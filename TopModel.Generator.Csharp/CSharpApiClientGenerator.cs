@@ -131,7 +131,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             fw.WriteLine(1, "}");
         }
 
-        var orderedEndpoints = endpoints.OrderBy(endpoint => endpoint.NamePascal).ToList();
+        var orderedEndpoints = endpoints.OrderBy(endpoint => endpoint.NamePascal, StringComparer.Ordinal).ToList();
 
         foreach (var endpoint in orderedEndpoints)
         {
@@ -145,6 +145,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             foreach (var param in endpoint.Params)
             {
                 fw.WriteParam(param.GetParamName(), param.Comment);
+            }
+
+            if (Config.UseCancellationTokens)
+            {
+                fw.WriteParam("ct", "CancellationToken.");
             }
 
             fw.WriteReturns(1, endpoint.Returns?.Comment ?? "Task.");
@@ -173,10 +178,15 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     fw.Write($" = {Config.GetValue(param, Classes)}");
                 }
 
-                if (endpoint.Params.Last() != param)
+                if (endpoint.Params.Last() != param || Config.UseCancellationTokens)
                 {
                     fw.Write(", ");
                 }
+            }
+
+            if (Config.UseCancellationTokens)
+            {
+                fw.Write("CancellationToken ct = default");
             }
 
             fw.WriteLine(")");
@@ -184,7 +194,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             var bodyParam = endpoint.GetJsonBodyParam();
 
-            fw.WriteLine(2, $"await EnsureAuthentication();");
+            fw.WriteLine(2, $"await EnsureAuthentication({(Config.UseCancellationTokens ? $"ct" : string.Empty)});");
 
             if (endpoint.GetQueryParams().Any())
             {
@@ -207,7 +217,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
                 if (listQPs.Count == 0)
                 {
-                    fw.WriteLine(2, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    fw.WriteLine(2, $"}}.Where(kv => kv.Value != null)).ReadAsStringAsync({(Config.UseCancellationTokens ? "ct" : string.Empty)});");
                 }
                 else
                 {
@@ -225,12 +235,12 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         fw.WriteLine(first ? 0 : 3, $@"{(first ? string.Empty : " ")}.Concat({qp.GetParamName()}?.Select(i => new KeyValuePair<string, string>(""{qp.GetParamName()}"", i{toString})) ?? new Dictionary<string, string>())");
                     }
 
-                    fw.WriteLine(2, " .Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    fw.WriteLine(2, $" .Where(kv => kv.Value != null)).ReadAsStringAsync({(Config.UseCancellationTokens ? "ct" : string.Empty)});");
                 }
             }
 
-            fw.WriteLine(2, $"using var res = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
-            fw.WriteLine(2, $"await EnsureSuccess(res);");
+            fw.WriteLine(2, $"using var res = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});");
+            fw.WriteLine(2, $"await EnsureSuccess(res{(Config.UseCancellationTokens ? $", ct" : string.Empty)});");
 
             if (returnType != null)
             {
@@ -246,13 +256,13 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                 if (returnType.TrimEnd('?') == "string")
                 {
                     fw.WriteLine();
-                    fw.WriteLine(2, $"return (await res.Content.ReadAsStringAsync()).Trim('\"');");
+                    fw.WriteLine(2, $"return (await res.Content.ReadAsStringAsync({(Config.UseCancellationTokens ? "ct" : string.Empty)})).Trim('\"');");
                 }
                 else if (returnType == "byte[]")
                 {
                     fw.WriteLine();
                     fw.WriteLine(2, "using var ms = new MemoryStream();");
-                    fw.WriteLine(2, "(await res.Content.ReadAsStreamAsync()).CopyTo(ms);");
+                    fw.WriteLine(2, $"(await res.Content.ReadAsStreamAsync({(Config.UseCancellationTokens ? "ct" : string.Empty)})).CopyTo(ms);");
                     fw.WriteLine(2, "return ms.ToArray();");
                 }
                 else
@@ -265,7 +275,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         fw.Write("(");
                     }
 
-                    fw.Write($"await res.Content.ReadFromJsonAsync<{returnType}>(_jsOptions)");
+                    fw.Write($"await res.Content.ReadFromJsonAsync<{returnType}>(_jsOptions{(Config.UseCancellationTokens ? ", ct" : string.Empty)})");
 
                     if (Config.NullableEnable && endpoint.Returns.Required)
                     {
@@ -281,12 +291,24 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         fw.WriteLine();
         fw.WriteSummary(1, "Assure que l'authentification est configurée.");
-        fw.WriteLine(1, "private partial Task EnsureAuthentication();");
+
+        if (Config.UseCancellationTokens)
+        {
+            fw.WriteParam("ct", "CancellationToken.");
+        }
+
+        fw.WriteLine(1, $"private partial Task EnsureAuthentication({(Config.UseCancellationTokens ? $"CancellationToken ct = default" : string.Empty)});");
 
         fw.WriteLine();
         fw.WriteSummary(1, "Gère les erreurs éventuelles retournées par l'API appelée.");
         fw.WriteParam("response", "Réponse HTTP");
-        fw.WriteLine(1, "private partial Task EnsureSuccess(HttpResponseMessage response);");
+
+        if (Config.UseCancellationTokens)
+        {
+            fw.WriteParam("ct", "CancellationToken.");
+        }
+
+        fw.WriteLine(1, $"private partial Task EnsureSuccess(HttpResponseMessage response{(Config.UseCancellationTokens ? $", CancellationToken ct = default" : string.Empty)});");
 
         fw.WriteLine("}");
     }
@@ -306,13 +328,13 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         w.WriteSummary($"Client {className[..^6]}");
         w.WriteClassDeclaration(className, null, false);
 
-        w.WriteLine(1, "private partial Task EnsureAuthentication()");
+        w.WriteLine(1, $"private partial Task EnsureAuthentication({(Config.UseCancellationTokens ? $"CancellationToken ct" : string.Empty)})");
         w.WriteLine(1, "{");
         w.WriteLine(2, "return Task.CompletedTask;");
         w.WriteLine(1, "}");
 
         w.WriteLine();
-        w.WriteLine(1, "private partial Task EnsureSuccess(HttpResponseMessage response)");
+        w.WriteLine(1, $"private partial Task EnsureSuccess(HttpResponseMessage response{(Config.UseCancellationTokens ? $", CancellationToken ct" : string.Empty)})");
         w.WriteLine(1, "{");
         w.WriteLine(2, "response.EnsureSuccessStatusCode();");
         w.WriteLine(2, "return Task.CompletedTask;");

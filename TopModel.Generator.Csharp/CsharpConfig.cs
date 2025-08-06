@@ -177,6 +177,11 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public bool UsePrimaryConstructors { get; set; } = true;
 
+    /// <summary>
+    /// Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).
+    /// </summary>
+    public bool UseCancellationTokens { get; set; }
+
     public override string[] PropertiesWithModuleVariableSupport =>
     [
         nameof(PersistentModelPath),

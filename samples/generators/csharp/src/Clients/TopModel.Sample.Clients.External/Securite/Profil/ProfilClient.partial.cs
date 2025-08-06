@@ -5,12 +5,12 @@
 /// </summary>
 public partial class ProfilClient
 {
-    private partial Task EnsureAuthentication()
+    private partial Task EnsureAuthentication(CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
-    private partial Task EnsureSuccess(HttpResponseMessage response)
+    private partial Task EnsureSuccess(HttpResponseMessage response, CancellationToken ct)
     {
         response.EnsureSuccessStatusCode();
         return Task.CompletedTask;

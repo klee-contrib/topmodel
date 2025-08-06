@@ -335,6 +335,12 @@ _(en preview, documentation à venir)_
 
   _Valeur par défaut_: `true`
 
+- `useCancellationTokens`
+
+  Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).
+
+  _Valeur par défaut_: `false`
+
 - `useEFComments`
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).

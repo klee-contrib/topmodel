@@ -143,6 +143,11 @@ public class {className} : Controller
                 wd.AppendLine($@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>");
             }
 
+            if (Config.UseCancellationTokens)
+            {
+                wd.AppendLine($@"{indent}/// <param name=""ct"">CancellationToken (HttpContext.RequestAborted).</param>");
+            }
+
             if (!Config.NoAsyncControllers || endpoint.Returns != null)
             {
                 wd.AppendLine($"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>");
@@ -159,7 +164,7 @@ public class {className} : Controller
             }
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(true)}(""{GetRoute(endpoint)}"")]");
-            wd.AppendLine($"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))})");
+            wd.AppendLine($"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken ct = default" : string.Empty)})");
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
             wd.AppendLine($"{indent}}}");

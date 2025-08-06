@@ -22,40 +22,43 @@ public partial class UtilisateurClient(HttpClient client)
     /// Ajoute un utilisateur.
     /// </summary>
     /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
+    /// <param name="ct">CancellationToken.</param>
     /// <returns>Utilisateur sauvegardé.</returns>
-    public async Task<UtilisateurRead> AddUtilisateur(UtilisateurWrite utilisateur)
+    public async Task<UtilisateurRead> AddUtilisateur(UtilisateurWrite utilisateur, CancellationToken ct = default)
     {
-        await EnsureAuthentication();
-        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/utilisateurs") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/utilisateurs") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions, ct);
     }
 
     /// <summary>
     /// Supprime un utilisateur.
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <param name="ct">CancellationToken.</param>
     /// <returns>Task.</returns>
-    public async Task DeleteUtilisateur(int utiId)
+    public async Task DeleteUtilisateur(int utiId, CancellationToken ct = default)
     {
-        await EnsureAuthentication();
-        using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/utilisateurs/{utiId}"));
-        await EnsureSuccess(res);
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/utilisateurs/{utiId}"), ct);
+        await EnsureSuccess(res, ct);
     }
 
     /// <summary>
     /// Charge le détail d'un utilisateur.
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <param name="ct">CancellationToken.</param>
     /// <returns>Le détail de l'utilisateur.</returns>
-    public async Task<UtilisateurRead> GetUtilisateur(int utiId)
+    public async Task<UtilisateurRead> GetUtilisateur(int utiId, CancellationToken ct = default)
     {
-        await EnsureAuthentication();
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead, ct);
+        await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -69,10 +72,11 @@ public partial class UtilisateurClient(HttpClient client)
     /// <param name="actif">Si l'utilisateur est actif.</param>
     /// <param name="profilId">Profil de l'utilisateur.</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur.</param>
+    /// <param name="ct">CancellationToken.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateOnly? dateNaissance = null, string adresse = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
+    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateOnly? dateNaissance = null, string adresse = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null, CancellationToken ct = default)
     {
-        await EnsureAuthentication();
+        await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["nom"] = nom,
@@ -83,11 +87,11 @@ public partial class UtilisateurClient(HttpClient client)
             ["actif"] = actif?.ToString(CultureInfo.InvariantCulture),
             ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
             ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
-        }.Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
+        }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
+        await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<UtilisateurItem>>(_jsOptions);
+        return await res.Content.ReadFromJsonAsync<ICollection<UtilisateurItem>>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -95,24 +99,27 @@ public partial class UtilisateurClient(HttpClient client)
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur.</param>
     /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
+    /// <param name="ct">CancellationToken.</param>
     /// <returns>Utilisateur sauvegardé.</returns>
-    public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, UtilisateurWrite utilisateur)
+    public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, UtilisateurWrite utilisateur, CancellationToken ct = default)
     {
-        await EnsureAuthentication();
-        using var res = await client.SendAsync(new(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions, ct);
     }
 
     /// <summary>
     /// Assure que l'authentification est configurée.
     /// </summary>
-    private partial Task EnsureAuthentication();
+    /// <param name="ct">CancellationToken.</param>
+    private partial Task EnsureAuthentication(CancellationToken ct = default);
 
     /// <summary>
     /// Gère les erreurs éventuelles retournées par l'API appelée.
     /// </summary>
     /// <param name="response">Réponse HTTP.</param>
-    private partial Task EnsureSuccess(HttpResponseMessage response);
+    /// <param name="ct">CancellationToken.</param>
+    private partial Task EnsureSuccess(HttpResponseMessage response, CancellationToken ct = default);
 }
