@@ -315,10 +315,9 @@ public class ModelStore : IDisposable
                     HashSet<string> unique = new HashSet<string>();
                     foreach (var fichier in generatedFiles)
                     {
-                        _logger.LogWarning(fichier);
                         if (!unique.Add(fichier))
                         {
-                            _logger.LogWarning($"Attention: fichier en doublon: {fichier}");
+                            _logger.LogWarning($"Attention: fichier en doublon: {fichier.ToPath()}");
                         }
                     }
 
