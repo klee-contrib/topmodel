@@ -66,7 +66,6 @@ public class TopModelLock : TopModelLockFile
 
         var generatedFilesList = generatedFiles
             .Select(f => f.ToRelative(_config.ConfigRoot))
-            .Distinct()
             .OrderBy(f => f)
             .ToList();
 
