@@ -231,7 +231,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
         if (property is AliasProperty ap && Classes.Contains(ap.Property.Class))
         {
-            var getter = Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class) ? string.Empty : $"#{GetGetterName(property)}()";
+            var getter = Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class) ? string.Empty : $"#{GetGetterName(ap.Property)}()";
             fw.WriteLine(1, $" * Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}");
         }
 

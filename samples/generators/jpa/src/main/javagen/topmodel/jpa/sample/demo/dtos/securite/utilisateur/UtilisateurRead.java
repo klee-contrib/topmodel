@@ -81,14 +81,14 @@ public class UtilisateurRead implements Serializable {
 
 	/**
 	 * Profil de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()}
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfil() Utilisateur#getProfil()}
 	 */
 	@NotNull
 	private Integer profilId;
 
 	/**
 	 * Type d'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()}
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()}
 	 */
 	@NotNull
 	private TypeUtilisateurCode typeUtilisateurCode = TypeUtilisateurCode.GEST;
