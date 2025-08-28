@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.0.1
+
+- [`9417eb2`](https://github.com/klee-contrib/topmodel/commit/9417eb28988b648179d428b818a30b1e9c946af2) - Fix required pour les reverseAssociationProperty
+
 ## 3.0.0
 
 _Remarque : Etant une version majeure, l'ensemble des modules de générateurs doivent être aussi mis à jour. Leurs versions ont toutes été montées à 3.0 également, pour suivre la version majeure de TopModel (on a donc sauté toutes les versions "2.x" 😁)_
@@ -366,7 +370,7 @@ Cela n'a pas d'impact sur le code généré.
 
 ## 2.3.4
 
-- [`60efcc60efcc60fe4bb8e9f743e5577f5b0f0848392594'](https://github.com/klee-contrib/topmodel/commit/60efcc60fe4bb8e9f743e5577f5b0f0848392594) [Core] Correction recopie `domainParameters`
+- [`60efcc60efcc60fe4bb8e9f743e5577f5b0f0848392594'](https://github.com/klee-contrib/topmodel/commit/60efcc60fe4bb8e9f743e5577f5b0f0848392594) [Core] Correction recopie`domainParameters`
 
 ## 2.3.3
 
@@ -596,7 +600,7 @@ Correctifs suite à la version majeure pour faire fonctionner l'installation du 
 
 - [`3293bd8`](https://github.com/klee-contrib/topmodel/commit/3293bd8f17e2e75f58bbfa703403137c4ac00223) - [JPA] Correction DAO correction visibilité interface
 
-- [`#197`](https://github.com/klee-contrib/topmodel/issues/197)[JPA] Supprimer la règle qui empêche de faire des associations dans des classes non persistées
+- [`#197`][https://github.com/klee-contrib/topmodel/issues/197](JPA) Supprimer la règle qui empêche de faire des associations dans des classes non persistées
 
 - [`e8fd3`](https://github.com/klee-contrib/topmodel/commit/e8fd3bc3282b0012d86ebbb46dc966ee65a3e3fb) - [JPA] Ne générer le constructeur par défaut que si un autre constructeur est généré. Y ajouter un commentaire
 
