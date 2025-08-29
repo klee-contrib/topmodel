@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.0.0
+version: 3.0.1
 custom:
   ../../../TopModel.Generator.Jpa: 17e49b6d60b41864ac2fc731ab5a34bb
 generatedFiles:
