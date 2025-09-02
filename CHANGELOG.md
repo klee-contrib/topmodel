@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.0.2
+
+- [`#492`](https://github.com/klee-contrib/topmodel/pull/492) - Amélioration : Avertir l'utilisateur qu'un fichier est généré "plusieurs fois"
+
 ## 3.0.1
 
 - [`9417eb2`](https://github.com/klee-contrib/topmodel/commit/9417eb28988b648179d428b818a30b1e9c946af2) - Fix required pour les reverseAssociationProperty
