@@ -311,16 +311,6 @@ public class ModelStore : IDisposable
                 var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
                 if (generatedFiles.Any() && !DisableLockfile && _topModelLock != null)
                 {
-
-                    HashSet<string> unique = new HashSet<string>();
-                    foreach (var fichier in generatedFiles)
-                    {
-                        if (!unique.Add(fichier))
-                        {
-                            _logger.LogWarning($"Attention: fichier en doublon: {fichier.ToPath()}");
-                        }
-                    }
-
                     _topModelLock.UpdateFiles(generatedFiles);
                 }
 

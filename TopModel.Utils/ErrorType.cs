@@ -93,6 +93,11 @@ public enum ErrorType
     /// </summary>
     TMD1005,
 
+    /// <summary>
+    /// Fichier en doublon: '{fichier.ToPath()}'.
+    /// </summary>
+    TMD1006,
+
     #endregion
 
     #region Erreurs d'annotations (2)
