@@ -60,13 +60,26 @@ public class TopModelLock : TopModelLockFile
 
     public void UpdateFiles(IEnumerable<string> generatedFiles)
     {
+
+        if (!_config.NoWarn.Contains(ErrorType.TMD0006))
+        {
+            HashSet<string> unique = new HashSet<string>();
+            foreach (var fichier in generatedFiles)
+            {
+                if (!unique.Add(fichier))
+                {
+                    _logger.LogWarning($"{{TMD1006}} - Fichier en doublon: '{fichier.ToPath()}'.");
+                }
+            }
+
+        }
+
         GeneratedFiles ??= [];
 
         generatedFiles = generatedFiles.Select(g => g.Replace("\\", "/"));
 
         var generatedFilesList = generatedFiles
             .Select(f => f.ToRelative(_config.ConfigRoot))
-            .Distinct()
             .OrderBy(f => f)
             .ToList();
 
