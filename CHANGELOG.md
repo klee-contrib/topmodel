@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.0.4
+
+- [`0f98caf`](https://github.com/klee-contrib/topmodel/commit/0f98caf3501ecdd1980a27fff9325bee04fa89e1) - Fix bug TranslationStore (oups encore)
+
 ## 3.0.3
 
 - [`a817927`](https://github.com/klee-contrib/topmodel/commit/a81792745c3c5c490cadc4c4697c31a83b5fbceb) - Fix bug TranslationStore
