@@ -541,7 +541,7 @@ public class ModelStore(
 
     private async Task LoadTranslations(CancellationToken ct = default)
     {
-        translationStore.Translations[config.I18n.DefaultLang] = new Dictionary<string, string>();
+        translationStore.Translations[config.I18n.DefaultLang] = [];
 
         foreach (var lang in config.I18n.Langs)
         {
