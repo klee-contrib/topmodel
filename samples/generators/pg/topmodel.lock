@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.0.2
+version: 3.0.3
 custom:
   ../../../TopModel.Generator.Sql: 96c630a12cf71193e93bbf46e5c212a6
 generatedFiles:

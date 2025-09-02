@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.0.3
+
+- [`a817927`](https://github.com/klee-contrib/topmodel/commit/a81792745c3c5c490cadc4c4697c31a83b5fbceb) - Fix bug TranslationStore
+
 ## 3.0.2
 
 - [`#492`](https://github.com/klee-contrib/topmodel/pull/492) - Amélioration : Avertir l'utilisateur qu'un fichier est généré "plusieurs fois"
