@@ -13,9 +13,11 @@ public class DataFlowSource
 
     public DataFlowSourceMode Mode { get; set; }
 
+#pragma warning disable MA0016
     public List<IProperty> JoinProperties { get; set; } = [];
+#pragma warning restore MA0016
 
-    public List<Reference> JoinPropertyReferences { get; set; } = [];
+    public IList<Reference> JoinPropertyReferences { get; set; } = [];
 
     public bool InnerJoin { get; set; }
 
@@ -24,7 +26,10 @@ public class DataFlowSource
 #nullable enable
     public FromMapper? TargetFromMapper
     {
-        get => DataFlow.Class.FromMappers.FirstOrDefault(fm => fm.Params.Count == 1 && fm.ClassParams.First().Class == Class);
+        get =>
+            DataFlow.Class.FromMappers.FirstOrDefault(fm =>
+                fm.Params.Count == 1 && fm.ClassParams.First().Class == Class
+            );
     }
 
     public ClassMappings? FirstSourceToMapper
@@ -32,12 +37,12 @@ public class DataFlowSource
         get
         {
             var joinedSources = DataFlow.Sources.Where(s => s.JoinProperties.Any()).ToList();
-            if (joinedSources.Count <= 1 || joinedSources.First() == this)
+            if (joinedSources.Count <= 1 || joinedSources[0] == this)
             {
                 return null;
             }
 
-            return Class.ToMappers.FirstOrDefault(mapper => mapper.Class == joinedSources.First().Class);
+            return Class.ToMappers.FirstOrDefault(mapper => mapper.Class == joinedSources[0].Class);
         }
     }
 }

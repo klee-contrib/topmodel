@@ -9,19 +9,24 @@ namespace TopModel.Utils;
 
 public static class NugetUtils
 {
-    private static readonly string CacheFile = Path.Combine(NuGetEnvironment.GetFolderPath(NuGetFolderPath.Temp), "topmodel-cache.json");
+    private static readonly string CacheFile = Path.Combine(
+        NuGetEnvironment.GetFolderPath(NuGetFolderPath.Temp),
+        "topmodel-cache.json"
+    );
     private static readonly CancellationToken Ct = CancellationToken.None;
     private static readonly SourceCacheContext NugetCache = new();
     private static readonly Dictionary<string, ModuleLatestVersion> Versions = [];
 
-    private static bool cantCheckVersion;
-    private static FindPackageByIdResource? nugetResource;
+    private static bool _cantCheckVersion;
+    private static FindPackageByIdResource? _nugetResource;
 
     static NugetUtils()
     {
         if (File.Exists(CacheFile))
         {
-            Versions = JsonSerializer.Deserialize<Dictionary<string, ModuleLatestVersion>>(File.ReadAllText(CacheFile))!;
+            Versions = JsonSerializer.Deserialize<Dictionary<string, ModuleLatestVersion>>(
+                File.ReadAllText(CacheFile)
+            )!;
         }
     }
 
@@ -34,14 +39,27 @@ public static class NugetUtils
     public static async Task<bool> DoesPackageExistsAsync(string id, string version)
     {
         var nugetResource = await GetNugetResourceAsync();
-        return await nugetResource.DoesPackageExistAsync(id, new NuGetVersion(version), NugetCache, NullLogger.Instance, Ct);
+        return await nugetResource.DoesPackageExistAsync(
+            id,
+            new NuGetVersion(version),
+            NugetCache,
+            NullLogger.Instance,
+            Ct
+        );
     }
 
     public static async Task<PackageArchiveReader> DownloadPackageAsync(string id, string version)
     {
         var nugetResource = await GetNugetResourceAsync();
         var packageStream = new MemoryStream();
-        await nugetResource.CopyNupkgToStreamAsync(id, new NuGetVersion(version), packageStream, NugetCache, NullLogger.Instance, Ct);
+        await nugetResource.CopyNupkgToStreamAsync(
+            id,
+            new NuGetVersion(version),
+            packageStream,
+            NugetCache,
+            NullLogger.Instance,
+            Ct
+        );
         return new PackageArchiveReader(packageStream);
     }
 
@@ -57,7 +75,7 @@ public static class NugetUtils
             {
                 if (cachedVersion.Version == null)
                 {
-                    cantCheckVersion = true;
+                    _cantCheckVersion = true;
                 }
                 else
                 {
@@ -66,7 +84,7 @@ public static class NugetUtils
             }
         }
 
-        if (cantCheckVersion && !forceCheck)
+        if (_cantCheckVersion && !forceCheck)
         {
             return null;
         }
@@ -82,7 +100,10 @@ public static class NugetUtils
             }
 
             var nugetVersion = moduleVersions.Last().Version;
-            var version = new TopModelLockModule { Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}" };
+            var version = new TopModelLockModule
+            {
+                Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}",
+            };
 
             Versions[id] = new(version.Version, DateTime.UtcNow);
             await WriteAsync();
@@ -91,8 +112,8 @@ public static class NugetUtils
         catch (FatalProtocolException)
         {
             // Si on a pas internet par exemple.
-            cantCheckVersion = true;
-            Versions[id] = new(null, DateTime.UtcNow);
+            _cantCheckVersion = true;
+            Versions[id] = new(Version: null, DateTime.UtcNow);
             await WriteAsync();
             return null;
         }
@@ -100,17 +121,17 @@ public static class NugetUtils
 
     private static async Task<FindPackageByIdResource> GetNugetResourceAsync()
     {
-        if (nugetResource == null)
+        if (_nugetResource == null)
         {
             var nugetRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
-            nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>();
+            _nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>(Ct);
         }
 
-        return nugetResource;
+        return _nugetResource;
     }
 
     private static async Task WriteAsync()
     {
-        await File.WriteAllTextAsync(CacheFile, JsonSerializer.Serialize(Versions));
+        await File.WriteAllTextAsync(CacheFile, JsonSerializer.Serialize(Versions), Ct);
     }
 }

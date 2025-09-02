@@ -60,7 +60,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                     {
                                         var annotation = new AnnotationReference(prop)
                                         {
-                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                            ParameterReferences = fileChecker.Deserialize<
+                                                Dictionary<ParameterReference, StringWithVariables>
+                                            >(parser),
                                         };
 
                                         rp.AnnotationReferences.Add(annotation);
@@ -73,7 +75,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             });
                             break;
                         case "customProperties":
-                            parser.ConsumeMapping(prop => rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            parser.ConsumeMapping(prop =>
+                                rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                            );
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -92,7 +96,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 var ap = new AssociationProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -114,7 +118,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                 "oneToOne" => AssociationType.OneToOne,
                                 "manyToOne" => AssociationType.ManyToOne,
                                 "manyToMany" => AssociationType.ManyToMany,
-                                _ => AssociationType.OneToMany
+                                _ => AssociationType.OneToMany,
                             };
                             break;
                         case "as":
@@ -156,7 +160,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                     {
                                         var annotation = new AnnotationReference(prop)
                                         {
-                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                            ParameterReferences = fileChecker.Deserialize<
+                                                Dictionary<ParameterReference, StringWithVariables>
+                                            >(parser),
                                         };
 
                                         ap.AnnotationReferences.Add(annotation);
@@ -169,7 +175,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             });
                             break;
                         case "customProperties":
-                            parser.ConsumeMapping(prop => ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            parser.ConsumeMapping(prop =>
+                                ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                            );
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -188,7 +196,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 var cp = new CompositionProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -231,7 +239,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                     {
                                         var annotation = new AnnotationReference(prop)
                                         {
-                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                            ParameterReferences = fileChecker.Deserialize<
+                                                Dictionary<ParameterReference, StringWithVariables>
+                                            >(parser),
                                         };
 
                                         cp.AnnotationReferences.Add(annotation);
@@ -244,7 +254,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             });
                             break;
                         case "customProperties":
-                            parser.ConsumeMapping(prop => cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            parser.ConsumeMapping(prop =>
+                                cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                            );
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -308,7 +320,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 var alp = new AliasProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -319,10 +331,16 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                     switch (prop)
                     {
                         case "prefix":
-                            alp.Prefix = value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Prefix =
+                                value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName
+                                : value.Value == "false" ? null
+                                : value.Value;
                             break;
                         case "suffix":
-                            alp.Suffix = value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Suffix =
+                                value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName
+                                : value.Value == "false" ? null
+                                : value.Value;
                             break;
                         case "label":
                             alp.Label = value!.Value;
@@ -363,7 +381,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                     {
                                         var annotation = new AnnotationReference(prop)
                                         {
-                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                            ParameterReferences = fileChecker.Deserialize<
+                                                Dictionary<ParameterReference, StringWithVariables>
+                                            >(parser),
                                         };
 
                                         alp.AnnotationReferences.Add(annotation);
@@ -377,7 +397,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             break;
                         case "customProperties":
                             var customProperties = new Dictionary<string, string>();
-                            parser.ConsumeMapping(prop => customProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            parser.ConsumeMapping(prop =>
+                                customProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                            );
                             alp.CustomProperties = customProperties;
                             break;
                         default:

@@ -21,7 +21,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
     {
         get
         {
-            _jpaModelPropertyGenerator ??= Config.UseJdbc ? new JdbcModelPropertyGenerator(Config, Classes, []) : new JpaModelPropertyGenerator(Config, Classes, []);
+            _jpaModelPropertyGenerator ??= Config.UseJdbc
+                ? new JdbcModelPropertyGenerator(Config, Classes, new Dictionary<string, string>())
+                : new JpaModelPropertyGenerator(Config, Classes, new Dictionary<string, string>());
             return _jpaModelPropertyGenerator;
         }
     }
@@ -42,13 +44,16 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
+            ReturnComment =
+                $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
             Comment = $"Crée une nouvelle instance de la classe '{classe.NamePascal}' en mappant les champs sources.",
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
 
-        fromMapperMethod.AddBodyLine($"return map{classe.NamePascal}({string.Join(", ", fromMapperMethod.Parameters.Select(p => p.Name))}, new {classe.NamePascal}());");
+        fromMapperMethod.AddBodyLine(
+            $"return map{classe.NamePascal}({string.Join(", ", fromMapperMethod.Parameters.Select(p => p.Name))}, new {classe.NamePascal}());"
+        );
         return fromMapperMethod;
     }
 
@@ -58,15 +63,18 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment = $"L'instance de '{classe.NamePascal}' passée en paramètres sur lesquels les champs sources ont été mappés",
+            ReturnComment =
+                $"L'instance de '{classe.NamePascal}' passée en paramètres sur lesquels les champs sources ont été mappés",
             Comment = $"Mappe les champs sources sur l'instance de la classe '{classe.NamePascal}' passée en paramètre",
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
-        fromMapperMethod.AddParameter(new JavaMethodParameter(classe.NamePascal, "target")
-        {
-            Comment = $"Instance de '{classe.NamePascal}' cible"
-        });
+        fromMapperMethod.AddParameter(
+            new JavaMethodParameter(classe.NamePascal, "target")
+            {
+                Comment = $"Instance de '{classe.NamePascal}' cible",
+            }
+        );
 
         fromMapperMethod.AddBodyLine("if (target == null) {");
         fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"target cannot be null\");");
@@ -87,7 +95,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             if (param.Required && !classe.Abstract)
             {
                 fromMapperMethod.AddBodyLine($"if ({param.Name.ToCamelCase()} == null) {{");
-                fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
+                fromMapperMethod.AddBodyLine(
+                    1,
+                    $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");"
+                );
                 fromMapperMethod.AddBodyLine("}");
                 fromMapperMethod.AddBodyLine();
             }
@@ -97,13 +108,20 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             if (param.Property.Required && !classe.Abstract)
             {
-                if (param.TargetProperty is AssociationProperty atg && atg.Association.IsPersistent && classe.IsPersistent)
+                if (
+                    param.TargetProperty is AssociationProperty atg
+                    && atg.Association.IsPersistent
+                    && classe.IsPersistent
+                )
                 {
                     continue;
                 }
 
                 fromMapperMethod.AddBodyLine($"if ({param.Property.NameCamel} == null) {{");
-                fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Property.NameCamel} cannot be null\");");
+                fromMapperMethod.AddBodyLine(
+                    1,
+                    $"throw new IllegalArgumentException(\"{param.Property.NameCamel} cannot be null\");"
+                );
                 fromMapperMethod.AddBodyLine("}");
                 fromMapperMethod.AddBodyLine();
             }
@@ -123,9 +141,14 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
-                var (getter, checkSourceNull, imports) = GetSourceGetter(propertySource, propertyTarget, classe, param.Name.ToCamelCase(), tag);
+                var (getter, checkSourceNull, imports) = GetSourceGetter(
+                    propertySource,
+                    propertyTarget,
+                    classe,
+                    param.Name.ToCamelCase(),
+                    tag
+                );
                 fromMapperMethod.Imports.AddRange(imports);
-                var propertyTargetName = JpaModelPropertyGenerator.GetPropertyName(propertyTarget);
                 if (classe.Abstract)
                 {
                     if (!isFirst)
@@ -139,7 +162,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (checkSourceNull)
                     {
-                        hydrate += $"{param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}() != null ? {getter} : null";
+                        hydrate +=
+                            $"{param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}() != null ? {getter} : null";
                     }
                     else
                     {
@@ -152,15 +176,24 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         if (checkSourceNull)
                         {
-                            fromMapperMethod.AddBodyLine(indent, $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{");
+                            fromMapperMethod.AddBodyLine(
+                                indent,
+                                $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
+                            );
                         }
 
-                        fromMapperMethod.AddBodyLine(indent + (checkSourceNull ? 1 : 0), $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});");
+                        fromMapperMethod.AddBodyLine(
+                            indent + (checkSourceNull ? 1 : 0),
+                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                        );
 
                         if (checkSourceNull)
                         {
                             fromMapperMethod.AddBodyLine(indent, $"}} else {{");
-                            fromMapperMethod.AddBodyLine(indent + 1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
+                            fromMapperMethod.AddBodyLine(
+                                indent + 1,
+                                $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                            );
                             fromMapperMethod.AddBodyLine(indent, $"}}");
                             fromMapperMethod.AddBodyLine();
                         }
@@ -177,8 +210,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var param in mapper.PropertyParams)
         {
-            var propertyTargetName = Config.UseJdbc ? param.TargetProperty.NamePascal : param.TargetProperty.NameByClassPascal;
-            if (param.TargetProperty is AssociationProperty apTg && apTg.Association.IsPersistent && classe.IsPersistent)
+            if (
+                param.TargetProperty is AssociationProperty apTg
+                && apTg.Association.IsPersistent
+                && classe.IsPersistent
+            )
             {
                 continue;
             }
@@ -198,7 +234,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
             else
             {
-                fromMapperMethod.AddBodyLine($"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});");
+                fromMapperMethod.AddBodyLine(
+                    $"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});"
+                );
             }
         }
 
@@ -213,14 +251,20 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         return fromMapperMethod;
     }
 
-    protected virtual (string Getter, bool CheckSourceNull, IEnumerable<string> Imports) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, string sourceName, string tag)
+    protected virtual (string Getter, bool CheckSourceNull, IEnumerable<string> Imports) GetSourceGetter(
+        IProperty propertySource,
+        IProperty propertyTarget,
+        Class classe,
+        string sourceName,
+        string tag
+    )
     {
         var getter = string.Empty;
         var imports = new List<string>();
         var getterName = JpaModelPropertyGenerator.GetGetterName(propertySource);
         var converter = propertySource.Domain.GetConverter(propertyTarget.Domain);
         var targetType = JpaModelPropertyGenerator.GetPropertyType(propertyTarget);
-        var collector = $"Collectors.to{targetType.Split('<').First()}()";
+        var collector = $"Collectors.to{targetType.Split('<')[0]}()";
         if (converter != null && Config.GetImplementation(converter) != null)
         {
             var impl = Config.GetImplementation(converter);
@@ -233,25 +277,40 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         if (Config.UseJdbc)
         {
             getter = $"{sourceName}.{getterName}()";
-            return (Getter: Config.GetConvertedValue(
-                getter,
-                propertySource.Domain,
-                propertyTarget.Domain), CheckSourceNull: false, Imports: imports);
+            return (
+                Getter: Config.GetConvertedValue(getter, propertySource.Domain, propertyTarget.Domain),
+                CheckSourceNull: false,
+                Imports: imports
+            );
         }
 
         var checkSourceNull = false;
         if (
             (propertySource.Class.IsPersistent == propertyTarget.Class.IsPersistent)
-             || !(propertySource is AssociationProperty
+            || !(
+                propertySource is AssociationProperty
                 || propertySource is AliasProperty psAlp && psAlp.Property is AssociationProperty
                 || propertyTarget is AssociationProperty
-                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty))
+                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty
+            )
+        )
         {
             getter = $"{sourceName}.{getterName}()";
         }
-        else if (propertySource.Class.IsPersistent && (!propertyTarget.Class.IsPersistent || propertyTarget is not AssociationProperty) && (propertySource is AssociationProperty apSource && apSource.Association.IsPersistent || propertySource is AliasProperty alpSource && alpSource.Property is AssociationProperty apSource2 && apSource2.Association.IsPersistent))
+        else if (
+            propertySource.Class.IsPersistent
+            && (!propertyTarget.Class.IsPersistent || propertyTarget is not AssociationProperty)
+            && (
+                propertySource is AssociationProperty apSource && apSource.Association.IsPersistent
+                || propertySource is AliasProperty alpSource
+                    && alpSource.Property is AssociationProperty apSource2
+                    && apSource2.Association.IsPersistent
+            )
+        )
         {
-            apSource = propertySource is AssociationProperty ap ? ap : (AssociationProperty)((AliasProperty)propertySource).Property;
+            apSource = propertySource is AssociationProperty ap
+                ? ap
+                : (AssociationProperty)((AliasProperty)propertySource).Property;
             checkSourceNull = true;
             if (propertyTarget is CompositionProperty cp)
             {
@@ -260,37 +319,56 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var cpMapper = propertySource.Class.ToMappers.Single(t => t.Class == cp.Composition)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
-                    getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apSource.NameByClassPascal}())";
+                    getter =
+                        $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apSource.NameByClassPascal}())";
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
-                else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association))
+                else if (
+                    cp.Composition.FromMappers.Any(f =>
+                        f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association
+                    )
+                )
                 {
-                    var cpMapper = cp.Composition.FromMappers.Single(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association)!;
+                    var cpMapper = cp.Composition.FromMappers.Single(f =>
+                        f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association
+                    )!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cp.Composition, cpMapper));
 
                     getter = $"{sourceName}.{getterName}()";
                     if (apSource.Type.IsToMany())
                     {
-                        getter = $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cp.Composition}).collect({collector})";
+                        getter =
+                            $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cp.Composition}).collect({collector})";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
                     {
-                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.get{propertyTarget.NameByClassPascal}())";
+                        getter =
+                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.get{propertyTarget.NameByClassPascal}())";
                     }
 
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
                 else
                 {
-                    throw new ModelException(classe, $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apSource.Association.Name}");
+                    throw new ModelException(
+                        classe,
+                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apSource.Association.Name}"
+                    );
                 }
             }
             else
             {
                 if (apSource.Type == AssociationType.OneToOne || apSource.Type == AssociationType.ManyToOne)
                 {
-                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property, availableClasses: Classes))
+                    if (
+                        Config.EnumsAsEnums
+                        && Config.CanClassUseEnums(
+                            apSource.Association,
+                            prop: apSource.Property,
+                            availableClasses: Classes
+                        )
+                    )
                     {
                         getter = $"{sourceName}.{getterName}()";
                         checkSourceNull = false;
@@ -305,21 +383,40 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     checkSourceNull = true;
                     imports.Add("java.util.stream.Collectors");
                     imports.Add("java.util.Objects");
-                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property, availableClasses: Classes))
+                    if (
+                        Config.EnumsAsEnums
+                        && Config.CanClassUseEnums(
+                            apSource.Association,
+                            prop: apSource.Property,
+                            availableClasses: Classes
+                        )
+                    )
                     {
                         getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect({collector})";
                     }
                     else
                     {
-                        getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.NameByClassPascal}).collect({collector})";
+                        getter =
+                            $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.NameByClassPascal}).collect({collector})";
                         imports.Add(apSource.Association.GetImport(Config, tag));
                     }
                 }
             }
         }
-        else if ((!propertySource.Class.IsPersistent || propertySource is not AssociationProperty) && propertyTarget.Class.IsPersistent && (propertyTarget is AssociationProperty apTarget && apTarget.Association.IsPersistent || propertyTarget is AliasProperty ptAp && ptAp.Property is AssociationProperty ptApAss && ptApAss.Association.IsPersistent))
+        else if (
+            (!propertySource.Class.IsPersistent || propertySource is not AssociationProperty)
+            && propertyTarget.Class.IsPersistent
+            && (
+                propertyTarget is AssociationProperty apTarget && apTarget.Association.IsPersistent
+                || propertyTarget is AliasProperty ptAp
+                    && ptAp.Property is AssociationProperty ptApAss
+                    && ptApAss.Association.IsPersistent
+            )
+        )
         {
-            apTarget = propertyTarget is AssociationProperty ap ? ap : (AssociationProperty)((AliasProperty)propertyTarget).Property;
+            apTarget = propertyTarget is AssociationProperty ap
+                ? ap
+                : (AssociationProperty)((AliasProperty)propertyTarget).Property;
             if (Config.CanClassUseEnums(apTarget.Property.Class))
             {
                 if (!propertySource.Class.IsPersistent)
@@ -344,7 +441,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         checkSourceNull = true;
                         if (apTarget.Type.IsToMany())
                         {
-                            getter = $@"{sourceName}.{getterName}().stream().map({apTarget.Association.NamePascal}::new).collect({collector})";
+                            getter =
+                                $@"{sourceName}.{getterName}().stream().map({apTarget.Association.NamePascal}::new).collect({collector})";
                             imports.Add("java.util.stream.Collectors");
                         }
                         else
@@ -370,24 +468,30 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var cpMapper = cp.Composition.ToMappers.Single(t => t.Class == apTarget.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
-                    var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
+                    var isMultiple =
+                        apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
 
                     if (isMultiple)
                     {
                         checkSourceNull = !propertySource.Class.IsPersistent;
-                        getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: {cpMapper.Name.ToCamelCase()}).collect({collector})" : string.Empty)}";
+                        getter =
+                            $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: {cpMapper.Name.ToCamelCase()}).collect({collector})" : string.Empty)}";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
                     {
                         checkSourceNull = true;
-                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apTarget.NameByClassPascal}())";
+                        getter =
+                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apTarget.NameByClassPascal}())";
                         imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                     }
                 }
                 else
                 {
-                    throw new ModelException(classe, $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apTarget.Association.Name}");
+                    throw new ModelException(
+                        classe,
+                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apTarget.Association.Name}"
+                    );
                 }
             }
         }
@@ -396,10 +500,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             getter = $"{sourceName}.{getterName}()";
         }
 
-        return (Getter: Config.GetConvertedValue(
-                getter,
-                propertySource.Domain,
-                propertyTarget.Domain), CheckSourceNull: checkSourceNull, Imports: imports);
+        return (
+            Getter: Config.GetConvertedValue(getter, propertySource.Domain, propertyTarget.Domain),
+            CheckSourceNull: checkSourceNull,
+            Imports: imports
+        );
     }
 
     protected virtual JavaMethod GetToMapperMethodNoTarget(Class classe, ClassMappings mapper, string tag)
@@ -409,28 +514,36 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             Visibility = "public",
             Static = true,
             Comment = $"Mappe '{mapper.Class.NamePascal}' vers une nouvelle instance de '{classe}'",
-            ReturnComment = $"Nouvelle instance de '{classe}' mappée depuis '{mapper.Class.NameCamel}'"
-        }
-       .AddParameter(new JavaMethodParameter(classe.GetImport(Config, tag), classe.NamePascal, "source")
-       {
-           Comment = $"Instance de '{classe.NamePascal}' à mapper"
-       });
+            ReturnComment = $"Nouvelle instance de '{classe}' mappée depuis '{mapper.Class.NameCamel}'",
+        }.AddParameter(
+            new JavaMethodParameter(classe.GetImport(Config, tag), classe.NamePascal, "source")
+            {
+                Comment = $"Instance de '{classe.NamePascal}' à mapper",
+            }
+        );
 
-        toMapperMethod.AddBodyLine(1, $"return {mapper.Name.Value.ToCamelCase()}(source, new {mapper.Class.NamePascal}());");
+        toMapperMethod.AddBodyLine(
+            1,
+            $"return {mapper.Name.Value.ToCamelCase()}(source, new {mapper.Class.NamePascal}());"
+        );
         return toMapperMethod;
     }
 
     protected virtual JavaMethod GetToMapperMethodWithTarget(Class classe, ClassMappings mapper, string tag)
     {
         var toMapperMethod = GetToMapperMethodNoTarget(classe, mapper, tag);
-        toMapperMethod.AddParameter(new JavaMethodParameter(mapper.Class.GetImport(Config, tag), mapper.Class.NamePascal, "target")
-        {
-            Comment = $"Instance de '{mapper.Class.NamePascal}' sur laquelle mapper"
-        });
+        toMapperMethod.AddParameter(
+            new JavaMethodParameter(mapper.Class.GetImport(Config, tag), mapper.Class.NamePascal, "target")
+            {
+                Comment = $"Instance de '{mapper.Class.NamePascal}' sur laquelle mapper",
+            }
+        );
 
         toMapperMethod.Body.Clear();
-        toMapperMethod.Comment = $"Mappe '{mapper.Class.NamePascal}' vers une nouvelle instance ou bien sur l'instance passée en paramètres";
-        toMapperMethod.ReturnComment = $"Nouvelle instance ou bien l'instance passée en paramètres mappée depuis '{mapper.Class.NameCamel}'";
+        toMapperMethod.Comment =
+            $"Mappe '{mapper.Class.NamePascal}' vers une nouvelle instance ou bien sur l'instance passée en paramètres";
+        toMapperMethod.ReturnComment =
+            $"Nouvelle instance ou bien l'instance passée en paramètres mappée depuis '{mapper.Class.NameCamel}'";
         toMapperMethod.AddBodyLine("if (source == null) {");
         toMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"source cannot be null\");");
         toMapperMethod.AddBodyLine("}");
@@ -451,9 +564,18 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
             var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
-            var (getter, checkSourceNull, imports) = GetSourceGetter(propertySource, propertyTarget!, classe, "source", tag);
+            var (getter, checkSourceNull, imports) = GetSourceGetter(
+                propertySource,
+                propertyTarget!,
+                classe,
+                "source",
+                tag
+            );
             toMapperMethod.Imports.AddRange(imports);
-            var propertyTargetName = Config.UseJdbc || propertyTarget is AssociationProperty asp && !asp.Association.IsPersistent ? propertyTarget!.NamePascal : propertyTarget!.NameByClassPascal;
+            var propertyTargetName =
+                Config.UseJdbc || propertyTarget is AssociationProperty asp && !asp.Association.IsPersistent
+                    ? propertyTarget!.NamePascal
+                    : propertyTarget!.NameByClassPascal;
             if (mapper.Class.Abstract)
             {
                 if (!isFirst)
@@ -480,15 +602,23 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     if (checkSourceNull)
                     {
-                        toMapperMethod.AddBodyLine($"if (source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
+                        toMapperMethod.AddBodyLine(
+                            $"if (source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{"
+                        );
                     }
 
-                    toMapperMethod.AddBodyLine(checkSourceNull ? 1 : 0, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});");
+                    toMapperMethod.AddBodyLine(
+                        checkSourceNull ? 1 : 0,
+                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                    );
 
                     if (checkSourceNull)
                     {
                         toMapperMethod.AddBodyLine($"}} else {{");
-                        toMapperMethod.AddBodyLine(1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
+                        toMapperMethod.AddBodyLine(
+                            1,
+                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                        );
                         toMapperMethod.AddBodyLine($"}}");
                         toMapperMethod.AddBodyLine();
                     }
@@ -506,20 +636,31 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         return toMapperMethod;
     }
 
-    protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
+    protected override void HandleFile(
+        string fileName,
+        string tag,
+        IList<(Class Classe, FromMapper Mapper)> fromMappers,
+        IList<(Class Classe, ClassMappings Mapper)> toMappers
+    )
     {
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();
 
-        var (mapperNs, modelPath) = sampleFromMapper != default
-            ? Config.GetMapperLocation(sampleFromMapper)
-            : Config.GetMapperLocation(sampleToMapper);
+        var (mapperNs, modelPath) =
+            sampleFromMapper != default
+                ? Config.GetMapperLocation(sampleFromMapper)
+                : Config.GetMapperLocation(sampleToMapper);
 
-        var package = Config.GetPackageName(mapperNs, modelPath, GetBestClassTag(sampleFromMapper.Classe ?? sampleToMapper.Classe, tag));
+        var package = Config.GetPackageName(
+            mapperNs,
+            modelPath,
+            GetBestClassTag(sampleFromMapper.Classe ?? sampleToMapper.Classe, tag)
+        );
 
-        using var fw = this.OpenJavaWriter(fileName, package, null);
+        using var fw = this.OpenJavaWriter(fileName, package, codePage: null);
 
-        var imports = fromMappers.SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
+        var imports = fromMappers
+            .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
             .Select(c => c.GetImport(Config, c.Tags.Contains(tag) ? tag : c.Tags.Intersect(Config.Tags).First()))
@@ -553,7 +694,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         fw.WriteLine("}");
     }
 
-    protected virtual bool UseClassForAssociation(IProperty p, Class classe) => classe.IsPersistent && !Config.UseJdbc && p is AssociationProperty ap && ap.Association.IsPersistent;
+    protected virtual bool UseClassForAssociation(IProperty p, Class classe) =>
+        classe.IsPersistent && !Config.UseJdbc && p is AssociationProperty ap && ap.Association.IsPersistent;
 
     protected virtual void WriteFromMappers(Class classe, FromMapper mapper, JavaWriter fw, string tag)
     {
@@ -589,7 +731,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             var methodParameter = new JavaMethodParameter(param.Class.NamePascal, param.Name.ToCamelCase())
             {
-                Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}' source"
+                Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}' source",
             };
             methodParameter.Imports.Add(param.Class.GetImport(Config, tag));
             yield return methodParameter;
@@ -597,9 +739,16 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var param in mapper.PropertyParams)
         {
-            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property, Classes, useClassForAssociation: UseClassForAssociation(param.Property, classe)), param.Property.NameCamel)
+            var methodParameter = new JavaMethodParameter(
+                Config.GetType(
+                    param.Property,
+                    Classes,
+                    useClassForAssociation: UseClassForAssociation(param.Property, classe)
+                ),
+                param.Property.NameCamel
+            )
             {
-                Comment = param.Property.Comment
+                Comment = param.Property.Comment,
             };
             methodParameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
             yield return methodParameter;

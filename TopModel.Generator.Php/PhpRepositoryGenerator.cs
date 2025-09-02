@@ -23,7 +23,8 @@ public class PhpRepositoryGenerator(ILogger<PhpRepositoryGenerator> logger, IFil
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.RepositoriesPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}Repository.php");
+            $"{classe.NamePascal}Repository.php"
+        );
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -34,12 +35,11 @@ public class PhpRepositoryGenerator(ILogger<PhpRepositoryGenerator> logger, IFil
             return;
         }
 
-        var nameSpace = Config.ResolveVariables(
-            Config.RepositoriesPath,
-            tag,
-            module: classe.Namespace.Module).ToPackageName();
+        var nameSpace = Config
+            .ResolveVariables(Config.RepositoriesPath, tag, module: classe.Namespace.Module)
+            .ToPackageName();
 
-        using var fw = this.OpenPhpWriter(fileName, nameSpace, null);
+        using var fw = this.OpenPhpWriter(fileName, nameSpace, codePage: null);
         fw.WriteDocStart(0, $"@extends ServiceEntityRepository<{classe.NamePascal}>");
         fw.WriteDocEnd(0);
         fw.AddImport(@"Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository");

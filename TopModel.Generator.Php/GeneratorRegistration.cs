@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Generator.Core;
-
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Php;

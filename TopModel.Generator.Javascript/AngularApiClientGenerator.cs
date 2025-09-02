@@ -22,14 +22,12 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = OpenFileWriter(filePath, false);
+        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
 
-        imports.AddRange([
-            (Import: "Injectable", Path: "@angular/core"),
-            (Import: "inject", Path: "@angular/core"),
-            (Import: "HttpClient", Path: "@angular/common/http"),
-        ]);
+        imports.Add((Import: "Injectable", Path: "@angular/core"));
+        imports.Add((Import: "inject", Path: "@angular/core"));
+        imports.Add((Import: "HttpClient", Path: "@angular/common/http"));
 
         if (Config.ApiMode == TargetFramework.ANGULAR)
         {
@@ -45,11 +43,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
         }
 
-        imports.AddRange([
-            (Import: "HttpHeaders", Path: "@angular/common/http"),
-            (Import: "HttpParams", Path: "@angular/common/http"),
-            (Import: "HttpContext", Path: "@angular/common/http"),
-        ]);
+        imports.Add((Import: "HttpHeaders", Path: "@angular/common/http"));
+        imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
+        imports.Add((Import: "HttpContext", Path: "@angular/common/http"));
 
         imports = imports.GroupAndSort();
 
@@ -77,7 +73,8 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
         if (endpoints.Any(e => e.IsMultipart))
         {
-            fw.WriteLine(@"
+            fw.WriteLine(
+                @"
     private fillFormData(data: any, formData: FormData, prefix = """") {
         if (Array.isArray(data)) {
             for (const [i, item] of data.entries()) {
@@ -90,13 +87,14 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         } else {
             formData.append(prefix, data);
         }
-    }");
+    }"
+            );
         }
 
         fw.WriteLine("}");
     }
 
-    private string GetOptionsType()
+    private static string GetOptionsType()
     {
         var options = new List<string>
         {
@@ -105,7 +103,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             "params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}",
             "withCredentials?: boolean",
             "reportProgress?: boolean",
-            "transferCache?: {includeHeaders?: string[]} | boolean"
+            "transferCache?: {includeHeaders?: string[]} | boolean",
         };
         return @$"{{{string.Join("; ", options)}}}";
     }
@@ -139,7 +137,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
             hasProperty = true;
             var defaultValue = Config.GetValue(param, Classes);
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
+            fw.Write(
+                $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}"
+            );
         }
 
         string returnType;
@@ -171,7 +171,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         }
 
         string observe = "body";
-        var genericType = returnType.Split('<').First();
+        var genericType = returnType.Split('<')[0];
         if (genericType == "HttpEvent")
         {
             observe = "events";
@@ -218,8 +218,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
         if (endpoint.GetQueryParams().Any())
         {
-#pragma warning disable SA1118 // Parameter should not span multiple lines
-            fw.WriteLine(2, @"const addParam = (key: string, value: any) => {
+            fw.WriteLine(
+                2,
+                @"const addParam = (key: string, value: any) => {
   if (value !== null && value !== undefined) {
     if (options.params instanceof HttpParams) {
       options.params = options.params.append(key, value);
@@ -230,8 +231,8 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
       options.params[key] = value;
     }
   }
-};");
-#pragma warning restore SA1118 // Parameter should not span multiple lines
+};"
+            );
 
             foreach (var qParam in endpoint.GetQueryParams())
             {
@@ -246,7 +247,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
         if (observe != "body")
         {
-            getter = $"{endpoint.Method.ToLower()}<{returnType.Split('<')[1].Split('>').First()}>";
+            getter = $"{endpoint.Method.ToLower()}<{returnType.Split('<')[1].Split('>')[0]}>";
         }
 
         if (needResponseType)
@@ -254,7 +255,10 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             getter = $"{endpoint.Method.ToLower()}";
         }
 
-        fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{getter}(`/{fullRoute}`");
+        fw.Write(
+            2,
+            $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{getter}(`/{fullRoute}`"
+        );
         if (endpoint.GetJsonBodyParam() != null)
         {
             fw.Write($", {endpoint.GetJsonBodyParam()!.GetParamName()}");

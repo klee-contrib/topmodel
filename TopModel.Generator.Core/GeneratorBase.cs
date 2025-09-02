@@ -14,6 +14,7 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
 #nullable disable
     public T Config { get; internal set; }
+
 #nullable enable
 
     public int Number { get; internal set; }
@@ -22,20 +23,23 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
     public bool Disabled => Config.Disable?.Contains(Name) ?? false;
 
+#pragma warning disable MA0016
     protected Dictionary<string, ModelFile> Files { get; } = [];
+#pragma warning restore MA0016
 
-    protected IEnumerable<Class> Classes => Files
-        .SelectMany(f => f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value)))
-        .Distinct();
+    protected IEnumerable<Class> Classes =>
+        Files
+            .SelectMany(f =>
+                f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value))
+            )
+            .Distinct();
 
     protected virtual bool PersistentOnly => false;
 
     protected virtual bool NoLanguage => false;
 
     /// <inheritdoc cref="IModelWatcher.OnErrors" />
-    public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
-    {
-    }
+    public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors) { }
 
     /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
@@ -47,14 +51,26 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
         if (!NoLanguage)
         {
-            var missingDomains = handledFiles.SelectMany(f => f.Properties).Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false)).Select(fp => fp.Domain)
-                .Concat(PersistentOnly ? [] : handledFiles.SelectMany(f => f.Properties).OfType<CompositionProperty>().Select(fp => fp.Domain!))
+            var missingDomains = handledFiles
+                .SelectMany(f => f.Properties)
+                .Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false))
+                .Select(fp => fp.Domain)
+                .Concat(
+                    PersistentOnly
+                        ? []
+                        : handledFiles
+                            .SelectMany(f => f.Properties)
+                            .OfType<CompositionProperty>()
+                            .Select(fp => fp.Domain!)
+                )
                 .Where(domain => domain != null && Config.GetImplementation(domain) == null)
                 .Distinct();
 
             if (missingDomains.Any())
             {
-                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Language)}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
+                throw new ModelException(
+                    $"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Language)}' : {string.Join(", ", missingDomains.Select(d => d.Name).Order())}."
+                );
             }
         }
 
@@ -77,12 +93,20 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
     public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
     {
-        return writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), logger, encoderShouldEmitUTF8Identifier);
+        return writerProvider.OpenFileWriter(
+            Path.Combine(Config.OutputDirectory, fileName).Replace('\\', '/'),
+            logger,
+            encoderShouldEmitUTF8Identifier
+        );
     }
 
     public IFileWriter OpenFileWriter(string fileName, Encoding encoding)
     {
-        return writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), logger, encoding);
+        return writerProvider.OpenFileWriter(
+            Path.Combine(Config.OutputDirectory, fileName).Replace('\\', '/'),
+            logger,
+            encoding
+        );
     }
 
     protected IEnumerable<ClassValue> GetAllValues(Class classe)

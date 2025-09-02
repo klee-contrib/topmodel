@@ -8,7 +8,8 @@ public class ValueTemplate
 
 #nullable disable
     public StringWithVariables Value { get; set; }
+
 #nullable enable
 
-    public List<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; set; } = [];
 }

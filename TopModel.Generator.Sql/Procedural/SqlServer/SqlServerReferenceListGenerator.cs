@@ -3,8 +3,10 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.SqlServer;
 
-public class SqlServerReferenceListGenerator(ILogger<SqlServerReferenceListGenerator> logger, IFileWriterProvider writerProvider)
-    : AbstractReferenceListGenerator(logger, writerProvider)
+public class SqlServerReferenceListGenerator(
+    ILogger<SqlServerReferenceListGenerator> logger,
+    IFileWriterProvider writerProvider
+) : AbstractReferenceListGenerator(logger, writerProvider)
 {
     public override string Name => "SqlServerRefListGen";
 

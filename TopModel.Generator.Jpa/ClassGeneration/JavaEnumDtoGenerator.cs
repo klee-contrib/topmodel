@@ -36,7 +36,7 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
 
     protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        return;
+        // A surcharger
     }
 
     protected override void WriteStaticMembers(JavaWriter fw, Class classe)
@@ -47,7 +47,10 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             var code = refValue.Value[codeProperty];
-            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});");
+            fw.WriteLine(
+                1,
+                $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
+            );
         }
     }
 }

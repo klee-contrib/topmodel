@@ -10,8 +10,10 @@ namespace TopModel.Generator.Jpa.EndpointGeneration;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerator> logger, IFileWriterProvider writerProvider)
-    : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
+public class SpringRestTemplateApiGenerator(
+    ILogger<SpringRestTemplateApiGenerator> logger,
+    IFileWriterProvider writerProvider
+) : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override string Name => "SpringRestTemplateGen";
 
@@ -30,7 +32,7 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
         return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
-    protected virtual List<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
+    protected virtual IList<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
     {
         var methodParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams())
@@ -75,20 +77,21 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
 
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        var properties = endpoints
+            .SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
         return properties.SelectMany(property => property!.GetTypeImports(Config, tag));
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = GetClassName(fileName);
-        var packageName = Config.GetPackageName(endpoints.First(), tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, null);
+        var packageName = Config.GetPackageName(endpoints[0], tag);
+        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();
 
-        var javaxOrJakarta = Config.PersistenceMode.ToString().ToLower();
         if (Config.GeneratedHint)
         {
             fw.WriteLine(0, Config.GeneratedAnnotation);
@@ -152,10 +155,13 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
         var returnClass = "(Class<?>) null";
         if (endpoint.Returns != null)
         {
-            if (Config.GetType(endpoint.Returns) == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Length > 1)
+            if (
+                Config.GetType(endpoint.Returns) == "ResponseEntity"
+                && Config.GetType(endpoint.Returns).Split('<').Length > 1
+            )
             {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
-                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
+                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>')[0]}>";
+                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>')[0]}.class";
             }
             else if (Config.GetType(endpoint.Returns).Contains('<'))
             {
@@ -172,17 +178,17 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
 
         fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
         fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
-        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
-        var body = $"new HttpEntity<>({(endpoint.GetJsonBodyParam()?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
-        if (endpoint.Returns != null)
-        {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
-        }
-        else
-        {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
-        }
+        fw.WriteLine(
+            2,
+            $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, withType: false, withBody: false))});"
+        );
+        var body =
+            $"new HttpEntity<>({(endpoint.GetJsonBodyParam()?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
 
+        fw.WriteLine(
+            2,
+            $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});"
+        );
         fw.WriteLine(1, "}");
     }
 
@@ -217,9 +223,12 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
 
         fw.WriteLine(1, " */");
         var returnType = "UriComponentsBuilder";
-        var methodParams = GetMethodParams(endpoint, true, false);
+        var methodParams = GetMethodParams(endpoint, withType: true, withBody: false);
 
-        fw.WriteLine(1, $"protected {returnType} {endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", methodParams)}) {{");
+        fw.WriteLine(
+            1,
+            $"protected {returnType} {endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", methodParams)}) {{"
+        );
         var fullRoute = endpoint.FullRoute;
         fullRoute = "/" + fullRoute;
         foreach (IProperty p in endpoint.GetRouteParams())
@@ -229,7 +238,8 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
 
         if (endpoint.GetRouteParams().Any())
         {
-            fullRoute = $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))})";
+            fullRoute =
+                $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))})";
         }
         else
         {
@@ -257,7 +267,10 @@ public class SpringRestTemplateApiGenerator(ILogger<SpringRestTemplateApiGenerat
             if (Config.GetType(p).StartsWith("List"))
             {
                 fw.AddImport("java.util.stream.Collectors");
-                fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()}.stream().collect(Collectors.joining("","")));");
+                fw.WriteLine(
+                    indentLevel,
+                    @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()}.stream().collect(Collectors.joining("","")));"
+                );
             }
             else
             {

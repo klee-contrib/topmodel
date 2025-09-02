@@ -83,7 +83,8 @@ command.SetHandler(
     },
     fileOption,
     watchOption,
-    checkOption);
+    checkOption
+);
 
 await command.InvokeAsync(args);
 
@@ -150,11 +151,15 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     foreach (var conf in config.OpenApi)
     {
         ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
-        services.AddSingleton<ModelGenerator>(p => new OpenApiTmdGenerator(p.GetRequiredService<ILogger<OpenApiTmdGenerator>>(), conf, p.GetRequiredService<IFileWriterProvider>())
+        services.AddSingleton<TmdGenerator>(p => new OpenApiTmdGenerator(
+            p.GetRequiredService<ILogger<OpenApiTmdGenerator>>(),
+            conf,
+            p.GetRequiredService<IFileWriterProvider>()
+        )
         {
             DirectoryName = directoryName,
             ModelRoot = config.ModelRoot,
-            Number = config.OpenApi.IndexOf(conf) + 1
+            Number = config.OpenApi.IndexOf(conf) + 1,
         });
     }
 
@@ -163,45 +168,59 @@ async Task StartGeneration(string filePath, string directoryName, int i)
         ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
         if (conf.Source.DbType == DbType.ORACLE)
         {
-            services.AddSingleton<ModelGenerator>(p => new DatabaseOraTmdGenerator(p.GetRequiredService<ILogger<DatabaseOraTmdGenerator>>(), conf, p.GetRequiredService<IFileWriterProvider>())
+            services.AddSingleton<TmdGenerator>(p => new DatabaseOraTmdGenerator(
+                p.GetRequiredService<ILogger<DatabaseOraTmdGenerator>>(),
+                conf,
+                p.GetRequiredService<IFileWriterProvider>()
+            )
             {
                 DirectoryName = directoryName,
                 ModelRoot = config.ModelRoot,
                 Number = config.Database.IndexOf(conf) + 1,
-                Passwords = passwords
+                Passwords = passwords,
             });
         }
         else if (conf.Source.DbType == DbType.POSTGRESQL)
         {
-            services.AddSingleton<ModelGenerator>(p => new DatabasePgTmdGenerator(p.GetRequiredService<ILogger<DatabasePgTmdGenerator>>(), conf, p.GetRequiredService<IFileWriterProvider>())
+            services.AddSingleton<TmdGenerator>(p => new DatabasePgTmdGenerator(
+                p.GetRequiredService<ILogger<DatabasePgTmdGenerator>>(),
+                conf,
+                p.GetRequiredService<IFileWriterProvider>()
+            )
             {
                 DirectoryName = directoryName,
                 ModelRoot = config.ModelRoot,
                 Number = config.Database.IndexOf(conf) + 1,
-                Passwords = passwords
+                Passwords = passwords,
             });
         }
         else if (conf.Source.DbType == DbType.MYSQL)
         {
-            services.AddSingleton<ModelGenerator>(p => new DatabaseMySqlTmdGenerator(p.GetRequiredService<ILogger<DatabaseMySqlTmdGenerator>>(), conf, p.GetRequiredService<IFileWriterProvider>())
+            services.AddSingleton<TmdGenerator>(p => new DatabaseMySqlTmdGenerator(
+                p.GetRequiredService<ILogger<DatabaseMySqlTmdGenerator>>(),
+                conf,
+                p.GetRequiredService<IFileWriterProvider>()
+            )
             {
                 DirectoryName = directoryName,
                 ModelRoot = config.ModelRoot,
                 Number = config.Database.IndexOf(conf) + 1,
-                Passwords = passwords
+                Passwords = passwords,
             });
         }
     }
 
     using var provider = services.BuildServiceProvider();
 
-    var mainLogger = provider.GetRequiredService<ILogger<ModelGenerator>>();
+    var mainLogger = provider.GetRequiredService<ILogger<TmdGenerator>>();
     var loggingScope = new LoggingScope(i + 1, colors[i]);
     using var scope = mainLogger.BeginScope(loggingScope);
 
-    var generators = provider.GetRequiredService<IEnumerable<ModelGenerator>>();
+    var generators = provider.GetRequiredService<IEnumerable<TmdGenerator>>();
 
-    mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}");
+    mainLogger.LogInformation(
+        $"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
+    );
 
     var tmdLock = new TopModelLock(config, mainLogger);
     var generatedFiles = new List<string>();
@@ -225,17 +244,25 @@ foreach (var config in configs)
         var fsWatcher = new FileSystemWatcher(config.DirectoryName, "tmdgen*.config");
         fsWatcher.Changed += (sender, args) =>
         {
-            fsCache.Set(args.FullPath, args, new MemoryCacheEntryOptions()
-                .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
-                .RegisterPostEvictionCallback(async (k, v, r, a) =>
-                {
-                    if (r != EvictionReason.TokenExpired)
-                    {
-                        return;
-                    }
+            fsCache.Set(
+                args.FullPath,
+                args,
+                new MemoryCacheEntryOptions()
+                    .AddExpirationToken(
+                        new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token)
+                    )
+                    .RegisterPostEvictionCallback(
+                        async (k, v, r, a) =>
+                        {
+                            if (r != EvictionReason.TokenExpired)
+                            {
+                                return;
+                            }
 
-                    await StartGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
-                }));
+                            await StartGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
+                        }
+                    )
+            );
         };
         fsWatcher.IncludeSubdirectories = true;
         fsWatcher.EnableRaisingEvents = true;
@@ -245,7 +272,7 @@ foreach (var config in configs)
 
 if (watchMode)
 {
-    var autoResetEvent = new AutoResetEvent(false);
+    var autoResetEvent = new AutoResetEvent(initialState: false);
     Console.CancelKeyPress += (sender, eventArgs) =>
     {
         eventArgs.Cancel = true;
@@ -265,11 +292,15 @@ if (checkMode && loggerProvider.Changes > 0)
     AnsiConsole.WriteLine();
     if (loggerProvider.Changes == 1)
     {
-        AnsiConsole.MarkupLine($"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]");
+        AnsiConsole.MarkupLine(
+            $"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]"
+        );
     }
     else
     {
-        AnsiConsole.MarkupLine($"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]");
+        AnsiConsole.MarkupLine(
+            $"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]"
+        );
     }
 
     return 1;

@@ -32,8 +32,10 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
     {
         var annotations = base.GetAnnotations(classe, tag).ToList();
-        var tableAnnotation = new JavaAnnotation("Table", imports: "org.springframework.data.relational.core.mapping.Table")
-            .AddAttribute("name", @$"""{classe.SqlName.ToLower()}""");
+        var tableAnnotation = new JavaAnnotation(
+            "Table",
+            imports: "org.springframework.data.relational.core.mapping.Table"
+        ).AddAttribute("name", @$"""{classe.SqlName.ToLower()}""");
         annotations.Add(tableAnnotation);
         return annotations;
     }
@@ -46,7 +48,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
 
         fw.WriteLine();
 
@@ -67,11 +69,11 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             fw.AddImport("java.io.Serializable");
         }
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
 
         if (!classe.IsPersistent)
         {
-            fw.WriteLine("	/** Serial ID */");
+            fw.WriteLine("\t/** Serial ID */");
             fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
         }
 
@@ -88,16 +90,21 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                     fw.WriteLine(1, "@Transient");
                 }
 
-                fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});");
+                fw.WriteLine(
+                    1,
+                    $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
+                );
             }
         }
 
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
 
-        if (Config.CanClassUseEnums(classe, Classes)
+        if (
+            Config.CanClassUseEnums(classe, Classes)
             || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
             || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null)
+            || Config.GetClassExtends(classe, tag) != null
+        )
         {
             ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         }
@@ -120,8 +127,10 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             WriteToMappers(fw, classe, tag);
         }
 
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && classe.IsPersistent
-            || Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && !classe.IsPersistent)
+        if (
+            Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && classe.IsPersistent
+            || Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && !classe.IsPersistent
+        )
         {
             WriteFieldsEnum(fw, classe, tag);
         }
@@ -131,7 +140,12 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)));
+        var properties = classe.Properties.Where(p =>
+            !(
+                p is AssociationProperty ap
+                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+            )
+        );
         foreach (var property in properties)
         {
             JpaModelPropertyGenerator!.WriteGetter(fw, tag, property);
@@ -140,7 +154,12 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)));
+        var properties = classe.Properties.Where(p =>
+            !(
+                p is AssociationProperty ap
+                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+            )
+        );
         if (Config.CanClassUseEnums(classe, Classes))
         {
             return;

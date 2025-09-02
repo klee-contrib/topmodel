@@ -10,5 +10,5 @@ public enum PersistenceMode
     /// <summary>
     /// Génération du modèle utilisant l'api jakarta
     /// </summary>
-    Jakarta
+    Jakarta,
 }

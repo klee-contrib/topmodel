@@ -20,5 +20,5 @@ public enum AssociationType
     /// <summary>
     /// Many to many.
     /// </summary>
-    ManyToMany
+    ManyToMany,
 }

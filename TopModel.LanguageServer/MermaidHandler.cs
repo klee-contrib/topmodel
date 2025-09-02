@@ -6,7 +6,9 @@ using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer;
 
-public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade) : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpcHandler
+public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    : IRequestHandler<MermaidRequest, Mermaid>,
+        IJsonRpcHandler
 {
     public static string GenerateDiagramClasses(IEnumerable<Class> classes)
     {
@@ -62,14 +64,15 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                         cardLeft = property.Required ? "1" : "0..1";
                         cardRight = "0..*";
                         break;
-                    case AssociationType.ManyToMany:
                     default:
-                        cardLeft = property.Required ? "1..*" : "1..*";
+                        cardLeft = property.Required ? "1..*" : "0..*";
                         cardRight = "0..*";
                         break;
                 }
 
-                diagram += @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : string.Empty)}" + '\n';
+                diagram +=
+                    @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : string.Empty)}"
+                    + '\n';
             }
 
             foreach (var property in classe.Properties.OfType<CompositionProperty>())
@@ -108,9 +111,12 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
         return scope switch
         {
             MermaidScope.File => file?.Classes ?? Enumerable.Empty<Class>(),
-            MermaidScope.Module => modelStore.Files.Where(f => f.Namespace.Module == file?.Namespace.Module)?.SelectMany(f => f.Classes) ?? Enumerable.Empty<Class>(),
+            MermaidScope.Module => modelStore
+                .Files.Where(f => f.Namespace.Module == file?.Namespace.Module)
+                ?.SelectMany(f => f.Classes)
+            ?? [],
             MermaidScope.Model => modelStore.Files.SelectMany(f => f.Classes),
-            _ => []
+            _ => [],
         };
     }
 
@@ -122,7 +128,7 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
             return string.Empty;
         }
 
-        return file!.Name.Split("/").Last();
+        return file!.Name.Split("/")[^1];
     }
 
     public string GetModule(string uri)
@@ -139,7 +145,7 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
     /// <inheritdoc cref="IRequestHandler{TRequest, TResponse}.Handle" />
     public async Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates();
+        await modelStore.WaitForUpdates(cancellationToken);
         var result = GenerateDiagram(request);
         return new Mermaid(result, GetModule(request.Uri), GetFileName(request.Uri), request.Scope);
     }

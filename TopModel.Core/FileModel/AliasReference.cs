@@ -12,9 +12,9 @@ public class AliasReference
 
     public Reference ContainerReference => ClassReference ?? (EndpointReference as Reference) ?? DecoratorReference!;
 
-    public List<Reference> IncludeReferences { get; } = [];
+    public IList<Reference> IncludeReferences { get; } = [];
 
-    public List<Reference> ExcludeReferences { get; } = [];
+    public IList<Reference> ExcludeReferences { get; } = [];
 
     public void AddExclude(Scalar scalar)
     {

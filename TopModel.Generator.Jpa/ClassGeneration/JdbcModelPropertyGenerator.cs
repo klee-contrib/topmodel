@@ -5,14 +5,20 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JdbcModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes, Dictionary<string, string> newableTypes)
-    : JpaModelPropertyGenerator(config, classes, newableTypes)
+public class JdbcModelPropertyGenerator(
+    JpaConfig config,
+    IEnumerable<Class> classes,
+    IDictionary<string, string> newableTypes
+) : JpaModelPropertyGenerator(config, classes, newableTypes)
 {
     private static new JavaAnnotation IdAnnotation => new("Id", imports: "org.springframework.data.annotation.Id");
 
     public override JavaAnnotation GetColumnAnnotation(IProperty property)
     {
-        return new JavaAnnotation("Column", imports: "org.springframework.data.relational.core.mapping.Column").AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
+        return new JavaAnnotation(
+            "Column",
+            imports: "org.springframework.data.relational.core.mapping.Column"
+        ).AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
     }
 
     public override string GetPropertyName(IProperty property)
@@ -22,12 +28,17 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IEnumerable<Class> cla
 
     public override string GetPropertyType(IProperty property)
     {
-        return Config.GetType(property, Classes, false);
+        return Config.GetType(property, Classes, useClassForAssociation: false);
     }
 
     public override void WriteProperties(JavaWriter fw, Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)));
+        var properties = classe.Properties.Where(p =>
+            !(
+                p is AssociationProperty ap
+                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+            )
+        );
         foreach (var property in properties)
         {
             WriteProperty(fw, property, tag);

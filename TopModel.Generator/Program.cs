@@ -10,6 +10,7 @@ using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using Spectre.Console;
 using TopModel.Core;
@@ -35,7 +36,10 @@ var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin ver
 var excludeOption = new Option<IEnumerable<string>>(["-e", "--exclude"], "Tag à ignorer lors de la génération.");
 var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
 var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le code généré est conforme au modèle.");
-var updateOption = new Option<string>(["-u", "--update"], "Met à jour le module de générateurs spécifié (ou tous les modules si 'all').");
+var updateOption = new Option<string>(
+    ["-u", "--update"],
+    "Met à jour le module de générateurs spécifié (ou tous les modules si 'all')."
+);
 var schemaOption = new Option<bool>(["-s", "--schema"], "Génère le fichier de schéma JSON du fichier de config.");
 command.AddOption(fileOption);
 command.AddOption(excludeOption);
@@ -133,7 +137,8 @@ command.SetHandler(
     watchOption,
     updateOption,
     checkOption,
-    schemaOption);
+    schemaOption
+);
 
 await command.InvokeAsync(args);
 
@@ -160,7 +165,9 @@ var latestVersion = await NugetUtils.GetLatestVersionAsync("TopModel.Generator")
 if (latestVersion != null && latestVersion.Version != version)
 {
     AnsiConsole.MarkupLine($"[yellow]Nouvelle version disponible : {latestVersion.Version}[/]");
-    AnsiConsole.MarkupLine("[yellow]Vous pouvez lancer la commande `dotnet tool update -g TopModel.Generator` pour effectuer la mise à jour.[/]");
+    AnsiConsole.MarkupLine(
+        "[yellow]Vous pouvez lancer la commande `dotnet tool update -g TopModel.Generator` pour effectuer la mise à jour.[/]"
+    );
     AnsiConsole.WriteLine();
 }
 
@@ -196,7 +203,8 @@ for (var i = 0; i < configs.Count; i++)
 
 static Type? GetIGenRegInterface(Type t)
 {
-    return t.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGeneratorRegistration<>));
+    return t.GetInterfaces()
+        .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGeneratorRegistration<>));
 }
 
 static (Type Type, string Name) GetIGenRegInterfaceAndName(Type generator)
@@ -227,20 +235,22 @@ for (var i = 0; i < configs.Count; i++)
 
     if (updateMode == "all")
     {
-        topModelLock.Modules = [];
+        topModelLock.Modules = new Dictionary<string, TopModelLockModule>();
 
         if (Directory.Exists(modgenRoot))
         {
-            Directory.Delete(modgenRoot, true);
+            Directory.Delete(modgenRoot, recursive: true);
         }
     }
     else if (updateMode != null)
     {
         topModelLock.Modules.Remove(updateMode);
 
-        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
+        foreach (
+            var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/')[^1].Contains(updateMode))
+        )
         {
-            Directory.Delete(module, true);
+            Directory.Delete(module, recursive: true);
         }
     }
 
@@ -250,33 +260,45 @@ for (var i = 0; i < configs.Count; i++)
 
         var customDir = Path.GetFullPath(Path.Combine(new FileInfo(Path.GetFullPath(fullName)).DirectoryName!, cg));
 
-        var customHash = GetHash(
-            Directory
-                .EnumerateFiles(
-                    Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
-                    "*.cs",
-                    SearchOption.AllDirectories)
-                .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
-            customDir) ?? string.Empty;
+        var customHash =
+            GetHash(
+                Directory
+                    .EnumerateFiles(
+                        Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
+                        "*.cs",
+                        SearchOption.AllDirectories
+                    )
+                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
+                customDir
+            ) ?? string.Empty;
 
-        var customHashLocalFile = Path.Combine(modgenRoot, cg.Replace("/", "-").Replace("\\", "-"));
-        var customHashLocal = File.Exists(customHashLocalFile) ? await File.ReadAllTextAsync(customHashLocalFile) : string.Empty;
+        var customHashLocalFile = Path.Combine(modgenRoot, cg.Replace('/', '-').Replace('\\', '-'));
+        var customHashLocal = File.Exists(customHashLocalFile)
+            ? await File.ReadAllTextAsync(customHashLocalFile)
+            : string.Empty;
 
-        if (!topModelLock.Custom.TryGetValue(cg, out var customLockHash) || customHash != customLockHash || customHash != customHashLocal)
+        if (
+            !topModelLock.Custom.TryGetValue(cg, out var customLockHash)
+            || customHash != customLockHash
+            || customHash != customHashLocal
+        )
         {
             logger.LogInformation($"Build de '{cg}' en cours...");
-            var build = Process.Start(new ProcessStartInfo
-            {
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "dotnet",
-                Arguments = "build -v q",
-                WorkingDirectory = customDir,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            });
+            var build = Process.Start(
+                new ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "dotnet",
+                    Arguments = "build -v q",
+                    WorkingDirectory = customDir,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8,
+                }
+            );
 
             await build!.StandardOutput.ReadToEndAsync();
             await build!.StandardError.ReadToEndAsync();
@@ -290,7 +312,7 @@ for (var i = 0; i < configs.Count; i++)
             }
 
             logger.LogInformation($"Build de '{cg}' terminé.");
-            topModelLock.Custom ??= [];
+            topModelLock.Custom ??= new Dictionary<string, string>();
             topModelLock.Custom[cg] = customHash;
             await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[cg]);
         }
@@ -301,9 +323,16 @@ for (var i = 0; i < configs.Count; i++)
 
     if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
     {
-        var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
-        var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
-        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace("\\", "/")));
+        var generatorsPath = Path.Combine(
+            new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!,
+            "../../../.."
+        );
+        var modules = Directory
+            .GetFileSystemEntries(generatorsPath)
+            .Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
+        config.CustomGenerators.AddRange(
+            modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace('\\', '/'))
+        );
     }
 
     foreach (var cg in config.CustomGenerators)
@@ -311,7 +340,9 @@ for (var i = 0; i < configs.Count; i++)
         string? csproj = null;
         if (Directory.Exists(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!)))
         {
-            csproj = Directory.GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj").FirstOrDefault();
+            csproj = Directory
+                .GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj")
+                .FirstOrDefault();
         }
 
         if (csproj == null)
@@ -322,39 +353,49 @@ for (var i = 0; i < configs.Count; i++)
         }
 
         var csprojXml = new XmlDocument();
-        csprojXml.LoadXml(File.ReadAllText(csproj));
+        csprojXml.LoadXml(await File.ReadAllTextAsync(csproj));
 
-        foreach (var dep in csprojXml.GetElementsByTagName("PackageReference").Cast<XmlNode>()
-            .Where(n => n.ChildNodes.Count == 0)
-            .ToDictionary(n => n.Attributes!["Include"]!.Value, n => n.Attributes!["Version"]!.Value)
-            .Where(n => n.Key.StartsWith("TopModel.Generator")))
+        foreach (
+            var dep in csprojXml
+                .GetElementsByTagName("PackageReference")
+                .Cast<XmlNode>()
+                .Where(n => n.ChildNodes.Count == 0)
+                .ToDictionary(n => n.Attributes!["Include"]!.Value, n => n.Attributes!["Version"]!.Value)
+                .Where(n => n.Key.StartsWith("TopModel.Generator"))
+        )
         {
             if (dep.Key == "TopModel.Generator.Core")
             {
                 var depVersion = dep.Value.Split('.').Select(int.Parse).ToArray();
                 if (depVersion[0] != fullVersion.Major)
                 {
-                    logger.LogError($"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Value} < {version}).");
+                    logger.LogError(
+                        $"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Value} < {version})."
+                    );
                     returnCode = 1;
                     continue;
                 }
                 else if (depVersion[1] > fullVersion.Minor)
                 {
-                    logger.LogError($"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Value} > {version}).");
+                    logger.LogError(
+                        $"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Value} > {version})."
+                    );
                     returnCode = 1;
                     continue;
                 }
             }
             else
             {
-                var configKey = dep.Key.Split('.').Last().ToLower();
+                var configKey = dep.Key.Split('.')[^1].ToLower();
                 if (!topModelLock.Modules.TryGetValue(configKey, out var ev))
                 {
                     topModelLock.Modules.Add(configKey, new() { Version = dep.Value });
                 }
                 else if (ev.Version != dep.Value)
                 {
-                    logger.LogError($"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Value}', ce qui n'est pas la version du lockfile ('{ev}').");
+                    logger.LogError(
+                        $"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Value}', ce qui n'est pas la version du lockfile ('{ev}')."
+                    );
                     returnCode = 1;
                     continue;
                 }
@@ -363,17 +404,26 @@ for (var i = 0; i < configs.Count; i++)
 
         if (returnCode == 0)
         {
-            var assemblies = new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
+            var assemblies = new DirectoryInfo(
+                Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")
+            )
                 .GetFiles($"*.dll", SearchOption.AllDirectories)
                 .Where(a => !modgenAssemblies.Contains(a.Name))
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
 
-            generators.AddRange(assemblies
-                .Where(a => a.ManifestModule.Name.Equals($"{cg.Split('/').Last().ToLower()}.dll", StringComparison.CurrentCultureIgnoreCase))
-                .SelectMany(a => a.GetExportedTypes())
-                .Where(t => GetIGenRegInterface(t) != null));
+            generators.AddRange(
+                assemblies
+                    .Where(a =>
+                        a.ManifestModule.Name.Equals(
+                            $"{cg.Split('/')[^1].ToLower()}.dll",
+                            StringComparison.CurrentCultureIgnoreCase
+                        )
+                    )
+                    .SelectMany(a => a.GetExportedTypes())
+                    .Where(t => GetIGenRegInterface(t) != null)
+            );
         }
     }
 
@@ -386,7 +436,7 @@ for (var i = 0; i < configs.Count; i++)
 
     foreach (var configKey in config.Generators.Keys)
     {
-        if (generators.Any(g => GetIGenRegInterfaceAndName(g).Name == configKey))
+        if (generators.Exists(g => GetIGenRegInterfaceAndName(g).Name == configKey))
         {
             resolvedConfigKeys.Add(configKey, "custom");
             continue;
@@ -429,7 +479,7 @@ for (var i = 0; i < configs.Count; i++)
                 if (Directory.Exists(moduleFolder))
                 {
                     logger.LogInformation($"({dep.ConfigKey}) Module corrompu, réinstallation...");
-                    Directory.Delete(moduleFolder, true);
+                    Directory.Delete(moduleFolder, recursive: true);
                 }
 
                 logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} en cours...");
@@ -444,20 +494,32 @@ for (var i = 0; i < configs.Count; i++)
                 Directory.CreateDirectory(moduleFolder);
 
                 using var packageReader = await NugetUtils.DownloadPackageAsync(dep.FullName, depVersion);
-                var nuspecReader = await packageReader.GetNuspecReaderAsync(CancellationToken.None);
+                var nuspecReader = await packageReader.GetNuspecReaderAsync(default);
 
-                var dependencyGroup = nuspecReader.GetDependencyGroups()
+                var dependencyGroup = nuspecReader
+                    .GetDependencyGroups()
                     .OrderByDescending(dg => dg.TargetFramework.Version.Major)
                     .First(dg => dg.TargetFramework.Version.Major <= dotnetMajor);
 
                 var dependencies = dependencyGroup.Packages;
                 var framework = dependencyGroup.TargetFramework.ToString();
 
-                File.WriteAllText(Path.Combine(moduleFolder, "min-version"), dependencies.Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString());
+                await File.WriteAllTextAsync(
+                    Path.Combine(moduleFolder, "min-version"),
+                    dependencies.Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString()
+                );
 
-                foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
+                foreach (
+                    var file in (await packageReader.GetFilesAsync(default)).Where(f =>
+                        f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")
+                    )
+                )
                 {
-                    packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                    packageReader.ExtractFile(
+                        file,
+                        Path.Combine(moduleFolder, file.Split('/')[^1]),
+                        NullLogger.Instance
+                    );
                 }
 
                 var installedDependencies = new List<string>();
@@ -468,21 +530,32 @@ for (var i = 0; i < configs.Count; i++)
                     var newDeps = new List<PackageDependency>();
                     foreach (var otherDep in dependencies)
                     {
-                        using var packageReaderDep = await NugetUtils.DownloadPackageAsync(otherDep.Id, otherDep.VersionRange.MinVersion!.ToString());
-                        var file = packageReaderDep.GetFiles().SingleOrDefault(f => f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll"));
+                        using var packageReaderDep = await NugetUtils.DownloadPackageAsync(
+                            otherDep.Id,
+                            otherDep.VersionRange.MinVersion!.ToString()
+                        );
+                        var file = (await packageReaderDep.GetFilesAsync(default)).SingleOrDefault(f =>
+                            f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll")
+                        );
                         if (file != null)
                         {
-                            packageReaderDep.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                            packageReaderDep.ExtractFile(
+                                file,
+                                Path.Combine(moduleFolder, file.Split('/')[^1]),
+                                NullLogger.Instance
+                            );
 
                             installedDependencies.Add(otherDep.Id);
 
-                            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(CancellationToken.None);
+                            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(default);
                             if (nuspecReaderDep.GetDependencyGroups().Any())
                             {
-                                newDeps.AddRange(nuspecReaderDep.GetDependencyGroups()
-                                    .Single(dg => dg.TargetFramework.ToString() == framework)
-                                    .Packages
-                                    .Where(dep => !installedDependencies.Contains(dep.Id)));
+                                newDeps.AddRange(
+                                    nuspecReaderDep
+                                        .GetDependencyGroups()
+                                        .Single(dg => dg.TargetFramework.ToString() == framework)
+                                        .Packages.Where(dep => !installedDependencies.Contains(dep.Id))
+                                );
                             }
                         }
                     }
@@ -491,26 +564,36 @@ for (var i = 0; i < configs.Count; i++)
                 }
 
                 hasInstalled = true;
-                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} terminée avec succès.");
+                logger.LogInformation(
+                    $"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} terminée avec succès."
+                );
                 dep.Version.Hash = GetFolderHash(moduleFolder);
             }
 
-            var minVersionText = File.ReadAllText(Path.Combine(moduleFolder, "min-version"));
+            var minVersionText = await File.ReadAllTextAsync(Path.Combine(moduleFolder, "min-version"));
             var minVersion = minVersionText.Split('.').Select(int.Parse).ToArray();
             if (minVersion[0] != fullVersion.Major)
             {
-                logger.LogError($"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({depVersion} < {version}).");
+                logger.LogError(
+                    $"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({depVersion} < {version})."
+                );
                 returnCode = 1;
                 continue;
             }
             else if (minVersion[1] > fullVersion.Minor)
             {
-                logger.LogError($"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({minVersionText} > {version}).");
+                logger.LogError(
+                    $"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({minVersionText} > {version})."
+                );
                 returnCode = 1;
                 continue;
             }
 
-            generators.AddRange(Directory.GetFiles(moduleFolder, "*.dll").SelectMany(a => Assembly.LoadFrom(a).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null)));
+            generators.AddRange(
+                Directory
+                    .GetFiles(moduleFolder, "*.dll")
+                    .SelectMany(a => Assembly.LoadFrom(a).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null))
+            );
             resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
         }
     }
@@ -527,40 +610,64 @@ for (var i = 0; i < configs.Count; i++)
         dep.LatestVersion = (await NugetUtils.GetLatestVersionAsync(dep.FullName))?.Version;
     }
 
-    logger.LogInformation($"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}");
+    logger.LogInformation(
+        $"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
+    );
 
     var depsToUpdate = deps.Where(dep => dep.LatestVersion != null && dep.LatestVersion != dep.Version.Version);
     if (depsToUpdate.Any())
     {
-        logger.LogWarning($"Il existe une mise à jour pour les générateurs suivants :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}");
-        logger.LogWarning($"Vous pouvez lancer la commande `modgen --update {(depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all")}` pour effectuer la mise à jour.");
+        logger.LogWarning(
+            $"Il existe une mise à jour pour les générateurs suivants :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
+        );
+        logger.LogWarning(
+            $"Vous pouvez lancer la commande `modgen --update {(depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all")}` pour effectuer la mise à jour."
+        );
     }
 
     if (schemaMode || hasInstalled)
     {
         logger.LogInformation("Génération du schéma de configuration...");
 
-        var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
+        var schema = JsonNode
+            .Parse(
+                await File.ReadAllTextAsync(
+                    FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")
+                )
+            )!
+            .AsObject();
 
         schema.Remove("additionalProperties");
-        schema.Add("additionalProperties", false);
+        schema.Add("additionalProperties", value: false);
 
         foreach (var generator in generators)
         {
             var (configType, configName) = GetIGenRegInterfaceAndName(generator);
 
             var configSchema = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
-            configSchema.Add("items", JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json"))));
+            configSchema.Add(
+                "items",
+                JsonNode.Parse(
+                    await File.ReadAllTextAsync(
+                        FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json")
+                    )
+                )
+            );
             schema["properties"]!.AsObject().Add(configName, configSchema);
         }
 
-        File.WriteAllText(fullName + ".schema.json", schema.Root.ToJsonString(new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }));
-        var configFile = File.ReadAllText(fullName);
+        await File.WriteAllTextAsync(
+            fullName + ".schema.json",
+            schema.Root.ToJsonString(
+                new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }
+            )
+        );
+        var configFile = await File.ReadAllTextAsync(fullName);
         if (!configFile.StartsWith("# yaml-language-server"))
         {
             var relativePath = fullName.ToRelative(config.ConfigRoot);
             configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
-            File.WriteAllText(fullName, configFile);
+            await File.WriteAllTextAsync(fullName, configFile);
         }
 
         logger.LogInformation("Schéma de configuration généré avec succès.");
@@ -588,7 +695,9 @@ for (var i = 0; i < configs.Count; i++)
 
                 try
                 {
-                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
+                    var genConfig = (GeneratorConfigBase)(
+                        await fileChecker.GetGenConfig(configName, configType, genConfigMap)
+                    );
                     genConfig.InitVariables(config.App, number);
 
                     genConfig.ExcludedTags = excludedTags;
@@ -600,8 +709,7 @@ for (var i = 0; i < configs.Count; i++)
                     ModelUtils.CombinePath(config.ConfigRoot, genConfig, c => c.OutputDirectory);
 
                     var instance = Activator.CreateInstance(generator);
-                    instance!.GetType().GetMethod("Register")!
-                        .Invoke(instance, [services, genConfig, number]);
+                    instance!.GetType().GetMethod("Register")!.Invoke(instance, [services, genConfig, number]);
 
                     config.Configs.Add($"{configName}@{number}", genConfig);
                 }
@@ -637,7 +745,7 @@ for (var i = 0; i < configs.Count; i++)
 
 if (watchMode)
 {
-    var autoResetEvent = new AutoResetEvent(false);
+    var autoResetEvent = new AutoResetEvent(initialState: false);
     Console.CancelKeyPress += (sender, eventArgs) =>
     {
         eventArgs.Cancel = true;
@@ -661,11 +769,15 @@ if (checkMode && loggerProvider.Changes > 0)
     AnsiConsole.WriteLine();
     if (loggerProvider.Changes == 1)
     {
-        AnsiConsole.MarkupLine($"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]");
+        AnsiConsole.MarkupLine(
+            $"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]"
+        );
     }
     else
     {
-        AnsiConsole.MarkupLine($"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]");
+        AnsiConsole.MarkupLine(
+            $"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]"
+        );
     }
 
     return 1;
@@ -686,10 +798,10 @@ static string? GetFolderHash(string path)
 static string? GetHash(IEnumerable<string> f, string path)
 {
     var md5 = MD5.Create();
-    var files = f.OrderBy(f => f).ToList();
+    var files = f.Order().ToList();
     foreach (var file in files)
     {
-        var relativePath = Path.GetRelativePath(path, file).Replace("\\", "/");
+        var relativePath = Path.GetRelativePath(path, file).Replace('\\', '/');
         var pathBytes = Encoding.UTF8.GetBytes(relativePath.ToLower());
         md5.TransformBlock(pathBytes, 0, pathBytes.Length, pathBytes, 0);
 
@@ -704,7 +816,5 @@ static string? GetHash(IEnumerable<string> f, string path)
         }
     }
 
-    return md5.Hash != null
-        ? BitConverter.ToString(md5.Hash).Replace("-", string.Empty).ToLower()
-        : null;
+    return md5.Hash != null ? BitConverter.ToString(md5.Hash).Replace("-", string.Empty).ToLower() : null;
 }

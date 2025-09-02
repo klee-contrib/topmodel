@@ -12,10 +12,13 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 {
     public override string Name => "JpaEnumValuesGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files
-        .Values
-        .SelectMany(f => f.Classes.Where(FilterClass))
-        .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(c, tag)))).Distinct();
+    public override IEnumerable<string> GeneratedFiles =>
+        Files
+            .Values.SelectMany(f => f.Classes.Where(FilterClass))
+            .SelectMany(c =>
+                Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(c, tag)))
+            )
+            .Distinct();
 
     protected override bool FilterClass(Class classe)
     {
@@ -32,9 +35,8 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetEnumValuePackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.WriteLine();
-        var codeProperty = classe.EnumKey!;
         fw.WriteDocStart(0, $"Enumération des valeurs possibles de la classe {classe.NamePascal}");
         fw.WriteDocEnd(0);
 
@@ -46,11 +48,10 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 
         var implements = Config.GetClassImplements(classe, tag).ToList();
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, null, implements, "enum");
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, inheritedClass: null, implements, "enum");
         var i = 0;
 
-        var refs = GetAllValues(classe)
-            .ToList();
+        var refs = GetAllValues(classe).ToList();
 
         var notPkProperties = classe.Properties.Where(p => p != classe.EnumKey);
         foreach (var refValue in refs)
@@ -61,7 +62,6 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             }
 
             i++;
-            var isLast = i == refs.Count;
             if (classe.DefaultProperty != null)
             {
                 fw.WriteDocStart(1, $"{refValue.Value[classe.DefaultProperty]}");
@@ -79,13 +79,18 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 foreach (var prop in notPkProperties)
                 {
                     var isString = Config.GetType(prop) == "String";
-                    var isInt = Config.GetType(prop) == "int";
-                    var isBoolean = Config.GetType(prop) == "Boolean";
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
 
-                    if (prop is AssociationProperty ap && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
+                    if (
+                        prop is AssociationProperty ap
+                        && ap.Association.Values.Any(r =>
+                            r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value
+                        )
+                    )
                     {
-                        fw.AddImport($"{Config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}");
+                        fw.AddImport(
+                            $"{Config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}"
+                        );
                         value = ap.Association.NamePascal + "." + value;
                         isString = false;
                     }
@@ -94,7 +99,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                         value = Config.GetType(prop) + "." + value;
                     }
 
-                    if (Config.TranslateReferences == true && classe.DefaultProperty == prop && !Config.CanClassUseEnums(classe, prop: prop))
+                    if (
+                        Config.TranslateReferences == true
+                        && classe.DefaultProperty == prop
+                        && !Config.CanClassUseEnums(classe, prop: prop)
+                    )
                     {
                         value = refValue.ResourceKey;
                     }
@@ -162,12 +171,22 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
     private List<IProperty> GetEnumProperties(Class classe)
     {
         List<IProperty> result = [];
-        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey)))
+        if (
+            classe.EnumKey != null
+            && Config.CanClassUseEnums(classe, prop: classe.EnumKey)
+            && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))
+        )
         {
             result.Add(classe.EnumKey);
         }
 
-        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single()) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))).Select(uk => uk.Single());
+        var uks = classe
+            .UniqueKeys.Where(uk =>
+                uk.Count == 1
+                && Config.CanClassUseEnums(classe, Classes, uk.Single())
+                && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))
+            )
+            .Select(uk => uk.Single());
         result.AddRange(uks);
         return result;
     }
@@ -179,7 +198,8 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         fw.WriteDocEnd(1);
         var properties = classe.Properties.Where(p => p != classe.EnumKey);
         var constructor = new JavaConstructor(classe.NamePascal);
-        var methodParams = properties.Select((prop, index) =>
+        var methodParams = properties.Select(
+            (prop, index) =>
             {
                 var fieldName = prop.NameByClassCamel;
                 var fieldType = Config.GetType(prop);
@@ -190,7 +210,8 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 }
 
                 return new JavaMethodParameter(fieldType, fieldName) { Final = true };
-            });
+            }
+        );
         constructor.AddParameters(methodParams);
         foreach (var param in methodParams)
         {

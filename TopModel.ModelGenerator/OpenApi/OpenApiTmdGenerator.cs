@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Reader;
@@ -6,18 +7,23 @@ using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.OpenApi;
 
-public class OpenApiTmdGenerator : ModelGenerator
+public class OpenApiTmdGenerator : TmdGenerator
 {
-    private readonly Dictionary<IOpenApiSchema, TmdClass> _classesStore = new();
+    private readonly Dictionary<IOpenApiSchema, TmdClass> _classesStore = [];
     private readonly OpenApiConfig _config;
     private readonly ILogger<OpenApiTmdGenerator> _logger;
     private readonly IFileWriterProvider _writerProvider;
 
 #nullable disable
     private OpenApiDocument _model;
+
 #nullable enable
 
-    public OpenApiTmdGenerator(ILogger<OpenApiTmdGenerator> logger, OpenApiConfig config, IFileWriterProvider writerProvider)
+    public OpenApiTmdGenerator(
+        ILogger<OpenApiTmdGenerator> logger,
+        OpenApiConfig config,
+        IFileWriterProvider writerProvider
+    )
         : base(logger)
     {
         _config = config;
@@ -37,24 +43,34 @@ public class OpenApiTmdGenerator : ModelGenerator
 
     public override string Name => "OpenApiGen";
 
-    protected override async IAsyncEnumerable<string> GenerateCore()
+    protected override async IAsyncEnumerable<string> GenerateCore(
+        [EnumeratorCancellation] CancellationToken ct = default
+    )
     {
         if (_config.Source.StartsWith("http://") || _config.Source.StartsWith("https://"))
         {
             using var client = new HttpClient();
-            var openApi = await client.GetAsync(_config.Source);
+            var openApi = await client.GetAsync(_config.Source, ct);
             var settings = new OpenApiReaderSettings { LeaveStreamOpen = false };
             settings.AddYamlReader();
-            _model = OpenApiDocument.Load((MemoryStream)await openApi.Content.ReadAsStreamAsync(), "yaml", settings).Document!;
+            _model = (
+                await OpenApiDocument.LoadAsync(
+                    (MemoryStream)await openApi.Content.ReadAsStreamAsync(ct),
+                    "yaml",
+                    settings,
+                    ct
+                )
+            ).Document!;
         }
         else
         {
+#pragma warning disable S1075
             using var stream = File.Open(DirectoryName + "/" + _config.Source, FileMode.Open);
-            MemoryStream memoryStream = new MemoryStream();
+#pragma warning restore S1075
             string s = string.Empty;
-            using (StreamReader reader = new StreamReader(stream))
+            using (var reader = new StreamReader(stream))
             {
-                string fileContent = reader.ReadToEnd();
+                var fileContent = await reader.ReadToEndAsync(ct);
                 s += fileContent;
             }
 
@@ -63,25 +79,34 @@ public class OpenApiTmdGenerator : ModelGenerator
             _model = OpenApiDocument.Parse(s, "yaml", settings).Document!;
         }
 
-        var modules = _model.Paths
-            .SelectMany(p => p.Value.Operations?.Where(o => o.Value.Tags?.Any(t => t.Name != null || t.Reference.Id != null) ?? false) ?? [])
+        var modules = _model
+            .Paths.SelectMany(p =>
+                p.Value.Operations?.Where(o =>
+                    o.Value.Tags?.Any(t => t.Name != null || t.Reference.Id != null) ?? false
+                ) ?? []
+            )
             .GroupBy(o => (o.Value.Tags?.First().Name ?? o.Value.Tags?.First().Reference.Id ?? "Null").ToPascalCase())
-            .Where(m => m.Key != "Null" && (_config.Include == null || _config.Include.Select(i => i.ToPascalCase()).Contains(m.Key)));
+            .Where(m =>
+                m.Key != "Null"
+                && (_config.Include == null || _config.Include.Select(i => i.ToPascalCase()).Contains(m.Key))
+            );
 
         var modelFileName = $"{Path.Combine(ModelRoot, _config.OutputDirectory, _config.ModelFileName)}.tmd";
         yield return modelFileName;
 
-        var rootPath = Path.Combine(ModelRoot, _config.OutputDirectory);
         var tmdFile = new TmdFile()
         {
             Module = _config.Module,
             Name = _config.ModelFileName,
             Tags = _config.ModelTags.ToList(),
-            Path = Path.Combine(_config.OutputDirectory, _config.ModelFileName)
+            Path = Path.Combine(_config.OutputDirectory, _config.ModelFileName),
         };
-        var fileName = Path.Combine(rootPath, tmdFile.Name + ".tmd");
 
-        using var tmdFileWriter = new TmdWriter(_writerProvider.OpenFileWriter(modelFileName, _logger), tmdFile, Path.GetFullPath(ModelRoot));
+        using var tmdFileWriter = new TmdWriter(
+            _writerProvider.OpenFileWriter(modelFileName, _logger),
+            tmdFile,
+            Path.GetFullPath(ModelRoot)
+        );
         var schemaReferences = GetModuleReferences(modules.SelectMany(m => m));
         var schemas = _model.GetSchemas().Where(s => schemaReferences.Contains(s.Value)).ToList();
         foreach (var schema in schemas)
@@ -110,7 +135,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 tmdFile.Classes.Add(enumClass);
 
-                var p = WriteProperty(_config, new("Value", schema.Value), null, tmdFile);
+                var p = WriteProperty(_config, new("Value", schema.Value), schema: null, tmdFile);
                 p.Class = enumClass;
                 enumClass.Properties.Add(p);
                 AddValues(enumClass, schema.Value);
@@ -129,7 +154,9 @@ public class OpenApiTmdGenerator : ModelGenerator
                     continue;
                 }
 
-                var parents = schemas.Where(s => (s.Value.AnyOf ?? []).Contains(schema.Value) || (s.Value.OneOf ?? []).Contains(schema.Value));
+                var parents = schemas.Where(s =>
+                    (s.Value.AnyOf ?? []).Contains(schema.Value) || (s.Value.OneOf ?? []).Contains(schema.Value)
+                );
                 if (parents.Count() == 1)
                 {
                     classe.Extends = parents.Single().Key.ToPascalCase();
@@ -155,7 +182,9 @@ public class OpenApiTmdGenerator : ModelGenerator
                     }
                     else
                     {
-                        var enumClass = tmdFile.Classes.Where(c => c.Name == $"{classe.Name}{property.Key.ToPascalCase()}").SingleOrDefault();
+                        var enumClass = tmdFile.Classes.SingleOrDefault(c =>
+                            c.Name == $"{classe.Name}{property.Key.ToPascalCase()}"
+                        );
                         if (enumClass == null)
                         {
                             enumClass = new TmdClass()
@@ -163,23 +192,25 @@ public class OpenApiTmdGenerator : ModelGenerator
                                 File = tmdFile,
                                 Name = $"{classe.Name}{property.Key.ToPascalCase()}",
                                 Comment = $"enum pour les valeurs de {property.Key.ToPascalCase()}",
-                                PreservePropertyCasing = _config.PreservePropertyCasing
+                                PreservePropertyCasing = _config.PreservePropertyCasing,
                             };
 
                             tmdFile.Classes.Add(enumClass);
-                            var p = WriteProperty(_config, new("Value", property.Value), null, tmdFile);
+                            var p = WriteProperty(_config, new("Value", property.Value), schema: null, tmdFile);
                             p.Class = enumClass;
                             enumClass.Properties.Add(p);
                             AddValues(enumClass, property.Value);
                         }
 
-                        classeProperties.Add(new TmdAliasProperty()
-                        {
-                            Alias = enumClass.Properties[0],
-                            Name = $"{property.Key}",
-                            Comment = @$"{property.Value.Description.Format()}",
-                            Class = classe
-                        });
+                        classeProperties.Add(
+                            new TmdAliasProperty()
+                            {
+                                Alias = enumClass.Properties[0],
+                                Name = $"{property.Key}",
+                                Comment = @$"{property.Value.Description.Format()}",
+                                Class = classe,
+                            }
+                        );
                     }
                 }
             }
@@ -187,7 +218,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
         foreach (var cp in tmdFile.Classes.SelectMany(c => c.Properties.OfType<TmdCompositionProperty>()))
         {
-            var composition = _classesStore.Where(c => c.Key == cp.CompositionReference).FirstOrDefault();
+            var composition = _classesStore.FirstOrDefault(c => c.Key == cp.CompositionReference);
             cp.Composition = composition.Value;
         }
 
@@ -201,10 +232,14 @@ public class OpenApiTmdGenerator : ModelGenerator
                 Module = _config.Module,
                 Name = module.Key,
                 Tags = _config.EndpointTags.ToList(),
-                Path = Path.Combine(_config.OutputDirectory, module.Key)
+                Path = Path.Combine(_config.OutputDirectory, module.Key),
             };
 
-            using var tmdEndpointFileWriter = new TmdWriter(_writerProvider.OpenFileWriter(endpointFileName, _logger), tmdFileEnpoint, ModelRoot);
+            using var tmdEndpointFileWriter = new TmdWriter(
+                _writerProvider.OpenFileWriter(endpointFileName, _logger),
+                tmdFileEnpoint,
+                ModelRoot
+            );
 
             foreach (var operation in module.OrderBy(o => GetEndpointName(o)))
             {
@@ -214,17 +249,26 @@ public class OpenApiTmdGenerator : ModelGenerator
                     Name = GetEndpointName(operation),
                     Method = operation.Key.ToString().ToUpper(),
                     Route = path,
-                    File = tmdFileEnpoint
+                    File = tmdFileEnpoint,
                 };
                 tmdFileEnpoint.Endpoints.Add(endPoint);
-                if (!string.IsNullOrEmpty(operation.Value.Summary) || !string.IsNullOrEmpty(operation.Value.Description))
+                if (
+                    !string.IsNullOrEmpty(operation.Value.Summary) || !string.IsNullOrEmpty(operation.Value.Description)
+                )
                 {
-                    endPoint.Comment = (operation.Value.Summary ?? operation.Value.Description)?.Format(true)!;
+                    endPoint.Comment = (operation.Value.Summary ?? operation.Value.Description)?.Format(quote: true)!;
                 }
 
                 endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
 
-                if ((operation.Value.Parameters?.Any(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path) ?? false) || operation.Value.RequestBody != null)
+                if (
+                    (
+                        operation.Value.Parameters?.Any(p =>
+                            p.In == ParameterLocation.Query || p.In == ParameterLocation.Path
+                        ) ?? false
+                    )
+                    || operation.Value.RequestBody != null
+                )
                 {
                     var bodySchema = operation.Value.GetRequestBodySchema();
                     if (bodySchema != null)
@@ -232,7 +276,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                         var p = WriteProperty(_config, new("body", bodySchema), bodySchema, tmdFile);
                         if (p is TmdCompositionProperty cp)
                         {
-                            cp.Composition = _classesStore.Where(c => c.Key == cp.CompositionReference).SingleOrDefault().Value;
+                            cp.Composition = _classesStore.SingleOrDefault(c => c.Key == cp.CompositionReference).Value;
                         }
 
                         if (p.Comment == TmdProperty.DefaultComment)
@@ -247,12 +291,18 @@ public class OpenApiTmdGenerator : ModelGenerator
                         endPoint.Params.Add(p);
                     }
 
-                    foreach (var param in (operation.Value.Parameters ?? []).Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path).OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
+                    foreach (
+                        var param in (operation.Value.Parameters ?? [])
+                            .Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path)
+                            .OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name)
+                    )
                     {
                         TmdProperty property;
                         if ((param.Schema?.Enum ?? []).Any())
                         {
-                            var enumClass = tmdFile.Classes.Where(c => c.Name == $"{endPoint.Name.ToPascalCase()}{param.Name?.ToPascalCase()}").SingleOrDefault();
+                            var enumClass = tmdFile.Classes.SingleOrDefault(c =>
+                                c.Name == $"{endPoint.Name.ToPascalCase()}{param.Name?.ToPascalCase()}"
+                            );
                             if (enumClass == null)
                             {
                                 enumClass = new TmdClass()
@@ -260,11 +310,11 @@ public class OpenApiTmdGenerator : ModelGenerator
                                     File = tmdFile,
                                     Name = $"{endPoint.Name.ToPascalCase()}{param.Name?.ToPascalCase()}",
                                     Comment = $"enum pour les valeurs de {param.Name}",
-                                    PreservePropertyCasing = _config.PreservePropertyCasing
+                                    PreservePropertyCasing = _config.PreservePropertyCasing,
                                 };
 
                                 tmdFile.Classes.Add(enumClass);
-                                var p = WriteProperty(_config, new("Value", param.Schema!), null, tmdFile);
+                                var p = WriteProperty(_config, new("Value", param.Schema!), schema: null, tmdFile);
                                 p.Class = enumClass;
                                 enumClass.Properties.Add(p);
                                 AddValues(enumClass, param.Schema!);
@@ -274,7 +324,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                             {
                                 Alias = enumClass.Properties[0],
                                 Name = param.Name,
-                                Class = enumClass
+                                Class = enumClass,
                             };
                         }
                         else
@@ -282,7 +332,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                             property = new TmdRegularProperty()
                             {
                                 Name = param.Name,
-                                Domain = _config.GetDomain(param.Name!, param.Schema!)
+                                Domain = _config.GetDomain(param.Name!, param.Schema!),
                             };
                         }
 
@@ -300,10 +350,12 @@ public class OpenApiTmdGenerator : ModelGenerator
                     var returns = WriteProperty(_config, new("Result", responseSchema), responseSchema, tmdFile);
                     if (returns is TmdCompositionProperty cp)
                     {
-                        cp.Composition = _classesStore.Where(c => c.Key == cp.CompositionReference).SingleOrDefault().Value;
+                        cp.Composition = _classesStore.SingleOrDefault(c => c.Key == cp.CompositionReference).Value;
                     }
 
-                    var description = operation.Value.Responses?.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value.Description?.Format();
+                    var description = operation
+                        .Value.Responses?.FirstOrDefault(r => r.Key == "200" || r.Key == "201")
+                        .Value.Description?.Format();
                     if (!string.IsNullOrEmpty(description))
                     {
                         returns.Comment = description;
@@ -319,15 +371,60 @@ public class OpenApiTmdGenerator : ModelGenerator
     {
         foreach (var val in schema.Enum ?? [])
         {
-            Dictionary<string, string?> value = new()
-                {
-                    { classe.Properties.First().Name, val.AsValue().ToString() }
-                };
+            Dictionary<string, string?> value = new() { { classe.Properties[0].Name, val.AsValue().ToString() } };
             classe.Values.Add(value);
         }
     }
 
-    private static IEnumerable<OpenApiSchema> GetSchemaReferences(IOpenApiSchema? schema, HashSet<IOpenApiSchema> visited)
+    private static IEnumerable<OpenApiSchema> GetModuleReferences(
+        IEnumerable<KeyValuePair<HttpMethod, OpenApiOperation>> operations
+    )
+    {
+        var visited = new HashSet<IOpenApiSchema>();
+        foreach (var operation in operations)
+        {
+            if (operation.Value.RequestBody?.Content != null)
+            {
+                foreach (
+                    var reference in GetSchemaReferences(
+                        operation.Value.RequestBody.Content.First().Value.Schema,
+                        visited
+                    )
+                )
+                {
+                    yield return reference;
+                }
+            }
+
+            foreach (
+                var reference in operation.Value.Parameters?.SelectMany(p => GetSchemaReferences(p.Schema, visited))
+                    ?? []
+            )
+            {
+                yield return reference;
+            }
+
+            foreach (
+                var response in operation
+                    .Value.Responses?.Where(r => r.Key == "200" || r.Key == "201")
+                    .Select(r => r.Value) ?? []
+            )
+            {
+                if (response != null && (response.Content?.Any() ?? false))
+                {
+                    foreach (var reference in GetSchemaReferences(response.Content.First().Value.Schema, visited))
+                    {
+                        yield return reference;
+                    }
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<OpenApiSchema> GetSchemaReferences(
+        IOpenApiSchema? schema,
+        HashSet<IOpenApiSchema> visited
+    )
     {
         if (schema == null)
         {
@@ -356,7 +453,12 @@ public class OpenApiTmdGenerator : ModelGenerator
             }
         }
 
-        foreach (var reference in schema.GetProperties().Values.Where(p => !visited.Contains(p)).SelectMany(p => GetSchemaReferences(p, visited)))
+        foreach (
+            var reference in schema
+                .GetProperties()
+                .Values.Where(p => !visited.Contains(p))
+                .SelectMany(p => GetSchemaReferences(p, visited))
+        )
         {
             yield return reference;
         }
@@ -389,7 +491,9 @@ public class OpenApiTmdGenerator : ModelGenerator
     private string GetEndpointName(KeyValuePair<HttpMethod, OpenApiOperation> operation)
     {
         var operationId = _model.GetOperationId(operation);
-        var operationsWithId = _model.Paths.OrderBy(p => p.Key).SelectMany(p => (p.Value.Operations ?? []).OrderBy(o => o.Key.Method))
+        var operationsWithId = _model
+            .Paths.OrderBy(p => p.Key)
+            .SelectMany(p => (p.Value.Operations ?? []).OrderBy(o => o.Key.Method))
             .Where(o => _model.GetOperationId(o) == operationId)
             .ToList();
 
@@ -398,9 +502,10 @@ public class OpenApiTmdGenerator : ModelGenerator
             return operationId;
         }
 
-        var prefix = operationsWithId.DistinctBy(o => o.Key).Count() > 1
-            ? operation.Key.Method.ToPascalCase(strictIfUppercase: true)
-            : string.Empty;
+        var prefix =
+            operationsWithId.DistinctBy(o => o.Key).Count() > 1
+                ? operation.Key.Method.ToPascalCase(strictIfUppercase: true)
+                : string.Empty;
 
         var suffix = string.Empty;
 
@@ -420,43 +525,23 @@ public class OpenApiTmdGenerator : ModelGenerator
         return $"{prefix}{operationId}{suffix}";
     }
 
-    private IEnumerable<OpenApiSchema> GetModuleReferences(IEnumerable<KeyValuePair<HttpMethod, OpenApiOperation>> operations)
-    {
-        var visited = new HashSet<IOpenApiSchema>();
-        foreach (var operation in operations)
-        {
-            if (operation.Value.RequestBody?.Content != null)
-            {
-                foreach (var reference in GetSchemaReferences(operation.Value.RequestBody.Content.First().Value.Schema, visited))
-                {
-                    yield return reference;
-                }
-            }
-
-            foreach (var reference in operation.Value.Parameters?.SelectMany(p => GetSchemaReferences(p.Schema, visited)) ?? [])
-            {
-                yield return reference;
-            }
-
-            foreach (var response in operation.Value.Responses?.Where(r => r.Key == "200" || r.Key == "201").Select(r => r.Value) ?? [])
-            {
-                if (response != null && (response.Content?.Any() ?? false))
-                {
-                    foreach (var reference in GetSchemaReferences(response.Content.First().Value.Schema, visited))
-                    {
-                        yield return reference;
-                    }
-                }
-            }
-        }
-    }
-
-    private TmdProperty WriteProperty(OpenApiConfig config, KeyValuePair<string, IOpenApiSchema> property, IOpenApiSchema? schema, TmdFile tmdFile)
+    private TmdProperty WriteProperty(
+        OpenApiConfig config,
+        KeyValuePair<string, IOpenApiSchema> property,
+        IOpenApiSchema? schema,
+        TmdFile tmdFile
+    )
     {
         var (kind, sc) = OpenApiUtils.GetComposition(property.Value);
-        if (property.Value.Type == JsonSchemaType.Array && (property.Value.Items?.Enum ?? []).Any() && property.Value.Items?.Type == JsonSchemaType.String)
+        if (
+            property.Value.Type == JsonSchemaType.Array
+            && (property.Value.Items?.Enum ?? []).Any()
+            && property.Value.Items?.Type == JsonSchemaType.String
+        )
         {
-            var aliasClass = tmdFile.Classes.Where(c => c.Name == $"{_config.ClassPrefix}{property.Key.ToPascalCase()}").SingleOrDefault();
+            var aliasClass = tmdFile.Classes.SingleOrDefault(c =>
+                c.Name == $"{_config.ClassPrefix}{property.Key.ToPascalCase()}"
+            );
             if (aliasClass == null)
             {
                 aliasClass = new TmdClass()
@@ -464,12 +549,12 @@ public class OpenApiTmdGenerator : ModelGenerator
                     File = tmdFile,
                     Name = $"{_config.ClassPrefix}{property.Key.ToPascalCase()}",
                     Comment = $"enum pour les valeurs de {property.Key.ToPascalCase()}",
-                    PreservePropertyCasing = _config.PreservePropertyCasing
+                    PreservePropertyCasing = _config.PreservePropertyCasing,
                 };
 
                 tmdFile.Classes.Add(aliasClass);
 
-                var p = WriteProperty(_config, new("Value", property.Value.Items), null, tmdFile);
+                var p = WriteProperty(_config, new("Value", property.Value.Items), schema: null, tmdFile);
                 p.Class = aliasClass;
                 aliasClass.Properties.Add(p);
                 AddValues(aliasClass, property.Value.Items);
@@ -480,8 +565,8 @@ public class OpenApiTmdGenerator : ModelGenerator
                 Name = $"{property.Key}",
                 Required = schema?.Required?.Contains(property.Key) ?? false,
                 Domain = $"{config.GetDomain(property.Key, property.Value)}",
-                Alias = aliasClass.Properties.First(),
-                As = "list"
+                Alias = aliasClass.Properties[0],
+                As = "list",
             };
 
             if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
@@ -491,7 +576,15 @@ public class OpenApiTmdGenerator : ModelGenerator
 
             return aliasProperty;
         }
-        else if (sc != null && property.Value.Type != JsonSchemaType.String && (_classesStore.ContainsKey(sc) || sc is OpenApiSchemaReference schemaRef && _classesStore.ContainsKey(schemaRef.Target!)))
+
+        if (
+            sc != null
+            && property.Value.Type != JsonSchemaType.String
+            && (
+                _classesStore.ContainsKey(sc)
+                || sc is OpenApiSchemaReference schemaRef && _classesStore.ContainsKey(schemaRef.Target!)
+            )
+        )
         {
             var sch = sc is OpenApiSchemaReference scr ? scr.Target : sc;
             var compositionProperty = new TmdCompositionProperty()
@@ -513,21 +606,19 @@ public class OpenApiTmdGenerator : ModelGenerator
             compositionProperty.CompositionReference = sch;
             return compositionProperty;
         }
-        else
+
+        var regularProperty = new TmdRegularProperty()
         {
-            var regularProperty = new TmdRegularProperty()
-            {
-                Name = $"{property.Key}",
-                Required = schema?.Required?.Contains(property.Key) ?? false,
-                Domain = $"{config.GetDomain(property.Key, property.Value)}"
-            };
+            Name = $"{property.Key}",
+            Required = schema?.Required?.Contains(property.Key) ?? false,
+            Domain = $"{config.GetDomain(property.Key, property.Value)}",
+        };
 
-            if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
-            {
-                regularProperty.Comment = $"{property.Value.Description.Format()}";
-            }
-
-            return regularProperty;
+        if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
+        {
+            regularProperty.Comment = $"{property.Value.Description.Format()}";
         }
+
+        return regularProperty;
     }
 }

@@ -35,7 +35,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
         if (file.Options.Endpoints.Prefix != null)
         {
-            yield return new JavaAnnotation("RequestMapping", $@"""{file.Options.Endpoints.Prefix}""", "org.springframework.web.bind.annotation.RequestMapping");
+            yield return new JavaAnnotation(
+                "RequestMapping",
+                $@"""{file.Options.Endpoints.Prefix}""",
+                "org.springframework.web.bind.annotation.RequestMapping"
+            );
         }
     }
 
@@ -58,10 +62,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             returnType = Config.GetType(endpoint.Returns);
         }
 
-        var method = new JavaMethod(returnType, endpoint.NameCamel)
-        {
-            Comment = endpoint.Description
-        };
+        var method = new JavaMethod(returnType, endpoint.NameCamel) { Comment = endpoint.Description };
 
         if (endpoint.Returns != null)
         {
@@ -69,17 +70,21 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             method.Imports.AddRange(endpoint.Returns.GetTypeImports(Config, tag));
         }
 
-        var mappingAnnotation = new JavaAnnotation($@"@{endpoint.Method.ToPascalCase(true)}Mapping", imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(true)}Mapping")
-            .AddAttribute("path", $@"""{endpoint.Route.Trim('/')}""");
+        var mappingAnnotation = new JavaAnnotation(
+            $@"@{endpoint.Method.ToPascalCase(strict: true)}Mapping",
+            imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(strict: true)}Mapping"
+        ).AddAttribute("path", $@"""{endpoint.Route.Trim('/')}""");
         if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
         {
             mappingAnnotation.AddAttribute("produces", @$"""{endpoint.Returns.Domain.MediaType}""");
         }
 
-        var consumes = string.Empty;
         if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
         {
-            mappingAnnotation.AddAttribute("consumes", @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}");
+            mappingAnnotation.AddAttribute(
+                "consumes",
+                @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}"
+            );
         }
 
         foreach (var (annotation, imports) in Config.GetAnnotations(endpoint, tag))
@@ -92,7 +97,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         foreach (var routeParam in endpoint.GetRouteParams())
         {
             var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
-            var pathParamAnnotation = new JavaAnnotation("PathVariable", imports: "org.springframework.web.bind.annotation.PathVariable", value: @$"""{routeParam.GetParamName()}""");
+            var pathParamAnnotation = new JavaAnnotation(
+                "PathVariable",
+                @$"""{routeParam.GetParamName()}""",
+                "org.springframework.web.bind.annotation.PathVariable"
+            );
             param.AddAnnotation(pathParamAnnotation);
             param.Comment = routeParam.Comment;
             param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
@@ -103,8 +112,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
             if (Config.OpenApiAnnotations)
             {
-                param.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
-                    .AddAttribute("description", @$"""{routeParam.Comment}"""));
+                param.AddAnnotation(
+                    new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
+                        "description",
+                        @$"""{routeParam.Comment}"""
+                    )
+                );
             }
 
             method.AddParameter(param);
@@ -112,10 +125,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
         foreach (var queryParam in endpoint.GetQueryParams())
         {
-            var ann = string.Empty;
             var param = new JavaMethodParameter(Config.GetType(queryParam), queryParam.GetParamName());
-            var queryParamAnnotation = new JavaAnnotation("RequestParam", imports: "org.springframework.web.bind.annotation.RequestParam", value: @$"""{queryParam.GetParamName()}""")
-                .AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
+            var queryParamAnnotation = new JavaAnnotation(
+                "RequestParam",
+                imports: "org.springframework.web.bind.annotation.RequestParam",
+                value: @$"""{queryParam.GetParamName()}"""
+            ).AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
             param.AddAnnotation(queryParamAnnotation);
             param.Comment = queryParam.Comment;
             param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
@@ -126,8 +141,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
             if (Config.OpenApiAnnotations)
             {
-                param.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
-                    .AddAttribute("description", @$"""{queryParam.Comment}"""));
+                param.AddAnnotation(
+                    new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
+                        "description",
+                        @$"""{queryParam.Comment}"""
+                    )
+                );
             }
 
             method.AddParameter(param);
@@ -135,26 +154,48 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
         if (endpoint.IsMultipart)
         {
-            foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
+            foreach (
+                var param in endpoint.Params.Where(param =>
+                    param is CompositionProperty
+                    || (param.Domain?.BodyParam ?? false)
+                    || (param.Domain?.IsMultipart ?? false)
+                )
+            )
             {
                 var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
-                parameter.Comment = parameter.Comment;
+
                 if (!(param.Domain?.IsMultipart ?? false))
                 {
-                    parameter.AddAnnotation(new JavaAnnotation("ModelAttribute", imports: "org.springframework.web.bind.annotation.ModelAttribute"));
-                    parameter.AddAnnotation(new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid"));
+                    parameter.AddAnnotation(
+                        new JavaAnnotation(
+                            "ModelAttribute",
+                            imports: "org.springframework.web.bind.annotation.ModelAttribute"
+                        )
+                    );
+                    parameter.AddAnnotation(
+                        new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid")
+                    );
                 }
                 else
                 {
-                    parameter.AddAnnotation(new JavaAnnotation("RequestPart", imports: "org.springframework.web.bind.annotation.RequestPart", value: @$"""{param.GetParamName()}""")
-                        .AddAttribute("required", param.Required.ToString().ToFirstLower()));
+                    parameter.AddAnnotation(
+                        new JavaAnnotation(
+                            "RequestPart",
+                            @$"""{param.GetParamName()}""",
+                            "org.springframework.web.bind.annotation.RequestPart"
+                        ).AddAttribute("required", param.Required.ToString().ToFirstLower())
+                    );
                 }
 
                 parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
                 if (Config.OpenApiAnnotations)
                 {
-                    parameter.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
-                        .AddAttribute("description", @$"""{param.Comment}"""));
+                    parameter.AddAnnotation(
+                        new JavaAnnotation(
+                            "Parameter",
+                            imports: "io.swagger.v3.oas.annotations.Parameter"
+                        ).AddAttribute("description", @$"""{param.Comment}""")
+                    );
                 }
 
                 method.AddParameter(parameter);
@@ -165,8 +206,10 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             var bodyParam = endpoint.GetJsonBodyParam();
             if (bodyParam != null)
             {
-                var ann = string.Empty;
-                var annotation = new JavaAnnotation("RequestBody", imports: "org.springframework.web.bind.annotation.RequestBody");
+                var annotation = new JavaAnnotation(
+                    "RequestBody",
+                    imports: "org.springframework.web.bind.annotation.RequestBody"
+                );
                 var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
                 parameter.AddAnnotation(annotation);
                 parameter.Comment = bodyParam.Comment;
@@ -176,12 +219,18 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                     parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
                 }
 
-                parameter.AddAnnotation(new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid"));
+                parameter.AddAnnotation(
+                    new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid")
+                );
 
                 if (Config.OpenApiAnnotations)
                 {
-                    parameter.AddAnnotation(new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody")
-                        .AddAttribute("description", @$"""{bodyParam.Comment}"""));
+                    parameter.AddAnnotation(
+                        new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody").AddAttribute(
+                            "description",
+                            @$"""{bodyParam.Comment}"""
+                        )
+                    );
                 }
 
                 method.AddParameter(parameter);
@@ -190,13 +239,25 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
         if (method.ReturnType == "void" || method.ReturnType == "Void")
         {
-            method.AddAnnotation(new JavaAnnotation("ResponseStatus", imports: ["org.springframework.web.bind.annotation.ResponseStatus", "org.springframework.http.HttpStatus"], value: "HttpStatus.NO_CONTENT"));
+            method.AddAnnotation(
+                new JavaAnnotation(
+                    "ResponseStatus",
+                    imports:
+                    [
+                        "org.springframework.web.bind.annotation.ResponseStatus",
+                        "org.springframework.http.HttpStatus",
+                    ],
+                    value: "HttpStatus.NO_CONTENT"
+                )
+            );
         }
 
         if (Config.OpenApiAnnotations)
         {
-            var operationAnnotation = new JavaAnnotation("Operation", imports: ["io.swagger.v3.oas.annotations.Operation"])
-                .AddAttribute("description", @$"""{endpoint.Description}""");
+            var operationAnnotation = new JavaAnnotation(
+                "Operation",
+                imports: "io.swagger.v3.oas.annotations.Operation"
+            ).AddAttribute("description", @$"""{endpoint.Description}""");
             method.AddAnnotation(operationAnnotation);
         }
 
@@ -213,27 +274,28 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-            .Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
-                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-                .Select(e => e.Returns).OfType<CompositionProperty>()
-                .SelectMany(c => c.GetKindImports(Config, tag)));
+        var properties = endpoints
+            .SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        return properties
+            .SelectMany(property => property!.GetTypeImports(Config, tag))
+            .Concat(
+                endpoints
+                    .Where(endpoint => endpoint.Returns is not null)
+                    .Select(e => e.Returns)
+                    .OfType<CompositionProperty>()
+                    .SelectMany(c => c.GetKindImports(Config, tag))
+            );
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = GetClassName(fileName);
-        var packageName = Config.GetPackageName(endpoints.First(), tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, null);
+        var packageName = Config.GetPackageName(endpoints[0], tag);
+        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
-        var javaInterface = new JavaClass(className)
-        {
-            Interface = true,
-            Package = packageName,
-        };
-        var annotations = GetClassAnnotations(endpoints.First().ModelFile);
+        var javaInterface = new JavaClass(className) { Interface = true, Package = packageName };
+        var annotations = GetClassAnnotations(endpoints[0].ModelFile);
         javaInterface.AddRange(annotations);
         javaInterface.AddRange(GetMethods(endpoints, tag));
         fw.Write(0, javaInterface);

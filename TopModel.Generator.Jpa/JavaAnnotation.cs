@@ -1,4 +1,6 @@
-﻿namespace TopModel.Generator.Jpa;
+﻿using TopModel.Utils;
+
+namespace TopModel.Generator.Jpa;
 
 public class JavaAnnotation
 {
@@ -21,9 +23,9 @@ public class JavaAnnotation
 
     public string Name { get; set; }
 
-    public List<string> Imports { get; set; } = new();
+    public IList<string> Imports { get; set; } = [];
 
-    private Dictionary<string, object> Attributes { get; } = new();
+    private Dictionary<string, object> Attributes { get; } = [];
 
     public JavaAnnotation AddAttribute(string name, string value, params string[] import)
     {
@@ -71,7 +73,7 @@ public class JavaAnnotation
         {
             return name;
         }
-        else if (Attributes.Count() == 1 && Attributes.Any(a => a.Key == "value"))
+        else if (Attributes.Count == 1 && Attributes.Any(a => a.Key == "value"))
         {
             return $"{name}({Attributes.First().Value})";
         }

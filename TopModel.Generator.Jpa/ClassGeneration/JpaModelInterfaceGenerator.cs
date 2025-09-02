@@ -25,13 +25,22 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        foreach (var property in classe.Properties.Where(p => !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        foreach (
+            var property in classe.Properties.Where(p =>
+                !(
+                    p is AssociationProperty apo
+                    && apo.Association.Reference
+                    && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)
+                )
+            )
+        )
         {
             var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
             yield return new JavaMethod(Config.GetType(property), property.NameByClassPascal.WithPrefix(getterPrefix))
             {
                 Comment = $"Getter for {property.NameByClassCamel}",
-                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}"
+                ReturnComment =
+                    $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}",
             };
         }
     }
@@ -39,14 +48,10 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
-        var javaxOrJakarta = Config.PersistenceMode.ToString().ToLower();
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
 
         WriteImports(fw, classe, tag);
         fw.WriteLine();
-
-        var extends = Config.GetClassExtends(classe, tag);
-        var implements = Config.GetClassImplements(classe, tag);
 
         if (Config.GeneratedHint)
         {
@@ -71,9 +76,14 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected virtual void WriteHydrate(JavaWriter fw, Class classe)
     {
-        var properties = classe.Properties
-            .Where(p => !p.Readonly)
-            .Where(p => !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)));
+        var properties = classe.Properties.Where(p =>
+            !p.Readonly
+            && !(
+                p is AssociationProperty apo
+                && apo.Association.Reference
+                && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)
+            )
+        );
 
         if (!properties.Any())
         {
@@ -88,21 +98,20 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         }
 
         fw.WriteDocEnd(1);
-        var signature = string.Join(", ", properties.Select(property =>
+        var signature = string.Join(
+            ", ",
+            properties.Select(property =>
             {
-                var propertyName = property.NameByClassCamel;
                 return $@"{Config.GetType(property)} {property.NameByClassCamel}";
-            }));
+            })
+        );
 
         fw.WriteLine(1, $"void hydrate({signature});");
     }
 
     protected virtual void WriteImports(JavaWriter fw, Class classe, string tag)
     {
-        var imports = new List<string>
-            {
-                Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated",
-            };
+        var imports = new List<string> { Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated" };
         foreach (var property in classe.Properties)
         {
             imports.AddRange(property.GetTypeImports(Config, tag));

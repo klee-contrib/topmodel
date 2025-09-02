@@ -9,9 +9,7 @@ var server = await LanguageServer.From(options =>
     options
         .WithInput(Console.OpenStandardInput())
         .WithOutput(Console.OpenStandardOutput())
-        .ConfigureLogging(logging => logging
-            .AddLanguageProtocolLogging()
-            .SetMinimumLevel(LogLevel.Information))
+        .ConfigureLogging(logging => logging.AddLanguageProtocolLogging().SetMinimumLevel(LogLevel.Information))
         .WithServices(services =>
         {
             var fileChecker = new FileChecker();
@@ -50,10 +48,13 @@ var server = await LanguageServer.From(options =>
         .WithHandler<RenameHandler>()
         .WithHandler<DocumentLinkHandler>()
         .AddHandler<MermaidHandler>("mermaid")
-        .OnInitialize(async (server, _, __) =>
-        {
-            await server.Services.GetRequiredService<ModelStore>().LoadFromConfig(watch: true);
-        }));
+        .OnInitialize(
+            async (server, _, __) =>
+            {
+                await server.Services.GetRequiredService<ModelStore>().LoadFromConfig(watch: true, ct: __);
+            }
+        )
+);
 
 await server.WaitForExit;
 server.Dispose();

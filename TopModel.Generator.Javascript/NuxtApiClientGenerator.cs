@@ -22,7 +22,7 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = OpenFileWriter(filePath, false);
+        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
 
         fw.WriteLine($@"import {{AsyncData, AsyncDataOptions}} from ""nuxt/app"";");
 
@@ -61,11 +61,15 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
             foreach (var param in endpoint.Params)
             {
                 var defaultValue = Config.GetValue(param, Classes);
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+                fw.Write(
+                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                );
             }
 
             var fetchReturnType = endpoint.Returns == null ? "void" : Config.GetType(endpoint.Returns, Classes);
-            fw.WriteLine($"options: AsyncDataOptions<{fetchReturnType}> = {{}}): AsyncData<{fetchReturnType} | null, Error | null> {{");
+            fw.WriteLine(
+                $"options: AsyncDataOptions<{fetchReturnType}> = {{}}): AsyncData<{fetchReturnType} | null, Error | null> {{"
+            );
 
             if (endpoint.IsMultipart)
             {
@@ -132,7 +136,8 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
 
         if (endpoints.Any(endpoint => endpoint.IsMultipart))
         {
-            fw.WriteLine(@"
+            fw.WriteLine(
+                @"
 function fillFormData(data: any, formData: FormData, prefix = """") {
     if (Array.isArray(data)) {
         for (const [i, item] of data.entries()) {
@@ -145,7 +150,8 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
     } else {
         formData.append(prefix, data);
     }
-}");
+}"
+            );
         }
     }
 }

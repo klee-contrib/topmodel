@@ -1,4 +1,6 @@
-﻿namespace TopModel.Generator.Jpa;
+﻿using TopModel.Utils;
+
+namespace TopModel.Generator.Jpa;
 
 public class JavaField(string type, string name)
 {
@@ -6,9 +8,9 @@ public class JavaField(string type, string name)
 
     public string Name { get; set; } = name;
 
-    public List<JavaAnnotation> Annotations { get; } = [];
+    public IList<JavaAnnotation> Annotations { get; } = [];
 
-    public List<string> Imports { get; } = [];
+    public IList<string> Imports { get; } = [];
 
     public string Comment { get; set; } = string.Empty;
 

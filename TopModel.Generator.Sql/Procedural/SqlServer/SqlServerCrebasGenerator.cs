@@ -4,8 +4,11 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.SqlServer;
 
-public class SqlServerCrebasGenerator(ILogger<SqlServerCrebasGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, translationStore, writerProvider)
+public class SqlServerCrebasGenerator(
+    ILogger<SqlServerCrebasGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : AbstractCrebasGenerator(logger, translationStore, writerProvider)
 {
     public override string Name => "SqlServerCrebasGen";
 
@@ -14,9 +17,9 @@ public class SqlServerCrebasGenerator(ILogger<SqlServerCrebasGenerator> logger, 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires en ajoutant identity à la colonne.
     /// </summary>
-    /// <param name="writerCrebas">Flux d'écriture création bases.</param>
-    protected override void WriteIdentityColumn(IFileWriter writerCrebas)
+    /// <param name="writer">Flux d'écriture création bases.</param>
+    protected override void WriteIdentityColumn(IFileWriter writer)
     {
-        writerCrebas.Write(" identity(1, 1)");
+        writer.Write(" identity(1, 1)");
     }
 }

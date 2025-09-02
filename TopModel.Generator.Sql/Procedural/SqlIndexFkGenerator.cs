@@ -32,11 +32,11 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteLine("-- =========================================================================================== ");
-        writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + fileName.Split('/').Last());
-        writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
-        writer.WriteLine("-- =========================================================================================== ");
+        writer.WriteSqlFileHeader(
+            appName,
+            fileName.Split('/')[^1],
+            "Script de création des indexes et des clef étrangères."
+        );
 
         foreach (var fkProperty in classes.OrderBy(c => c.SqlName).SelectMany(GetForeignKeys))
         {
@@ -44,9 +44,15 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
             GenerateConstraintForeignKey(fkProperty, writer);
         }
 
-        if ((Config.TranslateReferences == true || Config.TranslateProperties == true) && Config.ResourcesTableName != null)
+        if (
+            (Config.TranslateReferences == true || Config.TranslateProperties == true)
+            && Config.ResourcesTableName != null
+        )
         {
-            var resourceProperties = classes.OrderBy(c => c.SqlName).Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum).Select(c => c.DefaultProperty!);
+            var resourceProperties = classes
+                .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)
+                .OrderBy(c => c.SqlName)
+                .Select(c => c.DefaultProperty!);
             foreach (var fkProperty in resourceProperties)
             {
                 GenerateIndexForeignKey(fkProperty, writer);
@@ -61,10 +67,16 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     /// <param name="propertyTarget">Propriété destination de la contrainte.</param>
     /// <param name="association">Association destination de la clef étrangère.</param>
     /// <param name="writer">Flux d'écriture.</param>
-    private void GenerateConstraintForeignKey(IProperty propertySource, IProperty propertyTarget, Class association, IFileWriter writer)
+    private void GenerateConstraintForeignKey(
+        AssociationProperty propertySource,
+        IProperty propertyTarget,
+        Class association,
+        IFileWriter writer
+    )
     {
         var tableName = propertySource.Class.SqlName;
-        var propertyName = propertySource.SqlName;
+        var propertyName = ((IProperty)propertySource).SqlName;
+        writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
@@ -77,7 +89,6 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
         writer.Write(propertyTarget.SqlName);
 
         writer.WriteLine($"){Config.BatchSeparator}");
-        writer.WriteLine();
     }
 
     /// <summary>
@@ -99,13 +110,23 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     {
         var tableName = property.Class.SqlName;
         var propertyName = property.SqlName;
+        writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
-        writer.WriteLine("create index " + "IDX_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName + "_FK" + " on " + tableName + " (");
+        writer.WriteLine(
+            "create index "
+                + "IDX_"
+                + (property.Class.Trigram ?? property.Class.SqlName)
+                + "_"
+                + propertyName
+                + "_FK"
+                + " on "
+                + tableName
+                + " ("
+        );
         writer.WriteLine("\t" + propertyName + " ASC");
         writer.WriteLine($"){GetIndexTablespaceDeclaration()}{Config.BatchSeparator}");
-        writer.WriteLine();
     }
 
     private IEnumerable<AssociationProperty> GetForeignKeys(Class classe)

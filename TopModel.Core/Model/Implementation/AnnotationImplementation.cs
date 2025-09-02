@@ -6,7 +6,7 @@ public class AnnotationImplementation
 {
     public required StringWithVariables Text { get; set; }
 
-    public List<AnnotationConstraint> When { get; set; } = [];
+    public IList<AnnotationConstraint> When { get; set; } = [];
 
-    public List<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; set; } = [];
 }

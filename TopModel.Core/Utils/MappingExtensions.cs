@@ -14,7 +14,9 @@ public static class MappingExtensions
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
         {
-            return fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+            return fromDomain.ConvertersFrom.FirstOrDefault(c =>
+                c.From.Contains(fromDomain) && c.To.Contains(toDomain)
+            );
         }
 
         return null;
@@ -32,6 +34,14 @@ public static class MappingExtensions
 
     public static bool GetRequired(this OneOf<ClassMappings, PropertyMapping> mapping)
     {
-        return mapping.Match(c => c.Required, p => p.Property.Required && p.Property is CompositionProperty or AliasProperty { Property: CompositionProperty } or { DefaultValue: null });
+        return mapping.Match(
+            c => c.Required,
+            p =>
+                p.Property.Required
+                && p.Property
+                    is CompositionProperty
+                        or AliasProperty { Property: CompositionProperty }
+                        or { DefaultValue: null }
+        );
     }
 }

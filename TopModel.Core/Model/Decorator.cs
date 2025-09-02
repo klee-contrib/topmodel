@@ -17,9 +17,11 @@ public class Decorator : IPropertyContainer, IVariableContainer
     public string Description { get; set; }
 
     public Target? Target { get; set; }
+
 #nullable enable
 
-    public Dictionary<string, DecoratorImplementation> Implementations { get; set; } = [];
+    public IDictionary<string, DecoratorImplementation> Implementations { get; set; } =
+        new Dictionary<string, DecoratorImplementation>();
 
 #nullable disable
     public ModelFile ModelFile { get; set; }
@@ -36,26 +38,32 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
-    public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i =>
-            (IEnumerable<ParameterReference>)[
-                ..i.Extends?.Variables ?? [],
-                ..i.Implements.SelectMany(a => a.Variables),
-                ..i.Imports.SelectMany(a => a.Variables)
-            ])
-        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
+    public IEnumerable<ParameterReference> VariableReferences =>
+        Implementations
+            .Values.SelectMany(i =>
+                (IEnumerable<ParameterReference>)
+                    [
+                        .. i.Extends?.Variables ?? [],
+                        .. i.Implements.SelectMany(a => a.Variables),
+                        .. i.Imports.SelectMany(a => a.Variables),
+                    ]
+            )
+            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
 
-    public Dictionary<string, Variable> Variables { get; } = [];
+    public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
-    public IEnumerable<TransformReference> TransformReferences => Implementations.Values
-       .SelectMany(i =>
-           (IEnumerable<TransformReference>)[
-                ..i.Extends?.Transforms ?? [],
-                ..i.Implements.SelectMany(a => a.Transforms),
-                ..i.Imports.SelectMany(a => a.Transforms)
-           ])
-        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
-        .Where(pr => pr.ReferenceName.IsValidTransform());
+    public IEnumerable<TransformReference> TransformReferences =>
+        Implementations
+            .Values.SelectMany(i =>
+                (IEnumerable<TransformReference>)
+                    [
+                        .. i.Extends?.Transforms ?? [],
+                        .. i.Implements.SelectMany(a => a.Transforms),
+                        .. i.Imports.SelectMany(a => a.Transforms),
+                    ]
+            )
+            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+            .Where(pr => pr.ReferenceName.IsValidTransform());
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -37,12 +36,14 @@ public class TopModelLock : TopModelLockFile
                 var lf = _deserializer.Deserialize<TopModelLockFile>(file);
                 Version = lf.Version;
                 GeneratedFiles = lf.GeneratedFiles;
-                Modules = lf.Modules ?? [];
-                Custom = lf.Custom ?? [];
+                Modules = lf.Modules;
+                Custom = lf.Custom;
             }
             catch
             {
-                _logger.LogError($"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement.");
+                _logger.LogError(
+                    $"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement."
+                );
                 throw;
             }
         }
@@ -52,7 +53,9 @@ public class TopModelLock : TopModelLockFile
 
         if (Version != null && version != Version)
         {
-            logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec {assembly.Name} v{Version}, qui n'est pas la version actuellement installée (v{version})");
+            logger.LogWarning(
+                $"Ce modèle a été généré pour la dernière fois avec {assembly.Name} v{Version}, qui n'est pas la version actuellement installée (v{version})"
+            );
         }
 
         Version = version;
@@ -60,48 +63,58 @@ public class TopModelLock : TopModelLockFile
 
     public void UpdateFiles(IEnumerable<string> generatedFiles)
     {
-
         if (!_config.NoWarn.Contains(ErrorType.TMD0006))
         {
-            HashSet<string> unique = new HashSet<string>();
+            var unique = new HashSet<string>();
             foreach (var fichier in generatedFiles)
             {
                 if (!unique.Add(fichier))
                 {
-                    _logger.LogWarning($"{{TMD1006}} - Fichier en doublon: '{fichier.ToPath()}'.");
+                    _logger.LogWarning($"{{TMD1006}} - Le fichier suivant est en doublon : '{fichier.ToRelative()}'.");
                 }
             }
-
         }
 
         GeneratedFiles ??= [];
 
-        generatedFiles = generatedFiles.Select(g => g.Replace("\\", "/"));
+        generatedFiles = generatedFiles.Select(g => g.Replace('\\', '/'));
 
-        var generatedFilesList = generatedFiles
-            .Select(f => f.ToRelative(_config.ConfigRoot))
-            .OrderBy(f => f)
-            .ToList();
+        var generatedFilesList = generatedFiles.Select(f => f.ToRelative(_config.ConfigRoot)).Order().ToList();
 
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        var isWindows = OperatingSystem.IsWindows();
         var filesToPrune = GeneratedFiles
-            .Select(f => f.Replace("\\", "/"))
-            .Where(f => !generatedFilesList.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
+            .Select(f => f.Replace('\\', '/'))
+            .Where(f =>
+                !generatedFilesList
+                    .Select(gf => isWindows ? gf.ToLowerInvariant() : gf)
+                    .Contains(isWindows ? f.ToLowerInvariant() : f)
+            )
             .Select(f => Path.Combine(_config.ConfigRoot, f));
 
-        Parallel.ForEach(filesToPrune.Where(File.Exists), fileToPrune =>
-        {
-            File.Delete(fileToPrune);
-            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
-        });
+        Parallel.ForEach(
+            filesToPrune.Where(File.Exists),
+            fileToPrune =>
+            {
+                File.Delete(fileToPrune);
+                _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
+            }
+        );
 
         GeneratedFiles = generatedFilesList;
 
         if (!_config.NoWarn.Contains(ErrorType.TMD1005))
         {
-            foreach (var ignoredFile in _config.IgnoredFiles.Select(i => Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace("\\", "/")).Except(generatedFiles))
+            foreach (
+                var ignoredFile in _config
+                    .IgnoredFiles.Select(i =>
+                        Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace('\\', '/')
+                    )
+                    .Except(generatedFiles)
+            )
             {
-                _logger.LogWarning($"{{TMD1005}} - Le fichier '{ignoredFile.ToRelative(_config.ConfigRoot)}' dans `ignoredFiles` est introuvable.");
+                _logger.LogWarning(
+                    $"{{TMD1005}} - Le fichier '{ignoredFile.ToRelative(_config.ConfigRoot)}' dans `ignoredFiles` est introuvable."
+                );
             }
         }
 
@@ -112,9 +125,14 @@ public class TopModelLock : TopModelLockFile
     {
         if (Modules.Count > 0 || GeneratedFiles.Count > 0)
         {
-            using var fw = new GeneratedFileWriter(_config, Path.Combine(_config.ConfigRoot, _config.LockFileName), _logger, true)
+            using var fw = new GeneratedFileWriter(
+                _config,
+                Path.Combine(_config.ConfigRoot, _config.LockFileName),
+                _logger,
+                encoderShouldEmitUTF8Identifier: true
+            )
             {
-                StartCommentToken = "#"
+                StartCommentToken = "#",
             };
 
             fw.Write(_serializer.Serialize(this));

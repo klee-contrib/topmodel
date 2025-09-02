@@ -7,8 +7,11 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public class SqlResourceGenerator(ILogger<SqlResourceGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
+public class SqlResourceGenerator(
+    ILogger<SqlResourceGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlResourceGen";
 
@@ -33,47 +36,80 @@ public class SqlResourceGenerator(ILogger<SqlResourceGenerator> logger, Translat
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteLine("-- =========================================================================================== ");
-        writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + fileName?.Split('/').Last());
-        writer.WriteLine("--   Description		:	Script de création des resources (libellés traduits). ");
-        writer.WriteLine("-- =========================================================================================== ");
+        writer.WriteSqlFileHeader(
+            appName,
+            fileName.Split('/')[^1],
+            "Script de création des resources (libellés traduits)."
+        );
 
         var propertiesMap = classes
-            .OrderBy(c => c.SqlName)
             .Where(c => c != null && c.Properties != null)
+            .OrderBy(c => c.SqlName)
             .SelectMany(c => c.Properties)
-            .Where(p => p.ResourceProperty.Parent.Namespace.Module != null && p.Label != null && p.ResourceProperty != null && p.Class != null)
-            .DistinctBy(property => property.ResourceKey).GroupBy(property => property.Class).ToDictionary(g => g.Key, g => g.Select(t => t));
+            .Where(p =>
+                p.ResourceProperty.Parent.Namespace.Module != null
+                && p.Label != null
+                && p.ResourceProperty != null
+                && p.Class != null
+            )
+            .DistinctBy(property => property.ResourceKey)
+            .GroupBy(property => property.Class)
+            .ToDictionary(g => g.Key, g => g.Select(t => t));
 
         foreach (var modelClass in propertiesMap.Keys)
         {
             if (propertiesMap.TryGetValue(modelClass, out var properties))
             {
-                var hasLocale = translationStore.Translations.Keys.Count > 1 || translationStore.Translations.Keys.Any(a => a != string.Empty);
-                if (Config.TranslateProperties == true && properties.Any(p => p.Label != null) && modelClass.ModelFile != null)
+                var hasLocale =
+                    translationStore.Translations.Keys.Count > 1
+                    || translationStore.Translations.Keys.Any(a => a != string.Empty);
+                if (
+                    Config.TranslateProperties == true
+                    && properties.Any(p => p.Label != null)
+                    && modelClass.ModelFile != null
+                )
                 {
                     writer.WriteLine();
-                    writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
+                    writer.WriteLine(
+                        "/**\t\tInitialisation des traductions des propriétés de la table "
+                            + modelClass.SqlName
+                            + "\t\t**/"
+                    );
 
                     foreach (var lang in translationStore.Translations.Keys)
                     {
-                        foreach (var property in properties.Where(p => p.Label != null).DistinctBy(property => property.ResourceKey))
+                        foreach (
+                            var property in properties
+                                .Where(p => p.Label != null)
+                                .DistinctBy(property => property.ResourceKey)
+                        )
                         {
-                            writer.WriteLine($@"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});");
+                            writer.WriteLine(
+                                $@"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
+                            );
                         }
                     }
                 }
 
-                if (modelClass.DefaultProperty != null && modelClass.Values.Count > 0 && Config.TranslateReferences == true)
+                if (
+                    modelClass.DefaultProperty != null
+                    && modelClass.Values.Count > 0
+                    && Config.TranslateReferences == true
+                )
                 {
                     writer.WriteLine();
-                    writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
+                    writer.WriteLine(
+                        "/**\t\tInitialisation des traductions des valeurs de la table "
+                            + modelClass.SqlName
+                            + "\t\t**/"
+                    );
                     foreach (var lang in translationStore.Translations.Keys)
                     {
                         foreach (var val in modelClass.Values)
                         {
-                            writer.WriteLine(@$"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});");
+                            writer.WriteLine(
+                                @$"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
+                            );
                         }
                     }
                 }

@@ -3,12 +3,8 @@
 public class LegitException : Exception
 {
     public LegitException()
-        : base()
-    {
-    }
+        : base() { }
 
     public LegitException(string message)
-        : base(message)
-    {
-    }
+        : base(message) { }
 }

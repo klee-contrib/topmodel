@@ -7,7 +7,9 @@ public class FromMapper
 {
     public string? Comment { get; set; }
 
+#pragma warning disable MA0016
     public List<OneOf<ClassMappings, PropertyMapping>> Params { get; } = [];
+#pragma warning restore MA0016
 
     public IEnumerable<ClassMappings> ClassParams => Params.Where(p => p.IsT0).Select(p => p.AsT0);
 

@@ -5,12 +5,8 @@ namespace TopModel.Core.FileModel;
 public class ParameterReference : Reference
 {
     internal ParameterReference()
-        : base()
-    {
-    }
+        : base() { }
 
     internal ParameterReference(Scalar scalar)
-        : base(scalar)
-    {
-    }
+        : base(scalar) { }
 }

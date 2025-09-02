@@ -10,12 +10,12 @@ public class Converter : IVariableContainer
     /// <summary>
     /// Domains sources du convertisseur
     /// </summary>
-    public IList<DomainReference> DomainsFromReferences { get; set; } = new List<DomainReference>();
+    public IList<DomainReference> DomainsFromReferences { get; set; } = [];
 
     /// <summary>
     /// Domains cibles du convertisseur
     /// </summary>
-    public IList<DomainReference> DomainsToReferences { get; set; } = new List<DomainReference>();
+    public IList<DomainReference> DomainsToReferences { get; set; } = [];
 
     /// <summary>
     /// Domains sources du convertisseur
@@ -31,16 +31,16 @@ public class Converter : IVariableContainer
 
 #nullable enable
 
-    public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
+    public IDictionary<string, ConverterImplementation> Implementations { get; set; } =
+        new Dictionary<string, ConverterImplementation>();
 
-    public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i => i.Text.Variables);
+    public IEnumerable<ParameterReference> VariableReferences =>
+        Implementations.Values.SelectMany(i => i.Text.Variables);
 
-    public Dictionary<string, Variable> Variables { get; } = [];
+    public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
-    public IEnumerable<TransformReference> TransformReferences => Implementations.Values
-         .SelectMany(i => i.Text.Transforms)
-         .Where(pr => pr.ReferenceName.IsValidTransform());
+    public IEnumerable<TransformReference> TransformReferences =>
+        Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

@@ -33,38 +33,55 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
     }
 
-    protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
+    protected override void HandleFile(
+        string fileName,
+        string tag,
+        IList<(Class Classe, FromMapper Mapper)> fromMappers,
+        IList<(Class Classe, ClassMappings Mapper)> toMappers
+    )
     {
         using var w = this.OpenCSharpWriter(fileName);
 
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();
 
-        var (mapperNs, modelPath) = sampleFromMapper != default
-            ? Config.GetMapperLocation(sampleFromMapper, tag)
-            : Config.GetMapperLocation(sampleToMapper, tag);
+        var (mapperNs, modelPath) =
+            sampleFromMapper != default
+                ? Config.GetMapperLocation(sampleFromMapper, tag)
+                : Config.GetMapperLocation(sampleToMapper, tag);
 
         var ns = Config.GetNamespace(mapperNs, modelPath, tag);
 
-        var usings = fromMappers.SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
+        var usings = fromMappers
+            .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
             .ToList();
 
-        foreach (var property in fromMappers.SelectMany(fm => fm.Mapper.PropertyParams.Select(pp => pp.Property).Concat(toMappers.SelectMany(tm => tm.Mapper.MissingRequiredProperties))))
+        foreach (
+            var property in fromMappers.SelectMany(fm =>
+                fm.Mapper.PropertyParams.Select(pp => pp.Property)
+                    .Concat(toMappers.SelectMany(tm => tm.Mapper.MissingRequiredProperties))
+            )
+        )
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
             usings.AddRange(Config.GetValueImports(property));
 
             switch (property)
             {
-                case AssociationProperty ap when Classes.Contains(ap.Association) && Config.CanClassUseEnums(ap.Association, Classes, ap.Property):
+                case AssociationProperty ap
+                    when Classes.Contains(ap.Association)
+                        && Config.CanClassUseEnums(ap.Association, Classes, ap.Property):
                     usings.Add(Config.GetNamespace(ap.Association, GetBestClassTag(ap.Association, tag)));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 } when Classes.Contains(ap2.Association) && Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property):
+                case AliasProperty { Property: AssociationProperty ap2 }
+                    when Classes.Contains(ap2.Association)
+                        && Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property):
                     usings.Add(Config.GetNamespace(ap2.Association, GetBestClassTag(ap2.Association, tag)));
                     break;
-                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, Classes, rp):
+                case AliasProperty { Property: RegularProperty rp }
+                    when Classes.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, Classes, rp):
                     usings.Add(Config.GetNamespace(rp.Class, GetBestClassTag(rp.Class, tag)));
                     break;
                 case CompositionProperty cp when Classes.Contains(cp.Composition):
@@ -102,7 +119,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             var requiredNonNullable = Config.RequiredNonNullable(GetBestClassTag(classe, tag));
 
-            w.WriteSummary(1, $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
+            w.WriteSummary(
+                1,
+                $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+            );
             foreach (var param in mapper.Params)
             {
                 w.WriteParam(param.GetNameCamel(), param.GetComment());
@@ -119,9 +139,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.Write(1, $"public static {classe.NamePascal} Create{classe.NamePascal}");
             }
 
-            w.WriteLine($"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
+            w.WriteLine(
+                $"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
                 c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property, Classes) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})");
+                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property, Classes) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})"
+            );
 
             if (classe.Abstract)
             {
@@ -130,7 +152,15 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteLine(1, "{");
 
-            var requiredParams = mapper.Params.Where(p => p.GetRequired() && (p.IsT0 || !Config.AllValueTypes.Contains(Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty)));
+            var requiredParams = mapper.Params.Where(p =>
+                p.GetRequired()
+                && (
+                    p.IsT0
+                    || !Config.AllValueTypes.Contains(
+                        Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty
+                    )
+                )
+            );
             var wlForCheck = false;
 
             foreach (var param in requiredParams)
@@ -143,14 +173,23 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 foreach (var param in mapper.ClassParams)
                 {
-                    foreach (var mapping in param.Mappings.Where(m => m.Key.Required && (!param.Required || !m.Value.Required)))
+                    foreach (
+                        var mapping in param.Mappings.Where(m =>
+                            m.Key.Required && (!param.Required || !m.Value.Required)
+                        )
+                    )
                     {
-                        w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.Name}{(!param.Required ? "?" : string.Empty)}.{mapping.Value.NamePascal});");
+                        w.WriteLine(
+                            2,
+                            $"ArgumentNullException.ThrowIfNull({param.Name}{(!param.Required ? "?" : string.Empty)}.{mapping.Value.NamePascal});"
+                        );
                         wlForCheck = true;
                     }
                 }
 
-                foreach (var param in mapper.PropertyParams.Where(p => p.TargetProperty.Required && !p.Property.Required))
+                foreach (
+                    var param in mapper.PropertyParams.Where(p => p.TargetProperty.Required && !p.Property.Required)
+                )
                 {
                     w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.NameCamel});");
                     wlForCheck = true;
@@ -189,11 +228,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                 w.Write(3, $"{mapping.Key.NamePascal} = ");
                             }
 
-                            var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+                            var value =
+                                $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
                             if (mapping.Key is CompositionProperty cp && mapping.Value is not CompositionProperty)
                             {
-                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.CompositionPrimaryKey?.NamePascal} = ");
+                                w.Write(
+                                    $"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.CompositionPrimaryKey?.NamePascal} = "
+                                );
                             }
                             else
                             {
@@ -201,23 +243,37 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                                 var targetType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                                 var sourceType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(targetType))
+                                if (
+                                    !sourceType.EndsWith(targetType)
+                                    && !targetType.EndsWith(sourceType)
+                                    && Config.GetEnumType(mapping.Key).EndsWith(targetType)
+                                )
                                 {
                                     var enumType = Config.GetEnumType(mapping.Key);
                                     value = $"<{enumType}>({value}";
 
-                                    w.AddUsing(Config.GetEnumTypeNamespace(mapping.Key, GetBestClassTag(mapping.Key.Class, tag)));
+                                    w.AddUsing(
+                                        Config.GetEnumTypeNamespace(
+                                            mapping.Key,
+                                            GetBestClassTag(mapping.Key.Class, tag)
+                                        )
+                                    );
 
                                     if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
                                     {
-                                        value = $"Enum.TryParse{value}, out var {mapping.Value.NameCamel}) ? {mapping.Value.NameCamel} : null";
+                                        value =
+                                            $"Enum.TryParse{value}, out var {mapping.Value.NameCamel}) ? {mapping.Value.NameCamel} : null";
                                     }
                                     else
                                     {
                                         value = $"Enum.Parse{value})";
                                     }
                                 }
-                                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(sourceType))
+                                else if (
+                                    !sourceType.EndsWith(targetType)
+                                    && !targetType.EndsWith(sourceType)
+                                    && Config.GetEnumType(mapping.Value).EndsWith(sourceType)
+                                )
                                 {
                                     if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
                                     {
@@ -241,12 +297,22 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                                     value = $"({cast}){value}";
                                 }
-                                else if (isValueType && requiredNonNullable && mapping.Key.Required && !mapping.Value.Required)
+                                else if (
+                                    isValueType
+                                    && requiredNonNullable
+                                    && mapping.Key.Required
+                                    && !mapping.Value.Required
+                                )
                                 {
                                     value += ".Value";
                                 }
 
-                                value = Config.GetConvertedValue(value, mapping.Value.Domain, mapping.Key.Domain, isValueType && (!requiredNonNullable || !mapping.Value.Required));
+                                value = Config.GetConvertedValue(
+                                    value,
+                                    mapping.Value.Domain,
+                                    mapping.Key.Domain,
+                                    isValueType && (!requiredNonNullable || !mapping.Value.Required)
+                                );
                             }
 
                             w.Write(value);
@@ -256,7 +322,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                 w.Write(" }");
                             }
 
-                            if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                            if (
+                                mapper.Params.IndexOf(param) < mapper.Params.Count - 1
+                                || mappings.IndexOf(mapping) < mappings.Count - 1
+                            )
                             {
                                 w.Write(",");
                             }
@@ -272,12 +341,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     {
                         var value = param.NameCamel;
 
-                        if (Config.IsValueType(param.Property, Classes))
+                        if (
+                            Config.IsValueType(param.Property, Classes)
+                            && requiredNonNullable
+                            && param.TargetProperty.Required
+                            && !param.Property.Required
+                        )
                         {
-                            if (requiredNonNullable && param.TargetProperty.Required && !param.Property.Required)
-                            {
-                                value += ".Value";
-                            }
+                            value += ".Value";
                         }
 
                         if (classe.Abstract)
@@ -299,7 +370,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         }
 
                         w.WriteLine();
-                    });
+                    }
+                );
             }
 
             if (!classe.Abstract)
@@ -323,10 +395,17 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             var rrnSource = Config.RequiredNonNullable(GetBestClassTag(classe, tag));
             var rrnTarget = Config.RequiredNonNullable(GetBestClassTag(mapper.Class, tag));
 
-            w.WriteSummary(1, $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
+            w.WriteSummary(
+                1,
+                $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+            );
             w.WriteParam("source", $"Instance de '{classe.NamePascal}'");
 
-            var missingRequiredProperties = mapper.MissingRequiredProperties.Where(mrp => mrp is not CompositionProperty cp || Classes.Contains(cp.Composition)).ToList();
+            var missingRequiredProperties = mapper
+                .MissingRequiredProperties.Where(mrp =>
+                    mrp is not CompositionProperty cp || Classes.Contains(cp.Composition)
+                )
+                .ToList();
 
             foreach (var mrp in missingRequiredProperties)
             {
@@ -338,7 +417,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             var extraParams = string.Empty;
             if (missingRequiredProperties.Count > 0)
             {
-                extraParams = $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, Classes, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
+                extraParams =
+                    $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, Classes, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
             }
 
             if (mapper.Class.Abstract)
@@ -348,14 +428,19 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             }
             else
             {
-                w.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source{extraParams})");
+                w.WriteLine(
+                    1,
+                    $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source{extraParams})"
+                );
             }
 
             w.WriteLine(1, "{");
 
             if (rrnTarget)
             {
-                var requiredMappings = mapper.Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required).ToList();
+                var requiredMappings = mapper
+                    .Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required)
+                    .ToList();
                 foreach (var mapping in requiredMappings)
                 {
                     w.WriteLine(2, $"ArgumentNullException.ThrowIfNull(source.{GetSourceMapping(mapping.Key)});");
@@ -389,7 +474,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                 var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                 var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(sourceType))
+                if (
+                    !sourceType.EndsWith(targetType)
+                    && !targetType.EndsWith(sourceType)
+                    && Config.GetEnumType(mapping.Key).EndsWith(sourceType)
+                )
                 {
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
@@ -400,7 +489,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         value = $"Enum.GetName({value})";
                     }
                 }
-                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
+                else if (
+                    !sourceType.EndsWith(targetType)
+                    && !targetType.EndsWith(sourceType)
+                    && Config.GetEnumType(mapping.Value).EndsWith(targetType)
+                )
                 {
                     var enumType = Config.GetEnumType(mapping.Value);
                     value = $"<{enumType}>({value}";
@@ -409,7 +502,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
-                        value = $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
+                        value =
+                            $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
                     }
                     else
                     {
@@ -417,7 +511,12 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     }
                 }
 
-                value = Config.GetConvertedValue(value, mapping.Key.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
+                value = Config.GetConvertedValue(
+                    value,
+                    mapping.Key.Domain,
+                    mapping.Value.Domain,
+                    isValueType && (!rrnSource || !mapping.Key.Required)
+                );
 
                 if (mapper.Class.Abstract)
                 {
@@ -477,16 +576,24 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             if (!mapper.Class.Abstract)
             {
                 w.WriteLine();
-                w.WriteSummary(1, $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
+                w.WriteSummary(
+                    1,
+                    $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                );
                 w.WriteParam("source", $"Instance de '{classe.NamePascal}'");
                 w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class.NamePascal}'.");
                 w.WriteReturns(1, $"L'instance pré-existante de '{mapper.Class.NamePascal}'");
-                w.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest)");
+                w.WriteLine(
+                    1,
+                    $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest)"
+                );
                 w.WriteLine(1, "{");
 
                 if (rrnTarget)
                 {
-                    var requiredMappings = mapper.Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required).ToList();
+                    var requiredMappings = mapper
+                        .Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required)
+                        .ToList();
                     foreach (var mapping in requiredMappings)
                     {
                         w.WriteLine(2, $"ArgumentNullException.ThrowIfNull(source.{GetSourceMapping(mapping.Key)});");
@@ -510,7 +617,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                     var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                     var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                    if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(sourceType))
+                    if (
+                        !sourceType.EndsWith(targetType)
+                        && !targetType.EndsWith(sourceType)
+                        && Config.GetEnumType(mapping.Key).EndsWith(sourceType)
+                    )
                     {
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                         {
@@ -521,16 +632,23 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             value = $"Enum.GetName({value})";
                         }
                     }
-                    else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
+                    else if (
+                        !sourceType.EndsWith(targetType)
+                        && !targetType.EndsWith(sourceType)
+                        && Config.GetEnumType(mapping.Value).EndsWith(targetType)
+                    )
                     {
                         var enumType = Config.GetEnumType(mapping.Value);
                         value = $"<{enumType}>({value}";
 
-                        w.AddUsing(Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag)));
+                        w.AddUsing(
+                            Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag))
+                        );
 
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                         {
-                            value = $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
+                            value =
+                                $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
                         }
                         else
                         {
@@ -538,7 +656,12 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         }
                     }
 
-                    value = Config.GetConvertedValue(value, mapping.Key.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
+                    value = Config.GetConvertedValue(
+                        value,
+                        mapping.Key.Domain,
+                        mapping.Value.Domain,
+                        isValueType && (!rrnSource || !mapping.Key.Required)
+                    );
 
                     w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
                 }

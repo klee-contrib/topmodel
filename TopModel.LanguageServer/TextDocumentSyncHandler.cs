@@ -8,19 +8,10 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
+public class TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
+    : TextDocumentSyncHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ModelFileCache _fileCache;
-    private readonly ModelStore _modelStore;
-
-    public TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
-    {
-        _config = config;
-        _fileCache = fileCache;
-        _modelStore = modelStore;
-    }
-
+    /// <inheritdoc cref="ITextDocumentIdentifier.GetTextDocumentAttributes" />
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
     {
         return new TextDocumentAttributes(uri, "yaml");
@@ -28,7 +19,7 @@ public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
 
     public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
     {
-        _fileCache.UpdateFile(request.TextDocument.Uri.GetFileSystemPath(), request.TextDocument.Text);
+        fileCache.UpdateFile(request.TextDocument.Uri.GetFileSystemPath(), request.TextDocument.Text);
         return Unit.Task;
     }
 
@@ -36,8 +27,8 @@ public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
     {
         var filePath = request.TextDocument.Uri.GetFileSystemPath();
         var content = request.ContentChanges.Single().Text;
-        _fileCache.UpdateFile(filePath, content);
-        await _modelStore.OnModelFileChange(filePath, content);
+        fileCache.UpdateFile(filePath, content);
+        await modelStore.OnModelFileChange(filePath, content, cancellationToken);
         return Unit.Value;
     }
 
@@ -51,13 +42,16 @@ public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
         return Unit.Task;
     }
 
-    protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
+    protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(
+        TextSynchronizationCapability capability,
+        ClientCapabilities clientCapabilities
+    )
     {
         return new TextDocumentSyncRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector(),
+            DocumentSelector = config.GetDocumentSelector(),
             Change = TextDocumentSyncKind.Full,
-            Save = new SaveOptions { IncludeText = true }
+            Save = new SaveOptions { IncludeText = true },
         };
     }
 }

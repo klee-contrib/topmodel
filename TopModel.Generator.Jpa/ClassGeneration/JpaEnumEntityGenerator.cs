@@ -32,7 +32,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
 
         fw.WriteLine();
         WriteClassComment(fw, classe, tag);
@@ -46,7 +46,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
         var implements = Config.GetClassImplements(classe, tag).ToList();
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
         fw.WriteLine();
 
         var codeProperty = classe.EnumKey!;
@@ -59,7 +59,10 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
                 fw.WriteLine(1, "@Transient");
             }
 
-            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});");
+            fw.WriteLine(
+                1,
+                $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
+            );
         }
 
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
@@ -88,6 +91,6 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        return;
+        // A surcharger
     }
 }

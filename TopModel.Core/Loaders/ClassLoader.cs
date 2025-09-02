@@ -6,7 +6,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Class>
+public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader)
+    : ILoader<Class>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Class Load(Parser parser)
@@ -73,7 +74,9 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                             {
                                 var decorator = new DecoratorReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 classe.DecoratorReferences.Add(decorator);
@@ -94,7 +97,9 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                             {
                                 var annotation = new AnnotationReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 classe.AnnotationReferences.Add(annotation);
@@ -139,7 +144,9 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                     });
                     break;
                 case "customProperties":
-                    parser.ConsumeMapping(prop => classe.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                    parser.ConsumeMapping(prop =>
+                        classe.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                    );
                     break;
                 case "mappers":
                     parser.ConsumeMapping(prop =>
@@ -177,27 +184,40 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                                             {
                                                                 case "class":
                                                                     classScalar = parser.Consume<Scalar>();
-                                                                    param.ClassReference = new ClassReference(classScalar);
+                                                                    param.ClassReference = new ClassReference(
+                                                                        classScalar
+                                                                    );
                                                                     break;
                                                                 case "required":
-                                                                    param.Required = parser.Consume<Scalar>().Value == "true";
+                                                                    param.Required =
+                                                                        parser.Consume<Scalar>().Value == "true";
                                                                     break;
                                                                 case "comment":
                                                                     param.Comment = parser.Consume<Scalar>().Value;
                                                                     break;
                                                                 case "name":
-                                                                    param.Name = new LocatedString(parser.Consume<Scalar>());
+                                                                    param.Name = new LocatedString(
+                                                                        parser.Consume<Scalar>()
+                                                                    );
                                                                     break;
                                                                 case "mappings":
                                                                     parser.ConsumeMapping(prop =>
                                                                     {
-                                                                        param.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
+                                                                        param.MappingReferences.Add(
+                                                                            new Reference(prop),
+                                                                            new Reference(parser.Consume<Scalar>())
+                                                                        );
                                                                     });
                                                                     break;
                                                             }
                                                         }
 
-                                                        param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase(strictIfUppercase: true) };
+                                                        param.Name ??= new LocatedString(classScalar)
+                                                        {
+                                                            Value = param.ClassReference.ReferenceName.ToCamelCase(
+                                                                strictIfUppercase: true
+                                                            ),
+                                                        };
                                                     }
                                                     else if (parser.Current is Scalar { Value: "property" })
                                                     {
@@ -213,14 +233,19 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                                                     param.Property.PropertyMapping = param;
                                                                     break;
                                                                 case "target":
-                                                                    param.TargetPropertyReference = new Reference(parser.Consume<Scalar>());
+                                                                    param.TargetPropertyReference = new Reference(
+                                                                        parser.Consume<Scalar>()
+                                                                    );
                                                                     break;
                                                             }
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        throw new ModelException(classe, $"Erreur dans la construction des paramètres du mapper 'from'.");
+                                                        throw new ModelException(
+                                                            classe,
+                                                            $"Erreur dans la construction des paramètres du mapper 'from'."
+                                                        );
                                                     }
 
                                                     parser.Consume<MappingEnd>();
@@ -255,12 +280,19 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                             case "mappings":
                                                 parser.ConsumeMapping(prop =>
                                                 {
-                                                    mapper.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
+                                                    mapper.MappingReferences.Add(
+                                                        new Reference(prop),
+                                                        new Reference(parser.Consume<Scalar>())
+                                                    );
                                                 });
                                                 break;
                                         }
 
-                                        mapper.Name ??= new LocatedString(classScalar) { Value = $"To{mapper.ClassReference.ReferenceName.ToPascalCase(strictIfUppercase: true)}" };
+                                        mapper.Name ??= new LocatedString(classScalar)
+                                        {
+                                            Value =
+                                                $"To{mapper.ClassReference.ReferenceName.ToPascalCase(strictIfUppercase: true)}",
+                                        };
                                     });
                                 });
                                 break;

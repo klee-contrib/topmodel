@@ -23,7 +23,7 @@ public interface IProperty : IAnnotationContainer
 
     Domain Domain { get; }
 
-    Dictionary<string, string> DomainParameters { get; }
+    IDictionary<string, string> DomainParameters { get; }
 
     DomainReference? DomainReference { get; }
 
@@ -35,7 +35,9 @@ public interface IProperty : IAnnotationContainer
 
     LocatedString? Trigram { get; set; }
 
+#pragma warning disable MA0016
     Dictionary<string, string> CustomProperties { get; }
+#pragma warning restore MA0016
 
     Class Class { get; set; }
 
@@ -47,7 +49,8 @@ public interface IProperty : IAnnotationContainer
 
     PropertyMapping PropertyMapping { get; set; }
 
-    IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
+    IPropertyContainer Parent =>
+        Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
 
     string SqlName
     {
@@ -59,36 +62,38 @@ public interface IProperty : IAnnotationContainer
             {
                 { Property: IProperty p } => p,
                 { Association: Class classe } => classe.Properties.FirstOrDefault(),
-                _ => null
+                _ => null,
             };
 
             string? trigram = prop.Trigram ?? ap?.Trigram ?? apPk?.Trigram ?? apPk?.Class.Trigram ?? prop.Class.Trigram;
             trigram = !string.IsNullOrWhiteSpace(trigram) ? $"{trigram}_" : string.Empty;
-            var role = ap?.Role != null
-                ? UseLegacyRoleName
-                    ? $"_{ap.Role.Replace(" ", "_").ToUpper()}"
-                    : $"_{ap.Role.ToConstantCase()}"
-                : string.Empty;
+            var role =
+                ap?.Role != null
+                    ? UseLegacyRoleName
+                        ? $"_{ap.Role.Replace(' ', '_').ToUpper()}"
+                        : $"_{ap.Role.ToConstantCase()}"
+                    : string.Empty;
 
             return $"{trigram}{RawSqlName}{role}";
         }
     }
 
-    IProperty ResourceProperty => SourceDecorator != null
-       ? SourceDecorator.Properties.First(p => p.Name == Name).ResourceProperty
-       : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
-       ? alp.OriginalProperty!.ResourceProperty
-       : this;
-
-    string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.NameCamel}";
-
-    IProperty CommentResourceProperty => SourceDecorator != null
-        ? SourceDecorator.Properties.First(p => p.Name == Name).CommentResourceProperty
-        : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
-        ? alp.OriginalProperty!.CommentResourceProperty
+    IProperty ResourceProperty =>
+        SourceDecorator != null ? SourceDecorator.Properties.First(p => p.Name == Name).ResourceProperty
+        : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label ? alp.OriginalProperty!.ResourceProperty
         : this;
 
-    string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleCamel}.{CommentResourceProperty.Parent.NameCamel}.{CommentResourceProperty.NameCamel}";
+    string ResourceKey =>
+        $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.NameCamel}";
+
+    IProperty CommentResourceProperty =>
+        SourceDecorator != null ? SourceDecorator.Properties.First(p => p.Name == Name).CommentResourceProperty
+        : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
+            ? alp.OriginalProperty!.CommentResourceProperty
+        : this;
+
+    string CommentResourceKey =>
+        $"comments.{CommentResourceProperty.Parent.Namespace.ModuleCamel}.{CommentResourceProperty.Parent.NameCamel}.{CommentResourceProperty.NameCamel}";
 
     bool UseLegacyRoleName { get; init; }
 
@@ -102,14 +107,18 @@ public interface IProperty : IAnnotationContainer
             {
                 { Property: IProperty p } => p,
                 { Association: Class classe } => classe.Properties.FirstOrDefault(),
-                _ => null
+                _ => null,
             };
 
             return prop switch
             {
-                AssociationProperty or AliasProperty { Property: AssociationProperty } => apPk?.RawSqlName ?? string.Empty,
-                { Class.Extends: not null, PrimaryKey: true } when prop.Name.StartsWith(prop.Class.Name) => prop.Name[prop.Class.Name.Length..].ToConstantCase(),
-                _ => prop.Name.ToConstantCase()
+                AssociationProperty or AliasProperty { Property: AssociationProperty } => apPk?.RawSqlName
+                    ?? string.Empty,
+                { Class.Extends: not null, PrimaryKey: true } when prop.Name.StartsWith(prop.Class.Name) => prop.Name[
+                        prop.Class.Name.Length..
+                    ]
+                    .ToConstantCase(),
+                _ => prop.Name.ToConstantCase(),
             };
         }
     }

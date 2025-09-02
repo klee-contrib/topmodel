@@ -11,14 +11,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 {
     public override string Name => "CSharpClassGen";
 
-    protected virtual Dictionary<string, string> NewableTypes { get; } = new()
-    {
-        ["IEnumerable"] = "List",
-        ["ICollection"] = "List",
-        ["IList"] = "List",
-        ["List"] = "List",
-        ["HashSet"] = "HashSet"
-    };
+    protected virtual IDictionary<string, string> NewableTypes { get; } =
+        new Dictionary<string, string>()
+        {
+            ["IEnumerable"] = "List",
+            ["ICollection"] = "List",
+            ["IList"] = "List",
+            ["List"] = "List",
+            ["HashSet"] = "HashSet",
+        };
 
     /// <summary>
     /// Génération de la déclaration de la classe.
@@ -52,7 +53,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (Config.DbSchema != null)
                 {
-                    w.WriteAttribute("Table", $@"""{sqlName}""", $@"Schema = ""{Config.ResolveVariables(Config.DbSchema, tag, module: item.Namespace.Module.ToSnakeCase())}""");
+                    w.WriteAttribute(
+                        "Table",
+                        $@"""{sqlName}""",
+                        $@"Schema = ""{Config.ResolveVariables(Config.DbSchema, tag, module: item.Namespace.Module.ToSnakeCase())}"""
+                    );
                 }
                 else
                 {
@@ -126,10 +131,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 consts.Add((item.EnumKey, refValue.Name, code, label));
             }
 
-            foreach (var uk in item.UniqueKeys.Where(uk =>
-                uk.Count == 1
-                && Config.GetType(uk.Single())?.TrimEnd('?') == "string"
-                && refValue.Value.ContainsKey(uk.Single())))
+            foreach (
+                var uk in item.UniqueKeys.Where(uk =>
+                    uk.Count == 1
+                    && Config.GetType(uk.Single())?.TrimEnd('?') == "string"
+                    && refValue.Value.ContainsKey(uk.Single())
+                )
+            )
             {
                 var prop = uk.Single();
 
@@ -141,7 +149,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
         }
 
-        var orderedConsts = consts.OrderBy(x => x.Name.ToPascalCase(strictIfUppercase: true), StringComparer.Ordinal).ToList();
+        var orderedConsts = consts
+            .OrderBy(x => x.Name.ToPascalCase(strictIfUppercase: true), StringComparer.Ordinal)
+            .ToList();
 
         foreach (var @const in orderedConsts)
         {
@@ -151,7 +161,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             w.WriteSummary(1, @const.Label);
-            w.WriteLine(1, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase(strictIfUppercase: true)} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
+            w.WriteLine(
+                1,
+                $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase(strictIfUppercase: true)} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};"
+            );
         }
 
         if (consts.Any())
@@ -174,7 +187,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             w.WriteReturns(1, "Instance de la classe.");
-            w.WriteLine(1, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});");
+            w.WriteLine(
+                1,
+                $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});"
+            );
         }
     }
 
@@ -230,12 +246,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 return false;
             }
 
-            var refs = GetAllValues(item)
-                .OrderBy(x => x.Name, StringComparer.Ordinal)
-                .ToList();
+            var refs = GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(1, $"public enum {Config.GetEnumType(prop, true)}");
+            w.WriteLine(1, $"public enum {Config.GetEnumType(prop, isPrimaryKeyDef: true)}");
             w.WriteLine(1, "{");
 
             foreach (var refValue in refs)
@@ -257,7 +271,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var hasLine = Config.CanClassUseEnums(item, Classes) && WriteEnum(item.EnumKey!);
 
-        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
+        foreach (
+            var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single()))
+        )
         {
             if (hasLine)
             {
@@ -288,7 +304,12 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteLine(1, "public enum Flags");
             w.WriteLine(1, "{");
 
-            var flagValues = item.Values.Where(refValue => refValue.Value.ContainsKey(item.FlagProperty) && int.TryParse(refValue.Value[item.FlagProperty], out var _)).ToList();
+            var flagValues = item
+                .Values.Where(refValue =>
+                    refValue.Value.ContainsKey(item.FlagProperty)
+                    && int.TryParse(refValue.Value[item.FlagProperty], out var _)
+                )
+                .ToList();
             foreach (var refValue in flagValues)
             {
                 var flag = int.Parse(refValue.Value[item.FlagProperty]);
@@ -315,10 +336,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="tag">Tag.</param>
     protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
-        var sameColumnSet = new HashSet<string>(item.Properties
-            .GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key));
+        var sameColumnSet = new HashSet<string>(
+            item.Properties.GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key)
+        );
 
-        foreach (var property in item.Properties.Where(p => p is not CompositionProperty cp || Classes.Contains(cp.Composition)))
+        foreach (
+            var property in item.Properties.Where(p =>
+                p is not CompositionProperty cp || Classes.Contains(cp.Composition)
+            )
+        )
         {
             if (item.Properties.IndexOf(property) > 0)
             {
@@ -336,7 +362,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="property">La propriété générée.</param>
     /// <param name="sameColumnSet">Sets des propriétés avec le même nom de colonne, pour ne pas les gérerer (genre alias).</param>
     /// <param name="tag">Tag.</param>
-    protected virtual void GenerateProperty(CSharpWriter w, IProperty property, HashSet<string> sameColumnSet, string tag)
+    protected virtual void GenerateProperty(CSharpWriter w, IProperty property, ISet<string> sameColumnSet, string tag)
     {
         w.WriteSummary(1, property.Comment);
 
@@ -344,19 +370,27 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             CompositionProperty c => c,
             AliasProperty { Property: CompositionProperty c } => c,
-            _ => null
+            _ => null,
         };
 
-        var type = Config.GetType(property, Classes, nonNullable: cp != null && cp.Required || property.Required && Config.RequiredNonNullable(tag));
+        var type = Config.GetType(
+            property,
+            Classes,
+            nonNullable: cp != null && cp.Required || property.Required && Config.RequiredNonNullable(tag)
+        );
 
         if (!property.Class.Abstract)
         {
             var prop = (property as AliasProperty)?.PersistentProperty ?? property;
             if (
-                (property.Class.IsPersistent || property is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
+                (
+                    property.Class.IsPersistent
+                    || property is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias
+                )
                 && Classes.Contains(prop.Class)
                 && !Config.NoPersistence(tag)
-                && !sameColumnSet.Contains(property.SqlName))
+                && !sameColumnSet.Contains(property.SqlName)
+            )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
                 if (!Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column")))
@@ -365,7 +399,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            if (property.Required && !Config.RequiredNonNullable(tag) && !property.PrimaryKey || property is AliasProperty { PrimaryKey: true } || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1)
+            if (
+                property.Required && !Config.RequiredNonNullable(tag) && !property.PrimaryKey
+                || property is AliasProperty { PrimaryKey: true }
+                || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
+            )
             {
                 w.WriteAttribute(1, "Required");
             }
@@ -373,17 +411,31 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             if (Config.Kinetix)
             {
                 var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
-                if (ap != null && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
+                if (
+                    ap != null
+                    && Classes.Contains(ap.Association)
+                    && ap.Association.IsPersistent
+                    && ap.Association.Reference
+                )
                 {
                     w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                 }
-                else if (property is AliasProperty alp2 && !alp2.AliasedPrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
+                else if (
+                    property is AliasProperty alp2
+                    && !alp2.AliasedPrimaryKey
+                    && alp2.Property.PrimaryKey
+                    && Classes.Contains(alp2.Property.Class)
+                    && alp2.Property.Class.Reference
+                )
                 {
                     w.WriteAttribute(1, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
                 }
             }
 
-            if (Config.Kinetix && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
+            if (
+                Config.Kinetix
+                && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+            )
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -398,7 +450,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, annotation);
             }
 
-            if (Config.IsPersistent(property.Class, tag) && property is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany })
+            if (
+                Config.IsPersistent(property.Class, tag)
+                && property is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+            )
             {
                 w.WriteAttribute(1, "NotMapped");
             }
@@ -423,12 +478,19 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             w.Write(1, "public");
 
-            if (Config.RequiredNonNullable(tag) && property.Required && (!isPk || !property.Domain.AutoGeneratedValue) && defaultValue == "null")
+            if (
+                Config.RequiredNonNullable(tag)
+                && property.Required
+                && (!isPk || !property.Domain.AutoGeneratedValue)
+                && defaultValue == "null"
+            )
             {
                 w.Write(" required");
             }
 
-            w.WriteLine($" {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
+            w.WriteLine(
+                $" {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}"
+            );
         }
         else
         {
@@ -453,26 +515,38 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.Any(p =>
-                p.Required && !Config.RequiredNonNullable(tag)
-                || p.PrimaryKey
-                || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
+            if (
+                item.Properties.Any(p =>
+                    p.Required && !Config.RequiredNonNullable(tag)
+                    || p.PrimaryKey
+                    || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null
+                )
+            )
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
-            if (item.Properties.Any(fp =>
+            if (
+                item.Properties.Any(fp =>
                 {
                     var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
-                    return (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
+                    return (
+                            fp.Class.IsPersistent
+                            || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias
+                        )
                         && Classes.Contains(prop.Class)
                         && !Config.NoPersistence(tag);
-                }))
+                })
+            )
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (item.Properties.Any(p => p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }) && Config.Kinetix)
+            if (
+                item.Properties.Any(p =>
+                    p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+                ) && Config.Kinetix
+            )
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -496,13 +570,28 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             switch (property)
             {
-                case AssociationProperty ap when Classes.Contains(ap.Association) && (Config.CanClassUseEnums(ap.Association, Classes, ap.Property) || Config.Kinetix && ap.Association.IsPersistent && ap.Association.Reference):
+                case AssociationProperty ap
+                    when Classes.Contains(ap.Association)
+                        && (
+                            Config.CanClassUseEnums(ap.Association, Classes, ap.Property)
+                            || Config.Kinetix && ap.Association.IsPersistent && ap.Association.Reference
+                        ):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 } when Classes.Contains(ap2.Association) && (Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property) || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference):
+                case AliasProperty { Property: AssociationProperty ap2 }
+                    when Classes.Contains(ap2.Association)
+                        && (
+                            Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property)
+                            || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference
+                        ):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes, rp) || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference):
+                case AliasProperty { Property: RegularProperty rp } alp
+                    when Classes.Contains(rp.Class)
+                        && (
+                            Config.CanClassUseEnums(rp.Class, Classes, rp)
+                            || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference
+                        ):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp when Classes.Contains(cp.Composition):
@@ -524,13 +613,16 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
     protected virtual string GetNamespace(Class classe, string tag)
     {
-        return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
+        return Config.GetNamespace(
+            classe,
+            classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag
+        );
     }
 
     protected virtual string? GetNewableType(CompositionProperty property)
     {
         var type = Config.GetType(property, nonNullable: true);
-        var genericType = type.Split('<').First();
+        var genericType = type.Split('<')[0];
 
         if (property.Domain == null)
         {

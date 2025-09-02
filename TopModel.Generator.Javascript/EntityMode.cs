@@ -15,5 +15,5 @@ public enum EntityMode
     /// <summary>
     /// DTO sans entité.
     /// </summary>
-    NONE
+    NONE,
 }

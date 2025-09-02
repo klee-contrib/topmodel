@@ -5,7 +5,13 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain> domains, IDictionary<string, Class> referencedClasses, IDictionary<string, Endpoint> referencedEndpoints, IDictionary<string, Decorator> referencedDecorators)
+internal class PropertyResolver(
+    ModelFile modelFile,
+    IDictionary<string, Domain> domains,
+    IDictionary<string, Class> referencedClasses,
+    IDictionary<string, Endpoint> referencedEndpoints,
+    IDictionary<string, Decorator> referencedDecorators
+)
 {
     /// <summary>
     /// Réinitialise les alias déjà résolus sur les classes/endpoints/décorateurs/mappers (pour le watch).
@@ -35,13 +41,16 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     alp.PropertyMapping.FromMapper.Params.RemoveAt(index);
                     if (!alp.PropertyMapping.FromMapper.Params.Contains(alp.OriginalAliasProperty.PropertyMapping))
                     {
-                        alp.PropertyMapping.FromMapper.Params.Insert(index, new PropertyMapping
-                        {
-                            FromMapper = alp.PropertyMapping.FromMapper,
-                            Property = alp.OriginalAliasProperty,
-                            TargetProperty = alp.PropertyMapping.TargetProperty,
-                            TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference
-                        });
+                        alp.PropertyMapping.FromMapper.Params.Insert(
+                            index,
+                            new PropertyMapping
+                            {
+                                FromMapper = alp.PropertyMapping.FromMapper,
+                                Property = alp.OriginalAliasProperty,
+                                TargetProperty = alp.PropertyMapping.TargetProperty,
+                                TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference,
+                            }
+                        );
                     }
                 }
             }
@@ -100,7 +109,12 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             {
                 if (!referencedClasses!.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
                 {
-                    yield return new ModelError(ErrorType.TMD0002, alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference.ClassReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0002,
+                        alp,
+                        "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                        alp.Reference.ClassReference
+                    );
                     continue;
                 }
 
@@ -108,9 +122,19 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             }
             else if (alp.Reference?.EndpointReference != null)
             {
-                if (!referencedEndpoints!.TryGetValue(alp.Reference.EndpointReference.ReferenceName, out var aliasedEndpoint))
+                if (
+                    !referencedEndpoints!.TryGetValue(
+                        alp.Reference.EndpointReference.ReferenceName,
+                        out var aliasedEndpoint
+                    )
+                )
                 {
-                    yield return new ModelError(ErrorType.TMD0006, alp, "L'endpoint '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference.EndpointReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0006,
+                        alp,
+                        "L'endpoint '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                        alp.Reference.EndpointReference
+                    );
                     continue;
                 }
 
@@ -118,9 +142,19 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             }
             else if (alp.Reference?.DecoratorReference != null)
             {
-                if (!referencedDecorators!.TryGetValue(alp.Reference.DecoratorReference.ReferenceName, out var aliasedDecorator))
+                if (
+                    !referencedDecorators!.TryGetValue(
+                        alp.Reference.DecoratorReference.ReferenceName,
+                        out var aliasedDecorator
+                    )
+                )
                 {
-                    yield return new ModelError(ErrorType.TMD0005, alp, "Le décorateur '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference.DecoratorReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0005,
+                        alp,
+                        "Le décorateur '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                        alp.Reference.DecoratorReference
+                    );
                     continue;
                 }
 
@@ -135,23 +169,54 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             var shouldBreak = false;
             foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
             {
-                var aliasedProperty = propertyContainer.Properties.FirstOrDefault(p => p.Name == propReference.ReferenceName);
+                var aliasedProperty = propertyContainer.Properties.FirstOrDefault(p =>
+                    p.Name == propReference.ReferenceName
+                );
                 if (aliasedProperty == null)
                 {
-                    yield return new ModelError(ErrorType.TMD0004, alp, $"La propriété '{{0}}' est introuvable sur la classe '{propertyContainer}'.", propReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0004,
+                        alp,
+                        $"La propriété '{{0}}' est introuvable sur la classe '{propertyContainer}'.",
+                        propReference
+                    );
                     shouldBreak = true;
                 }
             }
 
-            foreach (var include in alp.Reference.IncludeReferences.Where((e, i) => alp.Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+            foreach (
+                var include in alp.Reference.IncludeReferences.Where(
+                    (e, i) =>
+                        alp
+                            .Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i)
+                            .Any()
+                )
+            )
             {
-                yield return new ModelError(ErrorType.TMD9001, modelFile, $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.", include);
+                yield return new ModelError(
+                    ErrorType.TMD9001,
+                    modelFile,
+                    $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.",
+                    include
+                );
                 shouldBreak = true;
             }
 
-            foreach (var exclude in alp.Reference.ExcludeReferences.Where((e, i) => alp.Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+            foreach (
+                var exclude in alp.Reference.ExcludeReferences.Where(
+                    (e, i) =>
+                        alp
+                            .Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i)
+                            .Any()
+                )
+            )
             {
-                yield return new ModelError(ErrorType.TMD9001, modelFile, $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.", exclude);
+                yield return new ModelError(
+                    ErrorType.TMD9001,
+                    modelFile,
+                    $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.",
+                    exclude
+                );
                 shouldBreak = true;
             }
 
@@ -160,19 +225,31 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                 continue;
             }
 
-            var propertiesToAlias =
-                (alp.Reference.IncludeReferences.Count > 0
-                    ? alp.Reference.IncludeReferences.Select(p => propertyContainer.Properties.First(prop => prop.Name == p.ReferenceName))
-                    : propertyContainer.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
-                .Reverse();
+            var propertiesToAlias = (
+                alp.Reference.IncludeReferences.Count > 0
+                    ? alp.Reference.IncludeReferences.Select(p =>
+                        propertyContainer.Properties.First(prop => prop.Name == p.ReferenceName)
+                    )
+                    : propertyContainer.Properties.Where(prop =>
+                        !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)
+                    )
+            ).Reverse();
 
             foreach (var property in propertiesToAlias)
             {
-                var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
+                var prop = alp.Clone(
+                    property,
+                    alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name)
+                );
 
                 if (prop.As != null && prop.Domain == null)
                 {
-                    yield return new ModelError(ErrorType.TMD9004, modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference?.ContainerReference);
+                    yield return new ModelError(
+                        ErrorType.TMD9004,
+                        modelFile,
+                        $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'",
+                        prop.PropertyReference ?? prop.Reference?.ContainerReference
+                    );
                 }
 
                 if (alp.Class != null)
@@ -205,7 +282,9 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                 }
                 else if (alp.PropertyMapping != null)
                 {
-                    var index = alp.PropertyMapping.FromMapper.Params.FindIndex(param => param.TryPickT1(out var pm, out var _) && pm.Property == alp);
+                    var index = alp.PropertyMapping.FromMapper.Params.FindIndex(param =>
+                        param.TryPickT1(out var pm, out var _) && pm.Property == alp
+                    );
                     if (index >= 0)
                     {
                         var mapping = new PropertyMapping
@@ -231,7 +310,9 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             }
             else if (alp.PropertyMapping != null)
             {
-                alp.PropertyMapping.FromMapper.Params.RemoveAll(param => param.TryPickT1(out var pm, out var _) && pm.Property == alp);
+                alp.PropertyMapping.FromMapper.Params.RemoveAll(param =>
+                    param.TryPickT1(out var pm, out var _) && pm.Property == alp
+                );
             }
             else
             {
@@ -246,20 +327,36 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveAssociationProperties()
     {
-        foreach (var ap in modelFile.Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
+        foreach (
+            var ap in modelFile
+                .Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>())
+                .Where(ap => ap.Association != null)
+        )
         {
             if (ap.Type.IsToMany() && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
-                yield return new ModelError(ErrorType.TMD9003, ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.", ap.Reference);
+                yield return new ModelError(
+                    ErrorType.TMD9003,
+                    ap,
+                    $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
+                    ap.Reference
+                );
                 continue;
             }
 
             if (ap.PropertyReference != null)
             {
-                var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
+                var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p =>
+                    p.Name == ap.PropertyReference!.ReferenceName
+                );
                 if (referencedProperty == null)
                 {
-                    yield return new ModelError(ErrorType.TMD0004, ap, $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.", ap.PropertyReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0004,
+                        ap,
+                        $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.",
+                        ap.PropertyReference
+                    );
                 }
 
                 ap.Property = referencedProperty;
@@ -280,9 +377,17 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
             switch (prop)
             {
                 case RegularProperty rp:
-                    if (rp.DomainReference == null || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain))
+                    if (
+                        rp.DomainReference == null
+                        || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain)
+                    )
                     {
-                        yield return new ModelError(ErrorType.TMD0003, rp, "Le domaine '{0}' est introuvable.", rp.DomainReference);
+                        yield return new ModelError(
+                            ErrorType.TMD0003,
+                            rp,
+                            "Le domaine '{0}' est introuvable.",
+                            rp.DomainReference
+                        );
                         break;
                     }
 
@@ -292,25 +397,47 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     }
 
                     rp.Domain = domain;
-                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
+                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(
+                        pr => pr.Key.ReferenceName,
+                        pr => pr.Value.Value
+                    );
                     break;
 
                 case AssociationProperty ap:
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
-                        yield return new ModelError(ErrorType.TMD0002, ap, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", ap.Reference);
+                        yield return new ModelError(
+                            ErrorType.TMD0002,
+                            ap,
+                            "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                            ap.Reference
+                        );
                         break;
                     }
 
                     if (ap.PropertyReference == null && !association.ExtendedProperties.Any(p => p.PrimaryKey))
                     {
-                        yield return new ModelError(ErrorType.TMD9002, ap, "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.", ap.Reference);
+                        yield return new ModelError(
+                            ErrorType.TMD9002,
+                            ap,
+                            "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.",
+                            ap.Reference
+                        );
                         break;
                     }
 
-                    if (ap.PropertyReference == null && association.Properties.Count(p => p.PrimaryKey) > 1 && ap.PropertyReference == null)
+                    if (
+                        ap.PropertyReference == null
+                        && association.Properties.Count(p => p.PrimaryKey) > 1
+                        && ap.PropertyReference == null
+                    )
                     {
-                        yield return new ModelError(ErrorType.TMD9002, ap, "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.", ap.Reference);
+                        yield return new ModelError(
+                            ErrorType.TMD9002,
+                            ap,
+                            "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.",
+                            ap.Reference
+                        );
                         break;
                     }
 
@@ -320,7 +447,12 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                 case CompositionProperty cp:
                     if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
                     {
-                        yield return new ModelError(ErrorType.TMD0002, cp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", cp.Reference);
+                        yield return new ModelError(
+                            ErrorType.TMD0002,
+                            cp,
+                            "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                            cp.Reference
+                        );
                         break;
                     }
 
@@ -330,7 +462,12 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     {
                         if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
                         {
-                            yield return new ModelError(ErrorType.TMD0003, cp, "Le domaine '{0}' est introuvable.", cp.DomainReference);
+                            yield return new ModelError(
+                                ErrorType.TMD0003,
+                                cp,
+                                "Le domaine '{0}' est introuvable.",
+                                cp.DomainReference
+                            );
                             break;
                         }
 
@@ -340,7 +477,10 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                         }
 
                         cp.Domain = cpDomain;
-                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
+                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(
+                            pr => pr.Key.ReferenceName,
+                            pr => pr.Value.Value
+                        );
                     }
 
                     break;
@@ -348,7 +488,12 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                 case AliasProperty alp when alp.DomainReference != null:
                     if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
                     {
-                        yield return new ModelError(ErrorType.TMD0003, alp, "Le domaine '{0}' est introuvable.", alp.DomainReference);
+                        yield return new ModelError(
+                            ErrorType.TMD0003,
+                            alp,
+                            "Le domaine '{0}' est introuvable.",
+                            alp.DomainReference
+                        );
                         break;
                     }
 
@@ -358,22 +503,47 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     }
 
                     alp.Domain = aliasDomain;
-                    alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
+                    alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
+                        pr => pr.Key.ReferenceName,
+                        pr => pr.Value.Value
+                    );
                     break;
             }
         }
     }
 
-    private static IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
+    private static IEnumerable<ModelError> CheckDomainParameters(
+        IProperty property,
+        DomainReference domainRef,
+        Domain domain
+    )
     {
-        foreach (var extraParameter in domainRef.ParameterReferences.Keys.Where(pr => !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)))
+        foreach (
+            var extraParameter in domainRef.ParameterReferences.Keys.Where(pr =>
+                !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
+            )
+        )
         {
-            yield return new ModelError(ErrorType.TMD0007, property, $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le domaine '{domain.Name}'.", extraParameter);
+            yield return new ModelError(
+                ErrorType.TMD0007,
+                property,
+                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le domaine '{domain.Name}'.",
+                extraParameter
+            );
         }
 
-        foreach (var missingParameter in domain.TemplateParameters.Where(tp => tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)))
+        foreach (
+            var missingParameter in domain.TemplateParameters.Where(tp =>
+                tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
+            )
+        )
         {
-            yield return new ModelError(ErrorType.TMD0008, property, $"Le paramètre '{missingParameter.Name}' du domaine '{domain.Name}' est obligatoire.", domainRef);
+            yield return new ModelError(
+                ErrorType.TMD0008,
+                property,
+                $"Le paramètre '{missingParameter.Name}' du domaine '{domain.Name}' est obligatoire.",
+                domainRef
+            );
         }
     }
 }

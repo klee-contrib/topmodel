@@ -6,7 +6,11 @@ namespace TopModel.Core;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddModelStore(this IServiceCollection services, FileChecker fileChecker, ModelConfig config)
+    public static IServiceCollection AddModelStore(
+        this IServiceCollection services,
+        FileChecker fileChecker,
+        ModelConfig config
+    )
     {
         services
             .AddMemoryCache()

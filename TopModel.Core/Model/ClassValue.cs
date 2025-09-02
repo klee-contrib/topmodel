@@ -11,14 +11,14 @@ public class ClassValue
 
     public Reference Reference { get; set; }
 
-    public Dictionary<IProperty, string> Value { get; } = new();
+#pragma warning disable MA0016
+    public Dictionary<IProperty, string> Value { get; } = [];
+#pragma warning restore MA0016
 
     public string ResourceKey => $"{Class.Namespace.ModuleCamel}.{Class.NameCamel}.values.{Name}";
 
     public string GetLabel(Class classe)
     {
-        return classe.DefaultProperty != null
-            ? Value[classe.DefaultProperty]
-            : Name;
+        return classe.DefaultProperty != null ? Value[classe.DefaultProperty] : Name;
     }
 }

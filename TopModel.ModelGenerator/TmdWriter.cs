@@ -16,7 +16,7 @@ public class TmdWriter : IDisposable
         _file = file;
         _writer = writer;
         _writer.StartCommentToken = "####";
-        _modelRoot = Path.GetRelativePath(modelRoot, string.Join("/", writer.FileName.Split('/').SkipLast(1)));
+        _modelRoot = Path.GetRelativePath(modelRoot, string.Join('/', writer.FileName.Split('/').SkipLast(1)));
         if (_modelRoot == ".")
         {
             _modelRoot = string.Empty;
@@ -45,10 +45,10 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"  - {tag}");
         }
 
-        if (_file.Uses.Where(u => u.Name != _file.Name).Any())
+        if (_file.Uses.Any(u => u.Name != _file.Name))
         {
             _writer.WriteLine($"uses:");
-            foreach (var u in _file.Uses.OrderBy(u => u.Name).Where(u => u.Name != _file.Name && u.Path != null))
+            foreach (var u in _file.Uses.Where(u => u.Name != _file.Name && u.Path != null).OrderBy(u => u.Name))
             {
                 _writer.WriteLine($"  - {u.Path!.Replace('\\', '/').Replace("./", string.Empty)}");
             }
@@ -91,7 +91,7 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"  preservePropertyCasing: {classe.PreservePropertyCasing.ToString().ToLower()}");
         }
 
-        if (!classe.Properties.Where(p => !(p is TmdCompositionProperty cp && cp.Composition == null)).Any())
+        if (!classe.Properties.Any(p => !(p is TmdCompositionProperty cp && cp.Composition == null)))
         {
             _writer.WriteLine($"  properties: []");
         }
@@ -128,7 +128,9 @@ public class TmdWriter : IDisposable
             var i = 0;
             foreach (var row in classe.Values)
             {
-                _writer.WriteLine(@$"    Value{i++}: {{{string.Join(", ", row.Where(v => v.Value != null).Select(v => $@"{v.Key}: ""{v.Value}"""))}}}");
+                _writer.WriteLine(
+                    @$"    Value{i++}: {{{string.Join(", ", row.Where(v => v.Value != null).Select(v => $@"{v.Key}: ""{v.Value}"""))}}}"
+                );
             }
         }
     }
@@ -165,7 +167,7 @@ public class TmdWriter : IDisposable
         if (endpoint.Returns != null)
         {
             _writer.WriteLine($"  returns:");
-            WriteProperty(endpoint.Returns, true);
+            WriteProperty(endpoint.Returns, noList: true);
         }
     }
 
@@ -189,7 +191,7 @@ public class TmdWriter : IDisposable
             if (ap.PrimaryKey)
             {
                 _writer.WriteLine($"    {listPrefix}primaryKey: true");
-                if (ap.Class.Properties.OfType<TmdRegularProperty>().Where(p => p.PrimaryKey).Count() == 1)
+                if (ap.Class.Properties.OfType<TmdRegularProperty>().Count(p => p.PrimaryKey) == 1)
                 {
                     _writer.WriteLine($"    {listPrefix}type: oneToOne");
                 }

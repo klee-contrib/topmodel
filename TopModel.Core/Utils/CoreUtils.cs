@@ -11,7 +11,7 @@ public static class CoreUtils
     }
 
     public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
-            where T : notnull
+        where T : notnull
     {
         var sorted = new List<T>();
         var visited = new Dictionary<T, bool>();
@@ -24,7 +24,12 @@ public static class CoreUtils
         return sorted;
     }
 
-    private static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
+    private static void Visit<T>(
+        T item,
+        Func<T, IEnumerable<T>> getDependencies,
+        List<T> sorted,
+        Dictionary<T, bool> visited
+    )
         where T : notnull
     {
         var alreadyVisited = visited.TryGetValue(item, out var inProcess);
@@ -36,7 +41,10 @@ public static class CoreUtils
                 throw new ModelException(
                     item,
                     $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
-                    (item as ModelFile)?.Uses.FirstOrDefault(u => u.ReferenceName == (visited.Last().Key as ModelFile)?.Name));
+                    (item as ModelFile)?.Uses.FirstOrDefault(u =>
+                        u.ReferenceName == (visited.Last().Key as ModelFile)?.Name
+                    )
+                );
             }
         }
         else

@@ -5,8 +5,11 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Oracle;
 
-public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, translationStore, writerProvider)
+public class OracleCrebasGenerator(
+    ILogger<OracleCrebasGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : AbstractCrebasGenerator(logger, translationStore, writerProvider)
 {
     public override string Name => "OracleCrebasGen";
 
@@ -25,7 +28,13 @@ public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, Transl
         {
             if (IsNumericBoolean(property))
             {
-                writer.WriteLine("\tconstraint " + CheckIdentifierLength($"CHK_{property.SqlName}") + " check (" + property.SqlName + " in (0,1)),");
+                writer.WriteLine(
+                    "\tconstraint "
+                        + CheckIdentifierLength($"CHK_{property.SqlName}")
+                        + " check ("
+                        + property.SqlName
+                        + " in (0,1)),"
+                );
             }
         }
     }
@@ -36,7 +45,7 @@ public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, Transl
     /// <param name="writer">Flux d'écriture création bases.</param>
     protected override void WriteIdentityColumn(IFileWriter writer)
     {
-        throw new NotImplementedException("Non implémenté");
+        throw new NotSupportedException("Non implémenté");
     }
 
     protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)

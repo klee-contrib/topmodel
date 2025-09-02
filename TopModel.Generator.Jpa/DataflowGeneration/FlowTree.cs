@@ -1,24 +1,28 @@
 ﻿using TopModel.Core.Model;
 
-namespace TopModel.Generator.Jpa;
+namespace TopModel.Generator.Jpa.DataflowGeneration;
 
 public class FlowTree
 {
-    public FlowTree(List<DataFlow> flows)
+    public FlowTree(IList<DataFlow> flows)
     {
-        var hasIndependantFlow = Graps(flows).Count() > 1;
-        RootFlows = hasIndependantFlow ? new() : flows.Where(f => !flows.Intersect(f.DependsOn).Any()).ToList();
+        var hasIndependantFlow = Graps(flows).Count > 1;
+        RootFlows = hasIndependantFlow ? [] : flows.Where(f => !flows.Intersect(f.DependsOn).Any()).ToList();
         while (flows.Any(f => !Flows.Contains(f)))
         {
-            var f = flows.Where(f => !Flows.Contains(f)).First();
+            var f = flows.First(f => !Flows.Contains(f));
             var subFlowDataFlows = new List<DataFlow>();
             var stack = new Queue<DataFlow>();
             stack.Enqueue(f);
-            var flowsToAdd = new List<DataFlow>();
             while (stack.TryDequeue(out var s))
             {
                 subFlowDataFlows.Add(s);
-                foreach (var depFlow in flows.Where(f => !Flows.Concat(subFlowDataFlows).Contains(f)).Where(f => s.DependsOn.Contains(f) || f.DependsOn.Contains(s)))
+                foreach (
+                    var depFlow in flows.Where(f =>
+                        !Flows.Concat(subFlowDataFlows).Contains(f)
+                        && (s.DependsOn.Contains(f) || f.DependsOn.Contains(s))
+                    )
+                )
                 {
                     stack.Enqueue(depFlow);
                 }
@@ -29,13 +33,13 @@ public class FlowTree
     }
 
     // Flows dont toutes les dépendances sont déjà passées
-    public List<DataFlow> RootFlows { get; set; } = new();
+    public IList<DataFlow> RootFlows { get; set; } = [];
 
     // Arbres de dépendances
-    public List<FlowTree> Subflows { get; set; } = new();
+    public IList<FlowTree> Subflows { get; set; } = [];
 
     // Tous les flows de l'arbre
-    public List<DataFlow> Flows => RootFlows.Concat(Subflows.SelectMany(s => s.Flows)).Distinct().ToList();
+    public IList<DataFlow> Flows => RootFlows.Concat(Subflows.SelectMany(s => s.Flows)).Distinct().ToList();
 
     public string ToFlow(int indentLevel)
     {
@@ -48,19 +52,20 @@ public class FlowTree
 
         if (Flows.Count == 1)
         {
-            return $"{Flows.First().Name.ToCamelCase()}Flow";
+            return $"{Flows[0].Name.ToCamelCase()}Flow";
         }
 
         var result = $" //\n{indent}new FlowBuilder<Flow>(\"{string.Join('-', Flows.Select(r => r.Name))}\")";
         var next = "start";
         if (RootFlows.Count == 1)
         {
-            result += $" //\n{indent}{baseIndent}.start({RootFlows.First().Name.ToCamelCase()}Flow)";
+            result += $" //\n{indent}{baseIndent}.start({RootFlows[0].Name.ToCamelCase()}Flow)";
             next = "next";
         }
         else if (RootFlows.Count > 1)
         {
-            result += $" //\n{indent}{baseIndent}.start(new FlowBuilder<Flow>(\"{string.Join('-', RootFlows.Select(r => r.Name))}\")";
+            result +=
+                $" //\n{indent}{baseIndent}.start(new FlowBuilder<Flow>(\"{string.Join('-', RootFlows.Select(r => r.Name))}\")";
             next = "next";
             result += $" //\n{indent}{baseIndent}.split(taskExecutor)";
             result += $" //\n{indent}{baseIndent}.add(";
@@ -80,14 +85,15 @@ public class FlowTree
 
         if (Subflows.Count == 1)
         {
-            result += $"//\n{indent}{baseIndent}.{next}({Subflows.First().ToFlow(indentLevel + 2)})";
+            result += $"//\n{indent}{baseIndent}.{next}({Subflows[0].ToFlow(indentLevel + 2)})";
         }
         else
         {
             if (RootFlows.Any())
             {
                 result += $" //\n{indent}.{next}(";
-                result += $" //\n{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
+                result +=
+                    $" //\n{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
             }
 
             result += $" //\n{indent}{baseIndent}.split(taskExecutor)";
@@ -114,20 +120,24 @@ public class FlowTree
         return result;
     }
 
-    protected List<List<DataFlow>> Graps(List<DataFlow> flows)
+    protected virtual IList<List<DataFlow>> Graps(IList<DataFlow> flows)
     {
         var graps = new List<List<DataFlow>>();
         while (flows.Any(f => !graps.SelectMany(t => t).Contains(f)))
         {
-            var f = flows.Where(f => !graps.SelectMany(t => t).Contains(f)).First();
+            var f = flows.First(f => !graps.SelectMany(t => t).Contains(f));
             var subFlowDataFlows = new List<DataFlow>();
             var stack = new Queue<DataFlow>();
             stack.Enqueue(f);
-            var flowsToAdd = new List<DataFlow>();
             while (stack.TryDequeue(out var s))
             {
                 subFlowDataFlows.Add(s);
-                foreach (var depFlow in flows.Where(f => !graps.SelectMany(t => t).Concat(subFlowDataFlows).Contains(f)).Where(f => s.DependsOn.Contains(f) || f.DependsOn.Contains(s)))
+                foreach (
+                    var depFlow in flows.Where(f =>
+                        !graps.SelectMany(t => t).Concat(subFlowDataFlows).Contains(f)
+                        && (s.DependsOn.Contains(f) || f.DependsOn.Contains(s))
+                    )
+                )
                 {
                     stack.Enqueue(depFlow);
                 }

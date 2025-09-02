@@ -10,21 +10,32 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
 {
     public override string Name => "CSharpDbContextGen";
 
-    protected virtual IEnumerable<(IProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
+    protected virtual IEnumerable<(
+        IProperty Property,
+        AssociationProperty AssociationProperty
+    )> GetAssociationProperties(IEnumerable<Class> classes, string tag)
     {
         return classes
             .Distinct()
             .OrderBy(c => c.NamePascal)
             .SelectMany(c => c.Properties)
-            .Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } })
-            .Select(p => p switch
-            {
-                AssociationProperty ap => (p, ap),
-                AliasProperty { Property: AssociationProperty ap } => (p, ap),
-                _ => (null!, null!)
-            })
-            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
-            .Where(p => Classes.Contains(p.ap.Association) && Config.IsPersistent(p.ap.Association, GetBestClassTag(p.ap.Association, tag)));
+            .Where(p =>
+                p is AssociationProperty { Association.IsPersistent: true }
+                || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }
+            )
+            .Select(p =>
+                p switch
+                {
+                    AssociationProperty ap => (p, ap),
+                    AliasProperty { Property: AssociationProperty ap } => (p, ap),
+                    _ => (null!, null!),
+                }
+            )
+            .Where(p =>
+                (p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
+                && Classes.Contains(p.ap.Association)
+                && Config.IsPersistent(p.ap.Association, GetBestClassTag(p.ap.Association, tag))
+            );
     }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
@@ -40,7 +51,14 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         }
     }
 
-    protected virtual void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    protected virtual void HandleCommentsFile(
+        string fileName,
+        string tag,
+        string dbContextName,
+        string contextNs,
+        IList<string> usings,
+        IList<Class> classes
+    )
     {
         using var cw = this.OpenCSharpWriter(fileName);
 
@@ -57,11 +75,17 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         foreach (var classe in classes)
         {
             cw.WriteLine(2, $"var {classe.NameCamel} = modelBuilder.Entity<{classe.NamePascal}>();");
-            cw.WriteLine(2, $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
+            cw.WriteLine(
+                2,
+                $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
+            );
 
             foreach (var property in classe.Properties)
             {
-                cw.WriteLine(2, $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
+                cw.WriteLine(
+                    2,
+                    $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");"
+                );
             }
 
             if (classes.IndexOf(classe) < classes.Count - 1)
@@ -80,10 +104,12 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
         var contextNs = Config.GetDbContextNamespace(tag);
 
-        foreach (var ns in classes
-            .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
-            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
-            .Distinct())
+        foreach (
+            var ns in classes
+                .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
+                .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
+                .Distinct()
+        )
         {
             usings.Add(ns);
         }
@@ -100,13 +126,23 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         }
     }
 
-    protected virtual void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, List<string> usings, List<Class> classes)
+    protected virtual void HandleMainFile(
+        string fileName,
+        string tag,
+        string dbContextName,
+        string contextNs,
+        IList<string> usings,
+        IList<Class> classes
+    )
     {
         using var w = this.OpenCSharpWriter(fileName);
 
         foreach (var value in classes.SelectMany(c => c.Values.SelectMany(v => v.Value)))
         {
-            usings.AddRange(Config.GetValueImports(value.Key, value.Value));
+            foreach (var import in Config.GetValueImports(value.Key, value.Value))
+            {
+                usings.Add(import);
+            }
         }
 
         w.AddUsings(usings);
@@ -149,13 +185,19 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             if (Config.CanClassUseEnums(classe, Classes, targetProp))
             {
                 hasPropConfig = true;
-                w.WriteLine(2, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
+                );
             }
 
             if (fp.Domain?.Length != null && fp.Domain?.Scale != null)
             {
                 hasPropConfig = true;
-                w.WriteLine(2, $"modelBuilder.Entity<{fp.Class}>().Property(x => x.{fp.NamePascal}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});");
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.Entity<{fp.Class}>().Property(x => x.{fp.NamePascal}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});"
+                );
             }
         }
 
@@ -165,10 +207,13 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         }
 
         var hasPk = false;
-        foreach (var classe in classes.Distinct().OrderBy(c => c.NamePascal).Where(c => c.PrimaryKey.Count() > 1))
+        foreach (var classe in classes.Distinct().Where(c => c.PrimaryKey.Count() > 1).OrderBy(c => c.NamePascal))
         {
             hasPk = true;
-            w.WriteLine(2, $"modelBuilder.Entity<{classe}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.NamePascal}"))} }});");
+            w.WriteLine(
+                2,
+                $"modelBuilder.Entity<{classe}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.NamePascal}"))} }});"
+            );
         }
 
         if (hasPk)
@@ -181,7 +226,10 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         {
             hasJson = true;
             var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;
-            w.WriteLine(2, $@"modelBuilder.Entity<{cp.Class}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{sqlName}""));");
+            w.WriteLine(
+                2,
+                $@"modelBuilder.Entity<{cp.Class}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{sqlName}""));"
+            );
         }
 
         if (hasJson)
@@ -195,7 +243,10 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             foreach (var (prop, ap) in GetAssociationProperties(classes, tag))
             {
                 hasFk = true;
-                w.WriteLine(2, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.NamePascal}).OnDelete(DeleteBehavior.Restrict);");
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.NamePascal}).OnDelete(DeleteBehavior.Restrict);"
+                );
             }
 
             if (hasFk)
@@ -207,8 +258,11 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             foreach (var uk in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.UniqueKeys))
             {
                 hasUk = true;
-                var expr = uk.Count == 1 ? $"p.{uk.Single().NamePascal}" : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.NamePascal}"))} }}";
-                w.WriteLine(2, $"modelBuilder.Entity<{uk.First().Class}>().HasIndex(p => {expr}).IsUnique();");
+                var expr =
+                    uk.Count == 1
+                        ? $"p.{uk.Single().NamePascal}"
+                        : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.NamePascal}"))} }}";
+                w.WriteLine(2, $"modelBuilder.Entity<{uk[0].Class}>().HasIndex(p => {expr}).IsUnique();");
             }
 
             if (hasUk)
@@ -236,7 +290,10 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                             var targetNs = Config.GetNamespace(targetClass, tag);
                             var contextNsSplit = contextNs.Split('.');
                             var targetNsSplit = targetNs.Split('.');
-                            targetNs = string.Join(".", targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i)));
+                            targetNs = string.Join(
+                                '.',
+                                targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i))
+                            );
                             value = $"{targetNs}.{value}";
                         }
 

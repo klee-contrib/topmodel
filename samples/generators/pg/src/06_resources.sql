@@ -2,11 +2,11 @@
 ---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ----
 
--- =========================================================================================== 
+-- ===========================================================================================
 --   Application Name	:	pg 
 --   Script Name		:	06_resources.sql
---   Description		:	Script de création des resources (libellés traduits). 
--- =========================================================================================== 
+--   Description		:	Script de création des resources (libellés traduits).
+-- ===========================================================================================
 
 /**		Initialisation des traductions des propriétés de la table DROIT		**/
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.profil.droit.code', 'Droit');

@@ -6,8 +6,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JavaEnumConstructorGenerator(JpaConfig config)
-    : JavaConstructorGenerator(config)
+public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGenerator(config)
 {
     public void WriteEnumConstructor(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
     {
@@ -15,12 +14,12 @@ public class JavaEnumConstructorGenerator(JpaConfig config)
         var constructor = new JavaConstructor(classe.NamePascal)
         {
             Visibility = "public",
-            Comment = "Enum constructor"
+            Comment = "Enum constructor",
         };
 
         var parameter = new JavaMethodParameter(Config.GetType(classe.EnumKey!), classe.EnumKey!.NameCamel)
         {
-            Comment = "Code dont on veut obtenir l'instance."
+            Comment = "Code dont on veut obtenir l'instance.",
         };
         constructor.AddParameter(parameter);
 
@@ -45,17 +44,30 @@ public class JavaEnumConstructorGenerator(JpaConfig config)
                     {
                         isString = false;
                     }
-                    else if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Association, prop: ap.Property) && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
+                    else if (
+                        prop is AssociationProperty ap
+                        && Config.CanClassUseEnums(ap.Association, prop: ap.Property)
+                        && ap.Association.Values.Any(r =>
+                            r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value
+                        )
+                    )
                     {
                         value = ap.Association.NamePascal + "." + value;
                         isString = false;
                         constructor.Imports.Add(ap.Association.GetImport(Config, tag));
                     }
-                    else if (prop is AliasProperty alp && Config.CanClassUseEnums(alp.Property.Class, prop: alp.Property))
+                    else if (
+                        prop is AliasProperty alp
+                        && Config.CanClassUseEnums(alp.Property.Class, prop: alp.Property)
+                    )
                     {
                         value = Config.GetType(alp.Property) + "." + value;
                     }
-                    else if (Config.TranslateReferences == true && classe.DefaultProperty == prop && !Config.CanClassUseEnums(classe, prop: prop))
+                    else if (
+                        Config.TranslateReferences == true
+                        && classe.DefaultProperty == prop
+                        && !Config.CanClassUseEnums(classe, prop: prop)
+                    )
                     {
                         value = refValue.ResourceKey;
                     }

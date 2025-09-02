@@ -2,11 +2,12 @@
 ---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ----
 
--- =========================================================================================== 
+-- ===========================================================================================
 --   Application Name	:	pg 
 --   Script Name		:	04_references.sql
---   Description		:	Script d'insertion des données de références
+--   Description		:	Script d'insertion des données de références.
 -- ===========================================================================================
+
 /**		Initialisation de la table TYPE_DROIT		**/
 INSERT INTO TYPE_DROIT(TDR_CODE, TDR_LIBELLE) VALUES('READ', 'securite.profil.typeDroit.values.Read');
 INSERT INTO TYPE_DROIT(TDR_CODE, TDR_LIBELLE) VALUES('WRITE', 'securite.profil.typeDroit.values.Write');
@@ -22,4 +23,3 @@ INSERT INTO DROIT(DRO_CODE, DRO_LIBELLE, TDR_CODE) VALUES('DELETE', 'securite.pr
 INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('ADMIN', 'securite.utilisateur.typeUtilisateur.values.Admin');
 INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('GEST', 'securite.utilisateur.typeUtilisateur.values.Gestionnaire');
 INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('CLIENT', 'securite.utilisateur.typeUtilisateur.values.Client');
-

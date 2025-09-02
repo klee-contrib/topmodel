@@ -47,11 +47,21 @@ public class DataFlowLoader : ILoader<DataFlow>
                         FlowHook? hook = null;
                         switch (value)
                         {
-                            case "beforeFlow": hook = FlowHook.BeforeFlow; break;
-                            case "afterSource": hook = FlowHook.AfterSource; break;
-                            case "map": hook = FlowHook.Map; break;
-                            case "beforeTarget": hook = FlowHook.BeforeTarget; break;
-                            case "afterFlow": hook = FlowHook.AfterFlow; break;
+                            case "beforeFlow":
+                                hook = FlowHook.BeforeFlow;
+                                break;
+                            case "afterSource":
+                                hook = FlowHook.AfterSource;
+                                break;
+                            case "map":
+                                hook = FlowHook.Map;
+                                break;
+                            case "beforeTarget":
+                                hook = FlowHook.BeforeTarget;
+                                break;
+                            case "afterFlow":
+                                hook = FlowHook.AfterFlow;
+                                break;
                         }
 
                         if (hook != null)
@@ -89,7 +99,10 @@ public class DataFlowLoader : ILoader<DataFlow>
                                     source.InnerJoin = value!.Value == "true";
                                     break;
                                 default:
-                                    throw new ModelException(dataFlow, $"Propriété ${prop} inconnue pour une source de flux de données");
+                                    throw new ModelException(
+                                        dataFlow,
+                                        $"Propriété ${prop} inconnue pour une source de flux de données"
+                                    );
                             }
                         });
                         dataFlow.Sources.Add(source);

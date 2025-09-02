@@ -7,15 +7,8 @@ using TopModel.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class ModelWatcher : IModelWatcher
+public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
 {
-    private readonly ILanguageServerFacade _facade;
-
-    public ModelWatcher(ILanguageServerFacade facade)
-    {
-        _facade = facade;
-    }
-
     public string Name => "Errors";
 
     public int Number { get; init; }
@@ -34,33 +27,38 @@ public class ModelWatcher : IModelWatcher
             foreach (var error in fileErrors.Value)
             {
                 var loc = error.Location;
-                diagnostics.Add(new()
-                {
-                    Code = error.ErrorType.ToString(),
-                    Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
-                    Message = error.Message,
-                    Range = loc.ToRange()! ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
-                    Source = "TopModel"
-                });
+                diagnostics.Add(
+                    new()
+                    {
+                        Code = error.ErrorType.ToString(),
+                        Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
+                        Message = error.Message,
+                        Range =
+                            loc.ToRange()! ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                        Source = "TopModel",
+                    }
+                );
             }
 
-            _facade.TextDocument.PublishDiagnostics(new()
-            {
-                Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
-                Uri = new Uri(_facade.GetFilePath(fileErrors.Key))
-            });
+            facade.TextDocument.PublishDiagnostics(
+                new()
+                {
+                    Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
+                    Uri = new Uri(facade.GetFilePath(fileErrors.Key)),
+                }
+            );
         }
     }
 
     /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
-        _facade.SendNotification("filesChanged");
+        facade.SendNotification("filesChanged");
     }
 
     /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
     public void OnFilesDeleted(IEnumerable<string> fileNames)
     {
-        _facade.SendNotification("filesChanged");
+        facade.SendNotification("filesChanged");
     }
 }

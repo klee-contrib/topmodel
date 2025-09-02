@@ -57,7 +57,9 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                             {
                                 var decorator = new DecoratorReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 endpoint.DecoratorReferences.Add(decorator);
@@ -78,7 +80,9 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                             {
                                 var annotation = new AnnotationReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 endpoint.AnnotationReferences.Add(annotation);
@@ -91,7 +95,9 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                     });
                     break;
                 case "customProperties":
-                    parser.ConsumeMapping(prop => endpoint.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                    parser.ConsumeMapping(prop =>
+                        endpoint.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
+                    );
                     break;
                 default:
                     throw new ModelException(endpoint, $"Propriété ${prop} inconnue pour un endpoint");

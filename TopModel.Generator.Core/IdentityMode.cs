@@ -20,5 +20,5 @@ public enum IdentityMode
     /// <summary>
     /// Identité sous forme d'UUID.
     /// </summary>
-    UUID
+    UUID,
 }

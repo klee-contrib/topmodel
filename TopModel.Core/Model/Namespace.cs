@@ -14,7 +14,8 @@ public struct Namespace
 
     public string ModulePath => Module.Replace('.', Path.DirectorySeparatorChar);
 
-    public string ModulePathKebab => string.Join(Path.DirectorySeparatorChar, Module.Split('.').Select(m => m.ToKebabCase()));
+    public string ModulePathKebab =>
+        string.Join(Path.DirectorySeparatorChar, Module.Split('.').Select(m => m.ToKebabCase()));
 
-    public string RootModule => Module.Split('.').First();
+    public string RootModule => Module.Split('.')[0];
 }

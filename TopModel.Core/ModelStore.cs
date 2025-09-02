@@ -12,33 +12,26 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class ModelStore : IDisposable
+public class ModelStore(
+    IMemoryCache fsCache,
+    ModelFileLoader modelFileLoader,
+    ILogger<ModelStore> logger,
+    ModelConfig config,
+    IEnumerable<IModelWatcher> modelWatchers,
+    TranslationStore translationStore
+) : IDisposable
 {
-    private readonly ModelConfig _config;
-    private readonly IMemoryCache _fsCache;
     private readonly AsyncLock _lockInit = new();
     private readonly AsyncLock _lockUpdate = new();
-    private readonly ILogger<ModelStore> _logger;
-    private readonly ModelFileLoader _modelFileLoader;
     private readonly Dictionary<string, ModelFile> _modelFiles = [];
-    private readonly IEnumerable<IModelWatcher> _modelWatchers;
+    private readonly IEnumerable<IModelWatcher> _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
     private readonly ConcurrentQueue<(string FullPath, string? FileName, ModelFile? ModelFile)> _pendingUpdates = new();
-    private readonly TranslationStore _translationStore;
-
     private LoggingScope? _storeConfig;
     private TopModelLock? _topModelLock;
 
-    public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
-    {
-        _config = config;
-        _fsCache = fsCache;
-        _logger = logger;
-        _modelFileLoader = modelFileLoader;
-        _translationStore = translationStore;
-        _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
-    }
-
+#pragma warning disable MA0046
     public event Action<bool>? OnResolve;
+#pragma warning restore MA0046
 
     public FileSystemWatcher? FileSystemWatcher { get; private set; }
 
@@ -54,9 +47,8 @@ public class ModelStore : IDisposable
 
     public IEnumerable<DataFlow> DataFlows => Files.SelectMany(mf => mf.DataFlows).Distinct();
 
-    public IDictionary<string, Domain> Domains => Files.SelectMany(mf => mf.Domains)
-        .DistinctBy(d => (string)d.Name)
-        .ToDictionary(d => (string)d.Name, d => d);
+    public IDictionary<string, Domain> Domains =>
+        Files.SelectMany(mf => mf.Domains).DistinctBy(d => (string)d.Name).ToDictionary(d => (string)d.Name, d => d);
 
     public IList<Converter> Converters => Files.SelectMany(mf => mf.Converters).ToList();
 
@@ -64,11 +56,14 @@ public class ModelStore : IDisposable
 
     public IEnumerable<IProperty> Properties => Files.SelectMany(mf => mf.Properties);
 
-    public IEnumerable<IAnnotationContainer> AnnotationContainers => Files.SelectMany(mf => mf.AnnotationContainers).Distinct();
+    public IEnumerable<IAnnotationContainer> AnnotationContainers =>
+        Files.SelectMany(mf => mf.AnnotationContainers).Distinct();
 
-    public IEnumerable<IPropertyContainer> PropertyContainers => Files.SelectMany(mf => mf.PropertyContainers).Distinct();
+    public IEnumerable<IPropertyContainer> PropertyContainers =>
+        Files.SelectMany(mf => mf.PropertyContainers).Distinct();
 
-    public IEnumerable<IVariableContainer> VariableContainers => Files.SelectMany(mf => mf.VariableContainers).Distinct();
+    public IEnumerable<IVariableContainer> VariableContainers =>
+        Files.SelectMany(mf => mf.VariableContainers).Distinct();
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
@@ -78,14 +73,12 @@ public class ModelStore : IDisposable
 
     public IEnumerable<Annotation> GetAvailableAnnotations(ModelFile file)
     {
-        return GetDependencies(file).SelectMany(m => m.Annotations)
-            .Concat(file.Annotations);
+        return GetDependencies(file).SelectMany(m => m.Annotations).Concat(file.Annotations);
     }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
-        return GetDependencies(file).SelectMany(m => m.Classes)
-            .Concat(file.Classes);
+        return GetDependencies(file).SelectMany(m => m.Classes).Concat(file.Classes);
     }
 
     public IEnumerable<DataFlow> GetAvailableDataFlows(ModelFile file)
@@ -103,7 +96,7 @@ public class ModelStore : IDisposable
         return GetDependencies(file).SelectMany(m => m.Endpoints).Concat(file.Endpoints);
     }
 
-    public Dictionary<string, Annotation> GetReferencedAnnotations(ModelFile modelFile)
+    public IDictionary<string, Annotation> GetReferencedAnnotations(ModelFile modelFile)
     {
         return GetDependencies(modelFile)
             .SelectMany(m => m.Annotations)
@@ -113,7 +106,7 @@ public class ModelStore : IDisposable
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
+    public IDictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
     {
         return GetDependencies(modelFile)
             .SelectMany(m => m.Classes)
@@ -123,7 +116,7 @@ public class ModelStore : IDisposable
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public Dictionary<string, Decorator> GetReferencedDecorators(ModelFile modelFile)
+    public IDictionary<string, Decorator> GetReferencedDecorators(ModelFile modelFile)
     {
         return GetDependencies(modelFile)
             .SelectMany(m => m.Decorators)
@@ -133,7 +126,7 @@ public class ModelStore : IDisposable
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public Dictionary<string, Endpoint> GetReferencedEndpoints(ModelFile modelFile)
+    public IDictionary<string, Endpoint> GetReferencedEndpoints(ModelFile modelFile)
     {
         return GetDependencies(modelFile)
             .SelectMany(m => m.Endpoints)
@@ -143,26 +136,36 @@ public class ModelStore : IDisposable
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public async Task LoadFromConfig(bool watch = false, TopModelLock? topModelLock = null, LoggingScope? storeConfig = null)
+    public async Task LoadFromConfig(
+        bool watch = false,
+        TopModelLock? topModelLock = null,
+        LoggingScope? storeConfig = null,
+        CancellationToken ct = default
+    )
     {
         _storeConfig = storeConfig;
         _topModelLock = topModelLock;
 
-        using var scope = _logger.BeginScope(_storeConfig!);
+        using var scope = logger.BeginScope(_storeConfig!);
 
-        var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
+        var watchers = _modelWatchers
+            .Select(mw => mw.FullName.Split("@"))
+            .GroupBy(split => split[0])
+            .Select(grp => $"{grp.Key}@{{{string.Join(',', grp.Select(split => split[1]))}}}");
         if (watchers.Any())
         {
-            _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.OrderBy(x => x))}");
+            logger.LogInformation(
+                $"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.Order())}"
+            );
         }
         else
         {
-            _logger.LogWarning($"Aucun watcher enregistré pour cette configuration");
+            logger.LogWarning($"Aucun watcher enregistré pour cette configuration");
         }
 
         if (watch)
         {
-            FileSystemWatcher = new FileSystemWatcher(_config.ModelRoot, "*.tmd");
+            FileSystemWatcher = new FileSystemWatcher(config.ModelRoot, "*.tmd");
             FileSystemWatcher.Changed += OnFileChanged;
             FileSystemWatcher.Created += OnFileChanged;
             FileSystemWatcher.Deleted += OnFileChanged;
@@ -173,34 +176,40 @@ public class ModelStore : IDisposable
 
         _modelFiles.Clear();
 
-        _logger.LogInformation("Chargement du modèle...");
+        logger.LogInformation("Chargement du modèle...");
 
-        using (await _lockInit.LockAsync())
+        using (await _lockInit.LockAsync(ct))
         {
-            var files = await Directory.EnumerateFiles(_config.ModelRoot, "*.tmd", SearchOption.AllDirectories).ToAsyncEnumerable()
+            var files = await Directory
+                .EnumerateFiles(config.ModelRoot, "*.tmd", SearchOption.AllDirectories)
+                .ToAsyncEnumerable()
                 .SelectAwait(async fullPath => await LoadFile(fullPath, WatcherChangeTypes.Created))
-                .ToListAsync();
+                .ToListAsync(cancellationToken: ct);
 
-            await LoadTranslations();
-            await ApplyUpdates(files);
+            await LoadTranslations(ct);
+            await ApplyUpdates(files, ct);
         }
     }
 
-    public async Task OnModelFileChange(string fullPath, string content)
+    public async Task OnModelFileChange(string fullPath, string content, CancellationToken ct = default)
     {
-        await ApplyUpdates([await LoadFile(fullPath, WatcherChangeTypes.Changed, content)]);
+        await ApplyUpdates([await LoadFile(fullPath, WatcherChangeTypes.Changed, content, ct)], ct);
     }
 
-    public async Task WaitForUpdates()
+    public async Task WaitForUpdates(CancellationToken ct = default)
     {
-        using (await _lockUpdate.LockAsync())
+        using (await _lockUpdate.LockAsync(ct))
         {
+            // Juste pour attendre la dispo du lock.
         }
     }
 
-    private async Task ApplyUpdates(IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> updates)
+    private async Task ApplyUpdates(
+        IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> updates,
+        CancellationToken ct = default
+    )
     {
-        using (await _lockInit.LockAsync())
+        using (await _lockInit.LockAsync(ct))
         {
             foreach (var update in updates)
             {
@@ -208,7 +217,7 @@ public class ModelStore : IDisposable
             }
         }
 
-        using (await _lockUpdate.LockAsync())
+        using (await _lockUpdate.LockAsync(ct))
         {
             var files = new List<(string FullPath, string? FileName, ModelFile? ModelFile)>();
             while (_pendingUpdates.TryDequeue(out var file))
@@ -251,16 +260,20 @@ public class ModelStore : IDisposable
             {
                 var referenceErrors = new List<ModelError>();
 
-                var affectedFiles = pendingFileChanges.Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
+                var affectedFiles = pendingFileChanges
+                    .Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null)
+                    .Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
                     ? _modelFiles
                     : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
                 {
-                    sortedFiles = CoreUtils.Sort(affectedFiles.Values, f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name)));
+                    sortedFiles = CoreUtils.Sort(
+                        affectedFiles.Values,
+                        f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
+                    );
                 }
-
                 // Dépendance circulaire.
                 catch (ModelException e) when (e.ModelError is not null)
                 {
@@ -274,54 +287,69 @@ public class ModelStore : IDisposable
 
                 referenceErrors.AddRange(GetGlobalErrors());
 
-                Parallel.ForEach(_modelWatchers, modelWatcher =>
-                {
-                    modelWatcher.OnErrors(affectedFiles.Values
-                        .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ErrorType))))
-                        .ToDictionary(i => i.file, i => i.errors));
-                });
+                Parallel.ForEach(
+                    _modelWatchers,
+                    modelWatcher =>
+                    {
+                        modelWatcher.OnErrors(
+                            affectedFiles
+                                .Values.Select(file =>
+                                    (
+                                        file,
+                                        errors: referenceErrors.Where(e =>
+                                            e.File == file && !config.NoWarn.Contains(e.ErrorType)
+                                        )
+                                    )
+                                )
+                                .ToDictionary(i => i.file, i => i.errors)
+                        );
+                    }
+                );
 
                 foreach (var error in referenceErrors.Where(e => e.IsError))
                 {
-                    _logger.LogError(error.ToString());
+                    logger.LogError(error.ToString());
                 }
 
-                foreach (var error in referenceErrors.Where(e => !e.IsError && !_config.NoWarn.Contains(e.ErrorType)))
+                foreach (var error in referenceErrors.Where(e => !e.IsError && !config.NoWarn.Contains(e.ErrorType)))
                 {
-                    _logger.LogWarning(error.ToString());
+                    logger.LogWarning(error.ToString());
                 }
 
-                var hasError = referenceErrors.Any(r => r.IsError);
+                var hasError = referenceErrors.Exists(r => r.IsError);
                 OnResolve?.Invoke(hasError);
 
                 if (hasError)
                 {
                     throw new ModelException("Erreur lors de la lecture du modèle.");
                 }
-                else
-                {
-                    _logger.LogInformation("Modèle chargé avec succès.");
-                }
 
-                Parallel.ForEach(_modelWatchers, modelWatcher =>
-                {
-                    modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
-                });
+                logger.LogInformation("Modèle chargé avec succès.");
 
-                var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
+                Parallel.ForEach(
+                    _modelWatchers,
+                    modelWatcher =>
+                    {
+                        modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
+                    }
+                );
+
+                var generatedFiles = _modelWatchers
+                    .Where(m => m.GeneratedFiles != null)
+                    .SelectMany(m => m.GeneratedFiles!);
                 if (generatedFiles.Any() && !DisableLockfile && _topModelLock != null)
                 {
                     _topModelLock.UpdateFiles(generatedFiles);
                 }
 
-                _logger.LogInformation($"Mise à jour terminée avec succès.");
-                _logger.LogInformation(string.Empty);
+                logger.LogInformation($"Mise à jour terminée avec succès.");
+                logger.LogInformation(string.Empty);
 
                 pendingFileChanges.Clear();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, e.Message);
+                logger.LogError(e, e.Message);
             }
         }
     }
@@ -330,7 +358,11 @@ public class ModelStore : IDisposable
     {
         foundFiles ??= [];
 
-        foreach (var file in _modelFiles.Values.Where(f => fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d.ReferenceName))))
+        foreach (
+            var file in _modelFiles.Values.Where(f =>
+                fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d.ReferenceName))
+            )
+        )
         {
             if (!foundFiles.Contains(file.Name))
             {
@@ -347,13 +379,22 @@ public class ModelStore : IDisposable
 
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
-        return [
-            ..modelFile.Uses
-                .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
+        return
+        [
+            .. modelFile
+                .Uses.Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
                 .Where(dep => dep != null),
-            ..Files.Where(f => f != modelFile && f.Converters.Count > 0 && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)),
-            ..Files.Where(f => f != modelFile && f.Domains.Count > 0 && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))),
-            ..Files.Where(f => f != modelFile && f.Annotations.Where(a => a.Global).Any())
+            .. Files.Where(f =>
+                f != modelFile
+                && f.Converters.Count > 0
+                && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)
+            ),
+            .. Files.Where(f =>
+                f != modelFile
+                && f.Domains.Count > 0
+                && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))
+            ),
+            .. Files.Where(f => f != modelFile && f.Annotations.Any(a => a.Global)),
         ];
     }
 
@@ -369,39 +410,73 @@ public class ModelStore : IDisposable
 
         foreach (var converter in Converters)
         {
-            var dup = Converters.FirstOrDefault(c => Converters.IndexOf(c) < Converters.IndexOf(converter) && c.Conversions.Intersect(converter.Conversions).Any());
+            var dup = Converters.FirstOrDefault(c =>
+                Converters.IndexOf(c) < Converters.IndexOf(converter)
+                && c.Conversions.Intersect(converter.Conversions).Any()
+            );
             if (dup != null)
             {
                 foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                 {
-                    yield return new ModelError(ErrorType.TMD6002, converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter");
+                    yield return new ModelError(
+                        ErrorType.TMD6002,
+                        converter,
+                        $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter"
+                    );
                 }
             }
         }
 
-        foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
+        foreach (
+            var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c))
+        )
         {
             var otherClasses = Classes.Where(u => u.Trigram == classe.Trigram && u != classe);
-            yield return new ModelError(ErrorType.TMD3004, classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}", classe.Trigram.GetLocation(), isError: false);
+            yield return new ModelError(
+                ErrorType.TMD3004,
+                classe.ModelFile,
+                $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}",
+                classe.Trigram.GetLocation(),
+                isError: false
+            );
         }
 
         foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
         {
-            yield return new ModelError(ErrorType.TMD0009, domain, $"Le domaine '{domain.Name}' n'est pas utilisé.", isError: false);
+            yield return new ModelError(
+                ErrorType.TMD0009,
+                domain,
+                $"Le domaine '{domain.Name}' n'est pas utilisé.",
+                isError: false
+            );
         }
 
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
-            yield return new ModelError(ErrorType.TMD0010, decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.", isError: false);
+            yield return new ModelError(
+                ErrorType.TMD0010,
+                decorator,
+                $"Le décorateur '{decorator.Name}' n'est pas utilisé.",
+                isError: false
+            );
         }
 
         foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
         {
             var endpoints = files.SelectMany(f => f.Endpoints);
 
-            foreach (var endpoint in endpoints.Where((e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()))
+            foreach (
+                var endpoint in endpoints.Where(
+                    (e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()
+                )
+            )
             {
-                yield return new ModelError(ErrorType.TMD0001, endpoint, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation());
+                yield return new ModelError(
+                    ErrorType.TMD0001,
+                    endpoint,
+                    $"Le nom '{endpoint.Name}' est déjà utilisé.",
+                    endpoint.Name.GetLocation()
+                );
             }
 
             if (files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1)
@@ -410,20 +485,34 @@ public class ModelStore : IDisposable
                 {
                     if (file.Options.Endpoints.Prefix != null)
                     {
-                        yield return new ModelError(ErrorType.TMD7001, file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation());
+                        yield return new ModelError(
+                            ErrorType.TMD7001,
+                            file,
+                            $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.",
+                            file.Options.Endpoints.Prefix?.GetLocation()
+                        );
                     }
                     else
                     {
-                        yield return new ModelError(ErrorType.TMD7001, file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.");
+                        yield return new ModelError(
+                            ErrorType.TMD7001,
+                            file,
+                            $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font."
+                        );
                     }
                 }
             }
         }
     }
 
-    private async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadFile(string fullPath, WatcherChangeTypes changeType, string? content = null)
+    private async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadFile(
+        string fullPath,
+        WatcherChangeTypes changeType,
+        string? content = null,
+        CancellationToken ct = default
+    )
     {
-        var fileName = _config.GetFileName(fullPath);
+        var fileName = config.GetFileName(fullPath);
 
         try
         {
@@ -432,7 +521,7 @@ public class ModelStore : IDisposable
                 ModelFile? modelFile = null;
                 if (File.Exists(fullPath))
                 {
-                    modelFile = await _modelFileLoader.LoadModelFile(fullPath, content);
+                    modelFile = await modelFileLoader.LoadModelFile(fullPath, content, ct);
                 }
 
                 if (modelFile != null)
@@ -445,26 +534,26 @@ public class ModelStore : IDisposable
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
+            logger.LogError(e, e.Message);
             return (fullPath, null, null);
         }
     }
 
-    private async Task LoadTranslations()
+    private async Task LoadTranslations(CancellationToken ct = default)
     {
-        _translationStore.Translations[_config.I18n.DefaultLang] = [];
+        translationStore.Translations[config.I18n.DefaultLang] = new Dictionary<string, string>();
 
-        foreach (var lang in _config.I18n.Langs)
+        foreach (var lang in config.I18n.Langs)
         {
             var langMap = new Dictionary<string, string>();
-            var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
+            var directoryPath = config.I18n.RootPath.Replace("{lang}", lang);
             var exists = Directory.Exists(directoryPath);
             if (exists)
             {
                 var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
-                    var lines = await File.ReadAllLinesAsync(file);
+                    var lines = await File.ReadAllLinesAsync(file, ct);
                     foreach (var line in lines)
                     {
                         if (line != null && line != string.Empty)
@@ -475,97 +564,120 @@ public class ModelStore : IDisposable
                 }
             }
 
-            _translationStore.Translations[lang] = langMap;
+            translationStore.Translations[lang] = langMap;
         }
     }
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        _fsCache.Set($"{e.FullPath}:{e.ChangeType}", e, new MemoryCacheEntryOptions()
-            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(50)).Token))
-            .RegisterPostEvictionCallback(async (k, v, r, a) =>
-            {
-                if (r != EvictionReason.TokenExpired)
-                {
-                    return;
-                }
+        fsCache.Set(
+            $"{e.FullPath}:{e.ChangeType}",
+            e,
+            new MemoryCacheEntryOptions()
+                .AddExpirationToken(
+                    new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(50)).Token)
+                )
+                .RegisterPostEvictionCallback(
+                    async (k, v, r, a) =>
+                    {
+                        if (r != EvictionReason.TokenExpired)
+                        {
+                            return;
+                        }
 
-                e = (FileSystemEventArgs)v!;
-                var type = e.ChangeType switch
-                {
-                    WatcherChangeTypes.Created => "Créé",
-                    WatcherChangeTypes.Deleted => "Supprimé",
-                    WatcherChangeTypes.Renamed => "Renommé",
-                    _ => "Modifié"
-                };
+                        e = (FileSystemEventArgs)v!;
+                        var type = e.ChangeType switch
+                        {
+                            WatcherChangeTypes.Created => "Créé",
+                            WatcherChangeTypes.Deleted => "Supprimé",
+                            WatcherChangeTypes.Renamed => "Renommé",
+                            _ => "Modifié",
+                        };
 
-                _logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
+                        logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
 
-                var files = new List<(string, string?, ModelFile?)>();
+                        var files = new List<(string, string?, ModelFile?)>();
 
-                if (e is RenamedEventArgs re)
-                {
-                    files.Add(await LoadFile(re.OldFullPath, WatcherChangeTypes.Deleted));
-                    files.Add(await LoadFile(re.FullPath, WatcherChangeTypes.Created));
-                }
-                else
-                {
-                    files.Add(await LoadFile(e.FullPath, e.ChangeType));
-                }
+                        if (e is RenamedEventArgs re)
+                        {
+                            files.Add(await LoadFile(re.OldFullPath, WatcherChangeTypes.Deleted, ct: default));
+                            files.Add(await LoadFile(re.FullPath, WatcherChangeTypes.Created, ct: default));
+                        }
+                        else
+                        {
+                            files.Add(await LoadFile(e.FullPath, e.ChangeType, ct: default));
+                        }
 
-                await ApplyUpdates(files);
-            }));
+                        await ApplyUpdates(files, default);
+                    }
+                )
+        );
     }
 
     private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
     {
-        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use.ReferenceName, out var _));
+        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.ReferenceName));
         foreach (var use in nonExistingFiles)
         {
-            yield return new ModelError(ErrorType.TMD1001, modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use);
+            yield return new ModelError(
+                ErrorType.TMD1001,
+                modelFile,
+                $"Le fichier référencé '{use.ReferenceName}' est introuvable.",
+                use
+            );
         }
 
-        var duplicatedUses = modelFile.Uses
-            .GroupBy(u => u.ReferenceName)
+        var duplicatedUses = modelFile
+            .Uses.GroupBy(u => u.ReferenceName)
             .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
             .Where(r => r.Count > 1)
             .Select(u => u.ReferenceName);
 
         foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
         {
-            yield return new ModelError(ErrorType.TMD1002, modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use);
+            yield return new ModelError(
+                ErrorType.TMD1002,
+                modelFile,
+                $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois",
+                use
+            );
         }
 
         var dependencies = GetDependencies(modelFile).ToList();
 
-        var referencedClassesRaw = dependencies
-            .SelectMany(m => m.Classes)
-            .Concat(modelFile.Classes)
-            .Distinct();
+        var referencedClassesRaw = dependencies.SelectMany(m => m.Classes).Concat(modelFile.Classes).Distinct();
 
         var duplicateClasses = referencedClassesRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
-            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+            .Select(g =>
+                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                    .First()
+            );
 
         foreach (var classe in duplicateClasses.Where(c => c.ModelFile == modelFile))
         {
-            yield return new ModelError(ErrorType.TMD3001, classe, $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.", classe.Name.Location);
+            yield return new ModelError(
+                ErrorType.TMD3001,
+                classe,
+                $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.",
+                classe.Name.Location
+            );
         }
 
         var referencedClasses = referencedClassesRaw
             .Where(c => !duplicateClasses.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var referencedEndpointsRaw = dependencies
-            .SelectMany(m => m.Endpoints)
-            .Concat(modelFile.Endpoints)
-            .Distinct();
+        var referencedEndpointsRaw = dependencies.SelectMany(m => m.Endpoints).Concat(modelFile.Endpoints).Distinct();
 
         var duplicateEndpoints = referencedEndpointsRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
-            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+            .Select(g =>
+                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                    .First()
+            );
 
         var referencedEndpoints = referencedEndpointsRaw
             .Where(c => !duplicateEndpoints.Select(c => c.Name.Value).Contains(c.Name.Value))
@@ -583,33 +695,49 @@ public class ModelStore : IDisposable
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
 
-        var referencedDataFlowsRaw = dependencies
-             .SelectMany(m => m.DataFlows)
-             .Concat(modelFile.DataFlows)
-             .Distinct();
+        var referencedDataFlowsRaw = dependencies.SelectMany(m => m.DataFlows).Concat(modelFile.DataFlows).Distinct();
 
         var duplicateDataFlows = referencedDataFlowsRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
-            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+            .Select(g =>
+                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                    .First()
+            );
 
         foreach (var dataFlow in duplicateDataFlows.Where(c => c.ModelFile == modelFile))
         {
-            yield return new ModelError(ErrorType.TMD4001, dataFlow, $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.", dataFlow.Name.Location);
+            yield return new ModelError(
+                ErrorType.TMD4001,
+                dataFlow,
+                $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.",
+                dataFlow.Name.Location
+            );
         }
 
         var referencedDataFlows = referencedDataFlowsRaw
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var annotationResolver = new AnnotationResolver(modelFile, _config, referencedAnnotations);
+        var annotationResolver = new AnnotationResolver(modelFile, config, referencedAnnotations);
         var classResolver = new ClassResolver(modelFile, referencedClasses);
         var dataFlowResolver = new DataFlowResolver(modelFile, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(modelFile, _config, referencedDecorators);
-        var domainResolver = new DomainResolver(modelFile, _config, Domains, Converters);
+        var decoratorResolver = new DecoratorResolver(modelFile, config, referencedDecorators);
+        var domainResolver = new DomainResolver(modelFile, config, Domains, Converters);
         var endpointResolver = new EndpointResolver(modelFile);
-        var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
-        var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
+        var mapperResolver = new MapperResolver(
+            modelFile,
+            referencedClasses,
+            Converters,
+            config.UseLegacyAssociationCompositionMappers
+        );
+        var propertyResolver = new PropertyResolver(
+            modelFile,
+            Domains,
+            referencedClasses,
+            referencedEndpoints,
+            referencedDecorators
+        );
 
         foreach (var error in domainResolver.ResolveDomainVariables())
         {
@@ -644,7 +772,9 @@ public class ModelStore : IDisposable
         propertyResolver.ResetAliases();
 
         // Résolution des alias des décorateurs
-        foreach (var error in propertyResolver.ResolveAliases(alp => alp.Decorator is not null && alp.Reference is not null))
+        foreach (
+            var error in propertyResolver.ResolveAliases(alp => alp.Decorator is not null && alp.Reference is not null)
+        )
         {
             yield return error;
         }
@@ -652,7 +782,9 @@ public class ModelStore : IDisposable
         decoratorResolver.CopyDecoratorProperties();
 
         // Résolution des alias des classes et endpoints.
-        foreach (var error in propertyResolver.ResolveAliases(alp => alp.Decorator is null && alp.Reference is not null))
+        foreach (
+            var error in propertyResolver.ResolveAliases(alp => alp.Decorator is null && alp.Reference is not null)
+        )
         {
             yield return error;
         }
@@ -712,11 +844,17 @@ public class ModelStore : IDisposable
             yield return error;
         }
 
-        classResolver.ResolveTranslations(_translationStore, _config.I18n.DefaultLang);
+        classResolver.ResolveTranslations(translationStore, config.I18n.DefaultLang);
 
-        foreach (var use in modelFile.UselessImports.Where(u => dependencies.Any(d => d.Name == u.ReferenceName)))
+        foreach (var use in modelFile.UselessImports.Where(u => dependencies.Exists(d => d.Name == u.ReferenceName)))
         {
-            yield return new ModelError(ErrorType.TMD1003, modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use, isError: false);
+            yield return new ModelError(
+                ErrorType.TMD1003,
+                modelFile,
+                $"L'import '{use.ReferenceName}' n'est pas utilisé.",
+                use,
+                isError: false
+            );
         }
     }
 }

@@ -5,9 +5,8 @@ namespace TopModel.Core.FileModel;
 public class AnnotationReference : Reference
 {
     internal AnnotationReference(Scalar scalar)
-        : base(scalar)
-    {
-    }
+        : base(scalar) { }
 
-    public Dictionary<ParameterReference, StringWithVariables> ParameterReferences { get; set; } = [];
+    public IDictionary<ParameterReference, StringWithVariables> ParameterReferences { get; set; } =
+        new Dictionary<ParameterReference, StringWithVariables>();
 }

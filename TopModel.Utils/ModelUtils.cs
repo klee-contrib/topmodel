@@ -11,6 +11,20 @@ namespace TopModel.Utils;
 public static class ModelUtils
 {
     /// <summary>
+    /// AddRange sur IList.
+    /// </summary>
+    /// <typeparam name="T">Type de la liste.</typeparam>
+    /// <param name="source">Liste source.</param>
+    /// <param name="range">Items à ajouter.</param>
+    public static void AddRange<T>(this IList<T> source, IEnumerable<T> range)
+    {
+        foreach (var item in range)
+        {
+            source.Add(item);
+        }
+    }
+
+    /// <summary>
     /// Applique une transformation sur chaque section (divisée par un séparateur) d'une chaîne de caractères.
     /// </summary>
     /// <param name="value">Le texte en entrée.</param>
@@ -27,7 +41,12 @@ public static class ModelUtils
 
         if (property.GetValue(classe) != null)
         {
-            property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!)).TrimEnd('/').Replace("\\", "/"));
+            property.SetValue(
+                classe,
+                Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!))
+                    .TrimEnd('/')
+                    .Replace('\\', '/')
+            );
         }
     }
 
@@ -61,12 +80,15 @@ public static class ModelUtils
             var isLastChar = i == c.Length - 1;
             var nextIsLow = !isLastChar && char.ToUpper(c[i + 1]) != c[i + 1];
 
-            if (upperChar == c[i] && upperChar != '_')
+            if (
+                upperChar == c[i]
+                && upperChar != '_'
+                && sb.Length != 0
+                && !lastIsUnderscore
+                && (!lastIsUp || nextIsLow)
+            )
             {
-                if (sb.Length != 0 && !lastIsUnderscore && (!lastIsUp || nextIsLow))
-                {
-                    sb.Append('_');
-                }
+                sb.Append('_');
             }
 
             lastIsUp = upperChar == c[i];
@@ -125,7 +147,7 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToKebabCase(this string text)
     {
-        return text.ToSnakeCase().Replace("_", "-");
+        return text.ToSnakeCase().Replace('_', '-');
     }
 
     /// <summary>
@@ -150,15 +172,13 @@ public static class ModelUtils
         var upperCaseInside = new Regex("(?<=[A-Z])[A-Z]+?((?=[A-Z][a-z])|(?=[0-9]))");
 
         var pascalCase =
-
             // replace white spaces with undescore, then replace all invalid chars with empty string
-            invalidCharsRgx.Replace(whiteSpace.Replace(text.Replace("-", "_"), "_"), string.Empty)
-
-            // split by underscores
-            .Split(['_'], StringSplitOptions.RemoveEmptyEntries)
-
-            // set first letter to uppercase
-            .Select(w => startsWithLowerCaseChar.Replace(w, m => m.Value.ToUpper()));
+            invalidCharsRgx
+                .Replace(whiteSpace.Replace(text.Replace('-', '_'), "_"), string.Empty)
+                // split by underscores
+                .Split(['_'], StringSplitOptions.RemoveEmptyEntries)
+                // set first letter to uppercase
+                .Select(w => startsWithLowerCaseChar.Replace(w, m => m.Value.ToUpper()));
 
         if (strict)
         {
@@ -196,7 +216,7 @@ public static class ModelUtils
             relative = $".\\{relative}";
         }
 
-        return relative.Replace("\\", "/");
+        return relative.Replace('\\', '/');
     }
 
     /// <summary>

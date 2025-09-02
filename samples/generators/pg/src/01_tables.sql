@@ -2,11 +2,12 @@
 ---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ----
 
--- =========================================================================================== 
+-- ===========================================================================================
 --   Application Name	:	pg 
 --   Script Name		:	01_tables.sql
 --   Description		:	Script de création des tables.
--- =========================================================================================== 
+-- ===========================================================================================
+
 /**
   * Création de la table DROIT
  **/
@@ -91,10 +92,10 @@ create table TRANSLATION (
     LABEL varchar(4000),
     constraint PK_TRANSLATION primary key (RESOURCE_KEY, LOCALE)
 );
+
 /**
   * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
  **/
 create index IDX_TRANSLATION_RESOURCE_KEY on TRANSLATION (
 	RESOURCE_KEY ASC
 );
-

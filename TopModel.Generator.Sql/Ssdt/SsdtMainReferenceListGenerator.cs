@@ -9,8 +9,10 @@ namespace TopModel.Generator.Sql.Ssdt;
 /// <summary>
 /// Scripter écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs de listes de références.
 /// </summary>
-public class SsdtMainReferenceListGenerator(ILogger<SsdtMainReferenceListGenerator> logger, IFileWriterProvider writerProvider)
-    : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
+public class SsdtMainReferenceListGenerator(
+    ILogger<SsdtMainReferenceListGenerator> logger,
+    IFileWriterProvider writerProvider
+) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SsdtMainRefListGen";
 
@@ -20,7 +22,11 @@ public class SsdtMainReferenceListGenerator(ILogger<SsdtMainReferenceListGenerat
     {
         if (classe.IsPersistent && !classe.Abstract && classe.Values.Count > 0)
         {
-            yield return ("main", Path.Combine(Config.Ssdt!.InitListScriptFolder!, Config.Ssdt!.InitListMainScriptName!).Replace("\\", "/"));
+            yield return (
+                "main",
+                Path.Combine(Config.Ssdt!.InitListScriptFolder!, Config.Ssdt!.InitListMainScriptName!)
+                    .Replace('\\', '/')
+            );
         }
     }
 
@@ -32,10 +38,13 @@ public class SsdtMainReferenceListGenerator(ILogger<SsdtMainReferenceListGenerat
         WriteHeader(writer);
 
         // Construit la liste des Reference Class ordonnée.
-        var orderList = CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c => c.Properties
-            .OfType<AssociationProperty>()
-            .Select(a => a.Association)
-            .Where(a => a != c && a.Values.Count > 0));
+        var orderList = CoreUtils.Sort(
+            classes.OrderBy(c => c.SqlName),
+            c =>
+                c.Properties.OfType<AssociationProperty>()
+                    .Select(a => a.Association)
+                    .Where(a => a != c && a.Values.Count > 0)
+        );
 
         // Appel des scripts d'insertion.
         WriteScriptCalls(writer, orderList);
@@ -47,9 +56,7 @@ public class SsdtMainReferenceListGenerator(ILogger<SsdtMainReferenceListGenerat
     /// <param name="writer">Flux.</param>
     private static void WriteHeader(IFileWriter writer)
     {
-        writer.WriteLine("-- ===========================================================================================");
-        writer.WriteLine("--   Description		:	Insertion des valeurs de listes statiques.");
-        writer.WriteLine("-- ===========================================================================================");
+        writer.WriteSqlFileHeader(description: "Insertion des valeurs de listes statiques.");
         writer.WriteLine();
     }
 

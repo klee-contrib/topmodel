@@ -75,13 +75,17 @@ public class LocatedString(Scalar value) : IComparable
         {
             return ls.Value == Value;
         }
+        else if (obj is string s)
+        {
+            return s == Value;
+        }
 
-        return base.Equals(obj);
+        return false;
     }
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        return StringComparer.Ordinal.GetHashCode(Value);
     }
 
     public string Replace(string pattern, string replacement)

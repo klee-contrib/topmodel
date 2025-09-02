@@ -38,12 +38,13 @@ public class WatcherConfigBase
     /// <summary>
     /// Variables globales du module.
     /// </summary>
-    public Dictionary<string, string> Variables { get; set; } = [];
+    public IDictionary<string, string> Variables { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
     /// Variables par tag du module.
     /// </summary>
-    public Dictionary<string, Dictionary<string, string>> TagVariables { get; set; } = [];
+    public IDictionary<string, IDictionary<string, string>> TagVariables { get; set; } =
+        new Dictionary<string, IDictionary<string, string>>();
 
     /// <summary>
     /// Noms de toutes les variables par tag du module.
@@ -73,7 +74,9 @@ public class WatcherConfigBase
     /// <summary>
     /// Propriétés qui peuvent contenir des templates à ne pas interprêter dans la résolution des variables globales ou par tag.
     /// </summary>
+#pragma warning disable MA0016
     public virtual Dictionary<string, List<string>> TemplateAttributes => [];
+#pragma warning restore MA0016
 
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.
@@ -135,29 +138,27 @@ public class WatcherConfigBase
         // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
         if (TagVariableNames.Any())
         {
-            foreach (var tag in Tags)
+            foreach (var tag in Tags.Where(tag => !TagVariables.ContainsKey(tag)))
             {
-                if (!TagVariables.ContainsKey(tag))
-                {
-                    TagVariables[tag] = [];
-                }
+                TagVariables[tag] = new Dictionary<string, string>();
             }
 
             foreach (var variables in TagVariables.Values)
             {
-                foreach (var varName in TagVariableNames)
+                foreach (var varName in TagVariableNames.Where(varName => !variables.ContainsKey(varName)))
                 {
-                    if (!variables.ContainsKey(varName))
-                    {
-                        Variables.TryGetValue(varName, out var globalVariable);
-                        variables[varName] = globalVariable ?? string.Empty;
-                    }
+                    Variables.TryGetValue(varName, out var globalVariable);
+                    variables[varName] = globalVariable ?? string.Empty;
                 }
             }
         }
 
         var hasMissingVar = false;
-        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(DefaultLanguage)))
+        foreach (
+            var property in GetType()
+                .GetProperties()
+                .Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(DefaultLanguage))
+        )
         {
             var value = (string?)property.GetValue(this);
             if (value != null)
@@ -180,13 +181,15 @@ public class WatcherConfigBase
                             "module" => PropertiesWithModuleVariableSupport,
                             "lang" => PropertiesWithLangVariableSupport,
                             "fileName" => PropertiesWithFileNameVariableSupport,
-                            _ => null!
+                            _ => null!,
                         };
 
                         if (!supportedProperties.Contains(property.Name))
                         {
                             hasMissingVar = true;
-                            AnsiConsole.MarkupLine($"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas supportée par cette propriété.[/]");
+                            AnsiConsole.MarkupLine(
+                                $"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas supportée par cette propriété.[/]"
+                            );
                         }
 
                         continue;
@@ -197,12 +200,16 @@ public class WatcherConfigBase
                     if (!hasTagSupport)
                     {
                         hasMissingVar = true;
-                        AnsiConsole.MarkupLine($"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour ce générateur.[/]");
+                        AnsiConsole.MarkupLine(
+                            $"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour ce générateur.[/]"
+                        );
                     }
                     else if (!TagVariableNames.Contains(varName))
                     {
                         hasMissingVar = true;
-                        AnsiConsole.MarkupLine($"[yellow]{Emoji.Known.Warning}  {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour ce générateur.[/]");
+                        AnsiConsole.MarkupLine(
+                            $"[yellow]{Emoji.Known.Warning}  {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour ce générateur.[/]"
+                        );
                     }
                 }
             }

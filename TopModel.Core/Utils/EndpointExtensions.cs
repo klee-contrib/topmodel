@@ -14,7 +14,10 @@ public static class EndpointExtensions
 
         var bodyParams = endpoint.Params.Where(param => param is CompositionProperty or { Domain.BodyParam: true });
         return bodyParams.Count() > 1
-            ? throw new ModelException(endpoint, $"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}")
+            ? throw new ModelException(
+                endpoint,
+                $"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}"
+            )
             : bodyParams.SingleOrDefault();
     }
 
@@ -32,15 +35,21 @@ public static class EndpointExtensions
 
     public static IEnumerable<IProperty> GetQueryAndMultipartParams(this Endpoint endpoint)
     {
-        return endpoint.Params
-            .Where(param => !(param is CompositionProperty || (param.Domain?.BodyParam ?? false)))
+        return endpoint
+            .Params.Where(param => !(param is CompositionProperty || (param.Domain?.BodyParam ?? false)))
             .Except(endpoint.GetRouteParams());
     }
 
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
     {
-        return endpoint.Params
-            .Where(param => !(param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
+        return endpoint
+            .Params.Where(param =>
+                !(
+                    param is CompositionProperty
+                    || (param.Domain?.BodyParam ?? false)
+                    || (param.Domain?.IsMultipart ?? false)
+                )
+            )
             .Except(endpoint.GetRouteParams());
     }
 

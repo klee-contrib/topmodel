@@ -15,5 +15,5 @@ public enum TargetDBMS
     /// <summary>
     /// Oracle.
     /// </summary>
-    Oracle
+    Oracle,
 }

@@ -7,8 +7,11 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
+public abstract class AbstractCrebasGenerator(
+    ILogger<AbstractCrebasGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     protected override bool PersistentOnly => true;
 
@@ -20,10 +23,7 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
     /// <summary>
     /// Indique si le moteur de BDD visé supporte "primary key clustered ()".
     /// </summary>
-    protected abstract bool SupportsClusteredKey
-    {
-        get;
-    }
+    protected abstract bool SupportsClusteredKey { get; }
 
     /// <summary>
     /// Indique la limite de longueur d'un identifiant.
@@ -38,7 +38,9 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
     protected static string CheckIdentifierLength(string identifier)
     {
         return identifier.Length > IdentifierLengthLimit
-            ? throw new ArgumentException($"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères.")
+            ? throw new ModelException(
+                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
+            )
             : identifier;
     }
 
@@ -61,11 +63,7 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteLine("-- =========================================================================================== ");
-        writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + fileName.Split('/').Last());
-        writer.WriteLine("--   Description		:	Script de création des tables.");
-        writer.WriteLine("-- =========================================================================================== ");
+        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des tables.");
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
@@ -78,9 +76,7 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
         }
     }
 
-    protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IList<IProperty> properties)
-    {
-    }
+    protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IList<IProperty> properties) { }
 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires.
@@ -88,8 +84,8 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
     /// <param name="writer">Flux d'écriture création bases.</param>
     protected abstract void WriteIdentityColumn(IFileWriter writer);
 
-    protected virtual void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)
-        => throw new NotImplementedException($"Sequence declaration is not implemented with {Config.TargetDBMS}");
+    protected virtual void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName) =>
+        throw new NotSupportedException($"Sequence declaration is not implemented with {Config.TargetDBMS}");
 
     private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(Config.TableTablespace);
 
@@ -155,7 +151,7 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
             writer.Write("clustered ");
         }
 
-        writer.WriteLine($"({string.Join(",", properties.Where(p => p.PrimaryKey).Select(pk => pk.SqlName))})");
+        writer.WriteLine($"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => pk.SqlName))})");
     }
 
     private void WriteResourceTableDeclaration(IFileWriter writer)
@@ -163,33 +159,46 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
         if (Config.ResourcesTableName != null)
         {
             var tableName = Config.ResourcesTableName;
+            writer.WriteLine();
             writer.WriteLine("/**");
             writer.WriteLine("  * Création de ta table " + tableName + " contenant les traductions");
             writer.WriteLine(" **/");
             writer.WriteLine($"create table {Config.ResourcesTableName} (");
             writer.WriteLine(1, "RESOURCE_KEY varchar(255),");
-            var hasLocale = translationStore.Translations.Keys.Count > 1 || translationStore.Translations.Keys.Any(a => a != string.Empty);
+            var hasLocale =
+                translationStore.Translations.Keys.Count > 1
+                || translationStore.Translations.Keys.Any(a => a != string.Empty);
             if (hasLocale)
             {
                 writer.WriteLine(1, "LOCALE varchar(10),");
             }
 
             writer.WriteLine(1, "LABEL varchar(4000),");
-            writer.WriteLine(1, $"constraint PK_{Config.ResourcesTableName.ToConstantCase()} primary key (RESOURCE_KEY, LOCALE)");
+            writer.WriteLine(
+                1,
+                $"constraint PK_{Config.ResourcesTableName.ToConstantCase()} primary key (RESOURCE_KEY, LOCALE)"
+            );
             writer.WriteLine($"){Config.BatchSeparator}");
 
+            writer.WriteLine();
             writer.WriteLine("/**");
             writer.WriteLine("  * Création de l'index pour " + tableName + " (RESOURCE_KEY, LOCALE)");
             writer.WriteLine(" **/");
-            writer.WriteLine("create index " + $"IDX_{Config.ResourcesTableName}_RESOURCE_KEY{(hasLocale ? "_LOCALE" : string.Empty)}" + " on " + tableName + " (");
+            writer.WriteLine(
+                "create index "
+                    + $"IDX_{Config.ResourcesTableName}_RESOURCE_KEY{(hasLocale ? "_LOCALE" : string.Empty)}"
+                    + " on "
+                    + tableName
+                    + " ("
+            );
             writer.WriteLine("\t" + $"RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}" + " ASC");
             writer.WriteLine($"){Config.BatchSeparator}");
-            writer.WriteLine();
         }
     }
 
     private void WriteSequence(Class classe, IFileWriter writer, string tableName)
     {
+        writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine($"  * Création de la séquence pour la clé primaire de la table {tableName}");
         writer.WriteLine(" **/");
@@ -197,15 +206,15 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
         WriteSequenceDeclaration(classe, writer, tableName);
 
         writer.WriteLine(Config.BatchSeparator);
-        writer.WriteLine();
     }
 
-    private List<AssociationProperty> WriteTableDeclaration(Class classe, IFileWriter writer)
+    private void WriteTableDeclaration(Class classe, IFileWriter writer)
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
         var tableName = CheckIdentifierLength(classe.SqlName);
 
+        writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine("  * Création de la table " + tableName);
         writer.WriteLine(" **/");
@@ -222,13 +231,23 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
                 persistentType = $"{persistentType}({property.Domain.Length})";
             }
 
-            if ((persistentType.ToLower().Equals("numeric") || persistentType.ToLower().Equals("decimal")) && property.Domain.Length != null)
+            if (
+                (persistentType.ToLower().Equals("numeric") || persistentType.ToLower().Equals("decimal"))
+                && property.Domain.Length != null
+            )
             {
-                persistentType = $"{persistentType}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
+                persistentType =
+                    $"{persistentType}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
             }
 
             writer.Write("\t" + CheckIdentifierLength(property.SqlName) + " " + persistentType);
-            if (property is not AssociationProperty && property.PrimaryKey && property.Domain.AutoGeneratedValue && persistentType.Contains("int") && Config.Procedural!.Identity.Mode == IdentityMode.IDENTITY)
+            if (
+                property is not AssociationProperty
+                && property.PrimaryKey
+                && property.Domain.AutoGeneratedValue
+                && persistentType.Contains("int")
+                && Config.Procedural!.Identity.Mode == IdentityMode.IDENTITY
+            )
             {
                 WriteIdentityColumn(writer);
             }
@@ -257,14 +276,16 @@ public abstract class AbstractCrebasGenerator(ILogger<AbstractCrebasGenerator> l
         WritePrimaryKeyConstraint(writer, classe, properties);
         WriteEndTableDeclaration(writer);
 
-        writer.WriteLine();
-
-        var shouldWriteSequence = Config.Procedural!.Identity.Mode == IdentityMode.SEQUENCE && classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.Single().Domain.AutoGeneratedValue && !Config.GetType(classe.PrimaryKey.Single()).Contains("varchar", StringComparison.CurrentCultureIgnoreCase);
+        var shouldWriteSequence =
+            Config.Procedural!.Identity.Mode == IdentityMode.SEQUENCE
+            && classe.PrimaryKey.Count() == 1
+            && classe.PrimaryKey.Single().Domain.AutoGeneratedValue
+            && !Config
+                .GetType(classe.PrimaryKey.Single())
+                .Contains("varchar", StringComparison.CurrentCultureIgnoreCase);
         if (shouldWriteSequence)
         {
             WriteSequence(classe, writer, tableName);
         }
-
-        return fkPropertiesList;
     }
 }

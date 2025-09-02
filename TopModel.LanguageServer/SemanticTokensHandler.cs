@@ -7,36 +7,42 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : SemanticTokensHandlerBase
+public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+    : SemanticTokensHandlerBase
 {
-    protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability, ClientCapabilities clientCapabilities)
+    protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
+        SemanticTokensCapability capability,
+        ClientCapabilities clientCapabilities
+    )
     {
         return new SemanticTokensRegistrationOptions
         {
             DocumentSelector = config.GetDocumentSelector(),
-            Legend = new()
-            {
-                TokenModifiers = capability.TokenModifiers,
-                TokenTypes = capability.TokenTypes
-            },
-            Full = new SemanticTokensCapabilityRequestFull
-            {
-                Delta = true
-            },
-            Range = true
+            Legend = new() { TokenModifiers = capability.TokenModifiers, TokenTypes = capability.TokenTypes },
+            Full = new SemanticTokensCapabilityRequestFull { Delta = true },
+            Range = true,
         };
     }
 
-    protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(ITextDocumentIdentifierParams @params, CancellationToken cancellationToken)
+    protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(
+        ITextDocumentIdentifierParams @params,
+        CancellationToken cancellationToken
+    )
     {
         return Task.FromResult(new SemanticTokensDocument(RegistrationOptions.Legend));
     }
 
-    protected override async Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier, CancellationToken cancellationToken)
+    protected override async Task Tokenize(
+        SemanticTokensBuilder builder,
+        ITextDocumentIdentifierParams identifier,
+        CancellationToken cancellationToken
+    )
     {
-        await modelStore.WaitForUpdates();
+        await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f =>
+            facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath()
+        );
         if (file != null)
         {
             foreach (var reference in file.Uses)
@@ -51,12 +57,13 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
             {
                 var type = reference switch
                 {
-                    AnnotationReference or ClassReference or DecoratorReference or EndpointReference => SemanticTokenType.Class,
+                    AnnotationReference or ClassReference or DecoratorReference or EndpointReference =>
+                        SemanticTokenType.Class,
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
                     Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,
                     ParameterReference => SemanticTokenType.Parameter,
-                    _ => SemanticTokenType.Function
+                    _ => SemanticTokenType.Function,
                 };
 
                 builder.Push(reference.ToRange()!, type, SemanticTokenModifier.Definition);

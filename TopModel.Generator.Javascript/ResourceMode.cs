@@ -13,5 +13,5 @@ public enum ResourceMode
     /// <summary>
     /// Fichier JSON.
     /// </summary>
-    JSON
+    JSON,
 }

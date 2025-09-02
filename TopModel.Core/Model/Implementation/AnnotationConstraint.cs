@@ -32,5 +32,5 @@ public enum AnnotationConstraint
     /// Clé primaire.
     /// </summary>
     [EnumMember(Value = "primary-key")]
-    PrimaryKey
+    PrimaryKey,
 }

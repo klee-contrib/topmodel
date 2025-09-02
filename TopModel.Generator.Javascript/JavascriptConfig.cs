@@ -82,30 +82,20 @@ public class JavascriptConfig : GeneratorConfigBase
     public bool GenerateMainResourceFiles { get; set; }
 
     public override string[] PropertiesWithModuleVariableSupport =>
-    [
-        nameof(ModelRootPath),
-        nameof(ApiClientFilePath),
-        nameof(ResourceRootPath)
-    ];
+        [nameof(ModelRootPath), nameof(ApiClientFilePath), nameof(ResourceRootPath)];
 
-    public override string[] PropertiesWithFileNameVariableSupport =>
-    [
-        nameof(ApiClientFilePath)
-    ];
+    public override string[] PropertiesWithFileNameVariableSupport => [nameof(ApiClientFilePath)];
 
     public override string[] PropertiesWithTagVariableSupport =>
-    [
-        nameof(ModelRootPath),
-        nameof(ResourceRootPath),
-        nameof(ApiClientRootPath),
-        nameof(FetchPath),
-        nameof(DomainPath)
-    ];
+        [
+            nameof(ModelRootPath),
+            nameof(ResourceRootPath),
+            nameof(ApiClientRootPath),
+            nameof(FetchPath),
+            nameof(DomainPath),
+        ];
 
-    public override string[] PropertiesWithLangVariableSupport =>
-    [
-        nameof(ResourceRootPath)
-    ];
+    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourceRootPath)];
 
     protected override bool UseNamedEnums => false;
 
@@ -114,37 +104,69 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ModelRootPath!, tag, classe.Namespace.ModulePathKebab),
-            $"{classe.Name.ToKebabCase()}.ts")
-        .Replace("\\", "/");
+                OutputDirectory,
+                ResolveVariables(ModelRootPath!, tag, classe.Namespace.ModulePathKebab),
+                $"{classe.Name.ToKebabCase()}.ts"
+            )
+            .Replace('\\', '/');
     }
 
     public virtual string GetCommentResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
-            $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
-        .Replace("\\", "/");
+                OutputDirectory,
+                ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
+                $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
+            )
+            .Replace('\\', '/');
     }
 
-    public virtual IEnumerable<(string Import, string Path)> GetDomainImportPaths(string fileName, IProperty prop, string tag)
+    public virtual IEnumerable<(string Import, string Path)> GetDomainImportPaths(
+        string fileName,
+        IProperty prop,
+        string tag
+    )
     {
         return GetDomainImports(prop, tag)
-            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName)));
+            .Select(import =>
+                (Import: import.Split("/")[^1], Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName))
+            );
     }
 
-    public virtual List<(string Import, string Path)> GetEndpointImports(string fileName, IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
+    public virtual IList<(string Import, string Path)> GetEndpointImports(
+        string fileName,
+        IEnumerable<Endpoint> endpoints,
+        string tag,
+        IEnumerable<Class> availableClasses
+    )
     {
-        return endpoints.SelectMany(e => e.ClassDependencies)
-            .Select(dep => (
-                Import: dep is { Source: IProperty fp and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
-                    ? GetEnumType(fp)
-                    : dep.Classe.NamePascal,
-                Path: GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
+        return endpoints
+            .SelectMany(e => e.ClassDependencies)
+            .Select(dep =>
+                (
+                    Import: dep
+                        is {
+                            Source: IProperty fp
+                                and not CompositionProperty
+                                and not AliasProperty { Property: CompositionProperty }
+                        }
+                        ? GetEnumType(fp)
+                        : dep.Classe.NamePascal,
+                    Path: GetImportPathForClass(
+                        dep,
+                        dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag,
+                        tag,
+                        availableClasses
+                    )!
+                )
+            )
             .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
-            .Concat(endpoints.SelectMany(d => d.Params).Where(p => p.IsQueryParam()).SelectMany(dep => GetValueImportPaths(fileName, dep)))
+            .Concat(
+                endpoints
+                    .SelectMany(d => d.Params)
+                    .Where(p => p.IsQueryParam())
+                    .SelectMany(dep => GetValueImportPaths(fileName, dep))
+            )
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
@@ -152,16 +174,26 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string GetEndpointsFileName(ModelFile file, string tag)
     {
         return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ApiClientRootPath!, tag),
-            ResolveVariables(ApiClientFilePath!, module: file.Namespace.ModulePathKebab).Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase()) + ".ts")
-        .Replace("\\", "/");
+                OutputDirectory,
+                ResolveVariables(ApiClientRootPath!, tag),
+                ResolveVariables(ApiClientFilePath!, module: file.Namespace.ModulePathKebab)
+                    .Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase()) + ".ts"
+            )
+            .Replace('\\', '/');
     }
 
-    public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
+    public virtual string? GetImportPathForClass(
+        ClassDependency dep,
+        string targetTag,
+        string sourceTag,
+        IEnumerable<Class> availableClasses
+    )
     {
         string target;
-        if (dep is { Source: IProperty and not CompositionProperty and not AliasProperty { Property: CompositionProperty } })
+        if (
+            dep is
+            { Source: IProperty and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
+        )
         {
             if (dep.Classe.EnumKey != null && availableClasses.Contains(dep.Classe))
             {
@@ -184,7 +216,7 @@ public class JavascriptConfig : GeneratorConfigBase
             IProperty { Class: Class classe } => GetClassFileName(classe, sourceTag),
             IProperty { Endpoint: Endpoint endpoint } => GetEndpointsFileName(endpoint.ModelFile, sourceTag),
             Class classe => GetClassFileName(classe, sourceTag),
-            _ => null
+            _ => null,
         };
 
         if (source == null)
@@ -192,7 +224,8 @@ public class JavascriptConfig : GeneratorConfigBase
             return null;
         }
 
-        var path = Path.GetRelativePath(string.Join('/', source.Split('/').SkipLast(1)), target)[..^3].Replace("\\", "/");
+        var path = Path.GetRelativePath(string.Join('/', source.Split('/').SkipLast(1)), target)[..^3]
+            .Replace('\\', '/');
 
         if (!path.StartsWith('.'))
         {
@@ -204,42 +237,47 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public virtual string GetMainResourceFilePath(string tag, string lang)
     {
-        return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ResourceRootPath!, tag, lang: lang),
-            "index.ts")
-        .Replace("\\", "/");
+        return Path.Combine(OutputDirectory, ResolveVariables(ResourceRootPath!, tag, lang: lang), "index.ts")
+            .Replace('\\', '/');
     }
 
     public virtual string GetReferencesFileName(Namespace ns, string tag)
     {
-        return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ModelRootPath!, tag, ns.ModulePathKebab),
-            "references.ts")
-        .Replace("\\", "/");
+        return Path.Combine(OutputDirectory, ResolveVariables(ModelRootPath!, tag, ns.ModulePathKebab), "references.ts")
+            .Replace('\\', '/');
     }
 
     public virtual string GetRelativePath(string path, string fileName)
     {
         return !path.StartsWith('.')
             ? path
-            : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(OutputDirectory, path)).Replace("\\", "/");
+            : Path.GetRelativePath(
+                    string.Join('/', fileName.Split('/').SkipLast(1)),
+                    Path.Combine(OutputDirectory, path)
+                )
+                .Replace('\\', '/');
     }
 
     public virtual string GetResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
-            $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
-        .Replace("\\", "/");
+                OutputDirectory,
+                ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
+                $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
+            )
+            .Replace('\\', '/');
     }
 
-    public virtual IEnumerable<(string Import, string Path)> GetValueImportPaths(string fileName, IProperty prop, string? value = null)
+    public virtual IEnumerable<(string Import, string Path)> GetValueImportPaths(
+        string fileName,
+        IProperty prop,
+        string? value = null
+    )
     {
         return GetValueImports(prop, value)
-            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName)));
+            .Select(import =>
+                (Import: import.Split("/")[^1], Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName))
+            );
     }
 
     public virtual bool IsListComposition(IProperty property)
@@ -248,7 +286,7 @@ public class JavascriptConfig : GeneratorConfigBase
         {
             CompositionProperty p => p,
             AliasProperty { Property: CompositionProperty p } => p,
-            _ => null
+            _ => null,
         };
 
         return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);

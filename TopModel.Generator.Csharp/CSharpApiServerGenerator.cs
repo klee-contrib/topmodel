@@ -24,7 +24,10 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
     protected override string GetFilePath(ModelFile file, string tag)
     {
-        return Path.Combine(Config.GetApiPath(file, tag, withControllers: true), $"{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs");
+        return Path.Combine(
+            Config.GetApiPath(file, tag, withControllers: true),
+            $"{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs"
+        );
     }
 
     protected virtual string GetParam(IProperty param)
@@ -35,7 +38,12 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam();
 
-        var type = Config.GetType(param, nonNullable: param.Required && !isFormParam && !param.IsQueryParam() || param.IsRouteParam() || defaultValue != "null");
+        var type = Config.GetType(
+            param,
+            nonNullable: param.Required && !isFormParam && !param.IsQueryParam()
+                || param.IsRouteParam()
+                || defaultValue != "null"
+        );
 
         var hasAnnotation = false;
 
@@ -93,7 +101,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
                     "int?" => "int",
                     "Guid" => "guid",
                     "Guid?" => "guid",
-                    _ => null
+                    _ => null,
                 };
                 if (paramType != null)
                 {
@@ -102,13 +110,13 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
             }
         }
 
-        return string.Join("/", split);
+        return string.Join('/', split);
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = $"{fileName.ToPascalCase()}Controller";
-        var ns = Config.GetNamespace(endpoints.First(), tag);
+        var ns = Config.GetNamespace(endpoints[0], tag);
 
         var text = File.Exists(filePath)
             ? File.ReadAllText(filePath)
@@ -121,8 +129,8 @@ public class {className} : Controller
 
 }}";
 
-        var syntaxTree = CSharpSyntaxTree.ParseText(text);
-        var existingController = syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+        var syntaxTree = CSharpSyntaxTree.ParseText(text, cancellationToken: default);
+        var existingController = syntaxTree.GetRoot(default).DescendantNodes().OfType<ClassDeclarationSyntax>().First();
 
         var controller = existingController;
 
@@ -145,12 +153,16 @@ public class {className} : Controller
 
             if (Config.UseCancellationTokens)
             {
-                wd.AppendLine($@"{indent}/// <param name=""ct"">CancellationToken (HttpContext.RequestAborted).</param>");
+                wd.AppendLine(
+                    $@"{indent}/// <param name=""ct"">CancellationToken (HttpContext.RequestAborted).</param>"
+                );
             }
 
             if (!Config.NoAsyncControllers || endpoint.Returns != null)
             {
-                wd.AppendLine($"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>");
+                wd.AppendLine(
+                    $"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>"
+                );
             }
 
             if (endpoint.Returns is { Domain.MediaType: string mediaType })
@@ -163,15 +175,20 @@ public class {className} : Controller
                 wd.AppendLine($"{indent}[{annotation}]");
             }
 
-            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(true)}(""{GetRoute(endpoint)}"")]");
-            wd.AppendLine($"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken ct = default" : string.Empty)})");
+            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
+            wd.AppendLine(
+                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken ct = default" : string.Empty)})"
+            );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
             wd.AppendLine($"{indent}}}");
 
             var method = (MethodDeclarationSyntax)ParseMemberDeclaration(wd.ToString())!;
 
-            var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.NamePascal);
+            var existingMethod = controller
+                .DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .SingleOrDefault(method => method.Identifier.Text == endpoint.NamePascal);
             if (existingMethod != null)
             {
                 method = method.WithBody(existingMethod.Body);
@@ -182,15 +199,32 @@ public class {className} : Controller
                 var index = endpoints.IndexOf(endpoint);
                 var firstMethod = controller.Members.OfType<MethodDeclarationSyntax>().FirstOrDefault();
                 var start = firstMethod != null ? controller.Members.IndexOf(firstMethod) : 0;
-                controller = controller.WithMembers(List(controller.Members.Take(start + index).Concat([method]).Concat(controller.Members.Skip(start + index))));
+                controller = controller.WithMembers(
+                    List(
+                        controller
+                            .Members.Take(start + index)
+                            .Concat([method])
+                            .Concat(controller.Members.Skip(start + index))
+                    )
+                );
             }
         }
 
         foreach (var method in controller.DescendantNodes().OfType<MethodDeclarationSyntax>())
         {
-            if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !endpoints.Any(endpoint => endpoint.NamePascal == method.Identifier.Text))
+            if (
+                method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword))
+                && !endpoints.Any(endpoint => endpoint.NamePascal == method.Identifier.Text)
+            )
             {
-                controller = controller.WithMembers(List(controller.Members.Where(member => ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty) != method.Identifier.Text)));
+                controller = controller.WithMembers(
+                    List(
+                        controller.Members.Where(member =>
+                            ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty)
+                            != method.Identifier.Text
+                        )
+                    )
+                );
             }
         }
 
@@ -201,6 +235,6 @@ public class {className} : Controller
 
         using var fw = OpenFileWriter(filePath);
         fw.HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !";
-        fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
+        fw.Write(syntaxTree.GetRoot(default).ReplaceNode(existingController, controller).ToString());
     }
 }

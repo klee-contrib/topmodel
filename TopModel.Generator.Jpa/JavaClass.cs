@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -14,19 +15,19 @@ public class JavaClass(string name)
 
     public string? Modifier { get; set; }
 
-    public List<JavaAnnotation> Annotations { get; } = [];
+    public IList<JavaAnnotation> Annotations { get; } = [];
 
-    public List<string> Imports { get; } = [];
+    public IList<string> Imports { get; } = [];
 
-    public List<string> Implements { get; } = [];
+    public IList<string> Implements { get; } = [];
 
     public bool Interface { get; set; }
 
-    public List<JavaField> Fields { get; } = [];
+    public IList<JavaField> Fields { get; } = [];
 
-    public List<JavaConstructor> Constructors { get; } = [];
+    public IList<JavaConstructor> Constructors { get; } = [];
 
-    public List<JavaMethod> Methods { get; } = [];
+    public IList<JavaMethod> Methods { get; } = [];
 
     public string Comment { get; set; } = string.Empty;
 

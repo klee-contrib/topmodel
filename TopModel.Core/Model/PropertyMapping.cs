@@ -13,25 +13,25 @@ public class PropertyMapping : IPropertyContainer
 
     public FromMapper FromMapper { get; set; }
 
-    public ModelFile ModelFile => throw new NotImplementedException();
+    public ModelFile ModelFile => throw new NotSupportedException();
 
-    public LocatedString Name => throw new NotImplementedException();
+    public LocatedString Name => throw new NotSupportedException();
 
     public string NamePascal => Property.NamePascal;
 
     public string NameCamel => Property.NameCamel;
 
-    public Namespace Namespace => throw new NotImplementedException();
+    public Namespace Namespace => throw new NotSupportedException();
 
     public IList<IProperty> Properties => [Property];
 
     public bool PreservePropertyCasing => false;
 
-    public IList<DecoratorInstance> Decorators => throw new NotImplementedException();
+    public IList<DecoratorInstance> Decorators => throw new NotSupportedException();
 
-    public IList<DecoratorReference> DecoratorReferences => throw new NotImplementedException();
+    public IList<DecoratorReference> DecoratorReferences => throw new NotSupportedException();
 
-    public IList<AnnotationInstance> Annotations => throw new NotImplementedException();
+    public IList<AnnotationInstance> Annotations => throw new NotSupportedException();
 
-    public IList<AnnotationReference> AnnotationReferences => throw new NotImplementedException();
+    public IList<AnnotationReference> AnnotationReferences => throw new NotSupportedException();
 }

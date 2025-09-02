@@ -4,7 +4,7 @@ namespace TopModel.Core.Model;
 
 public interface IVariableContainer
 {
-    Dictionary<string, Variable> Variables { get; }
+    IDictionary<string, Variable> Variables { get; }
 
     IEnumerable<ParameterReference> VariableReferences { get; }
 

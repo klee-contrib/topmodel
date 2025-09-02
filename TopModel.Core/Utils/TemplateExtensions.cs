@@ -11,7 +11,14 @@ public static class TemplateExtensions
         return template.ParseTemplate(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag);
     }
 
-    public static string ParseTemplate(this string template, IProperty p, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(
+        this string template,
+        IProperty p,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -21,13 +28,23 @@ public static class TemplateExtensions
         string result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(p, templateParameters, parameterValues, config, tag));
+            result = result.Replace(
+                t.Value,
+                t.Value.Trim('{', '}').ResolveVariable(p, templateParameters, parameterValues, config, tag)
+            );
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, IPropertyContainer c, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(
+        this string template,
+        IPropertyContainer c,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -37,13 +54,22 @@ public static class TemplateExtensions
         string result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(c, templateParameters, parameterValues, config, tag));
+            result = result.Replace(
+                t.Value,
+                t.Value.Trim('{', '}').ResolveVariable(c, templateParameters, parameterValues, config, tag)
+            );
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(
+        this string template,
+        Domain domainFrom,
+        Domain domainTo,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -95,10 +121,10 @@ public static class TemplateExtensions
                         value = value.ToPath();
                         break;
                     case "head":
-                        value = value.Split('/', '\\', '.').First();
+                        value = value.Split('/', '\\', '.')[0];
                         break;
                     case "last":
-                        value = value.Split('/', '\\', '.').Last();
+                        value = value.Split('/', '\\', '.')[^1];
                         break;
                     case "tail":
                         value = value.Any(c => c == '/' || c == '\\' || c == '.')
@@ -120,9 +146,9 @@ public static class TemplateExtensions
         return regex.Matches(input).Cast<Match>();
     }
 
-    private static string ResolveCustomProperty(string input, Dictionary<string, string> customProperties)
+    private static string ResolveCustomProperty(string input, IDictionary<string, string> customProperties)
     {
-        var propertyName = input.Split(':').First();
+        var propertyName = input.Split(':')[0];
         if (customProperties.TryGetValue(propertyName, out var value))
         {
             return value.Transform(input);
@@ -131,20 +157,34 @@ public static class TemplateExtensions
         return string.Empty;
     }
 
-    private static string ResolveVariable(this string input, Domain domain, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        Domain domain,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
-        return (input.Split(':').First() switch
-        {
-            "mediaType" => domain.MediaType ?? string.Empty,
-            "length" => domain.Length?.ToString() ?? string.Empty,
-            "scale" => domain.Scale?.ToString() ?? string.Empty,
-            "name" => domain.Name ?? string.Empty,
-            "type" => config.GetImplementation(domain)?.Type ?? string.Empty,
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), tag: tag)
-        }).Transform(input);
+        return (
+            input.Split(':')[0] switch
+            {
+                "mediaType" => domain.MediaType ?? string.Empty,
+                "length" => domain.Length?.ToString() ?? string.Empty,
+                "scale" => domain.Scale?.ToString() ?? string.Empty,
+                "name" => domain.Name ?? string.Empty,
+                "type" => config.GetImplementation(domain)?.Type ?? string.Empty,
+                var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), tag: tag),
+            }
+        ).Transform(input);
     }
 
-    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        IPropertyContainer container,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         return container switch
         {
@@ -154,7 +194,14 @@ public static class TemplateExtensions
         };
     }
 
-    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        IProperty p,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (input == null || input.Length == 0)
         {
@@ -163,7 +210,8 @@ public static class TemplateExtensions
 
         if (input.StartsWith("parent."))
         {
-            return input["parent.".Length..].ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
+            return input["parent.".Length..]
+                .ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("class."))
@@ -173,7 +221,8 @@ public static class TemplateExtensions
 
         if (input.StartsWith("endpoint."))
         {
-            return input["endpoint.".Length..].ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
+            return input["endpoint.".Length..]
+                .ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("domain."))
@@ -192,12 +241,13 @@ public static class TemplateExtensions
             {
                 AssociationProperty ap => ap.Association,
                 AliasProperty { Property: AssociationProperty ap } => ap.Association,
-                _ => null // impossible
+                _ => null, // impossible
             };
 
             if (association != null)
             {
-                return input["association.".Length..].ResolveVariable(association, templateParameters, parameterValues, config, tag);
+                return input["association.".Length..]
+                    .ResolveVariable(association, templateParameters, parameterValues, config, tag);
             }
         }
 
@@ -207,34 +257,49 @@ public static class TemplateExtensions
             {
                 CompositionProperty cp => cp.Composition,
                 AliasProperty { Property: CompositionProperty cp } => cp.Composition,
-                _ => null // impossible
+                _ => null, // impossible
             };
 
             if (composition != null)
             {
-                return input["composition.".Length..].ResolveVariable(composition, templateParameters, parameterValues, config, tag);
+                return input["composition.".Length..]
+                    .ResolveVariable(composition, templateParameters, parameterValues, config, tag);
             }
         }
 
-        var result = (input.Split(':').First() switch
-        {
-            "name" => p.Name ?? string.Empty,
-            "sqlName" => p.SqlName ?? string.Empty,
-            "paramName" => p.GetParamName().ToString(),
-            "trigram" => p.Trigram ?? p.Class?.Trigram ?? string.Empty,
-            "label" => p.Label ?? string.Empty,
-            "comment" => p.Comment,
-            "required" => p.Required.ToString().ToLower(),
-            "resourceKey" => p.ResourceKey.ToString(),
-            "commentResourceKey" => p.CommentResourceKey.ToString(),
-            "defaultValue" => p.DefaultValue?.ToString() ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: p.Parent.Namespace.Module, tag: tag)
-        }).Transform(input);
+        var result = (
+            input.Split(':')[0] switch
+            {
+                "name" => p.Name ?? string.Empty,
+                "sqlName" => p.SqlName ?? string.Empty,
+                "paramName" => p.GetParamName(),
+                "trigram" => p.Trigram ?? p.Class?.Trigram ?? string.Empty,
+                "label" => p.Label ?? string.Empty,
+                "comment" => p.Comment,
+                "required" => p.Required.ToString().ToLower(),
+                "resourceKey" => p.ResourceKey,
+                "commentResourceKey" => p.CommentResourceKey,
+                "defaultValue" => p.DefaultValue ?? string.Empty,
+                var i => i.TryResolveParameters(templateParameters, parameterValues)
+                    ?? config.ResolveVariables(
+                        config.ResolveGlobalVariables($@"{{{i}}}"),
+                        module: p.Parent.Namespace.Module,
+                        tag: tag
+                    ),
+            }
+        ).Transform(input);
 
         return result;
     }
 
-    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        Class c,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (input == null || input.Length == 0)
         {
@@ -248,7 +313,8 @@ public static class TemplateExtensions
                 return string.Empty;
             }
 
-            return input["primaryKey.".Length..].ResolveVariable(c.PrimaryKey.FirstOrDefault()!, templateParameters, parameterValues, config, tag);
+            return input["primaryKey.".Length..]
+                .ResolveVariable(c.PrimaryKey.FirstOrDefault()!, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("extends."))
@@ -258,7 +324,8 @@ public static class TemplateExtensions
                 return string.Empty;
             }
 
-            return input["extends.".Length..].ResolveVariable(c.Extends, templateParameters, parameterValues, config, tag);
+            return input["extends.".Length..]
+                .ResolveVariable(c.Extends, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -280,28 +347,40 @@ public static class TemplateExtensions
 
                 return nextInput.ResolveVariable(c.Properties[index], templateParameters, parameterValues, config, tag);
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return string.Empty;
         }
 
-        var result = (input.Split(':').First() switch
-        {
-            "trigram" => c.Trigram ?? string.Empty,
-            "name" => c.Name,
-            "sqlName" => c.SqlName,
-            "comment" => c.Comment,
-            "label" => c.Label ?? string.Empty,
-            "pluralName" => c.PluralName ?? string.Empty,
-            "module" => c.Namespace.Module ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: c.Namespace.Module, tag: tag)
-        }).Transform(input);
+        var result = (
+            input.Split(':')[0] switch
+            {
+                "trigram" => c.Trigram ?? string.Empty,
+                "name" => c.Name,
+                "sqlName" => c.SqlName,
+                "comment" => c.Comment,
+                "label" => c.Label ?? string.Empty,
+                "pluralName" => c.PluralName ?? string.Empty,
+                "module" => c.Namespace.Module ?? string.Empty,
+                var i => i.TryResolveParameters(templateParameters, parameterValues)
+                    ?? config.ResolveVariables(
+                        config.ResolveGlobalVariables($@"{{{i}}}"),
+                        module: c.Namespace.Module,
+                        tag: tag
+                    ),
+            }
+        ).Transform(input);
 
         return result;
     }
 
-    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        Endpoint e,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (input == null || input.Length == 0)
         {
@@ -315,7 +394,8 @@ public static class TemplateExtensions
                 return string.Empty;
             }
 
-            return input["returns.".Length..].ResolveVariable(e.Returns, templateParameters, parameterValues, config, tag);
+            return input["returns.".Length..]
+                .ResolveVariable(e.Returns, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -337,38 +417,51 @@ public static class TemplateExtensions
 
                 return nextInput.ResolveVariable(e.Params[index], templateParameters, parameterValues, config, tag);
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return string.Empty;
         }
 
-        var result = (input.Split(':').First() switch
-        {
-            "name" => e.Name,
-            "method" => e.Method,
-            "route" => e.Route,
-            "description" => e.Description,
-            "module" => e.Namespace.Module ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: e.Namespace.Module, tag: tag)
-        }).Transform(input);
+        var result = (
+            input.Split(':')[0] switch
+            {
+                "name" => e.Name,
+                "method" => e.Method,
+                "route" => e.Route,
+                "description" => e.Description,
+                "module" => e.Namespace.Module ?? string.Empty,
+                var i => i.TryResolveParameters(templateParameters, parameterValues)
+                    ?? config.ResolveVariables(
+                        config.ResolveGlobalVariables($@"{{{i}}}"),
+                        module: e.Namespace.Module,
+                        tag: tag
+                    ),
+            }
+        ).Transform(input);
 
         return result;
     }
 
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(
+        this string input,
+        Domain domainFrom,
+        Domain domainTo,
+        WatcherConfigBase config,
+        string? tag = null
+    )
     {
         if (input.StartsWith("from."))
         {
             return input["from.".Length..].ResolveVariable(domainFrom, config, tag);
         }
-        else
-        {
-            return input["to.".Length..].ResolveVariable(domainTo, config, tag);
-        }
+
+        return input["to.".Length..].ResolveVariable(domainTo, config, tag);
     }
 
-    private static string? TryResolveParameters(this string input, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues)
+    private static string? TryResolveParameters(
+        this string input,
+        IList<TemplateParameter> templateParameters,
+        IDictionary<string, string> parameterValues
+    )
     {
         foreach (var parameter in templateParameters)
         {

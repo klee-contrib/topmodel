@@ -74,18 +74,18 @@ public class JpaConfig : GeneratorConfigBase
     /// </summary>
     public string CompositionConverterCanonicalName { get; set; } = "{package}.{class}Converter";
 
-    public string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.').Last();
+    public string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.')[^1];
 
     public string JavaxOrJakarta => PersistenceMode.ToString().ToLower();
 
-    public JavaAnnotation GeneratedAnnotation => new JavaAnnotation("Generated", imports: $"{JavaxOrJakarta}.annotation.Generated")
-                .AddAttribute("value", "\"TopModel : https://github.com/klee-contrib/topmodel\"");
+    public JavaAnnotation GeneratedAnnotation =>
+        new JavaAnnotation("Generated", imports: $"{JavaxOrJakarta}.annotation.Generated").AddAttribute(
+            "value",
+            "\"TopModel : https://github.com/klee-contrib/topmodel\""
+        );
 
-    public override Dictionary<string, List<string>> TemplateAttributes => new()
-    {
-        [nameof(CompositionConverterCanonicalName)] = ["package", "class"],
-        [nameof(DaosName)] = ["class"],
-    };
+    public override Dictionary<string, List<string>> TemplateAttributes =>
+        new() { [nameof(CompositionConverterCanonicalName)] = ["package", "class"], [nameof(DaosName)] = ["class"] };
 
     /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany
@@ -165,53 +165,58 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Listeners à ajouter aux dataflows
     /// </summary>
-    public List<string> DataFlowsListeners { get; set; } = [];
+    public IList<string> DataFlowsListeners { get; set; } = [];
 
-    public override string[] PropertiesWithLangVariableSupport =>
-    [
-        nameof(ResourcesPath)
-    ];
+    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesPath)];
 
     public override string[] PropertiesWithTagVariableSupport =>
-    [
-        nameof(EntitiesPath),
-        nameof(DaosPath),
-        nameof(DtosPath),
-        nameof(ApiPath),
-        nameof(EnumsPath),
-        nameof(EnumsValuesPath),
-        nameof(ApiGeneration),
-        nameof(ResourcesPath),
-        nameof(DbSchema)
-    ];
+        [
+            nameof(EntitiesPath),
+            nameof(DaosPath),
+            nameof(DtosPath),
+            nameof(ApiPath),
+            nameof(EnumsPath),
+            nameof(EnumsValuesPath),
+            nameof(ApiGeneration),
+            nameof(ResourcesPath),
+            nameof(DbSchema),
+        ];
 
     public override string[] PropertiesWithModuleVariableSupport =>
-    [
-        nameof(EntitiesPath),
-        nameof(DaosPath),
-        nameof(DtosPath),
-        nameof(ApiPath),
-        nameof(EnumsPath),
-        nameof(EnumsValuesPath),
-        nameof(DataFlowsPath)
-    ];
+        [
+            nameof(EntitiesPath),
+            nameof(DaosPath),
+            nameof(DtosPath),
+            nameof(ApiPath),
+            nameof(EnumsPath),
+            nameof(EnumsValuesPath),
+            nameof(DataFlowsPath),
+        ];
 
     /// <summary>
     /// Localisation des enums de valeurs, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/enums/{module:path}'.
     /// </summary>
     public string EnumsValuesPath { get; set; } = "default";
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
+    public override bool CanClassUseEnums(
+        Class classe,
+        IEnumerable<Class>? availableClasses = null,
+        IProperty? prop = null
+    )
     {
-        return !UseJdbc && base.CanClassUseEnums(classe, availableClasses, prop)
-            && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
+        return !UseJdbc
+            && base.CanClassUseEnums(classe, availableClasses, prop)
+            && !classe
+                .Properties.OfType<AssociationProperty>()
+                .Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
     }
 
     public string GetApiPath(ModelFile file, string tag)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
+            ResolveVariables(ApiPath!, tag, module: file.Namespace.Module).ToFilePath()
+        );
     }
 
     public string GetBestClassTag(Class classe, string tag)
@@ -223,17 +228,19 @@ public class JpaConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.java");
+            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module)
+                .ToFilePath(),
+            $"{classe.NamePascal}.java"
+        );
     }
 
     public string GetDataFlowConfigFilePath(string module)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(DataFlowsPath!, module: module).ToFilePath()
-            .ToFilePath(),
-            $"{module.ToPascalCase()}JobConfiguration.java");
+            ResolveVariables(DataFlowsPath!, module: module).ToFilePath().ToFilePath(),
+            $"{module.ToPascalCase()}JobConfiguration.java"
+        );
     }
 
     public string GetDataFlowFilePath(DataFlow df, string tag)
@@ -241,7 +248,8 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
-            $"{df.Name.ToPascalCase()}Flow.java");
+            $"{df.Name.ToPascalCase()}Flow.java"
+        );
     }
 
     public string GetDataFlowPartialFilePath(DataFlow df, string tag)
@@ -249,15 +257,17 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
-            $"{df.Name.ToPascalCase()}PartialFlow.java");
+            $"{df.Name.ToPascalCase()}PartialFlow.java"
+        );
     }
 
     public IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)
     {
-        return GetAnnotations(property, tag).Select(a =>
-        {
-            return new JavaAnnotation(name: a.Annotation, imports: a.Imports.ToArray());
-        });
+        return GetAnnotations(property, tag)
+            .Select(a =>
+            {
+                return new JavaAnnotation(name: a.Annotation, imports: a.Imports.ToArray());
+            });
     }
 
     public string GetEnumFileName(IProperty property, Class classe, string tag)
@@ -265,10 +275,11 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{GetEnumName(property, classe)}.java");
+            $"{GetEnumName(property, classe)}.java"
+        );
     }
 
-    public string GetEnumName(IProperty property, Class classe)
+    public virtual string GetEnumName(IProperty property, Class classe)
     {
         return $"{classe.NamePascal}{property.Name.ToPascalCase()}";
     }
@@ -283,7 +294,8 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(EnumsValuesPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.java");
+            $"{classe.NamePascal}.java"
+        );
     }
 
     public string GetEnumValuePackageName(Class classe, string tag)
@@ -297,7 +309,8 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
-            $"{GetMapperName(ns, modelPath)}.java");
+            $"{GetMapperName(ns, modelPath)}.java"
+        );
     }
 
     public string GetMapperFilePath((Class Classe, ClassMappings Mapper) mapper, string tag)
@@ -306,7 +319,8 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
-            $"{GetMapperName(ns, modelPath)}.java");
+            $"{GetMapperName(ns, modelPath)}.java"
+        );
     }
 
     public string GetMapperImport(Namespace ns, string modelPath, string tag)
@@ -359,8 +373,15 @@ public class JpaConfig : GeneratorConfigBase
     {
         return GetPackageName(
             classe.Namespace,
-            isPersistent.HasValue ? isPersistent.Value ? EntitiesPath : DtosPath : classe.IsPersistent ? EntitiesPath : DtosPath,
-            tag);
+            isPersistent.HasValue
+                ? isPersistent.Value
+                    ? EntitiesPath
+                    : DtosPath
+                : classe.IsPersistent
+                    ? EntitiesPath
+                    : DtosPath,
+            tag
+        );
     }
 
     public string GetPackageName(Namespace ns, string modelPath, string tag)
@@ -390,6 +411,10 @@ public class JpaConfig : GeneratorConfigBase
 
     protected override bool IsEnumNameValid(string name)
     {
-        return base.IsEnumNameValid(name) && !Regex.IsMatch(name ?? string.Empty, "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)");
+        return base.IsEnumNameValid(name)
+            && !Regex.IsMatch(
+                name ?? string.Empty,
+                "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"
+            );
     }
 }

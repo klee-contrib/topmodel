@@ -10,8 +10,10 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> logger, IFileWriterProvider writerProvider)
-    : EndpointsGeneratorBase<JavascriptConfig>(logger, writerProvider)
+public class JavascriptApiClientGenerator(
+    ILogger<JavascriptApiClientGenerator> logger,
+    IFileWriterProvider writerProvider
+) : EndpointsGeneratorBase<JavascriptConfig>(logger, writerProvider)
 {
     public override string Name => "JSApiClientGen";
 
@@ -23,11 +25,16 @@ public class JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var fetch = Config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
-        var fetchImport = Config.FetchPath.StartsWith('@') || !Config.FetchPath.StartsWith('.')
-            ? Config.ResolveVariables(Config.FetchPath, tag)
-            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))).Replace("\\", "/");
+        var fetchImport =
+            Config.FetchPath.StartsWith('@') || !Config.FetchPath.StartsWith('.')
+                ? Config.ResolveVariables(Config.FetchPath, tag)
+                : Path.GetRelativePath(
+                        string.Join('/', filePath.Split('/').SkipLast(1)),
+                        Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))
+                    )
+                    .Replace('\\', '/');
 
-        using var fw = OpenFileWriter(filePath, false);
+        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
 
         fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
@@ -66,7 +73,9 @@ public class JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> 
             foreach (var param in endpoint.Params)
             {
                 var defaultValue = Config.GetValue(param, Classes);
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+                fw.Write(
+                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                );
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
@@ -150,9 +159,17 @@ public class JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> 
             fw.WriteLine("}");
         }
 
-        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is not CompositionProperty and not AliasProperty { Property: CompositionProperty } && Config.GetType(p).Contains("File"))))
+        if (
+            endpoints.Any(endpoint =>
+                endpoint.Params.Any(p =>
+                    p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+                    && Config.GetType(p).Contains("File")
+                )
+            )
+        )
         {
-            fw.WriteLine(@"
+            fw.WriteLine(
+                @"
 function fillFormData(data: any, formData: FormData, prefix = """") {
     if (Array.isArray(data)) {
         for (const [i, item] of data.entries()) {
@@ -165,7 +182,8 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
     } else {
         formData.append(prefix, data);
     }
-}");
+}"
+            );
         }
     }
 }

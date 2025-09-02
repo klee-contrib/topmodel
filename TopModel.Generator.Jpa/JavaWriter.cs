@@ -25,7 +25,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <inheritdoc cref="IDisposable.Dispose" />
     void IDisposable.Dispose()
     {
-        writer.IndentValue = "	";
+        writer.IndentValue = "\t";
         writer.WriteLine($"package {packageName};");
         WriteImports();
         _toWrite.ForEach(l => writer.WriteLine(l.Indent, l.Line));
@@ -58,10 +58,18 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         Write(indentationLevel, javaMethod.Annotations);
         var hasBody = javaMethod.Body.Count > 0;
-        _toWrite.Add(new WriterLine() { Line = @$"{javaMethod.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel });
+        _toWrite.Add(
+            new WriterLine() { Line = @$"{javaMethod.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel }
+        );
         foreach (var bodyLine in javaMethod.Body)
         {
-            _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Line == string.Empty ? 0 : bodyLine.Indent + indentationLevel + 1 });
+            _toWrite.Add(
+                new WriterLine()
+                {
+                    Line = bodyLine.Line,
+                    Indent = bodyLine.Line == string.Empty ? 0 : bodyLine.Indent + indentationLevel + 1,
+                }
+            );
         }
 
         if (hasBody)
@@ -113,7 +121,9 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
     public void Write(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
     {
-        foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()).OrderBy(j => j.ToString().Length))
+        foreach (
+            var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(')[0]).OrderBy(j => j.ToString().Length)
+        )
         {
             WriteLine(indentationLevel, annotation);
         }
@@ -127,7 +137,13 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="implementingInterfaces">Interfaces implémentées.</param>
     /// <param name="classType">Type de classe à implémenter (classe, interface...).</param>
-    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IList<string>? implementingInterfaces = null, string classType = "class")
+    public void WriteClassDeclaration(
+        string name,
+        string? modifier,
+        string? inheritedClass = null,
+        IList<string>? implementingInterfaces = null,
+        string classType = "class"
+    )
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -181,7 +197,9 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         }
 
         var hasBody = constructor.Body.Count > 0;
-        _toWrite.Add(new WriterLine() { Line = @$"{constructor.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel });
+        _toWrite.Add(
+            new WriterLine() { Line = @$"{constructor.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel }
+        );
         foreach (var bodyLine in constructor.Body)
         {
             _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Indent + indentationLevel + 1 });
@@ -336,7 +354,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         var sb = new StringBuilder();
         sb.Append("/**\n");
-        sb.Append(" * " + summary.Replace("\n", "\n * "));
+        sb.Append(" * ").Append(summary.Replace("\n", "\n * "));
         if (!summary.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
             sb.Append('.');
@@ -428,11 +446,15 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="fw">FileWriter.</param>
     private void WriteImports()
     {
-        _imports = _imports.Distinct().Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != packageName).Distinct().ToArray().ToList();
+        _imports = _imports
+            .Distinct()
+            .Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != packageName)
+            .Distinct()
+            .ToList();
         var currentPackage = string.Empty;
-        foreach (var import in this._imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).OrderBy(x => x))
+        foreach (var import in this._imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).Order())
         {
-            var package = import.Split('.').First();
+            var package = import.Split('.')[0];
             if (package != currentPackage)
             {
                 writer.WriteLine();
@@ -442,9 +464,9 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             writer.WriteLine($"import {import};");
         }
 
-        foreach (var import in this._imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).OrderBy(x => x))
+        foreach (var import in this._imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).Order())
         {
-            var package = import.Split('.').First();
+            var package = import.Split('.')[0];
             if (package != currentPackage)
             {
                 writer.WriteLine();

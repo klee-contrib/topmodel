@@ -53,6 +53,7 @@ public class AssociationProperty : IProperty
     public Decorator Decorator { get; set; }
 
     public PropertyMapping PropertyMapping { get; set; }
+
 #nullable enable
 
     public string? Role { get; set; }
@@ -163,13 +164,21 @@ public class AssociationProperty : IProperty
 
     public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
 
-    public string NameByClassPascal => Type.IsToMany() ? $"{NamePascal}" : $"{ClassName?.ToPascalCase(strictIfUppercase: true) ?? Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
+    public string NameByClassPascal =>
+        Type.IsToMany()
+            ? $"{NamePascal}"
+            : $"{ClassName?.ToPascalCase(strictIfUppercase: true) ?? Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
 
-    public string NameByClassCamel => Type.IsToMany() ? $"{NameCamel}" : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
+    public string NameByClassCamel =>
+        Type.IsToMany()
+            ? $"{NameCamel}"
+            : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
-    public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
+    public Domain Domain =>
+        Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
-    public Dictionary<string, string> DomainParameters => Property?.DomainParameters ?? [];
+    public IDictionary<string, string> DomainParameters =>
+        Property?.DomainParameters ?? new Dictionary<string, string>();
 
     public bool PrimaryKey { get; set; }
 
@@ -209,7 +218,7 @@ public class AssociationProperty : IProperty
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
-            Annotations = Annotations
+            Annotations = Annotations,
         };
     }
 

@@ -3,8 +3,10 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Oracle;
 
-public class OracleReferenceListGenerator(ILogger<OracleReferenceListGenerator> logger, IFileWriterProvider writerProvider)
-    : AbstractReferenceListGenerator(logger, writerProvider)
+public class OracleReferenceListGenerator(
+    ILogger<OracleReferenceListGenerator> logger,
+    IFileWriterProvider writerProvider
+) : AbstractReferenceListGenerator(logger, writerProvider)
 {
     public override string Name => "OracleRefListGen";
 

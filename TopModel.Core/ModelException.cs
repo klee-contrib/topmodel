@@ -13,9 +13,7 @@ public class ModelException : LegitException
     /// </summary>
     /// <param name="message">Message.</param>
     public ModelException(string message)
-        : base(message)
-    {
-    }
+        : base(message) { }
 
     /// <summary>
     /// Constructeur.

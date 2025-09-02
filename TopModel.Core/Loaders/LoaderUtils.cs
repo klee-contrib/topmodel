@@ -22,7 +22,9 @@ public static class LoaderUtils
                         name = parser.Consume<Scalar>();
                         break;
                     case "parameters":
-                        parameters = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser);
+                        parameters = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(
+                            parser
+                        );
                         break;
                 }
             });

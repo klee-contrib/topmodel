@@ -5,14 +5,18 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class ClassGroupGeneratorBase<T>(ILogger<ClassGroupGeneratorBase<T>> logger, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
+public abstract class ClassGroupGeneratorBase<T>(
+    ILogger<ClassGroupGeneratorBase<T>> logger,
+    IFileWriterProvider writerProvider
+) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    public override List<string> GeneratedFiles => Classes
-        .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetFileNames(c, tag)))
-        .Select(f => f.FileName)
-        .Distinct()
-        .ToList();
+    public override List<string> GeneratedFiles =>
+        Classes
+            .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetFileNames(c, tag)))
+            .Select(f => f.FileName)
+            .Distinct()
+            .ToList();
 
     protected abstract IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag);
 
@@ -22,14 +26,21 @@ public abstract class ClassGroupGeneratorBase<T>(ILogger<ClassGroupGeneratorBase
     {
         Parallel.ForEach(
             Classes
-                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                    .SelectMany(tag => GetFileNames(classe, tag)
-                        .Select(f => (key: (f.FileType, f.FileName), tag, classe))))
+                .SelectMany(classe =>
+                    Config
+                        .Tags.Intersect(classe.Tags)
+                        .SelectMany(tag =>
+                            GetFileNames(classe, tag).Select(f => (key: (f.FileType, f.FileName), tag, classe))
+                        )
+                )
                 .GroupBy(f => f.key),
-            file => HandleFile(
-                file.Key.FileType,
-                file.Key.FileName,
-                file.First().tag,
-                file.Select(f => f.classe).Distinct()));
+            file =>
+                HandleFile(
+                    file.Key.FileType,
+                    file.Key.FileName,
+                    file.First().tag,
+                    file.Select(f => f.classe).Distinct()
+                )
+        );
     }
 }

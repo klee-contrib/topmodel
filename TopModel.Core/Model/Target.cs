@@ -38,5 +38,5 @@ public enum Target
     /// Propriété de composition.
     /// </summary>
     [EnumMember(Value = "composition-property")]
-    CompositionProperty
+    CompositionProperty,
 }

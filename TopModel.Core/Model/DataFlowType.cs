@@ -25,5 +25,5 @@ public enum DataFlowType
     /// <summary>
     /// Fusion des données et désactivation des données non matchées (bulk merge + bulk update)
     /// </summary>
-    MergeDisable
+    MergeDisable,
 }

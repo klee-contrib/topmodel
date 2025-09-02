@@ -15,7 +15,9 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1) && !Config.CanClassUseEnums(classe, Classes);
+        return classe.IsPersistent
+            && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1)
+            && !Config.CanClassUseEnums(classe, Classes);
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -24,7 +26,8 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{className}.java");
+            $"{className}.java"
+        );
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -35,38 +38,40 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             return;
         }
 
-        var packageName = Config.ResolveVariables(
-            Config.DaosPath!,
-            tag,
-            module: classe.Namespace.Module).ToPackageName();
+        var packageName = Config
+            .ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module)
+            .ToPackageName();
         var javaClass = GetJavaClass(classe, tag);
 
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(0, javaClass);
     }
 
     private string GetClassName(Class classe)
     {
-        return Config.DaosName != null ? Config.DaosName.Replace("{class}", classe.NamePascal) : $"{(Config.DaosAbstract ? "Abstract" : string.Empty)}{classe.NamePascal}DAO";
+        return Config.DaosName != null
+            ? Config.DaosName.Replace("{class}", classe.NamePascal)
+            : $"{(Config.DaosAbstract ? "Abstract" : string.Empty)}{classe.NamePascal}DAO";
     }
 
     private JavaClass GetJavaClass(Class classe, string tag)
     {
-        var packageName = Config.ResolveVariables(
-            Config.DaosPath!,
-            tag,
-            module: classe.Namespace.Module).ToPackageName();
+        var packageName = Config
+            .ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module)
+            .ToPackageName();
         var javaClass = new JavaClass(GetClassName(classe))
         {
             Package = packageName,
             Interface = true,
-            Visibility = "public"
+            Visibility = "public",
         };
         javaClass.Imports.Add(classe.GetImport(Config, tag));
 
         if (Config.CanClassUseEnums(classe))
         {
-            javaClass.Imports.Add($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends!.PrimaryKey.Single())}");
+            javaClass.Imports.Add(
+                $"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends!.PrimaryKey.Single())}"
+            );
         }
 
         string pk;
@@ -93,7 +98,8 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         if (Config.DaosInterface != null)
         {
             int lastIndexOf = Config.DaosInterface.LastIndexOf('.');
-            string daosInterfaceName = lastIndexOf > -1 ? Config.DaosInterface[(lastIndexOf + 1)..] : Config.DaosInterface;
+            string daosInterfaceName =
+                lastIndexOf > -1 ? Config.DaosInterface[(lastIndexOf + 1)..] : Config.DaosInterface;
             daosInterface = daosInterfaceName;
             daosInterfaceImport = Config.DaosInterface;
         }
@@ -108,7 +114,9 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
 
         if (Config.DaosAbstract)
         {
-            javaClass.Add(new JavaAnnotation("NoRepositoryBean", imports: "org.springframework.data.repository.NoRepositoryBean"));
+            javaClass.Add(
+                new JavaAnnotation("NoRepositoryBean", imports: "org.springframework.data.repository.NoRepositoryBean")
+            );
         }
 
         return javaClass;

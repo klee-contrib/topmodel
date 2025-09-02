@@ -40,7 +40,9 @@ public class AnnotationLoader(FileChecker fileChecker) : ILoader<Annotation>
 
                     break;
                 default:
-                    annotation.Implementations[prop.Value] = fileChecker.Deserialize<IList<AnnotationImplementation>>(parser);
+                    annotation.Implementations[prop.Value] = fileChecker.Deserialize<IList<AnnotationImplementation>>(
+                        parser
+                    );
                     break;
             }
         });

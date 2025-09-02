@@ -4,7 +4,11 @@ public class OpenApiConfig
 {
     private string? _outputDirectory;
 
-    public string OutputDirectory { get => _outputDirectory ?? Module; set => _outputDirectory = value.Replace("{module}", Module); }
+    public string OutputDirectory
+    {
+        get => _outputDirectory ?? Module;
+        set => _outputDirectory = value.Replace("{module}", Module);
+    }
 
     public string Module { get; set; } = "OpenApi";
 

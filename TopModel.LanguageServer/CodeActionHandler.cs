@@ -10,18 +10,28 @@ using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer;
 
-public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache modelFileCache, ModelConfig config) : CodeActionHandlerBase
+public class CodeActionHandler(
+    ModelStore modelStore,
+    ILanguageServerFacade facade,
+    ModelFileCache modelFileCache,
+    ModelConfig config
+) : CodeActionHandlerBase
 {
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
     }
 
-    public override async Task<CommandOrCodeActionContainer?> Handle(CodeActionParams request, CancellationToken cancellationToken)
+    public override async Task<CommandOrCodeActionContainer?> Handle(
+        CodeActionParams request,
+        CancellationToken cancellationToken
+    )
     {
-        await modelStore.WaitForUpdates();
+        await modelStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var modelFile = modelStore.Files.SingleOrDefault(f =>
+            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
+        );
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
@@ -65,8 +75,8 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
 
     protected static CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
-        var start = modelFile.Uses.First().ToRange()!.Start;
-        var end = modelFile.Uses.Last().ToRange()!.End;
+        var start = modelFile.Uses[0].ToRange()!.Start;
+        var end = modelFile.Uses[^1].ToRange()!.End;
         var uselessImports = modelFile.UselessImports;
         return new CodeAction()
         {
@@ -75,29 +85,32 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
             IsPreferred = true,
             Edit = new WorkspaceEdit
             {
-                Changes =
-                    new Dictionary<DocumentUri, IEnumerable<TextEdit>>
-                    {
-                        [request.TextDocument.Uri] =
-                        [
-                            new()
-                            {
-                                NewText = string.Join(
-                                    "\n  - ",
-                                    modelFile.Uses
-                                        .Except(uselessImports)
-                                        .DistinctBy(u => u.ReferenceName)
-                                        .OrderBy(u => u.ReferenceName)
-                                        .Select(u => u.ReferenceName)),
-                                Range = new Range(start, end)
-                            }
-                        ]
-                    }
-            }
+                Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                {
+                    [request.TextDocument.Uri] =
+                    [
+                        new()
+                        {
+                            NewText = string.Join(
+                                "\n  - ",
+                                modelFile
+                                    .Uses.Except(uselessImports)
+                                    .DistinctBy(u => u.ReferenceName)
+                                    .OrderBy(u => u.ReferenceName)
+                                    .Select(u => u.ReferenceName)
+                            ),
+                            Range = new Range(start, end),
+                        },
+                    ],
+                },
+            },
         };
     }
 
-    protected override CodeActionRegistrationOptions CreateRegistrationOptions(CodeActionCapability capability, ClientCapabilities clientCapabilities)
+    protected override CodeActionRegistrationOptions CreateRegistrationOptions(
+        CodeActionCapability capability,
+        ClientCapabilities clientCapabilities
+    )
     {
         return new()
         {
@@ -106,15 +119,19 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
             CodeActionKinds = new List<CodeActionKind>
             {
                 CodeActionKind.SourceOrganizeImports,
-                CodeActionKind.QuickFix
-            }
+                CodeActionKind.QuickFix,
+            },
         };
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var line = text[diagnostic.Range.Start.Line];
         var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
         return
         [
@@ -123,20 +140,17 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
                 Title = $"TopModel : Créer la classe {className} dans ce fichier",
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
-                Diagnostics = new List<Diagnostic>
-                {
-                    diagnostic
-                },
+                Diagnostics = new List<Diagnostic> { diagnostic },
                 Edit = new WorkspaceEdit
                 {
-                    Changes =
-                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
-                        {
-                            [new Uri(facade.GetFilePath(modelFile))] =
-                            [
-                                new()
-                                {
-                                    NewText = @$"
+                    Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [
+                            new()
+                            {
+                                NewText =
+                                    @$"
 ---
 class: 
   name: {className}
@@ -144,129 +158,176 @@ class:
   properties:
     - 
 ",
-                                    Range = new Range(text.Length, 0, text.Length, 0)
-                                }
-                            ]
-                        }
-                }
-            }
+                                Range = new Range(text.Length, 0, text.Length, 0),
+                            },
+                        ],
+                    },
+                },
+            },
         ];
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(CodeActionParams request, Diagnostic diagnostic)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(
+        CodeActionParams request,
+        Diagnostic diagnostic
+    )
     {
-        var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var line = text[diagnostic.Range.Start.Line];
         var domainName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
 
-        return modelStore.Files.Where(f => f.Domains.Count > 0).Select(f =>
-        {
-            var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
-            return (CommandOrCodeAction)new CodeAction
+        return modelStore
+            .Files.Where(f => f.Domains.Count > 0)
+            .Select(f =>
             {
-                Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
-                Kind = CodeActionKind.QuickFix,
-                IsPreferred = true,
-                Diagnostics = new List<Diagnostic>
-                {
-                    diagnostic
-                },
-                Edit = new WorkspaceEdit
-                {
-                    Changes =
-                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
+                return (CommandOrCodeAction)
+                    new CodeAction
+                    {
+                        Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
+                        Kind = CodeActionKind.QuickFix,
+                        IsPreferred = true,
+                        Diagnostics = new List<Diagnostic> { diagnostic },
+                        Edit = new WorkspaceEdit
                         {
-                            [new Uri(facade.GetFilePath(f))] =
-                            [
-                                new()
-                                {
-                                    Range = new Range(new Position(lastLine, 0), new Position(lastLine, 0)),
-                                    NewText = $@"
+                            Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                            {
+                                [new Uri(facade.GetFilePath(f))] =
+                                [
+                                    new()
+                                    {
+                                        Range = new Range(new Position(lastLine, 0), new Position(lastLine, 0)),
+                                        NewText =
+                                            $@"
 ---
 domain:
   name: {domainName}
   label: 
-"
-                                }
-                            ]
-                        }
-                }
-            };
-        }).ToList();
+",
+                                    },
+                                ],
+                            },
+                        },
+                    };
+            })
+            .ToList();
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore.Annotations.Where(c => c.Name == decoratorName)
-            .Select(annotationToImport => GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex));
+        return modelStore
+            .Annotations.Where(c => c.Name == decoratorName)
+            .Select(annotationToImport =>
+                GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex)
+            );
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var (className, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore.Classes.Where(c => c.Name == className)
+        return modelStore
+            .Classes.Where(c => c.Name == className)
             .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDataFlowImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDataFlowImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var (dataFlowName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore.DataFlows.Where(c => c.Name == dataFlowName)
-            .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
+        return modelStore
+            .DataFlows.Where(c => c.Name == dataFlowName)
+            .Select(decoratorToImport =>
+                GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
+            );
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore.Decorators.Where(c => c.Name == decoratorName)
-            .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
+        return modelStore
+            .Decorators.Where(c => c.Name == decoratorName)
+            .Select(decoratorToImport =>
+                GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
+            );
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingEndpointImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingEndpointImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var (endpointName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore.Endpoints.Where(c => c.Name == endpointName)
-            .Select(endpointToImport => GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex));
+        return modelStore
+            .Endpoints.Where(c => c.Name == endpointName)
+            .Select(endpointToImport =>
+                GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex)
+            );
     }
 
-    private CommandOrCodeAction GetFileImportAction(Diagnostic diagnostic, ModelFile targetFile, ModelFile sourceFile, int useIndex)
+    private CommandOrCodeAction GetFileImportAction(
+        Diagnostic diagnostic,
+        ModelFile targetFile,
+        ModelFile sourceFile,
+        int useIndex
+    )
     {
-        return (CommandOrCodeAction)new CodeAction
-        {
-            Title = $"TopModel : Ajouter l'import {sourceFile.Name}",
-            Kind = CodeActionKind.QuickFix,
-            IsPreferred = true,
-            Diagnostics = new List<Diagnostic> { diagnostic },
-            Edit = new WorkspaceEdit
+        return (CommandOrCodeAction)
+            new CodeAction
             {
-                Changes =
-                    new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                Title = $"TopModel : Ajouter l'import {sourceFile.Name}",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic> { diagnostic },
+                Edit = new WorkspaceEdit
+                {
+                    Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
                         [new Uri(facade.GetFilePath(targetFile))] =
                         [
                             new()
                             {
-                                NewText = targetFile.Uses.Count > 0 ? $"  - {sourceFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {sourceFile.Name}{Environment.NewLine}",
-                                Range = new Range(useIndex, 0, useIndex, 0)
-                            }
-                        ]
-                    }
-            }
-        };
+                                NewText =
+                                    targetFile.Uses.Count > 0
+                                        ? $"  - {sourceFile.Name}{Environment.NewLine}"
+                                        : $"uses:{Environment.NewLine}  - {sourceFile.Name}{Environment.NewLine}",
+                                Range = new Range(useIndex, 0, useIndex, 0),
+                            },
+                        ],
+                    },
+                },
+            };
     }
 
-    private (string ImportName, int UseIndex) GetImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    private (string ImportName, int UseIndex) GetImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var line = text[diagnostic.Range.Start.Line];
         var importName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
-        var useIndex = modelFile!.Uses.Count != 0
-            ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
-            : text.First().StartsWith('-')
-                ? 1
-                : 0;
+        var useIndex =
+            modelFile!.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
+            : text[0].StartsWith('-') ? 1
+            : 0;
 
         return (importName, useIndex);
     }

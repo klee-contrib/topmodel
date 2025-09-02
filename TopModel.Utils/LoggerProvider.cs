@@ -15,28 +15,18 @@ public class LoggerProvider : ILoggerProvider
     /// <inheritdoc cref="ILoggerProvider.CreateLogger" />
     public ILogger CreateLogger(string categoryName)
     {
-        return new ConsoleLogger(categoryName.Split(".").Last(), () => Changes++);
+        return new ConsoleLogger(categoryName.Split(".")[^1], () => Changes++);
     }
 
-    public void Dispose()
-    {
-    }
+    /// <inheritdoc cref="IDisposable.Dispose" />
+    public void Dispose() { }
 
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger(string categoryName, Action registerChange) : ILogger
     {
         private static readonly object _lock = new();
-
-        private readonly string _categoryName;
-        private readonly Action _registerChange;
         private string? _generatorName;
         private string? _storeColor;
         private int? _storeNumber;
-
-        public ConsoleLogger(string categoryName, Action registerChange)
-        {
-            _categoryName = categoryName;
-            _registerChange = registerChange;
-        }
 
         /// <inheritdoc cref="ILogger.BeginScope{TState}" />
         public IDisposable? BeginScope<TState>(TState state)
@@ -62,7 +52,13 @@ public class LoggerProvider : ILoggerProvider
         }
 
         /// <inheritdoc cref="ILogger.Log{TState}" />
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter
+        )
         {
             if (!IsEnabled(logLevel))
             {
@@ -84,7 +80,7 @@ public class LoggerProvider : ILoggerProvider
                     AnsiConsole.Markup($"[{_storeColor}]#{_storeNumber.Value} [/]");
                 }
 
-                var name = ((_generatorName ?? _categoryName) + " ").PadRight(22, '-');
+                var name = ((_generatorName ?? categoryName) + " ").PadRight(22, '-');
                 var split = name.Split(" ");
                 var fColor = _generatorName != null ? "fuchsia" : "grey";
                 AnsiConsole.Markup($"[{fColor}]{split[0].EscapeMarkup()}[/]");
@@ -136,7 +132,7 @@ public class LoggerProvider : ILoggerProvider
         {
             if (message.LastIndexOf(action) >= 0)
             {
-                _registerChange();
+                registerChange();
                 AnsiConsole.Markup($"[{color}]{action}[/]");
                 return message.Split(action)[1];
             }

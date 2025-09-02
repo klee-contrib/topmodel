@@ -30,18 +30,24 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         yield return new JavaAnnotation("Entity", imports: $"{JavaxOrJakarta}.persistence.Entity");
         if (Classes.Any(c => c.Extends == classe))
         {
-            yield return new JavaAnnotation("Inheritance", imports: $"{JavaxOrJakarta}.persistence.Inheritance")
-                .AddAttribute("strategy", "InheritanceType.JOINED", $"{JavaxOrJakarta}.persistence.InheritanceType");
+            yield return new JavaAnnotation(
+                "Inheritance",
+                imports: $"{JavaxOrJakarta}.persistence.Inheritance"
+            ).AddAttribute("strategy", "InheritanceType.JOINED", $"{JavaxOrJakarta}.persistence.InheritanceType");
         }
 
-        var tableAnnotation = new JavaAnnotation("Table", imports: $"{JavaxOrJakarta}.persistence.Table")
-            .AddAttribute("name", $@"""{classe.SqlName}""");
+        var tableAnnotation = new JavaAnnotation("Table", imports: $"{JavaxOrJakarta}.persistence.Table").AddAttribute(
+            "name",
+            $@"""{classe.SqlName}"""
+        );
         if (classe.UniqueKeys.Count > 0)
         {
-            var uks = classe.UniqueKeys.Select(uk => new JavaAnnotation(
-                "UniqueConstraint",
-                imports: $"{JavaxOrJakarta}.persistence.UniqueConstraint")
-                .AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray()));
+            var uks = classe.UniqueKeys.Select(uk =>
+                new JavaAnnotation(
+                    "UniqueConstraint",
+                    imports: $"{JavaxOrJakarta}.persistence.UniqueConstraint"
+                ).AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
+            );
 
             tableAnnotation.AddAttribute("uniqueConstraints", uks);
         }
@@ -49,8 +55,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         yield return tableAnnotation;
         if (classe.PrimaryKey.Count() > 1)
         {
-            yield return new JavaAnnotation("IdClass", imports: $"{JavaxOrJakarta}.persistence.IdClass")
-                .AddAttribute("value", $"{classe.NamePascal}.{classe.NamePascal}Id.class");
+            yield return new JavaAnnotation("IdClass", imports: $"{JavaxOrJakarta}.persistence.IdClass").AddAttribute(
+                "value",
+                $"{classe.NamePascal}.{classe.NamePascal}Id.class"
+            );
         }
 
         if (classe.Reference)
@@ -59,11 +67,19 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             if (Config.CanClassUseEnums(classe))
             {
                 yield return new JavaAnnotation("Immutable", imports: "org.hibernate.annotations.Immutable");
-                cacheAnnotation.AddAttribute("usage", "CacheConcurrencyStrategy.READ_ONLY", "org.hibernate.annotations.CacheConcurrencyStrategy");
+                cacheAnnotation.AddAttribute(
+                    "usage",
+                    "CacheConcurrencyStrategy.READ_ONLY",
+                    "org.hibernate.annotations.CacheConcurrencyStrategy"
+                );
             }
             else
             {
-                cacheAnnotation.AddAttribute("usage", "CacheConcurrencyStrategy.READ_WRITE", "org.hibernate.annotations.CacheConcurrencyStrategy");
+                cacheAnnotation.AddAttribute(
+                    "usage",
+                    "CacheConcurrencyStrategy.READ_WRITE",
+                    "org.hibernate.annotations.CacheConcurrencyStrategy"
+                );
             }
 
             yield return cacheAnnotation;
@@ -75,7 +91,8 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.EntitiesPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.java");
+            $"{classe.NamePascal}.java"
+        );
     }
 
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
@@ -102,7 +119,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
 
         fw.WriteLine();
 
@@ -117,7 +134,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         var implements = Config.GetClassImplements(classe, tag).ToList();
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
 
         WriteMapIdProperty(fw, classe, tag);
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
@@ -147,17 +164,30 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.IsPersistent && Config.AssociationAdders)
         {
-            foreach (var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
+            foreach (
+                var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany())
+            )
             {
-                var reverse = ap is ReverseAssociationProperty rap ? rap.ReverseProperty : ap.Association.GetProperties(Classes).OfType<ReverseAssociationProperty>().FirstOrDefault(r => r.ReverseProperty == ap);
+                var reverse = ap is ReverseAssociationProperty rap
+                    ? rap.ReverseProperty
+                    : ap
+                        .Association.GetProperties(Classes)
+                        .OfType<ReverseAssociationProperty>()
+                        .FirstOrDefault(r => r.ReverseProperty == ap);
                 if (reverse != null)
                 {
                     var propertyName = ap.NameByClassCamel;
                     fw.WriteLine();
-                    fw.WriteDocStart(1, $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
+                    fw.WriteDocStart(
+                        1,
+                        $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
+                    );
                     fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to add");
                     fw.WriteDocEnd(1);
-                    fw.WriteLine(1, @$"public void add{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{");
+                    fw.WriteLine(
+                        1,
+                        @$"public void add{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
+                    );
                     fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
                     if (reverse.Type.IsToMany())
                     {
@@ -203,7 +233,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             }
 
             fw.Write(2, annotations);
-            fw.WriteLine(2, $"private {JpaModelPropertyGenerator.GetPropertyType(pk)} {JpaModelPropertyGenerator.GetPropertyName(pk)};");
+            fw.WriteLine(
+                2,
+                $"private {JpaModelPropertyGenerator.GetPropertyType(pk)} {JpaModelPropertyGenerator.GetPropertyName(pk)};"
+            );
         }
 
         foreach (var pk in classe.PrimaryKey)
@@ -227,23 +260,34 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         fw.WriteLine(3, "}");
         fw.WriteLine();
         fw.WriteLine(3, $"{classe.NamePascal}Id oId = ({classe.NamePascal}Id) o;");
-        var associations = classe.PrimaryKey.Where(p => p is AssociationProperty || p is AliasProperty ap && ap.Property is AssociationProperty);
+        var associations = classe.PrimaryKey.Where(p =>
+            p is AssociationProperty || p is AliasProperty ap && ap.Property is AssociationProperty
+        );
         if (associations.Any())
         {
             fw.WriteLine();
-            fw.WriteLine(3, @$"if ({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{");
+            fw.WriteLine(
+                3,
+                @$"if ({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{"
+            );
             fw.WriteLine(4, "return false;");
             fw.WriteLine(3, "}");
         }
 
         fw.WriteLine();
-        fw.WriteLine(3, $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)})"))};");
+        fw.WriteLine(
+            3,
+            $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)})"))};"
+        );
         fw.WriteLine(2, "}");
 
         fw.WriteLine();
         fw.WriteLine(2, "@Override");
         fw.WriteLine(2, "public int hashCode() {");
-        fw.WriteLine(3, $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk is AssociationProperty || pk is AliasProperty ap && ap.Property is AssociationProperty ? $"{pk.NameByClassCamel} == null ? null : " : string.Empty)}{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}"))});");
+        fw.WriteLine(
+            3,
+            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk is AssociationProperty || pk is AliasProperty ap && ap.Property is AssociationProperty ? $"{pk.NameByClassCamel} == null ? null : " : string.Empty)}{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}"))});"
+        );
         fw.AddImport("java.util.Objects");
         fw.WriteLine(2, "}");
         fw.WriteLine(1, "}");
@@ -251,9 +295,11 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual void WriteConstructors(Class classe, string tag, JavaWriter fw)
     {
-        if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
+        if (
+            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
             || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null)
+            || Config.GetClassExtends(classe, tag) != null
+        )
         {
             ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         }
@@ -269,7 +315,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap)
         {
             fw.WriteLine();
-            fw.WriteDocStart(1, @$"Identifiant technique mappé avec celui de la classe {{@link {ap.Association.GetImport(Config, tag)}}} {ap.Association.NamePascal}");
+            fw.WriteDocStart(
+                1,
+                @$"Identifiant technique mappé avec celui de la classe {{@link {ap.Association.GetImport(Config, tag)}}} {ap.Association.NamePascal}"
+            );
             fw.WriteDocEnd(1);
             fw.WriteLine(1, JpaModelPropertyGenerator.IdAnnotation);
             fw.WriteLine(1, $"private {JpaModelPropertyGenerator.GetPropertyType(ap.Property)} {ap.NameCamel};");
@@ -280,17 +329,30 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.IsPersistent && Config.AssociationRemovers)
         {
-            foreach (var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
+            foreach (
+                var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany())
+            )
             {
-                var reverse = ap is ReverseAssociationProperty rap ? rap.ReverseProperty : ap.Association.GetProperties(Classes).OfType<ReverseAssociationProperty>().FirstOrDefault(r => r.ReverseProperty == ap);
+                var reverse = ap is ReverseAssociationProperty rap
+                    ? rap.ReverseProperty
+                    : ap
+                        .Association.GetProperties(Classes)
+                        .OfType<ReverseAssociationProperty>()
+                        .FirstOrDefault(r => r.ReverseProperty == ap);
                 if (reverse != null)
                 {
                     var propertyName = ap.NameByClassCamel;
                     fw.WriteLine();
-                    fw.WriteDocStart(1, $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
+                    fw.WriteDocStart(
+                        1,
+                        $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
+                    );
                     fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to remove");
                     fw.WriteDocEnd(1);
-                    fw.WriteLine(1, @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{");
+                    fw.WriteLine(
+                        1,
+                        @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
+                    );
                     fw.WriteLine(2, @$"this.{propertyName}.remove({ap.Association.NameCamel});");
                     if (reverse.Type.IsToMany())
                     {

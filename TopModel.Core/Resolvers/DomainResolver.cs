@@ -5,7 +5,12 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictionary<string, Domain> domains, IEnumerable<Converter> converters)
+internal class DomainResolver(
+    ModelFile modelFile,
+    ModelConfig config,
+    IDictionary<string, Domain> domains,
+    IEnumerable<Converter> converters
+)
 {
     /// <summary>
     /// Résout les `asDomains` sur les domaines.
@@ -19,16 +24,30 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
             {
                 if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
-                    yield return new ModelError(ErrorType.TMD0003, domain, "Le domaine '{0}' est introuvable.", domainReference);
+                    yield return new ModelError(
+                        ErrorType.TMD0003,
+                        domain,
+                        "Le domaine '{0}' est introuvable.",
+                        domainReference
+                    );
                     continue;
                 }
 
                 domain.AsDomains[asName] = asDomain;
             }
 
-            foreach (var templateParam in domain.TemplateParameters.Where((e, i) => domain.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
+            foreach (
+                var templateParam in domain.TemplateParameters.Where(
+                    (e, i) => domain.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()
+                )
+            )
             {
-                yield return new ModelError(ErrorType.TMD0001, domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation());
+                yield return new ModelError(
+                    ErrorType.TMD0001,
+                    domain,
+                    $"Le nom '{templateParam.Name}' est déjà utilisé.",
+                    templateParam.GetLocation()
+                );
             }
         }
     }
@@ -51,7 +70,13 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
                 }
                 else
                 {
-                    yield return new ModelError(ErrorType.TMD0011, converter, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
+                    yield return new ModelError(
+                        ErrorType.TMD0011,
+                        converter,
+                        $"La variable '{varName.ReferenceName}' est introuvable.",
+                        varName,
+                        isError: false
+                    );
                 }
             }
 
@@ -117,7 +142,13 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
                 }
                 else
                 {
-                    yield return new ModelError(ErrorType.TMD0011, domain, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
+                    yield return new ModelError(
+                        ErrorType.TMD0011,
+                        domain,
+                        $"La variable '{varName.ReferenceName}' est introuvable.",
+                        varName,
+                        isError: false
+                    );
                 }
             }
         }

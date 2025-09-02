@@ -10,8 +10,10 @@ using static JavascriptUtils;
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
-public class TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> logger, IFileWriterProvider writerProvider)
-    : ClassGroupGeneratorBase<JavascriptConfig>(logger, writerProvider)
+public class TypescriptReferenceGenerator(
+    ILogger<TypescriptReferenceGenerator> logger,
+    IFileWriterProvider writerProvider
+) : ClassGroupGeneratorBase<JavascriptConfig>(logger, writerProvider)
 {
     public override string Name => "JSReferenceGen";
 
@@ -33,19 +35,33 @@ public class TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> 
     /// </summary>
     private void GenerateReferenceFile(string fileName, IEnumerable<Class> references, string tag)
     {
-        using var fw = OpenFileWriter(fileName, false);
+        using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
         var imports = references
             .SelectMany(r => r.ClassDependencies)
-            .Select(dep => (
-                Import: dep.Source switch
-                {
-                    IProperty fp => Config.GetType(fp, Classes),
-                    Class c => c.NamePascal,
-                    _ => null!
-                },
-                Path: Config.GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(references.SelectMany(r => r.Properties).SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)))
+            .Select(dep =>
+                (
+                    Import: dep.Source switch
+                    {
+                        IProperty fp => Config.GetType(fp, Classes),
+                        Class c => c.NamePascal,
+                        _ => null!,
+                    },
+                    Path: Config.GetImportPathForClass(
+                        dep,
+                        dep.Classe.Tags.Contains(tag)
+                            ? tag
+                            : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag,
+                        tag,
+                        Classes
+                    )!
+                )
+            )
+            .Concat(
+                references
+                    .SelectMany(r => r.Properties)
+                    .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
+            )
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
@@ -86,16 +102,29 @@ public class TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> 
                     fw.Write($"{reference.EnumKey.NamePascal} = ");
                     var type = Config.GetImplementation(reference.EnumKey.Domain)?.Type;
                     var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
-                    fw.Write(string.Join(" | ", values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").OrderBy(x => x, StringComparer.Ordinal)));
+                    fw.Write(
+                        string.Join(
+                            " | ",
+                            values
+                                .Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}")
+                                .Order(StringComparer.Ordinal)
+                        )
+                    );
                     fw.WriteLine(";");
                 }
 
-                foreach (var uk in reference.UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required).Select(uk => uk.Single()))
+                foreach (
+                    var uk in reference
+                        .UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required)
+                        .Select(uk => uk.Single())
+                )
                 {
                     fw.Write("export type ");
                     fw.Write(reference.NamePascal);
                     fw.Write($"{uk} = ");
-                    fw.Write(string.Join(" | ", values.Select(r => $@"""{r.Value[uk]}""").OrderBy(x => x, StringComparer.Ordinal)));
+                    fw.Write(
+                        string.Join(" | ", values.Select(r => $@"""{r.Value[uk]}""").Order(StringComparer.Ordinal))
+                    );
                     fw.WriteLine(";");
                 }
             }
@@ -104,7 +133,12 @@ public class TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> 
             {
                 fw.Write($"export enum {reference.NamePascal}Flag {{\r\n");
 
-                var flagValues = reference.Values.Where(refValue => refValue.Value.ContainsKey(reference.FlagProperty) && int.TryParse(refValue.Value[reference.FlagProperty], out var _)).ToList();
+                var flagValues = reference
+                    .Values.Where(refValue =>
+                        refValue.Value.ContainsKey(reference.FlagProperty)
+                        && int.TryParse(refValue.Value[reference.FlagProperty], out var _)
+                    )
+                    .ToList();
                 foreach (var refValue in flagValues)
                 {
                     var flag = int.Parse(refValue.Value[reference.FlagProperty]);
@@ -164,7 +198,16 @@ public class TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> 
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)?.Type == "string" ? @$"""{(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(
+                string.Join(
+                    ",\n        ",
+                    refValue
+                        .Value.Where(p => p.Value != "null")
+                        .Select(property =>
+                            $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)?.Type == "string" ? @$"""{(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}"
+                        )
+                )
+            );
             fw.WriteLine();
             fw.WriteLine("    },");
         }

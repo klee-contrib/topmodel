@@ -20,5 +20,5 @@ public enum TargetFramework
     /// <summary>
     /// Vanilla.
     /// </summary>
-    VANILLA
+    VANILLA,
 }

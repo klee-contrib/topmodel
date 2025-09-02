@@ -10,8 +10,11 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : TranslationGeneratorBase<JpaConfig>(logger, translationStore, writerProvider)
+public class JpaResourceGenerator(
+    ILogger<JpaResourceGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : TranslationGeneratorBase<JpaConfig>(logger, translationStore, writerProvider)
 {
     private readonly TranslationStore _translationStore = translationStore;
 
@@ -25,7 +28,8 @@ public class JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, Translat
             return Path.Combine(
                 Config.OutputDirectory,
                 Config.ResolveVariables(Config.ResourcesPath!, tag: tag, lang: lang).ToLower(),
-                $"{p.Parent.Namespace.RootModule.ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties");
+                $"{p.Parent.Namespace.RootModule.ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties"
+            );
         }
 
         return null;
@@ -39,7 +43,7 @@ public class JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, Translat
             encoding = Config.ResourcesEncoding switch
             {
                 ResourcesEncoding.UTF8 => Encoding.UTF8,
-                _ => Encoding.Latin1
+                _ => Encoding.Latin1,
             };
         }
 

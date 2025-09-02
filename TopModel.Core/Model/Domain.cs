@@ -13,9 +13,9 @@ public class Domain : IAnnotationContainer, IVariableContainer
     public string Label { get; set; }
 
     // Liste des converter pour lesquels le converter est présent dans la liste des domains From
-    public HashSet<Converter> ConvertersFrom { get; set; } = new HashSet<Converter>();
+    public ISet<Converter> ConvertersFrom { get; set; } = new HashSet<Converter>();
 
-    public HashSet<Converter> ConvertersTo { get; set; } = new HashSet<Converter>();
+    public ISet<Converter> ConvertersTo { get; set; } = new HashSet<Converter>();
 
 #nullable enable
 
@@ -27,15 +27,18 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public bool BodyParam { get; set; }
 
-    public Dictionary<string, Domain> AsDomains { get; set; } = [];
+    public IDictionary<string, Domain> AsDomains { get; set; } = new Dictionary<string, Domain>();
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
-    public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = [];
+    public IDictionary<string, DomainReference> AsDomainReferences { get; set; } =
+        new Dictionary<string, DomainReference>();
 
+#pragma warning disable MA0016
     public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
+#pragma warning restore MA0016
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
@@ -43,32 +46,38 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public bool IsMultipart => MediaType == "multipart/form-data";
 
-    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(true);
+    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(strict: true);
 
-    public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i =>
-            (IEnumerable<ParameterReference>)[
-                ..i.Type?.Variables ?? [],
-                ..i.GenericType?.Variables ?? [],
-                ..i.Imports.SelectMany(a => a.Variables),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
-            ])
-        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
+    public IEnumerable<ParameterReference> VariableReferences =>
+        Implementations
+            .Values.SelectMany(i =>
+                (IEnumerable<ParameterReference>)
+                    [
+                        .. i.Type?.Variables ?? [],
+                        .. i.GenericType?.Variables ?? [],
+                        .. i.Imports.SelectMany(a => a.Variables),
+                        .. i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
+                        .. i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables)),
+                    ]
+            )
+            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
 
-    public Dictionary<string, Variable> Variables { get; } = [];
+    public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
-    public IEnumerable<TransformReference> TransformReferences => Implementations.Values
-        .SelectMany(i =>
-            (IEnumerable<TransformReference>)[
-                ..i.Type?.Transforms ?? [],
-                ..i.GenericType?.Transforms ?? [],
-                ..i.Imports.SelectMany(a => a.Transforms),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms))
-            ])
-        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
-        .Where(pr => pr.ReferenceName.IsValidTransform());
+    public IEnumerable<TransformReference> TransformReferences =>
+        Implementations
+            .Values.SelectMany(i =>
+                (IEnumerable<TransformReference>)
+                    [
+                        .. i.Type?.Transforms ?? [],
+                        .. i.GenericType?.Transforms ?? [],
+                        .. i.Imports.SelectMany(a => a.Transforms),
+                        .. i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
+                        .. i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms)),
+                    ]
+            )
+            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+            .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

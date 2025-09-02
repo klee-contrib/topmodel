@@ -23,13 +23,14 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.java");
+            $"{classe.NamePascal}.java"
+        );
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
 
         fw.WriteLine();
 
@@ -48,7 +49,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         implements.Add("Serializable");
         fw.AddImport("java.io.Serializable");
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
 
         WriteStaticMembers(fw, classe);
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
@@ -71,9 +72,11 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected virtual void WriteConstuctors(JavaWriter fw, Class classe, string tag)
     {
-        if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
+        if (
+            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
             || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null)
+            || Config.GetClassExtends(classe, tag) != null
+        )
         {
             ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         }
@@ -86,8 +89,8 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected virtual void WriteStaticMembers(JavaWriter fw, Class classe)
     {
-        fw.WriteLine("	/** Serial ID */");
-        var serialAnnotation = new JavaAnnotation("Serial", imports: ["java.io.Serial"]);
+        fw.WriteLine("\t/** Serial ID */");
+        var serialAnnotation = new JavaAnnotation("Serial", imports: "java.io.Serial");
         fw.Write(1, [serialAnnotation]);
         fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
     }

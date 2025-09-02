@@ -43,15 +43,6 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         _usings.AddRange(nsNames);
     }
 
-    /// <summary>
-    /// Ajoute des usings au fichier.
-    /// </summary>
-    /// <param name="nsNames">Nom des classes/namespaces à importer.</param>
-    public void AddUsings(params string[] nsNames)
-    {
-        _usings.AddRange(nsNames);
-    }
-
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
@@ -60,7 +51,13 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
             var systemUsings = _usings.Where(name => name.StartsWith("System"));
             var otherUsings = _usings.Except(systemUsings);
 
-            foreach (var nsName in systemUsings.OrderBy(x => x).Concat(otherUsings.OrderBy(x => x)).Where(u => !string.IsNullOrWhiteSpace(u)).Distinct())
+            foreach (
+                var nsName in systemUsings
+                    .Order()
+                    .Concat(otherUsings.Order())
+                    .Where(u => !string.IsNullOrWhiteSpace(u))
+                    .Distinct()
+            )
             {
                 writer.WriteLine($"using {nsName};");
             }
@@ -137,7 +134,13 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
     /// <param name="parameters">Paramètres (si constructeur principal).</param>
-    public virtual void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, string[]? ifList = null, string? parameters = null)
+    public virtual void WriteClassDeclaration(
+        string name,
+        string? inheritedClass,
+        bool isRecord,
+        string[]? ifList = null,
+        string? parameters = null
+    )
     {
         if (string.IsNullOrEmpty(name))
         {

@@ -35,7 +35,7 @@ public class TopModelLockModule : TopModelLockModuleBase, IYamlConvertible
     }
 }
 
-#pragma warning disable SA1402
+#pragma warning disable MA0048
 public class TopModelLockModuleBase
 {
     public required string Version { get; set; }

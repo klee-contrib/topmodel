@@ -9,7 +9,7 @@ public class AliasProperty : IProperty
     private Dictionary<string, string> _customProperties = [];
     private string? _defaultValue;
     private Domain? _domain;
-    private Dictionary<string, string>? _domainParameters;
+    private IDictionary<string, string>? _domainParameters;
     private string? _label;
     private string? _name;
 
@@ -30,7 +30,6 @@ public class AliasProperty : IProperty
 
             return prop;
         }
-
         set => _property = value;
     }
 
@@ -48,36 +47,45 @@ public class AliasProperty : IProperty
 
     public string Name
     {
-        get =>
-            (Prefix ?? string.Empty)
-            + (_name ?? _property?.Name)
-            + (Suffix ?? string.Empty);
+        get => (Prefix ?? string.Empty) + (_name ?? _property?.Name) + (Suffix ?? string.Empty);
         set => _name = value;
     }
 
-    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing
-        ? Name
-        : (Prefix?.ToFirstUpper() ?? string.Empty)
-            + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal)
-            + (Suffix ?? string.Empty);
+    public string NamePascal =>
+        ((IProperty)this).Parent.PreservePropertyCasing
+            ? Name
+            : (Prefix?.ToFirstUpper() ?? string.Empty)
+                + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal)
+                + (Suffix ?? string.Empty);
 
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing
-        ? Name
-        : (Prefix?.ToFirstLower() ?? string.Empty)
-            + (string.IsNullOrWhiteSpace(Prefix)
-                ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameCamel
-                : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal)
-            + (Suffix ?? string.Empty);
+    public string NameCamel =>
+        ((IProperty)this).Parent.PreservePropertyCasing
+            ? Name
+            : (Prefix?.ToFirstLower() ?? string.Empty)
+                + (
+                    string.IsNullOrWhiteSpace(Prefix)
+                        ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameCamel
+                        : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal
+                )
+                + (Suffix ?? string.Empty);
 
-    public string NameByClassPascal => Class.IsPersistent ? (Prefix?.ToFirstUpper() ?? string.Empty)
-            + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal)
-            + (Suffix ?? string.Empty) : NamePascal;
+    public string NameByClassPascal =>
+        Class.IsPersistent
+            ? (Prefix?.ToFirstUpper() ?? string.Empty)
+                + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal)
+                + (Suffix ?? string.Empty)
+            : NamePascal;
 
-    public string NameByClassCamel => Class.IsPersistent ? (Prefix?.ToFirstLower() ?? string.Empty)
-            + (string.IsNullOrWhiteSpace(Prefix)
-                ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameByClassCamel
-                : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal)
-            + (Suffix ?? string.Empty) : NameCamel;
+    public string NameByClassCamel =>
+        Class.IsPersistent
+            ? (Prefix?.ToFirstLower() ?? string.Empty)
+                + (
+                    string.IsNullOrWhiteSpace(Prefix)
+                        ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameByClassCamel
+                        : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal
+                )
+                + (Suffix ?? string.Empty)
+            : NameCamel;
 
     public string? Label
     {
@@ -105,16 +113,20 @@ public class AliasProperty : IProperty
         get
         {
             var domain = _domain ?? _property?.Domain;
-            return As != null ? domain != null && domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null : domain;
+            return As != null
+                ? domain != null && domain.AsDomains.TryGetValue(As, out var asDomain)
+                    ? asDomain
+                    : null
+                : domain;
         }
-
         set => _domain = value;
     }
+
 #nullable enable
 
-    public Dictionary<string, string> DomainParameters
+    public IDictionary<string, string> DomainParameters
     {
-        get => _domainParameters ?? _property?.DomainParameters ?? [];
+        get => _domainParameters ?? _property?.DomainParameters ?? new Dictionary<string, string>();
         set => _domainParameters = value;
     }
 
@@ -159,18 +171,20 @@ public class AliasProperty : IProperty
 
     public IProperty? OriginalProperty => _property;
 
-    public IProperty? PersistentProperty => Class?.IsPersistent ?? false
-        ? this
-        : OriginalProperty is AliasProperty op
-            ? op.PersistentProperty
-            : OriginalProperty?.Class?.IsPersistent ?? false
-                ? OriginalProperty
-                : null;
+    public IProperty? PersistentProperty =>
+        Class?.IsPersistent ?? false ? this
+        : OriginalProperty is AliasProperty op ? op.PersistentProperty
+        : OriginalProperty?.Class?.IsPersistent ?? false ? OriginalProperty
+        : null;
 
-    public bool AliasedPrimaryKey => (OriginalProperty is AliasProperty op
-        ? op.PrimaryKey || op.AliasedPrimaryKey
-        : OriginalProperty?.PrimaryKey ?? false)
-        && Prefix == null && Suffix == null;
+    public bool AliasedPrimaryKey =>
+        (
+            OriginalProperty is AliasProperty op
+                ? op.PrimaryKey || op.AliasedPrimaryKey
+                : OriginalProperty?.PrimaryKey ?? false
+        )
+        && Prefix == null
+        && Suffix == null;
 
     public AliasReference? Reference { get; set; }
 
@@ -213,7 +227,7 @@ public class AliasProperty : IProperty
             UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
-            OwnAnnotations = OwnAnnotations
+            OwnAnnotations = OwnAnnotations,
         };
 
         if (_domain != null)
@@ -266,7 +280,7 @@ public class AliasProperty : IProperty
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,
-            AnnotationReferences = AnnotationReferences
+            AnnotationReferences = AnnotationReferences,
         };
 
         if (_domain != null)

@@ -10,10 +10,17 @@ namespace TopModel.Generator.Csharp;
 public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterProvider writerProvider)
     : GeneratorBase<CsharpConfig>(logger, writerProvider)
 {
-    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.DataFlows)
-        .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
-            .SelectMany(tag => new[] { Config.GetDataFlowFilePath(df, tag), Config.GetDataFlowRegistrationFilePath(df, tag) }))
-        .Distinct();
+    public override IEnumerable<string> GeneratedFiles =>
+        Files
+            .Values.SelectMany(f => f.DataFlows)
+            .SelectMany(df =>
+                Config
+                    .Tags.Intersect(df.ModelFile.Tags)
+                    .SelectMany(tag =>
+                        new[] { Config.GetDataFlowFilePath(df, tag), Config.GetDataFlowRegistrationFilePath(df, tag) }
+                    )
+            )
+            .Distinct();
 
     public override string Name => "CSharpDataFlowGen";
 
@@ -21,7 +28,11 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
     {
         int GetSourceNumber(DataFlowSource source)
         {
-            return dataFlow.Sources.OrderBy(s => s.Source).Where(s => s.Source == source.Source).ToList().IndexOf(source) + 1;
+            return dataFlow
+                    .Sources.Where(s => s.Source == source.Source)
+                    .OrderBy(s => s.Source)
+                    .ToList()
+                    .IndexOf(source) + 1;
         }
 
         string GetConnectionName(DataFlowSource source)
@@ -35,7 +46,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         {
             "Kinetix.Etl",
             "Microsoft.Extensions.Logging",
-            Config.GetNamespace(dataFlow.Class, tag)
+            Config.GetNamespace(dataFlow.Class, tag),
         };
 
         foreach (var source in dataFlow.Sources)
@@ -49,7 +60,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
         var name = $"{dataFlow.Name.ToPascalCase()}Flow";
 
-        w.WriteClassDeclaration(name, $"DataFlow<{dataFlow.Class.NamePascal}>", false);
+        w.WriteClassDeclaration(name, $"DataFlow<{dataFlow.Class.NamePascal}>", isRecord: false);
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
@@ -71,7 +82,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         if (dataFlow.ActiveProperty != null)
         {
             w.WriteLine();
-            w.WriteLine(1, $"protected override string ActiveProperty => nameof({dataFlow.Class.NamePascal}.{dataFlow.ActiveProperty.NamePascal});");
+            w.WriteLine(
+                1,
+                $"protected override string ActiveProperty => nameof({dataFlow.Class.NamePascal}.{dataFlow.ActiveProperty.NamePascal});"
+            );
         }
 
         w.WriteLine();
@@ -80,7 +94,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         if (dataFlow.DependsOn.Count > 0)
         {
             w.WriteLine();
-            w.WriteLine(1, $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};");
+            w.WriteLine(
+                1,
+                $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};"
+            );
         }
 
         if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
@@ -114,14 +131,17 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         var firstSource = dataFlow.Sources.FirstOrDefault();
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
-            w.WriteLine(2, $"{GetConnectionName(source)} = ConnectionPool.GetConnection(\"{source.Source.ToCamelCase()}\");");
+            w.WriteLine(
+                2,
+                $"{GetConnectionName(source)} = ConnectionPool.GetConnection(\"{source.Source.ToCamelCase()}\");"
+            );
         }
 
         var hasCreateMapper = firstSource != null && firstSource.Class != dataFlow.Class;
 
         if (dataFlow.Sources.Count == 1)
         {
-            var source = dataFlow.Sources.First();
+            var source = dataFlow.Sources[0];
             w.WriteLine();
             w.Write(2, $"return ");
 
@@ -130,7 +150,9 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                 w.Write("(");
             }
 
-            w.Write($"await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})");
+            w.Write(
+                $"await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})"
+            );
             w.WriteLine(hasCreateMapper ? ")" : ";");
         }
         else if (dataFlow.Sources.Count > 1)
@@ -141,7 +163,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                 w.WriteLine(2, "return (await Task.WhenAll(");
                 foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
                 {
-                    w.Write(3, $"Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})");
+                    w.Write(
+                        3,
+                        $"Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})"
+                    );
                     if (dataFlow.Sources.OrderBy(s => s.Source).ToList().IndexOf(source) < dataFlow.Sources.Count - 1)
                     {
                         w.WriteLine(",");
@@ -193,26 +218,46 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                 {
                     var varName = GetVarName(source);
                     w.WriteLine();
-                    w.WriteLine(2, $"var {source.Source.ToCamelCase()}Source{GetSourceNumber(source)} = (await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)}))");
+                    w.WriteLine(
+                        2,
+                        $"var {source.Source.ToCamelCase()}Source{GetSourceNumber(source)} = (await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)}))"
+                    );
                     w.WriteLine(3, $".ToDictionary({varName} => {GetJoin(source)}, {varName} => {varName});");
                 }
 
                 w.WriteLine();
 
-                var mainSource = dataFlow.Sources.First();
-                w.WriteLine(2, $"return (await Get{mainSource.Source.ToPascalCase()}Source{GetSourceNumber(mainSource)}({GetConnectionName(mainSource)}))");
+                var mainSource = dataFlow.Sources[0];
+                w.WriteLine(
+                    2,
+                    $"return (await Get{mainSource.Source.ToPascalCase()}Source{GetSourceNumber(mainSource)}({GetConnectionName(mainSource)}))"
+                );
 
                 foreach (var source in dataFlow.Sources.Skip(1))
                 {
-                    var isLast = dataFlow.Sources.Skip(1).ToList().IndexOf(source) == dataFlow.Sources.Count - 2 && !hasCreateMapper;
+                    var isLast =
+                        dataFlow.Sources.Skip(1).ToList().IndexOf(source) == dataFlow.Sources.Count - 2
+                        && !hasCreateMapper;
 
-                    w.WriteLine(3, $".Select({GetVarName(mainSource)} => {GetJoin(mainSource, source)} != default && {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource, source)}, out var {GetVarName(source)})");
-                    w.WriteLine(4, $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase() ?? "MissingToMapper"}({GetVarName(mainSource)})");
-                    w.WriteLine(4, $": {(source.InnerJoin ? "null" : GetVarName(mainSource))}){(isLast && !source.InnerJoin ? ";" : string.Empty)}");
+                    w.WriteLine(
+                        3,
+                        $".Select({GetVarName(mainSource)} => {GetJoin(mainSource, source)} != default && {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource, source)}, out var {GetVarName(source)})"
+                    );
+                    w.WriteLine(
+                        4,
+                        $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase() ?? "MissingToMapper"}({GetVarName(mainSource)})"
+                    );
+                    w.WriteLine(
+                        4,
+                        $": {(source.InnerJoin ? "null" : GetVarName(mainSource))}){(isLast && !source.InnerJoin ? ";" : string.Empty)}"
+                    );
 
                     if (source.InnerJoin)
                     {
-                        w.WriteLine(3, $".Where({GetVarName(mainSource)} => {GetVarName(mainSource)} != default){(isLast ? ";" : string.Empty)}");
+                        w.WriteLine(
+                            3,
+                            $".Where({GetVarName(mainSource)} => {GetVarName(mainSource)} != default){(isLast ? ";" : string.Empty)}"
+                        );
                     }
                 }
             }
@@ -222,7 +267,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         {
             if (firstSource?.TargetFromMapper != null)
             {
-                var (ns, modelPath) = Config.GetMapperLocation((dataFlow.Class, firstSource.TargetFromMapper), GetBestClassTag(dataFlow.Class, tag));
+                var (ns, _) = Config.GetMapperLocation(
+                    (dataFlow.Class, firstSource.TargetFromMapper),
+                    GetBestClassTag(dataFlow.Class, tag)
+                );
                 w.WriteLine(3, $".Select({Config.GetMapperName(ns)}.Create{dataFlow.Class.NamePascal});");
             }
             else
@@ -248,7 +296,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
             w.WriteLine();
-            w.WriteLine(1, $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}");
+            w.WriteLine(
+                1,
+                $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}"
+            );
             if (source.Mode == DataFlowSourceMode.QueryAll)
             {
                 w.WriteLine(1, "{");
@@ -262,7 +313,11 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
     protected virtual void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
     {
-        if (!dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial) && !dataFlow.Hooks.Contains(FlowHook.AfterFlow) && !dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
+        if (
+            !dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial)
+            && !dataFlow.Hooks.Contains(FlowHook.AfterFlow)
+            && !dataFlow.Hooks.Contains(FlowHook.BeforeFlow)
+        )
         {
             return;
         }
@@ -275,10 +330,17 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         using var w = this.OpenCSharpWriter(fileName);
         w.EnableHeader = false;
 
-        w.AddUsings(["Kinetix.Etl", .. dataFlow.Sources.Select(source => Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)))]);
+        w.AddUsings(
+            [
+                "Kinetix.Etl",
+                .. dataFlow.Sources.Select(source =>
+                    Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag))
+                ),
+            ]
+        );
 
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
-        w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null, false);
+        w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", inheritedClass: null, isRecord: false);
 
         if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
@@ -307,7 +369,10 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                 w.WriteLine();
             }
 
-            w.WriteLine(1, $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.OrderBy(s => s.Source).Where(s => s.Source == source.Source).ToList().IndexOf(source) + 1}(IConnection connection)");
+            w.WriteLine(
+                1,
+                $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.Where(s => s.Source == source.Source).OrderBy(s => s.Source).ToList().IndexOf(source) + 1}(IConnection connection)"
+            );
             w.WriteLine(1, "{");
             w.WriteLine(1, "}");
         }
@@ -321,20 +386,35 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         {
             foreach (var dataFlow in file.DataFlows)
             {
-                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
-                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(dataFlow, tag)))
-                    .DistinctBy(t => t.fileName))
+                foreach (
+                    var (tag, fileName) in Config
+                        .Tags.Intersect(file.Tags)
+                        .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(dataFlow, tag)))
+                        .DistinctBy(t => t.fileName)
+                )
                 {
                     HandleDataFlow(fileName, dataFlow, tag);
-                    HandleDataFlowPartial(fileName.Replace($"{Path.DirectorySeparatorChar}generated", string.Empty).Replace(".cs", ".partial.cs"), dataFlow, tag);
+                    HandleDataFlowPartial(
+                        fileName
+                            .Replace($"{Path.DirectorySeparatorChar}generated", string.Empty)
+                            .Replace(".cs", ".partial.cs"),
+                        dataFlow,
+                        tag
+                    );
                 }
             }
         }
 
-        foreach (var g in Files.Values.SelectMany(f => f.DataFlows)
-            .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
-                .Select(tag => (tag, df, fileName: Config.GetDataFlowRegistrationFilePath(df, tag))))
-            .GroupBy(g => g.fileName))
+        foreach (
+            var g in Files
+                .Values.SelectMany(f => f.DataFlows)
+                .SelectMany(df =>
+                    Config
+                        .Tags.Intersect(df.ModelFile.Tags)
+                        .Select(tag => (tag, df, fileName: Config.GetDataFlowRegistrationFilePath(df, tag)))
+                )
+                .GroupBy(g => g.fileName)
+        )
         {
             HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
         }
@@ -345,17 +425,23 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         var firstFlow = flows.First();
         using var w = this.OpenCSharpWriter(fileName);
 
-        w.AddUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
+        w.AddUsings(["Kinetix.Etl", "Microsoft.Extensions.DependencyInjection"]);
 
         w.WriteNamespace(Config.GetNamespace(firstFlow, tag));
         w.WriteLine("public static class ServiceExtensions");
         w.WriteLine("{");
-        w.WriteLine(1, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
+        w.WriteLine(
+            1,
+            $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)"
+        );
         w.WriteLine(1, "{");
         w.WriteLine(2, "return services");
         foreach (var flow in flows.OrderBy(f => f.Name))
         {
-            w.WriteLine(3, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
+            w.WriteLine(
+                3,
+                $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}"
+            );
         }
 
         w.WriteLine(1, "}");

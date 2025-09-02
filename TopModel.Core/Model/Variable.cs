@@ -4,11 +4,11 @@ public class Variable
 {
     private readonly string? _description = null;
 
-    public List<string> Configs { get; init; } = [];
+    public IList<string> Configs { get; init; } = [];
 
-    public List<string> Tags { get; init; } = [];
+    public IList<string> Tags { get; init; } = [];
 
-    public List<string> Languages { get; init; } = [];
+    public IList<string> Languages { get; init; } = [];
 
     public bool ByTag { get; init; }
 

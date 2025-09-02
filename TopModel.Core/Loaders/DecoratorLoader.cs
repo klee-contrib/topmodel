@@ -40,7 +40,9 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                             {
                                 var decoratorRef = new DecoratorReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 decorator.DecoratorReferences.Add(decoratorRef);
@@ -61,7 +63,9 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                             {
                                 var annotation = new AnnotationReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 decorator.AnnotationReferences.Add(annotation);

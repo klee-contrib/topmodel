@@ -5,15 +5,21 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class EndpointsGeneratorBase<T>(ILogger<EndpointsGeneratorBase<T>> logger, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
+public abstract class EndpointsGeneratorBase<T>(
+    ILogger<EndpointsGeneratorBase<T>> logger,
+    IFileWriterProvider writerProvider
+) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    public override List<string> GeneratedFiles => Files.Values
-        .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag)).Select(tag => (file, path: GetFilePath(file, tag))))
-        .Where(i => i.file.Endpoints.Any())
-        .Select(i => i.path)
-        .Distinct()
-        .ToList();
+    public override List<string> GeneratedFiles =>
+        Files
+            .Values.SelectMany(file =>
+                Config.Tags.Intersect(file.AllTags.Where(FilterTag)).Select(tag => (file, path: GetFilePath(file, tag)))
+            )
+            .Where(i => i.file.Endpoints.Any())
+            .Select(i => i.path)
+            .Distinct()
+            .ToList();
 
     protected virtual bool FilterTag(string tag)
     {
@@ -27,14 +33,16 @@ public abstract class EndpointsGeneratorBase<T>(ILogger<EndpointsGeneratorBase<T
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         Parallel.ForEach(
-            Files.Values
-                .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag))
-                    .Select(tag => (tag, file, filePath: GetFilePath(file, tag))))
+            Files
+                .Values.SelectMany(file =>
+                    Config
+                        .Tags.Intersect(file.AllTags.Where(FilterTag))
+                        .Select(tag => (tag, file, filePath: GetFilePath(file, tag)))
+                )
                 .GroupBy(file => file.filePath),
             file =>
             {
-                var endpoints = file
-                    .SelectMany(f => f.file.Endpoints)
+                var endpoints = file.SelectMany(f => f.file.Endpoints)
                     .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
                     .Distinct()
                     .OrderBy(e => e.Name, StringComparer.Ordinal)
@@ -44,6 +52,7 @@ public abstract class EndpointsGeneratorBase<T>(ILogger<EndpointsGeneratorBase<T
                 {
                     HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
                 }
-            });
+            }
+        );
     }
 }

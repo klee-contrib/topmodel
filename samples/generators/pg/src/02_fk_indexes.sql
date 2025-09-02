@@ -2,11 +2,12 @@
 ---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ----
 
--- =========================================================================================== 
+-- ===========================================================================================
 --   Application Name	:	pg 
 --   Script Name		:	02_fk_indexes.sql
---   Description		:	Script de création des indexes et des clef étrangères. 
--- =========================================================================================== 
+--   Description		:	Script de création des indexes et des clef étrangères.
+-- ===========================================================================================
+
 /**
   * Création de l'index de clef étrangère pour DROIT.TDR_CODE
  **/
@@ -97,4 +98,3 @@ create index IDX_TDR_TDR_LIBELLE_FK on TYPE_DROIT (
 create index IDX_TUT_TUT_LIBELLE_FK on TYPE_UTILISATEUR (
 	TUT_LIBELLE ASC
 );
-

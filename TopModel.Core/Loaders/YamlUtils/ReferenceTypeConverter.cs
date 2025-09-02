@@ -22,6 +22,6 @@ internal class ReferenceTypeConverter : IYamlTypeConverter
     /// <inheritdoc cref="IYamlTypeConverter.WriteYaml" />
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

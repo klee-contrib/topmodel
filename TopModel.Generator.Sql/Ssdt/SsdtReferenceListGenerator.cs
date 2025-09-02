@@ -48,9 +48,7 @@ public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logg
     /// <param name="tableName">Nom de la table.</param>
     private static void WriteHeader(IFileWriter writer, string tableName)
     {
-        writer.WriteLine("-- ===========================================================================================");
-        writer.WriteLine("--   Description		:	Insertion des valeurs de la table " + tableName + ".");
-        writer.WriteLine("-- ===========================================================================================");
+        writer.WriteSqlFileHeader(description: $"Insertion des valeurs de la table {tableName}.");
         writer.WriteLine();
     }
 
@@ -77,7 +75,7 @@ public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logg
 
         // Création de la requête.
         var sb = new StringBuilder();
-        sb.Append("INSERT INTO " + modelClass.SqlName + "(");
+        sb.Append("INSERT INTO ").Append(modelClass.SqlName).Append('(');
         var isFirst = true;
         foreach (var columnName in nameValueDict.Keys)
         {

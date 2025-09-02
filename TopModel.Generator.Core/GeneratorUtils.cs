@@ -15,7 +15,11 @@ public static class GeneratorUtils
     /// <param name="config">Config.</param>
     /// <param name="number">Numéro du générateur.</param>
     /// <returns>ServiceCollection.</returns>
-    public static IServiceCollection AddGenerator<TGenerator, TConfig>(this IServiceCollection services, TConfig config, int number)
+    public static IServiceCollection AddGenerator<TGenerator, TConfig>(
+        this IServiceCollection services,
+        TConfig config,
+        int number
+    )
         where TGenerator : GeneratorBase<TConfig>
         where TConfig : GeneratorConfigBase
     {
@@ -35,36 +39,48 @@ public static class GeneratorUtils
             return classe.Properties;
         }
 
-        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses).Select(p => new ReverseAssociationProperty()
-        {
-            Association = p.Class,
-            Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-                : p.Type == AssociationType.OneToOne ? AssociationType.OneToOne
-                : AssociationType.ManyToMany,
-            Comment = $"Association réciproque de {p.Class.NamePascal}.{p.Name}",
-            Class = classe,
-            ReverseProperty = p,
-            Role = p.Role
-        })).ToList();
+        return classe
+            .Properties.Concat(
+                classe
+                    .GetReverseProperties(availableClasses)
+                    .Select(p => new ReverseAssociationProperty()
+                    {
+                        Association = p.Class,
+                        Type =
+                            p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
+                            : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
+                            : p.Type == AssociationType.OneToOne ? AssociationType.OneToOne
+                            : AssociationType.ManyToMany,
+                        Comment = $"Association réciproque de {p.Class.NamePascal}.{p.Name}",
+                        Class = classe,
+                        ReverseProperty = p,
+                        Role = p.Role,
+                    })
+            )
+            .ToList();
     }
 
-    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses)
+    public static IList<AssociationProperty> GetReverseProperties(
+        this Class classe,
+        IEnumerable<Class> availableClasses
+    )
     {
         if (classe.Reference)
         {
-            return new List<AssociationProperty>();
+            return [];
         }
 
         return availableClasses
             .SelectMany(c => c.Properties)
             .OfType<AssociationProperty>()
-            .Where(p => p is not ReverseAssociationProperty)
-            .Where(p => p.Type != AssociationType.OneToOne)
-            .Where(p => p.Class.IsPersistent)
-            .Where(p => p.Association.PrimaryKey.Count() == 1 || p.Type == AssociationType.ManyToOne)
-            .Where(p => p.Association == classe
-                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
+            .Where(p =>
+                p is not ReverseAssociationProperty
+                && p.Type != AssociationType.OneToOne
+                && p.Class.IsPersistent
+                && (p.Association.PrimaryKey.Count() == 1 || p.Type == AssociationType.ManyToOne)
+                && p.Association == classe
+                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule)
+            )
             .ToList();
     }
 }

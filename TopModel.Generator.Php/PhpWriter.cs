@@ -66,7 +66,12 @@ public class PhpWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="modifier">Modifier.</param>
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="implementingInterfaces">Interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IEnumerable<string>? implementingInterfaces = null)
+    public void WriteClassDeclaration(
+        string name,
+        string? modifier,
+        string? inheritedClass = null,
+        IEnumerable<string>? implementingInterfaces = null
+    )
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -212,7 +217,7 @@ public class PhpWriter(IFileWriter writer, string packageName) : IDisposable
 
         var sb = new StringBuilder();
         sb.Append("/**\n");
-        sb.Append(" * " + summary.Replace("\n", "\n * "));
+        sb.Append(" * ").Append(summary.Replace("\n", "\n * "));
         return sb.ToString();
     }
 
@@ -294,11 +299,13 @@ public class PhpWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="fw">FileWriter.</param>
     private void WriteImports()
     {
-        _imports = _imports.Distinct().Where(i => string.Join('\\', i.Split('\\').SkipLast(1).ToList()) != packageName).ToList();
+        _imports = _imports
+            .Distinct()
+            .Where(i => string.Join('\\', i.Split('\\').SkipLast(1).ToList()) != packageName)
+            .ToList();
 
-        foreach (var import in this._imports.OrderBy(x => x))
+        foreach (var import in _imports.Order())
         {
-            var package = import.Split('.').First();
             writer.WriteLine($"use {import};");
         }
 

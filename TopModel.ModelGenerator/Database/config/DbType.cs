@@ -1,4 +1,6 @@
-﻿public enum DbType
+﻿namespace TopModel.ModelGenerator;
+
+public enum DbType
 {
     /// <summary>
     ///  Base de données Posgresql

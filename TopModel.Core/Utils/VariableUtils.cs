@@ -13,7 +13,7 @@ internal static class VariableUtils
         ["comment"] = "Commentaire de la classe",
         ["label"] = "Libellé de la classe",
         ["pluralName"] = "Nom au pluriel de la classe",
-        ["module"] = "Module du fichier contenant la classe"
+        ["module"] = "Module du fichier contenant la classe",
     };
 
     internal static readonly Dictionary<string, string> DomainProperties = new()
@@ -22,7 +22,7 @@ internal static class VariableUtils
         ["length"] = "Longueur d'une proprieté du domaine",
         ["scale"] = "Nombre de chiffres après la virgule pour une propriété du domaine",
         ["name"] = "Nom du domaine",
-        ["type"] = "Type d'implémentation du domaine"
+        ["type"] = "Type d'implémentation du domaine",
     };
 
     internal static readonly Dictionary<string, string> EndpointProperties = new()
@@ -31,7 +31,7 @@ internal static class VariableUtils
         ["method"] = "Méthode HTTP de l'endpoint",
         ["route"] = "Route de l'endpoint",
         ["description"] = "Description de l'endpoint",
-        ["module"] = "Module du fichier contenant l'endpoint"
+        ["module"] = "Module du fichier contenant l'endpoint",
     };
 
     internal static readonly Dictionary<string, string> PropertyProperties = new()
@@ -47,17 +47,36 @@ internal static class VariableUtils
         ["required"] = "Si la propriété est obligatoire",
         ["resourceKey"] = "Clé de traduction de la propriété",
         ["commentResourceKey"] = "Clé de traduction pour le commentaire de la propriété",
-        ["defaultValue"] = "Valeur par défaut de la propriété"
+        ["defaultValue"] = "Valeur par défaut de la propriété",
     };
 
-    internal static readonly string[] Transforms = ["camel", "constant", "kebab", "lower", "pascal", "snake", "upper", "flat", "path", "head", "last", "tail"];
+    internal static readonly string[] Transforms =
+    [
+        "camel",
+        "constant",
+        "kebab",
+        "lower",
+        "pascal",
+        "snake",
+        "upper",
+        "flat",
+        "path",
+        "head",
+        "last",
+        "tail",
+    ];
 
     public static bool IsValidTransform(this string input)
     {
         return Transforms.Contains(input);
     }
 
-    public static bool TryGetClassVariable(this string input, ModelConfig config, IList<TemplateParameter> templateParameters, [MaybeNullWhen(false)] out Variable variable)
+    public static bool TryGetClassVariable(
+        this string input,
+        ModelConfig config,
+        IList<TemplateParameter> templateParameters,
+        [MaybeNullWhen(false)] out Variable variable
+    )
     {
         if (input.StartsWith("primaryKey."))
         {
@@ -141,7 +160,12 @@ internal static class VariableUtils
         return false;
     }
 
-    public static bool TryGetEndpointVariable(this string input, ModelConfig config, IList<TemplateParameter> templateParameters, [MaybeNullWhen(false)] out Variable variable)
+    public static bool TryGetEndpointVariable(
+        this string input,
+        ModelConfig config,
+        IList<TemplateParameter> templateParameters,
+        [MaybeNullWhen(false)] out Variable variable
+    )
     {
         if (input.StartsWith("returns."))
         {
@@ -187,11 +211,17 @@ internal static class VariableUtils
         return false;
     }
 
-    public static bool TryGetPropertyVariable(this string input, ModelConfig config, IList<TemplateParameter> templateParameters, [MaybeNullWhen(false)] out Variable variable)
+    public static bool TryGetPropertyVariable(
+        this string input,
+        ModelConfig config,
+        IList<TemplateParameter> templateParameters,
+        [MaybeNullWhen(false)] out Variable variable
+    )
     {
         if (input.StartsWith("parent."))
         {
-            return input["parent.".Length..].TryGetClassVariable(config, templateParameters, out variable) || input["parent.".Length..].TryGetEndpointVariable(config, templateParameters, out variable);
+            return input["parent.".Length..].TryGetClassVariable(config, templateParameters, out variable)
+                || input["parent.".Length..].TryGetEndpointVariable(config, templateParameters, out variable);
         }
 
         if (input.StartsWith("class."))

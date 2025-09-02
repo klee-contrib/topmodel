@@ -34,19 +34,25 @@ public class Endpoint : IPropertyContainer
     }
 
     public string Description { get; set; }
+
 #nullable enable
 
     public IProperty? Returns { get; set; }
 
     public IList<IProperty> Params { get; set; } = [];
 
-    public bool IsMultipart => Params.Any(p => !p.IsRouteParam() && (p.Domain?.IsMultipart ?? false) || p is CompositionProperty cp && cp.IsMultipart);
+    public bool IsMultipart =>
+        Params.Any(p =>
+            !p.IsRouteParam() && (p.Domain?.IsMultipart ?? false) || p is CompositionProperty cp && cp.IsMultipart
+        );
 
     public IList<IProperty> Properties => Params.Concat([Returns!]).Where(p => p != null).ToList();
 
     public bool PreservePropertyCasing { get; set; }
 
+#pragma warning disable MA0016
     public Dictionary<string, string> CustomProperties { get; } = [];
+#pragma warning restore MA0016
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 

@@ -25,21 +25,17 @@ public class PhpConfig : GeneratorConfigBase
     /// </summary>
     public IdentityConfig Identity { get; set; } = new() { Mode = IdentityMode.IDENTITY };
 
-    public override string[] PropertiesWithTagVariableSupport => new[]
-    {
-        nameof(EntitiesPath),
-        nameof(RepositoriesPath),
-        nameof(DtosPath),
-    };
+    public override string[] PropertiesWithTagVariableSupport =>
+        new[] { nameof(EntitiesPath), nameof(RepositoriesPath), nameof(DtosPath) };
 
-    public override string[] PropertiesWithModuleVariableSupport => new[]
-    {
-        nameof(EntitiesPath),
-        nameof(RepositoriesPath),
-        nameof(DtosPath),
-    };
+    public override string[] PropertiesWithModuleVariableSupport =>
+        new[] { nameof(EntitiesPath), nameof(RepositoriesPath), nameof(DtosPath) };
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
+    public override bool CanClassUseEnums(
+        Class classe,
+        IEnumerable<Class>? availableClasses = null,
+        IProperty? prop = null
+    )
     {
         return false;
     }
@@ -48,16 +44,25 @@ public class PhpConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.php");
+            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module)
+                .ToFilePath(),
+            $"{classe.NamePascal}.php"
+        );
     }
 
     public string GetPackageName(Class classe, string tag, bool? isPersistent = null)
     {
         return GetPackageName(
             classe.Namespace,
-            isPersistent.HasValue ? isPersistent.Value ? EntitiesPath : DtosPath : classe.IsPersistent ? EntitiesPath : DtosPath,
-            tag);
+            isPersistent.HasValue
+                ? isPersistent.Value
+                    ? EntitiesPath
+                    : DtosPath
+                : classe.IsPersistent
+                    ? EntitiesPath
+                    : DtosPath,
+            tag
+        );
     }
 
     public string GetPackageName(Namespace ns, string modelPath, string tag)
@@ -67,6 +72,6 @@ public class PhpConfig : GeneratorConfigBase
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

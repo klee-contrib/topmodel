@@ -12,7 +12,13 @@ public class ModelError
     private readonly object _objet;
     private readonly Reference? _reference;
 
-    internal ModelError(ErrorType errorType, object objet, string message, Reference? reference = null, bool isError = true)
+    internal ModelError(
+        ErrorType errorType,
+        object objet,
+        string message,
+        Reference? reference = null,
+        bool isError = true
+    )
     {
         _message = message;
         _objet = objet;
@@ -28,19 +34,21 @@ public class ModelError
 
     public ModelFile File => _objet.GetFile();
 
-    public Class? Class => _objet switch
-    {
-        Class classe => classe,
-        IProperty { Class: Class classe } => classe,
-        _ => null
-    };
+    public Class? Class =>
+        _objet switch
+        {
+            Class classe => classe,
+            IProperty { Class: Class classe } => classe,
+            _ => null,
+        };
 
-    public Endpoint? Endpoint => _objet switch
-    {
-        Endpoint endpoint => endpoint,
-        IProperty { Endpoint: Endpoint endpoint } => endpoint,
-        _ => null
-    };
+    public Endpoint? Endpoint =>
+        _objet switch
+        {
+            Endpoint endpoint => endpoint,
+            IProperty { Endpoint: Endpoint endpoint } => endpoint,
+            _ => null,
+        };
 
     public Reference? Location => _reference ?? _objet.GetLocation();
 

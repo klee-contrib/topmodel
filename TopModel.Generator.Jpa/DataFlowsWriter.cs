@@ -10,5 +10,5 @@ public enum DataFlowsWriter
     /// <summary>
     /// Génération du modèle utilisant jpa-writer
     /// </summary>
-    Jpa
+    Jpa,
 }

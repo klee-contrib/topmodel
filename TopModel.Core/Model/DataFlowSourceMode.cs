@@ -10,5 +10,5 @@ public enum DataFlowSourceMode
     /// <summary>
     /// Implémentation automatique qui sélectionne tous les éléments.
     /// </summary>
-    QueryAll
+    QueryAll,
 }

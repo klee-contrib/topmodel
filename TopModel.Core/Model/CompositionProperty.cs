@@ -10,9 +10,11 @@ public class CompositionProperty : IProperty
 
     public string Name { get; set; }
 
-    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
+    public string NamePascal =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
 
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
+    public string NameCamel =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
 
     public string NameByClassPascal => NamePascal;
 
@@ -20,7 +22,7 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
-    public Dictionary<string, string> DomainParameters { get; set; } = [];
+    public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
 
     public string Comment { get; set; }
 
@@ -44,7 +46,7 @@ public class CompositionProperty : IProperty
 
 #nullable enable
 
-    public string DefaultValue => throw new NotImplementedException();
+    public string DefaultValue => throw new NotSupportedException();
 
     public LocatedString? Trigram { get; set; }
 
@@ -101,7 +103,7 @@ public class CompositionProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            Annotations = Annotations
+            Annotations = Annotations,
         };
     }
 

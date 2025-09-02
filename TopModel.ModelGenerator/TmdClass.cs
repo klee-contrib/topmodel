@@ -10,19 +10,26 @@ public class TmdClass
 #nullable enable
     public string Comment { get; set; } = "Non documenté";
 
-    public List<TmdProperty> Properties { get; set; } = [];
+    public IList<TmdProperty> Properties { get; set; } = [];
 
-    public List<TmdClass> Dependencies => Properties.OfType<TmdAssociationProperty>().Select(p => p.Association!).Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class)).Where(c => c != this).Distinct().ToList();
+    public IList<TmdClass> Dependencies =>
+        Properties
+            .OfType<TmdAssociationProperty>()
+            .Select(p => p.Association!)
+            .Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class))
+            .Where(c => c != this)
+            .Distinct()
+            .ToList();
 
     public string Trigram { get; set; } = string.Empty;
 
-    public List<List<string>> Unique { get; set; } = [];
+    public IList<IList<string>> Unique { get; set; } = [];
 
     public bool PreservePropertyCasing { get; set; }
 
     public string? Extends { get; set; }
 
-    public List<Dictionary<string, string?>> Values { get; set; } = new();
+    public IList<IDictionary<string, string?>> Values { get; set; } = [];
 
     public TmdFile? File { get; set; }
 }

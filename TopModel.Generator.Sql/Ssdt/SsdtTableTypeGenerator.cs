@@ -18,7 +18,9 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract && classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName);
+        return classe.IsPersistent
+            && !classe.Abstract
+            && classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName);
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -71,9 +73,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="tableName">Nom de la table.</param>
     private static void WriteHeader(IFileWriter writer, string tableName)
     {
-        writer.WriteLine("-- ===========================================================================================");
-        writer.WriteLine("--   Description		:	Création du type de table " + tableName + ".");
-        writer.WriteLine("-- ===========================================================================================");
+        writer.WriteSqlFileHeader(description: $"Création du type de table {tableName}.");
         writer.WriteLine();
     }
 
@@ -84,7 +84,9 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="classe">Classe.</param>
     private static void WriteInsertKeyLine(StringBuilder sb, Class classe)
     {
-        sb.Append('[').Append((classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty) + "INSERT_KEY] int null");
+        sb.Append('[')
+            .Append(classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty)
+            .Append("INSERT_KEY] int null");
     }
 
     /// <summary>
@@ -112,7 +114,10 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         // Colonnes
         foreach (var property in table.Properties)
         {
-            if ((!property.PrimaryKey || Config.ShouldQuoteValue(property)) && property.Name != ScriptUtils.InsertKeyName)
+            if (
+                (!property.PrimaryKey || Config.ShouldQuoteValue(property))
+                && property.Name != ScriptUtils.InsertKeyName
+            )
             {
                 sb.Clear();
                 WriteColumn(sb, property);

@@ -5,8 +5,11 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Postgres;
 
-public class PostgresCrebasGenerator(ILogger<PostgresCrebasGenerator> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, translationStore, writerProvider)
+public class PostgresCrebasGenerator(
+    ILogger<PostgresCrebasGenerator> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : AbstractCrebasGenerator(logger, translationStore, writerProvider)
 {
     public override string Name => "PostgresCrebasGen";
 
@@ -38,20 +41,22 @@ public class PostgresCrebasGenerator(ILogger<PostgresCrebasGenerator> logger, Tr
         }
     }
 
-    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writerCrebas, string tableName)
+    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)
     {
-        writerCrebas.Write($"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()}");
+        writer.Write(
+            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()}"
+        );
 
         if (Config.Procedural!.Identity.Start != null)
         {
-            writerCrebas.Write($"{$" start {Config.Procedural!.Identity.Start}"}");
+            writer.Write($"{$" start {Config.Procedural!.Identity.Start}"}");
         }
 
         if (Config.Procedural!.Identity.Increment != null)
         {
-            writerCrebas.Write($"{$" increment {Config.Procedural!.Identity.Increment}"}");
+            writer.Write($"{$" increment {Config.Procedural!.Identity.Increment}"}");
         }
 
-        writerCrebas.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
+        writer.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
     }
 }

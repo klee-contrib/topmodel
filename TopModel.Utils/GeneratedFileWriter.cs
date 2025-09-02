@@ -19,10 +19,13 @@ public class GeneratedFileWriter : IFileWriter
     private readonly ILogger _logger;
     private readonly StringBuilder _sb;
 
-    internal GeneratedFileWriter(ConfigBase config, string fileName, ILogger logger, bool encoderShouldEmitUTF8Identifier)
-        : this(config, fileName, logger, new UTF8Encoding(encoderShouldEmitUTF8Identifier))
-    {
-    }
+    internal GeneratedFileWriter(
+        ConfigBase config,
+        string fileName,
+        ILogger logger,
+        bool encoderShouldEmitUTF8Identifier
+    )
+        : this(config, fileName, logger, new UTF8Encoding(encoderShouldEmitUTF8Identifier)) { }
 
     internal GeneratedFileWriter(ConfigBase config, string fileName, ILogger logger, Encoding encoding)
     {
@@ -48,7 +51,7 @@ public class GeneratedFileWriter : IFileWriter
     /// <inheritdoc />
     public string StartCommentToken { get; set; } = "////";
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
         if (Marshal.GetExceptionPointers() != IntPtr.Zero)
@@ -57,7 +60,7 @@ public class GeneratedFileWriter : IFileWriter
         }
 
         string? currentContent = null;
-        var fileExists = File.Exists(FileName.Replace("\\", "/"));
+        var fileExists = File.Exists(FileName.Replace('\\', '/'));
         if (fileExists)
         {
             using var reader = new StreamReader(FileName, _encoding);
@@ -66,18 +69,23 @@ public class GeneratedFileWriter : IFileWriter
             {
                 for (var i = 0; i < LinesInHeader; i++)
                 {
-                    var line = reader.ReadLine();
+                    reader.ReadLine();
                 }
             }
 
             currentContent = reader.ReadToEnd();
 
-            var ignoredFile = _config.IgnoredFiles.FirstOrDefault(i => Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace("\\", "/") == FileName.Replace("\\", "/"));
+            var ignoredFile = _config.IgnoredFiles.FirstOrDefault(i =>
+                Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace('\\', '/')
+                == FileName.Replace('\\', '/')
+            );
             if (ignoredFile != null)
             {
                 if (!_config.NoWarn.Contains(ErrorType.TMD1004))
                 {
-                    _logger.LogWarning($"{{TMD1004}} - Le fichier '{ignoredFile.Path}' ne sera pas regénéré pour le motif : '{ignoredFile.Comment}'.");
+                    _logger.LogWarning(
+                        $"{{TMD1004}} - Le fichier '{ignoredFile.Path}' ne sera pas regénéré pour le motif : '{ignoredFile.Comment}'."
+                    );
                 }
 
                 return;
@@ -97,7 +105,7 @@ public class GeneratedFileWriter : IFileWriter
             Directory.CreateDirectory(dir);
         }
 
-        using (var sw = new StreamWriter(FileName, false, _encoding))
+        using (var sw = new StreamWriter(FileName, append: false, _encoding))
         {
             if (EnableHeader && !newContent.StartsWith($"{StartCommentToken}{Environment.NewLine}"))
             {

@@ -2,11 +2,11 @@
 ---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ----
 
--- =========================================================================================== 
+-- ===========================================================================================
 --   Application Name	:	pg 
 --   Script Name		:	05_comments.sql
---   Description		:	Script de création des commentaires. 
--- =========================================================================================== 
+--   Description		:	Script de création des commentaires.
+-- ===========================================================================================
 
 /**
   * Commentaires pour la table DROIT

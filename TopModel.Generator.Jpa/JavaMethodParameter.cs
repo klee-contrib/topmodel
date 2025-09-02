@@ -1,4 +1,6 @@
-﻿namespace TopModel.Generator.Jpa;
+﻿using TopModel.Utils;
+
+namespace TopModel.Generator.Jpa;
 
 public class JavaMethodParameter
 {
@@ -15,11 +17,12 @@ public class JavaMethodParameter
         Imports.Add(import);
     }
 
-    public string Declaration => $@"{(Final ? "final " : string.Empty)}{string.Join(' ', Annotations)}{(Annotations.Count() > 0 ? ' ' : string.Empty)}{Type} {Name}";
+    public string Declaration =>
+        $@"{(Final ? "final " : string.Empty)}{string.Join(' ', Annotations)}{(Annotations.Count > 0 ? ' ' : string.Empty)}{Type} {Name}";
 
-    public List<string> Imports { get; } = [];
+    public IList<string> Imports { get; } = [];
 
-    public List<JavaAnnotation> Annotations { get; } = [];
+    public IList<JavaAnnotation> Annotations { get; } = [];
 
     public bool Final { get; set; } = false;
 

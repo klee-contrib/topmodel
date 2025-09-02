@@ -1,3 +1,4 @@
 {
   "dotnet.defaultSolution": "TopModel.sln",
+  "editor.formatOnSave": true
 }

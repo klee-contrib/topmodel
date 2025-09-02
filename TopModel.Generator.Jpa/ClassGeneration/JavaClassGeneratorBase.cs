@@ -14,11 +14,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     private JavaConstructorGenerator? _jpaModelConstructorGenerator;
     private JpaModelPropertyGenerator? _jpaModelPropertyGenerator;
 
-    protected static Dictionary<string, string> NewableTypes => new()
-    {
-        ["List"] = "ArrayList",
-        ["Set"] = "HashSet"
-    };
+    protected static IDictionary<string, string> NewableTypes =>
+        new Dictionary<string, string>() { ["List"] = "ArrayList", ["Set"] = "HashSet" };
 
     protected string JavaxOrJakarta => Config.JavaxOrJakarta;
 
@@ -35,7 +32,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         get
         {
-            _jpaModelPropertyGenerator ??= Config.UseJdbc ? new JdbcModelPropertyGenerator(Config, Classes, NewableTypes)
+            _jpaModelPropertyGenerator ??= Config.UseJdbc
+                ? new JdbcModelPropertyGenerator(Config, Classes, NewableTypes)
                 : new JpaModelPropertyGenerator(Config, Classes, NewableTypes);
             return _jpaModelPropertyGenerator;
         }
@@ -48,7 +46,9 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             yield return Config.GeneratedAnnotation;
         }
 
-        var annotations = Config.GetAnnotations(classe, tag).Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
+        var annotations = Config
+            .GetAnnotations(classe, tag)
+            .Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
         foreach (var a in annotations)
         {
             yield return a;
@@ -80,33 +80,45 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
 
         fw.WriteLine();
-        fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}");
+        fw.WriteDocStart(
+            1,
+            $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}"
+        );
         fw.WriteDocEnd(1);
         string enumDeclaration = @$"public enum Fields";
         if (Config.FieldsEnumInterface != null)
         {
-            enumDeclaration += $" implements {Config.FieldsEnumInterface.Split(".").Last().Replace("<>", $"<{classe.NamePascal}>")}";
+            enumDeclaration +=
+                $" implements {Config.FieldsEnumInterface.Split(".")[^1].Replace("<>", $"<{classe.NamePascal}>")}";
         }
 
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
 
-        var props = classe.GetProperties(Classes).Select(prop =>
-        {
-            string name;
-            if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
+        var props = classe
+            .GetProperties(Classes)
+            .Select(prop =>
             {
-                name = ap.NameByClassCamel.ToConstantCase();
-            }
-            else
-            {
-                name = prop.NameCamel.ToConstantCase();
-            }
+                string name;
+                if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
+                {
+                    name = ap.NameByClassCamel.ToConstantCase();
+                }
+                else
+                {
+                    name = prop.NameCamel.ToConstantCase();
+                }
 
-            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc && prop is AssociationProperty asp && asp.Association.IsPersistent);
-            javaType = javaType.Split("<")[0];
-            return $"        {name}({javaType}.class)";
-        });
+                var javaType = Config.GetType(
+                    prop,
+                    useClassForAssociation: classe.IsPersistent
+                        && !Config.UseJdbc
+                        && prop is AssociationProperty asp
+                        && asp.Association.IsPersistent
+                );
+                javaType = javaType.Split("<")[0];
+                return $"        {name}({javaType}.class)";
+            });
 
         fw.WriteLine(string.Join(", //\n", props) + ";");
 
@@ -149,13 +161,15 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual void WriteToMappers(JavaWriter fw, Class classe, string tag)
     {
-        var toMappers = classe.ToMappers.Where(p => Classes.Contains(p.Class)).Select(m => (classe, m))
-        .OrderBy(m => m.m.Name)
-        .ToList();
+        var toMappers = classe
+            .ToMappers.Where(p => Classes.Contains(p.Class))
+            .Select(m => (classe, m))
+            .OrderBy(m => m.m.Name)
+            .ToList();
 
         foreach (var toMapper in toMappers)
         {
-            var (clazz, mapper) = toMapper;
+            var (_, mapper) = toMapper;
             fw.AddImport(mapper.Class.GetImport(Config, tag));
             fw.WriteLine();
             fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
@@ -164,14 +178,23 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 fw.WriteLine(1, $" * {mapper.Comment}");
             }
 
-            fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
+            fw.WriteParam(
+                "target",
+                $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié."
+            );
             fw.WriteReturns(1, $"Une instance de '{mapper.Class.NamePascal}'");
 
             fw.WriteDocEnd(1);
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
 
-            fw.WriteLine(1, $"public {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({mapper.Class.NamePascal} target) {{");
-            fw.WriteLine(2, $"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
+            fw.WriteLine(
+                1,
+                $"public {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({mapper.Class.NamePascal} target) {{"
+            );
+            fw.WriteLine(
+                2,
+                $"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);"
+            );
             fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             fw.WriteLine(1, "}");
 
@@ -193,7 +216,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             {
                 Visibility = "public",
                 Comment = $"Getter for {ap.NameCamel}",
-                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{ap.NameCamel} {ap.NameCamel}}}"
+                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{ap.NameCamel} {ap.NameCamel}}}",
             };
             method.AddBodyLine(@$"return this.{ap.NameCamel};");
             fw.Write(1, method);
@@ -212,12 +235,13 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             {
                 Visibility = "public",
                 Comment = $"Setter for {propertyName}",
-            }
-            .AddParameter(new JavaMethodParameter(propertyType, propertyName)
-            {
-                Comment = $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
-            })
-            ;
+            }.AddParameter(
+                new JavaMethodParameter(propertyType, propertyName)
+                {
+                    Comment =
+                        $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
+                }
+            );
             method.Imports.AddRange(Config.GetDomainImports(ap.Property, tag));
             method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
             fw.Write(1, method);

@@ -64,7 +64,9 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                             {
                                 var annotation = new AnnotationReference(prop)
                                 {
-                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
                                 };
 
                                 domain.AnnotationReferences.Add(annotation);
@@ -107,7 +109,9 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                                                     valueTemplate.Value = new(parser.Consume<Scalar>());
                                                     break;
                                                 case "imports":
-                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(new(parser.Consume<Scalar>())));
+                                                    parser.ConsumeSequence(() =>
+                                                        valueTemplate.Imports.Add(new(parser.Consume<Scalar>()))
+                                                    );
                                                     break;
                                             }
                                         });
@@ -125,10 +129,15 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                                     switch (prop.Value)
                                     {
                                         case "template":
-                                            implementation.ValueTemplates.Add(ValueTemplate.Default, HandleValueTemplate());
+                                            implementation.ValueTemplates.Add(
+                                                ValueTemplate.Default,
+                                                HandleValueTemplate()
+                                            );
                                             break;
                                         case "overrides":
-                                            parser.ConsumeMapping(prop => implementation.ValueTemplates.Add(prop.Value, HandleValueTemplate()));
+                                            parser.ConsumeMapping(prop =>
+                                                implementation.ValueTemplates.Add(prop.Value, HandleValueTemplate())
+                                            );
                                             break;
                                     }
                                 });

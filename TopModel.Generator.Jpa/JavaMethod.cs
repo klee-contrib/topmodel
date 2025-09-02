@@ -17,13 +17,14 @@ public class JavaMethod
         Imports.Add(import);
     }
 
-    public List<JavaAnnotation> Annotations { get; } = [];
+    public IList<JavaAnnotation> Annotations { get; } = [];
 
-    public List<WriterLine> Body { get; } = [];
+    public IList<WriterLine> Body { get; } = [];
 
-    public List<string> Imports { get; } = [];
+    public IList<string> Imports { get; } = [];
 
-    public virtual string Signature => $@"{(!string.IsNullOrEmpty(Visibility) ? $"{Visibility} " : string.Empty)}{(Static ? "static " : string.Empty)}{(GenericTypes.Count() > 0 ? $"<{string.Join(", ", GenericTypes)}> " : string.Empty)}{ReturnType} {Name}({string.Join(", ", Parameters.Select(p => p.Declaration))})";
+    public virtual string Signature =>
+        $@"{(!string.IsNullOrEmpty(Visibility) ? $"{Visibility} " : string.Empty)}{(Static ? "static " : string.Empty)}{(GenericTypes.Count > 0 ? $"<{string.Join(", ", GenericTypes)}> " : string.Empty)}{ReturnType} {Name}({string.Join(", ", Parameters.Select(p => p.Declaration))})";
 
     public string Visibility { get; set; } = string.Empty;
 
@@ -33,17 +34,20 @@ public class JavaMethod
 
     public string ReturnComment { get; set; } = string.Empty;
 
-    public List<JavaMethodParameter> Parameters { get; } = [];
+    public IList<JavaMethodParameter> Parameters { get; } = [];
 
     public string ReturnType { get; }
 
     protected string Name { get; }
 
-    protected List<string> GenericTypes { get; } = new();
+    protected IList<string> GenericTypes { get; } = [];
 
     public JavaMethod AddAnnotation(JavaAnnotation annotation)
     {
-        Imports.AddRange(annotation.Imports);
+        foreach (var import in annotation.Imports)
+        {
+            Imports.Add(import);
+        }
         Annotations.Add(annotation);
         return this;
     }
@@ -74,7 +78,10 @@ public class JavaMethod
 
     public virtual JavaMethod AddParameter(JavaMethodParameter parameter)
     {
-        Imports.AddRange(parameter.Imports);
+        foreach (var import in parameter.Imports)
+        {
+            Imports.Add(import);
+        }
         Parameters.Add(parameter);
         return this;
     }

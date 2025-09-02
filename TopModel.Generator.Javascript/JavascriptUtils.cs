@@ -5,13 +5,15 @@ namespace TopModel.Generator.Javascript;
 
 public static class JavascriptUtils
 {
-    public static List<(string Import, string Path)> GroupAndSort(this IEnumerable<(string Import, string Path)> imports)
+    public static IList<(string Import, string Path)> GroupAndSort(
+        this IEnumerable<(string Import, string Path)> imports
+    )
     {
         return imports
-             .GroupBy(i => i.Path)
-             .Select(i => (Import: string.Join(", ", i.Select(l => l.Import).Distinct().OrderBy(x => x)), Path: i.Key))
-             .OrderBy(i => i.Path.StartsWith('.') ? i.Path : $"...{i.Path}")
-             .ToList();
+            .GroupBy(i => i.Path)
+            .Select(i => (Import: string.Join(", ", i.Select(l => l.Import).Distinct().Order()), Path: i.Key))
+            .OrderBy(i => i.Path.StartsWith('.') ? i.Path : $"...{i.Path}")
+            .ToList();
     }
 
     public static bool IsJSReference(this Class classe)

@@ -4,9 +4,9 @@ public class TopModelLockFile
 {
     public required string Version { get; set; }
 
-    public Dictionary<string, TopModelLockModule> Modules { get; set; } = [];
+    public IDictionary<string, TopModelLockModule> Modules { get; set; } = new Dictionary<string, TopModelLockModule>();
 
-    public Dictionary<string, string> Custom { get; set; } = [];
+    public IDictionary<string, string> Custom { get; set; } = new Dictionary<string, string>();
 
-    public List<string> GeneratedFiles { get; set; } = [];
+    public IList<string> GeneratedFiles { get; set; } = [];
 }

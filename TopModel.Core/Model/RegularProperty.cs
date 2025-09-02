@@ -8,9 +8,11 @@ public class RegularProperty : IProperty
 #nullable disable
     public string Name { get; set; }
 
-    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
+    public string NamePascal =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
 
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
+    public string NameCamel =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
 
     public string NameByClassPascal => NamePascal;
 
@@ -31,7 +33,7 @@ public class RegularProperty : IProperty
 #nullable disable
     public Domain Domain { get; set; }
 
-    public Dictionary<string, string> DomainParameters { get; set; } = [];
+    public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
 
     public string Comment { get; set; }
 
@@ -86,7 +88,7 @@ public class RegularProperty : IProperty
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
-            Annotations = Annotations
+            Annotations = Annotations,
         };
     }
 

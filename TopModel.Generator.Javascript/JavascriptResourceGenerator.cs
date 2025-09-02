@@ -9,8 +9,12 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, TranslationStore translationStore, ModelConfig modelConfig, IFileWriterProvider writerProvider)
-    : TranslationGeneratorBase<JavascriptConfig>(logger, translationStore, writerProvider)
+public class JavascriptResourceGenerator(
+    ILogger<JavascriptResourceGenerator> logger,
+    TranslationStore translationStore,
+    ModelConfig modelConfig,
+    IFileWriterProvider writerProvider
+) : TranslationGeneratorBase<JavascriptConfig>(logger, translationStore, writerProvider)
 {
     private readonly TranslationStore _translationStore = translationStore;
 
@@ -43,7 +47,7 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
 
     protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
-        using var fw = OpenFileWriter(filePath, false);
+        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
         var module = properties.First().Parent.Namespace.RootModule;
@@ -57,7 +61,16 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             fw.WriteLine($"export const {module.ToCamelCase()}Comments = {{");
         }
 
-        WriteSubModule(fw, modelConfig.I18n.DefaultLang, properties.Where(p => Config.ExtendedCompositions || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }), true, 1);
+        WriteSubModule(
+            fw,
+            modelConfig.I18n.DefaultLang,
+            properties.Where(p =>
+                Config.ExtendedCompositions
+                || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+            ),
+            isComment: true,
+            1
+        );
 
         if (Config.ResourceMode != ResourceMode.JS)
         {
@@ -69,30 +82,41 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
         }
     }
 
-    protected override void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)
+    protected override void HandleMainResourceFile(
+        string mainFilePath,
+        IEnumerable<(string ModuleFilePath, string ModuleName)> modules
+    )
     {
-        using var fw = OpenFileWriter(mainFilePath, false);
+        using var fw = OpenFileWriter(mainFilePath, encoderShouldEmitUTF8Identifier: false);
 
         foreach (var (moduleFilePath, moduleName) in modules)
         {
-            fw.WriteLine($"import {{{moduleName.ToCamelCase()}}} from \"./{Path.GetRelativePath(Path.GetDirectoryName(mainFilePath)!, moduleFilePath).Replace("\\", "/").Replace(".ts", string.Empty)}\";");
+            fw.WriteLine(
+                $"import {{{moduleName.ToCamelCase()}}} from \"./{Path.GetRelativePath(Path.GetDirectoryName(mainFilePath)!, moduleFilePath).Replace('\\', '/').Replace(".ts", string.Empty)}\";"
+            );
         }
 
         fw.WriteLine();
-        fw.WriteLine($"export const all = {{{string.Join(", ", modules.Where(m => !m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase()))}}};");
+        fw.WriteLine(
+            $"export const all = {{{string.Join(", ", modules.Where(m => !m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase()))}}};"
+        );
 
-        var comments = modules.Where(m => m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase());
+        var comments = modules
+            .Where(m => m.ModuleFilePath.EndsWith(".comments.ts"))
+            .Select(m => m.ModuleName.ToCamelCase());
         if (comments.Any())
         {
-            fw.WriteLine($@"export const allComments = {{
+            fw.WriteLine(
+                $@"export const allComments = {{
     {string.Join($",{Environment.NewLine}    ", comments.Select(c => $"{c[0..^8]}: {c}"))}
-}};");
+}};"
+            );
         }
     }
 
     protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
-        using var fw = OpenFileWriter(filePath, false);
+        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
         var module = properties.First().Parent.Namespace.RootModule;
@@ -106,7 +130,16 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             fw.WriteLine($"export const {module.ToCamelCase()} = {{");
         }
 
-        WriteSubModule(fw, lang, properties.Where(p => Config.ExtendedCompositions || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }), false, 1);
+        WriteSubModule(
+            fw,
+            lang,
+            properties.Where(p =>
+                Config.ExtendedCompositions
+                || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+            ),
+            isComment: false,
+            1
+        );
 
         if (Config.ResourceMode != ResourceMode.JS)
         {
@@ -123,7 +156,15 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
         return Config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
     }
 
-    private void WriteClasseNode(IFileWriter fw, IGrouping<IPropertyContainer, IProperty> container, bool isComment, bool isLast, string lang, int indentLevel, bool onlyProperties = false)
+    private void WriteClasseNode(
+        IFileWriter fw,
+        IGrouping<IPropertyContainer, IProperty> container,
+        bool isComment,
+        bool isLast,
+        string lang,
+        int indentLevel,
+        bool onlyProperties = false
+    )
     {
         if (!onlyProperties)
         {
@@ -136,7 +177,7 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
             {
                 var translation = isComment
-                    ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace("\"", "'")
+                    ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace('"', '\'')
                     : _translationStore.GetTranslation(property, lang);
 
                 if (translation == string.Empty)
@@ -146,11 +187,25 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
 
                 fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
                 fw.Write($@"""{translation}""");
-                fw.WriteLine(container.Count() == i++ && !onlyProperties && !(Config.TranslateReferences == true && container.Key is Class { DefaultProperty: not null, Enum: true } && container.Key is Class { Values.Count: > 0 }) ? string.Empty : ",");
+                fw.WriteLine(
+                    container.Count() == i++
+                    && !onlyProperties
+                    && !(
+                        Config.TranslateReferences == true
+                        && container.Key is Class { DefaultProperty: not null, Enum: true }
+                        && container.Key is Class { Values.Count: > 0 }
+                    )
+                        ? string.Empty
+                        : ","
+                );
             }
         }
 
-        if (Config.TranslateReferences == true && container.Key is Class { DefaultProperty: not null, Enum: true } classe && classe?.Values.Count > 0)
+        if (
+            Config.TranslateReferences == true
+            && container.Key is Class { DefaultProperty: not null, Enum: true } classe
+            && classe?.Values.Count > 0
+        )
         {
             i = 1;
             fw.WriteLine(indentLevel + 1, @$"{Quote("values")}: {{");
@@ -171,14 +226,24 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
         }
     }
 
-    private void WriteSubModule(IFileWriter fw, string lang, IEnumerable<IProperty> properties, bool isComment, int level)
+    private void WriteSubModule(
+        IFileWriter fw,
+        string lang,
+        IEnumerable<IProperty> properties,
+        bool isComment,
+        int level
+    )
     {
         var classes = properties.GroupBy(prop => prop.Parent);
-        var modules = classes
-            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0)?.ToCamelCase());
+        var modules = classes.GroupBy(c =>
+            c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0)?.ToCamelCase()
+        );
         var u = 1;
 
-        var mainModuleClasses = modules.Where(c => c.Key == null).SelectMany(c => c.Select(p => p.Key.NameCamel)).ToHashSet();
+        var mainModuleClasses = modules
+            .Where(c => c.Key == null)
+            .SelectMany(c => c.Select(p => p.Key.NameCamel))
+            .ToHashSet();
         var extraSubModuleProperties = new Dictionary<string, IGrouping<IPropertyContainer, IProperty>>();
 
         if (mainModuleClasses.Count > 0)
@@ -188,7 +253,10 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             {
                 if (mainModuleClasses.Contains(key))
                 {
-                    extraSubModuleProperties.Add(key, modules.Where(m => m.Key == null).SelectMany(p => p.Where(c => c.Key.NameCamel == key)).Single());
+                    extraSubModuleProperties.Add(
+                        key,
+                        modules.Where(m => m.Key == null).SelectMany(p => p.Where(c => c.Key.NameCamel == key)).Single()
+                    );
                 }
             }
         }
@@ -199,7 +267,11 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             if (submodule.Key == null)
             {
                 var i = 1;
-                foreach (var container in submodule.Where(c => !extraSubModuleProperties.ContainsKey(c.Key.NameCamel)).OrderBy(c => c.Key.NameCamel))
+                foreach (
+                    var container in submodule
+                        .Where(c => !extraSubModuleProperties.ContainsKey(c.Key.NameCamel))
+                        .OrderBy(c => c.Key.NameCamel)
+                )
                 {
                     WriteClasseNode(fw, container, isComment, classes.Count() == i++ && isLast, lang, level);
                 }
@@ -210,7 +282,7 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
 
                 if (extraSubModuleProperties.TryGetValue(submodule.Key, out var container))
                 {
-                    WriteClasseNode(fw, container, isComment, false, lang, level, onlyProperties: true);
+                    WriteClasseNode(fw, container, isComment, isLast: false, lang, level, onlyProperties: true);
                 }
 
                 WriteSubModule(fw, lang, submodule.SelectMany(m => m), isComment, level + 1);

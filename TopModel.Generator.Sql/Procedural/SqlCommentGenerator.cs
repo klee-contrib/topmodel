@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -26,7 +27,9 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
     protected static string CheckIdentifierLength(string identifier)
     {
         return identifier.Length > IdentifierLengthLimit
-            ? throw new ArgumentException($"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères.")
+            ? throw new ModelException(
+                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
+            )
             : identifier;
     }
 
@@ -49,11 +52,7 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteLine("-- =========================================================================================== ");
-        writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + fileName?.Split('/').Last());
-        writer.WriteLine("--   Description		:	Script de création des commentaires. ");
-        writer.WriteLine("-- =========================================================================================== ");
+        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des commentaires.");
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
@@ -67,11 +66,15 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
         writer.WriteLine("/**");
         writer.WriteLine("  * Commentaires pour la table " + tableName);
         writer.WriteLine(" **/");
-        writer.WriteLine($"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{Config.BatchSeparator}");
+        writer.WriteLine(
+            $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{Config.BatchSeparator}"
+        );
 
         foreach (var p in properties)
         {
-            writer.WriteLine($"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{Config.BatchSeparator}");
+            writer.WriteLine(
+                $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{Config.BatchSeparator}"
+            );
         }
     }
 

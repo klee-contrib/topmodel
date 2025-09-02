@@ -32,11 +32,7 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteLine("-- =========================================================================================== ");
-        writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + fileName?.Split('/').Last());
-        writer.WriteLine("--   Description		:	Script de création des contraintes d'unicité.");
-        writer.WriteLine("-- =========================================================================================== ");
+        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des contraintes d'unicité.");
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
@@ -51,14 +47,22 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
     /// <param name="writer">Writer.</param>
     private void WriteUniqueKeys(Class classe, IFileWriter writer)
     {
-        foreach (var uk in classe.UniqueKeys
-            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne && !ap.PrimaryKey).Select(ap => new List<IProperty> { ap })))
+        foreach (
+            var uk in classe.UniqueKeys.Concat(
+                classe
+                    .Properties.OfType<AssociationProperty>()
+                    .Where(ap => ap.Type == AssociationType.OneToOne && !ap.PrimaryKey)
+                    .Select(ap => new List<IProperty> { ap })
+            )
+        )
         {
-            string columnNames = string.Join("_", uk.Select(p => p.SqlName));
-            string propertyNames = string.Join("_", uk.Select(p => GetPropertyName(p.SqlName)));
+            string columnNames = string.Join('_', uk.Select(p => p.SqlName));
+            string propertyNames = string.Join('_', uk.Select(p => GetPropertyName(p.SqlName)));
             string constraintName = Config.GetUniqueConstraintName(classe.SqlName, columnNames, propertyNames);
-            writer?.WriteLine($"alter table {classe.SqlName} add constraint {constraintName} unique ({string.Join(", ", uk.Select(p => p.SqlName))}){Config.BatchSeparator}");
             writer?.WriteLine();
+            writer?.WriteLine(
+                $"alter table {classe.SqlName} add constraint {constraintName} unique ({string.Join(", ", uk.Select(p => p.SqlName))}){Config.BatchSeparator}"
+            );
         }
 
         static string GetPropertyName(string columnName)

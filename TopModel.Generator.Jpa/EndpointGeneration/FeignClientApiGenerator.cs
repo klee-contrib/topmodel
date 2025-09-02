@@ -15,7 +15,8 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
 
     protected override bool FilterTag(string tag)
     {
-        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client && Config.ResolveVariables(Config.ClientApiGeneration!, tag) == ClientApiMode.FeignClient;
+        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client
+            && Config.ResolveVariables(Config.ClientApiGeneration!, tag) == ClientApiMode.FeignClient;
     }
 
     protected override IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file)
@@ -26,9 +27,12 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
             yield return a;
         }
 
-        var feignClientAnnotation = new JavaAnnotation("FeignClient", imports: "org.springframework.cloud.openfeign.FeignClient")
-                         .AddAttribute("name", $@"""{file.Namespace.RootModule}""")
-                         .AddAttribute("contextId", $@"""{GetClassName(fileName)}""");
+        var feignClientAnnotation = new JavaAnnotation(
+            "FeignClient",
+            imports: "org.springframework.cloud.openfeign.FeignClient"
+        )
+            .AddAttribute("name", $@"""{file.Namespace.RootModule}""")
+            .AddAttribute("contextId", $@"""{GetClassName(fileName)}""");
 
         if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
         {

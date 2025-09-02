@@ -17,11 +17,12 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public SsdtConfig? Ssdt { get; set; }
 
-    public override Dictionary<string, List<string>> TemplateAttributes => new()
-    {
-        { nameof(ForeignKeyConstraintNamePattern), new() { "tableName", "trigram", "columnName" } },
-        { nameof(UniqueConstraintNamePattern), new() { "tableName", "columnNames", "propertyNames" } }
-    };
+    public override Dictionary<string, List<string>> TemplateAttributes =>
+        new()
+        {
+            { nameof(ForeignKeyConstraintNamePattern), ["tableName", "trigram", "columnName"] },
+            { nameof(UniqueConstraintNamePattern), ["tableName", "columnNames", "propertyNames"] },
+        };
 
     /// <summary>
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
@@ -67,12 +68,13 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public bool AllowTablespace => TargetDBMS != TargetDBMS.Sqlserver;
 
-    public string BatchSeparator => TargetDBMS switch
-    {
-        TargetDBMS.Oracle => $"{Environment.NewLine}/",
-        TargetDBMS.Sqlserver => $"{Environment.NewLine}go",
-        _ => ";"
-    };
+    public string BatchSeparator =>
+        TargetDBMS switch
+        {
+            TargetDBMS.Oracle => $"{Environment.NewLine}/",
+            TargetDBMS.Sqlserver => $"{Environment.NewLine}go",
+            _ => ";",
+        };
 
     protected override bool UseNamedEnums => false;
 
@@ -80,13 +82,18 @@ public class SqlConfig : GeneratorConfigBase
     {
         var domain = property.Domain;
         /* Pour savoir si un domaine est booléen, on regarde grossièrement le mot bool dans le nom du domaine, le label du domaine, un type d'implémeentation de domaine. */
-        return
-            domain.Name.Value.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ||
-            domain.Label.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ||
-            domain.Implementations.Values.Any(di => di.Type?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false);
+        return domain.Name.Value.Contains("bool", StringComparison.InvariantCultureIgnoreCase)
+            || domain.Label.Contains("bool", StringComparison.InvariantCultureIgnoreCase)
+            || domain.Implementations.Values.Any(di =>
+                di.Type?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false
+            );
     }
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
+    public override bool CanClassUseEnums(
+        Class classe,
+        IEnumerable<Class>? availableClasses = null,
+        IProperty? prop = null
+    )
     {
         return false;
     }
@@ -100,7 +107,8 @@ public class SqlConfig : GeneratorConfigBase
                 [nameof(tableName)] = tableName,
                 [nameof(trigram)] = trigram,
                 [nameof(columnName)] = columnName,
-            });
+            }
+        );
     }
 
     /// <summary>
@@ -114,7 +122,7 @@ public class SqlConfig : GeneratorConfigBase
         {
             TargetDBMS.Oracle => $"{classe.Trigram}_SEQ",
             TargetDBMS.Postgre => $"SEQ_{classe.SqlName}",
-            var t => throw new NotImplementedException($"Sequence declaration is not implemented with {t}")
+            var t => throw new NotSupportedException($"Sequence declaration is not implemented with {t}"),
         };
     }
 
@@ -127,7 +135,8 @@ public class SqlConfig : GeneratorConfigBase
                 [nameof(tableName)] = tableName,
                 [nameof(columnNames)] = columnNames,
                 [nameof(propertyNames)] = propertyNames,
-            });
+            }
+        );
     }
 
     public override string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
@@ -140,10 +149,7 @@ public class SqlConfig : GeneratorConfigBase
                 return false;
             }
 
-            return
-                TargetDBMS == TargetDBMS.Oracle &&
-                GetType(property) == "number(1)" &&
-                IsBoolean(property);
+            return TargetDBMS == TargetDBMS.Oracle && GetType(property) == "number(1)" && IsBoolean(property);
         }
 
         if (NeedsBooleanConversionToNumeric())
@@ -154,9 +160,9 @@ public class SqlConfig : GeneratorConfigBase
         return base.GetValue(property, availableClasses, value);
     }
 
-    public override bool ShouldQuoteValue(IProperty prop)
+    public override bool ShouldQuoteValue(IProperty property)
     {
-        var type = GetType(prop);
+        var type = GetType(property);
         return (type ?? string.Empty).Contains("varchar")
             || type == "text"
             || type == "uniqueidentifier"
@@ -168,7 +174,7 @@ public class SqlConfig : GeneratorConfigBase
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     protected override string QuoteValue(string value)

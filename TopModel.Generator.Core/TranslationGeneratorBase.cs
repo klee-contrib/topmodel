@@ -6,23 +6,26 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBase<T>> logger, TranslationStore translationStore, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
+public abstract class TranslationGeneratorBase<T>(
+    ILogger<TranslationGeneratorBase<T>> logger,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    public override IEnumerable<string> GeneratedFiles => Config.Tags
-        .SelectMany(tag =>
-        {
-            var properties = Classes
-                .Where(c => c.Tags.Contains(tag))
-                .SelectMany(c => c.Properties);
+    public override IEnumerable<string> GeneratedFiles =>
+        Config
+            .Tags.SelectMany(tag =>
+            {
+                var properties = Classes.Where(c => c.Tags.Contains(tag)).SelectMany(c => c.Properties);
 
-            return properties
-                .SelectMany(p => GetResourceFileNames(p, tag))
-                .Concat(properties.SelectMany(p => GetCommentResourceFileNames(p, tag)))
-                .Concat(GetMainResourceFileNames(tag))
-                .Select(p => p.FilePath);
-        })
-        .Distinct();
+                return properties
+                    .SelectMany(p => GetResourceFileNames(p, tag))
+                    .Concat(properties.SelectMany(p => GetCommentResourceFileNames(p, tag)))
+                    .Concat(GetMainResourceFileNames(tag))
+                    .Select(p => p.FilePath);
+            })
+            .Distinct();
 
     protected virtual string? GetCommentResourceFilePath(IProperty property, string tag, string lang)
     {
@@ -36,9 +39,11 @@ public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBa
 
     protected abstract string? GetResourceFilePath(IProperty property, string tag, string lang);
 
-    protected virtual void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
-    {
-    }
+    protected virtual void HandleCommentResourceFile(
+        string filePath,
+        string lang,
+        IEnumerable<IProperty> properties
+    ) { }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -46,11 +51,28 @@ public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBa
 
         Parallel.ForEach(
             Classes
-                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                    .SelectMany(tag => classe.Properties.OfType<IProperty>()
-                        .SelectMany(p => GetResourceFileNames(p, tag)
-                            .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
-                    .GroupBy(f => f.key),
+                .SelectMany(classe =>
+                    Config
+                        .Tags.Intersect(classe.Tags)
+                        .SelectMany(tag =>
+                            classe
+                                .Properties.OfType<IProperty>()
+                                .SelectMany(p =>
+                                    GetResourceFileNames(p, tag)
+                                        .Select(f =>
+                                            (
+                                                key: (
+                                                    MainFilePath: GetMainResourceFilePath(tag, f.Lang),
+                                                    ModuleFilePath: f.FilePath,
+                                                    f.Lang
+                                                ),
+                                                p
+                                            )
+                                        )
+                                )
+                        )
+                )
+                .GroupBy(f => f.key),
             resources =>
             {
                 var properties = resources.Select(r => r.p.ResourceProperty).Distinct();
@@ -58,17 +80,41 @@ public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBa
 
                 if (resources.Key.MainFilePath != null)
                 {
-                    modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, properties.First().Parent.Namespace.RootModule));
+                    modules.Add(
+                        (
+                            resources.Key.MainFilePath,
+                            resources.Key.ModuleFilePath,
+                            properties.First().Parent.Namespace.RootModule
+                        )
+                    );
                 }
-            });
+            }
+        );
 
         Parallel.ForEach(
             Classes
-                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                    .SelectMany(tag => classe.Properties.OfType<IProperty>()
-                        .SelectMany(p => GetCommentResourceFileNames(p, tag)
-                            .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
-                    .GroupBy(f => f.key),
+                .SelectMany(classe =>
+                    Config
+                        .Tags.Intersect(classe.Tags)
+                        .SelectMany(tag =>
+                            classe
+                                .Properties.OfType<IProperty>()
+                                .SelectMany(p =>
+                                    GetCommentResourceFileNames(p, tag)
+                                        .Select(f =>
+                                            (
+                                                key: (
+                                                    MainFilePath: GetMainResourceFilePath(tag, f.Lang),
+                                                    ModuleFilePath: f.FilePath,
+                                                    f.Lang
+                                                ),
+                                                p
+                                            )
+                                        )
+                                )
+                        )
+                )
+                .GroupBy(f => f.key),
             resources =>
             {
                 var properties = resources.Select(r => r.p.CommentResourceProperty).Distinct();
@@ -76,20 +122,31 @@ public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBa
 
                 if (resources.Key.MainFilePath != null)
                 {
-                    modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, $"{properties.First().Parent.Namespace.RootModule}Comments"));
+                    modules.Add(
+                        (
+                            resources.Key.MainFilePath,
+                            resources.Key.ModuleFilePath,
+                            $"{properties.First().Parent.Namespace.RootModule}Comments"
+                        )
+                    );
                 }
-            });
+            }
+        );
 
         Parallel.ForEach(
             modules.GroupBy(m => m.MainFilePath),
-            g => HandleMainResourceFile(
-                g.Key,
-                g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)));
+            g =>
+                HandleMainResourceFile(
+                    g.Key,
+                    g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)
+                )
+        );
     }
 
-    protected virtual void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)
-    {
-    }
+    protected virtual void HandleMainResourceFile(
+        string mainFilePath,
+        IEnumerable<(string ModuleFilePath, string ModuleName)> modules
+    ) { }
 
     protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties);
 
@@ -100,27 +157,34 @@ public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBa
             return [];
         }
 
-        return translationStore.Translations
-            .Select(lang => (lang: lang.Key, file: GetCommentResourceFilePath(property.CommentResourceProperty, tag, lang.Key)!))
+        return translationStore
+            .Translations.Select(lang =>
+                (lang: lang.Key, file: GetCommentResourceFilePath(property.CommentResourceProperty, tag, lang.Key)!)
+            )
             .Where(g => g.file != null);
     }
 
     private IEnumerable<(string Lang, string FilePath)> GetMainResourceFileNames(string tag)
     {
-        return translationStore.Translations
-            .Select(lang => (lang: lang.Key, file: GetMainResourceFilePath(tag, lang.Key)!))
+        return translationStore
+            .Translations.Select(lang => (lang: lang.Key, file: GetMainResourceFilePath(tag, lang.Key)!))
             .Where(g => g.file != null);
     }
 
     private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IProperty property, string tag)
     {
-        if (Config.TranslateProperties != true && (Config.TranslateReferences != true || !(property.Class?.Values.Any() ?? false)))
+        if (
+            Config.TranslateProperties != true
+            && (Config.TranslateReferences != true || !(property.Class?.Values.Any() ?? false))
+        )
         {
             return [];
         }
 
-        return translationStore.Translations
-            .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!))
+        return translationStore
+            .Translations.Select(lang =>
+                (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!)
+            )
             .Where(g => g.file != null);
     }
 }

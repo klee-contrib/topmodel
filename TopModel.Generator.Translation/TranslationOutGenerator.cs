@@ -9,8 +9,12 @@ namespace TopModel.Generator.Translation;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, ModelConfig modelConfig, TranslationStore translationStore, IFileWriterProvider writerProvider)
-    : TranslationGeneratorBase<TranslationConfig>(logger, translationStore, writerProvider)
+public class TranslationOutGenerator(
+    ILogger<TranslationOutGenerator> logger,
+    ModelConfig modelConfig,
+    TranslationStore translationStore,
+    IFileWriterProvider writerProvider
+) : TranslationGeneratorBase<TranslationConfig>(logger, translationStore, writerProvider)
 {
     private readonly ModelConfig _modelConfig = modelConfig;
     private readonly TranslationStore _translationStore = translationStore;
@@ -27,16 +31,19 @@ public class TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, Mo
         }
 
         var p = property.ResourceProperty;
-        if (p.Label != null
-            && !ExistsInStore(lang, p.ResourceKey)
+        if (
+            p.Label != null && !ExistsInStore(lang, p.ResourceKey)
             || !(
-                p.Class?.DefaultProperty == null ||
-                (p.Class?.Values.All(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
+                p.Class?.DefaultProperty == null
+                || (p.Class?.Values.All(r => ExistsInStore(lang, r.ResourceKey)) ?? false)
+            )
+        )
         {
             return Path.Combine(
                 Config.OutputDirectory,
                 Config.ResolveVariables(Config.RootPath, tag: tag, lang: lang),
-                $"{p.Parent.Namespace.RootModule.ToKebabCase()}_{lang}.properties");
+                $"{p.Parent.Namespace.RootModule.ToKebabCase()}_{lang}.properties"
+            );
         }
 
         return null;
@@ -57,22 +64,23 @@ public class TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, Mo
 
     private bool ExistsInStore(string lang, string key)
     {
-        return _translationStore.Translations.TryGetValue(lang, out var langDict)
-            && langDict.ContainsKey(key);
+        return _translationStore.Translations.TryGetValue(lang, out var langDict) && langDict.ContainsKey(key);
     }
 
     private void WriteClasse(IFileWriter fw, IGrouping<IPropertyContainer, IProperty> container, string lang)
     {
         foreach (var property in container)
         {
-            if (property.Label != null
-                && !(_translationStore.Translations.TryGetValue(lang, out var langDict)
-                && langDict.ContainsKey(property.ResourceKey)))
+            if (
+                property.Label != null
+                && !(
+                    _translationStore.Translations.TryGetValue(lang, out var langDict)
+                    && langDict.ContainsKey(property.ResourceKey)
+                )
+                && !ExistsInStore(lang, property.ResourceKey)
+            )
             {
-                if (!ExistsInStore(lang, property.ResourceKey))
-                {
-                    fw.WriteLine($"{property.ResourceKey}={property.Label}");
-                }
+                fw.WriteLine($"{property.ResourceKey}={property.Label}");
             }
         }
 

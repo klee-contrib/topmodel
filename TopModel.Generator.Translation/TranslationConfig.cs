@@ -7,7 +7,7 @@ public class TranslationConfig : GeneratorConfigBase
     /// <summary>
     /// liste des langues de l'application
     /// </summary>
-    public List<string> Langs { get; set; } = [];
+    public IList<string> Langs { get; set; } = [];
 
     /// <summary>
     /// liste des langues de l'application
@@ -20,6 +20,6 @@ public class TranslationConfig : GeneratorConfigBase
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

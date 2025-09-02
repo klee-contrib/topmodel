@@ -5,7 +5,6 @@ using TopModel.Generator.Sql.Procedural.Oracle;
 using TopModel.Generator.Sql.Procedural.Postgres;
 using TopModel.Generator.Sql.Procedural.SqlServer;
 using TopModel.Generator.Sql.Ssdt;
-
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Sql;

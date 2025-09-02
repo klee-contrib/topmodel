@@ -22,7 +22,9 @@ public class FileChecker
     {
         if (configSchemaPath != null)
         {
-            _configSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath)).Result;
+            _configSchema = JsonSchema
+                .FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath))
+                .Result;
         }
 
         _modelSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), "schema.json")).Result;
@@ -35,9 +37,7 @@ public class FileChecker
             .WithTypeConverter(new ReferenceTypeConverter())
             .IgnoreUnmatchedProperties()
             .Build();
-        _serializer = new SerializerBuilder()
-            .JsonCompatible()
-            .Build();
+        _serializer = new SerializerBuilder().JsonCompatible().Build();
     }
 
     public static string GetFilePath(Assembly assembly, string fileName)
@@ -121,7 +121,10 @@ public class FileChecker
                     config.IgnoredFiles = _deserializer.Deserialize<IList<IgnoredFile>>(parser);
                     break;
                 default:
-                    config.Generators.Add(prop.Value, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
+                    config.Generators.Add(
+                        prop.Value,
+                        _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser)
+                    );
                     break;
             }
         });
@@ -132,9 +135,14 @@ public class FileChecker
         return config;
     }
 
-    public object GetGenConfig(string configName, Type configType, IDictionary<string, object> genConfigMap)
+    public async Task<object> GetGenConfig(
+        string configName,
+        Type configType,
+        IDictionary<string, object> genConfigMap,
+        CancellationToken ct = default
+    )
     {
-        var schema = JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json")).Result;
+        var schema = await JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json"), ct);
         Validate(configName, schema, _serializer.Serialize(genConfigMap));
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
@@ -190,7 +198,8 @@ public class FileChecker
         var firstObject = true;
         while (parser.Current is DocumentStart)
         {
-            var yaml = _deserializer.Deserialize(parser)
+            var yaml =
+                _deserializer.Deserialize(parser)
                 ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
             var json = _serializer.Serialize(yaml);
 

@@ -46,7 +46,8 @@ public class Class : IPropertyContainer
 
     public IList<IProperty> Properties { get; } = [];
 
-    public IList<IProperty> ExtendedProperties => Extends != null ? [.. Properties, .. Extends.ExtendedProperties] : Properties;
+    public IList<IProperty> ExtendedProperties =>
+        Extends != null ? [.. Properties, .. Extends.ExtendedProperties] : Properties;
 
     public bool PreservePropertyCasing { get; set; }
 
@@ -69,11 +70,14 @@ public class Class : IPropertyContainer
 
     public IList<FromMapper> FromMappers { get; } = [];
 
-    public IEnumerable<IProperty> FromMapperProperties => FromMappers.SelectMany(fm => fm.PropertyParams.Select(pp => pp.Property));
+    public IEnumerable<IProperty> FromMapperProperties =>
+        FromMappers.SelectMany(fm => fm.PropertyParams.Select(pp => pp.Property));
 
     public IList<ClassMappings> ToMappers { get; } = [];
 
+#pragma warning disable MA0016
     public Dictionary<string, string> CustomProperties { get; } = [];
+#pragma warning restore MA0016
 
     public string PluralName
     {
@@ -101,10 +105,13 @@ public class Class : IPropertyContainer
 
     public IList<IList<Reference>> UniqueKeyReferences { get; } = [];
 
-    public Dictionary<Reference, Dictionary<Reference, string>> ValueReferences { get; } = [];
+    public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; } =
+        new Dictionary<Reference, IDictionary<Reference, string>>();
 
-    public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
-        .Concat(Extends != null ? [new ClassDependency(Extends, this)] : Array.Empty<ClassDependency>());
+    public IEnumerable<ClassDependency> ClassDependencies =>
+        Properties
+            .GetClassDependencies(this)
+            .Concat(Extends != null ? [new ClassDependency(Extends, this)] : Array.Empty<ClassDependency>());
 
     internal LocatedString? EnumOverride { get; set; }
 

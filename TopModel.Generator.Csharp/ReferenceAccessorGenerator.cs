@@ -16,9 +16,9 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
     /// <param name="classList">Liste de classes à générer.</param>
-    protected virtual void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
+    protected virtual void GenerateReferenceAccessorsImplementation(string fileName, string tag, IList<Class> classList)
     {
-        var ns = classList.First().Namespace;
+        var ns = classList[0].Namespace;
 
         var implementationName = $"Db{Config.GetReferenceAccessorName(ns, tag)}";
         var implementationNamespace = Config.GetReferenceImplementationNamespace(ns, tag);
@@ -61,7 +61,12 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             usings.Add("Kinetix.DataAccess.Sql.Broker");
 
-            if (classList.Any(classe => classe.OrderProperty != null || classe.DefaultProperty != null && classe.DefaultProperty.NamePascal != "Libelle"))
+            if (
+                classList.Any(classe =>
+                    classe.OrderProperty != null
+                    || classe.DefaultProperty != null && classe.DefaultProperty.NamePascal != "Libelle"
+                )
+            )
             {
                 usings.Add("Kinetix.DataAccess.Sql");
             }
@@ -100,7 +105,13 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             var dbContextName = Config.GetDbContextName(tag);
             var parameters = $"{dbContextName} dbContext";
 
-            w.WriteClassDeclaration(implementationName, null, false, [interfaceName], Config.UsePrimaryConstructors ? parameters : null);
+            w.WriteClassDeclaration(
+                implementationName,
+                inheritedClass: null,
+                isRecord: false,
+                [interfaceName],
+                Config.UsePrimaryConstructors ? parameters : null
+            );
             if (!Config.UsePrimaryConstructors)
             {
                 w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
@@ -118,7 +129,13 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             var parameters = $"BrokerManager brokerManager";
 
-            w.WriteClassDeclaration(implementationName, null, false, [interfaceName], Config.UsePrimaryConstructors ? parameters : null);
+            w.WriteClassDeclaration(
+                implementationName,
+                inheritedClass: null,
+                isRecord: false,
+                [interfaceName],
+                Config.UsePrimaryConstructors ? parameters : null
+            );
             if (!Config.UsePrimaryConstructors)
             {
                 w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
@@ -133,9 +150,12 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             }
         }
 
-        foreach (var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Count > 0)))
+        foreach (
+            var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Count > 0))
+        )
         {
-            var serviceName = "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
+            var serviceName =
+                "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(1, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
             w.WriteLine(1, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
             w.WriteLine(2, LoadReferenceAccessorBody(classe));
@@ -157,12 +177,18 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
     /// <param name="classList">Liste de classes à générer.</param>
-    protected virtual void GenerateReferenceAccessorsInterface(string fileType, string fileName, string tag, IEnumerable<Class> classList)
+    protected virtual void GenerateReferenceAccessorsInterface(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classList
+    )
     {
         var ns = classList.First().Namespace;
 
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
-        var interfaceName = $"I{(fileType.StartsWith("db") ? "Db" : string.Empty)}{Config.GetReferenceAccessorName(ns, tag)}";
+        var interfaceName =
+            $"I{(fileType.StartsWith("db") ? "Db" : string.Empty)}{Config.GetReferenceAccessorName(ns, tag)}";
 
         using var w = this.OpenCSharpWriter(fileName);
 
@@ -182,7 +208,9 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         w.AddUsings(usings);
 
         w.WriteNamespace(interfaceNamespace);
-        w.WriteSummary($"Accesseurs de listes de référence {(fileType.StartsWith("db") ? "persistées" : "non persistées")}");
+        w.WriteSummary(
+            $"Accesseurs de listes de référence {(fileType.StartsWith("db") ? "persistées" : "non persistées")}"
+        );
         w.WriteLine("[RegisterContract]");
         w.WriteLine("public partial interface " + interfaceName + "\r\n{");
 
@@ -193,7 +221,14 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             w.WriteSummary(1, $"Accesseur de référence pour le type {classe.NamePascal}");
             w.WriteReturns(1, $"Liste de {classe.NamePascal}");
             w.WriteLine(1, "[ReferenceAccessor]");
-            w.WriteLine(1, "ICollection<" + classe.NamePascal + "> Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
+            w.WriteLine(
+                1,
+                "ICollection<"
+                    + classe.NamePascal
+                    + "> Load"
+                    + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal)
+                    + "();"
+            );
 
             if (count != classList.Count())
             {
@@ -223,7 +258,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
         var classList = classes
-            .OrderBy(x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal, StringComparer.Ordinal)
+            .OrderBy(
+                x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal,
+                StringComparer.Ordinal
+            )
             .ToList();
 
         if (fileType == "db-implementation")
@@ -267,7 +305,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             if (defaultProperty != null)
             {
-                queryParameter = $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
+                queryParameter =
+                    $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }
 
             return $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter});";

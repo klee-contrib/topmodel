@@ -38,14 +38,14 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenPhpWriter(fileName, packageName, null);
+        using var fw = this.OpenPhpWriter(fileName, packageName, codePage: null);
 
         WriteAttributes(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe, tag);
         var implements = Config.GetClassImplements(classe, tag);
 
-        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
 
         PhpModelPropertyGenerator.WriteProperties(fw, classe, Classes, tag);
 
@@ -64,16 +64,15 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
             fw.AddImport($@"Doctrine\ORM\Mapping\Table");
 
             fw.WriteLine(@$"#[Entity(repositoryClass: {classe.Name}Repository::class)]");
-            var repositoryNamespace = Config.ResolveVariables(
-            Config.RepositoriesPath,
-            tag,
-            module: classe.Namespace.Module).ToPackageName();
+            var repositoryNamespace = Config
+                .ResolveVariables(Config.RepositoriesPath, tag, module: classe.Namespace.Module)
+                .ToPackageName();
             fw.AddImport(@$"{repositoryNamespace}\{classe.Name}Repository");
             fw.WriteLine(@$"#[Table(name: '{classe.SqlName}')]");
 
             foreach (var uk in classe.UniqueKeys)
             {
-                var ukName = string.Join("_", uk.Select(u => u.SqlName)) + "_UNIQ";
+                var ukName = string.Join('_', uk.Select(u => u.SqlName)) + "_UNIQ";
                 var fields = string.Join(", ", uk.Select(u => u.SqlName));
                 fw.AddImport($@"Doctrine\ORM\Mapping\UniqueConstraint");
                 fw.WriteLine(@$"#[UniqueConstraint(name: ""{ukName}"", columns: [""{fields}""])]");
@@ -93,8 +92,9 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
     private void WriteConstructor(PhpWriter fw, Class classe)
     {
-        var collectionProperties = classe.GetProperties(Classes).Where(
-            p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
+        var collectionProperties = classe
+            .GetProperties(Classes)
+            .Where(p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
         if (collectionProperties.Any())
         {
             fw.WriteLine();
@@ -124,7 +124,10 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
             }
 
             var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")}");
+            fw.WriteLine(
+                1,
+                @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")}"
+            );
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"return $this->{property.NameByClassCamel};");
             fw.WriteLine(1, "}");
@@ -141,11 +144,17 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
             {
                 fw.WriteDocStart(1);
                 fw.AddImport(@"Doctrine\Common\Collections\Collection");
-                fw.WriteLine(1, $" * @param Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")} ${propertyName}");
+                fw.WriteLine(
+                    1,
+                    $" * @param Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")} ${propertyName}"
+                );
                 fw.WriteDocEnd(1);
             }
 
-            fw.WriteLine(1, @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}): self");
+            fw.WriteLine(
+                1,
+                @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}): self"
+            );
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"$this->{propertyName} = ${propertyName};");
             fw.WriteLine();

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Generator.Core;
-
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Javascript;
@@ -15,7 +14,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
             TrimSlashes(config, c => c.ApiClientFilePath);
             if (!config.ApiClientFilePath.Contains("{fileName}"))
             {
-                config.ApiClientFilePath = Path.Combine(config.ApiClientFilePath, "{fileName}").Replace("\\", "/");
+                config.ApiClientFilePath = Path.Combine(config.ApiClientFilePath, "{fileName}").Replace('\\', '/');
             }
         }
         else if (config.ApiMode == TargetFramework.ANGULAR || config.ApiMode == TargetFramework.ANGULAR_PROMISE)
@@ -62,7 +61,10 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
             }
         }
 
-        if (config.ResourceRootPath != null && (config.TranslateProperties == true || config.TranslateReferences == true))
+        if (
+            config.ResourceRootPath != null
+            && (config.TranslateProperties == true || config.TranslateReferences == true)
+        )
         {
             if (!config.ResourceRootPath.Contains("{lang}"))
             {

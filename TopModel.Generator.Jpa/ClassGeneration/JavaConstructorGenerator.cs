@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -11,34 +12,43 @@ public class JavaConstructorGenerator(JpaConfig config)
 
     public void WriteFromMappers(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
     {
-        var fromMappers = classe.FromMappers.Where(c => c.ClassParams.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m))
+        var fromMappers = classe
+            .FromMappers.Where(c => c.ClassParams.All(p => availableClasses.Contains(p.Class)))
+            .Select(m => (classe, m))
             .OrderBy(m => m.classe.NamePascal)
             .ToList();
 
         foreach (var fromMapper in fromMappers)
         {
-            var (clazz, mapper) = fromMapper;
+            var (_, mapper) = fromMapper;
 
             var constructor = new JavaConstructor(classe.NamePascal)
             {
                 Visibility = "public",
-                Comment = mapper.Comment ?? $"Crée une nouvelle instance de '{classe.NamePascal}'"
+                Comment = mapper.Comment ?? $"Crée une nouvelle instance de '{classe.NamePascal}'",
             };
 
             foreach (var param in mapper.ClassParams)
             {
-                var parameter = new JavaMethodParameter(param.Class.GetImport(Config, tag), param.Class.Name, param.Name.ToCamelCase())
+                var parameter = new JavaMethodParameter(
+                    param.Class.GetImport(Config, tag),
+                    param.Class.Name,
+                    param.Name.ToCamelCase()
+                )
                 {
-                    Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}'"
+                    Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}'",
                 };
                 constructor.AddParameter(parameter);
             }
 
             foreach (var param in mapper.PropertyParams)
             {
-                var parameter = new JavaMethodParameter(Config.GetType(param.Property, availableClasses), param.Property.NameCamel)
+                var parameter = new JavaMethodParameter(
+                    Config.GetType(param.Property, availableClasses),
+                    param.Property.NameCamel
+                )
                 {
-                    Comment = param.Property.Comment
+                    Comment = param.Property.Comment,
                 };
                 parameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
                 constructor.AddParameter(parameter);
@@ -51,7 +61,9 @@ public class JavaConstructorGenerator(JpaConfig config)
 
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(fromMapper);
             constructor.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
-            constructor.AddBodyLine($"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);");
+            constructor.AddBodyLine(
+                $"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);"
+            );
             constructor.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}'";
             fw.WriteLine();
             fw.Write(1, constructor);
@@ -64,7 +76,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         var constructor = new JavaConstructor(classe.NamePascal)
         {
             Visibility = "public",
-            Comment = "No arg constructor"
+            Comment = "No arg constructor",
         };
         if (Config.GetClassExtends(classe, tag) != null)
         {

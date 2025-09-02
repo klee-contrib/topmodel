@@ -1,4 +1,4 @@
-﻿#pragma warning disable SA1402
+﻿#pragma warning disable MA0048
 
 namespace TopModel.Core.FileModel;
 
@@ -11,6 +11,7 @@ public class EndpointOptions
 {
 #nullable disable
     public string FileName { get; set; }
+
 #nullable enable
 
     public LocatedString? Prefix { get; set; }

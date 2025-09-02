@@ -3,6 +3,11 @@
     <ItemGroup>
       <ConfigFileToCopy Include="$(MSBuildThisFileDirectory)../contentFiles/csharp.config.json" />
     </ItemGroup>
-    <Copy SourceFiles="@(ConfigFileToCopy)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
+    <Copy
+      SourceFiles="@(ConfigFileToCopy)"
+      DestinationFolder="$(OutputPath)"
+      SkipUnchangedFiles="true"
+      UseHardlinksIfPossible="false"
+    />
   </Target>
 </Project>

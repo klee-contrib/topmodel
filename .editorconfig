@@ -1,31 +1,12 @@
 [*.cs]
-csharp_style_namespace_declarations = file_scoped:warning
-dotnet_diagnostic.SA1816.severity = none
-dotnet_diagnostic.SA2254.severity = none
-dotnet_diagnostic.SA0000.severity = warning
-dotnet_diagnostic.SA0001.severity = none
-dotnet_diagnostic.SA1101.severity = none
-dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1309.severity = none
-dotnet_diagnostic.SA1408.severity = none
-dotnet_diagnostic.SA1412.severity = warning
-dotnet_diagnostic.SA1413.severity = none
-dotnet_diagnostic.SA1600.severity = none
-dotnet_diagnostic.SA1623.severity = none
-dotnet_diagnostic.SA1625.severity = none
-dotnet_diagnostic.SA1629.severity = none
-dotnet_diagnostic.SA1633.severity = none
-dotnet_diagnostic.SA1642.severity = none
-dotnet_diagnostic.SA1643.severity = none
-dotnet_diagnostic.SX1309.severity = warning
-dotnet_diagnostic.CA1816.severity = none
-dotnet_diagnostic.CA2254.severity = none
-dotnet_diagnostic.SYSLIB1045.severity = none
+end_of_line = crlf
+tab_width = 4
+indent_size = 4
+max_line_length = 120
 
-[*.cs]
 #### Styles de nommage ####
 
-# R�gles de nommage
+# Règles de nommage
 
 dotnet_naming_rule.interface_should_be_begins_with_i.severity = suggestion
 dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
@@ -39,7 +20,7 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
-# Sp�cifications de symboles
+# Spécifications de symboles
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
@@ -69,6 +50,95 @@ dotnet_naming_style.pascal_case.required_prefix =
 dotnet_naming_style.pascal_case.required_suffix = 
 dotnet_naming_style.pascal_case.word_separator = 
 dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_style_readonly_field = true:suggestion
+
+dotnet_sort_system_directives_first = true
+
+# Diagnostics
+
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0028.severity = warning
+dotnet_diagnostic.IDE0090.severity = warning
+dotnet_diagnostic.IDE0251.severity = none
+dotnet_diagnostic.IDE0290.severity = warning
+dotnet_diagnostic.IDE0305.severity = none
+
+dotnet_diagnostic.CA1816.severity = none
+dotnet_diagnostic.CA1829.severity = warning
+dotnet_diagnostic.CA1854.severity = warning
+dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1870.severity = none
+dotnet_diagnostic.CA1862.severity = none
+dotnet_diagnostic.CA2016.severity = warning
+dotnet_diagnostic.CA2254.severity = none
+
+dotnet_diagnostic.CS3001.severity = none
+dotnet_diagnostic.CS3002.severity = none
+
+dotnet_diagnostic.KTA1104.severity = warning
+
+dotnet_diagnostic.MA0001.severity = none
+dotnet_diagnostic.MA0002.severity = none
+dotnet_diagnostic.MA0003.severity = warning
+dotnet_diagnostic.MA0004.severity = none
+dotnet_diagnostic.MA0006.severity = none
+dotnet_diagnostic.MA0009.severity = none
+dotnet_diagnostic.MA0011.severity = none
+dotnet_diagnostic.MA0028.severity = warning
+dotnet_diagnostic.MA0029.severity = warning
+dotnet_diagnostic.MA0031.severity = none
+dotnet_diagnostic.MA0040.severity = none
+dotnet_diagnostic.MA0044.severity = warning
+dotnet_diagnostic.MA0051.severity = none
+dotnet_diagnostic.MA0056.severity = none
+dotnet_diagnostic.MA0071.severity = none
+dotnet_diagnostic.MA0074.severity = none
+dotnet_diagnostic.MA0075.severity = none
+dotnet_diagnostic.MA0076.severity = none
+dotnet_diagnostic.MA0078.severity = warning
+dotnet_diagnostic.MA0089.severity = warning
+dotnet_diagnostic.MA0097.severity = none ##
+dotnet_diagnostic.MA0098.severity = warning
+dotnet_diagnostic.MA0110.severity = none
+dotnet_diagnostic.MA0147.severity = none
+dotnet_diagnostic.MA0159.severity = warning
+dotnet_diagnostic.MA0160.severity = warning
+dotnet_diagnostic.MA0169.severity = none
+
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S112.severity = none
+dotnet_diagnostic.S1210.severity = none
+dotnet_diagnostic.S1643.severity = none
+dotnet_diagnostic.S1699.severity = none
+dotnet_diagnostic.S2344.severity = none
+dotnet_diagnostic.S2365.severity = none
+dotnet_diagnostic.S2376.severity = none
+dotnet_diagnostic.S2629.severity = none
+dotnet_diagnostic.S2692.severity = none
+dotnet_diagnostic.S3060.severity = none
+dotnet_diagnostic.S3246.severity = none
+dotnet_diagnostic.S3251.severity = none
+dotnet_diagnostic.S3267.severity = none
+dotnet_diagnostic.S3358.severity = none
+dotnet_diagnostic.S3881.severity = none
+dotnet_diagnostic.S3885.severity = none
+dotnet_diagnostic.S3963.severity = none
+dotnet_diagnostic.S4143.severity = none
+dotnet_diagnostic.S6562.severity = none
+dotnet_diagnostic.S6580.severity = none
+dotnet_diagnostic.S6667.severity = none
+dotnet_diagnostic.S6934.severity = none
+dotnet_diagnostic.S6961.severity = none
+dotnet_diagnostic.S6967.severity = none
+
+dotnet_diagnostic.SYSLIB1045.severity = none
+
+# C#
+
+csharp_prefer_braces = true:silent
+csharp_prefer_simple_using_statement = true:suggestion
 csharp_style_expression_bodied_methods = false:silent
 csharp_style_expression_bodied_constructors = false:silent
 csharp_style_expression_bodied_operators = false:silent
@@ -77,68 +147,13 @@ csharp_style_expression_bodied_indexers = true:silent
 csharp_style_expression_bodied_accessors = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
-csharp_style_prefer_switch_expression = true:suggestion
-csharp_style_prefer_pattern_matching = true:silent
+csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+csharp_style_prefer_switch_expression = true:suggestion
+csharp_style_prefer_pattern_matching = true:silent
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
-csharp_prefer_simple_using_statement = true:suggestion
-csharp_prefer_braces = true:silent
-dotnet_diagnostic.SA1010.severity = none
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
-dotnet_diagnostic.SA1124.severity = none
-
-[*.vb]
-#### Styles de nommage ####
-
-# R�gles de nommage
-
-dotnet_naming_rule.interface_should_be_commence_par_i.severity = suggestion
-dotnet_naming_rule.interface_should_be_commence_par_i.symbols = interface
-dotnet_naming_rule.interface_should_be_commence_par_i.style = commence_par_i
-
-dotnet_naming_rule.types_should_be_casse_pascal.severity = suggestion
-dotnet_naming_rule.types_should_be_casse_pascal.symbols = types
-dotnet_naming_rule.types_should_be_casse_pascal.style = casse_pascal
-
-dotnet_naming_rule.membres_autres_que_des_champs_should_be_casse_pascal.severity = suggestion
-dotnet_naming_rule.membres_autres_que_des_champs_should_be_casse_pascal.symbols = membres_autres_que_des_champs
-dotnet_naming_rule.membres_autres_que_des_champs_should_be_casse_pascal.style = casse_pascal
-
-# Sp�cifications de symboles
-
-dotnet_naming_symbols.interface.applicable_kinds = interface
-dotnet_naming_symbols.interface.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.interface.required_modifiers = 
-
-dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
-dotnet_naming_symbols.types.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.types.required_modifiers = 
-
-dotnet_naming_symbols.membres_autres_que_des_champs.applicable_kinds = property, event, method
-dotnet_naming_symbols.membres_autres_que_des_champs.applicable_accessibilities = public, friend, private, protected, protected_friend, private_protected
-dotnet_naming_symbols.membres_autres_que_des_champs.required_modifiers = 
-
-# Styles de nommage
-
-dotnet_naming_style.commence_par_i.required_prefix = I
-dotnet_naming_style.commence_par_i.required_suffix = 
-dotnet_naming_style.commence_par_i.word_separator = 
-dotnet_naming_style.commence_par_i.capitalization = pascal_case
-
-dotnet_naming_style.casse_pascal.required_prefix = 
-dotnet_naming_style.casse_pascal.required_suffix = 
-dotnet_naming_style.casse_pascal.word_separator = 
-dotnet_naming_style.casse_pascal.capitalization = pascal_case
-
-dotnet_naming_style.casse_pascal.required_prefix = 
-dotnet_naming_style.casse_pascal.required_suffix = 
-dotnet_naming_style.casse_pascal.word_separator = 
-dotnet_naming_style.casse_pascal.capitalization = pascal_case
-
-[*.{cs,vb}]
-tab_width = 4
-indent_size = 4

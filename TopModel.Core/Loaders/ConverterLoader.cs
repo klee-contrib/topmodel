@@ -15,7 +15,7 @@ public class ConverterLoader(FileChecker fileChecker) : ILoader<Converter>
 
         parser.ConsumeMapping(prop =>
         {
-            _ = parser.TryConsume<Scalar>(out var value);
+            _ = parser.TryConsume<Scalar>(out var _);
 
             switch (prop.Value)
             {
