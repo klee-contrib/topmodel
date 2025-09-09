@@ -409,6 +409,11 @@ public class JpaConfig : GeneratorConfigBase
         return $"{className.ToPascalCase()}{propName.ToPascalCase()}";
     }
 
+    public bool HasAnnotation(Class classe, string annotation)
+    {
+        return classe.Annotations.SelectMany(a => GetImplementation(a.Annotation)).Any(a => a.Text == annotation);
+    }
+
     protected override bool IsEnumNameValid(string name)
     {
         return base.IsEnumNameValid(name)
