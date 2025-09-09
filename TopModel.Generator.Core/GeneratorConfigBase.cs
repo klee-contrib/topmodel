@@ -230,11 +230,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             yield return import;
         }
-
-        foreach (var import in GetAnnotations(classe, tag).SelectMany(e => e.Imports))
-        {
-            yield return import;
-        }
     }
 
     public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
@@ -249,11 +244,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             yield return import;
         }
-
-        foreach (var import in GetAnnotations(endpoint, tag).SelectMany(e => e.Imports))
-        {
-            yield return import;
-        }
     }
 
     public IEnumerable<string> GetDomainImports(IProperty property, string tag)
@@ -264,11 +254,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 var import in GetImplementation(property.Domain)!
                     .Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
             )
-            {
-                yield return import;
-            }
-
-            foreach (var import in GetAnnotations(property, tag).SelectMany(a => a.Imports))
             {
                 yield return import;
             }

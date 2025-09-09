@@ -558,14 +558,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
         }
 
-        foreach (var @using in Config.GetDecoratorImports(item, tag))
-        {
-            usings.Add(@using);
-        }
+        usings.AddRange(Config.GetDecoratorImports(item, tag));
+        usings.AddRange(Config.GetAnnotations(item, tag).SelectMany(a => a.Imports));
 
         foreach (var property in item.Properties)
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
+            usings.AddRange(Config.GetAnnotations(property, tag).SelectMany(a => a.Imports));
             usings.AddRange(Config.GetValueImports(property));
 
             switch (property)
