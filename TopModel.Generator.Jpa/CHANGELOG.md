@@ -1,5 +1,10 @@
 # Changelog JPA
 
+## 3.0.1
+
+- [`ad3e477`](https://github.com/klee-contrib/topmodel/commit/c7707e66eaefc0c016c403beab6030df8b1e4d1c) - [JPA] Fix mauvais imports annotations
+- [`e1563e1`](https://github.com/klee-contrib/topmodel/commit/c7707e66eaefc0c016c403beab6030df8b1e4d1c) - [JPA] Ne pas générer les getter & setters si les annotations lombok sont présentes
+
 ## 3.0.0
 
 Compatibilité avec TopModel 3

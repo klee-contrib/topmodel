@@ -1,3 +1,8 @@
+
+## 3.1.1
+
+- [`c7707e6`](https://github.com/klee-contrib/topmodel/commit/c7707e66eaefc0c016c403beab6030df8b1e4d1c) - [Core] Fix imports d'annotations ajoutés à tort avec les annotations de domaines/décorators
+
 ## 3.1.0
 
 - [`5c8bb57`](https://github.com/klee-contrib/topmodel/commit/5c8bb577a7a623af452837717c1974e53c597cc0) - [C#] useCancellationTokens
