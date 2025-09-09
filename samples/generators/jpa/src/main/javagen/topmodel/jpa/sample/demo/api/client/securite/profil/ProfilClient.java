@@ -32,8 +32,8 @@ public interface ProfilClient {
 	 * @param profil Profil à sauvegarder
 	 * @return Profil sauvegardé
 	 */
-	@PreAuthorize("hasRole('CREATE')")
 	@PostExchange("/")
+	@PreAuthorize("hasRole('CREATE')")
 	ResponseEntity<ProfilRead> addProfil(@RequestBody @Valid ProfilWrite profil);
 
 	/**
@@ -41,16 +41,16 @@ public interface ProfilClient {
 	 * @param proId Id technique
 	 * @return Le détail du profil
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetExchange("/{proId}")
+	@PreAuthorize("hasRole('READ')")
 	ResponseEntity<ProfilRead> getProfil(@PathVariable("proId") Integer proId);
 
 	/**
 	 * Liste tous les Profils.
 	 * @return Profils matchant les critères
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetExchange("/")
+	@PreAuthorize("hasRole('READ')")
 	ResponseEntity<List<ProfilItem>> getProfils();
 
 	/**
@@ -59,7 +59,7 @@ public interface ProfilClient {
 	 * @param profil Profil à sauvegarder
 	 * @return Profil sauvegardé
 	 */
-	@PreAuthorize("hasRole('UPDATE')")
 	@PutExchange("/{proId}")
+	@PreAuthorize("hasRole('UPDATE')")
 	ResponseEntity<ProfilRead> updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }

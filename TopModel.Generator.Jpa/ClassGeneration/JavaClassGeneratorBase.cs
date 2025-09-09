@@ -145,7 +145,10 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             foreach (var property in classe.GetProperties(Classes))
             {
-                JpaModelPropertyGenerator.WriteGetter(fw, tag, property);
+                if (!Config.HasAnnotation(property, "Getter"))
+                {
+                    JpaModelPropertyGenerator.WriteGetter(fw, tag, property);
+                }
             }
         }
 
@@ -158,7 +161,10 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             foreach (var property in classe.GetProperties(Classes))
             {
-                JpaModelPropertyGenerator.WriteSetter(fw, tag, property);
+                if (!Config.HasAnnotation(property, "Setter"))
+                {
+                    JpaModelPropertyGenerator.WriteSetter(fw, tag, property);
+                }
             }
         }
 

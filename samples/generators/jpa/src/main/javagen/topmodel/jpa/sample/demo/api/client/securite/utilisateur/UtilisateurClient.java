@@ -36,16 +36,16 @@ public interface UtilisateurClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	@PreAuthorize("hasRole('CREATE')")
 	@PostExchange("/")
+	@PreAuthorize("hasRole('CREATE')")
 	ResponseEntity<UtilisateurRead> addUtilisateur(@RequestBody @Valid UtilisateurWrite utilisateur);
 
 	/**
 	 * Supprime un utilisateur.
 	 * @param utiId Id de l'utilisateur
 	 */
-	@PreAuthorize("hasRole('DELETE')")
 	@DeleteExchange("/{utiId}")
+	@PreAuthorize("hasRole('DELETE')")
 	ResponseEntity<Void> deleteUtilisateur(@PathVariable("utiId") Integer utiId);
 
 	/**
@@ -53,8 +53,8 @@ public interface UtilisateurClient {
 	 * @param utiId Id de l'utilisateur
 	 * @return Le détail de l'utilisateur
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetExchange("/{utiId}")
+	@PreAuthorize("hasRole('READ')")
 	ResponseEntity<UtilisateurRead> getUtilisateur(@PathVariable("utiId") Integer utiId);
 
 	/**
@@ -69,8 +69,8 @@ public interface UtilisateurClient {
 	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetExchange("/")
+	@PreAuthorize("hasRole('READ')")
 	ResponseEntity<List<UtilisateurItem>> searchUtilisateur(@RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "prenom", required = false) String prenom, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "dateNaissance", required = false) LocalDate dateNaissance, @RequestParam(value = "adresse", required = false) String adresse, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "profilId", required = false) Integer profilId, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode);
 
 	/**
@@ -79,7 +79,7 @@ public interface UtilisateurClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	@PreAuthorize("hasRole('UPDATE')")
 	@PutExchange("/{utiId}")
+	@PreAuthorize("hasRole('UPDATE')")
 	ResponseEntity<UtilisateurRead> updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
 }

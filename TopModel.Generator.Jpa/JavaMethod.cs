@@ -52,6 +52,15 @@ public class JavaMethod
         return this;
     }
 
+    public JavaMethod AddAnnotations(IEnumerable<JavaAnnotation> annotation)
+    {
+        foreach (var a in annotation)
+        {
+            AddAnnotation(a);
+        }
+        return this;
+    }
+
     public JavaMethod AddBodyLine()
     {
         Body.Add(new WriterLine() { Line = string.Empty, Indent = 0 });

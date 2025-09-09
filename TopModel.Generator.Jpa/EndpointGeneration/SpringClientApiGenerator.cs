@@ -109,10 +109,10 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             endpoint.NameCamel
         );
 
-        foreach (var (annotation, _) in Config.GetAnnotations(endpoint, tag))
-        {
-            fw.WriteLine(1, $"{(annotation.StartsWith('@') ? string.Empty : "@")}{annotation}");
-        }
+        var javaAnnotations = Config
+            .GetAnnotations(endpoint, tag)
+            .Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
+        method.AddAnnotations(javaAnnotations);
 
         var exchangeAnnotation = new JavaAnnotation(
             $"{endpoint.Method.ToPascalCase(strict: true)}Exchange",
