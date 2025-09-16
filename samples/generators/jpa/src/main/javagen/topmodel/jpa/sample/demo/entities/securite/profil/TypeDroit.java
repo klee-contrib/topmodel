@@ -64,15 +64,15 @@ public class TypeDroit {
 	public TypeDroit(TypeDroitCode code) {
 		this.code = code;
 		switch(code) {
-		case ADMIN :
-			this.libelle = "securite.profil.typeDroit.values.Admin";
-			break;
-		case READ :
-			this.libelle = "securite.profil.typeDroit.values.Read";
-			break;
-		case WRITE :
-			this.libelle = "securite.profil.typeDroit.values.Write";
-			break;
+			case ADMIN :
+				this.libelle = "securite.profil.typeDroit.values.Admin";
+				break;
+			case READ :
+				this.libelle = "securite.profil.typeDroit.values.Read";
+				break;
+			case WRITE :
+				this.libelle = "securite.profil.typeDroit.values.Write";
+				break;
 		}
 	}
 

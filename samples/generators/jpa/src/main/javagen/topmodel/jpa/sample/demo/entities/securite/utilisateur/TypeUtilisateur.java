@@ -64,15 +64,15 @@ public class TypeUtilisateur {
 	public TypeUtilisateur(TypeUtilisateurCode code) {
 		this.code = code;
 		switch(code) {
-		case ADMIN :
-			this.libelle = "securite.utilisateur.typeUtilisateur.values.Admin";
-			break;
-		case CLIENT :
-			this.libelle = "securite.utilisateur.typeUtilisateur.values.Client";
-			break;
-		case GEST :
-			this.libelle = "securite.utilisateur.typeUtilisateur.values.Gestionnaire";
-			break;
+			case ADMIN :
+				this.libelle = "securite.utilisateur.typeUtilisateur.values.Admin";
+				break;
+			case CLIENT :
+				this.libelle = "securite.utilisateur.typeUtilisateur.values.Client";
+				break;
+			case GEST :
+				this.libelle = "securite.utilisateur.typeUtilisateur.values.Gestionnaire";
+				break;
 		}
 	}
 
