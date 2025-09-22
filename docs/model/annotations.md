@@ -90,6 +90,80 @@ Cela générera la route suivante dans un contrôleur :
 public async Task Get()
 ```
 
+## Application des annotations
+
+### Règles générales
+
+- Les classes, les endpoints et les propriétés peuvent définir leurs propres annotations.
+- Une propriété d'alias héritera des annotations de sa propriété originale, et pourra en définir de nouvelles.
+- Les annotations posées sur les domaines seront posées sur chaque propriété qui utilise ce domaine.
+- Les annotations posées sur les décorateurs seront posées sur chaque classe ou endpoint qui utilise ce décorateur.
+
+### Annotations de propriétés
+
+En plus des annotations posées directement dessus ou héritées de leur domaine, il est également possible de poser des annotations sur des **propriétés au niveau de leur conteneur**, donc la classe, l'endpoint, ou le décorateur.
+
+Par exemple, sur une classe :
+
+```yaml
+class:
+  name: MyClass
+  propertyAnnotations:
+    - MyAnnotation
+  properties:
+    - name: Property1
+      domain: DO_DOMAIN
+      comment: Propriété 1.
+    - name: Property2
+      domain: DO_DOMAIN
+      comment: Propriété 2.
+```
+
+Ainsi, l'annotation `MyAnnotation` sera prise en compte pour le listing des annotations de toutes les propriétés de la classe.
+
+Remarques :
+
+- Ces annotations ne seront disponibles sur chaque propriété **que dans le contexte de la classe ou du endpoint qui les défini**. Elles ne feront dont **pas** partie de la liste des annotations de la propriété, et ne seront donc pas incluses dans les annotations d'un alias de cette propriété par exemple.
+- Les annotations de propriétés définies dans un décorateur ne s'appliqueront que sur les propriétés définies dans le décorateur. En revanche, ces propriétés récupèreront aussi les annotations de propriété de la classe ou du endpoint qui utilise ce décorateur. Par exemple, pour :
+  ```yaml
+  ---
+  decorator:
+    name: MyDecorator
+    description: Mon décorateur.
+    propertyAnnotations:
+      - MyAnnotation1
+    properties:
+      name: MyProperty
+      domain: DO_DOMAIN
+      comment: Ma propriété.
+  ---
+  class:
+    name: MyClass
+    comment: Ma classe.
+    decorators:
+      - MyDecorator
+    propertyAnnotations:
+      - MyAnnotation2
+    properties:
+      - name: MyClassProperty
+        domain: DO_DOMAIN
+        comment: Ma propriété de classe.
+  ```
+  `MyProperty` dans `MyClass` aura bien `MyAnnotation1` et `MyAnnotation2`, tandis que `MyClassProperty` n'aura que `MyAnnotation2`.
+
+### Priorité des annotations
+
+Il est interdit de déclarer plusieurs fois la même annotation sur un objet, y compris pour les annotations ajoutées sur les propriétés d'alias. En revanche, les annotations effectives sur les classes, endpoints et propriétés peuvent se retrouver en doublon (par exemple, si une même annotation est définie sur un domaine et une propriété qui utilise ce domaine). Dans le cas où l'annotation définit des paramètres, il est possible que l'instanciation des annotations ne soit pas faite avec les mêmes valeurs. Dans ce cas, la priorité suivante est établie :
+
+- Pour une **propriété**, les paramètres sont récupérés en priorité :
+  - Sur la propriété elle-même.
+  - Sur la classe (via `propertyAnnotations`).
+  - Sur le décorateur qui définit la propriété, s'il y en a un (via `propertyAnnotations`).
+  - Sur le domaine.
+- Pour une **classe** ou un **endpoint**, les paramètres sont récupérés en priorité :
+  - Sur la classe/l'endpoint elle/lui-même.
+  - Sur le premier décorateur qui définit l'annotation, s'il y en a un.
+
 ## Ciblage des annotations
 
 ### `target`
@@ -178,56 +252,3 @@ Les variables et paramètres sont utilisables dans les propriétés d'implément
 
 - `text`
 - `imports`
-
-## Annotations de propriétés
-
-En plus des annotations posées directement dessus ou héritées de leur domaine, il est également possible de poser des annotations sur des **propriétés au niveau de leur conteneur**, donc la classe, l'endpoint, ou le décorateur.
-
-Par exemple, sur une classe :
-
-```yaml
-class:
-  name: MyClass
-  propertyAnnotations:
-    - MyAnnotation
-  properties:
-    - name: Property1
-      domain: DO_DOMAIN
-      comment: Propriété 1.
-    - name: Property2
-      domain: DO_DOMAIN
-      comment: Propriété 2.
-```
-
-Ainsi, l'annotation `MyAnnotation` sera prise en compte pour le listing des annotations de toutes les propriétés de la classe.
-
-Remarques :
-
-- Ces annotations ne seront disponibles sur chaque propriété **que dans le contexte de la classe ou du endpoint qui les défini**. Elles ne feront dont **pas** partie de la liste des annotations de la propriété, et ne seront donc pas incluses dans les annotations d'un alias de cette propriété par exemple.
-- Les annotations de propriétés définies dans un décorateur ne s'appliqueront que sur les propriétés définies dans le décorateur. En revanche, ces propriétés récupèreront aussi les annotations de propriété de la classe ou du endpoint qui utilise ce décorateur. Par exemple, pour :
-  ```yaml
-  ---
-  decorator:
-    name: MyDecorator
-    description: Mon décorateur.
-    propertyAnnotations:
-      - MyAnnotation1
-    properties:
-      name: MyProperty
-      domain: DO_DOMAIN
-      comment: Ma propriété.
-  ---
-  class:
-    name: MyClass
-    comment: Ma classe.
-    decorators:
-      - MyDecorator
-    propertyAnnotations:
-      - MyAnnotation2
-    properties:
-      - name: MyClassProperty
-        domain: DO_DOMAIN
-        comment: Ma propriété de classe.
-  ```
-  `MyProperty` dans `MyClass` aura bien `MyAnnotation1` et `MyAnnotation2`, tandis que `MyClassProperty` n'aura que `MyAnnotation2`.
-- Si une propriété définit la même annotation que sa/son classe/endpoint/décorateur, alors son instance propre sera prioritaire (dans le cas où elle définit des paramètres en particulier). De même, si une classe ou un endpoint définit la même annotation de propriétés qu'un décorateur qu'elle utilise, son instance sera prioritaire également.

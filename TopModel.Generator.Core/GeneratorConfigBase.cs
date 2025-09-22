@@ -164,22 +164,31 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 )
             )
             {
-                var resolvedParameters = parameters.ToDictionary(
-                    p => p.Key,
-                    p => p.Value.ParseTemplate(property, this, tag)
-                );
-                yield return (
-                    Annotation: implementation.Text.Value.ParseTemplate(
-                        property,
-                        annotation.TemplateParameters,
-                        resolvedParameters,
-                        this,
-                        tag
-                    ),
-                    Imports: implementation.Imports.Select(i =>
-                        i.Value.ParseTemplate(property, annotation.TemplateParameters, resolvedParameters, this, tag)
-                    )
-                );
+                if (!annotations.Any(a => a.Annotation == annotation))
+                {
+                    var resolvedParameters = parameters.ToDictionary(
+                        p => p.Key,
+                        p => p.Value.ParseTemplate(property, this, tag)
+                    );
+                    yield return (
+                        Annotation: implementation.Text.Value.ParseTemplate(
+                            property,
+                            annotation.TemplateParameters,
+                            resolvedParameters,
+                            this,
+                            tag
+                        ),
+                        Imports: implementation.Imports.Select(i =>
+                            i.Value.ParseTemplate(
+                                property,
+                                annotation.TemplateParameters,
+                                resolvedParameters,
+                                this,
+                                tag
+                            )
+                        )
+                    );
+                }
             }
         }
     }
@@ -564,22 +573,25 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))
         )
         {
-            var resolvedParameters = annotationParameters.ToDictionary(
-                p => p.Key,
-                p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)
-            );
-            yield return (
-                Annotation: implementation.Text.Value.ParseTemplate(
-                    container,
-                    annotation.TemplateParameters,
-                    resolvedParameters,
-                    this,
-                    tag
-                ),
-                Imports: implementation.Imports.Select(i =>
-                    i.Value.ParseTemplate(container, annotation.TemplateParameters, resolvedParameters, this, tag)
-                )
-            );
+            if (!container.Annotations.Any(a => a.Annotation == annotation))
+            {
+                var resolvedParameters = annotationParameters.ToDictionary(
+                    p => p.Key,
+                    p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)
+                );
+                yield return (
+                    Annotation: implementation.Text.Value.ParseTemplate(
+                        container,
+                        annotation.TemplateParameters,
+                        resolvedParameters,
+                        this,
+                        tag
+                    ),
+                    Imports: implementation.Imports.Select(i =>
+                        i.Value.ParseTemplate(container, annotation.TemplateParameters, resolvedParameters, this, tag)
+                    )
+                );
+            }
         }
 
         foreach (var subD in decorator.Decorators)

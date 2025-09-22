@@ -28,20 +28,6 @@ public class AnnotationResolver(
                     );
                 }
             }
-
-            foreach (var (annotation, _) in (alp.Domain?.Annotations ?? []).Intersect(alp.Annotations))
-            {
-                var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == annotation.Name);
-                if (annotationRef != null)
-                {
-                    yield return new ModelError(
-                        ErrorType.TMD2003,
-                        alp,
-                        $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{alp}'.",
-                        annotationRef
-                    );
-                }
-            }
         }
     }
 
@@ -265,35 +251,6 @@ public class AnnotationResolver(
                 }
                 else
                 {
-                    if (
-                        container is IPropertyContainer propertyContainer
-                        && propertyContainer.AllDecorators.Any(d => d.Annotations.Any(a => a.Annotation == annotation))
-                    )
-                    {
-                        isError = true;
-                        yield return new ModelError(
-                            ErrorType.TMD2003,
-                            propertyContainer,
-                            $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations d'un des décorateurs de l'objet '{propertyContainer}'.",
-                            annotationRef
-                        );
-                    }
-
-                    if (
-                        container is IProperty property
-                        && property is not AliasProperty
-                        && (property.Domain?.Annotations.Any(d => d.Annotation == annotation) ?? false)
-                    )
-                    {
-                        isError = true;
-                        yield return new ModelError(
-                            ErrorType.TMD2003,
-                            property,
-                            $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.",
-                            annotationRef
-                        );
-                    }
-
                     if (
                         annotation.Target.Any()
                         && (
