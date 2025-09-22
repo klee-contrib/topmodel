@@ -178,3 +178,56 @@ Les variables et paramètres sont utilisables dans les propriétés d'implément
 
 - `text`
 - `imports`
+
+## Annotations de propriétés
+
+En plus des annotations posées directement dessus ou héritées de leur domaine, il est également possible de poser des annotations sur des **propriétés au niveau de leur conteneur**, donc la classe, l'endpoint, ou le décorateur.
+
+Par exemple, sur une classe :
+
+```yaml
+class:
+  name: MyClass
+  propertyAnnotations:
+    - MyAnnotation
+  properties:
+    - name: Property1
+      domain: DO_DOMAIN
+      comment: Propriété 1.
+    - name: Property2
+      domain: DO_DOMAIN
+      comment: Propriété 2.
+```
+
+Ainsi, l'annotation `MyAnnotation` sera prise en compte pour le listing des annotations de toutes les propriétés de la classe.
+
+Remarques :
+
+- Ces annotations ne seront disponibles sur chaque propriété **que dans le contexte de la classe ou du endpoint qui les défini**. Elles ne feront dont **pas** partie de la liste des annotations de la propriété, et ne seront donc pas incluses dans les annotations d'un alias de cette propriété par exemple.
+- Les annotations de propriétés définies dans un décorateur ne s'appliqueront que sur les propriétés définies dans le décorateur. En revanche, ces propriétés récupèreront aussi les annotations de propriété de la classe ou du endpoint qui utilise ce décorateur. Par exemple, pour :
+  ```yaml
+  ---
+  decorator:
+    name: MyDecorator
+    description: Mon décorateur.
+    propertyAnnotations:
+      - MyAnnotation1
+    properties:
+      name: MyProperty
+      domain: DO_DOMAIN
+      comment: Ma propriété.
+  ---
+  class:
+    name: MyClass
+    comment: Ma classe.
+    decorators:
+      - MyDecorator
+    propertyAnnotations:
+      - MyAnnotation2
+    properties:
+      - name: MyClassProperty
+        domain: DO_DOMAIN
+        comment: Ma propriété de classe.
+  ```
+  `MyProperty` dans `MyClass` aura bien `MyAnnotation1` et `MyAnnotation2`, tandis que `MyClassProperty` n'aura que `MyAnnotation2`.
+- Si une propriété définit la même annotation que sa/son classe/endpoint/décorateur, alors son instance propre sera prioritaire (dans le cas où elle définit des paramètres en particulier). De même, si une classe ou un endpoint définit la même annotation de propriétés qu'un décorateur qu'elle utilise, son instance sera prioritaire également.
