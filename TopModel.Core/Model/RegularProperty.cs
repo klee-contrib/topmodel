@@ -71,7 +71,7 @@ public class RegularProperty : IProperty
     {
         return new RegularProperty
         {
-            SourceDecorator = Decorator,
+            SourceDecorator = SourceDecorator ?? Decorator,
             Class = classe,
             Comment = Comment,
             Decorator = decorator,

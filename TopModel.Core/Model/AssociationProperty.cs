@@ -202,7 +202,7 @@ public class AssociationProperty : IProperty
     {
         return new AssociationProperty
         {
-            SourceDecorator = Decorator,
+            SourceDecorator = SourceDecorator ?? Decorator,
             Association = Association,
             Class = classe,
             Comment = Comment,

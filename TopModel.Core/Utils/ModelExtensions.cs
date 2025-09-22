@@ -19,6 +19,18 @@ public static class ModelExtensions
                     File: c.GetFile()
                 )
             )
+            .Concat(
+                modelStore
+                    .PropertyContainers.Where(c => c.PropertyAnnotations.Select(d => d.Annotation).Contains(annotation))
+                    .Select(c =>
+                        (
+                            Reference: c.PropertyAnnotationReferences.FirstOrDefault(dr =>
+                                dr.ReferenceName == annotation.Name
+                            )!,
+                            File: c.GetFile()
+                        )
+                    )
+            )
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
@@ -264,6 +276,23 @@ public static class ModelExtensions
                                 (
                                     Reference: pc
                                         .DecoratorReferences.FirstOrDefault(ac => ac.ReferenceName == d.Decorator.Name)
+                                        ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
+                                    File: pc.GetFile()!
+                                )
+                            )
+                    )
+                )
+            )
+            .Concat(
+                modelStore.PropertyContainers.SelectMany(pc =>
+                    pc.PropertyAnnotations.SelectMany(d =>
+                        d.Annotation.TemplateParameters.Where(tp => tp == parameter)
+                            .Select(tp =>
+                                (
+                                    Reference: pc
+                                        .PropertyAnnotationReferences.FirstOrDefault(ac =>
+                                            ac.ReferenceName == d.Annotation.Name
+                                        )
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
                                     File: pc.GetFile()!
                                 )

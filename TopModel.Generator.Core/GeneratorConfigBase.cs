@@ -81,8 +81,29 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         string tag
     )
     {
+        IList<AnnotationInstance> annotations = [.. container.Annotations];
+
+        if (container is IProperty prop)
+        {
+            foreach (var parentAnnotation in prop.Parent.PropertyAnnotations)
+            {
+                if (!annotations.Any(a => a.Annotation == parentAnnotation.Annotation))
+                {
+                    annotations.Add(parentAnnotation);
+                }
+            }
+
+            foreach (var decoratorAnnotation in prop.SourceDecorator?.PropertyAnnotations ?? [])
+            {
+                if (!annotations.Any(a => a.Annotation == decoratorAnnotation.Annotation))
+                {
+                    annotations.Add(decoratorAnnotation);
+                }
+            }
+        }
+
         foreach (
-            var (implementation, annotation, parameters) in container.Annotations.SelectMany(a =>
+            var (implementation, annotation, parameters) in annotations.SelectMany(a =>
                 GetImplementation(a.Annotation)
                     .Select(i => (Implementation: i, a.Annotation, a.Parameters))
                     .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))

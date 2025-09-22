@@ -88,7 +88,7 @@ public class CompositionProperty : IProperty
     {
         return new CompositionProperty
         {
-            SourceDecorator = Decorator,
+            SourceDecorator = SourceDecorator ?? Decorator,
             Class = classe,
             Comment = Comment,
             Composition = Composition,

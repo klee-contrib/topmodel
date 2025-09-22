@@ -137,6 +137,31 @@ public class ModelFile
                     )
                 )
             )
+            .Concat(
+                PropertyContainers.SelectMany(c =>
+                    c.PropertyAnnotationReferences.Select(par =>
+                        (
+                            par as Reference,
+                            c.PropertyAnnotations.Select(d => d.Annotation)
+                                .FirstOrDefault(d => d.Name == par.ReferenceName) as object
+                        )
+                    )
+                )
+            )
+            .Concat(
+                PropertyContainers.SelectMany(c =>
+                    c.PropertyAnnotationReferences.SelectMany(par =>
+                        par.ParameterReferences.Keys.Select(
+                            (pr, i) =>
+                                (
+                                    pr as Reference,
+                                    c.PropertyAnnotations.FirstOrDefault(d => d.Annotation.Name == par.ReferenceName)
+                                        ?.Annotation.TemplateParameters.ElementAtOrDefault(i) as object
+                                )
+                        )
+                    )
+                )
+            )
             .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
             .Concat(
                 Endpoints.SelectMany(e =>
