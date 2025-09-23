@@ -707,6 +707,14 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 ### Fichier de configuration
 
+- `rootModule`
+
+  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).
+
+  _Templating_: `{module}`
+
+  _Valeur par défaut_: `{module:head}`
+
 - `entitiesPath`
 
   Localisation des classses persistées du modèle, relatif au répertoire de génération.

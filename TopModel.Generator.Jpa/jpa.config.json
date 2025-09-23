@@ -97,6 +97,11 @@
       "type": "boolean",
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
     },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).",
+      "default": "{module:head}"
+    },
     "entitiesPath": {
       "type": "string",
       "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/entities/{module:path}'."

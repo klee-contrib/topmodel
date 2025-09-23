@@ -70,6 +70,7 @@ public static class GeneratorUtils
             return [];
         }
 
+#pragma warning disable CS0618
         return availableClasses
             .SelectMany(c => c.Properties)
             .OfType<AssociationProperty>()

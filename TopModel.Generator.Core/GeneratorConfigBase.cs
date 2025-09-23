@@ -306,6 +306,16 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     }
 
     /// <summary>
+    /// Récupère le module racine pour un namespace.
+    /// </summary>
+    /// <param name="ns">Namespace.</param>
+    /// <returns>Module racine.</returns>
+    public virtual string GetRootModule(Namespace ns)
+    {
+        return ResolveVariables(RootModule, module: ns.Module);
+    }
+
+    /// <summary>
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>
