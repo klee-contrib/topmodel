@@ -113,7 +113,7 @@ public enum ErrorType
     TMD2002,
 
     /// <summary>
-    /// L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.
+    /// L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.
     /// </summary>
     TMD2003,
 

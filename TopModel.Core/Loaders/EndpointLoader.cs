@@ -94,6 +94,31 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                         }
                     });
                     break;
+                case "propertyAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
+                                };
+
+                                endpoint.PropertyAnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            endpoint.PropertyAnnotationReferences.Add(
+                                new AnnotationReference(parser.Consume<Scalar>())
+                            );
+                        }
+                    });
+                    break;
                 case "customProperties":
                     parser.ConsumeMapping(prop =>
                         endpoint.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)

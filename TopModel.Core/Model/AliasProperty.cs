@@ -208,7 +208,7 @@ public class AliasProperty : IProperty
     {
         var alp = new AliasProperty
         {
-            SourceDecorator = Decorator,
+            SourceDecorator = SourceDecorator ?? Decorator,
             Class = classe,
             Comment = _comment!,
             Decorator = decorator,

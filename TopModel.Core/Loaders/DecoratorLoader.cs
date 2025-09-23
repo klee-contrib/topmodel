@@ -77,6 +77,31 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         }
                     });
                     break;
+                case "propertyAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
+                                };
+
+                                decorator.PropertyAnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            decorator.PropertyAnnotationReferences.Add(
+                                new AnnotationReference(parser.Consume<Scalar>())
+                            );
+                        }
+                    });
+                    break;
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {

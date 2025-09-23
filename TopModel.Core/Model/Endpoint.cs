@@ -58,11 +58,15 @@ public class Endpoint : IPropertyContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
+    public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
+
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
 
 #nullable disable
 

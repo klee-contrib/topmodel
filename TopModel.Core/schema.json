@@ -866,6 +866,13 @@
                 "$ref": "#/definitions/annotation"
               }
             },
+            "propertyAnnotations": {
+              "type": "array",
+              "description": "Annotations à poser sur toutes les propriétés du décorateur.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
             "properties": {
               "type": "array",
               "description": "Liste des propriétés du décorateur.",
@@ -1000,6 +1007,13 @@
             "annotations": {
               "type": "array",
               "description": "Annotations de la classe.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "propertyAnnotations": {
+              "type": "array",
+              "description": "Annotations à poser sur toutes les propriétés de la classe.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
@@ -1242,6 +1256,13 @@
             "annotations": {
               "type": "array",
               "description": "Annotations de l'endpoint.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "propertyAnnotations": {
+              "type": "array",
+              "description": "Annotations à poser sur toutes les propriétés de l'endpoint'.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }

@@ -111,6 +111,29 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                         }
                     });
                     break;
+                case "propertyAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<
+                                        Dictionary<ParameterReference, StringWithVariables>
+                                    >(parser),
+                                };
+
+                                classe.PropertyAnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            classe.PropertyAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {

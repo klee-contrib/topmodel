@@ -32,6 +32,8 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
+    public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
+
     public IList<IProperty> Properties { get; } = [];
 
     public bool PreservePropertyCasing { get; set; }
@@ -48,7 +50,10 @@ public class Decorator : IPropertyContainer, IVariableContainer
                         .. i.Imports.SelectMany(a => a.Variables),
                     ]
             )
-            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
+            .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)))
+            .Concat(
+                PropertyAnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables))
+            );
 
     public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
@@ -63,11 +68,16 @@ public class Decorator : IPropertyContainer, IVariableContainer
                     ]
             )
             .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+            .Concat(
+                PropertyAnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms))
+            )
             .Where(pr => pr.ReferenceName.IsValidTransform());
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
 
     internal Reference Location { get; set; }
 

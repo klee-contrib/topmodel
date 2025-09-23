@@ -28,20 +28,6 @@ public class AnnotationResolver(
                     );
                 }
             }
-
-            foreach (var (annotation, _) in (alp.Domain?.Annotations ?? []).Intersect(alp.Annotations))
-            {
-                var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == annotation.Name);
-                if (annotationRef != null)
-                {
-                    yield return new ModelError(
-                        ErrorType.TMD2003,
-                        alp,
-                        $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{alp}'.",
-                        annotationRef
-                    );
-                }
-            }
         }
     }
 
@@ -158,104 +144,33 @@ public class AnnotationResolver(
                 }
             }
 
-            foreach (var annotationRef in container.AnnotationReferences)
+            foreach (
+                var error in ResolveAnnotationReferences(
+                    container,
+                    container.AnnotationReferences,
+                    annotationsToResolve
+                )
+            )
             {
-                if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
+                isError = true;
+                yield return error;
+            }
+
+            if (container is IPropertyContainer pContainer)
+            {
+                pContainer.PropertyAnnotations.Clear();
+
+                foreach (
+                    var error in ResolveAnnotationReferences(
+                        pContainer,
+                        pContainer.PropertyAnnotationReferences,
+                        pContainer.PropertyAnnotations,
+                        isProperty: true
+                    )
+                )
                 {
                     isError = true;
-                    yield return new ModelError(
-                        ErrorType.TMD2001,
-                        container,
-                        $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.",
-                        annotationRef
-                    );
-                }
-                else
-                {
-                    if (annotationsToResolve.Any(d => d.Annotation == annotation))
-                    {
-                        isError = true;
-                        yield return new ModelError(
-                            ErrorType.TMD2002,
-                            container,
-                            $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.",
-                            annotationRef
-                        );
-                    }
-                    else
-                    {
-                        if (
-                            container is IPropertyContainer propertyContainer
-                            && propertyContainer.AllDecorators.Any(d =>
-                                d.Annotations.Any(a => a.Annotation == annotation)
-                            )
-                        )
-                        {
-                            isError = true;
-                            yield return new ModelError(
-                                ErrorType.TMD2003,
-                                propertyContainer,
-                                $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations d'un des décorateurs de l'objet '{propertyContainer}'.",
-                                annotationRef
-                            );
-                        }
-
-                        if (
-                            container is IProperty property
-                            && property is not AliasProperty
-                            && (property.Domain?.Annotations.Any(d => d.Annotation == annotation) ?? false)
-                        )
-                        {
-                            isError = true;
-                            yield return new ModelError(
-                                ErrorType.TMD2003,
-                                property,
-                                $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.",
-                                annotationRef
-                            );
-                        }
-
-                        if (
-                            annotation.Target.Any()
-                            && (
-                                container is Class && !annotation.Target.Contains(Target.Class)
-                                || container is Endpoint && !annotation.Target.Contains(Target.Endpoint)
-                                || container is Decorator { Target: Target dt } && !annotation.Target.Contains(dt)
-                                || container is Domain or IProperty
-                                    && !annotation.Target.Contains(Target.Property)
-                                    && !annotation.Target.Contains(Target.AssociationProperty)
-                                    && !annotation.Target.Contains(Target.CompositionProperty)
-                                    && !annotation.Target.Contains(Target.RegularProperty)
-                            )
-                        )
-                        {
-                            isError = true;
-                            yield return new ModelError(
-                                ErrorType.TMD2004,
-                                container,
-                                $"Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.",
-                                annotationRef
-                            );
-                        }
-
-                        foreach (var error in CheckAnnotationParameters(container, annotationRef, annotation))
-                        {
-                            yield return error;
-                        }
-
-                        if (!isError)
-                        {
-                            annotationsToResolve.Add(
-                                new(
-                                    annotation,
-                                    annotationRef.ParameterReferences.ToDictionary(
-                                        pr => pr.Key.ReferenceName,
-                                        pr => pr.Value.Value
-                                    )
-                                )
-                            );
-                        }
-                    }
+                    yield return error;
                 }
             }
 
@@ -298,6 +213,88 @@ public class AnnotationResolver(
                 $"Le paramètre '{missingParameter.Name}' de l'annotation '{annotation.Name}' est obligatoire.",
                 annotationRef
             );
+        }
+    }
+
+    private IEnumerable<ModelError> ResolveAnnotationReferences(
+        IAnnotationContainer container,
+        IEnumerable<AnnotationReference> annotationReferences,
+        IList<AnnotationInstance> annotationsToResolve,
+        bool isProperty = false
+    )
+    {
+        var isError = false;
+
+        foreach (var annotationRef in annotationReferences)
+        {
+            if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
+            {
+                isError = true;
+                yield return new ModelError(
+                    ErrorType.TMD2001,
+                    container,
+                    $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                    annotationRef
+                );
+            }
+            else
+            {
+                if (annotationsToResolve.Any(d => d.Annotation == annotation))
+                {
+                    isError = true;
+                    yield return new ModelError(
+                        ErrorType.TMD2002,
+                        container,
+                        $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.",
+                        annotationRef
+                    );
+                }
+                else
+                {
+                    if (
+                        annotation.Target.Any()
+                        && (
+                            container is Class && !annotation.Target.Contains(Target.Class) && !isProperty
+                            || container is Endpoint && !annotation.Target.Contains(Target.Endpoint) && !isProperty
+                            || container is Decorator { Target: Target dt }
+                                && !annotation.Target.Contains(dt)
+                                && !isProperty
+                            || (container is Domain or IProperty || isProperty)
+                                && !annotation.Target.Contains(Target.Property)
+                                && !annotation.Target.Contains(Target.AssociationProperty)
+                                && !annotation.Target.Contains(Target.CompositionProperty)
+                                && !annotation.Target.Contains(Target.RegularProperty)
+                        )
+                    )
+                    {
+                        isError = true;
+                        yield return new ModelError(
+                            ErrorType.TMD2004,
+                            container,
+                            $"Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.",
+                            annotationRef
+                        );
+                    }
+
+                    foreach (var error in CheckAnnotationParameters(container, annotationRef, annotation))
+                    {
+                        yield return error;
+                    }
+
+                    if (!isError)
+                    {
+                        annotationsToResolve.Add(
+                            new(
+                                annotation,
+                                annotationRef.ParameterReferences.ToDictionary(
+                                    pr => pr.Key.ReferenceName,
+                                    pr => pr.Value.Value
+                                )
+                            )
+                        );
+                    }
+                }
+            }
         }
     }
 }
