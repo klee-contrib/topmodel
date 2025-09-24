@@ -261,7 +261,7 @@ public class CompletionHandler(
             end++;
         }
 
-        return (Math.Min(start + 1, lineNumber), Math.Max(end - 1, lineNumber));
+        return (Math.Min(start + 1, lineNumber), Math.Max(end, lineNumber));
     }
 
     private static (string Key, int Line, int End, bool IsKey) GetParentKey(string[] text, int line, int position)
