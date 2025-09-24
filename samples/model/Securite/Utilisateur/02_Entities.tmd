@@ -58,6 +58,7 @@ class:
     - association: Profil
       label: Profil
       required: true
+      hasReverse: true
       comment: Profil de l'utilisateur
 
     - association: TypeUtilisateur

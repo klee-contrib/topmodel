@@ -18,4 +18,6 @@ public class ReverseAssociationProperty : AssociationProperty
 
     public override string Comment =>
         $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
+
+    public override bool HasReverse => true;
 }
