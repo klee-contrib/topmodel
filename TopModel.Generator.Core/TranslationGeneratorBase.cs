@@ -84,7 +84,7 @@ public abstract class TranslationGeneratorBase<T>(
                         (
                             resources.Key.MainFilePath,
                             resources.Key.ModuleFilePath,
-                            properties.First().Parent.Namespace.RootModule
+                            Config.GetRootModule(properties.First().Parent.Namespace)
                         )
                     );
                 }
@@ -126,7 +126,7 @@ public abstract class TranslationGeneratorBase<T>(
                         (
                             resources.Key.MainFilePath,
                             resources.Key.ModuleFilePath,
-                            $"{properties.First().Parent.Namespace.RootModule}Comments"
+                            $"{Config.GetRootModule(properties.First().Parent.Namespace)}Comments"
                         )
                     );
                 }

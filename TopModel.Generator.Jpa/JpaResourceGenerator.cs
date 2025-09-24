@@ -28,7 +28,7 @@ public class JpaResourceGenerator(
             return Path.Combine(
                 Config.OutputDirectory,
                 Config.ResolveVariables(Config.ResourcesPath!, tag: tag, lang: lang).ToLower(),
-                $"{p.Parent.Namespace.RootModule.ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties"
+                $"{Config.GetRootModule(p.Parent.Namespace).ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties"
             );
         }
 

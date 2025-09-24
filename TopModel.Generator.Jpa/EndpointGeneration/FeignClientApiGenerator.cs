@@ -31,7 +31,7 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
             "FeignClient",
             imports: "org.springframework.cloud.openfeign.FeignClient"
         )
-            .AddAttribute("name", $@"""{file.Namespace.RootModule}""")
+            .AddAttribute("name", $@"""{Config.GetRootModule(file.Namespace)}""")
             .AddAttribute("contextId", $@"""{GetClassName(fileName)}""");
 
         if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))

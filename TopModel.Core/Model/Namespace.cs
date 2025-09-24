@@ -1,4 +1,6 @@
-﻿using TopModel.Utils;
+﻿#pragma warning disable S1133
+
+using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
@@ -17,5 +19,6 @@ public struct Namespace
     public string ModulePathKebab =>
         string.Join(Path.DirectorySeparatorChar, Module.Split('.').Select(m => m.ToKebabCase()));
 
+    [Obsolete("Utiliser Config.GetRootModule(ns) à la place")]
     public string RootModule => Module.Split('.')[0];
 }

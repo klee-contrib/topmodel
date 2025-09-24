@@ -50,7 +50,7 @@ public class JavascriptResourceGenerator(
         using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
-        var module = properties.First().Parent.Namespace.RootModule;
+        var module = Config.GetRootModule(properties.First().Parent.Namespace);
 
         if (Config.ResourceMode != ResourceMode.JS)
         {
@@ -119,7 +119,7 @@ public class JavascriptResourceGenerator(
         using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
-        var module = properties.First().Parent.Namespace.RootModule;
+        var module = Config.GetRootModule(properties.First().Parent.Namespace);
 
         if (Config.ResourceMode != ResourceMode.JS)
         {

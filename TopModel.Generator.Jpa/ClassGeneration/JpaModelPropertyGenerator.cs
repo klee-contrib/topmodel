@@ -682,7 +682,8 @@ public class JpaModelPropertyGenerator(
         else
         {
             var pk = property.Class.PrimaryKey.Single().SqlName;
-            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
+            var hasReverse =
+                Config.GetRootModule(property.Class.Namespace) == Config.GetRootModule(property.Association.Namespace);
 
             association
                 .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")

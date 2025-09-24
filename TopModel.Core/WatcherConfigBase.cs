@@ -47,6 +47,11 @@ public class WatcherConfigBase
         new Dictionary<string, IDictionary<string, string>>();
 
     /// <summary>
+    /// Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).
+    /// </summary>
+    public string RootModule { get; set; } = "{module:head}";
+
+    /// <summary>
     /// Noms de toutes les variables par tag du module.
     /// </summary>
     public IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
@@ -178,7 +183,7 @@ public class WatcherConfigBase
                     {
                         var supportedProperties = varName switch
                         {
-                            "module" => PropertiesWithModuleVariableSupport,
+                            "module" => [.. PropertiesWithModuleVariableSupport, nameof(RootModule)],
                             "lang" => PropertiesWithLangVariableSupport,
                             "fileName" => PropertiesWithFileNameVariableSupport,
                             _ => null!,

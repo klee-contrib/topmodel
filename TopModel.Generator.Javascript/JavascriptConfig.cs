@@ -115,8 +115,8 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         return Path.Combine(
                 OutputDirectory,
-                ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
-                $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
+                ResolveVariables(ResourceRootPath!, tag, GetRootModule(ns).ToKebabCase(), lang),
+                $"{GetRootModule(ns).ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
             )
             .Replace('\\', '/');
     }
@@ -262,8 +262,8 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         return Path.Combine(
                 OutputDirectory,
-                ResolveVariables(ResourceRootPath!, tag, ns.RootModule.ToKebabCase(), lang),
-                $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
+                ResolveVariables(ResourceRootPath!, tag, GetRootModule(ns).ToKebabCase(), lang),
+                $"{GetRootModule(ns).ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}"
             )
             .Replace('\\', '/');
     }
