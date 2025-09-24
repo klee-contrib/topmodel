@@ -343,7 +343,12 @@ public enum ErrorType
     /// <summary>
     /// Le domaine '{prop.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'.
     /// </summary>
-    TMD9004
+    TMD9004,
+
+    /// <summary>
+    /// Il sera impossible de générer une association réciproque pour cette association.
+    /// </summary>
+    TMD9005,
 
     #endregion
 }

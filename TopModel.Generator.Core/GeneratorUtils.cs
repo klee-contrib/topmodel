@@ -52,17 +52,10 @@ public static class GeneratorUtils
             return [];
         }
 
-#pragma warning disable CS0618
         return availableClasses
             .SelectMany(c => c.Properties)
             .OfType<AssociationProperty>()
-            .Where(p =>
-                p.Type != AssociationType.OneToOne
-                && p.Class.IsPersistent
-                && (p.Association.PrimaryKey.Count() == 1 || p.Type == AssociationType.ManyToOne)
-                && p.Association == classe
-                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule)
-            )
+            .Where(p => p.HasReverse && p.Association == classe)
             .Select(p => new ReverseAssociationProperty { Class = classe, ReverseProperty = p });
     }
 }

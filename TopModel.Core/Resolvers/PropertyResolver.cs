@@ -442,6 +442,17 @@ internal class PropertyResolver(
                     }
 
                     ap.Association = association;
+
+                    if (ap.HasReverse && (ap.Type == AssociationType.OneToOne || !(ap.Class?.IsPersistent ?? false)))
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD9005,
+                            ap,
+                            $"Il sera impossible de générer une association réciproque pour cette association.",
+                            ap.Reference
+                        );
+                    }
+
                     break;
 
                 case CompositionProperty cp:

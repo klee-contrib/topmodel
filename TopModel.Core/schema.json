@@ -181,6 +181,10 @@
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
+            "hasReverse": {
+              "type": "boolean",
+              "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement)."
+            },
             "comment": {
               "type": "string",
               "description": "Description de la propriété."
