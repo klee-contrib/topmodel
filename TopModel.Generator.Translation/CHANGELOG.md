@@ -1,3 +1,7 @@
+## 3.1.0
+
+Support pour `rootModule` dans la config.
+
 ## 3.0.0
 
 Compatibilité avec TopModel 3

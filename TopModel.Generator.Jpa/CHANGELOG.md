@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.1.0
+
+Support pour `rootModule` dans la config.
+
 ## 3.0.1
 
 - [`ad3e477`](https://github.com/klee-contrib/topmodel/commit/c7707e66eaefc0c016c403beab6030df8b1e4d1c) - [JPA] Fix mauvais imports annotations

@@ -8,6 +8,18 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.1.0
+
+- [#496](https://github.com/klee-contrib/topmodel/pull/496) - Annotations de propriétés sur classes/endpoints/décorateurs
+
+  Vous pouvez désormais utiliser `propertyAnnotations` sur une classe, un endpoint ou un décorateur pour appliquer des annotations sur toutes les propriétés d'un objet (au lieu de les poser manuellement sur chaque propriété). Si la même annotation est posée à plusieurs endroits (domaine, classe ou propriété), elle ne sera pas en doublon.
+
+- [#497](https://github.com/klee-contrib/topmodel/pull/497) - Configuration du `rootModule` par config
+
+  Les générateurs qui utilisent `rootModule` peuvent désormais surcharger la valeur par défaut (`{module:head}`).
+
+  Par exemple, les traductions des modules `Securite.Utilisateur` et `Securite.Profil` étaient regroupées dans un fichier de traduction `securite.properties` en Java (qui correspond à `{module:head}`, non paramétrable). Désormais, vous pouvez personnaliser ce regroupement en surchargeant la valeur de `rootModule`.
+
 ## 3.0.5
 
 - [`c7707e6`](https://github.com/klee-contrib/topmodel/commit/c7707e66eaefc0c016c403beab6030df8b1e4d1c) - [Core] Fix imports d'annotations ajoutés à tort avec les annotations de domaines/décorators
