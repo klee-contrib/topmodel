@@ -39,28 +39,10 @@ public static class GeneratorUtils
             return classe.Properties;
         }
 
-        return classe
-            .Properties.Concat(
-                classe
-                    .GetReverseProperties(availableClasses)
-                    .Select(p => new ReverseAssociationProperty()
-                    {
-                        Association = p.Class,
-                        Type =
-                            p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-                            : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-                            : p.Type == AssociationType.OneToOne ? AssociationType.OneToOne
-                            : AssociationType.ManyToMany,
-                        Comment = $"Association réciproque de {p.Class.NamePascal}.{p.Name}",
-                        Class = classe,
-                        ReverseProperty = p,
-                        Role = p.Role,
-                    })
-            )
-            .ToList();
+        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses)).ToList();
     }
 
-    public static IList<AssociationProperty> GetReverseProperties(
+    private static IEnumerable<ReverseAssociationProperty> GetReverseProperties(
         this Class classe,
         IEnumerable<Class> availableClasses
     )
@@ -75,13 +57,12 @@ public static class GeneratorUtils
             .SelectMany(c => c.Properties)
             .OfType<AssociationProperty>()
             .Where(p =>
-                p is not ReverseAssociationProperty
-                && p.Type != AssociationType.OneToOne
+                p.Type != AssociationType.OneToOne
                 && p.Class.IsPersistent
                 && (p.Association.PrimaryKey.Count() == 1 || p.Type == AssociationType.ManyToOne)
                 && p.Association == classe
                 && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule)
             )
-            .ToList();
+            .Select(p => new ReverseAssociationProperty { Class = classe, ReverseProperty = p });
     }
 }

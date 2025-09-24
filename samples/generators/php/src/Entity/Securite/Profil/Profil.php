@@ -51,11 +51,12 @@ class Profil
    * @var Collection<Utilisateur>
    */
   #[OneToMany(mappedBy: 'profil', targetEntity: Utilisateur::class)]
-  private Utilisateur $utilisateurs;
+  private Collection $utilisateurs;
 
   public function __construct()
   {
     $this->droits = new ArrayCollection();
+    $this->utilisateurs = new ArrayCollection();
   }
 
   public function getId(): int
@@ -89,7 +90,7 @@ class Profil
   /**
    * @return Collection<Utilisateur>|null
    */
-  public function getUtilisateurs(): Utilisateur|null
+  public function getUtilisateurs(): Collection|null
   {
     return $this->utilisateurs;
   }
@@ -135,7 +136,7 @@ class Profil
   /**
    * @param Collection<Utilisateur>|null $utilisateurs
    */
-  public function setUtilisateurs(Utilisateur|null $utilisateurs): self
+  public function setUtilisateurs(Collection|null $utilisateurs): self
   {
     $this->utilisateurs = $utilisateurs;
 

@@ -79,7 +79,7 @@ public class Profil {
 	 * Association réciproque de Utilisateur.ProfilId.
 	 */
 	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "profil")
-	private Utilisateur utilisateurs;
+	private List<Utilisateur> utilisateurs;
 
 	/**
 	 * Getter for id.
@@ -134,7 +134,10 @@ public class Profil {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
 	 */
-	public Utilisateur getUtilisateurs() {
+	public List<Utilisateur> getUtilisateurs() {
+		if (this.utilisateurs == null) {
+			this.utilisateurs = new ArrayList<>();
+		}
 		return this.utilisateurs;
 	}
 
@@ -182,7 +185,7 @@ public class Profil {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
 	 * @param utilisateurs value to set.
 	 */
-	public void setUtilisateurs(Utilisateur utilisateurs) {
+	public void setUtilisateurs(List<Utilisateur> utilisateurs) {
 		this.utilisateurs = utilisateurs;
 	}
 
@@ -205,7 +208,7 @@ public class Profil {
         DROITS(List.class), //
         DATE_CREATION(LocalDateTime.class), //
         DATE_MODIFICATION(LocalDateTime.class), //
-        UTILISATEURS(Utilisateur.class);
+        UTILISATEURS(List.class);
 
 		private final Class<?> type;
 

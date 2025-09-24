@@ -14,7 +14,7 @@ public class AssociationProperty : IProperty
     public string? ClassName { get; set; }
 
 #nullable disable
-    public Class Association { get; set; }
+    public virtual Class Association { get; set; }
 
     public IProperty Property
     {
@@ -44,7 +44,7 @@ public class AssociationProperty : IProperty
     public string? Label { get; set; }
 
 #nullable disable
-    public string Comment { get; set; }
+    public virtual string Comment { get; set; }
 
     public Class Class { get; set; }
 
@@ -56,9 +56,9 @@ public class AssociationProperty : IProperty
 
 #nullable enable
 
-    public string? Role { get; set; }
+    public virtual string? Role { get; set; }
 
-    public AssociationType Type { get; set; }
+    public virtual AssociationType Type { get; set; }
 
     public string As { get; set; } = "list";
 
