@@ -185,6 +185,10 @@
               "type": "boolean",
               "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement)."
             },
+            "reverseClassName": {
+              "type": "string",
+              "description": "Surcharge du nom de cette classe dans le nom de la propriété d'association réciproque sur la classe cible."
+            },
             "comment": {
               "type": "string",
               "description": "Description de la propriété."

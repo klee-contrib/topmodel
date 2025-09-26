@@ -142,6 +142,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                         case "hasReverse":
                             ap.HasReverse = value!.Value == "true";
                             break;
+                        case "reverseClassName":
+                            ap.ReverseClassName = value!.Value;
+                            break;
                         case "comment":
                             ap.Comment = value!.Value;
                             break;

@@ -11,7 +11,7 @@ public class AssociationProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
-    public string? ClassName { get; set; }
+    public virtual string? ClassName { get; set; }
 
 #nullable disable
     public virtual Class Association { get; set; }
@@ -69,6 +69,8 @@ public class AssociationProperty : IProperty
     public string? DefaultValue { get; set; }
 
     public virtual bool HasReverse { get; set; }
+
+    public string? ReverseClassName { get; set; }
 
     public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
