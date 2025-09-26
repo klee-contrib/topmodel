@@ -60,7 +60,7 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
         }
     }
 
-    protected void WriteComments(IFileWriter writer, Class classe, string tableName, IList<IProperty> properties)
+    protected void WriteComments(IFileWriter writer, Class classe, string tableName, IEnumerable<IProperty> properties)
     {
         writer.WriteLine();
         writer.WriteLine("/**");

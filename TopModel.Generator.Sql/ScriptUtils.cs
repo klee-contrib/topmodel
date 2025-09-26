@@ -12,51 +12,30 @@ public static class ScriptUtils
 {
     public const string InsertKeyName = "InsertKey";
 
-    public static IList<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
+    public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
-        var properties = classe
-            .Properties.Where(p =>
-                p is not AssociationProperty ap
-                || ap.Type == AssociationType.ManyToOne
-                || ap.Type == AssociationType.OneToOne
-            )
-            .ToList();
+        foreach (
+            var prop in classe
+                .GetProperties(availableClasses)
+                .Where(p =>
+                    p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                )
+        )
+        {
+            yield return prop;
+        }
 
         if (classe.Extends != null)
         {
-            properties.Add(
-                new AssociationProperty
-                {
-                    Association = classe.Extends,
-                    Class = classe,
-                    Comment = "Association vers la clé primaire de la classe parente",
-                    Required = true,
-                    PrimaryKey = !classe.PrimaryKey.Any(),
-                }
-            );
-        }
-
-        var oneToManyProperties = availableClasses
-            .SelectMany(cl => cl.Properties)
-            .Where(p => p is AssociationProperty ap && ap.Type == AssociationType.OneToMany && ap.Association == classe)
-            .Cast<AssociationProperty>();
-        foreach (var ap in oneToManyProperties)
-        {
-            var asp = new AssociationProperty()
+            yield return new AssociationProperty
             {
-                Association = ap.Class,
-                Class = ap.Association,
-                Comment = ap.Comment,
-                Type = AssociationType.ManyToOne,
-                Required = ap.Required,
-                Role = ap.Role,
-                DefaultValue = ap.DefaultValue,
-                Label = ap.Label,
+                Association = classe.Extends,
+                Class = classe,
+                Comment = "Association vers la clé primaire de la classe parente",
+                Required = true,
+                PrimaryKey = !classe.PrimaryKey.Any(),
             };
-            properties.Add(asp);
         }
-
-        return properties;
     }
 
     public static IEnumerable<Class> GetExtraClasses(this ModelFile file)

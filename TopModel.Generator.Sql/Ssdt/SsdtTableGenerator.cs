@@ -99,7 +99,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="tableName">Nom de la table.</param>
     /// <param name="properties">Champs.</param>
-    private void GenerateIndexForeignKey(IFileWriter writer, string tableName, IList<IProperty> properties)
+    private void GenerateIndexForeignKey(IFileWriter writer, string tableName, IEnumerable<IProperty> properties)
     {
         var fkList = properties.OfType<AssociationProperty>().ToList();
         foreach (var property in fkList)
@@ -266,53 +266,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private List<IProperty> WriteInsideInstructions(IFileWriter writer, Class table)
+    private IEnumerable<IProperty> WriteInsideInstructions(IFileWriter writer, Class table)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
         var sb = new StringBuilder();
 
         // Colonnes
-        var properties = table
-            .Properties.Where(p =>
-                p is not AssociationProperty ap
-                || ap.Type == AssociationType.ManyToOne
-                || ap.Type == AssociationType.OneToOne
-            )
-            .ToList();
-
-        if (table.Extends != null)
-        {
-            properties.Add(
-                new AssociationProperty
-                {
-                    Association = table.Extends,
-                    Class = table,
-                    Required = true,
-                    PrimaryKey = !table.PrimaryKey.Any(),
-                }
-            );
-        }
-
-        var oneToManyProperties = Classes
-            .SelectMany(cl => cl.Properties)
-            .OfType<AssociationProperty>()
-            .Where(ap => ap.Type == AssociationType.OneToMany && ap.Association == table);
-        foreach (var ap in oneToManyProperties)
-        {
-            var asp = new AssociationProperty()
-            {
-                Association = ap.Class,
-                Class = ap.Association,
-                Comment = ap.Comment,
-                Type = AssociationType.ManyToOne,
-                Required = ap.Required,
-                Role = ap.Role,
-                DefaultValue = ap.DefaultValue,
-                Label = ap.Label,
-            };
-            properties.Add(asp);
-        }
+        var properties = table.GetAllProperties(Classes);
 
         foreach (var property in properties)
         {
@@ -354,7 +315,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePkLine(StringBuilder sb, Class classe, List<IProperty> properties)
+    private void WritePkLine(StringBuilder sb, Class classe, IEnumerable<IProperty> properties)
     {
         var pkCount = 0;
 

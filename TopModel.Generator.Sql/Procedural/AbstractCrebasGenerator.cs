@@ -76,7 +76,7 @@ public abstract class AbstractCrebasGenerator(
         }
     }
 
-    protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IList<IProperty> properties) { }
+    protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties) { }
 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires.
@@ -119,7 +119,7 @@ public abstract class AbstractCrebasGenerator(
     /// </summary>
     /// <param name="writer">Flux crebas.</param>
     /// <param name="properties">Liste des propriétés persistantes.</param>
-    private void WriteCheckConstraints(IFileWriter writer, IList<IProperty> properties)
+    private void WriteCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties)
     {
         WriteBooleanCheckConstraints(writer, properties);
     }
@@ -138,7 +138,7 @@ public abstract class AbstractCrebasGenerator(
     /// </summary>
     /// <param name="writer">Writer.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePrimaryKeyConstraint(IFileWriter writer, Class classe, IList<IProperty> properties)
+    private void WritePrimaryKeyConstraint(IFileWriter writer, Class classe, IEnumerable<IProperty> properties)
     {
         if (!properties.Any(p => p.PrimaryKey))
         {
