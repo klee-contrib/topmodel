@@ -62,7 +62,7 @@ public class AssociationProperty : IProperty
 
     public string As { get; set; } = "list";
 
-    public bool Required { get; set; }
+    public virtual bool Required { get; set; }
 
     public bool Readonly { get; set; }
 

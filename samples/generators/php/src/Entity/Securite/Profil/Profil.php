@@ -88,9 +88,9 @@ class Profil
   }
 
   /**
-   * @return Collection<Utilisateur>|null
+   * @return Collection<Utilisateur>
    */
-  public function getUtilisateurs(): Collection|null
+  public function getUtilisateurs(): Collection
   {
     return $this->utilisateurs;
   }
@@ -134,7 +134,7 @@ class Profil
   }
 
   /**
-   * @param Collection<Utilisateur>|null $utilisateurs
+   * @param Collection<Utilisateur> $utilisateurs
    */
   public function setUtilisateurs(Collection|null $utilisateurs): self
   {

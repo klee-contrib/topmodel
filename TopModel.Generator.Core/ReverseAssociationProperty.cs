@@ -14,6 +14,8 @@ public class ReverseAssociationProperty : AssociationProperty
         : ReverseProperty.Type == AssociationType.OneToOne ? AssociationType.OneToOne
         : AssociationType.ManyToMany;
 
+    public override bool Required => ReverseProperty.Required;
+
     public override string? ClassName => ReverseProperty.ReverseClassName;
 
     public override string? Role => ReverseProperty.Role;
