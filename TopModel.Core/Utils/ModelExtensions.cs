@@ -201,6 +201,13 @@ public static class ModelExtensions
                 ?? templateParameter.Decorator?.ModelFile
                 ?? templateParameter.Annotation!.ModelFile,
             Variable => new ModelFile { Name = string.Empty },
+            ReverseAssociationDefinition { Property.Decorator: Decorator decorator } => decorator.ModelFile,
+            ReverseAssociationDefinition { Property.Class: Class classe } => classe.ModelFile,
+            ReverseAssociationDefinition { Property.Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+            ReverseAssociationDefinition { Property.PropertyMapping: PropertyMapping param } => param
+                .FromMapper
+                .Class
+                .ModelFile,
             _ => throw new InvalidOperationException("Type d'objet non supporté."),
         };
     }
@@ -230,6 +237,7 @@ public static class ModelExtensions
             Converter c => c.Location,
             TemplateParameter t => t.Name.Location,
             Variable { TemplateParameter: TemplateParameter t } => t.Name.Location,
+            ReverseAssociationDefinition rad => rad.Property.Location,
             _ => null,
         };
     }

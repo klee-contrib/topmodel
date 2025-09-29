@@ -140,10 +140,58 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             ap.DefaultValue = value!.Value;
                             break;
                         case "withReverse":
-                            ap.WithReverse = value!.Value == "true";
-                            break;
-                        case "reverseClassName":
-                            ap.ReverseClassName = value!.Value;
+                            if (value?.Value != "false")
+                            {
+                                ap.WithReverse = new() { Property = ap };
+
+#pragma warning disable S3247
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        _ = parser.TryConsume<Scalar>(out var rValue);
+
+                                        switch (prop.Value)
+                                        {
+                                            case "className":
+                                                ap.WithReverse.ClassName = rValue!.Value;
+                                                break;
+                                            case "label":
+                                                ap.WithReverse.Label = rValue!.Value;
+                                                break;
+                                            case "comment":
+                                                ap.WithReverse.Comment = rValue!.Value;
+                                                break;
+                                            case "annotations":
+                                                parser.ConsumeSequence(() =>
+                                                {
+                                                    if (parser.Current is MappingStart)
+                                                    {
+                                                        parser.ConsumeMapping(prop =>
+                                                        {
+                                                            var annotation = new AnnotationReference(prop)
+                                                            {
+                                                                ParameterReferences = fileChecker.Deserialize<
+                                                                    Dictionary<ParameterReference, StringWithVariables>
+                                                                >(parser),
+                                                            };
+
+                                                            ap.WithReverse.AnnotationReferences.Add(annotation);
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        ap.WithReverse.AnnotationReferences.Add(
+                                                            new AnnotationReference(parser.Consume<Scalar>())
+                                                        );
+                                                    }
+                                                });
+                                                break;
+                                        }
+                                    });
+                                }
+#pragma warning restore S3247
+                            }
                             break;
                         case "comment":
                             ap.Comment = value!.Value;

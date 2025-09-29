@@ -41,7 +41,7 @@ public class AssociationProperty : IProperty
 
 #nullable enable
 
-    public string? Label { get; set; }
+    public virtual string? Label { get; set; }
 
 #nullable disable
     public virtual string Comment { get; set; }
@@ -60,7 +60,7 @@ public class AssociationProperty : IProperty
 
     public virtual AssociationType Type { get; set; }
 
-    public string As { get; set; } = "list";
+    public virtual string As { get; set; } = "list";
 
     public virtual bool Required { get; set; }
 
@@ -68,13 +68,11 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public virtual bool WithReverse { get; set; }
+    public virtual ReverseAssociationDefinition? WithReverse { get; set; }
 
-    public string? ReverseClassName { get; set; }
+    public virtual IList<AnnotationInstance> Annotations { get; private set; } = [];
 
-    public IList<AnnotationInstance> Annotations { get; private set; } = [];
-
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public virtual IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
     public Dictionary<string, string> CustomProperties { get; private set; } = [];
 

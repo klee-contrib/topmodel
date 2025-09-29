@@ -686,7 +686,8 @@ public class JpaModelPropertyGenerator(
             association
                 .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")
                 .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
-            if (property.WithReverse)
+
+            if (property.WithReverse != null)
             {
                 association.AddAttribute("mappedBy", @$"""{property.Class.NameCamel}{property.Role ?? string.Empty}""");
             }

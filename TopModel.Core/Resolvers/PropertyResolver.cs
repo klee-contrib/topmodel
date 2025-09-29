@@ -338,7 +338,22 @@ internal class PropertyResolver(
                 yield return new ModelError(
                     ErrorType.TMD9003,
                     ap,
-                    $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
+                    $@"Cette association ne peut pas avoir le type {ap.Type} car le domaine {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
+                    ap.Reference
+                );
+                continue;
+            }
+
+            if (
+                ap.WithReverse != null
+                && !ap.Type.IsToMany()
+                && !(ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
+            )
+            {
+                yield return new ModelError(
+                    ErrorType.TMD9003,
+                    ap,
+                    $@"Cette association ne peut pas définir d'association réciproque car le domaine {ap.Class.PrimaryKey.FirstOrDefault()?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
                     ap.Reference
                 );
                 continue;
@@ -416,7 +431,7 @@ internal class PropertyResolver(
                             );
                             break;
                         }
-                        else if (ap.WithReverse)
+                        else if (ap.WithReverse != null)
                         {
                             yield return new ModelError(
                                 ErrorType.TMD9006,

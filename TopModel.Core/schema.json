@@ -182,12 +182,38 @@
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
             "withReverse": {
-              "type": "boolean",
-              "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement)."
-            },
-            "reverseClassName": {
-              "type": "string",
-              "description": "Surcharge du nom de cette classe dans le nom de la propriété d'association réciproque sur la classe cible."
+              "oneOf": [
+                {
+                  "type": "boolean",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement)."
+                },
+                {
+                  "type": "object",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement).",
+                  "additionalProperties": false,
+                  "properties": {
+                    "className": {
+                      "type": "string",
+                      "description": "Surcharge du nom de cette classe dans le nom de la propriété d'association réciproque sur la classe cible."
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "Commentaire de la propriété d'association réciproque sur la classe cible."
+                    },
+                    "label": {
+                      "type": "string",
+                      "description": "Libellé de la propriété d'association réciproque sur la classe cible."
+                    },
+                    "annotations": {
+                      "type": "array",
+                      "description": "Annotations de la propriété d'association réciproque sur la classe cible.",
+                      "items": {
+                        "$ref": "#/definitions/annotation"
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "comment": {
               "type": "string",

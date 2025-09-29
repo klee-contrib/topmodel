@@ -54,7 +54,17 @@ public class ModelFile
         ];
 
     public IEnumerable<IAnnotationContainer> AnnotationContainers =>
-        [.. Domains, .. Decorators, .. Classes, .. Endpoints, .. Properties];
+        [
+            .. Domains,
+            .. Decorators,
+            .. Classes,
+            .. Endpoints,
+            .. Properties,
+            .. Properties
+                .OfType<AssociationProperty>()
+                .Where(ap => ap.WithReverse != null)
+                .Select(ap => ap.WithReverse),
+        ];
 
     public IEnumerable<IPropertyContainer> PropertyContainers => [.. Decorators, .. Classes, .. Endpoints];
 
