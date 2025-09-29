@@ -15,11 +15,9 @@ public static class ScriptUtils
     public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
         foreach (
-            var prop in classe
-                .GetProperties(availableClasses)
-                .Where(p =>
-                    p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-                )
+            var prop in classe.Properties.Where(p =>
+                p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+            )
         )
         {
             yield return prop;

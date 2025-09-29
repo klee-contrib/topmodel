@@ -5,6 +5,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
@@ -35,7 +36,7 @@ public class CodeActionHandler(
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
-            if (modelFile.Uses.Except(modelFile.UselessImports).Any())
+            if (modelFile.Uses.Except(modelStore.GetUselessImports(modelFile)).Any())
             {
                 codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
             }
@@ -71,40 +72,6 @@ public class CodeActionHandler(
         }
 
         return CommandOrCodeActionContainer.From(codeActions);
-    }
-
-    protected static CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
-    {
-        var start = modelFile.Uses[0].ToRange()!.Start;
-        var end = modelFile.Uses[^1].ToRange()!.End;
-        var uselessImports = modelFile.UselessImports;
-        return new CodeAction()
-        {
-            Title = "Trier les Uses",
-            Kind = CodeActionKind.SourceOrganizeImports,
-            IsPreferred = true,
-            Edit = new WorkspaceEdit
-            {
-                Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
-                {
-                    [request.TextDocument.Uri] =
-                    [
-                        new()
-                        {
-                            NewText = string.Join(
-                                "\n  - ",
-                                modelFile
-                                    .Uses.Except(uselessImports)
-                                    .DistinctBy(u => u.ReferenceName)
-                                    .OrderBy(u => u.ReferenceName)
-                                    .Select(u => u.ReferenceName)
-                            ),
-                            Range = new Range(start, end),
-                        },
-                    ],
-                },
-            },
-        };
     }
 
     protected override CodeActionRegistrationOptions CreateRegistrationOptions(
@@ -279,6 +246,39 @@ domain:
             .Select(endpointToImport =>
                 GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex)
             );
+    }
+
+    protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
+    {
+        var start = modelFile.Uses[0].ToRange()!.Start;
+        var end = modelFile.Uses[^1].ToRange()!.End;
+        return new CodeAction()
+        {
+            Title = "Trier les Uses",
+            Kind = CodeActionKind.SourceOrganizeImports,
+            IsPreferred = true,
+            Edit = new WorkspaceEdit
+            {
+                Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                {
+                    [request.TextDocument.Uri] =
+                    [
+                        new()
+                        {
+                            NewText = string.Join(
+                                "\n  - ",
+                                modelFile
+                                    .Uses.Except(modelStore.GetUselessImports(modelFile))
+                                    .DistinctBy(u => u.ReferenceName)
+                                    .OrderBy(u => u.ReferenceName)
+                                    .Select(u => u.ReferenceName)
+                            ),
+                            Range = new Range(start, end),
+                        },
+                    ],
+                },
+            },
+        };
     }
 
     private CommandOrCodeAction GetFileImportAction(

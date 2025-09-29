@@ -236,7 +236,7 @@ public class JpaModelPropertyGenerator(
 
     public virtual void WriteProperties(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(Classes))
+        foreach (var property in classe.Properties)
         {
             WriteProperty(fw, property, tag);
         }
@@ -687,7 +687,7 @@ public class JpaModelPropertyGenerator(
                 .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")
                 .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
 
-            if (property.WithReverse != null)
+            if (property.ReverseProperty != null)
             {
                 association.AddAttribute("mappedBy", @$"""{property.Class.NameCamel}{property.Role ?? string.Empty}""");
             }

@@ -346,14 +346,19 @@ public enum ErrorType
     TMD9004,
 
     /// <summary>
-    /// Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire unique.
+    /// Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.
     /// </summary>
     TMD9005,
 
     /// <summary>
-    /// Il sera impossible de générer une association réciproque pour cette association.
+    /// Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.
     /// </summary>
     TMD9006,
+
+    /// <summary>
+    /// Le fichier de la classe cible doit référencer le fichier courant pour définir une association réciproque.
+    /// </summary>
+    TMD9007,
 
     #endregion
 }

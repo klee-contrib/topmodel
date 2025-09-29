@@ -41,17 +41,17 @@ class Profil
   #[ManyToMany(targetEntity: Droit::class)]
   private Collection $droits;
 
-  #[Column(name: 'PRO_DATE_CREATION')]
-  private Date $dateCreation = now;
-
-  #[Column(name: 'PRO_DATE_MODIFICATION', nullable: true)]
-  private Date|null $dateModification = now;
-
   /**
    * @var Collection<Utilisateur>
    */
   #[OneToMany(mappedBy: 'profil', targetEntity: Utilisateur::class)]
   private Collection $utilisateurs;
+
+  #[Column(name: 'PRO_DATE_CREATION')]
+  private Date $dateCreation = now;
+
+  #[Column(name: 'PRO_DATE_MODIFICATION', nullable: true)]
+  private Date|null $dateModification = now;
 
   public function __construct()
   {
@@ -77,6 +77,14 @@ class Profil
     return $this->droits;
   }
 
+  /**
+   * @return Collection<Utilisateur>
+   */
+  public function getUtilisateurs(): Collection
+  {
+    return $this->utilisateurs;
+  }
+
   public function getDateCreation(): Date
   {
     return $this->dateCreation;
@@ -85,14 +93,6 @@ class Profil
   public function getDateModification(): Date|null
   {
     return $this->dateModification;
-  }
-
-  /**
-   * @return Collection<Utilisateur>
-   */
-  public function getUtilisateurs(): Collection
-  {
-    return $this->utilisateurs;
   }
 
   public function setId(int|null $id): self
@@ -119,6 +119,16 @@ class Profil
     return $this;
   }
 
+  /**
+   * @param Collection<Utilisateur> $utilisateurs
+   */
+  public function setUtilisateurs(Collection|null $utilisateurs): self
+  {
+    $this->utilisateurs = $utilisateurs;
+
+    return $this;
+  }
+
   public function setDateCreation(Date|null $dateCreation): self
   {
     $this->dateCreation = $dateCreation;
@@ -129,16 +139,6 @@ class Profil
   public function setDateModification(Date|null $dateModification): self
   {
     $this->dateModification = $dateModification;
-
-    return $this;
-  }
-
-  /**
-   * @param Collection<Utilisateur> $utilisateurs
-   */
-  public function setUtilisateurs(Collection|null $utilisateurs): self
-  {
-    $this->utilisateurs = $utilisateurs;
 
     return $this;
   }

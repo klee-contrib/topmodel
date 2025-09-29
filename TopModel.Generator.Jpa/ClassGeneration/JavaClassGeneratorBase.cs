@@ -95,30 +95,28 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
 
-        var props = classe
-            .GetProperties(Classes)
-            .Select(prop =>
+        var props = classe.Properties.Select(prop =>
+        {
+            string name;
+            if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
             {
-                string name;
-                if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
-                {
-                    name = ap.NameByClassCamel.ToConstantCase();
-                }
-                else
-                {
-                    name = prop.NameCamel.ToConstantCase();
-                }
+                name = ap.NameByClassCamel.ToConstantCase();
+            }
+            else
+            {
+                name = prop.NameCamel.ToConstantCase();
+            }
 
-                var javaType = Config.GetType(
-                    prop,
-                    useClassForAssociation: classe.IsPersistent
-                        && !Config.UseJdbc
-                        && prop is AssociationProperty asp
-                        && asp.Association.IsPersistent
-                );
-                javaType = javaType.Split("<")[0];
-                return $"        {name}({javaType}.class)";
-            });
+            var javaType = Config.GetType(
+                prop,
+                useClassForAssociation: classe.IsPersistent
+                    && !Config.UseJdbc
+                    && prop is AssociationProperty asp
+                    && asp.Association.IsPersistent
+            );
+            javaType = javaType.Split("<")[0];
+            return $"        {name}({javaType}.class)";
+        });
 
         fw.WriteLine(string.Join(", //\n", props) + ";");
 
@@ -143,7 +141,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         if (!Config.HasAnnotation(classe, "Getter"))
         {
-            foreach (var property in classe.GetProperties(Classes))
+            foreach (var property in classe.Properties)
             {
                 if (!Config.HasAnnotation(property, "Getter"))
                 {
@@ -159,7 +157,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         if (!Config.HasAnnotation(classe, "Setter"))
         {
-            foreach (var property in classe.GetProperties(Classes))
+            foreach (var property in classe.Properties)
             {
                 if (!Config.HasAnnotation(property, "Setter"))
                 {

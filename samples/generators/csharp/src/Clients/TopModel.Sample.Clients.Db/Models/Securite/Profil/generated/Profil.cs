@@ -43,6 +43,14 @@ public partial record Profil
     public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
+    /// Association réciproque de Utilisateur.ProfilId.
+    /// </summary>
+    [Column("uti_id")]
+    [Domain(Domains.IdListe)]
+    [NotMapped]
+    public int[] Utilisateurs { get; set; }
+
+    /// <summary>
     /// Date de création de l'utilisateur.
     /// </summary>
     [Column("pro_date_creation")]

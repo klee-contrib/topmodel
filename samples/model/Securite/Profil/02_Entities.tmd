@@ -5,6 +5,7 @@ tags:
 uses:
   - meta/decorators
   - Securite/Profil/01_References
+  - Securite/Utilisateur/02_Entities
 
 ---
 class:
@@ -40,3 +41,4 @@ class:
           Id: false
           DateCreation: false
           DateModification: false
+          Utilisateurs: false

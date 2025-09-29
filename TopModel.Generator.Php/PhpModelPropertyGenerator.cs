@@ -13,7 +13,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
     public void WriteProperties(PhpWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
     {
         var isFirst = true;
-        foreach (var property in classe.GetProperties(availableClasses))
+        foreach (var property in classe.Properties)
         {
             if (!isFirst)
             {

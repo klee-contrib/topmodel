@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -29,14 +28,14 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
         }
 
         constructor.AddBodyLine($@"this.{classe.EnumKey!.NameCamel} = {classe.EnumKey!.NameCamel};");
-        if (classe.GetProperties(availableClasses).Count > 1)
+        if (classe.Properties.Count > 1)
         {
             constructor.AddBodyLine($@"switch({classe.EnumKey!.NameCamel}) {{");
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
                 constructor.AddBodyLine(1, $@"case {code} :");
-                foreach (var prop in classe.GetProperties(availableClasses).Where(p => p != codeProperty))
+                foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
                     var isString = Config.GetType(prop) == "String";
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";

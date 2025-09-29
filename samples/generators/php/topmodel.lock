@@ -4,7 +4,7 @@
 
 version: 3.1.0
 custom:
-  ../../../TopModel.Generator.Php: 0d69aeee674bd61c00ec3427c9e87609
+  ../../../TopModel.Generator.Php: d1fb6907bd6febc8a0b708333e704941
 generatedFiles:
   - ./src/Entity/Securite/Profil/Droit.php
   - ./src/Entity/Securite/Profil/Profil.php

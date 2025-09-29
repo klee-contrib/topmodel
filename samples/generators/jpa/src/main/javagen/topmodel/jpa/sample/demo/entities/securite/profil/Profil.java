@@ -62,6 +62,12 @@ public class Profil {
 	private List<Droit> droits;
 
 	/**
+	 * Association réciproque de Utilisateur.ProfilId.
+	 */
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "profil")
+	private List<Utilisateur> utilisateurs;
+
+	/**
 	 * Date de création de l'utilisateur.
 	 */
 	@CreatedDate
@@ -74,12 +80,6 @@ public class Profil {
 	@LastModifiedDate
 	@Column(name = "PRO_DATE_MODIFICATION", columnDefinition = "date")
 	private LocalDateTime dateModification = LocalDateTime.now();
-
-	/**
-	 * Association réciproque de Utilisateur.ProfilId.
-	 */
-	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "profil")
-	private List<Utilisateur> utilisateurs;
 
 	/**
 	 * Getter for id.
@@ -112,6 +112,18 @@ public class Profil {
 	}
 
 	/**
+	 * Getter for utilisateurs.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
+	 */
+	public List<Utilisateur> getUtilisateurs() {
+		if (this.utilisateurs == null) {
+			this.utilisateurs = new ArrayList<>();
+		}
+		return this.utilisateurs;
+	}
+
+	/**
 	 * Getter for dateCreation.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateCreation dateCreation}.
@@ -127,18 +139,6 @@ public class Profil {
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
-	}
-
-	/**
-	 * Getter for utilisateurs.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
-	 */
-	public List<Utilisateur> getUtilisateurs() {
-		if (this.utilisateurs == null) {
-			this.utilisateurs = new ArrayList<>();
-		}
-		return this.utilisateurs;
 	}
 
 	/**
@@ -166,6 +166,14 @@ public class Profil {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
+	 * @param utilisateurs value to set.
+	 */
+	public void setUtilisateurs(List<Utilisateur> utilisateurs) {
+		this.utilisateurs = utilisateurs;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateCreation dateCreation}.
 	 * @param dateCreation value to set.
 	 */
@@ -179,14 +187,6 @@ public class Profil {
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
-	 * @param utilisateurs value to set.
-	 */
-	public void setUtilisateurs(List<Utilisateur> utilisateurs) {
-		this.utilisateurs = utilisateurs;
 	}
 
 	/**
@@ -206,9 +206,9 @@ public class Profil {
         ID(Integer.class), //
         LIBELLE(String.class), //
         DROITS(List.class), //
+        UTILISATEURS(List.class), //
         DATE_CREATION(LocalDateTime.class), //
-        DATE_MODIFICATION(LocalDateTime.class), //
-        UTILISATEURS(List.class);
+        DATE_MODIFICATION(LocalDateTime.class);
 
 		private final Class<?> type;
 
