@@ -57,6 +57,22 @@ La propriété qui en découlera sera `ClasseCibleExempleId` (si la `primaryKey`
 
 Une association peut référencer une classe non persistée, dans ce cas il faut identifier la propriété de la classe cible à utiliser via `property` (puisqu'une telle classe ne peut pas avoir de clé primaire par définition).
 
+### Associations réciproques
+
+Via `withReverse`, il est possible de déclarer l'association réciproque sur la classe cible de l'association. Son type sera l'inverse de celle de l'association courante (`ManyToOne` <> `OneToMany`, et `OneToOne` <> `OneToOne` / `ManyToMany` <> `ManyToMany`), et elle sera **ajoutée effectivement comme une propriété d'association sur la classe cible**. En particulier, cela imposera une **référence circulaire** entre les deux classes, et donc les fichiers qui les contiennent. Cette dépendance devra être déclarée explicitement (si elle ne l'est pas déjà par ailleurs, ou si les deux classes ne sont pas déjà dans le même fichier) sur le fichier de la classe cible. Les cycles de dépendances sont traités comme un seul gros fichier par TopModel, donc pour simplifier la résolution et éviter des effets de bord indésirables, il est conseillé de les réduire au minimum possible.
+
+Une association réciproque peut être déclarée via `withReverse: true`, ou par un objet qui peut paramétrer la propriété d'association réciproque :
+
+```yaml
+withReverse:
+  className: # Equivalent de `className` sur l'association.
+  label: # Equivalent de `label` sur l'association.
+  comment: # Equivalent de `comment` sur l'association. Un commentaire est généré par défaut s'il n'y en a pas.
+  annotations: # Annotations a ajouter sur l'association réciproque.
+```
+
+Les associations réciproques étant de vraies propriétés de classe dans le modèle, elles sont disponibles dans les alias et les mappers.
+
 ## Composition
 
 Une composition est une propriété spéciale qui permet de **référencer une autre classe**, à l'inverse de l'association qui ne concerne que la clé primaire. Par conséquent, la composition est le seul type de **propriété non primitif** (ce qui ne prescrit pas à priori son usage dans un objet persisté puisqu'elle pourrait y être stockée en JSON, mais on préfèrera bien souvent utiliser une association à la place). Elle est identifiée par la présence de la propriété `composition` en premier.
