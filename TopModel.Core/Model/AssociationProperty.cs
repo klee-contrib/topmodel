@@ -68,7 +68,7 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public virtual bool HasReverse { get; set; }
+    public virtual bool WithReverse { get; set; }
 
     public string? ReverseClassName { get; set; }
 
@@ -219,7 +219,7 @@ public class AssociationProperty : IProperty
             Role = Role,
             Type = Type,
             Readonly = Readonly,
-            HasReverse = HasReverse,
+            WithReverse = WithReverse,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,

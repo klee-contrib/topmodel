@@ -55,7 +55,7 @@ public static class GeneratorUtils
         return availableClasses
             .SelectMany(c => c.Properties)
             .OfType<AssociationProperty>()
-            .Where(p => p.HasReverse && p.Association == classe)
+            .Where(p => p.WithReverse && p.Association == classe)
             .Select(p => new ReverseAssociationProperty { Class = classe, ReverseProperty = p });
     }
 }

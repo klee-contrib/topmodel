@@ -139,8 +139,8 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                         case "defaultValue":
                             ap.DefaultValue = value!.Value;
                             break;
-                        case "hasReverse":
-                            ap.HasReverse = value!.Value == "true";
+                        case "withReverse":
+                            ap.WithReverse = value!.Value == "true";
                             break;
                         case "reverseClassName":
                             ap.ReverseClassName = value!.Value;

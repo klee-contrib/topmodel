@@ -346,9 +346,14 @@ public enum ErrorType
     TMD9004,
 
     /// <summary>
-    /// Il sera impossible de générer une association réciproque pour cette association.
+    /// Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire unique.
     /// </summary>
     TMD9005,
+
+    /// <summary>
+    /// Il sera impossible de générer une association réciproque pour cette association.
+    /// </summary>
+    TMD9006,
 
     #endregion
 }

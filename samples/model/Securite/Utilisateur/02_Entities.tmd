@@ -58,7 +58,12 @@ class:
     - association: Profil
       label: Profil
       required: true
-      hasReverse: true
+      withReverse:
+        className: lol
+        label: lol
+        comment: lol
+        annotations:
+          - Lol
       comment: Profil de l'utilisateur
 
     - association: TypeUtilisateur

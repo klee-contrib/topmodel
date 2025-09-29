@@ -404,6 +404,30 @@ internal class PropertyResolver(
                     break;
 
                 case AssociationProperty ap:
+                    if ((ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1)
+                    {
+                        if (ap.Type.IsToMany())
+                        {
+                            yield return new ModelError(
+                                ErrorType.TMD9005,
+                                ap,
+                                $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire unique.",
+                                ap.Reference
+                            );
+                            break;
+                        }
+                        else if (ap.WithReverse)
+                        {
+                            yield return new ModelError(
+                                ErrorType.TMD9006,
+                                ap,
+                                $"Il est impossible de définir une association réciproque sur classe sans clé primaire unique.",
+                                ap.Reference
+                            );
+                            break;
+                        }
+                    }
+
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
                         yield return new ModelError(
@@ -442,17 +466,6 @@ internal class PropertyResolver(
                     }
 
                     ap.Association = association;
-
-                    if (ap.HasReverse && (ap.Type == AssociationType.OneToOne || !(ap.Class?.IsPersistent ?? false)))
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD9005,
-                            ap,
-                            $"Il sera impossible de générer une association réciproque pour cette association.",
-                            ap.Reference
-                        );
-                    }
-
                     break;
 
                 case CompositionProperty cp:

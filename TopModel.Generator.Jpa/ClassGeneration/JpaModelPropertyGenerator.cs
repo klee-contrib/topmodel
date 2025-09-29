@@ -682,13 +682,11 @@ public class JpaModelPropertyGenerator(
         else
         {
             var pk = property.Class.PrimaryKey.Single().SqlName;
-            var hasReverse =
-                Config.GetRootModule(property.Class.Namespace) == Config.GetRootModule(property.Association.Namespace);
 
             association
                 .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")
                 .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
-            if (hasReverse)
+            if (property.WithReverse)
             {
                 association.AddAttribute("mappedBy", @$"""{property.Class.NameCamel}{property.Role ?? string.Empty}""");
             }
