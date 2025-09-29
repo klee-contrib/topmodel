@@ -341,7 +341,11 @@ public class ModelFile
             .ToDictionary(t => t.Item1, t => t.Item2);
 
     public IList<Reference> UselessImports =>
-        Uses.Where(use => !References.Values.Select(r => r.GetFile().Name).Contains(use.ReferenceName)).ToList();
+        Uses.Where(use =>
+                use.ReferenceName == Name
+                || !References.Values.Select(r => r.GetFile().Name).Contains(use.ReferenceName)
+            )
+            .ToList();
 
     public override string ToString()
     {
