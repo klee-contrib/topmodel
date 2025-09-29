@@ -1,11 +1,13 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Model;
 
-namespace TopModel.Generator;
+namespace TopModel.Core.Model;
 
 public class ReverseAssociationProperty : AssociationProperty
 {
-    public required AssociationProperty ReverseProperty { get; set; }
+#nullable disable
+    public override required AssociationProperty ReverseProperty { get; set; }
+
+#nullable enable
 
     public override Class Association => ReverseProperty.Class;
 

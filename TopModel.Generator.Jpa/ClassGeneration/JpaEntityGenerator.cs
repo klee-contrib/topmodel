@@ -2,7 +2,6 @@
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Utils;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -164,17 +163,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.IsPersistent && Config.AssociationAdders)
         {
-            foreach (
-                var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany())
-            )
+            foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
             {
-                var reverse = ap is ReverseAssociationProperty rap
-                    ? rap.ReverseProperty
-                    : ap
-                        .Association.GetProperties(Classes)
-                        .OfType<ReverseAssociationProperty>()
-                        .FirstOrDefault(r => r.ReverseProperty == ap);
-                if (reverse != null)
+                if (ap.ReverseProperty != null)
                 {
                     var propertyName = ap.NameByClassCamel;
                     fw.WriteLine();
@@ -189,13 +180,19 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         @$"public void add{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
                     );
                     fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
-                    if (reverse.Type.IsToMany())
+                    if (ap.ReverseProperty.Type.IsToMany())
                     {
-                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.get{reverse.NameByClassPascal}().add(this);");
+                        fw.WriteLine(
+                            2,
+                            @$"{ap.Association.NameCamel}.get{ap.ReverseProperty.NameByClassPascal}().add(this);"
+                        );
                     }
                     else
                     {
-                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.set{reverse.NameByClassPascal}(this);");
+                        fw.WriteLine(
+                            2,
+                            @$"{ap.Association.NameCamel}.set{ap.ReverseProperty.NameByClassPascal}(this);"
+                        );
                     }
 
                     fw.WriteLine(1, "}");
@@ -329,17 +326,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.IsPersistent && Config.AssociationRemovers)
         {
-            foreach (
-                var ap in classe.GetProperties(Classes).OfType<AssociationProperty>().Where(t => t.Type.IsToMany())
-            )
+            foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
             {
-                var reverse = ap is ReverseAssociationProperty rap
-                    ? rap.ReverseProperty
-                    : ap
-                        .Association.GetProperties(Classes)
-                        .OfType<ReverseAssociationProperty>()
-                        .FirstOrDefault(r => r.ReverseProperty == ap);
-                if (reverse != null)
+                if (ap.ReverseProperty != null)
                 {
                     var propertyName = ap.NameByClassCamel;
                     fw.WriteLine();
@@ -354,13 +343,19 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
                     );
                     fw.WriteLine(2, @$"this.{propertyName}.remove({ap.Association.NameCamel});");
-                    if (reverse.Type.IsToMany())
+                    if (ap.ReverseProperty.Type.IsToMany())
                     {
-                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.get{reverse.NameByClassPascal}().remove(this);");
+                        fw.WriteLine(
+                            2,
+                            @$"{ap.Association.NameCamel}.get{ap.ReverseProperty.NameByClassPascal}().remove(this);"
+                        );
                     }
                     else
                     {
-                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.set{reverse.NameByClassPascal}(null);");
+                        fw.WriteLine(
+                            2,
+                            @$"{ap.Association.NameCamel}.set{ap.ReverseProperty.NameByClassPascal}(null);"
+                        );
                     }
 
                     fw.WriteLine(1, "}");

@@ -857,11 +857,7 @@ public class ModelStore(
 
         foreach (var modelFile in modelFiles)
         {
-            foreach (
-                var use in modelFile.UselessImports.Where(u =>
-                    modelFiles.Concat(dependencies).Any(d => d.Name == u.ReferenceName)
-                )
-            )
+            foreach (var use in this.GetUselessImports(modelFile))
             {
                 yield return new ModelError(
                     ErrorType.TMD1003,

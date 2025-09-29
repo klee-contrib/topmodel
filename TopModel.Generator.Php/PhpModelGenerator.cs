@@ -92,9 +92,9 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
     private void WriteConstructor(PhpWriter fw, Class classe)
     {
-        var collectionProperties = classe
-            .GetProperties(Classes)
-            .Where(p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
+        var collectionProperties = classe.Properties.Where(p =>
+            Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection"
+        );
         if (collectionProperties.Any())
         {
             fw.WriteLine();
@@ -112,7 +112,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
     private void WriteGetters(PhpWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(Classes))
+        foreach (var property in classe.Properties)
         {
             fw.WriteLine();
             if (property is AssociationProperty ap && ap.Type.IsToMany())
@@ -136,7 +136,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
     private void WriteSetters(PhpWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(Classes))
+        foreach (var property in classe.Properties)
         {
             var propertyName = property.NameByClassCamel;
             fw.WriteLine();

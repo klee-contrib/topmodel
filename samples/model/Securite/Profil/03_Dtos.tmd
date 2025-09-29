@@ -36,6 +36,7 @@ class:
         exclude:
           - DateCreation
           - DateModification
+          - Utilisateurs
 
     - alias:
         class: Profil
@@ -64,6 +65,7 @@ class:
           - Id
           - DateCreation
           - DateModification
+          - Utilisateurs
 
   mappers:
     to:

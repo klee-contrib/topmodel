@@ -350,13 +350,6 @@ public class ModelFile
             .DistinctBy(t => t.Item1)
             .ToDictionary(t => t.Item1, t => t.Item2);
 
-    public IList<Reference> UselessImports =>
-        Uses.Where(use =>
-                use.ReferenceName == Name
-                || !References.Values.Select(r => r.GetFile().Name).Contains(use.ReferenceName)
-            )
-            .ToList();
-
     public override string ToString()
     {
         return Name;

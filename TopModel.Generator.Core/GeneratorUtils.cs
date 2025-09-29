@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
-using TopModel.Core.Model;
 
 namespace TopModel.Generator.Core;
 
@@ -30,32 +29,5 @@ public static class GeneratorUtils
             generator.Number = number;
             return generator;
         });
-    }
-
-    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses)
-    {
-        if (classe.Reference)
-        {
-            return classe.Properties;
-        }
-
-        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses)).ToList();
-    }
-
-    private static IEnumerable<ReverseAssociationProperty> GetReverseProperties(
-        this Class classe,
-        IEnumerable<Class> availableClasses
-    )
-    {
-        if (classe.Reference)
-        {
-            return [];
-        }
-
-        return availableClasses
-            .SelectMany(c => c.Properties)
-            .OfType<AssociationProperty>()
-            .Where(p => p.WithReverse != null && p.Association == classe)
-            .Select(p => new ReverseAssociationProperty { Class = classe, ReverseProperty = p });
     }
 }

@@ -387,6 +387,16 @@ internal class PropertyResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveNonAliasProperties()
     {
+        var classes = modelFiles.SelectMany(mf => mf.Classes);
+
+        foreach (var classe in classes)
+        {
+            foreach (var rap in classe.Properties.OfType<ReverseAssociationProperty>().ToList())
+            {
+                classe.Properties.Remove(rap);
+            }
+        }
+
         foreach (var prop in modelFiles.SelectMany(mf => mf.Properties).Where(p => p.SourceDecorator is null))
         {
             switch (prop)
@@ -418,7 +428,8 @@ internal class PropertyResolver(
                     );
                     break;
 
-                case AssociationProperty ap:
+                case AssociationProperty ap
+                and not ReverseAssociationProperty:
                     if ((ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1)
                     {
                         if (ap.Type.IsToMany())
@@ -426,17 +437,17 @@ internal class PropertyResolver(
                             yield return new ModelError(
                                 ErrorType.TMD9005,
                                 ap,
-                                $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire unique.",
+                                $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.",
                                 ap.Reference
                             );
                             break;
                         }
-                        else if (ap.WithReverse != null)
+                        else if (ap.WithReverse != null || ap.Class == null)
                         {
                             yield return new ModelError(
                                 ErrorType.TMD9006,
                                 ap,
-                                $"Il est impossible de définir une association réciproque sur classe sans clé primaire unique.",
+                                $"Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.",
                                 ap.Reference
                             );
                             break;
@@ -481,6 +492,28 @@ internal class PropertyResolver(
                     }
 
                     ap.Association = association;
+
+                    if (ap.WithReverse != null && ap.Class != null)
+                    {
+                        if (!classes.Contains(association))
+                        {
+                            yield return new ModelError(
+                                ErrorType.TMD9007,
+                                ap,
+                                "Le fichier de la classe cible doit référencer le fichier courant pour définir une association réciproque.",
+                                ap.Reference
+                            );
+                            break;
+                        }
+
+                        ap.ReverseProperty = new ReverseAssociationProperty
+                        {
+                            Class = association,
+                            ReverseProperty = ap,
+                        };
+                        association.Properties.Add(ap.ReverseProperty);
+                    }
+
                     break;
 
                 case CompositionProperty cp:

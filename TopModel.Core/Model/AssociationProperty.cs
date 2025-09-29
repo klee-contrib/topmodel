@@ -70,6 +70,8 @@ public class AssociationProperty : IProperty
 
     public virtual ReverseAssociationDefinition? WithReverse { get; set; }
 
+    public virtual AssociationProperty? ReverseProperty { get; set; }
+
     public virtual IList<AnnotationInstance> Annotations { get; private set; } = [];
 
     public virtual IList<AnnotationReference> AnnotationReferences { get; set; } = [];

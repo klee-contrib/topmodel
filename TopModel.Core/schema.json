@@ -185,11 +185,11 @@
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement)."
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association."
                 },
                 {
                   "type": "object",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association (en génération uniquement).",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association.",
                   "additionalProperties": false,
                   "properties": {
                     "className": {
