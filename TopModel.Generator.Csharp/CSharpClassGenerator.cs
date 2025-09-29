@@ -400,7 +400,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             if (
-                property.Required && !Config.RequiredNonNullable(tag) && !property.PrimaryKey
+                property.Required
+                    && !Config.RequiredNonNullable(tag)
+                    && !property.PrimaryKey
+                    && property
+                        is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
                 || property is AliasProperty { PrimaryKey: true }
                 || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
             )

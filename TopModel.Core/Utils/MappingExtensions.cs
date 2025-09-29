@@ -39,9 +39,12 @@ public static class MappingExtensions
             p =>
                 p.Property.Required
                 && p.Property
-                    is CompositionProperty
-                        or AliasProperty { Property: CompositionProperty }
-                        or { DefaultValue: null }
+                    is (
+                            CompositionProperty
+                            or AliasProperty { Property: CompositionProperty }
+                            or { DefaultValue: null }
+                        )
+                        and not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
         );
     }
 }

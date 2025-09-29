@@ -717,7 +717,7 @@ public class CompletionHandler(
                         if (!isKey)
                         {
                             var (startP, endP) = GetObjectRange(text, parentKey.Line);
-                            var parentObjectLines = text[startP..(endP + 1)];
+                            var parentObjectLines = text[startP..endP];
                             className = parentObjectLines
                                 .First(l => l.Contains("class: "))
                                 .TrimStart()

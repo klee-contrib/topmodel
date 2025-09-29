@@ -29,8 +29,13 @@ public class ClassMappings
             .Properties.Where(p =>
                 p.Required
                 && (
-                    p is CompositionProperty or AliasProperty { Property: CompositionProperty }
-                    || p.DefaultValue == null
+                    p
+                    is (
+                            CompositionProperty
+                            or AliasProperty { Property: CompositionProperty }
+                            or { DefaultValue: null }
+                        )
+                        and not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
                 )
                 && !(
                     p.Class.IsPersistent

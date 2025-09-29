@@ -27,7 +27,6 @@ public partial class TopModelSampleDbContext : DbContext
         profil.ToTable(t => t.HasComment("Profil des utilisateurs"));
         profil.Property(p => p.Id).HasComment("Id technique");
         profil.Property(p => p.Libelle).HasComment("Libellé du profil.");
-        profil.Property(p => p.Droits).HasComment("Liste des droits du profil");
         profil.Property(p => p.DateCreation).HasComment("Date de création de l'utilisateur.");
         profil.Property(p => p.DateModification).HasComment("Date de modification de l'utilisateur.");
 

@@ -80,7 +80,11 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                 $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
             );
 
-            foreach (var property in classe.Properties)
+            foreach (
+                var property in classe.Properties.Where(p =>
+                    p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                )
+            )
             {
                 cw.WriteLine(
                     2,
