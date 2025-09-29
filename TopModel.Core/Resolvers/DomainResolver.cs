@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DomainResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Domain> domains,
     IEnumerable<Converter> converters
@@ -18,7 +18,7 @@ internal class DomainResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveAsDomains()
     {
-        foreach (var domain in modelFile.Domains)
+        foreach (var domain in modelFiles.SelectMany(mf => mf.Domains))
         {
             foreach (var (asName, domainReference) in domain.AsDomainReferences)
             {
@@ -130,7 +130,7 @@ internal class DomainResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDomainVariables()
     {
-        foreach (var domain in modelFile.Domains)
+        foreach (var domain in modelFiles.SelectMany(mf => mf.Domains))
         {
             domain.Variables.Clear();
 

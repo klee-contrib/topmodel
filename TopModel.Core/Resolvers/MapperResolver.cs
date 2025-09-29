@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class MapperResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     IEnumerable<Converter> converters,
     bool useLegacyAssociationCompositionMappers
@@ -18,7 +18,7 @@ internal class MapperResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveMappers()
     {
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
             {
@@ -549,7 +549,7 @@ internal class MapperResolver(
         }
 
         // Vérification qu'aucun mapper n'est vide
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             foreach (var mapper in classe.FromMappers)
             {

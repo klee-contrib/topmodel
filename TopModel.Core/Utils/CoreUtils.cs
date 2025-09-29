@@ -16,48 +16,98 @@ public static class CoreUtils
         var sorted = new List<T>();
         var visited = new Dictionary<T, bool>();
 
+        void Visit(T item)
+        {
+            var alreadyVisited = visited.TryGetValue(item, out var inProcess);
+
+            if (alreadyVisited)
+            {
+                if (inProcess)
+                {
+                    throw new ModelException(
+                        item,
+                        $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
+                        (item as ModelFile)?.Uses.FirstOrDefault(u =>
+                            u.ReferenceName == (visited.Last().Key as ModelFile)?.Name
+                        )
+                    );
+                }
+            }
+            else
+            {
+                visited[item] = true;
+
+                foreach (var dependency in getDependencies(item))
+                {
+                    Visit(dependency);
+                }
+
+                visited[item] = false;
+                sorted.Add(item);
+            }
+        }
+
         foreach (var item in source)
         {
-            Visit(item, getDependencies, sorted, visited);
+            Visit(item);
         }
 
         return sorted;
     }
 
-    private static void Visit<T>(
-        T item,
-        Func<T, IEnumerable<T>> getDependencies,
-        List<T> sorted,
-        Dictionary<T, bool> visited
-    )
+    public static IList<IList<T>> SortWithCycles<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
         where T : notnull
     {
-        var alreadyVisited = visited.TryGetValue(item, out var inProcess);
+        var indexMap = new Dictionary<T, int>();
+        var lowLinkMap = new Dictionary<T, int>();
+        var pending = new Stack<T>();
 
-        if (alreadyVisited)
+        IList<IList<T>> sorted = [];
+
+        int index = 0;
+
+        void Visit(T item)
         {
-            if (inProcess)
+            indexMap[item] = index;
+            lowLinkMap[item] = index;
+            index++;
+            pending.Push(item);
+
+            foreach (var dep in getDependencies(item))
             {
-                throw new ModelException(
-                    item,
-                    $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
-                    (item as ModelFile)?.Uses.FirstOrDefault(u =>
-                        u.ReferenceName == (visited.Last().Key as ModelFile)?.Name
-                    )
-                );
+                if (!indexMap.TryGetValue(dep, out var visited))
+                {
+                    Visit(dep);
+                    lowLinkMap[item] = Math.Min(lowLinkMap[item], lowLinkMap[dep]);
+                }
+                else if (pending.Contains(dep))
+                {
+                    lowLinkMap[item] = Math.Min(lowLinkMap[item], visited);
+                }
+            }
+
+            if (lowLinkMap[item] == indexMap[item])
+            {
+                var cycle = new List<T>();
+                T w;
+                do
+                {
+                    w = pending.Pop();
+                    cycle.Add(w);
+                } while (!w.Equals(item));
+
+                sorted.Add(cycle);
             }
         }
-        else
+
+        foreach (var item in source)
         {
-            visited[item] = true;
-
-            foreach (var dependency in getDependencies(item))
+            if (!indexMap.ContainsKey(item))
             {
-                Visit(dependency, getDependencies, sorted, visited);
+                Visit(item);
             }
-
-            visited[item] = false;
-            sorted.Add(item);
         }
+
+        return sorted;
     }
 }
