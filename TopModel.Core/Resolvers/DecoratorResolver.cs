@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DecoratorResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Decorator> referencedDecorators
 )
@@ -16,7 +16,7 @@ internal class DecoratorResolver(
     /// </summary>
     public void CopyDecoratorProperties()
     {
-        foreach (var decorator in modelFile.Decorators)
+        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
         {
             if (decorator.Decorators.Count > 0)
             {
@@ -32,7 +32,7 @@ internal class DecoratorResolver(
             }
         }
 
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             if (classe.Decorators.Count > 0)
             {
@@ -48,7 +48,7 @@ internal class DecoratorResolver(
             }
         }
 
-        foreach (var endpoint in modelFile.Endpoints)
+        foreach (var endpoint in modelFiles.SelectMany(mf => mf.Endpoints))
         {
             if (endpoint.Decorators.Count > 0)
             {
@@ -71,7 +71,7 @@ internal class DecoratorResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDecorators()
     {
-        foreach (var decorator in modelFile.Decorators)
+        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
         {
             decorator.Variables.Clear();
 
@@ -120,7 +120,11 @@ internal class DecoratorResolver(
             }
         }
 
-        foreach (var container in modelFile.PropertyContainers.Where(c => c.DecoratorReferences.Count > 0))
+        foreach (
+            var container in modelFiles
+                .SelectMany(mf => mf.PropertyContainers)
+                .Where(c => c.DecoratorReferences.Count > 0)
+        )
         {
             container.Decorators.Clear();
 

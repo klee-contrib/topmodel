@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> referencedClasses)
+internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Class> referencedClasses)
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des classes.
@@ -13,72 +13,81 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> CheckResult()
     {
-        foreach (var classe in modelFile.Classes)
+        foreach (var modelFile in modelFiles)
         {
-            foreach (
-                var property in classe.ExtendedProperties.Where(
-                    (e, i) => classe.ExtendedProperties.Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var classe in modelFile.Classes)
             {
-                yield return new ModelError(
-                    ErrorType.TMD0001,
-                    modelFile,
-                    $"Le nom '{property.Name}' est déjà utilisé.",
-                    property.Decorator is not null
-                        ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name)
-                        : property.GetLocation()
-                );
-            }
-
-            foreach (
-                var property in classe
-                    .Properties.OfType<AssociationProperty>()
-                    .Where(p =>
-                        (p.Association == classe || p.Association == classe.Extends) && string.IsNullOrEmpty(p.Role)
+                foreach (
+                    var property in classe.ExtendedProperties.Where(
+                        (e, i) => classe.ExtendedProperties.Where((p, j) => p.Name == e.Name && j < i).Any()
                     )
-            )
-            {
-                yield return new ModelError(
-                    ErrorType.TMD3005,
-                    modelFile,
-                    $"Cette association sur la classe '{classe}' doit définir un rôle.",
-                    property.Decorator is not null
-                        ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name)
-                        : property.GetLocation()
-                );
-            }
+                )
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD0001,
+                        modelFile,
+                        $"Le nom '{property.Name}' est déjà utilisé.",
+                        property.Decorator is not null
+                            ? classe.DecoratorReferences.FirstOrDefault(dr =>
+                                dr.ReferenceName == property.Decorator.Name
+                            )
+                            : property.GetLocation()
+                    );
+                }
 
-            if (
-                classe.PrimaryKey.Count() == 1
-                && classe.PrimaryKey.First() is AssociationProperty ap
-                && ap.Type != AssociationType.OneToOne
-            )
-            {
-                yield return new ModelError(
-                    ErrorType.TMD3006,
-                    modelFile,
-                    $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.",
-                    ap.GetLocation()
-                );
-            }
+                foreach (
+                    var property in classe
+                        .Properties.OfType<AssociationProperty>()
+                        .Where(p =>
+                            (p.Association == classe || p.Association == classe.Extends) && string.IsNullOrEmpty(p.Role)
+                        )
+                )
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3005,
+                        modelFile,
+                        $"Cette association sur la classe '{classe}' doit définir un rôle.",
+                        property.Decorator is not null
+                            ? classe.DecoratorReferences.FirstOrDefault(dr =>
+                                dr.ReferenceName == property.Decorator.Name
+                            )
+                            : property.GetLocation()
+                    );
+                }
 
-            if (
-                classe.PrimaryKey.Count() > 1
-                && classe.PrimaryKey.Any(pk => pk is AssociationProperty ap && ap.Type != AssociationType.ManyToOne)
-            )
-            {
-                yield return new ModelError(
-                    ErrorType.TMD3007,
-                    modelFile,
-                    "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.",
-                    classe.GetLocation()
-                );
+                if (
+                    classe.PrimaryKey.Count() == 1
+                    && classe.PrimaryKey.First() is AssociationProperty ap
+                    && ap.Type != AssociationType.OneToOne
+                )
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3006,
+                        modelFile,
+                        $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.",
+                        ap.GetLocation()
+                    );
+                }
+
+                if (
+                    classe.PrimaryKey.Count() > 1
+                    && classe.PrimaryKey.Any(pk => pk is AssociationProperty ap && ap.Type != AssociationType.ManyToOne)
+                )
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3007,
+                        modelFile,
+                        "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.",
+                        classe.GetLocation()
+                    );
+                }
             }
         }
 
         foreach (
-            var classe in modelFile.Classes.Where(c => c.Values.Count > 0 && (c.IsPersistent || c.UniqueKeys.Count > 0))
+            var classe in modelFiles
+                .SelectMany(mf => mf.Classes)
+                .Where(c => c.Values.Count > 0 && (c.IsPersistent || c.UniqueKeys.Count > 0))
         )
         {
             var uks = new List<IEnumerable<IProperty>>();
@@ -120,17 +129,17 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveEnums()
     {
-        foreach (var classe in modelFile.Classes.Where(c => c.Reference && c.ReferenceKey == null))
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
-            yield return new ModelError(
-                ErrorType.TMD3002,
-                classe,
-                $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`."
-            );
-        }
+            if (classe.Reference && classe.ReferenceKey == null)
+            {
+                yield return new ModelError(
+                    ErrorType.TMD3002,
+                    classe,
+                    $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`."
+                );
+            }
 
-        foreach (var classe in modelFile.Classes)
-        {
             if (classe.EnumOverride != null)
             {
                 if (classe.EnumOverride == "true" && (classe.Values.Count == 0 || classe.ReferenceKey == null))
@@ -172,7 +181,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveExtends()
     {
-        foreach (var classe in modelFile.Classes.Where(c => c.ExtendsReference != null))
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.ExtendsReference != null))
         {
             if (classe.Abstract)
             {
@@ -228,7 +237,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveSpecialProperties()
     {
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             if (classe.DefaultPropertyReference != null)
             {
@@ -306,7 +315,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <param name="defaultLang">Langue par défaut.</param>
     public void ResolveTranslations(TranslationStore translationStore, string defaultLang)
     {
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             foreach (var p in classe.Properties.Where(p => p.Label != null))
             {
@@ -332,7 +341,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveUniqueKeys()
     {
-        foreach (var classe in modelFile.Classes.Where(c => c.UniqueKeyReferences.Count > 0))
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.UniqueKeyReferences.Count > 0))
         {
             classe.UniqueKeys.Clear();
 
@@ -369,7 +378,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveValues()
     {
-        foreach (var classe in modelFile.Classes.Where(c => c.ValueReferences.Count > 0))
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.ValueReferences.Count > 0))
         {
             classe.Values.Clear();
 

@@ -266,19 +266,10 @@ public class ModelStore(
                     ? _modelFiles
                     : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
-                IList<ModelFile> sortedFiles = new List<ModelFile>(1);
-                try
-                {
-                    sortedFiles = CoreUtils.Sort(
-                        affectedFiles.Values,
-                        f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
-                    );
-                }
-                // Dépendance circulaire.
-                catch (ModelException e) when (e.ModelError is not null)
-                {
-                    referenceErrors.Add(e.ModelError);
-                }
+                var sortedFiles = CoreUtils.SortWithCycles(
+                    affectedFiles.Values,
+                    f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
+                );
 
                 foreach (var affectedFile in sortedFiles)
                 {
@@ -330,7 +321,7 @@ public class ModelStore(
                     _modelWatchers,
                     modelWatcher =>
                     {
-                        modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
+                        modelWatcher.OnFilesChanged(sortedFiles.SelectMany(x => x), _storeConfig);
                     }
                 );
 
@@ -614,48 +605,56 @@ public class ModelStore(
         );
     }
 
-    private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
+    private IEnumerable<ModelError> ResolveReferences(IList<ModelFile> modelFiles)
     {
-        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.ReferenceName));
-        foreach (var use in nonExistingFiles)
+        foreach (var modelFile in modelFiles)
         {
-            yield return new ModelError(
-                ErrorType.TMD1001,
-                modelFile,
-                $"Le fichier référencé '{use.ReferenceName}' est introuvable.",
-                use
-            );
+            var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.ReferenceName));
+            foreach (var use in nonExistingFiles)
+            {
+                yield return new ModelError(
+                    ErrorType.TMD1001,
+                    modelFile,
+                    $"Le fichier référencé '{use.ReferenceName}' est introuvable.",
+                    use
+                );
+            }
+
+            var duplicatedUses = modelFile
+                .Uses.GroupBy(u => u.ReferenceName)
+                .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
+                .Where(r => r.Count > 1)
+                .Select(u => u.ReferenceName);
+
+            foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
+            {
+                yield return new ModelError(
+                    ErrorType.TMD1002,
+                    modelFile,
+                    $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois",
+                    use
+                );
+            }
         }
 
-        var duplicatedUses = modelFile
-            .Uses.GroupBy(u => u.ReferenceName)
-            .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
-            .Where(r => r.Count > 1)
-            .Select(u => u.ReferenceName);
+        var dependencies = modelFiles.SelectMany(GetDependencies).Distinct().Except(modelFiles).ToList();
 
-        foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
-        {
-            yield return new ModelError(
-                ErrorType.TMD1002,
-                modelFile,
-                $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois",
-                use
-            );
-        }
-
-        var dependencies = GetDependencies(modelFile).ToList();
-
-        var referencedClassesRaw = dependencies.SelectMany(m => m.Classes).Concat(modelFile.Classes).Distinct();
+        var referencedClassesRaw = dependencies
+            .SelectMany(m => m.Classes)
+            .Concat(modelFiles.SelectMany(mf => mf.Classes))
+            .Distinct();
 
         var duplicateClasses = referencedClassesRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
             .Select(g =>
-                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                g.OrderByDescending(c =>
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                    )
                     .First()
             );
 
-        foreach (var classe in duplicateClasses.Where(c => c.ModelFile == modelFile))
+        foreach (var classe in duplicateClasses.Where(c => modelFiles.Contains(c.ModelFile)))
         {
             yield return new ModelError(
                 ErrorType.TMD3001,
@@ -669,13 +668,18 @@ public class ModelStore(
             .Where(c => !duplicateClasses.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var referencedEndpointsRaw = dependencies.SelectMany(m => m.Endpoints).Concat(modelFile.Endpoints).Distinct();
+        var referencedEndpointsRaw = dependencies
+            .SelectMany(m => m.Endpoints)
+            .Concat(modelFiles.SelectMany(mf => mf.Endpoints))
+            .Distinct();
 
         var duplicateEndpoints = referencedEndpointsRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
             .Select(g =>
-                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                g.OrderByDescending(c =>
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                    )
                     .First()
             );
 
@@ -685,27 +689,32 @@ public class ModelStore(
 
         var referencedAnnotations = dependencies
             .SelectMany(m => m.Annotations)
-            .Concat(modelFile.Annotations)
+            .Concat(modelFiles.SelectMany(mf => mf.Annotations))
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
 
         var referencedDecorators = dependencies
             .SelectMany(m => m.Decorators)
-            .Concat(modelFile.Decorators)
+            .Concat(modelFiles.SelectMany(mf => mf.Decorators))
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
 
-        var referencedDataFlowsRaw = dependencies.SelectMany(m => m.DataFlows).Concat(modelFile.DataFlows).Distinct();
+        var referencedDataFlowsRaw = dependencies
+            .SelectMany(m => m.DataFlows)
+            .Concat(modelFiles.SelectMany(mf => mf.DataFlows))
+            .Distinct();
 
         var duplicateDataFlows = referencedDataFlowsRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
             .Select(g =>
-                g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line)
+                g.OrderByDescending(c =>
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                    )
                     .First()
             );
 
-        foreach (var dataFlow in duplicateDataFlows.Where(c => c.ModelFile == modelFile))
+        foreach (var dataFlow in duplicateDataFlows.Where(c => modelFiles.Contains(c.ModelFile)))
         {
             yield return new ModelError(
                 ErrorType.TMD4001,
@@ -719,20 +728,20 @@ public class ModelStore(
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var annotationResolver = new AnnotationResolver(modelFile, config, referencedAnnotations);
-        var classResolver = new ClassResolver(modelFile, referencedClasses);
-        var dataFlowResolver = new DataFlowResolver(modelFile, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(modelFile, config, referencedDecorators);
-        var domainResolver = new DomainResolver(modelFile, config, Domains, Converters);
-        var endpointResolver = new EndpointResolver(modelFile);
+        var annotationResolver = new AnnotationResolver(modelFiles, config, referencedAnnotations);
+        var classResolver = new ClassResolver(modelFiles, referencedClasses);
+        var dataFlowResolver = new DataFlowResolver(modelFiles, referencedDataFlows, referencedClasses);
+        var decoratorResolver = new DecoratorResolver(modelFiles, config, referencedDecorators);
+        var domainResolver = new DomainResolver(modelFiles, config, Domains, Converters);
+        var endpointResolver = new EndpointResolver(modelFiles);
         var mapperResolver = new MapperResolver(
-            modelFile,
+            modelFiles,
             referencedClasses,
             Converters,
             config.UseLegacyAssociationCompositionMappers
         );
         var propertyResolver = new PropertyResolver(
-            modelFile,
+            modelFiles,
             Domains,
             referencedClasses,
             referencedEndpoints,
@@ -846,15 +855,20 @@ public class ModelStore(
 
         classResolver.ResolveTranslations(translationStore, config.I18n.DefaultLang);
 
-        foreach (var use in modelFile.UselessImports.Where(u => dependencies.Exists(d => d.Name == u.ReferenceName)))
+        foreach (var modelFile in modelFiles)
         {
-            yield return new ModelError(
-                ErrorType.TMD1003,
-                modelFile,
-                $"L'import '{use.ReferenceName}' n'est pas utilisé.",
-                use,
-                isError: false
-            );
+            foreach (
+                var use in modelFile.UselessImports.Where(u => dependencies.Exists(d => d.Name == u.ReferenceName))
+            )
+            {
+                yield return new ModelError(
+                    ErrorType.TMD1003,
+                    modelFile,
+                    $"L'import '{use.ReferenceName}' n'est pas utilisé.",
+                    use,
+                    isError: false
+                );
+            }
         }
     }
 }

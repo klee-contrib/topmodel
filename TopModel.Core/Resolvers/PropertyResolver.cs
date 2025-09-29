@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class PropertyResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     IDictionary<string, Domain> domains,
     IDictionary<string, Class> referencedClasses,
     IDictionary<string, Endpoint> referencedEndpoints,
@@ -18,7 +18,7 @@ internal class PropertyResolver(
     /// </summary>
     public void ResetAliases()
     {
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
             foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
             {
@@ -56,7 +56,7 @@ internal class PropertyResolver(
             }
         }
 
-        foreach (var endpoint in modelFile.Endpoints)
+        foreach (var endpoint in modelFiles.SelectMany(mf => mf.Endpoints))
         {
             foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
             {
@@ -77,7 +77,7 @@ internal class PropertyResolver(
             }
         }
 
-        foreach (var decorator in modelFile.Decorators)
+        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
         {
             foreach (var alp in decorator.Properties.OfType<AliasProperty>().ToList())
             {
@@ -101,7 +101,7 @@ internal class PropertyResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveAliases(Func<AliasProperty, bool> filter)
     {
-        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(filter))
+        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>().Where(filter))
         {
             IPropertyContainer propertyContainer;
 
@@ -195,7 +195,7 @@ internal class PropertyResolver(
             {
                 yield return new ModelError(
                     ErrorType.TMD9001,
-                    modelFile,
+                    alp,
                     $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.",
                     include
                 );
@@ -213,7 +213,7 @@ internal class PropertyResolver(
             {
                 yield return new ModelError(
                     ErrorType.TMD9001,
-                    modelFile,
+                    alp,
                     $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.",
                     exclude
                 );
@@ -246,7 +246,7 @@ internal class PropertyResolver(
                 {
                     yield return new ModelError(
                         ErrorType.TMD9004,
-                        modelFile,
+                        alp,
                         $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'",
                         prop.PropertyReference ?? prop.Reference?.ContainerReference
                     );
@@ -328,8 +328,8 @@ internal class PropertyResolver(
     public IEnumerable<ModelError> ResolveAssociationProperties()
     {
         foreach (
-            var ap in modelFile
-                .Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>())
+            var ap in modelFiles
+                .SelectMany(mf => mf.Properties.OfType<AssociationProperty>())
                 .Where(ap => ap.Association != null)
         )
         {
@@ -372,7 +372,7 @@ internal class PropertyResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveNonAliasProperties()
     {
-        foreach (var prop in modelFile.Properties.Where(p => p.SourceDecorator is null))
+        foreach (var prop in modelFiles.SelectMany(mf => mf.Properties).Where(p => p.SourceDecorator is null))
         {
             switch (prop)
             {

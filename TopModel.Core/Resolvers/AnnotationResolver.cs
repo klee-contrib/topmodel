@@ -6,14 +6,14 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 public class AnnotationResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Annotation> referencedAnnotations
 )
 {
     public IEnumerable<ModelError> CheckAliasAnnotations()
     {
-        foreach (var alp in modelFile.Properties.OfType<AliasProperty>())
+        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>())
         {
             foreach (var g in alp.Annotations.GroupBy(a => a.Annotation.Name).Where(g => g.Count() > 1))
             {
@@ -37,7 +37,7 @@ public class AnnotationResolver(
     /// <returns>Annotations.</returns>
     public IEnumerable<ModelError> ResolveAnnotations()
     {
-        foreach (var annotation in modelFile.Annotations)
+        foreach (var annotation in modelFiles.SelectMany(mf => mf.Annotations))
         {
             annotation.Variables.Clear();
 
@@ -106,7 +106,7 @@ public class AnnotationResolver(
             }
         }
 
-        foreach (var container in modelFile.AnnotationContainers)
+        foreach (var container in modelFiles.SelectMany(mf => mf.AnnotationContainers))
         {
             var annotationsToResolve = container is AliasProperty alp ? alp.OwnAnnotations : container.Annotations;
 

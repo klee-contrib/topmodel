@@ -5,7 +5,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DataFlowResolver(
-    ModelFile modelFile,
+    IList<ModelFile> modelFiles,
     IDictionary<string, DataFlow> referencedDataFlows,
     IDictionary<string, Class> referencedClasses
 )
@@ -16,7 +16,7 @@ internal class DataFlowResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDataFlows()
     {
-        foreach (var dataFlow in modelFile.DataFlows)
+        foreach (var dataFlow in modelFiles.SelectMany(mf => mf.DataFlows))
         {
             if (!referencedClasses.TryGetValue(dataFlow.ClassReference.ReferenceName, out var classe))
             {
