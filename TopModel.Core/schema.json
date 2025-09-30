@@ -185,11 +185,11 @@
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association."
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany, peu importe la valeur de `withReverse`."
                 },
                 {
                   "type": "object",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association.",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany.",
                   "additionalProperties": false,
                   "properties": {
                     "className": {

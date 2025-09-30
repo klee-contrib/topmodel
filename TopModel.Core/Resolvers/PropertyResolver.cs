@@ -428,21 +428,17 @@ internal class PropertyResolver(
                     );
                     break;
 
-                case AssociationProperty ap
-                and not ReverseAssociationProperty:
-                    if ((ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1)
+                case AssociationProperty ap:
+                    if ((ap.Class == null || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1) && ap.Type.IsToMany())
                     {
-                        if (ap.Type.IsToMany())
-                        {
-                            yield return new ModelError(
-                                ErrorType.TMD9005,
-                                ap,
-                                $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.",
-                                ap.Reference
-                            );
-                            break;
-                        }
-                        else if (ap.WithReverse != null || ap.Class == null)
+                        yield return new ModelError(
+                            ErrorType.TMD9005,
+                            ap,
+                            $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.",
+                            ap.Reference
+                        );
+
+                        if (ap.WithReverse != null)
                         {
                             yield return new ModelError(
                                 ErrorType.TMD9006,
@@ -450,8 +446,9 @@ internal class PropertyResolver(
                                 $"Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.",
                                 ap.Reference
                             );
-                            break;
                         }
+
+                        break;
                     }
 
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))

@@ -244,6 +244,12 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 }
 
                 parser.Consume<MappingEnd>();
+
+                if (ap.Type == AssociationType.OneToMany && ap.WithReverse == null)
+                {
+                    ap.WithReverse = new() { Property = ap };
+                }
+
                 return ap;
 
             case Scalar { Value: "composition" } s:

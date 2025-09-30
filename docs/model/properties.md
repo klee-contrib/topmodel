@@ -73,6 +73,8 @@ withReverse:
 
 Les associations réciproques étant de vraies propriétés de classe dans le modèle, elles sont disponibles dans les alias et les mappers.
 
+**L'association réciproque est obligatoirement ajoutée pour une association `OneToMany`**, indépendement de la valeur de `withReverse`.
+
 ## Composition
 
 Une composition est une propriété spéciale qui permet de **référencer une autre classe**, à l'inverse de l'association qui ne concerne que la clé primaire. Par conséquent, la composition est le seul type de **propriété non primitif** (ce qui ne prescrit pas à priori son usage dans un objet persisté puisqu'elle pourrait y être stockée en JSON, mais on préfèrera bien souvent utiliser une association à la place). Elle est identifiée par la présence de la propriété `composition` en premier.

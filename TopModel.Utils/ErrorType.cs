@@ -351,7 +351,7 @@ public enum ErrorType
     TMD9005,
 
     /// <summary>
-    /// Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.
+    /// Une association réciproque sur une oneToMany ou manyToMany ne peut être définie que dans une classe avec une clé primaire simple.
     /// </summary>
     TMD9006,
 

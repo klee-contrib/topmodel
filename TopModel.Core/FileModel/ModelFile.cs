@@ -43,7 +43,7 @@ public class ModelFile
             .Concat(Endpoints.SelectMany(e => e.Params))
             .Concat(Endpoints.Select(e => e.Returns))
             .Concat(Decorators.SelectMany(e => e.Properties))
-            .Where(p => p != null)
+            .Where(p => p != null && p is not ReverseAssociationProperty)
             .ToList();
 
     public IEnumerable<TemplateParameter> Parameters =>

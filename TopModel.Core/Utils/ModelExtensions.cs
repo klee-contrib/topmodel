@@ -344,7 +344,7 @@ public static class ModelExtensions
                 && !modelStore.Files.Any(mf =>
                     mf.Name == use.ReferenceName
                     && mf.Properties.OfType<AssociationProperty>()
-                        .Any(ap => ap.Association.ModelFile == modelFile && ap.ReverseProperty != null)
+                        .Any(ap => ap.Association?.ModelFile == modelFile && ap.ReverseProperty != null)
                 )
         );
     }
