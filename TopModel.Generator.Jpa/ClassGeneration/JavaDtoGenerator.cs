@@ -40,7 +40,6 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)
         {
-            fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
             fw.AddImport(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
         }
 
