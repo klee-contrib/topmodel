@@ -8,6 +8,31 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.2.0
+
+- [#500](https://github.com/klee-contrib/topmodel/pull/500) - Gestion des dépendances circulaires entre fichier
+
+  TopModel gère désormais les dépendances circulaires entre fichiers (!!). A la résolution, les cycles sont regroupés ensemble et résolus comme un seul fichier. Leur usage reste à vos risques et périls : selon votre architecture applicative, les cycles pourraient ne pas être supportés dans le code généré, et vous augmentez la complexité de votre modèle en introduisant des dépendances circulaires.
+
+- [#498](https://github.com/klee-contrib/topmodel/pull/498) / [#501](https://github.com/klee-contrib/topmodel/pull/501) - Associations réciproques explicites, dans le modèle
+
+  Les propriétés d'association réciproques sont désormais définies directement dans le modèle, au lieu d'être implicitement ajoutées à la génération (côté générateurs JPA et SQL). Elles sont générées par la propriété `withReverse` sur une association, qui peut valoir `true`/`false`, ou bien un objet qui permet de configurer le `className`, le `label`, le `comment` et les `annotations` de cette propriété réciproque (de la même façon que sur l'association originale).
+
+  Une association réciproque crée une référence circulaire entre les deux classes associées : il est donc nécessaire que la classe cible d'une association avec réciproque ait aussi une dépendance vers la classe source. Si les classes ne sont pas dans le même fichier, cela se traduira par un `use` vers le fichier source de l'association sur le fichier cible. Un quick fix est disponible pour l'ajouter 😉
+
+  Une association `oneToMany` doit nécessairement définir son association réciproque, puisqu'elle correspond à la propriété qui sera effectivement ajoutée en base de données comme clé étrangère. `withReverse` vaut donc `true` par défaut et vous ne pourrez pas y mettre `false`.
+
+  Ces propriétés d'association réciproque seront ajoutées à la liste de propriétés de la classe cible de l'association, ce qui les rend donc disponibles dans les alias et les mappers comme des propriétés classiques.
+
+  **/!\ breaking changes /!\\**
+
+  - Il est nécessaire d'avoir les générateurs JPA (>= 3.2) et SQL (>= 3.1) à jour pour utiliser cette version.
+  - Les associations `manyToOne` ne génèrent plus d'association réciproque par défaut : si vous l'utilisiez, il faudra ajouter `withReverse: true` sur la propriété (et ajouter l'import sur le fichier de la classe cible)
+  - Les associations `oneToMany` ont bien toujours leur association réciproque, mais il faudra ajouter l'import sur le fichier de la classe cible (via le quick fix).
+  - Les associations réciproques seront ajoutées à tous les alias sans `include` explicite, il vous faudra les ajouter dans la liste d'exclusion de `exclude` pour rester à l'identique.
+
+  Le code généré ne devrait pas être impacté, au delà d'un changement d'ordre possible sur les propriétés de classes qui avaient déjà plusieurs associations réciproques.
+
 ## 3.1.0
 
 - [#496](https://github.com/klee-contrib/topmodel/pull/496) - Annotations de propriétés sur classes/endpoints/décorateurs

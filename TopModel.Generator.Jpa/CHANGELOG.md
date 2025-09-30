@@ -2,6 +2,12 @@
 
 ## 3.1.0
 
+Compatibilité avec Topmodel 3.2
+
+- [`f38a662`](https://github.com/klee-contrib/topmodel/commit/f38a662c9aa7cb4b1c2835a178b5d1d6de4377b7) - [JPA] Fix imports extends
+
+## 3.1.0
+
 Support pour `rootModule` dans la config.
 
 ## 3.0.1

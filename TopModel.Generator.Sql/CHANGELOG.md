@@ -1,3 +1,7 @@
+## 3.1.0
+
+Compatibilité avec Topmodel 3.2
+
 ## 3.0.0
 
 Compatibilité avec TopModel 3

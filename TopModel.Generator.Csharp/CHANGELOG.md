@@ -1,3 +1,6 @@
+## 3.1.2
+
+- [`08dfc43`](https://github.com/klee-contrib/topmodel/commit/08dfc43d97603ac527078e8f466fa6d209c3f9c2) - [Core/C#] Fix required en trop sur associations ToMany
 
 ## 3.1.1
 
