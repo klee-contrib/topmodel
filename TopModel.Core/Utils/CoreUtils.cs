@@ -55,18 +55,17 @@ public static class CoreUtils
         return sorted;
     }
 
-    public static IList<IList<T>> SortWithCycles<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
-        where T : notnull
+    public static IList<IList<ModelFile>> SortWithCycles(IEnumerable<ModelFile> source, Func<ModelFile, IEnumerable<ModelFile>> getDependencies)
     {
-        var indexMap = new Dictionary<T, int>();
-        var lowLinkMap = new Dictionary<T, int>();
-        var pending = new Stack<T>();
+        var indexMap = new Dictionary<ModelFile, int>();
+        var lowLinkMap = new Dictionary<ModelFile, int>();
+        var pending = new Stack<ModelFile>();
 
-        IList<IList<T>> sorted = [];
+        IList<IList<ModelFile>> sorted = [];
 
         int index = 0;
 
-        void Visit(T item)
+        void Visit(ModelFile item)
         {
             indexMap[item] = index;
             lowLinkMap[item] = index;
@@ -88,15 +87,15 @@ public static class CoreUtils
 
             if (lowLinkMap[item] == indexMap[item])
             {
-                var cycle = new List<T>();
-                T w;
+                var cycle = new List<ModelFile>();
+                ModelFile w;
                 do
                 {
                     w = pending.Pop();
                     cycle.Add(w);
                 } while (!w.Equals(item));
 
-                sorted.Add(cycle);
+                sorted.Add(cycle.OrderBy(f => f.Name).ToList());
             }
         }
 

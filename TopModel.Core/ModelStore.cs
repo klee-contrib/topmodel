@@ -266,14 +266,14 @@ public class ModelStore(
                     ? _modelFiles
                     : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
-                var sortedFiles = CoreUtils.SortWithCycles(
+                var sortedFileCycles = CoreUtils.SortWithCycles(
                     affectedFiles.Values,
                     f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
                 );
 
-                foreach (var affectedFile in sortedFiles)
+                foreach (var sortedFileCycle in sortedFileCycles)
                 {
-                    referenceErrors.AddRange(ResolveReferences(affectedFile));
+                    referenceErrors.AddRange(ResolveReferences(sortedFileCycle));
                 }
 
                 referenceErrors.AddRange(GetGlobalErrors());
@@ -321,7 +321,7 @@ public class ModelStore(
                     _modelWatchers,
                     modelWatcher =>
                     {
-                        modelWatcher.OnFilesChanged(sortedFiles.SelectMany(x => x), _storeConfig);
+                        modelWatcher.OnFilesChanged(sortedFileCycles.SelectMany(x => x), _storeConfig);
                     }
                 );
 
