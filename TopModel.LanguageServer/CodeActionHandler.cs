@@ -5,6 +5,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
@@ -56,14 +57,17 @@ public class CodeActionHandler(
                     case ErrorType.TMD0005:
                         codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
                         break;
+                    case ErrorType.TMD0006:
+                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
+                        break;
                     case ErrorType.TMD2001:
                         codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
                         break;
                     case ErrorType.TMD4002:
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
                         break;
-                    case ErrorType.TMD0006:
-                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
+                    case ErrorType.TMD9007:
+                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(request, diagnostic, modelFile));
                         break;
                     default:
                         break;
@@ -248,6 +252,30 @@ domain:
             );
     }
 
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingWithReverseImport(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
+    {
+        var (_, objet) = modelFile.GetObjetAtPosition(diagnostic.Range.Start);
+
+        if (objet is not Class)
+        {
+            return [];
+        }
+
+        var targetFile = objet.GetFile();
+        var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
+
+        var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
+        return modelStore
+            .Classes.Where(c => c.Name == className)
+            .Select(targetClass =>
+                GetFileImportAction(diagnostic, targetClass.ModelFile, modelFile, useIndex, reverse: true)
+            );
+    }
+
     protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
         var start = modelFile.Uses[0].ToRange()!.Start;
@@ -281,17 +309,33 @@ domain:
         };
     }
 
+    private static (string ImportName, int UseIndex) GetImport(
+        string importName,
+        string[] fileText,
+        ModelFile modelFile
+    )
+    {
+        var useIndex =
+            modelFile!.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
+            : fileText[0].StartsWith('-') ? 1
+            : 0;
+
+        return (importName, useIndex);
+    }
+
     private CommandOrCodeAction GetFileImportAction(
         Diagnostic diagnostic,
         ModelFile targetFile,
         ModelFile sourceFile,
-        int useIndex
+        int useIndex,
+        bool reverse = false
     )
     {
         return (CommandOrCodeAction)
             new CodeAction
             {
-                Title = $"TopModel : Ajouter l'import {sourceFile.Name}",
+                Title =
+                    $"TopModel : Ajouter l'import {sourceFile.Name}{(reverse ? $" dans le fichier {targetFile.Name}" : string.Empty)}",
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
                 Diagnostics = new List<Diagnostic> { diagnostic },
@@ -321,14 +365,9 @@ domain:
         ModelFile modelFile
     )
     {
-        var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text[diagnostic.Range.Start.Line];
+        var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = fileText[diagnostic.Range.Start.Line];
         var importName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
-        var useIndex =
-            modelFile!.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
-            : text[0].StartsWith('-') ? 1
-            : 0;
-
-        return (importName, useIndex);
+        return GetImport(importName, fileText, modelFile);
     }
 }

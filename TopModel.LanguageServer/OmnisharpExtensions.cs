@@ -31,15 +31,8 @@ public static class OmnisharpExtensions
         };
     }
 
-    public static References? GetReferencesForPositionInFile(
-        this ModelStore modelStore,
-        Position position,
-        ModelFile file,
-        bool includeTransitive = false
-    )
+    public static (Reference? Reference, object? Objet) GetObjetAtPosition(this ModelFile file, Position position)
     {
-        object? referencedObject = null;
-
         var matchedReference = file.References.Keys.SingleOrDefault(reference =>
             reference.Start.Line - 1 <= position.Line
             && position.Line <= reference.End.Line - 1
@@ -47,10 +40,17 @@ public static class OmnisharpExtensions
             && position.Character <= reference.End.Column - 1
         );
 
-        if (matchedReference != null)
-        {
-            referencedObject = file.References[matchedReference];
-        }
+        return (matchedReference, matchedReference != null ? file.References[matchedReference] : null);
+    }
+
+    public static References? GetReferencesForPositionInFile(
+        this ModelStore modelStore,
+        Position position,
+        ModelFile file,
+        bool includeTransitive = false
+    )
+    {
+        var (_, referencedObject) = file.GetObjetAtPosition(position);
 
         var definedObjects = file
             .Classes.Where(c =>

@@ -24,16 +24,10 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
         );
         if (file != null)
         {
-            var matchedReference = file.References.Keys.SingleOrDefault(reference =>
-                reference.Start.Line - 1 <= request.Position.Line
-                && request.Position.Line <= reference.End.Line - 1
-                && reference.Start.Column - 1 <= request.Position.Character
-                && request.Position.Character <= reference.End.Column - 1
-            );
+            var (reference, objet) = file.GetObjetAtPosition(request.Position);
 
-            if (matchedReference != null)
+            if (reference != null && objet != null)
             {
-                var objet = file.References[matchedReference];
                 var selectionRange = objet.GetLocation().ToRange();
                 if (selectionRange == null)
                 {
@@ -43,7 +37,7 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
                 return new(
                     new LocationLink
                     {
-                        OriginSelectionRange = matchedReference.ToRange(),
+                        OriginSelectionRange = reference.ToRange(),
                         TargetRange = objet switch
                         {
                             Class or Endpoint or Domain => selectionRange with
@@ -81,7 +75,7 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
                     return new(
                         new LocationLink
                         {
-                            OriginSelectionRange = matchedReference.ToRange(),
+                            OriginSelectionRange = reference.ToRange(),
                             TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
                             TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
                                 0,

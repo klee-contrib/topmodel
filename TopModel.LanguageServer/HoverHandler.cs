@@ -19,19 +19,13 @@ public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, M
         );
         if (file != null)
         {
-            var matchedReference = file.References.Keys.SingleOrDefault(reference =>
-                reference.Start.Line - 1 <= request.Position.Line
-                && request.Position.Line <= reference.End.Line - 1
-                && reference.Start.Column - 1 <= request.Position.Character
-                && request.Position.Character <= reference.End.Column - 1
-            );
+            var (reference, objet) = file.GetObjetAtPosition(request.Position);
 
-            if (matchedReference != null)
+            if (reference != null && objet != null)
             {
-                var objet = file.References[matchedReference];
                 return new Hover
                 {
-                    Range = matchedReference.ToRange(),
+                    Range = reference.ToRange(),
                     Contents = new(
                         new MarkedString(
                             objet switch
