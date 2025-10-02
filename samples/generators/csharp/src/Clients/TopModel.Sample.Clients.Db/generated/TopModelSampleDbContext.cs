@@ -35,6 +35,11 @@ public partial class TopModelSampleDbContext : DbContext
     public DbSet<Profil> Profils { get; set; }
 
     /// <summary>
+    /// Accès à l'entité ProfilDroit.
+    /// </summary>
+    public DbSet<ProfilDroit> ProfilDroits { get; set; }
+
+    /// <summary>
     /// Accès à l'entité TypeDroit.
     /// </summary>
     public DbSet<TypeDroit> TypeDroits { get; set; }
@@ -57,12 +62,16 @@ public partial class TopModelSampleDbContext : DbContext
     {
         modelBuilder.Entity<Droit>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Droit>().Property(p => p.TypeDroitCode).HasConversion<string>().HasMaxLength(10);
-        modelBuilder.Entity<Profil>().Property(p => p.Droits).HasConversion<string[]>().HasMaxLength(10);
+        modelBuilder.Entity<ProfilDroit>().Property(p => p.DroitCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<TypeDroit>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<TypeUtilisateur>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Utilisateur>().Property(p => p.TypeUtilisateurCode).HasConversion<string>().HasMaxLength(10);
 
+        modelBuilder.Entity<ProfilDroit>().HasKey(p => new { p.ProfilId, p.DroitCode });
+
         modelBuilder.Entity<Droit>().HasOne<TypeDroit>().WithMany().HasForeignKey(p => p.TypeDroitCode).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProfilDroit>().HasOne<Profil>().WithMany().HasForeignKey(p => p.ProfilId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProfilDroit>().HasOne<Droit>().WithMany().HasForeignKey(p => p.DroitCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<Profil>().WithMany().HasForeignKey(p => p.ProfilId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<TypeUtilisateur>().WithMany().HasForeignKey(p => p.TypeUtilisateurCode).OnDelete(DeleteBehavior.Restrict);
 

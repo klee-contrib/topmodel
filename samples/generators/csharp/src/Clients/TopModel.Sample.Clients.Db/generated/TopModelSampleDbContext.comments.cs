@@ -30,6 +30,11 @@ public partial class TopModelSampleDbContext : DbContext
         profil.Property(p => p.DateCreation).HasComment("Date de création de l'utilisateur.");
         profil.Property(p => p.DateModification).HasComment("Date de modification de l'utilisateur.");
 
+        var profilDroit = modelBuilder.Entity<ProfilDroit>();
+        profilDroit.ToTable(t => t.HasComment("Association N-N Profils <> Droits"));
+        profilDroit.Property(p => p.ProfilId).HasComment("Profil.");
+        profilDroit.Property(p => p.DroitCode).HasComment("Droit.");
+
         var typeDroit = modelBuilder.Entity<TypeDroit>();
         typeDroit.ToTable(t => t.HasComment("Type de droit"));
         typeDroit.Property(p => p.Code).HasComment("Code du type de droit");

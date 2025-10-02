@@ -36,7 +36,16 @@ class:
         exclude:
           - DateCreation
           - DateModification
+          - ProfilDroits
           - Utilisateurs
+    - alias:
+        class: ProfilDroit
+        include: DroitCode
+      name: Droits
+      label: Droits
+      required: false
+      as: list
+      comment: Liste des droits du profil.
 
     - alias:
         class: Profil
@@ -60,7 +69,7 @@ class:
   comment: Détail d'un profil en écriture.
   properties:
     - alias:
-        class: Profil
+        class: ProfilRead
         exclude:
           - Id
           - DateCreation

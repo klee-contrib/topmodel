@@ -13,9 +13,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\InverseJoinColumn;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
@@ -34,12 +31,10 @@ class Profil
   private string $libelle;
 
   /**
-   * @var Collection<Droit>
+   * @var Collection<ProfilDroit>
    */
-  #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
-  #[InverseJoinColumn(name: 'DRO_CODE', referencedColumnName: 'DRO_CODE')]
-  #[ManyToMany(targetEntity: Droit::class)]
-  private Collection $droits;
+  #[OneToMany(mappedBy: 'profil', targetEntity: ProfilDroit::class)]
+  private Collection $profilDroits;
 
   /**
    * @var Collection<Utilisateur>
@@ -55,7 +50,7 @@ class Profil
 
   public function __construct()
   {
-    $this->droits = new ArrayCollection();
+    $this->profilDroits = new ArrayCollection();
     $this->utilisateurs = new ArrayCollection();
   }
 
@@ -70,11 +65,11 @@ class Profil
   }
 
   /**
-   * @return Collection<Droit>|null
+   * @return Collection<ProfilDroit>
    */
-  public function getDroits(): Collection|null
+  public function getProfilDroits(): Collection
   {
-    return $this->droits;
+    return $this->profilDroits;
   }
 
   /**
@@ -110,11 +105,11 @@ class Profil
   }
 
   /**
-   * @param Collection<Droit>|null $droits
+   * @param Collection<ProfilDroit> $profilDroits
    */
-  public function setDroits(Collection|null $droits): self
+  public function setProfilDroits(Collection|null $profilDroits): self
   {
-    $this->droits = $droits;
+    $this->profilDroits = $profilDroits;
 
     return $this;
   }

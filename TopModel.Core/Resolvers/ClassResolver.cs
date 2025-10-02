@@ -348,7 +348,6 @@ internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Cl
             foreach (var ukRef in classe.UniqueKeyReferences)
             {
                 var uk = new List<IProperty>();
-                classe.UniqueKeys.Add(uk);
 
                 foreach (var ukPropRef in ukRef)
                 {
@@ -367,6 +366,15 @@ internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Cl
                     {
                         uk.Add(property);
                     }
+                }
+
+                if (uk.Count == 1 && uk[0] is AssociationProperty ap)
+                {
+                    ap.Type = AssociationType.OneToOne;
+                }
+                else
+                {
+                    classe.UniqueKeys.Add(uk);
                 }
             }
         }

@@ -28,9 +28,9 @@ COMMENT ON COLUMN PROFIL.PRO_DATE_MODIFICATION IS 'Date de modification de l''ut
 /**
   * Commentaires pour la table PROFIL_DROIT
  **/
-COMMENT ON TABLE PROFIL_DROIT IS 'Liste des droits du profil';
-COMMENT ON COLUMN PROFIL_DROIT.PRO_ID IS 'Liste des droits du profil';
-COMMENT ON COLUMN PROFIL_DROIT.DRO_CODE IS 'Liste des droits du profil';
+COMMENT ON TABLE PROFIL_DROIT IS 'Association N-N Profils <> Droits';
+COMMENT ON COLUMN PROFIL_DROIT.PRO_ID IS 'Profil.';
+COMMENT ON COLUMN PROFIL_DROIT.DRO_CODE IS 'Droit.';
 
 /**
   * Commentaires pour la table TYPE_DROIT

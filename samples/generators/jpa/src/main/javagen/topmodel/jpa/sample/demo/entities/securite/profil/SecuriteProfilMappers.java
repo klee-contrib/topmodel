@@ -4,9 +4,6 @@
 
 package topmodel.jpa.sample.demo.entities.securite.profil;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead;
@@ -47,12 +44,6 @@ public class SecuriteProfilMappers {
 
 		target.setId(profil.getId());
 		target.setLibelle(profil.getLibelle());
-		if (profil.getDroits() != null) {
-			target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
-		} else {
-			target.setDroits(null);
-		}
-
 		target.setDateCreation(profil.getDateCreation());
 		target.setDateModification(profil.getDateModification());
 		return target;
@@ -85,7 +76,7 @@ public class SecuriteProfilMappers {
 		}
 
 		target.setLibelle(source.getLibelle());
-		target.setDroits(source.getDroits());
+		target.setProfilDroits(source.getProfilDroits());
 		return target;
 	}
 
@@ -116,12 +107,6 @@ public class SecuriteProfilMappers {
 		}
 
 		target.setLibelle(source.getLibelle());
-		if (source.getDroits() != null) {
-			target.setDroits(source.getDroits().stream().map(Droit::new).collect(Collectors.toList()));
-		} else {
-			target.setDroits(null);
-		}
-
 		return target;
 	}
 }

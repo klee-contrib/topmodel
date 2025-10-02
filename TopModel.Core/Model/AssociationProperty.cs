@@ -60,6 +60,8 @@ public class AssociationProperty : IProperty
 
     public virtual AssociationType Type { get; set; }
 
+    public Reference? ExplicitType { get; set; }
+
     public virtual string As { get; set; } = "list";
 
     public virtual bool Required { get; set; }

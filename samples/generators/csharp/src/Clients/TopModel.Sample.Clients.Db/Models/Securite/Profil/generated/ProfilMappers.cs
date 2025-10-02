@@ -24,7 +24,6 @@ public static class ProfilMappers
         {
             Id = profil.Id,
             Libelle = profil.Libelle,
-            Droits = profil.Droits,
             DateCreation = profil.DateCreation,
             DateModification = profil.DateModification
         };
@@ -40,7 +39,7 @@ public static class ProfilMappers
         return new Profil
         {
             Libelle = source.Libelle,
-            Droits = source.Droits
+            ProfilDroits = source.ProfilDroits
         };
     }
 
@@ -53,7 +52,7 @@ public static class ProfilMappers
     public static Profil ToProfil(this Profil source, Profil dest)
     {
         dest.Libelle = source.Libelle;
-        dest.Droits = source.Droits;
+        dest.ProfilDroits = source.ProfilDroits;
         return dest;
     }
 
@@ -66,8 +65,7 @@ public static class ProfilMappers
     {
         return new Profil
         {
-            Libelle = source.Libelle,
-            Droits = source.Droits
+            Libelle = source.Libelle
         };
     }
 
@@ -80,7 +78,6 @@ public static class ProfilMappers
     public static Profil ToProfil(this ProfilWrite source, Profil dest)
     {
         dest.Libelle = source.Libelle;
-        dest.Droits = source.Droits;
         return dest;
     }
 }

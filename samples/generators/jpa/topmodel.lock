@@ -11,6 +11,7 @@ generatedFiles:
   - ./src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/profil/ProfilController.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurController.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDAO.java
+  - ./src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDroitDAO.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/UtilisateurDAO.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilItem.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilRead.java
@@ -20,6 +21,7 @@ generatedFiles:
   - ./src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurWrite.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Droit.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Profil.java
+  - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/ProfilDroit.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/SecuriteProfilMappers.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/TypeDroit.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/SecuriteUtilisateurMappers.java

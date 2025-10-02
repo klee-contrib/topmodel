@@ -113,6 +113,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                             ap.Role = value!.Value;
                             break;
                         case "type":
+                            ap.ExplicitType = new Reference(value!);
                             ap.Type = value!.Value switch
                             {
                                 "oneToOne" => AssociationType.OneToOne,

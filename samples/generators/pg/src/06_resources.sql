@@ -21,7 +21,6 @@ INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.profil.droit.value
 /**		Initialisation des traductions des propriétés de la table PROFIL		**/
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.profil.profil.id', 'Id technique du profil');
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.profil.profil.libelle', 'Libellé du profil');
-INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.profil.profil.droits', 'Droits');
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('common.entityListeners.dateCreation', 'Date de création');
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('common.entityListeners.dateModification', 'Date de modification');
 

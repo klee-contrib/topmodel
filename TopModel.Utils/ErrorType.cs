@@ -360,5 +360,10 @@ public enum ErrorType
     /// </summary>
     TMD9007,
 
+    /// <summary>
+    /// La propriété `type` est dépréciée.
+    /// </summary>
+    TMD9008,
+
     #endregion
 }

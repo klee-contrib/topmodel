@@ -12,12 +12,14 @@
             }
         },
         "profil": {
-            "droits": "Droits",
             "id": "Id technique du profil",
             "libelle": "Libellé du profil"
         },
         "profilItem": {
             "nombreUtilisateurs": "Nombre d'utilisateurs affectés"
+        },
+        "profilRead": {
+            "droits": "Droits"
         },
         "typeDroit": {
             "code": "Type de droit",
