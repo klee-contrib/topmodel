@@ -668,24 +668,17 @@ public class JpaModelPropertyGenerator(
             @$"{property.Type}",
             imports: $"{JavaxOrJakarta}.persistence.{property.Type}"
         );
+        association
+            .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")
+            .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
+
         if (property is ReverseAssociationProperty rap)
         {
-            association
-                .AddAttribute(
-                    "cascade",
-                    "{CascadeType.PERSIST, CascadeType.MERGE}",
-                    $"{JavaxOrJakarta}.persistence.CascadeType"
-                )
-                .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType")
-                .AddAttribute("mappedBy", $@"""{rap.ReverseProperty.NameByClassCamel}""");
+            association.AddAttribute("mappedBy", $@"""{rap.ReverseProperty.NameByClassCamel}""");
         }
         else
         {
             var pk = property.Class.PrimaryKey.Single().SqlName;
-
-            association
-                .AddAttribute("cascade", "CascadeType.ALL", $"{JavaxOrJakarta}.persistence.CascadeType")
-                .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
 
             if (property.ReverseProperty != null)
             {
