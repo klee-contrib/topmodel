@@ -1,6 +1,10 @@
 # Changelog JPA
 
-## 3.1.0
+## 3.2.1
+
+- [`0637de6`](https://github.com/klee-contrib/topmodel/commit/0637de6e18cc64f5cce07897574517feafbc8dcb) - [JPA] Uniformisation cascade=ALL sur le oneToMany et reverse ManyToOne
+
+## 3.2.0
 
 Compatibilité avec Topmodel 3.2
 

@@ -36,7 +36,6 @@ public partial record Profil
     /// <summary>
     /// Liste des droits du profil.
     /// </summary>
-    [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
     [Domain(Domains.CodeListe)]
     [NotMapped]
@@ -45,7 +44,6 @@ public partial record Profil
     /// <summary>
     /// Association réciproque de Utilisateur.ProfilId.
     /// </summary>
-    [Column("uti_id")]
     [Domain(Domains.IdListe)]
     [NotMapped]
     public int[] Utilisateurs { get; set; }

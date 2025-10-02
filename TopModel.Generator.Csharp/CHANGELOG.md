@@ -1,3 +1,7 @@
+## 3.1.3
+
+- [`f7b3475`](https://github.com/klee-contrib/topmodel/commit/f7b347537de55e0359c27053c9d461458be11f46) - [C#] Fix annotation [Column] en trop sur xxToMany
+
 ## 3.1.2
 
 - [`08dfc43`](https://github.com/klee-contrib/topmodel/commit/08dfc43d97603ac527078e8f466fa6d209c3f9c2) - [Core/C#] Fix required en trop sur associations ToMany

@@ -64,7 +64,7 @@ public class Profil {
 	/**
 	 * Association réciproque de Utilisateur.ProfilId.
 	 */
-	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "profil")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "profil")
 	private List<Utilisateur> utilisateurs;
 
 	/**
