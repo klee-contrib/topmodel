@@ -35,3 +35,7 @@ jobs:
           pat: ${{secrets.VS_MARKETPLACE_API_KEY}}
           registryUrl: https://marketplace.visualstudio.com
           packagePath: TopModel.VSCode
+
+      - run: npx ovsx publish -p ${{secrets.OPEN_VSX_API_KEY}} 
+        working-directory: TopModel.VSCode
+        name: Publish to open-vsx Marketplace
