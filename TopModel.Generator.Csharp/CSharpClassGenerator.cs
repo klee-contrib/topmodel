@@ -390,6 +390,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && Classes.Contains(prop.Class)
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
+                && property is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
             )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
