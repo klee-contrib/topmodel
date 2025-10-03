@@ -35,13 +35,13 @@ Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM D
 
 #### Ignorer les warnings
 
-Il est possible de rendre silencieux certains Warnings depuis le fichier de configuration. Pour cela, ajouter la propriété `nowarn`. L'ensemble des warnings entrés dans cette propriété seront ignorés à la génération et dans l'extension.
+Il est possible de rendre silencieux certains Warnings depuis le fichier de configuration. Pour cela, ajouter la propriété `noWarn`. L'ensemble des warnings entrés dans cette propriété seront ignorés à la génération et dans l'extension.
 
 Exemple :
 
 ```yaml
 app: Exemple
-nowarn:
+noWarn:
   - TMD0005 # Ignore le warning sur la dupplication des trigram
 ```
 
