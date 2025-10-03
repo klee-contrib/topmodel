@@ -1,5 +1,9 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.12.8
+
+- Revert du commit mentionné en dessous (😁)
+
 ## 1.12.6
 
 - [`c4c14b4`](https://github.com/klee-contrib/topmodel/commit/c4c14b412019f19e81ad75e507ca4ab61f9f9289) - [tmdgen - SQL] Fix association PK pour qu'elle ait "type: oneToOne" aussi.
