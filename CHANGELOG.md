@@ -8,6 +8,14 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.2.1
+
+- [#502](https://github.com/klee-contrib/topmodel/pull/502) - Dépréciation de `association.type`
+
+  Un warning a été ajouté pour prévenir que `association.type` va disparaître dans la prochaine version majeure de TopModel et pour guider vers les alternatives.
+
+  Une association utilisée comme PK simple, ou une association sur laquelle une clé d'unicité est définie, sera désormais maintenant automatiquement convertie en `oneToOne`.
+
 ## 3.2.0
 
 - [#500](https://github.com/klee-contrib/topmodel/pull/500) - Gestion des dépendances circulaires entre fichier

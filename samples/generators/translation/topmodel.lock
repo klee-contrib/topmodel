@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.2.0
+version: 3.2.1
 custom:
   ../../../TopModel.Generator.Translation: ede6323a73bbcd9cd7689425ea6213c2
 generatedFiles:

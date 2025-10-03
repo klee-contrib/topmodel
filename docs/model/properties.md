@@ -28,11 +28,7 @@ Une association peut être obligatoire (ou non) (`required`) et optionnellement 
 
 Une association peut être (ou faire partie de) la clé primaire de la classe (via `primaryKey`).
 
-Une association peut également définir sa multiplicité : `manyToOne` (par défaut), `oneToOne`, `oneToMany` et `manyToMany`.
-
-Une `manyToOne` correspond à une clé étrangère simple vers la classe référencée, tandis que `oneToOne` y ajoute une contrainte d'unicité. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`.
-
-Les `oneToMany` et `manyToMany` sont des associations qui seront implémentées comme des collections de la classe cible. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.PluralName}{Rôle}`. Le domaine de la clé primaire doit définir un `asDomain` `list` pour pouvoir définir une telle association (le `asDomain` correspondant peut être surchargé en renseignant la propriété `as` sur l'association, qui ne sera utilisée que pour ces types d'associations-là). Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
+Le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`.
 
 La classe référencée par l'association doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
@@ -44,7 +40,7 @@ required: true
 comment: C'est une FK obligatoire
 ```
 
-Il est par ailleurs possible de définir un `role` pour l'association. Le rôle est une chaîne de caractères permettant de spécifier l'usage de l'association. Il viendra se placer en suffix du nom de la propriété.
+Et avec un rôle :
 
 ```yaml
 association: ClasseCible
@@ -53,13 +49,15 @@ comment: C'est une FK obligatoire
 role: Exemple
 ```
 
-La propriété qui en découlera sera `ClasseCibleExempleId` (si la `primaryKey` de `ClasseCible` est `Id`). Il est possible de surcharger le nom de la classe cible dans la propriété (donc ici `ClasseCible`) via la propriété `className`.
+Dans ce cas, la propriété qui en découlera sera `ClasseCibleIdExemple` (si la `primaryKey` de `ClasseCible` est `Id`). Il est possible de surcharger le nom de la classe cible dans la propriété (donc ici `ClasseCible`) via la propriété `className`.
 
 Une association peut référencer une classe non persistée, dans ce cas il faut identifier la propriété de la classe cible à utiliser via `property` (puisqu'une telle classe ne peut pas avoir de clé primaire par définition).
 
 ### Associations réciproques
 
-Via `withReverse`, il est possible de déclarer l'association réciproque sur la classe cible de l'association. Son type sera l'inverse de celle de l'association courante (`ManyToOne` <> `OneToMany`, et `OneToOne` <> `OneToOne` / `ManyToMany` <> `ManyToMany`), et elle sera **ajoutée effectivement comme une propriété d'association sur la classe cible**. En particulier, cela imposera une **référence circulaire** entre les deux classes, et donc les fichiers qui les contiennent. Cette dépendance devra être déclarée explicitement (si elle ne l'est pas déjà par ailleurs, ou si les deux classes ne sont pas déjà dans le même fichier) sur le fichier de la classe cible. Les cycles de dépendances sont traités comme un seul gros fichier par TopModel, donc pour simplifier la résolution et éviter des effets de bord indésirables, il est conseillé de les réduire au minimum possible.
+Via `withReverse`, il est possible de déclarer **l'association réciproque sur la classe cible de l'association**. Pour une association sans contrainte d'unicité (parce qu'il s'agit d'une clé primaire simple, où bien si une clé d'unicité simple est définie dessus), classiquement appelée "Many to One", l'association réciproque sera une "One to Many", représentée par une collection de la classe source de l'association. Pour une association avec contrainte d'unicité (une "One to One"), la réciproque sera également une "One to One".
+
+Cette propriété sera **ajoutée effectivement comme une propriété d'association sur la classe cible**. En particulier, cela imposera une **référence circulaire** entre les deux classes, et donc les fichiers qui les contiennent. Cette dépendance devra être déclarée explicitement (si elle ne l'est pas déjà par ailleurs, ou si les deux classes ne sont pas déjà dans le même fichier) sur le fichier de la classe cible. Les cycles de dépendances sont traités comme un seul gros fichier par TopModel, donc pour simplifier la résolution et éviter des effets de bord indésirables, il est conseillé de les réduire au minimum possible.
 
 Une association réciproque peut être déclarée via `withReverse: true`, ou par un objet qui peut paramétrer la propriété d'association réciproque :
 
@@ -73,7 +71,21 @@ withReverse:
 
 Les associations réciproques étant de vraies propriétés de classe dans le modèle, elles sont disponibles dans les alias et les mappers.
 
-**L'association réciproque est obligatoirement ajoutée pour une association `OneToMany`**, indépendement de la valeur de `withReverse`.
+Les associations réciproques de type "One to Many" sont des propriétés :
+
+- Dont le nom de la propriété sera déterminé automatiquement comme étant `{ClasseSource.PluralName}{Rôle}`
+- Dont le domaine sera égal au `asDomain` `list` (par défaut, surchargeable via `as` sur l'association) de la propriété d'association source. Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
+
+### Types d'association (déprécié)
+
+Une association peut définir explicitement sa multiplicité via la propriété `type`: `manyToOne` (par défaut), `oneToOne`, `oneToMany` et `manyToMany`. Cette définition est **dépréciée** et sera définitivement retirée en 4.0.
+
+Par rapport au fonctionnement décrit précédemment :
+
+- `manyToOne` ne change rien
+- `oneToOne` ajoute automatiquement la contrainte d'unicité sur la propriété d'association
+- `oneToMany` est la même chose qu'une réciproque de `manyToOne`, mais définie sur l'autre classe. **L'association réciproque** (qui est donc une `manyToOne`) **est obligatoirement ajoutée**, indépendement de la valeur de `withReverse`.
+- `manyToMany` introduit une classe de jointure implicite entre les deux classes associées. La réciproque d'une `manyToMany` est également une `manyToMany`.
 
 ## Composition
 
