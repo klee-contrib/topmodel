@@ -429,7 +429,38 @@ internal class PropertyResolver(
                     break;
 
                 case AssociationProperty ap:
-                    if ((ap.Class == null || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1) && ap.Type.IsToMany())
+                    if (ap.ExplicitType != null)
+                    {
+                        var warning = "La propriété `type` est dépréciée et sera retirée en 4.0.";
+
+                        switch (ap.Type)
+                        {
+                            case AssociationType.ManyToOne:
+                                warning += " 'manyToOne' est la valeur par défaut, vous pouvez la retirer.";
+                                break;
+                            case AssociationType.OneToOne:
+                                warning +=
+                                    " Vous pouvez définir une 'oneToOne' en retirant la définition de 'type' et en ajoutant une contrainte d'unicité sur la propriété.";
+                                break;
+                            case AssociationType.OneToMany:
+                                warning +=
+                                    " Vous devez définir l'association réciproque sur la classe cible pour définir une 'oneToMany'.";
+                                break;
+                            case AssociationType.ManyToMany:
+                                warning +=
+                                    " Vous devez définir une classe d'association explicite pour votre `manyToMany`.";
+                                break;
+                        }
+
+                        yield return new ModelError(ErrorType.TMD9008, ap, warning, ap.ExplicitType, isError: false);
+                    }
+
+                    if (
+                        (
+                            ap.Class == null
+                            || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1
+                        ) && ap.Type.IsToMany()
+                    )
                     {
                         yield return new ModelError(
                             ErrorType.TMD9005,

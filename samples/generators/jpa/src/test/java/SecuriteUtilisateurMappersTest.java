@@ -10,6 +10,7 @@ import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead;
 import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite;
 import topmodel.jpa.sample.demo.entities.securite.profil.Droit;
 import topmodel.jpa.sample.demo.entities.securite.profil.Profil;
+import topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit;
 import topmodel.jpa.sample.demo.entities.securite.utilisateur.SecuriteUtilisateurMappers;
 import topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur;
@@ -30,7 +31,10 @@ public class SecuriteUtilisateurMappersTest {
         utilisateur.setActif(true);
         var profil = new Profil();
         profil.setId(2);
-        profil.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
+        var profilDroit = new ProfilDroit();
+        profilDroit.setProfil(profil);
+        profilDroit.setDroit(Droit.CREATE);
+        profil.setProfilDroits(Arrays.asList(profilDroit));
         utilisateur.setProfil(profil);
         utilisateur.setTypeUtilisateur(new TypeUtilisateur(TypeUtilisateurCode.ADMIN));
 

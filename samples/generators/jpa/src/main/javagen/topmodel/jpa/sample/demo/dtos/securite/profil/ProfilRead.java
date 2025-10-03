@@ -45,7 +45,7 @@ public class ProfilRead implements Serializable {
 
 	/**
 	 * Liste des droits du profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDroits() Profil#getDroits()}
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#getDroit() ProfilDroit#getDroit()}
 	 */
 	@Size(max = 10)
 	private List<DroitCode> droits;

@@ -21,11 +21,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur;
@@ -56,10 +52,8 @@ public class Profil {
 	/**
 	 * Liste des droits du profil.
 	 */
-	@ManyToMany
-	@OrderBy("code ASC")
-	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
-	private List<Droit> droits;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "profil")
+	private List<ProfilDroit> profilDroits;
 
 	/**
 	 * Association réciproque de Utilisateur.ProfilId.
@@ -100,15 +94,15 @@ public class Profil {
 	}
 
 	/**
-	 * Getter for droits.
+	 * Getter for profilDroits.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#droits droits}.
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#profilDroits profilDroits}.
 	 */
-	public List<Droit> getDroits() {
-		if (this.droits == null) {
-			this.droits = new ArrayList<>();
+	public List<ProfilDroit> getProfilDroits() {
+		if (this.profilDroits == null) {
+			this.profilDroits = new ArrayList<>();
 		}
-		return this.droits;
+		return this.profilDroits;
 	}
 
 	/**
@@ -158,11 +152,11 @@ public class Profil {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#droits droits}.
-	 * @param droits value to set.
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#profilDroits profilDroits}.
+	 * @param profilDroits value to set.
 	 */
-	public void setDroits(List<Droit> droits) {
-		this.droits = droits;
+	public void setProfilDroits(List<ProfilDroit> profilDroits) {
+		this.profilDroits = profilDroits;
 	}
 
 	/**
@@ -205,7 +199,7 @@ public class Profil {
 	public enum Fields {
         ID(Integer.class), //
         LIBELLE(String.class), //
-        DROITS(List.class), //
+        PROFIL_DROITS(List.class), //
         UTILISATEURS(List.class), //
         DATE_CREATION(LocalDateTime.class), //
         DATE_MODIFICATION(LocalDateTime.class);

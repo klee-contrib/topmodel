@@ -154,7 +154,7 @@
             },
             "type": {
               "type": "string",
-              "description": "Type de l'association. Par défaut: 'manyToOne'",
+              "description": "[Déprécié] Type de l'association.",
               "enum": [
                 "oneToOne",
                 "oneToMany",

@@ -25,7 +25,7 @@ alter table DROIT
 /**
   * Création de l'index de clef étrangère pour PROFIL_DROIT.PRO_ID
  **/
-create index IDX_PROFIL_DROIT_PRO_ID_FK on PROFIL_DROIT (
+create index IDX_PRD_PRO_ID_FK on PROFIL_DROIT (
 	PRO_ID ASC
 );
 
@@ -39,7 +39,7 @@ alter table PROFIL_DROIT
 /**
   * Création de l'index de clef étrangère pour PROFIL_DROIT.DRO_CODE
  **/
-create index IDX_PROFIL_DROIT_DRO_CODE_FK on PROFIL_DROIT (
+create index IDX_PRD_DRO_CODE_FK on PROFIL_DROIT (
 	DRO_CODE ASC
 );
 

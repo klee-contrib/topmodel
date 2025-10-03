@@ -10,7 +10,6 @@ export const securite = {
             typeDroitCode: "TypeDroitCode"
         },
         profil: {
-            droits: "Droits",
             id: "Id technique du profil",
             libelle: "Libellé du profil"
         },
@@ -18,6 +17,7 @@ export const securite = {
             nombreUtilisateurs: "Nombre d'utilisateurs affectés"
         },
         profilRead: {
+            droits: "Droits",
             utilisateurs: "Utilisateurs"
         },
         typeDroit: {

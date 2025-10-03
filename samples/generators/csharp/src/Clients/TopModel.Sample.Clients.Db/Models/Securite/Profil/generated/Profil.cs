@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Common;
-using TopModel.Sample.Securite.Models.Profil;
 
 namespace TopModel.Sample.Clients.Db.Models.Securite.Profil;
 
@@ -36,10 +35,9 @@ public partial record Profil
     /// <summary>
     /// Liste des droits du profil.
     /// </summary>
-    [ReferencedType(typeof(Droit))]
-    [Domain(Domains.CodeListe)]
+    [Domain(Domains.IdListe)]
     [NotMapped]
-    public Droit.Codes[] Droits { get; set; }
+    public int[] ProfilDroits { get; set; }
 
     /// <summary>
     /// Association réciproque de Utilisateur.ProfilId.

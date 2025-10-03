@@ -191,10 +191,6 @@ public class TmdWriter : IDisposable
             if (ap.PrimaryKey)
             {
                 _writer.WriteLine($"    {listPrefix}primaryKey: true");
-                if (ap.Class.Properties.OfType<TmdRegularProperty>().Count(p => p.PrimaryKey) == 1)
-                {
-                    _writer.WriteLine($"    {listPrefix}type: oneToOne");
-                }
             }
         }
         else if (property is TmdRegularProperty rp)

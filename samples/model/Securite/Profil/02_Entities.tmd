@@ -29,11 +29,6 @@ class:
       required: true
       comment: Libellé du profil.
 
-    - association: Droit
-      label: Droits
-      comment: Liste des droits du profil
-      type: manyToMany
-
   mappers:
     to:
       - class: Profil
@@ -42,3 +37,19 @@ class:
           DateCreation: false
           DateModification: false
           Utilisateurs: false
+---
+class:
+  name: ProfilDroit
+  trigram: PRD
+  comment: Association N-N Profils <> Droits
+
+  properties:
+    - association: Profil
+      primaryKey: true
+      withReverse:
+        comment: Liste des droits du profil.
+      comment: Profil.
+
+    - association: Droit
+      primaryKey: true
+      comment: Droit.

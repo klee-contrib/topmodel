@@ -25,4 +25,4 @@ create nonclustered index [IDX_PROFIL_DROIT_DRO_CODE_FK]
 go
 
 /* Description property. */
-EXECUTE sp_addextendedproperty 'Description', 'Droits', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT';
+EXECUTE sp_addextendedproperty 'Description', 'ProfilDroit', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT';

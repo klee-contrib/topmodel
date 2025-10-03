@@ -8,6 +8,7 @@ custom:
 generatedFiles:
   - ./src/Entity/Securite/Profil/Droit.php
   - ./src/Entity/Securite/Profil/Profil.php
+  - ./src/Entity/Securite/Profil/ProfilDroit.php
   - ./src/Entity/Securite/Profil/TypeDroit.php
   - ./src/Entity/Securite/Utilisateur/TypeUtilisateur.php
   - ./src/Entity/Securite/Utilisateur/Utilisateur.php
@@ -16,6 +17,7 @@ generatedFiles:
   - ./src/Model/Securite/Utilisateur/UtilisateurRead.php
   - ./src/Model/Securite/Utilisateur/UtilisateurWrite.php
   - ./src/Repository/Securite/Profil/DroitRepository.php
+  - ./src/Repository/Securite/Profil/ProfilDroitRepository.php
   - ./src/Repository/Securite/Profil/ProfilRepository.php
   - ./src/Repository/Securite/Profil/TypeDroitRepository.php
   - ./src/Repository/Securite/Utilisateur/TypeUtilisateurRepository.php

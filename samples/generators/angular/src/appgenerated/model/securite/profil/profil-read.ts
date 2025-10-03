@@ -38,7 +38,7 @@ export const ProfilReadEntity: ProfilReadEntityType = {
         name: "droits",
         domain: DO_CODE_LISTE,
         isRequired: false,
-        label: "securite.profil.profil.droits"
+        label: "securite.profil.profilRead.droits"
     },
     dateCreation: {
         type: "field",
