@@ -9,8 +9,8 @@ import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
 import topmodel.jpa.sample.demo.entities.securite.profil.Droit;
 import topmodel.jpa.sample.demo.entities.securite.profil.Profil;
+import topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit;
 import topmodel.jpa.sample.demo.entities.securite.profil.SecuriteProfilMappers;
-import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 
 public class SecuriteProfilMappersTest {
 
@@ -18,10 +18,13 @@ public class SecuriteProfilMappersTest {
     public void testCreateProfilRead() {
         // GIVEN
         // Create a Profil object with some data
-        Profil profil = new Profil();
+        var profil = new Profil();
         profil.setId(1);
         profil.setLibelle("Test Profil");
-        profil.setDroits(Arrays.asList(Droit.DELETE, Droit.CREATE));
+        var profilDroit = new ProfilDroit();
+        profilDroit.setProfil(profil);
+        profilDroit.setDroit(Droit.CREATE);
+        profil.setProfilDroits(Arrays.asList(profilDroit));
 
         // WHEN
         // Call the createProfilRead method with the Profil object and a null target
@@ -31,8 +34,6 @@ public class SecuriteProfilMappersTest {
         // Verify that the ProfilRead object has the same data as the Profil object
         assertThat(profilRead.getId()).isEqualTo(profil.getId());
         assertThat(profilRead.getLibelle()).isEqualTo(profil.getLibelle());
-        assertThat(profilRead.getDroits()).hasSize(profil.getDroits().size());
-        assertThat(profilRead.getDroits()).containsAll(Arrays.asList(DroitCode.DELETE, DroitCode.CREATE));
     }
 
     @Test
@@ -41,7 +42,6 @@ public class SecuriteProfilMappersTest {
         // Create a source Profil object with some data
         Profil source = new Profil();
         source.setLibelle("Source Profil");
-        source.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // WHEN
         // Call the toProfil method with the source Profil object and a null target
@@ -51,7 +51,6 @@ public class SecuriteProfilMappersTest {
         // Verify that the target Profil object has the same data as the source Profil
         // object
         assertThat(target.getLibelle()).isEqualTo(source.getLibelle());
-        assertThat(target.getDroits()).isEqualTo(source.getDroits());
     }
 
     @Test
@@ -60,7 +59,6 @@ public class SecuriteProfilMappersTest {
         // Create a source ProfilWrite object with some data
         ProfilWrite source = new ProfilWrite();
         source.setLibelle("Source Profil");
-        source.setDroits(Arrays.asList(DroitCode.CREATE, DroitCode.DELETE));
 
         // WHEN
         // Call the toProfil method with the source ProfilWrite object and a null target
@@ -70,8 +68,6 @@ public class SecuriteProfilMappersTest {
         // Verify that the target Profil object has the same data as the source
         // ProfilWrite object
         assertThat(target.getLibelle()).isEqualTo(source.getLibelle());
-        assertThat(target.getDroits()).hasSize(source.getDroits().size());
-        assertThat(target.getDroits().stream().map(Droit::getCode)).containsAll(source.getDroits());
     }
 
     @Test
@@ -80,12 +76,10 @@ public class SecuriteProfilMappersTest {
         // Create a source Profil object with some data
         Profil source = new Profil();
         source.setLibelle("Source Profil");
-        source.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // Create a target Profil object with some data
         Profil target = new Profil();
         target.setLibelle("Target Profil");
-        target.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // WHEN
         // Call the toProfil method with the source Profil object and the target Profil
@@ -96,7 +90,6 @@ public class SecuriteProfilMappersTest {
         // Verify that the result Profil object has the same data as the source Profil
         // object
         assertThat(result.getLibelle()).isEqualTo(source.getLibelle());
-        assertThat(result.getDroits()).isEqualTo(source.getDroits());
     }
 
     @Test
@@ -105,12 +98,10 @@ public class SecuriteProfilMappersTest {
         // Create a source ProfilWrite object with some data
         ProfilWrite source = new ProfilWrite();
         source.setLibelle("Source Profil");
-        source.setDroits(Arrays.asList(DroitCode.CREATE, DroitCode.DELETE));
 
         // Create a target Profil object with some data
         Profil target = new Profil();
         target.setLibelle("Target Profil");
-        target.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // WHEN
         // Call the toProfil method with the source ProfilWrite object and the target
@@ -121,8 +112,6 @@ public class SecuriteProfilMappersTest {
         // Verify that the result Profil object has the same data as the source
         // ProfilWrite object
         assertThat(result.getLibelle()).isEqualTo(source.getLibelle());
-        assertThat(result.getDroits()).hasSize(source.getDroits().size());
-        assertThat(result.getDroits().stream().map(Droit::getCode)).containsAll(source.getDroits());
     }
 
     @Test
