@@ -157,11 +157,6 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
-    /// Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.
-    /// </summary>
-    TMD3006,
-
-    /// <summary>
     /// Les associations d'une clé primaire composite doivent être de type 'manyToOne'.
     /// </summary>
     TMD3007,

@@ -55,18 +55,9 @@ internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Cl
                     );
                 }
 
-                if (
-                    classe.PrimaryKey.Count() == 1
-                    && classe.PrimaryKey.First() is AssociationProperty ap
-                    && ap.Type != AssociationType.OneToOne
-                )
+                if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap)
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3006,
-                        modelFile,
-                        $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.",
-                        ap.GetLocation()
-                    );
+                    ap.Type = AssociationType.OneToOne;
                 }
 
                 if (
