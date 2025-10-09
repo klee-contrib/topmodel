@@ -262,12 +262,13 @@ public class JpaModelPropertyGenerator(
             Comment = { property.Comment },
         };
 
-        if (property is AliasProperty ap && Classes.Contains(ap.Property.Class))
+        if (
+            property is AliasProperty ap
+            && Classes.Contains(ap.Property.Class)
+            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class))
+        )
         {
-            var getter =
-                Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class)
-                    ? string.Empty
-                    : $"#{GetGetterName(ap.Property)}()";
+            var getter = $"#{GetGetterName(ap.Property)}()";
             javaField.Comment.Add(
                 $"Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
             );

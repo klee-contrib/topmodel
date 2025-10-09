@@ -45,7 +45,7 @@ internal class EndpointResolver(IList<ModelFile> modelFiles)
                     )
                     {
                         yield return new ModelError(
-                            ErrorType.TMD7002,
+                            ErrorType.TMD7004,
                             endpoint,
                             $"Le paramètre de requête (ou multipart) '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.",
                             queryParam.GetLocation(),
@@ -66,7 +66,7 @@ internal class EndpointResolver(IList<ModelFile> modelFiles)
                         if (param == null)
                         {
                             yield return new ModelError(
-                                ErrorType.TMD7003,
+                                ErrorType.TMD7005,
                                 endpoint,
                                 $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.Select(p => p.GetParamName()))}."
                             );

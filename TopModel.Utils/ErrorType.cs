@@ -243,14 +243,24 @@ public enum ErrorType
     TMD7001,
 
     /// <summary>
-    /// Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.
+    /// Le fichier définit un préfixe d'endpoint alors qu'il ne contient pas d'endpoint.
     /// </summary>
     TMD7002,
 
     /// <summary>
-    /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
+    /// Le fichier définit un nom de fichier d'endpoint alors qu'il ne contient pas d'endpoint.
     /// </summary>
     TMD7003,
+
+    /// <summary>
+    /// Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.
+    /// </summary>
+    TMD7004,
+
+    /// <summary>
+    /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
+    /// </summary>
+    TMD7005,
 
     #endregion
 

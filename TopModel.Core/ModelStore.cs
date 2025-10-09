@@ -500,6 +500,19 @@ public class ModelStore(
                 }
             }
         }
+        foreach (var file in Files.Where(f => !f.Endpoints.Any()))
+        {
+            if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
+            {
+                yield return new ModelError(
+                    ErrorType.TMD7002,
+                    file,
+                    $"Le fichier définit un préfixe d'endpoint alors qu'il ne contient pas de déclaration d'endpoint.",
+                    file.Options.Endpoints.Prefix?.GetLocation(),
+                    isError: false
+                );
+            }
+        }
     }
 
     private async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadFile(
