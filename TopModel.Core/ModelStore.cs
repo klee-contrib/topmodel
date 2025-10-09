@@ -470,7 +470,13 @@ public class ModelStore(
                 );
             }
 
-            if (files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1)
+            if (
+                files
+                    .Where(file => file.Endpoints.Any())
+                    .Select(file => file.Options.Endpoints.Prefix)
+                    .Distinct()
+                    .Count() > 1
+            )
             {
                 foreach (var file in files)
                 {
