@@ -11,7 +11,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
-    <Version>3.2.1</Version>
+    <Version>3.2.2</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel.</Description>

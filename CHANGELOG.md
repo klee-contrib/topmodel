@@ -8,6 +8,14 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.2.2
+
+- [`f069f54`](https://github.com/klee-contrib/topmodel/commit/f069f5438b5ba6076e4dac347c251d922f3fd558) - [Core] Tri des alias à résoudre en fonction de leur dépendances
+
+- [`31c86e0`](https://github.com/klee-contrib/topmodel/commit/31c86e0d797c677722b7347df1c48436016729e7) - [Core] Vérifier le préfix des endpoints uniquement pour les fichiers qui en ont
+
+- [`69a7501`](https://github.com/klee-contrib/topmodel/commit/69a7501989de85385c4beb4274c2c88f4fb3b1bb) - [Core] Ajouter un warning si le fichier contient des options d'endpoints alors qu'il ne déclare par de endpoint
+
 ## 3.2.1
 
 - [#502](https://github.com/klee-contrib/topmodel/pull/502) - Dépréciation de `association.type`
