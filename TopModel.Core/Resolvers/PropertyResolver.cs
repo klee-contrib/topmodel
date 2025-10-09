@@ -101,7 +101,24 @@ internal class PropertyResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveAliases(Func<AliasProperty, bool> filter)
     {
-        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>().Where(filter))
+        var aliasedProperties = modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>().Where(filter);
+        var sortedAliases = CoreUtils.Sort<AliasProperty>(
+            aliasedProperties,
+            a =>
+                aliasedProperties
+                    .Where(b =>
+                        (a.Class != b.Class || a.Endpoint != b.Endpoint || a.Decorator != b.Decorator)
+                        && (
+                            b.Class?.Name != null && b.Class?.Name == a.Reference?.ClassReference?.ReferenceName
+                            || b.Endpoint?.Name != null
+                                && b.Endpoint?.Name == a.Reference?.EndpointReference?.ReferenceName
+                            || b.Decorator?.Name != null
+                                && b.Decorator?.Name == a.Reference?.DecoratorReference?.ReferenceName
+                        )
+                    )
+                    .ToList()
+        );
+        foreach (var alp in sortedAliases)
         {
             IPropertyContainer propertyContainer;
 
