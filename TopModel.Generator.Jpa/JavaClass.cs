@@ -21,7 +21,7 @@ public class JavaClass(string name)
 
     public IList<string> Implements { get; } = [];
 
-    public bool Interface { get; set; }
+    public string ClassType { get; set; } = "class";
 
     public IList<JavaField> Fields { get; } = [];
 
@@ -30,6 +30,8 @@ public class JavaClass(string name)
     public IList<JavaMethod> Methods { get; } = [];
 
     public string Comment { get; set; } = string.Empty;
+
+    public IList<JavaClass> InnerClasses { get; } = [];
 
     public JavaClass Add(JavaAnnotation annotation)
     {
@@ -69,6 +71,26 @@ public class JavaClass(string name)
         return this;
     }
 
+    public JavaClass AddRange(IEnumerable<JavaField> javaFields)
+    {
+        foreach (var field in javaFields)
+        {
+            Add(field);
+        }
+
+        return this;
+    }
+
+    public JavaClass AddRange(IEnumerable<JavaConstructor> constructors)
+    {
+        foreach (var constructor in constructors)
+        {
+            Add(constructor);
+        }
+
+        return this;
+    }
+
     public JavaClass AddRange(IEnumerable<JavaMethod> methods)
     {
         foreach (var method in methods)
@@ -79,6 +101,17 @@ public class JavaClass(string name)
         return this;
     }
 
+    public JavaConstructor GetAllArgsConstructor()
+    {
+        var constructor = new JavaConstructor(Name);
+        foreach (var field in Fields)
+        {
+            constructor.Parameters.Add(new JavaMethodParameter(field.Type, field.Name));
+            constructor.Body.Add(new WriterLine() { Line = $"this.{field.Name} = {field.Name};", Indent = 0 });
+        }
+        return constructor;
+    }
+
     public string GetDeclaration()
     {
         var sb = new StringBuilder();
@@ -87,8 +120,7 @@ public class JavaClass(string name)
             sb.Append($"{Visibility} ");
         }
 
-        var classType = Interface ? "interface" : "class";
-        sb.Append($"{classType}");
+        sb.Append($"{ClassType}");
         if (!string.IsNullOrEmpty(Modifier))
         {
             sb.Append($" {Modifier}");

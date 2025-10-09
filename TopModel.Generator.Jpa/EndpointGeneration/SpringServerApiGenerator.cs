@@ -294,7 +294,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         var packageName = Config.GetPackageName(endpoints[0], tag);
         using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
-        var javaInterface = new JavaClass(className) { Interface = true, Package = packageName };
+        var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
         var annotations = GetClassAnnotations(endpoints[0].ModelFile);
         javaInterface.AddRange(annotations);
         javaInterface.AddRange(GetMethods(endpoints, tag));

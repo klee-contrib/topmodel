@@ -10,7 +10,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 {
     protected JpaConfig Config { get; set; } = config;
 
-    public void WriteFromMappers(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
+    public IEnumerable<JavaMethod> GetFromMappers(Class classe, IEnumerable<Class> availableClasses, string tag)
     {
         var fromMappers = classe
             .FromMappers.Where(c => c.ClassParams.All(p => availableClasses.Contains(p.Class)))
@@ -65,6 +65,15 @@ public class JavaConstructorGenerator(JpaConfig config)
                 $"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);"
             );
             constructor.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}'";
+            yield return constructor;
+        }
+    }
+
+    public void WriteFromMappers(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
+    {
+        var constructors = GetFromMappers(classe, availableClasses, tag).ToList();
+        foreach (var constructor in constructors)
+        {
             fw.WriteLine();
             fw.Write(1, constructor);
         }
@@ -72,7 +81,13 @@ public class JavaConstructorGenerator(JpaConfig config)
 
     public void WriteNoArgConstructor(JavaWriter fw, Class classe, string tag)
     {
+        var constructor = GetNoArgConstructor(classe, tag);
         fw.WriteLine();
+        fw.Write(1, constructor);
+    }
+
+    public JavaMethod GetNoArgConstructor(Class classe, string tag)
+    {
         var constructor = new JavaConstructor(classe.NamePascal)
         {
             Visibility = "public",
@@ -84,6 +99,6 @@ public class JavaConstructorGenerator(JpaConfig config)
         }
 
         constructor.AddBodyLine("// No arg constructor");
-        fw.Write(1, constructor);
+        return constructor;
     }
 }

@@ -208,29 +208,29 @@ public class JpaModelPropertyGenerator(
         }
     }
 
-    public virtual void WriteGetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
+    public virtual JavaMethod GetGetter(string tag, IProperty property, int indentLevel = 1)
     {
-        var propertyName = GetPropertyName(property);
-        var propertyType = GetPropertyType(property);
-        fw.WriteLine();
-        string getterName = GetGetterName(property);
-        var method = new JavaMethod(propertyType, getterName)
-        {
-            Visibility = "public",
-            Comment = $"Getter for {propertyName}",
-            ReturnComment = $"value of {{@link {property.Class.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
-        };
-        var genericType = propertyType.Split('<')[0];
+        var field = GetProperty(property, tag);
+        var method = field.DefaultGetter;
+        var genericType = field.Type.Split('<')[0];
         if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
         {
-            fw.AddImport($"java.util.{newableType}");
+            method.Imports.Add($"java.util.{newableType}");
+            method.Body.Clear();
             method
-                .AddBodyLine($"if (this.{propertyName} == null) {{")
-                .AddBodyLine(1, $"this.{propertyName} = new {newableType}<>();")
+                .AddBodyLine($"if (this.{field.Name} == null) {{")
+                .AddBodyLine(1, $"this.{field.Name} = new {newableType}<>();")
                 .AddBodyLine($"}}");
+            method.AddBodyLine(@$"return this.{field.Name};");
         }
 
-        method.AddBodyLine(@$"return this.{propertyName};");
+        return method;
+    }
+
+    public virtual void WriteGetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
+    {
+        var method = GetGetter(tag, property, indentLevel);
+        fw.WriteLine();
         fw.Write(indentLevel, method);
     }
 
@@ -242,52 +242,60 @@ public class JpaModelPropertyGenerator(
         }
     }
 
+    public virtual IEnumerable<JavaField> GetProperties(Class classe, string tag)
+    {
+        foreach (var property in classe.Properties)
+        {
+            yield return GetProperty(property, tag);
+        }
+    }
+
     public virtual void WriteProperty(JavaWriter fw, IProperty property, string tag)
     {
-        fw.WriteLine();
-        fw.WriteDocStart(1, property.Comment);
-        IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
+        fw.Write(1, GetProperty(property, tag));
+    }
+
+    public virtual JavaField GetProperty(IProperty property, string tag)
+    {
+        var javaField = new JavaField(GetPropertyType(property), GetPropertyName(property))
+        {
+            Comment = { property.Comment },
+        };
+
         if (property is AliasProperty ap && Classes.Contains(ap.Property.Class))
         {
             var getter =
                 Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class)
                     ? string.Empty
                     : $"#{GetGetterName(ap.Property)}()";
-            fw.WriteLine(
-                1,
-                $" * Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
+            javaField.Comment.Add(
+                $"Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
             );
         }
-
-        fw.WriteDocEnd(1);
+        IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
 
         if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)
         {
             annotations = GetDomainAnnotations(property, tag).Concat(annotations).ToList();
         }
 
-        fw.Write(1, annotations);
-        string defaultValue = GetDefaultValue(property);
-        fw.AddImports(GetDefaultValueImports(property, tag));
-        fw.AddImports(property.GetTypeImports(Config, tag));
-        fw.WriteLine(1, $"private {GetPropertyType(property)} {GetPropertyName(property)}{defaultValue};");
+        javaField.AddRange(annotations);
+        javaField.DefaultValue = GetDefaultValue(property);
+        javaField.Imports.AddRange(GetDefaultValueImports(property, tag));
+        javaField.Imports.AddRange(property.GetTypeImports(Config, tag));
+        return javaField;
     }
 
     public virtual void WriteSetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
     {
-        var propertyName = GetPropertyName(property);
+        var method = GetSetter(tag, property, indentLevel);
         fw.WriteLine();
-        var method = new JavaMethod("void", GetSetterName(property))
-        {
-            Visibility = "public",
-            Comment =
-                $"Set the value of {{@link {property.Class.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
-        }
-            .AddParameter(
-                new JavaMethodParameter(GetPropertyType(property), propertyName) { Comment = $"value to set" }
-            )
-            .AddBodyLine(@$"this.{propertyName} = {propertyName};");
         fw.Write(indentLevel, method);
+    }
+
+    public virtual JavaMethod GetSetter(string tag, IProperty property, int indentLevel = 1)
+    {
+        return GetProperty(property, tag).DefaulSetter;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(CompositionProperty property, string tag)
@@ -527,11 +535,11 @@ public class JpaModelPropertyGenerator(
             {
                 if (Config.EnumsAsEnums)
                 {
-                    return $" = {defaultValue}";
+                    return $"{defaultValue}";
                 }
                 else
                 {
-                    return $" = new {ap.Association.NamePascal}({defaultValue})";
+                    return $"new {ap.Association.NamePascal}({defaultValue})";
                 }
             }
 
@@ -539,7 +547,7 @@ public class JpaModelPropertyGenerator(
         }
         else
         {
-            var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
+            var suffix = defaultValue != "null" ? $"{defaultValue}" : string.Empty;
             return suffix;
         }
     }

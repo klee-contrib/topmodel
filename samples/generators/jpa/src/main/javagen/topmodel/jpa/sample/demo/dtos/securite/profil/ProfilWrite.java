@@ -21,7 +21,10 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilWrite implements Serializable {
-	/** Serial ID */
+
+	/**
+	 * Serial ID.
+	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +46,7 @@ public class ProfilWrite implements Serializable {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
@@ -52,23 +55,21 @@ public class ProfilWrite implements Serializable {
 	/**
 	 * Getter for droits.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite#droits droits}.
+	 * @return value of {@link #droits droits}.
 	 */
 	public List<DroitCode> getDroits() {
 		return this.droits;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite#libelle libelle}.
-	 * @param libelle value to set.
+	 * Setter for libelle.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite#droits droits}.
-	 * @param droits value to set.
+	 * Setter for droits.
 	 */
 	public void setDroits(List<DroitCode> droits) {
 		this.droits = droits;
@@ -84,12 +85,13 @@ public class ProfilWrite implements Serializable {
 		return SecuriteProfilMappers.toProfil(this, target);
 	}
 
+
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite ProfilWrite}.
 	 */
 	public enum Fields {
-        LIBELLE(String.class), //
-        DROITS(List.class);
+		LIBELLE(String.class),
+		DROITS(List.class);
 
 		private final Class<?> type;
 
@@ -97,6 +99,11 @@ public class ProfilWrite implements Serializable {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

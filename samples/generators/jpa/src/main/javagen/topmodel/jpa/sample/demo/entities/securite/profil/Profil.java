@@ -78,7 +78,7 @@ public class Profil {
 	/**
 	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#id id}.
+	 * @return value of {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
@@ -87,7 +87,7 @@ public class Profil {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
@@ -96,7 +96,7 @@ public class Profil {
 	/**
 	 * Getter for profilDroits.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#profilDroits profilDroits}.
+	 * @return value of {@link #profilDroits profilDroits}.
 	 */
 	public List<ProfilDroit> getProfilDroits() {
 		if (this.profilDroits == null) {
@@ -108,7 +108,7 @@ public class Profil {
 	/**
 	 * Getter for utilisateurs.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
+	 * @return value of {@link #utilisateurs utilisateurs}.
 	 */
 	public List<Utilisateur> getUtilisateurs() {
 		if (this.utilisateurs == null) {
@@ -120,7 +120,7 @@ public class Profil {
 	/**
 	 * Getter for dateCreation.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateCreation dateCreation}.
+	 * @return value of {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
@@ -129,60 +129,53 @@ public class Profil {
 	/**
 	 * Getter for dateModification.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateModification dateModification}.
+	 * @return value of {@link #dateModification dateModification}.
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#id id}.
-	 * @param id value to set.
+	 * Setter for id.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#libelle libelle}.
-	 * @param libelle value to set.
+	 * Setter for libelle.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#profilDroits profilDroits}.
-	 * @param profilDroits value to set.
+	 * Setter for profilDroits.
 	 */
 	public void setProfilDroits(List<ProfilDroit> profilDroits) {
 		this.profilDroits = profilDroits;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#utilisateurs utilisateurs}.
-	 * @param utilisateurs value to set.
+	 * Setter for utilisateurs.
 	 */
 	public void setUtilisateurs(List<Utilisateur> utilisateurs) {
 		this.utilisateurs = utilisateurs;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Setter for dateCreation.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#dateModification dateModification}.
-	 * @param dateModification value to set.
+	 * Setter for dateModification.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
-
 	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
@@ -192,6 +185,7 @@ public class Profil {
 	public Profil toProfil(Profil target) {
 		return SecuriteProfilMappers.toProfil(this, target);
 	}
+
 
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil Profil}.

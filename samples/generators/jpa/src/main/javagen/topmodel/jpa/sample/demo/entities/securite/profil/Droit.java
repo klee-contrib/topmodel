@@ -98,7 +98,7 @@ public class Droit {
 	/**
 	 * Getter for code.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#code code}.
+	 * @return value of {@link #code code}.
 	 */
 	public DroitCode getCode() {
 		return this.code;
@@ -107,7 +107,7 @@ public class Droit {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
@@ -116,7 +116,7 @@ public class Droit {
 	/**
 	 * Getter for typeDroit.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#typeDroit typeDroit}.
+	 * @return value of {@link #typeDroit typeDroit}.
 	 */
 	public TypeDroit getTypeDroit() {
 		return this.typeDroit;

@@ -111,7 +111,7 @@ public class Utilisateur {
 	/**
 	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#id id}.
+	 * @return value of {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
@@ -120,7 +120,7 @@ public class Utilisateur {
 	/**
 	 * Getter for nom.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#nom nom}.
+	 * @return value of {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
@@ -129,7 +129,7 @@ public class Utilisateur {
 	/**
 	 * Getter for prenom.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#prenom prenom}.
+	 * @return value of {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
@@ -138,7 +138,7 @@ public class Utilisateur {
 	/**
 	 * Getter for email.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#email email}.
+	 * @return value of {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
@@ -147,7 +147,7 @@ public class Utilisateur {
 	/**
 	 * Getter for dateNaissance.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateNaissance dateNaissance}.
+	 * @return value of {@link #dateNaissance dateNaissance}.
 	 */
 	public LocalDate getDateNaissance() {
 		return this.dateNaissance;
@@ -156,7 +156,7 @@ public class Utilisateur {
 	/**
 	 * Getter for adresse.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#adresse adresse}.
+	 * @return value of {@link #adresse adresse}.
 	 */
 	public String getAdresse() {
 		return this.adresse;
@@ -165,7 +165,7 @@ public class Utilisateur {
 	/**
 	 * Getter for actif.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#actif actif}.
+	 * @return value of {@link #actif actif}.
 	 */
 	public Boolean getActif() {
 		return this.actif;
@@ -174,7 +174,7 @@ public class Utilisateur {
 	/**
 	 * Getter for profil.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#profil profil}.
+	 * @return value of {@link #profil profil}.
 	 */
 	public Profil getProfil() {
 		return this.profil;
@@ -183,7 +183,7 @@ public class Utilisateur {
 	/**
 	 * Getter for typeUtilisateur.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
+	 * @return value of {@link #typeUtilisateur typeUtilisateur}.
 	 */
 	public TypeUtilisateur getTypeUtilisateur() {
 		return this.typeUtilisateur;
@@ -192,7 +192,7 @@ public class Utilisateur {
 	/**
 	 * Getter for dateCreation.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateCreation dateCreation}.
+	 * @return value of {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
@@ -201,95 +201,84 @@ public class Utilisateur {
 	/**
 	 * Getter for dateModification.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateModification dateModification}.
+	 * @return value of {@link #dateModification dateModification}.
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#id id}.
-	 * @param id value to set.
+	 * Setter for id.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#nom nom}.
-	 * @param nom value to set.
+	 * Setter for nom.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#prenom prenom}.
-	 * @param prenom value to set.
+	 * Setter for prenom.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#email email}.
-	 * @param email value to set.
+	 * Setter for email.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateNaissance dateNaissance}.
-	 * @param dateNaissance value to set.
+	 * Setter for dateNaissance.
 	 */
 	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#adresse adresse}.
-	 * @param adresse value to set.
+	 * Setter for adresse.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#actif actif}.
-	 * @param actif value to set.
+	 * Setter for actif.
 	 */
 	public void setActif(Boolean actif) {
 		this.actif = actif;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#profil profil}.
-	 * @param profil value to set.
+	 * Setter for profil.
 	 */
 	public void setProfil(Profil profil) {
 		this.profil = profil;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
-	 * @param typeUtilisateur value to set.
+	 * Setter for typeUtilisateur.
 	 */
 	public void setTypeUtilisateur(TypeUtilisateur typeUtilisateur) {
 		this.typeUtilisateur = typeUtilisateur;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Setter for dateCreation.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateModification dateModification}.
-	 * @param dateModification value to set.
+	 * Setter for dateModification.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;

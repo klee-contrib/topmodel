@@ -24,7 +24,10 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilRead implements Serializable {
-	/** Serial ID */
+
+	/**
+	 * Serial ID.
+	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -90,7 +93,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#id id}.
+	 * @return value of {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
@@ -99,7 +102,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
@@ -108,7 +111,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for droits.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#droits droits}.
+	 * @return value of {@link #droits droits}.
 	 */
 	public List<DroitCode> getDroits() {
 		return this.droits;
@@ -117,7 +120,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for dateCreation.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#dateCreation dateCreation}.
+	 * @return value of {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
@@ -126,7 +129,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for dateModification.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#dateModification dateModification}.
+	 * @return value of {@link #dateModification dateModification}.
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
@@ -135,70 +138,65 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Getter for utilisateurs.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#utilisateurs utilisateurs}.
+	 * @return value of {@link #utilisateurs utilisateurs}.
 	 */
 	public List<UtilisateurItem> getUtilisateurs() {
 		return this.utilisateurs;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#id id}.
-	 * @param id value to set.
+	 * Setter for id.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#libelle libelle}.
-	 * @param libelle value to set.
+	 * Setter for libelle.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#droits droits}.
-	 * @param droits value to set.
+	 * Setter for droits.
 	 */
 	public void setDroits(List<DroitCode> droits) {
 		this.droits = droits;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Setter for dateCreation.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#dateModification dateModification}.
-	 * @param dateModification value to set.
+	 * Setter for dateModification.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead#utilisateurs utilisateurs}.
-	 * @param utilisateurs value to set.
+	 * Setter for utilisateurs.
 	 */
 	public void setUtilisateurs(List<UtilisateurItem> utilisateurs) {
 		this.utilisateurs = utilisateurs;
 	}
 
+
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead ProfilRead}.
 	 */
 	public enum Fields {
-        ID(Integer.class), //
-        LIBELLE(String.class), //
-        DROITS(List.class), //
-        DATE_CREATION(LocalDateTime.class), //
-        DATE_MODIFICATION(LocalDateTime.class), //
-        UTILISATEURS(List.class);
+		ID(Integer.class),
+		LIBELLE(String.class),
+		DROITS(List.class),
+		DATE_CREATION(LocalDateTime.class),
+		DATE_MODIFICATION(LocalDateTime.class),
+		UTILISATEURS(List.class);
 
 		private final Class<?> type;
 
@@ -206,6 +204,11 @@ public class ProfilRead implements Serializable {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

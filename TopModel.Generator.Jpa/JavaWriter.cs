@@ -87,17 +87,17 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     {
         AddImports(javaClass.Imports);
         WriteLine();
-        Write(indentationLevel, javaClass.Annotations);
         if (!string.IsNullOrEmpty(javaClass.Comment))
         {
             WriteDocStart(indentationLevel, javaClass.Comment);
             WriteDocEnd(indentationLevel);
         }
 
+        Write(indentationLevel, javaClass.Annotations);
         WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
         foreach (var field in javaClass.Fields)
         {
-            WriteField(indentationLevel + 1, field);
+            Write(indentationLevel + 1, field);
         }
 
         foreach (var constructor in javaClass.Constructors)
@@ -109,6 +109,72 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         {
             WriteLine();
             Write(indentationLevel + 1, method);
+        }
+
+        foreach (var innerClass in javaClass.InnerClasses)
+        {
+            WriteLine();
+            if (innerClass is JavaEnum javaEnum)
+            {
+                Write(indentationLevel + 1, javaEnum);
+            }
+            else
+            {
+                Write(indentationLevel + 1, innerClass);
+            }
+        }
+
+        WriteLine(indentationLevel, "}");
+    }
+
+    /// <summary>
+    /// Ecrit la classe Java avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaClass">Classe à écrire dans le flux.</param>
+    public void Write(int indentationLevel, JavaEnum javaClass)
+    {
+        AddImports(javaClass.Imports);
+        WriteLine();
+        if (!string.IsNullOrEmpty(javaClass.Comment))
+        {
+            WriteDocStart(indentationLevel, javaClass.Comment);
+            WriteDocEnd(indentationLevel);
+        }
+
+        Write(indentationLevel, javaClass.Annotations);
+        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
+        foreach (var value in javaClass.Values)
+        {
+            _toWrite.Add(
+                new WriterLine()
+                {
+                    Line = value.ToString() + (value != javaClass.Values.Last() ? "," : ";"),
+                    Indent = indentationLevel + 1,
+                }
+            );
+        }
+        foreach (var field in javaClass.Fields)
+        {
+            Write(indentationLevel + 1, field);
+        }
+
+        foreach (var constructor in javaClass.Constructors)
+        {
+            WriteLine();
+            WriteConstructor(indentationLevel + 1, constructor);
+        }
+
+        foreach (var method in javaClass.Methods)
+        {
+            WriteLine();
+            Write(indentationLevel + 1, method);
+        }
+
+        foreach (var innerClass in javaClass.InnerClasses)
+        {
+            WriteLine();
+            Write(indentationLevel + 1, innerClass);
         }
 
         WriteLine(indentationLevel, "}");
@@ -234,16 +300,21 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="field">Champ à écrire.</param>
-    public void WriteField(int indentationLevel, JavaField field)
+    public void Write(int indentationLevel, JavaField field)
     {
+        WriteLine();
         AddImports(field.Imports);
-        Write(indentationLevel, field.Annotations);
-        if (!string.IsNullOrEmpty(field.Comment))
+        if (field.Comment.Any())
         {
-            WriteDocStart(indentationLevel, field.Comment);
+            WriteDocStart(indentationLevel, field.Comment[0]);
+            for (var i = 1; i < field.Comment.Count; i++)
+            {
+                WriteLine(indentationLevel, $" * {field.Comment[i]}");
+            }
             WriteDocEnd(indentationLevel);
         }
 
+        Write(indentationLevel, field.Annotations);
         _toWrite.Add(new WriterLine() { Line = field.ToString(), Indent = indentationLevel });
     }
 

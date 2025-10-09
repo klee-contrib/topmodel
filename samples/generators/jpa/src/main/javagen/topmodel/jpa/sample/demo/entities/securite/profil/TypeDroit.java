@@ -79,7 +79,7 @@ public class TypeDroit {
 	/**
 	 * Getter for code.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit#code code}.
+	 * @return value of {@link #code code}.
 	 */
 	public TypeDroitCode getCode() {
 		return this.code;
@@ -88,7 +88,7 @@ public class TypeDroit {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;

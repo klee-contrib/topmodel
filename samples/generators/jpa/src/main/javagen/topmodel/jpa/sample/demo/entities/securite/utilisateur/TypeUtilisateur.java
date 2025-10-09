@@ -79,7 +79,7 @@ public class TypeUtilisateur {
 	/**
 	 * Getter for code.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur#code code}.
+	 * @return value of {@link #code code}.
 	 */
 	public TypeUtilisateurCode getCode() {
 		return this.code;
@@ -88,7 +88,7 @@ public class TypeUtilisateur {
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur#libelle libelle}.
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;

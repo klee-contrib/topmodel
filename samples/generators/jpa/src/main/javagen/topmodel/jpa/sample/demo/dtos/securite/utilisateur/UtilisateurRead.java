@@ -23,7 +23,10 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurRead implements Serializable {
-	/** Serial ID */
+
+	/**
+	 * Serial ID.
+	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -126,7 +129,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#id id}.
+	 * @return value of {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
@@ -135,7 +138,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for nom.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#nom nom}.
+	 * @return value of {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
@@ -144,7 +147,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for prenom.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#prenom prenom}.
+	 * @return value of {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
@@ -153,7 +156,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for email.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#email email}.
+	 * @return value of {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
@@ -162,7 +165,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for dateNaissance.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateNaissance dateNaissance}.
+	 * @return value of {@link #dateNaissance dateNaissance}.
 	 */
 	public LocalDate getDateNaissance() {
 		return this.dateNaissance;
@@ -171,7 +174,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for adresse.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#adresse adresse}.
+	 * @return value of {@link #adresse adresse}.
 	 */
 	public String getAdresse() {
 		return this.adresse;
@@ -180,7 +183,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for actif.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#actif actif}.
+	 * @return value of {@link #actif actif}.
 	 */
 	public Boolean getActif() {
 		return this.actif;
@@ -189,7 +192,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for profilId.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#profilId profilId}.
+	 * @return value of {@link #profilId profilId}.
 	 */
 	public Integer getProfilId() {
 		return this.profilId;
@@ -198,7 +201,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for typeUtilisateurCode.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#typeUtilisateurCode typeUtilisateurCode}.
+	 * @return value of {@link #typeUtilisateurCode typeUtilisateurCode}.
 	 */
 	public TypeUtilisateurCode getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
@@ -207,7 +210,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for dateCreation.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateCreation dateCreation}.
+	 * @return value of {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
@@ -216,115 +219,105 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Getter for dateModification.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateModification dateModification}.
+	 * @return value of {@link #dateModification dateModification}.
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#id id}.
-	 * @param id value to set.
+	 * Setter for id.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#nom nom}.
-	 * @param nom value to set.
+	 * Setter for nom.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#prenom prenom}.
-	 * @param prenom value to set.
+	 * Setter for prenom.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#email email}.
-	 * @param email value to set.
+	 * Setter for email.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateNaissance dateNaissance}.
-	 * @param dateNaissance value to set.
+	 * Setter for dateNaissance.
 	 */
 	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#adresse adresse}.
-	 * @param adresse value to set.
+	 * Setter for adresse.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#actif actif}.
-	 * @param actif value to set.
+	 * Setter for actif.
 	 */
 	public void setActif(Boolean actif) {
 		this.actif = actif;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#profilId profilId}.
-	 * @param profilId value to set.
+	 * Setter for profilId.
 	 */
 	public void setProfilId(Integer profilId) {
 		this.profilId = profilId;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#typeUtilisateurCode typeUtilisateurCode}.
-	 * @param typeUtilisateurCode value to set.
+	 * Setter for typeUtilisateurCode.
 	 */
 	public void setTypeUtilisateurCode(TypeUtilisateurCode typeUtilisateurCode) {
 		this.typeUtilisateurCode = typeUtilisateurCode;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Setter for dateCreation.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#dateModification dateModification}.
-	 * @param dateModification value to set.
+	 * Setter for dateModification.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
 
+
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead UtilisateurRead}.
 	 */
 	public enum Fields {
-        ID(Integer.class), //
-        NOM(String.class), //
-        PRENOM(String.class), //
-        EMAIL(String.class), //
-        DATE_NAISSANCE(LocalDate.class), //
-        ADRESSE(String.class), //
-        ACTIF(Boolean.class), //
-        PROFIL_ID(Integer.class), //
-        TYPE_UTILISATEUR_CODE(TypeUtilisateurCode.class), //
-        DATE_CREATION(LocalDateTime.class), //
-        DATE_MODIFICATION(LocalDateTime.class);
+		ID(Integer.class),
+		NOM(String.class),
+		PRENOM(String.class),
+		EMAIL(String.class),
+		DATE_NAISSANCE(LocalDate.class),
+		ADRESSE(String.class),
+		ACTIF(Boolean.class),
+		PROFIL_ID(Integer.class),
+		TYPE_UTILISATEUR_CODE(TypeUtilisateurCode.class),
+		DATE_CREATION(LocalDateTime.class),
+		DATE_MODIFICATION(LocalDateTime.class);
 
 		private final Class<?> type;
 
@@ -332,6 +325,11 @@ public class UtilisateurRead implements Serializable {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

@@ -62,7 +62,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         var javaClass = new JavaClass(GetClassName(classe))
         {
             Package = packageName,
-            Interface = true,
+            ClassType = "interface",
             Visibility = "public",
         };
         javaClass.Imports.Add(classe.GetImport(Config, tag));

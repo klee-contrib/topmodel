@@ -49,15 +49,14 @@ public class ProfilDroit {
 		/**
 		 * Getter for profil.
 		 *
-		 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#profil profil}.
+		 * @return value of {@link #profil profil}.
 		 */
 		public Profil getProfil() {
 			return this.profil;
 		}
 
 		/**
-		 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#profil profil}.
-		 * @param profil value to set.
+		 * Setter for profil.
 		 */
 		public void setProfil(Profil profil) {
 			this.profil = profil;
@@ -66,15 +65,14 @@ public class ProfilDroit {
 		/**
 		 * Getter for droit.
 		 *
-		 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#droit droit}.
+		 * @return value of {@link #droit droit}.
 		 */
 		public Droit getDroit() {
 			return this.droit;
 		}
 
 		/**
-		 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#droit droit}.
-		 * @param droit value to set.
+		 * Setter for droit.
 		 */
 		public void setDroit(Droit droit) {
 			this.droit = droit;
@@ -112,7 +110,7 @@ public class ProfilDroit {
 	/**
 	 * Getter for profil.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#profil profil}.
+	 * @return value of {@link #profil profil}.
 	 */
 	public Profil getProfil() {
 		return this.profil;
@@ -121,23 +119,21 @@ public class ProfilDroit {
 	/**
 	 * Getter for droit.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#droit droit}.
+	 * @return value of {@link #droit droit}.
 	 */
 	public Droit getDroit() {
 		return this.droit;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#profil profil}.
-	 * @param profil value to set.
+	 * Setter for profil.
 	 */
 	public void setProfil(Profil profil) {
 		this.profil = profil;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit#droit droit}.
-	 * @param droit value to set.
+	 * Setter for droit.
 	 */
 	public void setDroit(Droit droit) {
 		this.droit = droit;
