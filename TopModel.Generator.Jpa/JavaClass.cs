@@ -112,6 +112,11 @@ public class JavaClass(string name)
         return constructor;
     }
 
+    public JavaConstructor GetNoArgsConstructor()
+    {
+        return new JavaConstructor(Name);
+    }
+
     public string GetDeclaration()
     {
         var sb = new StringBuilder();

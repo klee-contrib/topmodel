@@ -73,22 +73,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         fw.Write(0, javaClass);
     }
 
-    protected virtual void WriteConstuctors(JavaWriter fw, Class classe, string tag)
-    {
-        if (
-            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
-            || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null
-        )
-        {
-            ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
-        }
-
-        if (Config.MappersInClass)
-        {
-            ConstructorGenerator.WriteFromMappers(fw, classe, Classes, tag);
-        }
-    }
+    protected virtual void WriteConstuctors(JavaWriter fw, Class classe, string tag) { }
 
     protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {

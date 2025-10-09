@@ -136,42 +136,48 @@ public class Profil {
 	}
 
 	/**
-	 * Setter for id.
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Setter for libelle.
+	 * Set the value of {@link #libelle libelle}.
+	 * @param libelle value to set.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Setter for profilDroits.
+	 * Set the value of {@link #profilDroits profilDroits}.
+	 * @param profilDroits value to set.
 	 */
 	public void setProfilDroits(List<ProfilDroit> profilDroits) {
 		this.profilDroits = profilDroits;
 	}
 
 	/**
-	 * Setter for utilisateurs.
+	 * Set the value of {@link #utilisateurs utilisateurs}.
+	 * @param utilisateurs value to set.
 	 */
 	public void setUtilisateurs(List<Utilisateur> utilisateurs) {
 		this.utilisateurs = utilisateurs;
 	}
 
 	/**
-	 * Setter for dateCreation.
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Setter for dateModification.
+	 * Set the value of {@link #dateModification dateModification}.
+	 * @param dateModification value to set.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;

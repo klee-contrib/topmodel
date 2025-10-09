@@ -62,14 +62,16 @@ public class ProfilWrite implements Serializable {
 	}
 
 	/**
-	 * Setter for libelle.
+	 * Set the value of {@link #libelle libelle}.
+	 * @param libelle value to set.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Setter for droits.
+	 * Set the value of {@link #droits droits}.
+	 * @param droits value to set.
 	 */
 	public void setDroits(List<DroitCode> droits) {
 		this.droits = droits;

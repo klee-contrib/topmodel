@@ -161,56 +161,64 @@ public class UtilisateurWrite implements Serializable {
 	}
 
 	/**
-	 * Setter for nom.
+	 * Set the value of {@link #nom nom}.
+	 * @param nom value to set.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Setter for prenom.
+	 * Set the value of {@link #prenom prenom}.
+	 * @param prenom value to set.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Setter for email.
+	 * Set the value of {@link #email email}.
+	 * @param email value to set.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Setter for dateNaissance.
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
 	 */
 	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
 	/**
-	 * Setter for adresse.
+	 * Set the value of {@link #adresse adresse}.
+	 * @param adresse value to set.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;
 	}
 
 	/**
-	 * Setter for actif.
+	 * Set the value of {@link #actif actif}.
+	 * @param actif value to set.
 	 */
 	public void setActif(Boolean actif) {
 		this.actif = actif;
 	}
 
 	/**
-	 * Setter for profilId.
+	 * Set the value of {@link #profilId profilId}.
+	 * @param profilId value to set.
 	 */
 	public void setProfilId(Integer profilId) {
 		this.profilId = profilId;
 	}
 
 	/**
-	 * Setter for typeUtilisateurCode.
+	 * Set the value of {@link #typeUtilisateurCode typeUtilisateurCode}.
+	 * @param typeUtilisateurCode value to set.
 	 */
 	public void setTypeUtilisateurCode(TypeUtilisateurCode typeUtilisateurCode) {
 		this.typeUtilisateurCode = typeUtilisateurCode;

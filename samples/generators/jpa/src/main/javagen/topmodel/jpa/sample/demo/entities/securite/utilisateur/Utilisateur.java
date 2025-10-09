@@ -208,77 +208,88 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Setter for id.
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Setter for nom.
+	 * Set the value of {@link #nom nom}.
+	 * @param nom value to set.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Setter for prenom.
+	 * Set the value of {@link #prenom prenom}.
+	 * @param prenom value to set.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Setter for email.
+	 * Set the value of {@link #email email}.
+	 * @param email value to set.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Setter for dateNaissance.
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
 	 */
 	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
 	/**
-	 * Setter for adresse.
+	 * Set the value of {@link #adresse adresse}.
+	 * @param adresse value to set.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;
 	}
 
 	/**
-	 * Setter for actif.
+	 * Set the value of {@link #actif actif}.
+	 * @param actif value to set.
 	 */
 	public void setActif(Boolean actif) {
 		this.actif = actif;
 	}
 
 	/**
-	 * Setter for profil.
+	 * Set the value of {@link #profil profil}.
+	 * @param profil value to set.
 	 */
 	public void setProfil(Profil profil) {
 		this.profil = profil;
 	}
 
 	/**
-	 * Setter for typeUtilisateur.
+	 * Set the value of {@link #typeUtilisateur typeUtilisateur}.
+	 * @param typeUtilisateur value to set.
 	 */
 	public void setTypeUtilisateur(TypeUtilisateur typeUtilisateur) {
 		this.typeUtilisateur = typeUtilisateur;
 	}
 
 	/**
-	 * Setter for dateCreation.
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Setter for dateModification.
+	 * Set the value of {@link #dateModification dateModification}.
+	 * @param dateModification value to set.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;

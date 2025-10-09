@@ -48,8 +48,8 @@ public class JavaField(string type, string name)
     public JavaMethod DefaulSetter =>
         new("void", $"set{Name.ToPascalCase()}")
         {
-            Comment = $"Setter for {Name}",
-            Parameters = { new JavaMethodParameter(Type, Name) },
+            Comment = $@"Set the value of {{@link #{Name} {Name}}}",
+            Parameters = { new JavaMethodParameter(Type, Name) { Comment = $"value to set" } },
             Body =
             {
                 new WriterLine() { Line = $"this.{Name} = {Name};", Indent = 0 },

@@ -145,42 +145,48 @@ public class ProfilRead implements Serializable {
 	}
 
 	/**
-	 * Setter for id.
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Setter for libelle.
+	 * Set the value of {@link #libelle libelle}.
+	 * @param libelle value to set.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Setter for droits.
+	 * Set the value of {@link #droits droits}.
+	 * @param droits value to set.
 	 */
 	public void setDroits(List<DroitCode> droits) {
 		this.droits = droits;
 	}
 
 	/**
-	 * Setter for dateCreation.
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Setter for dateModification.
+	 * Set the value of {@link #dateModification dateModification}.
+	 * @param dateModification value to set.
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
 
 	/**
-	 * Setter for utilisateurs.
+	 * Set the value of {@link #utilisateurs utilisateurs}.
+	 * @param utilisateurs value to set.
 	 */
 	public void setUtilisateurs(List<UtilisateurItem> utilisateurs) {
 		this.utilisateurs = utilisateurs;

@@ -56,7 +56,8 @@ public class ProfilDroit {
 		}
 
 		/**
-		 * Setter for profil.
+		 * Set the value of {@link #profil profil}.
+		 * @param profil value to set.
 		 */
 		public void setProfil(Profil profil) {
 			this.profil = profil;
@@ -72,7 +73,8 @@ public class ProfilDroit {
 		}
 
 		/**
-		 * Setter for droit.
+		 * Set the value of {@link #droit droit}.
+		 * @param droit value to set.
 		 */
 		public void setDroit(Droit droit) {
 			this.droit = droit;
@@ -126,14 +128,16 @@ public class ProfilDroit {
 	}
 
 	/**
-	 * Setter for profil.
+	 * Set the value of {@link #profil profil}.
+	 * @param profil value to set.
 	 */
 	public void setProfil(Profil profil) {
 		this.profil = profil;
 	}
 
 	/**
-	 * Setter for droit.
+	 * Set the value of {@link #droit droit}.
+	 * @param droit value to set.
 	 */
 	public void setDroit(Droit droit) {
 		this.droit = droit;
