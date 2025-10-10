@@ -288,11 +288,11 @@ public class JpaModelPropertyGenerator(
 
     public virtual void WriteSetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
     {
-        var method = GetSetter(tag, property, indentLevel);
+        var method = GetSetter(tag, property);
         fw.Write(indentLevel, method);
     }
 
-    public virtual JavaMethod GetSetter(string tag, IProperty property, int indentLevel = 1)
+    public virtual JavaMethod GetSetter(string tag, IProperty property)
     {
         return GetField(property, tag).DefaulSetter;
     }

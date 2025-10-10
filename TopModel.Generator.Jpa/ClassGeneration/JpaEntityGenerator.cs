@@ -94,6 +94,38 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         );
     }
 
+    protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
+    {
+        foreach (var getter in base.GetGetters(classe, tag))
+        {
+            yield return getter;
+        }
+
+        var mapIdGetter = GetMapIdPropertyGetter(classe, tag);
+        if (mapIdGetter != null)
+        {
+            yield return mapIdGetter;
+        }
+    }
+
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
+        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap)
+        {
+            yield return new JavaField(JpaModelPropertyGenerator.GetPropertyType(ap.Property), ap.NameCamel)
+            {
+                Comment =
+                {
+                    @$"Identifiant technique mappé avec celui de la classe {{@link {ap.Association.GetImport(Config, tag)}}} {ap.Association.NamePascal}",
+                },
+            }.Add(JpaModelPropertyGenerator.IdAnnotation);
+        }
+        foreach (var field in JpaModelPropertyGenerator.GetProperties(classe, tag))
+        {
+            yield return field;
+        }
+    }
+
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
     {
         if (pk is AssociationProperty ap)
@@ -161,44 +193,68 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual void WriteAdders(JavaWriter fw, Class classe, string tag)
     {
-        if (classe.IsPersistent && Config.AssociationAdders)
+        foreach (var adder in GetAdders(classe, tag))
+        {
+            fw.Write(1, adder);
+        }
+    }
+
+    private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
+    {
+        if (Config.AssociationAdders)
         {
             foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
             {
                 if (ap.ReverseProperty != null)
                 {
                     var propertyName = ap.NameByClassCamel;
-                    fw.WriteLine();
-                    fw.WriteDocStart(
-                        1,
-                        $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
-                    );
-                    fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to add");
-                    fw.WriteDocEnd(1);
-                    fw.WriteLine(
-                        1,
-                        @$"public void add{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
-                    );
-                    fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
+                    var adder = new JavaMethod("void", $"add{ap.Association.NamePascal}{ap.Role}")
+                    {
+                        Comment =
+                            $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
+                    }
+                        .AddParameter(
+                            new JavaMethodParameter(ap.Association.NamePascal, ap.Association.NameCamel)
+                            {
+                                Comment = $"value to add to {ap.ReverseProperty.NameByClassCamel}",
+                            }
+                        )
+                        .AddBodyLine(@$"this.{propertyName}.add({ap.Association.NameCamel});");
                     if (ap.ReverseProperty.Type.IsToMany())
                     {
-                        fw.WriteLine(
-                            2,
+                        adder.AddBodyLine(
                             @$"{ap.Association.NameCamel}.get{ap.ReverseProperty.NameByClassPascal}().add(this);"
                         );
                     }
                     else
                     {
-                        fw.WriteLine(
-                            2,
+                        adder.AddBodyLine(
                             @$"{ap.Association.NameCamel}.set{ap.ReverseProperty.NameByClassPascal}(this);"
                         );
                     }
 
-                    fw.WriteLine(1, "}");
+                    yield return adder;
                 }
             }
         }
+    }
+
+    private JavaMethod? GetMapIdPropertyGetter(Class classe, string tag)
+    {
+        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.FirstOrDefault() is AssociationProperty ap)
+        {
+            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap.Property);
+            string getterName = $"get{ap.NamePascal}";
+            var method = new JavaMethod(propertyType, getterName)
+            {
+                Visibility = "public",
+                Comment = $"Getter for {ap.NameCamel}",
+                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{ap.NameCamel} {ap.NameCamel}}}",
+            };
+            method.AddBodyLine(@$"return this.{ap.NameCamel};");
+            return method;
+        }
+        return null;
     }
 
     protected virtual void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe, string tag)
@@ -238,8 +294,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         foreach (var pk in classe.PrimaryKey)
         {
-            JpaModelPropertyGenerator.WriteGetter(fw, tag, pk, 2);
-            JpaModelPropertyGenerator.WriteSetter(fw, tag, pk, 2);
+            var getter = JpaModelPropertyGenerator.GetGetter(tag, pk);
+            var setter = JpaModelPropertyGenerator.GetSetter(tag, pk);
+            List<JavaMethod> methods = new() { getter, setter };
+            foreach (var method in methods)
+            {
+                fw.Write(2, method);
+            }
         }
 
         fw.WriteLine();
@@ -292,18 +353,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual void WriteConstructors(Class classe, string tag, JavaWriter fw)
     {
-        if (
-            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
-            || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null
-        )
+        foreach (var constructor in GetConstuctors(classe, tag))
         {
-            ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
-        }
-
-        if (Config.MappersInClass)
-        {
-            ConstructorGenerator.WriteFromMappers(fw, classe, Classes, tag);
+            fw.Write(1, constructor);
         }
     }
 
@@ -324,41 +376,46 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual void WriteRemovers(JavaWriter fw, Class classe, string tag)
     {
-        if (classe.IsPersistent && Config.AssociationRemovers)
+        foreach (var remover in GetRemovers(classe, tag))
+        {
+            fw.Write(1, remover);
+        }
+    }
+
+    private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
+    {
+        if (Config.AssociationRemovers)
         {
             foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
             {
                 if (ap.ReverseProperty != null)
                 {
                     var propertyName = ap.NameByClassCamel;
-                    fw.WriteLine();
-                    fw.WriteDocStart(
-                        1,
-                        $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
-                    );
-                    fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to remove");
-                    fw.WriteDocEnd(1);
-                    fw.WriteLine(
-                        1,
-                        @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{"
-                    );
-                    fw.WriteLine(2, @$"this.{propertyName}.remove({ap.Association.NameCamel});");
+                    var remover = new JavaMethod("void", $"remove{ap.Association.NamePascal}{ap.Role}")
+                    {
+                        Comment =
+                            $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
+                    }
+                        .AddParameter(
+                            new JavaMethodParameter(ap.Association.NamePascal, ap.Association.NameCamel)
+                            {
+                                Comment = $"{ap.Association.NameCamel} value to remove",
+                            }
+                        )
+                        .AddBodyLine(@$"this.{propertyName}.remove({ap.Association.NameCamel});");
                     if (ap.ReverseProperty.Type.IsToMany())
                     {
-                        fw.WriteLine(
-                            2,
+                        remover.AddBodyLine(
                             @$"{ap.Association.NameCamel}.get{ap.ReverseProperty.NameByClassPascal}().remove(this);"
                         );
                     }
                     else
                     {
-                        fw.WriteLine(
-                            2,
+                        remover.AddBodyLine(
                             @$"{ap.Association.NameCamel}.set{ap.ReverseProperty.NameByClassPascal}(null);"
                         );
                     }
-
-                    fw.WriteLine(1, "}");
+                    yield return remover;
                 }
             }
         }
