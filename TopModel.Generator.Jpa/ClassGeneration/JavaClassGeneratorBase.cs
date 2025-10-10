@@ -135,7 +135,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        return JpaModelPropertyGenerator.GetProperties(classe, tag);
+        return JpaModelPropertyGenerator.GetFields(classe, tag);
     }
 
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
@@ -205,28 +205,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected virtual void WriteAnnotations(JavaWriter fw, Class classe, string tag)
-    {
-        fw.AddImports(Config.GetDecoratorImports(classe, tag).ToList());
-        fw.Write(0, GetAnnotations(classe, tag));
-    }
-
-    protected virtual void WriteClassComment(JavaWriter fw, Class classe, string tag)
-    {
-        fw.WriteDocStart(0, classe.Comment);
-        fw.WriteDocEnd(0);
-    }
-
-    protected virtual void WriteFieldsEnum(JavaWriter fw, Class classe, string tag)
-    {
-        if (!classe.Properties.Any())
-        {
-            return;
-        }
-
-        fw.Write(1, GetFieldsEnum(classe, tag));
-    }
-
     protected virtual JavaEnum GetFieldsEnum(Class classe, string tag)
     {
         var javaEnum = new JavaEnum("Fields")
@@ -269,38 +247,5 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 Imports = prop.GetTypeImports(Config, tag).ToList(),
             };
         });
-    }
-
-    protected virtual void WriteGetters(JavaWriter fw, Class classe, string tag)
-    {
-        var getters = GetGetters(classe, tag);
-        foreach (var getter in getters)
-        {
-            fw.Write(1, getter);
-        }
-    }
-
-    protected virtual void WriteSetters(JavaWriter fw, Class classe, string tag)
-    {
-        var setters = GetSetters(classe, tag);
-        foreach (var setter in setters)
-        {
-            fw.Write(1, setter);
-        }
-    }
-
-    protected virtual void WriteToMappers(JavaWriter fw, Class classe, string tag)
-    {
-        var toMappers = classe.ToMappers.Where(p => Classes.Contains(p.Class)).ToList();
-        if (!toMappers.Any())
-        {
-            return;
-        }
-
-        foreach (var method in GetToMappers(classe, tag))
-        {
-            fw.Write(1, method);
-            fw.WriteLine();
-        }
     }
 }

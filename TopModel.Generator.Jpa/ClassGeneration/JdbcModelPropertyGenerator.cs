@@ -31,20 +31,6 @@ public class JdbcModelPropertyGenerator(
         return Config.GetType(property, Classes, useClassForAssociation: false);
     }
 
-    public override void WriteProperties(JavaWriter fw, Class classe, string tag)
-    {
-        var properties = classe.Properties.Where(p =>
-            !(
-                p is AssociationProperty ap
-                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-            )
-        );
-        foreach (var property in properties)
-        {
-            WriteProperty(fw, property, tag);
-        }
-    }
-
     protected override IEnumerable<JavaAnnotation> GetAnnotations(AliasProperty property, string tag)
     {
         if (property.PrimaryKey && property.Class.IsPersistent)

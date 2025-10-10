@@ -134,7 +134,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 },
             }.Add(JpaModelPropertyGenerator.IdAnnotation);
         }
-        foreach (var field in JpaModelPropertyGenerator.GetProperties(classe, tag))
+        foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))
         {
             yield return field;
         }
@@ -159,24 +159,6 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         }
 
         return string.Empty;
-    }
-
-    protected override void HandleClass(string fileName, Class classe, string tag)
-    {
-        var javaClass = base.InitClass(classe, tag);
-
-        if (Config.AssociationAdders)
-        {
-            javaClass.Methods.AddRange(GetAdders(classe, tag));
-        }
-        if (Config.AssociationRemovers)
-        {
-            javaClass.Methods.AddRange(GetRemovers(classe, tag));
-        }
-
-        var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
     }
 
     protected override IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
@@ -381,22 +363,6 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         hashCodeMethod.Imports.Add("java.util.Objects");
         javaClass.Add(hashCodeMethod);
         return javaClass;
-    }
-
-    protected virtual void WriteConstructors(Class classe, string tag, JavaWriter fw)
-    {
-        foreach (var constructor in GetConstuctors(classe, tag))
-        {
-            fw.Write(1, constructor);
-        }
-    }
-
-    protected virtual void WriteRemovers(JavaWriter fw, Class classe, string tag)
-    {
-        foreach (var remover in GetRemovers(classe, tag))
-        {
-            fw.Write(1, remover);
-        }
     }
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)

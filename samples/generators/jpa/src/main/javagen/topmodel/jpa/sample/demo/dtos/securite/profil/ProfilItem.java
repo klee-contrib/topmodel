@@ -6,35 +6,32 @@ package topmodel.jpa.sample.demo.dtos.securite.profil;
 
 import jakarta.annotation.Generated;
 
+/**
+ * Détail d'un profil en liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface ProfilItem {
 
 	/**
 	 * Getter for id.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem#id id}.
 	 */
 	Integer getId();
 
 	/**
 	 * Getter for libelle.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem#libelle libelle}.
 	 */
 	String getLibelle();
 
 	/**
 	 * Getter for nombreUtilisateurs.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem#nombreUtilisateurs nombreUtilisateurs}.
 	 */
 	Long getNombreUtilisateurs();
 
 	/**
-	 * hydrate values of instance.
-	 * @param id value to set
-	 * @param libelle value to set
-	 * @param nombreUtilisateurs value to set
+	 * Hydrate values of instance.
+	 * @param id value to set.
+	 * @param libelle value to set.
+	 * @param nombreUtilisateurs value to set.
 	 */
 	void hydrate(Integer id, String libelle, Long nombreUtilisateurs);
 }

@@ -208,7 +208,7 @@ public class JpaModelPropertyGenerator(
         }
     }
 
-    public virtual JavaMethod GetGetter(string tag, IProperty property, int indentLevel = 1)
+    public virtual JavaMethod GetGetter(string tag, IProperty property)
     {
         var field = GetField(property, tag);
         var method = field.DefaultGetter;
@@ -227,31 +227,12 @@ public class JpaModelPropertyGenerator(
         return method;
     }
 
-    public virtual void WriteGetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
-    {
-        var method = GetGetter(tag, property, indentLevel);
-        fw.Write(indentLevel, method);
-    }
-
-    public virtual void WriteProperties(JavaWriter fw, Class classe, string tag)
-    {
-        foreach (var property in classe.Properties)
-        {
-            WriteProperty(fw, property, tag);
-        }
-    }
-
-    public virtual IEnumerable<JavaField> GetProperties(Class classe, string tag)
+    public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
         foreach (var property in classe.Properties)
         {
             yield return GetField(property, tag);
         }
-    }
-
-    public virtual void WriteProperty(JavaWriter fw, IProperty property, string tag)
-    {
-        fw.Write(1, GetField(property, tag));
     }
 
     public virtual JavaField GetField(IProperty property, string tag)
@@ -284,12 +265,6 @@ public class JpaModelPropertyGenerator(
         javaField.Imports.AddRange(GetDefaultValueImports(property, tag));
         javaField.Imports.AddRange(property.GetTypeImports(Config, tag));
         return javaField;
-    }
-
-    public virtual void WriteSetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
-    {
-        var method = GetSetter(tag, property);
-        fw.Write(indentLevel, method);
     }
 
     public virtual JavaMethod GetSetter(string tag, IProperty property)

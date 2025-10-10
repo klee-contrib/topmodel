@@ -32,6 +32,12 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         return Config.GetEnumValueFileName(classe, tag);
     }
 
+    private void WriteAnnotations(JavaWriter fw, Class classe, string tag)
+    {
+        fw.AddImports(Config.GetDecoratorImports(classe, tag).ToList());
+        fw.Write(0, GetAnnotations(classe, tag));
+    }
+
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetEnumValuePackageName(classe, tag);

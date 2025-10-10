@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -9,7 +8,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// Générateur de DAOs JPA.
 /// </summary>
 public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logger, IFileWriterProvider writerProvider)
-    : ClassGeneratorBase<JpaConfig>(logger, writerProvider)
+    : JavaClassGeneratorBase(logger, writerProvider)
 {
     public override string Name => "JpaInterfaceGen";
 
@@ -18,12 +17,17 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         return classe.Abstract;
     }
 
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
+        return [];
+    }
+
     protected override string GetFileName(Class classe, string tag)
     {
         return Config.GetClassFileName(classe, tag);
     }
 
-    protected IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
         foreach (
             var property in classe.Properties.Where(p =>
@@ -35,45 +39,15 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
             )
         )
         {
-            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
-            yield return new JavaMethod(Config.GetType(property), property.NameByClassPascal.WithPrefix(getterPrefix))
-            {
-                Comment = $"Getter for {property.NameByClassCamel}",
-                ReturnComment =
-                    $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}",
-            };
+            var getter = JpaModelPropertyGenerator.GetGetter(tag, property);
+            getter.Body.Clear();
+            getter.ReturnComment = string.Empty;
+            getter.Visibility = string.Empty;
+            yield return getter;
         }
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
-    {
-        var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-
-        WriteImports(fw, classe, tag);
-        fw.WriteLine();
-
-        if (Config.GeneratedHint)
-        {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
-        }
-
-        fw.WriteLine($"public interface {classe.NamePascal} {{");
-
-        foreach (var getter in GetGetters(classe, tag))
-        {
-            fw.Write(1, getter);
-        }
-
-        if (classe.Properties.Any(p => !p.Readonly))
-        {
-            WriteHydrate(fw, classe);
-        }
-
-        fw.WriteLine("}");
-    }
-
-    protected virtual void WriteHydrate(JavaWriter fw, Class classe)
+    protected virtual JavaMethod? GetHydrate(Class classe, string tag)
     {
         var properties = classe.Properties.Where(p =>
             !p.Readonly
@@ -86,49 +60,40 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
         if (!properties.Any())
         {
-            return;
+            return null;
         }
-        fw.WriteLine();
-        fw.WriteDocStart(1, $"hydrate values of instance");
+        var hydrate = new JavaMethod("void", "hydrate") { Comment = "Hydrate values of instance" };
         foreach (var property in properties)
         {
             var propertyName = property.NameByClassCamel;
-            fw.WriteLine(1, $" * @param {propertyName} value to set");
+            var parameter = new JavaMethodParameter(Config.GetType(property), property.NameByClassCamel)
+            {
+                Comment = $"value to set",
+            };
+            parameter.Imports.AddRange(property.GetTypeImports(Config, tag));
+            hydrate.AddParameter(parameter);
         }
 
-        fw.WriteDocEnd(1);
-        var signature = string.Join(
-            ", ",
-            properties.Select(property =>
-            {
-                return $@"{Config.GetType(property)} {property.NameByClassCamel}";
-            })
-        );
-
-        fw.WriteLine(1, $"void hydrate({signature});");
+        return hydrate;
     }
 
-    protected virtual void WriteImports(JavaWriter fw, Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
     {
-        var imports = new List<string> { Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated" };
-        foreach (var property in classe.Properties)
+        foreach (var method in GetGetters(classe, tag))
         {
-            imports.AddRange(property.GetTypeImports(Config, tag));
-
-            if (property is CompositionProperty cp && cp.Composition.Namespace.Module == cp.Class?.Namespace.Module)
-            {
-                imports.Add(cp.Composition.GetImport(Config, tag));
-            }
+            yield return method;
         }
-
-        if (classe.Extends != null)
+        var hydrate = GetHydrate(classe, tag);
+        if (hydrate != null)
         {
-            foreach (var property in classe.Extends.Properties)
-            {
-                imports.AddRange(property.GetTypeImports(Config, tag));
-            }
+            yield return hydrate;
         }
+    }
 
-        fw.AddImports(imports);
+    protected override JavaClass InitClass(Class classe, string tag)
+    {
+        var javaClass = base.InitClass(classe, tag);
+        javaClass.ClassType = "interface";
+        return javaClass;
     }
 }
