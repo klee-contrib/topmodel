@@ -299,17 +299,17 @@ public class Utilisateur {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields {
-        ID(Integer.class), //
-        NOM(String.class), //
-        PRENOM(String.class), //
-        EMAIL(String.class), //
-        DATE_NAISSANCE(LocalDate.class), //
-        ADRESSE(String.class), //
-        ACTIF(Boolean.class), //
-        PROFIL(Profil.class), //
-        TYPE_UTILISATEUR(TypeUtilisateur.class), //
-        DATE_CREATION(LocalDateTime.class), //
-        DATE_MODIFICATION(LocalDateTime.class);
+		ID(Integer.class),
+		NOM(String.class),
+		PRENOM(String.class),
+		EMAIL(String.class),
+		DATE_NAISSANCE(LocalDate.class),
+		ADRESSE(String.class),
+		ACTIF(Boolean.class),
+		PROFIL(Profil.class),
+		TYPE_UTILISATEUR(TypeUtilisateur.class),
+		DATE_CREATION(LocalDateTime.class),
+		DATE_MODIFICATION(LocalDateTime.class);
 
 		private final Class<?> type;
 
@@ -317,6 +317,11 @@ public class Utilisateur {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

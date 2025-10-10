@@ -705,9 +705,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             return;
         }
 
-        fw.WriteLine();
         fw.Write(1, GetFromMapperNoTarget(classe, mapper, tag));
-        fw.WriteLine();
         fw.Write(1, GetFromMapperWithTarget(classe, mapper, tag));
     }
 
@@ -719,9 +717,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             return;
         }
 
-        fw.WriteLine();
         fw.Write(1, GetToMapperMethodNoTarget(classe, mapper, tag));
-        fw.WriteLine();
         fw.Write(1, GetToMapperMethodWithTarget(classe, mapper, tag));
     }
 

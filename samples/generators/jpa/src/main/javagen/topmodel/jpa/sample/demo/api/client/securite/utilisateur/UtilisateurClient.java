@@ -33,8 +33,9 @@ public interface UtilisateurClient {
 
 	/**
 	 * Ajoute un utilisateur.
-	 * @param utilisateur Utilisateur à sauvegarder
-	 * @return Utilisateur sauvegardé
+	 * @param utilisateur Utilisateur à sauvegarder.
+	 *
+	 * @return Utilisateur sauvegardé.
 	 */
 	@PostExchange("/")
 	@PreAuthorize("hasRole('CREATE')")
@@ -42,7 +43,9 @@ public interface UtilisateurClient {
 
 	/**
 	 * Supprime un utilisateur.
-	 * @param utiId Id de l'utilisateur
+	 * @param utiId Id de l'utilisateur.
+	 *
+	 * @return Aucun retour.
 	 */
 	@DeleteExchange("/{utiId}")
 	@PreAuthorize("hasRole('DELETE')")
@@ -50,8 +53,9 @@ public interface UtilisateurClient {
 
 	/**
 	 * Charge le détail d'un utilisateur.
-	 * @param utiId Id de l'utilisateur
-	 * @return Le détail de l'utilisateur
+	 * @param utiId Id de l'utilisateur.
+	 *
+	 * @return Le détail de l'utilisateur.
 	 */
 	@GetExchange("/{utiId}")
 	@PreAuthorize("hasRole('READ')")
@@ -59,15 +63,16 @@ public interface UtilisateurClient {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param nom Nom de l'utilisateur
-	 * @param prenom Nom de l'utilisateur
-	 * @param email Email de l'utilisateur
-	 * @param dateNaissance Age de l'utilisateur
-	 * @param adresse Adresse de l'utilisateur
-	 * @param actif Si l'utilisateur est actif
-	 * @param profilId Profil de l'utilisateur
-	 * @param typeUtilisateurCode Type d'utilisateur
-	 * @return Utilisateurs matchant les critères
+	 * @param nom Nom de l'utilisateur.
+	 * @param prenom Nom de l'utilisateur.
+	 * @param email Email de l'utilisateur.
+	 * @param dateNaissance Age de l'utilisateur.
+	 * @param adresse Adresse de l'utilisateur.
+	 * @param actif Si l'utilisateur est actif.
+	 * @param profilId Profil de l'utilisateur.
+	 * @param typeUtilisateurCode Type d'utilisateur.
+	 *
+	 * @return Utilisateurs matchant les critères.
 	 */
 	@GetExchange("/")
 	@PreAuthorize("hasRole('READ')")
@@ -75,9 +80,10 @@ public interface UtilisateurClient {
 
 	/**
 	 * Sauvegarde un utilisateur.
-	 * @param utiId Id de l'utilisateur
-	 * @param utilisateur Utilisateur à sauvegarder
-	 * @return Utilisateur sauvegardé
+	 * @param utiId Id de l'utilisateur.
+	 * @param utilisateur Utilisateur à sauvegarder.
+	 *
+	 * @return Utilisateur sauvegardé.
 	 */
 	@PutExchange("/{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")

@@ -380,7 +380,6 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 )
             );
         javaMethod.Imports.Add("org.springframework.batch.item.database.builder.JpaItemWriterBuilder");
-        fw.WriteLine();
         fw.Write(1, javaMethod);
     }
 

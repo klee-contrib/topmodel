@@ -210,7 +210,7 @@ public class JpaModelPropertyGenerator(
 
     public virtual JavaMethod GetGetter(string tag, IProperty property, int indentLevel = 1)
     {
-        var field = GetProperty(property, tag);
+        var field = GetField(property, tag);
         var method = field.DefaultGetter;
         var genericType = field.Type.Split('<')[0];
         if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
@@ -230,7 +230,6 @@ public class JpaModelPropertyGenerator(
     public virtual void WriteGetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
     {
         var method = GetGetter(tag, property, indentLevel);
-        fw.WriteLine();
         fw.Write(indentLevel, method);
     }
 
@@ -246,16 +245,16 @@ public class JpaModelPropertyGenerator(
     {
         foreach (var property in classe.Properties)
         {
-            yield return GetProperty(property, tag);
+            yield return GetField(property, tag);
         }
     }
 
     public virtual void WriteProperty(JavaWriter fw, IProperty property, string tag)
     {
-        fw.Write(1, GetProperty(property, tag));
+        fw.Write(1, GetField(property, tag));
     }
 
-    public virtual JavaField GetProperty(IProperty property, string tag)
+    public virtual JavaField GetField(IProperty property, string tag)
     {
         var javaField = new JavaField(GetPropertyType(property), GetPropertyName(property))
         {
@@ -290,13 +289,12 @@ public class JpaModelPropertyGenerator(
     public virtual void WriteSetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
     {
         var method = GetSetter(tag, property, indentLevel);
-        fw.WriteLine();
         fw.Write(indentLevel, method);
     }
 
     public virtual JavaMethod GetSetter(string tag, IProperty property, int indentLevel = 1)
     {
-        return GetProperty(property, tag).DefaulSetter;
+        return GetField(property, tag).DefaulSetter;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(CompositionProperty property, string tag)

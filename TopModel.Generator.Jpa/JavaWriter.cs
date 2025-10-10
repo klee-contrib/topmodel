@@ -39,6 +39,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="javaMethod">Valeur à écrire dans le flux.</param>
     public void Write(int indentationLevel, JavaMethod javaMethod)
     {
+        WriteLine();
         AddImports(javaMethod.Imports);
         if (!string.IsNullOrEmpty(javaMethod.Comment))
         {
@@ -95,64 +96,29 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         Write(indentationLevel, javaClass.Annotations);
         WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
-        foreach (var field in javaClass.Fields)
+        if (javaClass is JavaEnum javaEnum)
         {
-            Write(indentationLevel + 1, field);
-        }
-
-        foreach (var constructor in javaClass.Constructors)
-        {
-            WriteConstructor(indentationLevel + 1, constructor);
-        }
-
-        foreach (var method in javaClass.Methods)
-        {
-            WriteLine();
-            Write(indentationLevel + 1, method);
-        }
-
-        foreach (var innerClass in javaClass.InnerClasses)
-        {
-            WriteLine();
-            if (innerClass is JavaEnum javaEnum)
+            foreach (var value in javaEnum.Values)
             {
-                Write(indentationLevel + 1, javaEnum);
-            }
-            else
-            {
-                Write(indentationLevel + 1, innerClass);
-            }
-        }
-
-        WriteLine(indentationLevel, "}");
-    }
-
-    /// <summary>
-    /// Ecrit la classe Java avec le niveau indenté.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="javaClass">Classe à écrire dans le flux.</param>
-    public void Write(int indentationLevel, JavaEnum javaClass)
-    {
-        AddImports(javaClass.Imports);
-        WriteLine();
-        if (!string.IsNullOrEmpty(javaClass.Comment))
-        {
-            WriteDocStart(indentationLevel, javaClass.Comment);
-            WriteDocEnd(indentationLevel);
-        }
-
-        Write(indentationLevel, javaClass.Annotations);
-        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
-        foreach (var value in javaClass.Values)
-        {
-            _toWrite.Add(
-                new WriterLine()
+                if (value.Comment != string.Empty)
                 {
-                    Line = value.ToString() + (value != javaClass.Values.Last() ? "," : ";"),
-                    Indent = indentationLevel + 1,
+                    WriteDocStart(indentationLevel + 1, value.Comment);
+                    WriteDocEnd(indentationLevel + 1);
                 }
-            );
+                _toWrite.Add(
+                    new WriterLine()
+                    {
+                        Line =
+                            value.ToString()
+                            + (
+                                value != javaEnum.Values.Last() ? ","
+                                : javaEnum.Fields.Any() ? ";"
+                                : string.Empty
+                            ),
+                        Indent = indentationLevel + 1,
+                    }
+                );
+            }
         }
         foreach (var field in javaClass.Fields)
         {
@@ -161,19 +127,16 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         foreach (var constructor in javaClass.Constructors)
         {
-            WriteLine();
             WriteConstructor(indentationLevel + 1, constructor);
         }
 
         foreach (var method in javaClass.Methods)
         {
-            WriteLine();
             Write(indentationLevel + 1, method);
         }
 
         foreach (var innerClass in javaClass.InnerClasses)
         {
-            WriteLine();
             Write(indentationLevel + 1, innerClass);
         }
 
@@ -249,6 +212,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="constructor">Constructeur à écrire.</param>
     public void WriteConstructor(int indentationLevel, JavaConstructor constructor)
     {
+        WriteLine();
         AddImports(constructor.Imports);
         Write(indentationLevel, constructor.Annotations);
         if (!string.IsNullOrEmpty(constructor.Comment))

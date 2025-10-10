@@ -63,7 +63,6 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         foreach (var getter in GetGetters(classe, tag))
         {
             fw.Write(1, getter);
-            fw.WriteLine();
         }
 
         if (classe.Properties.Any(p => !p.Readonly))
@@ -89,7 +88,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         {
             return;
         }
-
+        fw.WriteLine();
         fw.WriteDocStart(1, $"hydrate values of instance");
         foreach (var property in properties)
         {

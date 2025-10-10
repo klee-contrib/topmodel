@@ -98,8 +98,8 @@ public class TypeUtilisateur {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur TypeUtilisateur}.
 	 */
 	public enum Fields {
-        CODE(TypeUtilisateurCode.class), //
-        LIBELLE(String.class);
+		CODE(TypeUtilisateurCode.class),
+		LIBELLE(String.class);
 
 		private final Class<?> type;
 
@@ -107,6 +107,11 @@ public class TypeUtilisateur {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

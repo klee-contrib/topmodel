@@ -234,7 +234,6 @@ public class UtilisateurWrite implements Serializable {
 		return SecuriteUtilisateurMappers.toUtilisateur(this, target);
 	}
 
-
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite UtilisateurWrite}.
 	 */

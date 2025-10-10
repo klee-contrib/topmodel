@@ -10,6 +10,7 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface UtilisateurItem {
+
 	/**
 	 * Getter for id.
 	 *

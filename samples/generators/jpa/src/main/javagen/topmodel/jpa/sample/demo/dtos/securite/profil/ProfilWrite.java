@@ -87,7 +87,6 @@ public class ProfilWrite implements Serializable {
 		return SecuriteProfilMappers.toProfil(this, target);
 	}
 
-
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite ProfilWrite}.
 	 */

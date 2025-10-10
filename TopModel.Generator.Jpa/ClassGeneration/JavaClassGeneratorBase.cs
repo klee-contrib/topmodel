@@ -55,6 +55,59 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
+    protected virtual JavaClass InitClass(Class classe, string tag)
+    {
+        var packageName = Config.GetPackageName(classe, tag);
+
+        var javaClass = new JavaClass(classe.NamePascal) { Comment = classe.Comment };
+        javaClass.AddRange(GetAnnotations(classe, tag));
+        var extends = Config.GetClassExtends(classe, tag);
+        if (classe.Extends is not null)
+        {
+            javaClass.Extends = extends;
+            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
+        }
+
+        var implements = Config.GetClassImplements(classe, tag).ToList();
+        javaClass.Implements.AddRange(implements);
+        javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
+        javaClass.AddRange(GetConstuctors(classe, tag));
+        javaClass.AddRange(GetFields(classe, tag));
+        javaClass.AddRange(GetGetters(classe, tag));
+        javaClass.AddRange(GetSetters(classe, tag));
+        if (Config.MappersInClass)
+        {
+            javaClass.AddRange(GetToMappers(classe, tag));
+        }
+
+        return javaClass;
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        if (
+            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
+            || Classes.Any(c => c.Extends == classe)
+            || Config.GetClassExtends(classe, tag) != null
+        )
+        {
+            yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
+        }
+
+        if (Config.MappersInClass)
+        {
+            foreach (var constructor in ConstructorGenerator.GetFromMappers(classe, Classes, tag))
+            {
+                yield return constructor;
+            }
+        }
+    }
+
+    protected virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
+        return JpaModelPropertyGenerator.GetProperties(classe, tag);
+    }
+
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
         if (!Config.HasAnnotation(classe, "Getter"))
@@ -178,67 +231,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             return;
         }
 
-        if (Config.FieldsEnumInterface != null)
-        {
-            fw.AddImport(Config.FieldsEnumInterface.Replace("<>", string.Empty));
-        }
-
-        fw.WriteLine();
-        fw.WriteDocStart(
-            1,
-            $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}"
-        );
-        fw.WriteDocEnd(1);
-        string enumDeclaration = @$"public enum Fields";
-        if (Config.FieldsEnumInterface != null)
-        {
-            enumDeclaration +=
-                $" implements {Config.FieldsEnumInterface.Split(".")[^1].Replace("<>", $"<{classe.NamePascal}>")}";
-        }
-
-        enumDeclaration += " {";
-        fw.WriteLine(1, enumDeclaration);
-
-        var props = classe.Properties.Select(prop =>
-        {
-            string name;
-            if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
-            {
-                name = ap.NameByClassCamel.ToConstantCase();
-            }
-            else
-            {
-                name = prop.NameCamel.ToConstantCase();
-            }
-
-            var javaType = Config.GetType(
-                prop,
-                useClassForAssociation: classe.IsPersistent
-                    && !Config.UseJdbc
-                    && prop is AssociationProperty asp
-                    && asp.Association.IsPersistent
-            );
-            javaType = javaType.Split("<")[0];
-            return $"        {name}({javaType}.class)";
-        });
-
-        fw.WriteLine(string.Join(", //\n", props) + ";");
-
-        fw.WriteLine();
-
-        fw.WriteLine(2, "private final Class<?> type;");
-        fw.WriteLine();
-        fw.WriteLine(2, "Fields(Class<?> type) {");
-        fw.WriteLine(3, "this.type = type;");
-        fw.WriteLine(2, "}");
-
-        fw.WriteLine();
-
-        fw.WriteLine(2, "public Class<?> getType() {");
-        fw.WriteLine(3, "return this.type;");
-        fw.WriteLine(2, "}");
-
-        fw.WriteLine(1, "}");
+        fw.Write(1, GetFieldsEnum(classe, tag));
     }
 
     protected virtual JavaEnum GetFieldsEnum(Class classe, string tag)
@@ -261,18 +254,20 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             );
         }
 
-        var enumValues = classe.Properties.Select(prop =>
-        {
-            string name;
-            if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
-            {
-                name = ap.NameByClassCamel.ToConstantCase();
-            }
-            else
-            {
-                name = prop.NameCamel.ToConstantCase();
-            }
+        var enumValues = GetFieldsEnumValues(classe, tag);
+        javaEnum.AddRange(enumValues);
+        var classField = new JavaField("Class<?>", "type") { Final = true };
+        javaEnum.Add(new JavaField("Class<?>", "type") { Final = true });
+        javaEnum.Add(classField.DefaultGetter);
+        javaEnum.Constructors.Add(javaEnum.GetAllArgsConstructor());
+        return javaEnum;
+    }
 
+    protected virtual IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
+    {
+        return classe.Properties.Select(prop =>
+        {
+            string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
             var javaType = Config.GetType(
                 prop,
                 useClassForAssociation: classe.IsPersistent
@@ -281,46 +276,30 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                     && asp.Association.IsPersistent
             );
             javaType = javaType.Split("<")[0];
-            return new JavaEnumValue(name) { Parameters = { $"{javaType}.class" } };
+            return new JavaEnumValue(name)
+            {
+                Parameters = { $"{javaType}.class" },
+                Imports = prop.GetTypeImports(Config, tag).ToList(),
+            };
         });
-        javaEnum.Values.AddRange(enumValues);
-        var classField = new JavaField("Class<?>", "type") { Final = true };
-        javaEnum.Add(new JavaField("Class<?>", "type") { Final = true });
-        javaEnum.Add(classField.DefaultGetter);
-        javaEnum.Constructors.Add(javaEnum.GetAllArgsConstructor());
-        return javaEnum;
     }
 
     protected virtual void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        if (!Config.HasAnnotation(classe, "Getter"))
+        var getters = GetGetters(classe, tag);
+        foreach (var getter in getters)
         {
-            foreach (var property in classe.Properties)
-            {
-                if (!Config.HasAnnotation(property, "Getter"))
-                {
-                    JpaModelPropertyGenerator.WriteGetter(fw, tag, property);
-                }
-            }
+            fw.Write(1, getter);
         }
-
-        WriteMapIdPropertyGetter(fw, classe, tag);
     }
 
     protected virtual void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        if (!Config.HasAnnotation(classe, "Setter"))
+        var setters = GetSetters(classe, tag);
+        foreach (var setter in setters)
         {
-            foreach (var property in classe.Properties)
-            {
-                if (!Config.HasAnnotation(property, "Setter"))
-                {
-                    JpaModelPropertyGenerator.WriteSetter(fw, tag, property);
-                }
-            }
+            fw.Write(1, setter);
         }
-
-        WriteMapIdPropertySetter(fw, classe, tag);
     }
 
     protected virtual void WriteToMappers(JavaWriter fw, Class classe, string tag)

@@ -5,6 +5,7 @@ namespace TopModel.Generator.Jpa;
 public class JavaField(string type, string name)
 {
     public string Type { get; set; } = type;
+    public string Visibility { get; set; } = "private";
 
     public string Name { get; set; } = name;
     public string DefaultValue { get; set; } = "";
@@ -59,6 +60,6 @@ public class JavaField(string type, string name)
 
     public override string ToString()
     {
-        return $"private{(Static ? " static" : string.Empty)}{(Final ? " final" : string.Empty)} {Type} {Name}{(DefaultValue != string.Empty ? $" = {DefaultValue}" : string.Empty)};";
+        return $"{Visibility}{(Static ? " static" : string.Empty)}{(Final ? " final" : string.Empty)} {Type} {Name}{(DefaultValue != string.Empty ? $" = {DefaultValue}" : string.Empty)};";
     }
 }

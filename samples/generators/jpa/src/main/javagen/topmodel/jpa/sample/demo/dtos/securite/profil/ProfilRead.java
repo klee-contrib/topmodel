@@ -192,7 +192,6 @@ public class ProfilRead implements Serializable {
 		this.utilisateurs = utilisateurs;
 	}
 
-
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead ProfilRead}.
 	 */

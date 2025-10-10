@@ -182,6 +182,7 @@ public class Profil {
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
+
 	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
@@ -197,12 +198,12 @@ public class Profil {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil Profil}.
 	 */
 	public enum Fields {
-        ID(Integer.class), //
-        LIBELLE(String.class), //
-        PROFIL_DROITS(List.class), //
-        UTILISATEURS(List.class), //
-        DATE_CREATION(LocalDateTime.class), //
-        DATE_MODIFICATION(LocalDateTime.class);
+		ID(Integer.class),
+		LIBELLE(String.class),
+		PROFIL_DROITS(List.class),
+		UTILISATEURS(List.class),
+		DATE_CREATION(LocalDateTime.class),
+		DATE_MODIFICATION(LocalDateTime.class);
 
 		private final Class<?> type;
 
@@ -210,6 +211,11 @@ public class Profil {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

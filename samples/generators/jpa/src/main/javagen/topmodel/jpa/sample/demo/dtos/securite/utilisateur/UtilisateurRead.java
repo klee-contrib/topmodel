@@ -313,7 +313,6 @@ public class UtilisateurRead implements Serializable {
 		this.dateModification = dateModification;
 	}
 
-
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead UtilisateurRead}.
 	 */

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -47,127 +48,87 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
+        var javaClass = base.InitClass(classe, tag);
+
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
+        {
+            javaClass.InnerClasses.Add(GetFieldsEnum(classe, tag));
+            javaClass.Imports.AddRange(javaClass.InnerClasses.SelectMany(i => i.Imports));
+        }
+
         var packageName = Config.GetPackageName(classe, tag);
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        fw.Write(0, javaClass);
+    }
 
-        fw.WriteLine();
+    private IEnumerable<IProperty> GetFilteredProperties(Class classe)
+    {
+        return classe.Properties.Where(p => !(p is AssociationProperty ap && ap.Type.IsToMany()));
+    }
 
-        WriteClassComment(fw, classe, tag);
-        WriteAnnotations(fw, classe, tag);
+    protected override IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
+    {
+        return GetFilteredProperties(classe)
+            .Select(prop =>
+            {
+                string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
+                var javaType = Config.GetType(
+                    prop,
+                    useClassForAssociation: classe.IsPersistent
+                        && !Config.UseJdbc
+                        && prop is AssociationProperty asp
+                        && asp.Association.IsPersistent
+                );
+                javaType = javaType.Split("<")[0];
+                return new JavaEnumValue(name)
+                {
+                    Parameters = { $"{javaType}.class" },
+                    Imports = prop.GetTypeImports(Config, tag).ToList(),
+                };
+            });
+    }
 
-        var extends = Config.GetClassExtends(classe, tag);
-        if (classe.Extends is not null)
-        {
-            fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
-        }
-
-        var implements = Config.GetClassImplements(classe, tag).ToList();
-
-        if (!classe.IsPersistent)
-        {
-            implements.Add("Serializable");
-            fw.AddImport("java.io.Serializable");
-        }
-
-        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
-
-        if (!classe.IsPersistent)
-        {
-            fw.WriteLine("\t/** Serial ID */");
-            fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
-        }
-
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
         if (Config.CanClassUseEnums(classe, Classes))
         {
-            fw.WriteLine();
             var codeProperty = classe.EnumKey!;
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
-                if (classe.IsPersistent)
-                {
-                    fw.AddImport($"{JavaxOrJakarta}.persistence.Transient");
-                    fw.WriteLine(1, "@Transient");
-                }
 
-                fw.WriteLine(
-                    1,
-                    $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
-                );
+                yield return new JavaField(classe.NamePascal, code)
+                {
+                    Static = true,
+                    Final = true,
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+                }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
             }
         }
-
-        JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
-
-        if (
-            Config.CanClassUseEnums(classe, Classes)
-            || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
-            || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null
-        )
+        foreach (var property in GetFilteredProperties(classe))
         {
-            ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
-        }
-
-        if (Config.MappersInClass)
-        {
-            ConstructorGenerator.WriteFromMappers(fw, classe, Classes, tag);
-        }
-
-        if (Config.CanClassUseEnums(classe, Classes))
-        {
-            ConstructorGenerator.WriteEnumConstructor(fw, classe, Classes, tag);
-        }
-
-        WriteGetters(fw, classe, tag);
-        WriteSetters(fw, classe, tag);
-
-        if (Config.MappersInClass)
-        {
-            WriteToMappers(fw, classe, tag);
-        }
-
-        if (
-            Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && classe.IsPersistent
-            || Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && !classe.IsPersistent
-        )
-        {
-            WriteFieldsEnum(fw, classe, tag);
-        }
-
-        fw.WriteLine("}");
-    }
-
-    protected override void WriteGetters(JavaWriter fw, Class classe, string tag)
-    {
-        var properties = classe.Properties.Where(p =>
-            !(
-                p is AssociationProperty ap
-                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-            )
-        );
-        foreach (var property in properties)
-        {
-            JpaModelPropertyGenerator!.WriteGetter(fw, tag, property);
+            yield return JpaModelPropertyGenerator.GetField(property, tag);
         }
     }
 
-    protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p =>
-            !(
-                p is AssociationProperty ap
-                && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-            )
-        );
-        if (Config.CanClassUseEnums(classe, Classes))
-        {
-            return;
-        }
-
+        var properties = GetFilteredProperties(classe);
         foreach (var property in properties)
         {
-            JpaModelPropertyGenerator!.WriteSetter(fw, tag, property);
+            yield return JpaModelPropertyGenerator!.GetGetter(tag, property);
+        }
+    }
+
+    protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
+    {
+        var properties = GetFilteredProperties(classe);
+        if (!Config.CanClassUseEnums(classe, Classes))
+        {
+            foreach (var property in properties)
+            {
+                yield return JpaModelPropertyGenerator!.GetSetter(tag, property);
+            }
         }
     }
 }

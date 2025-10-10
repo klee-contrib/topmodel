@@ -147,8 +147,8 @@ public class ProfilDroit {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit ProfilDroit}.
 	 */
 	public enum Fields {
-        PROFIL(Profil.class), //
-        DROIT(Droit.class);
+		PROFIL(Profil.class),
+		DROIT(Droit.class);
 
 		private final Class<?> type;
 
@@ -156,6 +156,11 @@ public class ProfilDroit {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}

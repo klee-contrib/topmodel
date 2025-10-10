@@ -29,8 +29,9 @@ public interface ProfilClient {
 
 	/**
 	 * Ajoute un Profil.
-	 * @param profil Profil à sauvegarder
-	 * @return Profil sauvegardé
+	 * @param profil Profil à sauvegarder.
+	 *
+	 * @return Profil sauvegardé.
 	 */
 	@PostExchange("/")
 	@PreAuthorize("hasRole('CREATE')")
@@ -38,8 +39,9 @@ public interface ProfilClient {
 
 	/**
 	 * Charge le détail d'un Profil.
-	 * @param proId Id technique
-	 * @return Le détail du profil
+	 * @param proId Id technique.
+	 *
+	 * @return Le détail du profil.
 	 */
 	@GetExchange("/{proId}")
 	@PreAuthorize("hasRole('READ')")
@@ -47,7 +49,8 @@ public interface ProfilClient {
 
 	/**
 	 * Liste tous les Profils.
-	 * @return Profils matchant les critères
+	 *
+	 * @return Profils matchant les critères.
 	 */
 	@GetExchange("/")
 	@PreAuthorize("hasRole('READ')")
@@ -55,9 +58,10 @@ public interface ProfilClient {
 
 	/**
 	 * Sauvegarde un Profil.
-	 * @param proId Id technique
-	 * @param profil Profil à sauvegarder
-	 * @return Profil sauvegardé
+	 * @param proId Id technique.
+	 * @param profil Profil à sauvegarder.
+	 *
+	 * @return Profil sauvegardé.
 	 */
 	@PutExchange("/{proId}")
 	@PreAuthorize("hasRole('UPDATE')")

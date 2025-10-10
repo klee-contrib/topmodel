@@ -74,7 +74,6 @@ public class JavaConstructorGenerator(JpaConfig config)
         var constructors = GetFromMappers(classe, availableClasses, tag).ToList();
         foreach (var constructor in constructors)
         {
-            fw.WriteLine();
             fw.Write(1, constructor);
         }
     }
@@ -82,7 +81,6 @@ public class JavaConstructorGenerator(JpaConfig config)
     public void WriteNoArgConstructor(JavaWriter fw, Class classe, string tag)
     {
         var constructor = GetNoArgConstructor(classe, tag);
-        fw.WriteLine();
         fw.Write(1, constructor);
     }
 

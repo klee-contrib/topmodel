@@ -23,34 +23,40 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
         }
     }
 
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
+        var codeProperty = classe.EnumKey!;
+        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        {
+            var code = refValue.Value[codeProperty];
+            yield return new JavaField(classe.NamePascal, code)
+            {
+                Static = true,
+                Final = true,
+                Visibility = "public",
+                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+            };
+        }
+
+        foreach (var property in base.GetFields(classe, tag))
+        {
+            yield return property;
+        }
+    }
+
     protected override bool FilterClass(Class classe)
     {
         return !classe.Abstract && Config.CanClassUseEnums(classe, Classes) && !classe.IsPersistent;
     }
 
-    protected override void WriteConstuctors(JavaWriter fw, Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
-        ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
-        ConstructorGenerator.WriteEnumConstructor(fw, classe, Classes, tag);
+        yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
+        yield return ConstructorGenerator.GetEnumConstructor(classe, Classes, tag);
     }
 
-    protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        // A surcharger
-    }
-
-    protected override void WriteStaticMembers(JavaWriter fw, Class classe)
-    {
-        base.WriteStaticMembers(fw, classe);
-        fw.WriteLine();
-        var codeProperty = classe.EnumKey!;
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-        {
-            var code = refValue.Value[codeProperty];
-            fw.WriteLine(
-                1,
-                $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
-            );
-        }
+        return [];
     }
 }

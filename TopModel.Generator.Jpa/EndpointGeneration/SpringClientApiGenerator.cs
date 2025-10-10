@@ -82,33 +82,21 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
     protected virtual void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
-        fw.WriteLine();
-        fw.WriteDocStart(1, endpoint.Description);
-
-        foreach (var param in endpoint.Params)
-        {
-            fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
-        }
-
-        if (endpoint.Returns != null)
-        {
-            fw.WriteLine(1, $" * @return {endpoint.Returns.Comment}");
-        }
-
-        fw.WriteLine(1, " */");
         var returnType = "Void";
 
         if (endpoint.Returns != null)
         {
             returnType = Config.GetType(endpoint.Returns);
         }
-
         var method = new JavaMethod(
             "org.springframework.http.ResponseEntity",
             @$"ResponseEntity<{returnType}>",
             endpoint.NameCamel
-        );
-
+        )
+        {
+            Comment = endpoint.Description,
+            ReturnComment = endpoint.Returns != null ? endpoint.Returns.Comment : "Aucun retour",
+        };
         var javaAnnotations = Config
             .GetAnnotations(endpoint, tag)
             .Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
@@ -146,6 +134,9 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 imports: "org.springframework.web.bind.annotation.PathVariable"
             ).AddAttribute(@$"""{param.GetParamName()}""");
             var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+            {
+                Comment = param.Comment,
+            }
                 .AddAnnotation(pathParamAnnotation)
                 .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
             parameter.Imports.AddRange(Config.GetDomainImports(param, tag));
@@ -161,6 +152,9 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 .AddAttribute(@$"""{param.GetParamName()}""")
                 .AddAttribute("required", param.Required.ToString().ToFirstLower());
             var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+            {
+                Comment = param.Comment,
+            }
                 .AddAnnotation(requestParamAnnotation)
                 .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
             method.AddParameter(parameter);
@@ -190,6 +184,9 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                         "MultiValueMap<K, V>",
                         param.GetParamName()
                     )
+                    {
+                        Comment = param.Comment,
+                    }
                         .AddAnnotation(requestPartAnnotation)
                         .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
                     method.AddParameter(parameter).AddGenericType("K").AddGenericType("V");
@@ -203,9 +200,10 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                         .AddAttribute(@$"""{param.Name}""")
                         .AddAttribute("required", param.Required.ToString().ToFirstLower());
 
-                    var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName()).AddAnnotation(
-                        requestPartAnnotation
-                    );
+                    var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+                    {
+                        Comment = param.Comment,
+                    }.AddAnnotation(requestPartAnnotation);
                     method.AddParameter(parameter);
                 }
             }
@@ -221,6 +219,9 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                     imports: "org.springframework.web.bind.annotation.RequestBody"
                 );
                 var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName())
+                {
+                    Comment = bodyParam.Comment,
+                }
                     .AddAnnotation(requestBodyAnnotation)
                     .AddAnnotation(validAnnotation);
                 method.AddParameter(parameter);

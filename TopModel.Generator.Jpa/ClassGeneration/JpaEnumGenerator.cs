@@ -79,35 +79,39 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
         }
     }
 
-    protected virtual void WriteEnum(IProperty property, Class classe, string tag)
+    private JavaEnum GetJavaEnum(IProperty property, Class classe, string tag)
     {
-        var packageName = Config.GetEnumPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(Config.GetEnumFileName(property, classe, tag), packageName, codePage: null);
-        fw.WriteLine();
+        var javaEnum = new JavaEnum(Config.GetEnumName(property, classe))
+        {
+            ClassType = "enum",
+            Comment =
+                $"Enumération des valeurs possibles de la propriété {property.NamePascal} de la classe {classe.NamePascal}",
+        };
         var codeProperty = classe.EnumKey!;
-        fw.WriteDocStart(
-            0,
-            $"Enumération des valeurs possibles de la propriété {codeProperty.NamePascal} de la classe {classe.NamePascal}"
-        );
-        fw.WriteDocEnd(0);
-        fw.WriteLine($@"public enum {Config.GetEnumName(property, classe)} {{");
         var i = 0;
-
         var refs = GetAllValues(classe).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 
         foreach (var value in refs)
         {
             i++;
             var isLast = i == refs.Count;
+            var enumValue = new JavaEnumValue(value.Value[property]);
             if (classe.DefaultProperty != null)
             {
-                fw.WriteDocStart(1, $"{value.Value[classe.DefaultProperty]}");
-                fw.WriteDocEnd(1);
+                enumValue.Comment = value.Value[classe.DefaultProperty];
             }
 
-            fw.WriteLine(1, $"{value.Value[property]}{(isLast ? string.Empty : ",")}");
+            javaEnum.Add(enumValue);
         }
 
-        fw.WriteLine("}");
+        return javaEnum;
+    }
+
+    protected virtual void WriteEnum(IProperty property, Class classe, string tag)
+    {
+        var packageName = Config.GetEnumPackageName(classe, tag);
+        using var fw = this.OpenJavaWriter(Config.GetEnumFileName(property, classe, tag), packageName, codePage: null);
+        var javaEnum = GetJavaEnum(property, classe, tag);
+        fw.Write(0, javaEnum);
     }
 }

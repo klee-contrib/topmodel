@@ -98,8 +98,8 @@ public class TypeDroit {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit TypeDroit}.
 	 */
 	public enum Fields {
-        CODE(TypeDroitCode.class), //
-        LIBELLE(String.class);
+		CODE(TypeDroitCode.class),
+		LIBELLE(String.class);
 
 		private final Class<?> type;
 
@@ -107,6 +107,11 @@ public class TypeDroit {
 			this.type = type;
 		}
 
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
 		public Class<?> getType() {
 			return this.type;
 		}
