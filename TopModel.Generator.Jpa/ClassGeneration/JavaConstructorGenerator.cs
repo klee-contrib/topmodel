@@ -69,21 +69,6 @@ public class JavaConstructorGenerator(JpaConfig config)
         }
     }
 
-    public void WriteFromMappers(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
-    {
-        var constructors = GetFromMappers(classe, availableClasses, tag).ToList();
-        foreach (var constructor in constructors)
-        {
-            fw.Write(1, constructor);
-        }
-    }
-
-    public void WriteNoArgConstructor(JavaWriter fw, Class classe, string tag)
-    {
-        var constructor = GetNoArgConstructor(classe, tag);
-        fw.Write(1, constructor);
-    }
-
     public JavaMethod GetNoArgConstructor(Class classe, string tag)
     {
         var constructor = new JavaConstructor(classe.NamePascal)

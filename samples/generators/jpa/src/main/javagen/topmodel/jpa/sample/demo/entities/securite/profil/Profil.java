@@ -193,7 +193,6 @@ public class Profil {
 		return SecuriteProfilMappers.toProfil(this, target);
 	}
 
-
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil Profil}.
 	 */

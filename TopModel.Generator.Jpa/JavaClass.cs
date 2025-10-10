@@ -71,6 +71,23 @@ public class JavaClass(string name)
         return this;
     }
 
+    public JavaClass Add(JavaClass innerClass)
+    {
+        InnerClasses.Add(innerClass);
+        Imports.AddRange(innerClass.Imports);
+
+        return this;
+    }
+
+    public JavaClass AddRange(IEnumerable<JavaClass> innerClasses)
+    {
+        foreach (var innerClass in innerClasses)
+        {
+            Add(innerClass);
+        }
+        return this;
+    }
+
     public JavaClass AddRange(IEnumerable<JavaField> javaFields)
     {
         foreach (var field in javaFields)
@@ -125,13 +142,12 @@ public class JavaClass(string name)
             sb.Append($"{Visibility} ");
         }
 
-        sb.Append($"{ClassType}");
         if (!string.IsNullOrEmpty(Modifier))
         {
-            sb.Append($" {Modifier}");
+            sb.Append($"{Modifier} ");
         }
 
-        sb.Append($" {Name}");
+        sb.Append($"{ClassType} {Name}");
         if (!string.IsNullOrEmpty(Extends))
         {
             sb.Append($" extends {Extends}");

@@ -46,19 +46,13 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         return Config.GetClassFileName(classe, tag);
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
-        var javaClass = base.InitClass(classe, tag);
-
         if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
         {
-            javaClass.InnerClasses.Add(GetFieldsEnum(classe, tag));
-            javaClass.Imports.AddRange(javaClass.InnerClasses.SelectMany(i => i.Imports));
+            var fieldEnum = GetFieldsEnum(classe, tag);
+            yield return fieldEnum;
         }
-
-        var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
     }
 
     private IEnumerable<IProperty> GetFilteredProperties(Class classe)

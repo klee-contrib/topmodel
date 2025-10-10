@@ -31,8 +31,10 @@ public class TypeDroit {
 
 	@Transient
 	public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);
+
 	@Transient
 	public static final TypeDroit READ = new TypeDroit(TypeDroitCode.READ);
+
 	@Transient
 	public static final TypeDroit WRITE = new TypeDroit(TypeDroitCode.WRITE);
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -29,68 +28,34 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
         return !classe.Abstract && Config.CanClassUseEnums(classe, Classes) && classe.IsPersistent;
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
-        var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
+        yield return ConstructorGenerator.GetEnumConstructor(classe, Classes, tag);
+    }
 
-        fw.WriteLine();
-        WriteClassComment(fw, classe, tag);
-        WriteAnnotations(fw, classe, tag);
-
-        var extends = Config.GetClassExtends(classe, tag);
-        if (classe.Extends is not null)
-        {
-            fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
-        }
-
-        var implements = Config.GetClassImplements(classe, tag).ToList();
-
-        fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
-        fw.WriteLine();
-
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
         var codeProperty = classe.EnumKey!;
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             var code = refValue.Value[codeProperty];
-            if (classe.IsPersistent)
+            yield return new JavaField(classe.NamePascal, code)
             {
-                fw.AddImport($"{JavaxOrJakarta}.persistence.Transient");
-                fw.WriteLine(1, "@Transient");
-            }
-
-            fw.WriteLine(
-                1,
-                $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});"
-            );
+                Visibility = "public",
+                Static = true,
+                Final = true,
+                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+            }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
         }
-
-        JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
-        WriteConstructors(classe, tag, fw);
-
-        WriteGetters(fw, classe, tag);
-
-        if (Config.MappersInClass)
+        foreach (var field in JpaModelPropertyGenerator.GetProperties(classe, tag))
         {
-            WriteToMappers(fw, classe, tag);
+            yield return field;
         }
-
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
-        {
-            WriteFieldsEnum(fw, classe, tag);
-        }
-
-        fw.WriteLine("}");
     }
 
-    protected override void WriteConstructors(Class classe, string tag, JavaWriter fw)
+    protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
-        ConstructorGenerator.WriteEnumConstructor(fw, classe, Classes, tag);
-    }
-
-    protected override void WriteSetters(JavaWriter fw, Class classe, string tag)
-    {
-        // A surcharger
+        return [];
     }
 }

@@ -41,7 +41,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         var packageName = Config
             .ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module)
             .ToPackageName();
-        var javaClass = GetJavaClass(classe, tag);
+        var javaClass = InitClass(classe, tag);
 
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(0, javaClass);
@@ -54,7 +54,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             : $"{(Config.DaosAbstract ? "Abstract" : string.Empty)}{classe.NamePascal}DAO";
     }
 
-    private JavaClass GetJavaClass(Class classe, string tag)
+    private JavaClass InitClass(Class classe, string tag)
     {
         var packageName = Config
             .ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module)

@@ -34,10 +34,13 @@ public class Droit {
 
 	@Transient
 	public static final Droit CREATE = new Droit(DroitCode.CREATE);
+
 	@Transient
 	public static final Droit DELETE = new Droit(DroitCode.DELETE);
+
 	@Transient
 	public static final Droit READ = new Droit(DroitCode.READ);
+
 	@Transient
 	public static final Droit UPDATE = new Droit(DroitCode.UPDATE);
 

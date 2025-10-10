@@ -19,6 +19,16 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected string JavaxOrJakarta => Config.JavaxOrJakarta;
 
+    protected override void HandleClass(string fileName, Class classe, string tag)
+    {
+        var packageName = Config.GetPackageName(classe, tag);
+
+        var javaClass = InitClass(classe, tag);
+
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        fw.Write(0, javaClass);
+    }
+
     protected virtual JavaConstructorGenerator ConstructorGenerator
     {
         get
@@ -73,14 +83,34 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
         javaClass.AddRange(GetConstuctors(classe, tag));
         javaClass.AddRange(GetFields(classe, tag));
-        javaClass.AddRange(GetGetters(classe, tag));
-        javaClass.AddRange(GetSetters(classe, tag));
-        if (Config.MappersInClass)
-        {
-            javaClass.AddRange(GetToMappers(classe, tag));
-        }
+        javaClass.AddRange(GetMethods(classe, tag));
+        javaClass.AddRange(GetInnerClasses(classe, tag));
 
         return javaClass;
+    }
+
+    protected virtual IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
+    {
+        return [];
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
+    {
+        foreach (var method in GetGetters(classe, tag))
+        {
+            yield return method;
+        }
+        foreach (var method in GetSetters(classe, tag))
+        {
+            yield return method;
+        }
+        if (Config.MappersInClass)
+        {
+            foreach (var method in GetToMappers(classe, tag))
+            {
+                yield return method;
+            }
+        }
     }
 
     protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
@@ -122,31 +152,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected virtual JavaMethod? GetMapIdPropertySetter(Class classe, string tag)
-    {
-        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.FirstOrDefault() is AssociationProperty ap)
-        {
-            var propertyName = classe.PrimaryKey.First().NameCamel;
-            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap.Property);
-            string setterName = $"set{ap.NamePascal}";
-            var method = new JavaMethod("void", setterName)
-            {
-                Visibility = "public",
-                Comment = $"Setter for {propertyName}",
-            }.AddParameter(
-                new JavaMethodParameter(propertyType, propertyName)
-                {
-                    Comment =
-                        $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
-                }
-            );
-            method.Imports.AddRange(Config.GetDomainImports(ap.Property, tag));
-            method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
-            return method;
-        }
-        return null;
-    }
-
     protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
         if (!Config.HasAnnotation(classe, "Setter"))
@@ -158,12 +163,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                     yield return JpaModelPropertyGenerator.GetSetter(tag, property);
                 }
             }
-        }
-
-        var mapIdSetter = GetMapIdPropertySetter(classe, tag);
-        if (mapIdSetter != null)
-        {
-            yield return mapIdSetter;
         }
     }
 

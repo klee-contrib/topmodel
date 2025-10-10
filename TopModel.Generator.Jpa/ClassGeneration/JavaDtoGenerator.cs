@@ -27,22 +27,21 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         );
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override JavaClass InitClass(Class classe, string tag)
     {
-        var packageName = Config.GetPackageName(classe, tag);
-
         var javaClass = base.InitClass(classe, tag);
         javaClass.Implements.Add("Serializable");
         javaClass.Imports.Add("java.io.Serializable");
+        return javaClass;
+    }
 
+    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
+    {
         if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
-            javaClass.InnerClasses.Add(fieldEnum);
+            yield return fieldEnum;
         }
-
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)

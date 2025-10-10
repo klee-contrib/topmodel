@@ -23,6 +23,17 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
         }
     }
 
+    protected override bool FilterClass(Class classe)
+    {
+        return !classe.Abstract && Config.CanClassUseEnums(classe, Classes) && !classe.IsPersistent;
+    }
+
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
+        yield return ConstructorGenerator.GetEnumConstructor(classe, Classes, tag);
+    }
+
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
         var codeProperty = classe.EnumKey!;
@@ -42,17 +53,6 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
         {
             yield return property;
         }
-    }
-
-    protected override bool FilterClass(Class classe)
-    {
-        return !classe.Abstract && Config.CanClassUseEnums(classe, Classes) && !classe.IsPersistent;
-    }
-
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
-    {
-        yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
-        yield return ConstructorGenerator.GetEnumConstructor(classe, Classes, tag);
     }
 
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)

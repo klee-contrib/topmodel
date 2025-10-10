@@ -31,8 +31,10 @@ public class TypeUtilisateur {
 
 	@Transient
 	public static final TypeUtilisateur ADMIN = new TypeUtilisateur(TypeUtilisateurCode.ADMIN);
+
 	@Transient
 	public static final TypeUtilisateur CLIENT = new TypeUtilisateur(TypeUtilisateurCode.CLIENT);
+
 	@Transient
 	public static final TypeUtilisateur GEST = new TypeUtilisateur(TypeUtilisateurCode.GEST);
 

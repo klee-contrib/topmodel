@@ -36,6 +36,63 @@ public class ProfilDroit {
 	@Id
 	private Droit droit;
 
+	/**
+	 * Getter for profil.
+	 *
+	 * @return value of {@link #profil profil}.
+	 */
+	public Profil getProfil() {
+		return this.profil;
+	}
+
+	/**
+	 * Getter for droit.
+	 *
+	 * @return value of {@link #droit droit}.
+	 */
+	public Droit getDroit() {
+		return this.droit;
+	}
+
+	/**
+	 * Set the value of {@link #profil profil}.
+	 * @param profil value to set.
+	 */
+	public void setProfil(Profil profil) {
+		this.profil = profil;
+	}
+
+	/**
+	 * Set the value of {@link #droit droit}.
+	 * @param droit value to set.
+	 */
+	public void setDroit(Droit droit) {
+		this.droit = droit;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit ProfilDroit}.
+	 */
+	public enum Fields {
+		PROFIL(Profil.class),
+		DROIT(Droit.class);
+
+		private final Class<?> type;
+
+		Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
+
 	public static class ProfilDroitId {
 
 		@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
@@ -106,63 +163,6 @@ public class ProfilDroit {
 		@Override
 		public int hashCode() {
 			return Objects.hash(profil == null ? null : profil.getId(), droit == null ? null : droit.getCode());
-		}
-	}
-
-	/**
-	 * Getter for profil.
-	 *
-	 * @return value of {@link #profil profil}.
-	 */
-	public Profil getProfil() {
-		return this.profil;
-	}
-
-	/**
-	 * Getter for droit.
-	 *
-	 * @return value of {@link #droit droit}.
-	 */
-	public Droit getDroit() {
-		return this.droit;
-	}
-
-	/**
-	 * Set the value of {@link #profil profil}.
-	 * @param profil value to set.
-	 */
-	public void setProfil(Profil profil) {
-		this.profil = profil;
-	}
-
-	/**
-	 * Set the value of {@link #droit droit}.
-	 * @param droit value to set.
-	 */
-	public void setDroit(Droit droit) {
-		this.droit = droit;
-	}
-
-	/**
-	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.ProfilDroit ProfilDroit}.
-	 */
-	public enum Fields {
-		PROFIL(Profil.class),
-		DROIT(Droit.class);
-
-		private final Class<?> type;
-
-		Fields(Class<?> type) {
-			this.type = type;
-		}
-
-		/**
-		 * Getter for type.
-		 *
-		 * @return value of {@link #type type}.
-		 */
-		public Class<?> getType() {
-			return this.type;
 		}
 	}
 }
