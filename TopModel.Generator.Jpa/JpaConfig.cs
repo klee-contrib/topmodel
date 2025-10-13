@@ -175,10 +175,12 @@ public class JpaConfig : GeneratorConfigBase
             nameof(DaosPath),
             nameof(DtosPath),
             nameof(ApiPath),
+            nameof(ResourcesPath),
+            nameof(EnumsValuesPath),
             nameof(EnumsPath),
             nameof(EnumsValuesPath),
+            nameof(DataFlowsPath),
             nameof(ApiGeneration),
-            nameof(ResourcesPath),
             nameof(DbSchema),
         ];
 
@@ -189,6 +191,7 @@ public class JpaConfig : GeneratorConfigBase
             nameof(DtosPath),
             nameof(ApiPath),
             nameof(ResourcesPath),
+            nameof(EnumsValuesPath),
             nameof(EnumsPath),
             nameof(EnumsValuesPath),
             nameof(DataFlowsPath),
