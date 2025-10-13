@@ -149,16 +149,12 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 
         if (notPkProperties.Any())
         {
-            fw.WriteLine();
             WriteConstructor(classe, fw);
         }
 
         foreach (var prop in notPkProperties)
         {
-            fw.WriteLine();
             var fieldName = prop.NameByClassCamel;
-            fw.WriteDocStart(1, $"Getter for {fieldName}");
-            fw.WriteDocEnd(1);
             var fieldType = Config.GetType(prop);
             if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Association, Classes))
             {
@@ -166,7 +162,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 fieldType = $"{ap.Association.NamePascal}";
             }
 
-            var method = new JavaMethod(fieldType, $"get{fieldName.ToFirstUpper()}") { Visibility = "public" };
+            var method = new JavaMethod(fieldType, $"get{fieldName.ToFirstUpper()}")
+            {
+                Visibility = "public",
+                Comment = $"Getter for {fieldName}",
+            };
             method.AddBodyLine($@"return this.{fieldName};");
             fw.Write(1, method);
         }
@@ -200,10 +200,8 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
     private void WriteConstructor(Class classe, JavaWriter fw)
     {
         // Constructeur
-        fw.WriteDocStart(1, "Enum values constructor");
-        fw.WriteDocEnd(1);
         var properties = classe.Properties.Where(p => p != classe.EnumKey);
-        var constructor = new JavaConstructor(classe.NamePascal);
+        var constructor = new JavaConstructor(classe.NamePascal) { Comment = "Enum values constructor" };
         var methodParams = properties.Select(
             (prop, index) =>
             {
