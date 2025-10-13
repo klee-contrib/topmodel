@@ -13,17 +13,17 @@ import jakarta.annotation.Generated;
 public interface ProfilItem {
 
 	/**
-	 * Getter for id.
+	 * Id technique.
 	 */
 	Integer getId();
 
 	/**
-	 * Getter for libelle.
+	 * Libellé du profil.
 	 */
 	String getLibelle();
 
 	/**
-	 * Getter for nombreUtilisateurs.
+	 * Nombre d'utilisateurs affectés au profil.
 	 */
 	Long getNombreUtilisateurs();
 

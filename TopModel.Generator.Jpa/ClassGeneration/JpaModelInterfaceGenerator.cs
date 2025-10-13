@@ -42,6 +42,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
             var getter = JpaModelPropertyGenerator.GetGetter(tag, property);
             getter.Body.Clear();
             getter.ReturnComment = string.Empty;
+            getter.Comment = property.Comment;
             getter.Visibility = string.Empty;
             yield return getter;
         }

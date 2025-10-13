@@ -15,27 +15,27 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 public interface UtilisateurItem {
 
 	/**
-	 * Getter for id.
+	 * Id de l'utilisateur.
 	 */
 	Integer getId();
 
 	/**
-	 * Getter for nom.
+	 * Nom de l'utilisateur.
 	 */
 	String getNom();
 
 	/**
-	 * Getter for prenom.
+	 * Nom de l'utilisateur.
 	 */
 	String getPrenom();
 
 	/**
-	 * Getter for email.
+	 * Email de l'utilisateur.
 	 */
 	String getEmail();
 
 	/**
-	 * Getter for typeUtilisateurCode.
+	 * Type d'utilisateur.
 	 */
 	TypeUtilisateurCode getTypeUtilisateurCode();
 
