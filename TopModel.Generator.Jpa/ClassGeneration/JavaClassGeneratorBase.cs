@@ -115,11 +115,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
-        if (
-            Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
-            || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe, tag) != null
-        )
+        if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class))))
         {
             yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
         }
