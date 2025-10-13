@@ -188,6 +188,7 @@ public class JpaConfig : GeneratorConfigBase
             nameof(DaosPath),
             nameof(DtosPath),
             nameof(ApiPath),
+            nameof(ResourcesPath),
             nameof(EnumsPath),
             nameof(EnumsValuesPath),
             nameof(DataFlowsPath),

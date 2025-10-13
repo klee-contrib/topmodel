@@ -24,6 +24,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         TrimSlashes(config, c => c.EnumsValuesPath);
         TrimSlashes(config, c => c.ApiPath);
         TrimSlashes(config, c => c.ResourcesPath);
+        TrimSlashes(config, c => c.DataFlowsPath);
 
         config.DefaultLanguage = "java";
 
