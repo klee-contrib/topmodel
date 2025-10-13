@@ -17,7 +17,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
     {
         return classe.IsPersistent
             && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1)
-            && !Config.CanClassUseEnums(classe, Classes);
+            && !Config.CanClassUseEnums(classe);
     }
 
     protected override string GetFileName(Class classe, string tag)

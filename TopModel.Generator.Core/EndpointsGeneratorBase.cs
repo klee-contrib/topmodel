@@ -12,8 +12,8 @@ public abstract class EndpointsGeneratorBase<T>(
     where T : GeneratorConfigBase
 {
     public override List<string> GeneratedFiles =>
-        Files
-            .Values.SelectMany(file =>
+        Config
+            .Files.Values.SelectMany(file =>
                 Config.Tags.Intersect(file.AllTags.Where(FilterTag)).Select(tag => (file, path: GetFilePath(file, tag)))
             )
             .Where(i => i.file.Endpoints.Any())
@@ -33,8 +33,8 @@ public abstract class EndpointsGeneratorBase<T>(
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         Parallel.ForEach(
-            Files
-                .Values.SelectMany(file =>
+            Config
+                .Files.Values.SelectMany(file =>
                     Config
                         .Tags.Intersect(file.AllTags.Where(FilterTag))
                         .Select(tag => (tag, file, filePath: GetFilePath(file, tag)))

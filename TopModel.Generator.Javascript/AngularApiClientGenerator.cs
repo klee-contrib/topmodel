@@ -23,7 +23,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
-        var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(filePath, endpoints, tag);
 
         imports.Add((Import: "Injectable", Path: "@angular/core"));
         imports.Add((Import: "inject", Path: "@angular/core"));
@@ -136,9 +136,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             }
 
             hasProperty = true;
-            var defaultValue = Config.GetValue(param, Classes);
+            var defaultValue = Config.GetValue(param);
             fw.Write(
-                $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}"
+                $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}"
             );
         }
 
@@ -149,7 +149,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         }
         else
         {
-            returnType = Config.GetType(endpoint.Returns, Classes);
+            returnType = Config.GetType(endpoint.Returns);
         }
 
         var optionsType = GetOptionsType();

@@ -38,7 +38,7 @@ public class JavascriptApiClientGenerator(
 
         fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-        var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(filePath, endpoints, tag);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -72,9 +72,9 @@ public class JavascriptApiClientGenerator(
 
             foreach (var param in endpoint.Params)
             {
-                var defaultValue = Config.GetValue(param, Classes);
+                var defaultValue = Config.GetValue(param);
                 fw.Write(
-                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
                 );
             }
 
@@ -85,7 +85,7 @@ public class JavascriptApiClientGenerator(
             }
             else
             {
-                fw.Write(Config.GetType(endpoint.Returns, Classes));
+                fw.Write(Config.GetType(endpoint.Returns));
             }
 
             fw.WriteLine("> {");

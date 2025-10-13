@@ -246,6 +246,11 @@ public class ModelStore(
                 }
             }
 
+            foreach (var genConfig in config.Configs.Values)
+            {
+                genConfig.DeleteFiles(pendingFileDeletes);
+            }
+
             foreach (var modelWatcher in _modelWatchers)
             {
                 modelWatcher.OnFilesDeleted(pendingFileDeletes);
@@ -317,12 +322,16 @@ public class ModelStore(
 
                 logger.LogInformation("Modèle chargé avec succès.");
 
+                var changedFiles = sortedFileCycles.SelectMany(x => x);
+
+                foreach (var genConfig in config.Configs.Values)
+                {
+                    genConfig.UpdateFiles(changedFiles);
+                }
+
                 Parallel.ForEach(
                     _modelWatchers,
-                    modelWatcher =>
-                    {
-                        modelWatcher.OnFilesChanged(sortedFileCycles.SelectMany(x => x), _storeConfig);
-                    }
+                    modelWatcher => modelWatcher.OnFilesChanged(changedFiles, _storeConfig)
                 );
 
                 var generatedFiles = _modelWatchers
@@ -397,6 +406,11 @@ public class ModelStore(
             {
                 yield return new ModelError(ErrorType.TMD6001, domain, $"Le domaine '{domain}' est déjà défini");
             }
+        }
+
+        foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files)))
+        {
+            yield return error;
         }
 
         foreach (var converter in Converters)

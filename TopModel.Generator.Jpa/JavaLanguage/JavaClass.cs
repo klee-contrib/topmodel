@@ -61,20 +61,20 @@ public class JavaClass(string name)
         return this;
     }
 
+    public JavaClass Add(JavaClass innerClass)
+    {
+        InnerClasses.Add(innerClass);
+        Imports.AddRange(innerClass.Imports);
+
+        return this;
+    }
+
     public JavaClass AddRange(IEnumerable<JavaAnnotation> annotations)
     {
         foreach (var annotation in annotations)
         {
             Add(annotation);
         }
-
-        return this;
-    }
-
-    public JavaClass Add(JavaClass innerClass)
-    {
-        InnerClasses.Add(innerClass);
-        Imports.AddRange(innerClass.Imports);
 
         return this;
     }
@@ -129,11 +129,6 @@ public class JavaClass(string name)
         return constructor;
     }
 
-    public JavaConstructor GetNoArgsConstructor()
-    {
-        return new JavaConstructor(Name);
-    }
-
     public string GetDeclaration()
     {
         var sb = new StringBuilder();
@@ -159,5 +154,10 @@ public class JavaClass(string name)
         }
 
         return sb.ToString();
+    }
+
+    public JavaConstructor GetNoArgsConstructor()
+    {
+        return new JavaConstructor(Name);
     }
 }

@@ -33,8 +33,8 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             )
             .Where(p =>
                 (p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
-                && Classes.Contains(p.ap.Association)
-                && Config.IsPersistent(p.ap.Association, GetBestClassTag(p.ap.Association, tag))
+                && Config.AvailableClasses.Contains(p.ap.Association)
+                && Config.IsPersistent(p.ap.Association, Config.GetBestClassTag(p.ap.Association, tag))
             );
     }
 
@@ -111,7 +111,7 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         foreach (
             var ns in classes
                 .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
-                .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
+                .Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag)))
                 .Distinct()
         )
         {
@@ -186,7 +186,7 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             var classe = ap != null ? ap.Association : prop.Class;
             var targetProp = ap != null ? ap.Property : prop;
 
-            if (Config.CanClassUseEnums(classe, Classes, targetProp))
+            if (Config.CanClassUseEnums(classe, targetProp))
             {
                 hasPropConfig = true;
                 w.WriteLine(
@@ -288,7 +288,7 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                         var prop = refProp.Key is AliasProperty alp ? alp.Property : refProp.Key;
                         var targetClass = prop is AssociationProperty ap ? ap.Association : prop.Class;
 
-                        var value = Config.GetValue(refProp.Key, Classes, refProp.Value);
+                        var value = Config.GetValue(refProp.Key, refProp.Value);
                         if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
                         {
                             var targetNs = Config.GetNamespace(targetClass, tag);

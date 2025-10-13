@@ -26,7 +26,7 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
 
         fw.WriteLine($@"import {{AsyncData, AsyncDataOptions}} from ""nuxt/app"";");
 
-        var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(filePath, endpoints, tag);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -60,13 +60,13 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
 
             foreach (var param in endpoint.Params)
             {
-                var defaultValue = Config.GetValue(param, Classes);
+                var defaultValue = Config.GetValue(param);
                 fw.Write(
-                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
                 );
             }
 
-            var fetchReturnType = endpoint.Returns == null ? "void" : Config.GetType(endpoint.Returns, Classes);
+            var fetchReturnType = endpoint.Returns == null ? "void" : Config.GetType(endpoint.Returns);
             fw.WriteLine(
                 $"options: AsyncDataOptions<{fetchReturnType}> = {{}}): AsyncData<{fetchReturnType} | null, Error | null> {{"
             );

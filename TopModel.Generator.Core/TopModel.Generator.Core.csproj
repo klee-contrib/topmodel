@@ -36,6 +36,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="5.2.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
   </ItemGroup>
 </Project>

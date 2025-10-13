@@ -66,7 +66,6 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         var hydrate = new JavaMethod("void", "hydrate") { Comment = "Hydrate values of instance" };
         foreach (var property in properties)
         {
-            var propertyName = property.NameByClassCamel;
             var parameter = new JavaMethodParameter(Config.GetType(property), property.NameByClassCamel)
             {
                 Comment = $"value to set",

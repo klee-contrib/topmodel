@@ -1,7 +1,9 @@
-﻿using TopModel.Core.Model;
+﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
 using TopModel.Generator.Sql.Ssdt;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Sql;
 
@@ -10,12 +12,12 @@ public class SqlConfig : GeneratorConfigBase
     /// <summary>
     /// Config pour la génération en mode procédural.
     /// </summary>
-    public ProceduralSqlConfig? Procedural { get; set; }
+    public virtual ProceduralSqlConfig? Procedural { get; set; }
 
     /// <summary>
     /// Config pour la génération en mode SSDT.
     /// </summary>
-    public SsdtConfig? Ssdt { get; set; }
+    public virtual SsdtConfig? Ssdt { get; set; }
 
     public override Dictionary<string, List<string>> TemplateAttributes =>
         new()
@@ -32,49 +34,51 @@ public class SqlConfig : GeneratorConfigBase
     /// <summary>
     /// Retourne ou définit le nom de la table contenant les traductions.
     /// </summary>
-    public string? ResourcesTableName { get; set; }
+    public virtual string? ResourcesTableName { get; set; }
 
     /// <summary>
     /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).
     /// </summary>
-    public string? TableTablespace { get; set; }
+    public virtual string? TableTablespace { get; set; }
 
     /// <summary>
     /// Retourne ou définit le nom du tablespace pour les index (Postgres ou Oracle).
     /// </summary>
-    public string? IndexTablespace { get; set; }
+    public virtual string? IndexTablespace { get; set; }
 
     /// <summary>
     /// Retourne ou définit le pattern pour le nom des contraintes de clé étrangère.
     /// Supporte les variables tableName, trigram, columnName.
     /// Valeur par défaut : "FK_{tableName}_{columnName}".
     /// </summary>
-    public string ForeignKeyConstraintNamePattern { get; set; } = "FK_{tableName}_{columnName}";
+    public virtual string ForeignKeyConstraintNamePattern { get; set; } = "FK_{tableName}_{columnName}";
 
     /// <summary>
     /// Retourne ou définit le pattern pour le nom des contraintes d'unicité.
     /// Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme).
     /// Valeur par défaut : "UK_{tableName}_{columnNames}".
     /// </summary>
-    public string UniqueConstraintNamePattern { get; set; } = "UK_{tableName}_{columnNames}";
+    public virtual string UniqueConstraintNamePattern { get; set; } = "UK_{tableName}_{columnNames}";
 
     /// <summary>
     /// SGBD cible ("sqlserver" ou "postgres" ou "oracle").
     /// </summary>
-    public TargetDBMS TargetDBMS { get; set; } = TargetDBMS.Postgre;
+    public virtual TargetDBMS TargetDBMS { get; set; } = TargetDBMS.Postgre;
 
     /// <summary>
     /// Indique si le SGBD gère les tablespaces.
     /// </summary>
-    public bool AllowTablespace => TargetDBMS != TargetDBMS.Sqlserver;
+    public virtual bool AllowTablespace => TargetDBMS != TargetDBMS.Sqlserver;
 
-    public string BatchSeparator =>
+    public virtual string BatchSeparator =>
         TargetDBMS switch
         {
             TargetDBMS.Oracle => $"{Environment.NewLine}/",
             TargetDBMS.Sqlserver => $"{Environment.NewLine}go",
             _ => ";",
         };
+
+    protected override bool PersistentOnly => true;
 
     protected override bool UseNamedEnums => false;
 
@@ -89,16 +93,67 @@ public class SqlConfig : GeneratorConfigBase
             );
     }
 
-    public override bool CanClassUseEnums(
-        Class classe,
-        IEnumerable<Class>? availableClasses = null,
-        IProperty? prop = null
-    )
+    public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {
         return false;
     }
 
-    public string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)
+    public override IEnumerable<Class> GetExtraClasses(ModelFile file)
+    {
+        var manyToManyProperties = file
+            .Classes.Where(c => c.IsPersistent && !c.Abstract)
+            .SelectMany(cl => cl.Properties)
+            .OfType<AssociationProperty>()
+            .Where(ap => ap.Type == AssociationType.ManyToMany);
+
+        foreach (var ap in manyToManyProperties)
+        {
+            var traClass = new Class
+            {
+                Comment = ap.Comment,
+                Label = ap.Label,
+                SqlName =
+                    $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}",
+                ModelFile = file,
+            };
+
+            traClass.Properties.Add(
+                new AssociationProperty
+                {
+                    Association = ap.Class,
+                    Class = traClass,
+                    Comment = ap.Comment,
+                    Type = AssociationType.ManyToOne,
+                    PrimaryKey = true,
+                    Required = true,
+                    Role = ap.Role,
+                    DefaultValue = ap.DefaultValue,
+                    Label = ap.Label,
+                    Trigram = ap.Class.PrimaryKey.Single().Trigram,
+                }
+            );
+
+            traClass.Properties.Add(
+                new AssociationProperty
+                {
+                    Association = ap.Association,
+                    Class = traClass,
+                    Comment = ap.Comment,
+                    Type = AssociationType.ManyToOne,
+                    PrimaryKey = true,
+                    Required = true,
+                    Role = ap.Role,
+                    DefaultValue = ap.DefaultValue,
+                    Label = ap.Label,
+                    Trigram = ap.Trigram ?? ap.Property.Trigram ?? ap.Association.Trigram,
+                }
+            );
+
+            yield return traClass;
+        }
+    }
+
+    public virtual string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)
     {
         return ReplaceCustomVariables(
             ForeignKeyConstraintNamePattern,
@@ -116,7 +171,7 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="classe">Classe.</param>
     /// <returns>Nom de la séquence.</returns>
-    public string GetSequenceName(Class classe)
+    public virtual string GetSequenceName(Class classe)
     {
         return TargetDBMS switch
         {
@@ -126,7 +181,7 @@ public class SqlConfig : GeneratorConfigBase
         };
     }
 
-    public string GetUniqueConstraintName(string tableName, string columnNames, string propertyNames)
+    public virtual string GetUniqueConstraintName(string tableName, string columnNames, string propertyNames)
     {
         return ReplaceCustomVariables(
             UniqueConstraintNamePattern,
@@ -139,7 +194,7 @@ public class SqlConfig : GeneratorConfigBase
         );
     }
 
-    public override string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    public override string GetValue(IProperty property, string? value = null)
     {
         /* Cas spécifique d'un booléen sous Oracle, typé comme un numeric(1) */
         bool NeedsBooleanConversionToNumeric()
@@ -157,7 +212,7 @@ public class SqlConfig : GeneratorConfigBase
             return bool.Parse(value!) ? "1" : "0";
         }
 
-        return base.GetValue(property, availableClasses, value);
+        return base.GetValue(property, value);
     }
 
     public override bool ShouldQuoteValue(IProperty property)

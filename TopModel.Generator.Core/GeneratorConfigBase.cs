@@ -14,12 +14,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>
-    public required string OutputDirectory { get; set; }
-
-    /// <summary>
-    /// Tags pour lesquels il ne faut pas générer les fichiers (surchage en CLI).
-    /// </summary>
-    public IList<string> ExcludedTags { get; set; } = [];
+    public virtual required string OutputDirectory { get; set; }
 
     /// <summary>
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
@@ -29,17 +24,17 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <summary>
     /// Si les libellés des listes de références doivent être traduits.
     /// </summary>
-    public bool? TranslateReferences { get; set; }
+    public virtual bool? TranslateReferences { get; set; }
 
     /// <summary>
     /// Si les libellés des propriétés doivent être traduits.
     /// </summary>
-    public bool? TranslateProperties { get; set; }
+    public virtual bool? TranslateProperties { get; set; }
 
     /// <summary>
     /// Générateurs désactivés.
     /// </summary>
-    public IList<string>? Disable { get; set; }
+    public virtual IList<string>? Disable { get; set; }
 
     protected virtual bool UseNamedEnums => true;
 
@@ -49,16 +44,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
     /// </summary>
     /// <param name="classe">Classe.</param>
-    /// <param name="availableClasses">Classes disponibles.</param>
     /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
     /// <returns>Oui/non.</returns>
-    public virtual bool CanClassUseEnums(
-        Class classe,
-        IEnumerable<Class>? availableClasses = null,
-        IProperty? prop = null
-    )
+    public virtual bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {
-        if (availableClasses != null && !availableClasses.Contains(classe))
+        if (!AvailableClasses.Contains(classe))
         {
             return false;
         }
@@ -76,7 +66,23 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return classe.Enum && CheckProperty(prop!);
     }
 
-    public IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetAnnotations(
+    public virtual IEnumerable<ClassValue> GetAllValues(Class classe)
+    {
+        foreach (var value in classe.Values)
+        {
+            yield return value;
+        }
+
+        foreach (var child in AvailableClasses.Where(c => c.Extends == classe))
+        {
+            foreach (var value in GetAllValues(child))
+            {
+                yield return value;
+            }
+        }
+    }
+
+    public virtual IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetAnnotations(
         IAnnotationContainer container,
         string tag
     )
@@ -193,7 +199,17 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public string? GetClassExtends(Class classe, string tag)
+    public virtual string GetBestClassTag(Class classe, string tag)
+    {
+        return classe.Tags.Contains(tag)
+            ? tag
+            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
+                    .Tags.Intersect(ReferencedTagConfigs.Keys)
+                    .FirstOrDefault()
+                ?? tag;
+    }
+
+    public virtual string? GetClassExtends(Class classe, string tag)
     {
         return classe.Extends?.NamePascal
             ?? classe
@@ -203,7 +219,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 .SingleOrDefault(e => e != null);
     }
 
-    public IEnumerable<string> GetClassImplements(Class classe, string tag)
+    public virtual IEnumerable<string> GetClassImplements(Class classe, string tag)
     {
         return classe
             .Decorators.SelectMany(d =>
@@ -212,7 +228,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             .Distinct();
     }
 
-    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
+    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
     {
         var converter = fromDomain.GetConverter(toDomain);
         if (converter != null && fromDomain != null && toDomain != null)
@@ -229,7 +245,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return value;
     }
 
-    public IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain)
+    public virtual IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain)
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
         {
@@ -248,7 +264,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public IEnumerable<string> GetDecoratorImports(Class classe, string tag)
+    public virtual IEnumerable<string> GetDecoratorImports(Class classe, string tag)
     {
         foreach (
             var import in classe
@@ -262,7 +278,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
+    public virtual IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
     {
         foreach (
             var import in endpoint
@@ -276,7 +292,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public IEnumerable<string> GetDomainImports(IProperty property, string tag)
+    public virtual IEnumerable<string> GetDomainImports(IProperty property, string tag)
     {
         if (property.Domain != null)
         {
@@ -290,7 +306,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public string GetEnumType(IProperty fp, bool isPrimaryKeyDef = false)
+    public virtual string GetEnumType(IProperty fp, bool isPrimaryKeyDef = false)
     {
         var op = fp switch
         {
@@ -319,14 +335,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>
-    /// <param name="availableClasses">Classes disponibles.</param>
     /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
     /// <returns>Le type.</returns>
-    public string GetType(
-        IProperty property,
-        IEnumerable<Class>? availableClasses = null,
-        bool useClassForAssociation = false
-    )
+    public virtual string GetType(IProperty property, bool useClassForAssociation = false)
     {
         string GetEnum(string className, string propName, bool isPrimaryKeyDef = false)
         {
@@ -380,22 +391,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             AssociationProperty ap when useClassForAssociation => HandleAUC(ap),
             AliasProperty { Property: AssociationProperty ap } when useClassForAssociation => HandleAUC(ap),
-            AssociationProperty ap when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => HandleEnum(
-                ap
-            ),
-            AliasProperty { Property: AssociationProperty ap }
-                when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => HandleEnum(ap),
-            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(
-                rp
-            ),
-            AliasProperty { Property: RegularProperty { Class: not null } rp }
-                when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
+            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => HandleEnum(ap),
+            AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, ap.Property) =>
+                HandleEnum(ap),
+            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
+            AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, rp) =>
+                HandleEnum(rp),
             AliasProperty { As: not null } alp when GetImplementation(alp.Domain)?.GenericType != null =>
                 GetImplementation(alp.Domain)!
-                    .GenericType!.Replace(
-                        "{T}",
-                        GetType(alp.OriginalProperty!, availableClasses, useClassForAssociation)
-                    ),
+                    .GenericType!.Replace("{T}", GetType(alp.OriginalProperty!, useClassForAssociation)),
             CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{T}")
                 .Replace("{T}", "{composition.name}")
                 .ParseTemplate(property, this),
@@ -415,10 +419,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère la valeur d'une propriété.
     /// </summary>
     /// <param name="property">La propriété.</param>
-    /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
     /// <param name="value">Valeur à utiliser, si non renseigné utilise la valeur par défaut de la propriété.</param>
     /// <returns>La valeur.</returns>
-    public virtual string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    public virtual string GetValue(IProperty property, string? value = null)
     {
         if (
             !IgnoreDefaultValues
@@ -445,9 +448,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         var classe = ap != null ? ap.Association : prop.Class;
         var targetProp = ap != null ? ap.Property : prop;
 
-        if (UseNamedEnums && classe != null && classe.Enum && availableClasses.Contains(classe))
+        if (UseNamedEnums && classe != null && classe.Enum && AvailableClasses.Contains(classe))
         {
-            if (CanClassUseEnums(classe, availableClasses, targetProp))
+            if (CanClassUseEnums(classe, targetProp))
             {
                 return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{value}";
             }
@@ -469,7 +472,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return value;
     }
 
-    public IEnumerable<string> GetValueImports(IProperty property, string? value = null)
+    public virtual IEnumerable<string> GetValueImports(IProperty property, string? value = null)
     {
         if (
             !IgnoreDefaultValues

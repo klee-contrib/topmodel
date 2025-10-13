@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -10,13 +9,6 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlIndexFkGen";
-
-    protected override bool PersistentOnly => true;
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -131,7 +123,7 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
 
     private IEnumerable<AssociationProperty> GetForeignKeys(Class classe)
     {
-        var properties = classe.GetAllProperties(Classes);
+        var properties = classe.GetAllProperties(Config.Classes);
 
         foreach (var property in properties)
         {

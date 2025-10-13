@@ -7,13 +7,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// </summary>
 public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGenerator(config)
 {
-    public void WriteEnumConstructor(JavaWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
-    {
-        var constructor = GetEnumConstructor(classe, availableClasses, tag);
-        fw.Write(1, constructor);
-    }
-
-    public JavaConstructor GetEnumConstructor(Class classe, IEnumerable<Class> availableClasses, string tag)
+    public JavaConstructor GetEnumConstructor(Class classe, string tag)
     {
         var codeProperty = classe.EnumKey!;
         var constructor = new JavaConstructor(classe.NamePascal)
@@ -89,5 +83,11 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
         }
 
         return constructor;
+    }
+
+    public void WriteEnumConstructor(JavaWriter fw, Class classe, string tag)
+    {
+        var constructor = GetEnumConstructor(classe, tag);
+        fw.Write(1, constructor);
     }
 }

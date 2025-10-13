@@ -41,23 +41,27 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         return annotations;
     }
 
-    protected override string GetFileName(Class classe, string tag)
+    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        return Config.GetClassFileName(classe, tag);
-    }
-
-    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
-    {
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
+        if (Config.CanClassUseEnums(classe))
         {
-            var fieldEnum = GetFieldsEnum(classe, tag);
-            yield return fieldEnum;
-        }
-    }
+            var codeProperty = classe.EnumKey!;
+            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+            {
+                var code = refValue.Value[codeProperty];
 
-    private IEnumerable<IProperty> GetFilteredProperties(Class classe)
-    {
-        return classe.Properties.Where(p => !(p is AssociationProperty ap && ap.Type.IsToMany()));
+                yield return new JavaField(classe.NamePascal, code)
+                {
+                    Static = true,
+                    Final = true,
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+                }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
+            }
+        }
+        foreach (var property in GetFilteredProperties(classe))
+        {
+            yield return JpaModelPropertyGenerator.GetField(property, tag);
+        }
     }
 
     protected override IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
@@ -82,27 +86,9 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             });
     }
 
-    protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
+    protected override string GetFileName(Class classe, string tag)
     {
-        if (Config.CanClassUseEnums(classe, Classes))
-        {
-            var codeProperty = classe.EnumKey!;
-            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-            {
-                var code = refValue.Value[codeProperty];
-
-                yield return new JavaField(classe.NamePascal, code)
-                {
-                    Static = true,
-                    Final = true,
-                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
-                }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
-            }
-        }
-        foreach (var property in GetFilteredProperties(classe))
-        {
-            yield return JpaModelPropertyGenerator.GetField(property, tag);
-        }
+        return Config.GetClassFileName(classe, tag);
     }
 
     protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
@@ -114,15 +100,29 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         }
     }
 
+    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
+    {
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
+        {
+            var fieldEnum = GetFieldsEnum(classe, tag);
+            yield return fieldEnum;
+        }
+    }
+
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
         var properties = GetFilteredProperties(classe);
-        if (!Config.CanClassUseEnums(classe, Classes))
+        if (!Config.CanClassUseEnums(classe))
         {
             foreach (var property in properties)
             {
                 yield return JpaModelPropertyGenerator!.GetSetter(tag, property);
             }
         }
+    }
+
+    private static IEnumerable<IProperty> GetFilteredProperties(Class classe)
+    {
+        return classe.Properties.Where(p => !(p is AssociationProperty ap && ap.Type.IsToMany()));
     }
 }

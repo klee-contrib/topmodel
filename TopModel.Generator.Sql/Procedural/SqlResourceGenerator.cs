@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -14,13 +13,6 @@ public class SqlResourceGenerator(
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlResourceGen";
-
-    protected override bool PersistentOnly => true;
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {

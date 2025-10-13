@@ -10,10 +10,10 @@ public class JavaConstructorGenerator(JpaConfig config)
 {
     protected JpaConfig Config { get; set; } = config;
 
-    public IEnumerable<JavaMethod> GetFromMappers(Class classe, IEnumerable<Class> availableClasses, string tag)
+    public IEnumerable<JavaMethod> GetFromMappers(Class classe, string tag)
     {
         var fromMappers = classe
-            .FromMappers.Where(c => c.ClassParams.All(p => availableClasses.Contains(p.Class)))
+            .FromMappers.Where(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
             .Select(m => (classe, m))
             .OrderBy(m => m.classe.NamePascal)
             .ToList();
@@ -43,10 +43,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 
             foreach (var param in mapper.PropertyParams)
             {
-                var parameter = new JavaMethodParameter(
-                    Config.GetType(param.Property, availableClasses),
-                    param.Property.NameCamel
-                )
+                var parameter = new JavaMethodParameter(Config.GetType(param.Property), param.Property.NameCamel)
                 {
                     Comment = param.Property.Comment,
                 };

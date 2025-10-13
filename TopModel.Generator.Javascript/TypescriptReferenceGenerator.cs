@@ -43,7 +43,7 @@ public class TypescriptReferenceGenerator(
                 (
                     Import: dep.Source switch
                     {
-                        IProperty fp => Config.GetType(fp, Classes),
+                        IProperty fp => Config.GetType(fp),
                         Class c => c.NamePascal,
                         _ => null!,
                     },
@@ -52,8 +52,7 @@ public class TypescriptReferenceGenerator(
                         dep.Classe.Tags.Contains(tag)
                             ? tag
                             : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag,
-                        tag,
-                        Classes
+                        tag
                     )!
                 )
             )
@@ -93,7 +92,7 @@ public class TypescriptReferenceGenerator(
 
             if (reference.EnumKey != null)
             {
-                var values = GetAllValues(reference).ToList();
+                var values = Config.GetAllValues(reference).ToList();
 
                 if (reference.Extends == null)
                 {
@@ -170,7 +169,7 @@ public class TypescriptReferenceGenerator(
                     fw.Write(property.NameCamel);
                     fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                     fw.Write(": ");
-                    fw.Write(Config.GetType(property, Classes));
+                    fw.Write(Config.GetType(property));
                     fw.Write(";\r\n");
                 }
 

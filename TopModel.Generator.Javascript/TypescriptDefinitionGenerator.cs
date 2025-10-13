@@ -69,11 +69,12 @@ public class TypescriptDefinitionGenerator(
                     )
                         ? dep.Classe.NamePascal
                     : dep
-                        is {
-                            Source: IProperty fp
+                        is
+                    {
+                        Source: IProperty fp
                                 and not CompositionProperty
                                 and not AliasProperty { Property: CompositionProperty }
-                        }
+                    }
                         ? Config.GetEnumType(fp)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
@@ -81,8 +82,7 @@ public class TypescriptDefinitionGenerator(
                         dep.Classe.Tags.Contains(tag)
                             ? tag
                             : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag,
-                        tag,
-                        Classes
+                        tag
                     )!
                 )
             )
@@ -164,13 +164,13 @@ public class TypescriptDefinitionGenerator(
 
                         break;
                     default:
-                        fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property, Classes)}>;");
+                        fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property)}>;");
                         break;
                 }
             }
             else
             {
-                fw.Write($"{Config.GetType(property, Classes)};");
+                fw.Write($"{Config.GetType(property)};");
             }
 
             fw.Write("\r\n");
@@ -243,7 +243,7 @@ public class TypescriptDefinitionGenerator(
                     fw.WriteLine(2, $"name: \"{property.NameCamel}\",");
                     fw.WriteLine(2, $"domain: {property.Domain.Name},");
 
-                    var defaultValue = Config.GetValue(property, Classes);
+                    var defaultValue = Config.GetValue(property);
                     if (defaultValue != "undefined")
                     {
                         fw.WriteLine(2, $"defaultValue: {defaultValue},");

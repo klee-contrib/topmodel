@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -10,13 +9,6 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlUkGen";
-
-    protected override bool PersistentOnly => true;
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {

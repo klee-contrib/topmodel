@@ -55,7 +55,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         var usings = fromMappers
             .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
-            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
+            .Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag)))
             .ToList();
 
         foreach (
@@ -71,24 +71,25 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             switch (property)
             {
                 case AssociationProperty ap
-                    when Classes.Contains(ap.Association)
-                        && Config.CanClassUseEnums(ap.Association, Classes, ap.Property):
-                    usings.Add(Config.GetNamespace(ap.Association, GetBestClassTag(ap.Association, tag)));
+                    when Config.AvailableClasses.Contains(ap.Association)
+                        && Config.CanClassUseEnums(ap.Association, ap.Property):
+                    usings.Add(Config.GetNamespace(ap.Association, Config.GetBestClassTag(ap.Association, tag)));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }
-                    when Classes.Contains(ap2.Association)
-                        && Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property):
-                    usings.Add(Config.GetNamespace(ap2.Association, GetBestClassTag(ap2.Association, tag)));
+                    when Config.AvailableClasses.Contains(ap2.Association)
+                        && Config.CanClassUseEnums(ap2.Association, ap2.Property):
+                    usings.Add(Config.GetNamespace(ap2.Association, Config.GetBestClassTag(ap2.Association, tag)));
                     break;
                 case AliasProperty { Property: RegularProperty rp }
-                    when Classes.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, Classes, rp):
-                    usings.Add(Config.GetNamespace(rp.Class, GetBestClassTag(rp.Class, tag)));
+                    when Config.AvailableClasses.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, rp):
+                    usings.Add(Config.GetNamespace(rp.Class, Config.GetBestClassTag(rp.Class, tag)));
                     break;
-                case CompositionProperty cp when Classes.Contains(cp.Composition):
-                    usings.Add(Config.GetNamespace(cp.Composition, GetBestClassTag(cp.Composition, tag)));
+                case CompositionProperty cp when Config.AvailableClasses.Contains(cp.Composition):
+                    usings.Add(Config.GetNamespace(cp.Composition, Config.GetBestClassTag(cp.Composition, tag)));
                     break;
-                case AliasProperty { Property: CompositionProperty cp } when Classes.Contains(cp.Composition):
-                    usings.Add(Config.GetNamespace(cp.Composition, GetBestClassTag(cp.Composition, tag)));
+                case AliasProperty { Property: CompositionProperty cp }
+                    when Config.AvailableClasses.Contains(cp.Composition):
+                    usings.Add(Config.GetNamespace(cp.Composition, Config.GetBestClassTag(cp.Composition, tag)));
                     break;
             }
         }
@@ -103,7 +104,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Key.Domain, m.Value.Domain)));
         }
 
-        if (usings.Any(@using => !ns.Contains(@using)))
+        if (usings.Exists(@using => !ns.Contains(@using)))
         {
             w.AddUsings(usings.Where(@using => !ns.Contains(@using)));
         }
@@ -117,7 +118,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         {
             var (classe, mapper) = fromMapper;
 
-            var requiredNonNullable = Config.RequiredNonNullable(GetBestClassTag(classe, tag));
+            var requiredNonNullable = Config.RequiredNonNullable(Config.GetBestClassTag(classe, tag));
 
             w.WriteSummary(
                 1,
@@ -142,7 +143,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             w.WriteLine(
                 $"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
                 c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property, Classes) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})"
+                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property)}" : string.Empty)}")))})"
             );
 
             if (classe.Abstract)
@@ -239,10 +240,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             }
                             else
                             {
-                                var isValueType = Config.IsValueType(mapping.Value, Classes);
+                                var isValueType = Config.IsValueType(mapping.Value);
 
-                                var targetType = Config.GetType(mapping.Key, Classes, nonNullable: true);
-                                var sourceType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                                var targetType = Config.GetType(mapping.Key, nonNullable: true);
+                                var sourceType = Config.GetType(mapping.Value, nonNullable: true);
                                 if (
                                     !sourceType.EndsWith(targetType)
                                     && !targetType.EndsWith(sourceType)
@@ -255,7 +256,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                     w.AddUsing(
                                         Config.GetEnumTypeNamespace(
                                             mapping.Key,
-                                            GetBestClassTag(mapping.Key.Class, tag)
+                                            Config.GetBestClassTag(mapping.Key.Class, tag)
                                         )
                                     );
 
@@ -291,7 +292,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                 }
                                 else if (isValueType && requiredNonNullable && mapping.Key.Required && !param.Required)
                                 {
-                                    var type = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                                    var type = Config.GetType(mapping.Value, nonNullable: true);
                                     var enumType = Config.GetEnumType(mapping.Value);
                                     var cast = enumType.Contains($".{type}") ? enumType : type;
 
@@ -342,7 +343,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         var value = param.NameCamel;
 
                         if (
-                            Config.IsValueType(param.Property, Classes)
+                            Config.IsValueType(param.Property)
                             && requiredNonNullable
                             && param.TargetProperty.Required
                             && !param.Property.Required
@@ -392,8 +393,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             var (classe, mapper) = toMapper;
             var mappings = mapper.Mappings.ToList();
 
-            var rrnSource = Config.RequiredNonNullable(GetBestClassTag(classe, tag));
-            var rrnTarget = Config.RequiredNonNullable(GetBestClassTag(mapper.Class, tag));
+            var rrnSource = Config.RequiredNonNullable(Config.GetBestClassTag(classe, tag));
+            var rrnTarget = Config.RequiredNonNullable(Config.GetBestClassTag(mapper.Class, tag));
 
             w.WriteSummary(
                 1,
@@ -403,7 +404,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             var missingRequiredProperties = mapper
                 .MissingRequiredProperties.Where(mrp =>
-                    mrp is not CompositionProperty cp || Classes.Contains(cp.Composition)
+                    mrp is not CompositionProperty cp || Config.AvailableClasses.Contains(cp.Composition)
                 )
                 .ToList();
 
@@ -418,7 +419,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             if (missingRequiredProperties.Count > 0)
             {
                 extraParams =
-                    $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, Classes, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
+                    $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
             }
 
             if (mapper.Class.Abstract)
@@ -466,14 +467,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 var value = $"source.{GetSourceMapping(mapping.Key)}";
 
-                var isValueType = Config.IsValueType(mapping.Key, Classes);
+                var isValueType = Config.IsValueType(mapping.Key);
                 if (isValueType && rrnTarget && (!rrnSource || !mapping.Key.Required) && mapping.Value.Required)
                 {
                     value += ".Value";
                 }
 
-                var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
-                var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                var sourceType = Config.GetType(mapping.Key, nonNullable: true);
+                var targetType = Config.GetType(mapping.Value, nonNullable: true);
                 if (
                     !sourceType.EndsWith(targetType)
                     && !targetType.EndsWith(sourceType)
@@ -498,7 +499,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     var enumType = Config.GetEnumType(mapping.Value);
                     value = $"<{enumType}>({value}";
 
-                    w.AddUsing(Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag)));
+                    w.AddUsing(
+                        Config.GetEnumTypeNamespace(mapping.Value, Config.GetBestClassTag(mapping.Value.Class, tag))
+                    );
 
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
@@ -609,14 +612,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 {
                     var value = $"source.{GetSourceMapping(mapping.Key)}";
 
-                    var isValueType = Config.IsValueType(mapping.Key, Classes);
+                    var isValueType = Config.IsValueType(mapping.Key);
                     if (isValueType && rrnTarget && (!rrnSource || !mapping.Key.Required) && mapping.Value.Required)
                     {
                         value += ".Value";
                     }
 
-                    var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
-                    var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                    var sourceType = Config.GetType(mapping.Key, nonNullable: true);
+                    var targetType = Config.GetType(mapping.Value, nonNullable: true);
                     if (
                         !sourceType.EndsWith(targetType)
                         && !targetType.EndsWith(sourceType)
@@ -642,7 +645,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         value = $"<{enumType}>({value}";
 
                         w.AddUsing(
-                            Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag))
+                            Config.GetEnumTypeNamespace(mapping.Value, Config.GetBestClassTag(mapping.Value.Class, tag))
                         );
 
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)

@@ -19,17 +19,17 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
             .Distinct();
 
     protected IEnumerable<(Class Classe, FromMapper Mapper)> FromMappers =>
-        Classes
-            .SelectMany(classe => classe.FromMappers.Select(mapper => (classe, mapper)))
-            .Where(mapper => mapper.mapper.ClassParams.All(p => Classes.Contains(p.Class)))
+        Config
+            .Classes.SelectMany(classe => classe.FromMappers.Select(mapper => (classe, mapper)))
+            .Where(mapper => mapper.mapper.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
             .Select(c => (c.classe, c.mapper));
 
     protected IEnumerable<(Class Classe, ClassMappings Mapper)> ToMappers =>
-        Classes
-            .SelectMany(classe =>
+        Config
+            .Classes.SelectMany(classe =>
                 classe
                     .ToMappers.Select(mapper => (classe, mapper))
-                    .Where(mapper => Classes.Contains(mapper.mapper.Class))
+                    .Where(mapper => Config.AvailableClasses.Contains(mapper.mapper.Class))
             )
             .Select(c => (c.classe, c.mapper));
 

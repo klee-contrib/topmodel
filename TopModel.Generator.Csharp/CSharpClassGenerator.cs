@@ -125,7 +125,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             var label = refValue.GetLabel(item);
 
-            if (!Config.CanClassUseEnums(item, Classes) && item.EnumKey != null)
+            if (!Config.CanClassUseEnums(item) && item.EnumKey != null)
             {
                 var code = refValue.Value[item.EnumKey];
                 consts.Add((item.EnumKey, refValue.Name, code, label));
@@ -141,7 +141,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 var prop = uk.Single();
 
-                if (!Config.CanClassUseEnums(item, Classes, prop))
+                if (!Config.CanClassUseEnums(item, prop))
                 {
                     var code = refValue.Value[prop];
                     consts.Add((prop, $"{refValue.Name}{prop}", code, label));
@@ -241,12 +241,12 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         bool WriteEnum(IProperty prop)
         {
-            if (item.Extends != null && Config.CanClassUseEnums(item.Extends, Classes, prop))
+            if (item.Extends != null && Config.CanClassUseEnums(item.Extends, prop))
             {
                 return false;
             }
 
-            var refs = GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+            var refs = Config.GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
             w.WriteLine(1, $"public enum {Config.GetEnumType(prop, isPrimaryKeyDef: true)}");
@@ -269,11 +269,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             return true;
         }
 
-        var hasLine = Config.CanClassUseEnums(item, Classes) && WriteEnum(item.EnumKey!);
+        var hasLine = Config.CanClassUseEnums(item) && WriteEnum(item.EnumKey!);
 
-        foreach (
-            var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single()))
-        )
+        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, uk.Single())))
         {
             if (hasLine)
             {
@@ -342,7 +340,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         foreach (
             var property in item.Properties.Where(p =>
-                p is not CompositionProperty cp || Classes.Contains(cp.Composition)
+                p is not CompositionProperty cp || Config.AvailableClasses.Contains(cp.Composition)
             )
         )
         {
@@ -375,7 +373,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var type = Config.GetType(
             property,
-            Classes,
             nonNullable: cp != null && cp.Required || property.Required && Config.RequiredNonNullable(tag)
         );
 
@@ -387,7 +384,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     property.Class.IsPersistent
                     || property is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias
                 )
-                && Classes.Contains(prop.Class)
+                && Config.AvailableClasses.Contains(prop.Class)
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
                 && property is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
@@ -418,7 +415,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
                 if (
                     ap != null
-                    && Classes.Contains(ap.Association)
+                    && Config.AvailableClasses.Contains(ap.Association)
                     && ap.Association.IsPersistent
                     && ap.Association.Reference
                 )
@@ -429,7 +426,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     property is AliasProperty alp2
                     && !alp2.AliasedPrimaryKey
                     && alp2.Property.PrimaryKey
-                    && Classes.Contains(alp2.Property.Class)
+                    && Config.AvailableClasses.Contains(alp2.Property.Class)
                     && alp2.Property.Class.Reference
                 )
                 {
@@ -470,7 +467,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "Key");
             }
 
-            var defaultValue = Config.GetValue(property, Classes);
+            var defaultValue = Config.GetValue(property);
 
             if (cp != null && cp.Required)
             {
@@ -539,7 +536,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                             fp.Class.IsPersistent
                             || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias
                         )
-                        && Classes.Contains(prop.Class)
+                        && Config.AvailableClasses.Contains(prop.Class)
                         && !Config.NoPersistence(tag);
                 })
             )
@@ -575,33 +572,34 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             switch (property)
             {
                 case AssociationProperty ap
-                    when Classes.Contains(ap.Association)
+                    when Config.AvailableClasses.Contains(ap.Association)
                         && (
-                            Config.CanClassUseEnums(ap.Association, Classes, ap.Property)
+                            Config.CanClassUseEnums(ap.Association, ap.Property)
                             || Config.Kinetix && ap.Association.IsPersistent && ap.Association.Reference
                         ):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }
-                    when Classes.Contains(ap2.Association)
+                    when Config.AvailableClasses.Contains(ap2.Association)
                         && (
-                            Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property)
+                            Config.CanClassUseEnums(ap2.Association, ap2.Property)
                             || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference
                         ):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { Property: RegularProperty rp } alp
-                    when Classes.Contains(rp.Class)
+                    when Config.AvailableClasses.Contains(rp.Class)
                         && (
-                            Config.CanClassUseEnums(rp.Class, Classes, rp)
+                            Config.CanClassUseEnums(rp.Class, rp)
                             || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference
                         ):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
-                case CompositionProperty cp when Classes.Contains(cp.Composition):
+                case CompositionProperty cp when Config.AvailableClasses.Contains(cp.Composition):
                     usings.Add(GetNamespace(cp.Composition, tag));
                     break;
-                case AliasProperty { Property: CompositionProperty cp } when Classes.Contains(cp.Composition):
+                case AliasProperty { Property: CompositionProperty cp }
+                    when Config.AvailableClasses.Contains(cp.Composition):
                     usings.Add(GetNamespace(cp.Composition, tag));
                     break;
             }
@@ -617,10 +615,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
     protected virtual string GetNamespace(Class classe, string tag)
     {
-        return Config.GetNamespace(
-            classe,
-            classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag
-        );
+        return Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag));
     }
 
     protected virtual string? GetNewableType(CompositionProperty property)

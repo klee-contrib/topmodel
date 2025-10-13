@@ -19,16 +19,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected string JavaxOrJakarta => Config.JavaxOrJakarta;
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
-    {
-        var packageName = Config.GetPackageName(classe, tag);
-
-        var javaClass = InitClass(classe, tag);
-
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
-    }
-
     protected virtual JavaConstructorGenerator ConstructorGenerator
     {
         get
@@ -43,8 +33,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         get
         {
             _jpaModelPropertyGenerator ??= Config.UseJdbc
-                ? new JdbcModelPropertyGenerator(Config, Classes, NewableTypes)
-                : new JpaModelPropertyGenerator(Config, Classes, NewableTypes);
+                ? new JdbcModelPropertyGenerator(Config, NewableTypes)
+                : new JpaModelPropertyGenerator(Config, NewableTypes);
             return _jpaModelPropertyGenerator;
         }
     }
@@ -65,64 +55,19 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected virtual JavaClass InitClass(Class classe, string tag)
-    {
-        var packageName = Config.GetPackageName(classe, tag);
-
-        var javaClass = new JavaClass(classe.NamePascal) { Comment = classe.Comment };
-        javaClass.AddRange(GetAnnotations(classe, tag));
-        var extends = Config.GetClassExtends(classe, tag);
-        if (classe.Extends is not null)
-        {
-            javaClass.Extends = extends;
-            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
-        }
-
-        var implements = Config.GetClassImplements(classe, tag).ToList();
-        javaClass.Implements.AddRange(implements);
-        javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
-        javaClass.AddRange(GetConstuctors(classe, tag));
-        javaClass.AddRange(GetFields(classe, tag));
-        javaClass.AddRange(GetMethods(classe, tag));
-        javaClass.AddRange(GetInnerClasses(classe, tag));
-
-        return javaClass;
-    }
-
-    protected virtual IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
-    {
-        return [];
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
-    {
-        foreach (var method in GetGetters(classe, tag))
-        {
-            yield return method;
-        }
-        foreach (var method in GetSetters(classe, tag))
-        {
-            yield return method;
-        }
-        if (Config.MappersInClass)
-        {
-            foreach (var method in GetToMappers(classe, tag))
-            {
-                yield return method;
-            }
-        }
-    }
-
     protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
-        if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class))))
+        if (
+            Config.MappersInClass
+            && classe.FromMappers.Any(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
+        )
         {
             yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
         }
 
         if (Config.MappersInClass)
         {
-            foreach (var constructor in ConstructorGenerator.GetFromMappers(classe, Classes, tag))
+            foreach (var constructor in ConstructorGenerator.GetFromMappers(classe, tag))
             {
                 yield return constructor;
             }
@@ -132,73 +77,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     protected virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
         return JpaModelPropertyGenerator.GetFields(classe, tag);
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
-    {
-        if (!Config.HasAnnotation(classe, "Getter"))
-        {
-            foreach (var property in classe.Properties)
-            {
-                if (!Config.HasAnnotation(property, "Getter"))
-                {
-                    yield return JpaModelPropertyGenerator.GetGetter(tag, property);
-                }
-            }
-        }
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
-    {
-        if (!Config.HasAnnotation(classe, "Setter"))
-        {
-            foreach (var property in classe.Properties)
-            {
-                if (!Config.HasAnnotation(property, "Setter"))
-                {
-                    yield return JpaModelPropertyGenerator.GetSetter(tag, property);
-                }
-            }
-        }
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, string tag)
-    {
-        var toMappers = classe
-            .ToMappers.Where(p => Classes.Contains(p.Class))
-            .Select(m => (classe, m))
-            .OrderBy(m => m.m.Name)
-            .ToList();
-
-        foreach (var toMapper in toMappers)
-        {
-            var (_, mapper) = toMapper;
-            var method = new JavaMethod(mapper.Class.NamePascal, mapper.Name.Value.ToCamelCase())
-            {
-                Visibility = "public",
-                Comment = $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'",
-            };
-            method.Imports.Add(mapper.Class.GetImport(Config, tag));
-            if (mapper.Comment != null)
-            {
-                method.Comment += $"{mapper.Comment}";
-            }
-
-            method.AddParameter(
-                new JavaMethodParameter(mapper.Class.NamePascal, "target")
-                {
-                    Comment =
-                        $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.",
-                }
-            );
-            method.ReturnComment = $"Une instance de '{mapper.Class.NamePascal}'";
-            var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
-            method.AddBodyLine(
-                @$"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);"
-            );
-            method.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
-            yield return method;
-        }
     }
 
     protected virtual JavaEnum GetFieldsEnum(Class classe, string tag)
@@ -243,5 +121,128 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 Imports = prop.GetTypeImports(Config, tag).ToList(),
             };
         });
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
+    {
+        if (!Config.HasAnnotation(classe, "Getter"))
+        {
+            foreach (var property in classe.Properties)
+            {
+                if (!Config.HasAnnotation(property, "Getter"))
+                {
+                    yield return JpaModelPropertyGenerator.GetGetter(tag, property);
+                }
+            }
+        }
+    }
+
+    protected virtual IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
+    {
+        return [];
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
+    {
+        foreach (var method in GetGetters(classe, tag))
+        {
+            yield return method;
+        }
+        foreach (var method in GetSetters(classe, tag))
+        {
+            yield return method;
+        }
+        if (Config.MappersInClass)
+        {
+            foreach (var method in GetToMappers(classe, tag))
+            {
+                yield return method;
+            }
+        }
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
+    {
+        if (!Config.HasAnnotation(classe, "Setter"))
+        {
+            foreach (var property in classe.Properties)
+            {
+                if (!Config.HasAnnotation(property, "Setter"))
+                {
+                    yield return JpaModelPropertyGenerator.GetSetter(tag, property);
+                }
+            }
+        }
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, string tag)
+    {
+        var toMappers = classe
+            .ToMappers.Where(p => Config.AvailableClasses.Contains(p.Class))
+            .Select(m => (classe, m))
+            .OrderBy(m => m.m.Name)
+            .ToList();
+
+        foreach (var toMapper in toMappers)
+        {
+            var (_, mapper) = toMapper;
+            var method = new JavaMethod(mapper.Class.NamePascal, mapper.Name.Value.ToCamelCase())
+            {
+                Visibility = "public",
+                Comment = $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'",
+            };
+            method.Imports.Add(mapper.Class.GetImport(Config, tag));
+            if (mapper.Comment != null)
+            {
+                method.Comment += $"{mapper.Comment}";
+            }
+
+            method.AddParameter(
+                new JavaMethodParameter(mapper.Class.NamePascal, "target")
+                {
+                    Comment =
+                        $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.",
+                }
+            );
+            method.ReturnComment = $"Une instance de '{mapper.Class.NamePascal}'";
+            var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
+            method.AddBodyLine(
+                @$"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);"
+            );
+            method.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
+            yield return method;
+        }
+    }
+
+    protected override void HandleClass(string fileName, Class classe, string tag)
+    {
+        var packageName = Config.GetPackageName(classe, tag);
+
+        var javaClass = InitClass(classe, tag);
+
+        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        fw.Write(0, javaClass);
+    }
+
+    protected virtual JavaClass InitClass(Class classe, string tag)
+    {
+        var javaClass = new JavaClass(classe.NamePascal) { Comment = classe.Comment };
+        javaClass.AddRange(GetAnnotations(classe, tag));
+        var extends = Config.GetClassExtends(classe, tag);
+        if (classe.Extends is not null)
+        {
+            javaClass.Extends = extends;
+            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
+        }
+
+        var implements = Config.GetClassImplements(classe, tag).ToList();
+        javaClass.Implements.AddRange(implements);
+        javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
+        javaClass.AddRange(GetConstuctors(classe, tag));
+        javaClass.AddRange(GetFields(classe, tag));
+        javaClass.AddRange(GetMethods(classe, tag));
+        javaClass.AddRange(GetInnerClasses(classe, tag));
+
+        return javaClass;
     }
 }

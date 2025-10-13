@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
@@ -23,21 +22,6 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
     public bool Disabled => Config.Disable?.Contains(Name) ?? false;
 
-#pragma warning disable MA0016
-    protected Dictionary<string, ModelFile> Files { get; } = [];
-#pragma warning restore MA0016
-
-    protected IEnumerable<Class> Classes =>
-        Files
-            .SelectMany(f =>
-                f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value))
-            )
-            .Distinct();
-
-    protected virtual bool PersistentOnly => false;
-
-    protected virtual bool NoLanguage => false;
-
     /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors) { }
 
@@ -46,50 +30,11 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
     {
         using var scope = logger.BeginScope(((IModelWatcher)this).FullName);
         using var scope2 = logger.BeginScope(storeConfig!);
-
-        var handledFiles = files.Where(file => Config.Tags.Intersect(file.AllTags.Except(Config.ExcludedTags)).Any());
-
-        if (!NoLanguage)
-        {
-            var missingDomains = handledFiles
-                .SelectMany(f => f.Properties)
-                .Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false))
-                .Select(fp => fp.Domain)
-                .Concat(
-                    PersistentOnly
-                        ? []
-                        : handledFiles
-                            .SelectMany(f => f.Properties)
-                            .OfType<CompositionProperty>()
-                            .Select(fp => fp.Domain!)
-                )
-                .Where(domain => domain != null && Config.GetImplementation(domain) == null)
-                .Distinct();
-
-            if (missingDomains.Any())
-            {
-                throw new ModelException(
-                    $"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Language)}' : {string.Join(", ", missingDomains.Select(d => d.Name).Order())}."
-                );
-            }
-        }
-
-        foreach (var file in handledFiles)
-        {
-            Files[file.Name] = file;
-        }
-
-        HandleFiles(handledFiles);
+        HandleFiles(files.Where(f => Config.Files.ContainsKey(f.Name)));
     }
 
     /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
-    public void OnFilesDeleted(IEnumerable<string> fileNames)
-    {
-        foreach (var fileName in fileNames)
-        {
-            Files.Remove(fileName);
-        }
-    }
+    public void OnFilesDeleted(IEnumerable<string> fileNames) { }
 
     public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
     {
@@ -107,32 +52,6 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
             logger,
             encoding
         );
-    }
-
-    protected IEnumerable<ClassValue> GetAllValues(Class classe)
-    {
-        foreach (var value in classe.Values)
-        {
-            yield return value;
-        }
-
-        foreach (var child in Classes.Where(c => c.Extends == classe))
-        {
-            foreach (var value in GetAllValues(child))
-            {
-                yield return value;
-            }
-        }
-    }
-
-    protected string GetBestClassTag(Class classe, string tag)
-    {
-        return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag;
-    }
-
-    protected virtual IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return [];
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);

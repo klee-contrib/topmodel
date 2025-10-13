@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using Spectre.Console;
+using TopModel.Core.FileModel;
 using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Utils;
+using TopModel.Utils;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
@@ -11,20 +13,45 @@ namespace TopModel.Core;
 public class WatcherConfigBase
 {
     /// <summary>
+    /// Nom de la configuration.
+    /// </summary>
+    public virtual string? Name { get; set; }
+
+    /// <summary>
     /// Tags du module.
     /// </summary>
-    public required IList<string> Tags { get; set; }
+    public virtual required IList<string> Tags { get; set; }
+
+    /// <summary>
+    /// Tags pour lesquels il ne faut pas générer les fichiers (surchage en CLI).
+    /// </summary>
+    public virtual IList<string> ExcludedTags { get; set; } = [];
+
+    /// <summary>
+    /// Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.
+    ///
+    /// Les valeurs sont les noms des configurations cibles pour chaque tag.
+    /// </summary>
+    public virtual IDictionary<string, string> ReferencedTags { get; set; } = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.
+    ///
+    /// Les valeurs sont les configurations cibles pour chaque tag.
+    /// </summary>
+    public virtual IDictionary<string, WatcherConfigBase> ReferencedTagConfigs { get; } =
+        new Dictionary<string, WatcherConfigBase>();
 
     /// <summary>
     /// Langages du module, utilisé en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
     [YamlConverter(typeof(StringListTypeConverter))]
-    public IList<string> Language { get; set; } = [];
+    public virtual IList<string> Language { get; set; } = [];
 
     /// <summary>
     /// Setter pour le language par défaut.
     /// </summary>
-    public string DefaultLanguage
+    public virtual string DefaultLanguage
     {
         set
         {
@@ -38,28 +65,29 @@ public class WatcherConfigBase
     /// <summary>
     /// Variables globales du module.
     /// </summary>
-    public IDictionary<string, string> Variables { get; set; } = new Dictionary<string, string>();
+    public virtual IDictionary<string, string> Variables { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
     /// Variables par tag du module.
     /// </summary>
-    public IDictionary<string, IDictionary<string, string>> TagVariables { get; set; } =
+    public virtual IDictionary<string, IDictionary<string, string>> TagVariables { get; set; } =
         new Dictionary<string, IDictionary<string, string>>();
 
     /// <summary>
     /// Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).
     /// </summary>
-    public string RootModule { get; set; } = "{module:head}";
+    public virtual string RootModule { get; set; } = "{module:head}";
 
     /// <summary>
     /// Noms de toutes les variables par tag du module.
     /// </summary>
-    public IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
+    public virtual IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
 
     /// <summary>
     /// Noms de toutes les variables  globales du module.
     /// </summary>
-    public IEnumerable<string> GlobalVariableNames => Variables.Select(v => v.Key).Except(TagVariableNames).Distinct();
+    public virtual IEnumerable<string> GlobalVariableNames =>
+        Variables.Select(v => v.Key).Except(TagVariableNames).Distinct();
 
     /// <summary>
     /// Propriétés qui supportent la variable "module".
@@ -88,12 +116,39 @@ public class WatcherConfigBase
     /// </summary>
     public virtual string[] PropertiesWithTagVariableSupport => [];
 
+    public virtual IDictionary<string, ModelFile> Files { get; } = new Dictionary<string, ModelFile>();
+
+    /// <summary>
+    /// Classes concernées par cette configuration.
+    /// </summary>
+    public virtual IEnumerable<Class> Classes =>
+        Files
+            .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value)))
+            .Distinct();
+
+    /// <summary>
+    /// Classes disponibles pour cette configuration. Peut contenir des classes d'autres configurations.
+    /// </summary>
+    public virtual IEnumerable<Class> AvailableClasses =>
+        Classes
+            .Concat(ReferencedTagConfigs.SelectMany(rtc => rtc.Value.Classes.Where(c => c.Tags.Contains(rtc.Key))))
+            .Distinct();
+
+    protected virtual bool PersistentOnly => false;
+
+    protected virtual bool NoLanguage => false;
+
+    public virtual IEnumerable<Class> GetExtraClasses(ModelFile file)
+    {
+        return [];
+    }
+
     /// <summary>
     /// Récupère les implémentations de l'annotation pour la config.
     /// </summary>
     /// <param name="annotation">Annotation.</param>
     /// <returns>Implémentations.</returns>
-    public IList<AnnotationImplementation> GetImplementation(Annotation? annotation)
+    public virtual IList<AnnotationImplementation> GetImplementation(Annotation? annotation)
     {
         return GetImplementation(annotation?.Implementations) ?? [];
     }
@@ -103,7 +158,7 @@ public class WatcherConfigBase
     /// </summary>
     /// <param name="domain">Décorateur.</param>
     /// <returns>Implémentation.</returns>
-    public DomainImplementation? GetImplementation(Domain? domain)
+    public virtual DomainImplementation? GetImplementation(Domain? domain)
     {
         return GetImplementation(domain?.Implementations);
     }
@@ -113,7 +168,7 @@ public class WatcherConfigBase
     /// </summary>
     /// <param name="decorator">Décorateur.</param>
     /// <returns>Implémentation.</returns>
-    public DecoratorImplementation? GetImplementation(Decorator? decorator)
+    public virtual DecoratorImplementation? GetImplementation(Decorator? decorator)
     {
         return GetImplementation(decorator?.Implementations);
     }
@@ -123,7 +178,7 @@ public class WatcherConfigBase
     /// </summary>
     /// <param name="converter">Convertisseur.</param>
     /// <returns>Implémentation.</returns>
-    public ConverterImplementation? GetImplementation(Converter? converter)
+    public virtual ConverterImplementation? GetImplementation(Converter? converter)
     {
         return GetImplementation(converter?.Implementations);
     }
@@ -133,7 +188,7 @@ public class WatcherConfigBase
     /// </summary>
     /// <param name="app">Valeur de la variable 'app'.</param>
     /// <param name="number">Numéro du générateur.</param>
-    public void InitVariables(string app, int number)
+    public virtual void InitVariables(string app, int number)
     {
         if (!Variables.ContainsKey("app"))
         {
@@ -267,6 +322,46 @@ public class WatcherConfigBase
         return result;
     }
 
+    internal IEnumerable<ModelError> CheckDomainImplementations(IEnumerable<ModelFile> files)
+    {
+        var handledFiles = files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any());
+
+        if (!NoLanguage)
+        {
+            foreach (
+                var domain in handledFiles
+                    .SelectMany(f => f.Properties)
+                    .Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false))
+                    .Select(fp => fp.Domain)
+                    .Concat(
+                        PersistentOnly
+                            ? []
+                            : handledFiles
+                                .SelectMany(f => f.Properties)
+                                .OfType<CompositionProperty>()
+                                .Select(fp => fp.Domain!)
+                    )
+                    .Where(domain => domain != null && GetImplementation(domain) == null)
+                    .Distinct()
+            )
+            {
+                yield return new ModelError(
+                    ErrorType.TMD6003,
+                    domain,
+                    $"La configuration '{Name}' requiert que le domaine '{domain}' ait une implémentation pour l'un des languages suivants : {string.Join(", ", Language.Select(l => $"'{l}'"))}."
+                );
+            }
+        }
+    }
+
+    internal void DeleteFiles(IEnumerable<string> fileNames)
+    {
+        foreach (var fileName in fileNames)
+        {
+            Files.Remove(fileName);
+        }
+    }
+
     internal string ResolveGlobalVariables(string input)
     {
         foreach (var varName in GlobalVariableNames)
@@ -275,6 +370,14 @@ public class WatcherConfigBase
         }
 
         return input;
+    }
+
+    internal void UpdateFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any()))
+        {
+            Files[file.Name] = file;
+        }
     }
 
     /// <summary>

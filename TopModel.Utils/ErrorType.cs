@@ -233,6 +233,11 @@ public enum ErrorType
     /// </summary>
     TMD6002,
 
+    /// <summary>
+    /// La configuration '{Name}' requiert que le domaine '{domain}' ait une implémentation pour le language '{Language}'.
+    /// </summary>
+    TMD6003,
+
     #endregion
 
     #region Erreurs d'endpoints (7)

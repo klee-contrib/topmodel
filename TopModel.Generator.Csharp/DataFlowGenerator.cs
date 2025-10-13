@@ -11,8 +11,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
     : GeneratorBase<CsharpConfig>(logger, writerProvider)
 {
     public override IEnumerable<string> GeneratedFiles =>
-        Files
-            .Values.SelectMany(f => f.DataFlows)
+        Config
+            .Files.Values.SelectMany(f => f.DataFlows)
             .SelectMany(df =>
                 Config
                     .Tags.Intersect(df.ModelFile.Tags)
@@ -51,7 +51,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
         foreach (var source in dataFlow.Sources)
         {
-            usings.Add(Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)));
+            usings.Add(Config.GetNamespace(source.Class, Config.GetBestClassTag(source.Class, tag)));
         }
 
         w.AddUsings(usings);
@@ -269,7 +269,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             {
                 var (ns, _) = Config.GetMapperLocation(
                     (dataFlow.Class, firstSource.TargetFromMapper),
-                    GetBestClassTag(dataFlow.Class, tag)
+                    Config.GetBestClassTag(dataFlow.Class, tag)
                 );
                 w.WriteLine(3, $".Select({Config.GetMapperName(ns)}.Create{dataFlow.Class.NamePascal});");
             }
@@ -334,7 +334,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             [
                 "Kinetix.Etl",
                 .. dataFlow.Sources.Select(source =>
-                    Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag))
+                    Config.GetNamespace(source.Class, Config.GetBestClassTag(source.Class, tag))
                 ),
             ]
         );
@@ -406,8 +406,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         }
 
         foreach (
-            var g in Files
-                .Values.SelectMany(f => f.DataFlows)
+            var g in Config
+                .Files.Values.SelectMany(f => f.DataFlows)
                 .SelectMany(df =>
                     Config
                         .Tags.Intersect(df.ModelFile.Tags)

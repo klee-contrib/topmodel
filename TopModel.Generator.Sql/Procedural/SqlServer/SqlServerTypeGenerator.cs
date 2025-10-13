@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -20,13 +19,6 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
     private const string JsonType = "json";
 
     public override string Name => "SqlServerTypeGen";
-
-    protected override bool PersistentOnly => true;
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -101,8 +93,8 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
             );
         }
 
-        var oneToManyProperties = Classes
-            .SelectMany(cl => cl.Properties)
+        var oneToManyProperties = Config
+            .Classes.SelectMany(cl => cl.Properties)
             .Where(p => p is AssociationProperty ap && ap.Type == AssociationType.OneToMany && ap.Association == classe)
             .Cast<AssociationProperty>();
         foreach (var ap in oneToManyProperties)
@@ -123,7 +115,7 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
 
         foreach (var property in properties)
         {
-            var persistentType = property is not CompositionProperty ? Config.GetType(property, Classes) : JsonType;
+            var persistentType = property is not CompositionProperty ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {

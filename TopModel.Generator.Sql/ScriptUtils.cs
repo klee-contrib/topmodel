@@ -1,5 +1,4 @@
-﻿using TopModel.Core.FileModel;
-using TopModel.Core.Model;
+﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -33,61 +32,6 @@ public static class ScriptUtils
                 Required = true,
                 PrimaryKey = !classe.PrimaryKey.Any(),
             };
-        }
-    }
-
-    public static IEnumerable<Class> GetExtraClasses(this ModelFile file)
-    {
-        var manyToManyProperties = file
-            .Classes.Where(c => c.IsPersistent && !c.Abstract)
-            .SelectMany(cl => cl.Properties)
-            .OfType<AssociationProperty>()
-            .Where(ap => ap.Type == AssociationType.ManyToMany);
-
-        foreach (var ap in manyToManyProperties)
-        {
-            var traClass = new Class
-            {
-                Comment = ap.Comment,
-                Label = ap.Label,
-                SqlName =
-                    $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}",
-                ModelFile = file,
-            };
-
-            traClass.Properties.Add(
-                new AssociationProperty
-                {
-                    Association = ap.Class,
-                    Class = traClass,
-                    Comment = ap.Comment,
-                    Type = AssociationType.ManyToOne,
-                    PrimaryKey = true,
-                    Required = true,
-                    Role = ap.Role,
-                    DefaultValue = ap.DefaultValue,
-                    Label = ap.Label,
-                    Trigram = ap.Class.PrimaryKey.Single().Trigram,
-                }
-            );
-
-            traClass.Properties.Add(
-                new AssociationProperty
-                {
-                    Association = ap.Association,
-                    Class = traClass,
-                    Comment = ap.Comment,
-                    Type = AssociationType.ManyToOne,
-                    PrimaryKey = true,
-                    Required = true,
-                    Role = ap.Role,
-                    DefaultValue = ap.DefaultValue,
-                    Label = ap.Label,
-                    Trigram = ap.Trigram ?? ap.Property.Trigram ?? ap.Association.Trigram,
-                }
-            );
-
-            yield return traClass;
         }
     }
 

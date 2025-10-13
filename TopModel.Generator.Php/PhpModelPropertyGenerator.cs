@@ -8,9 +8,9 @@ namespace TopModel.Generator.Php;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> classes)
+public class PhpModelPropertyGenerator(PhpConfig config)
 {
-    public void WriteProperties(PhpWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
+    public void WriteProperties(PhpWriter fw, Class classe, string tag)
     {
         var isFirst = true;
         foreach (var property in classe.Properties)
@@ -116,10 +116,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
                 break;
         }
 
-        fw.WriteLine(
-            1,
-            $"private {config.GetType(property, classes, classe.IsPersistent)} ${property.NameByClassCamel};"
-        );
+        fw.WriteLine(1, $"private {config.GetType(property, classe.IsPersistent)} ${property.NameByClassCamel};");
     }
 
     private void WriteRegularProperty(PhpWriter fw, Class classe, IProperty property, string tag)
@@ -192,7 +189,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
             fw.WriteLine(1, annotation);
         }
 
-        var defaultValue = config.GetValue(property, classes);
+        var defaultValue = config.GetValue(property);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
         if (property is AliasProperty ap && ap.Property is AssociationProperty asp && asp.Type.IsToMany())
         {
@@ -201,7 +198,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
 
         fw.WriteLine(
             1,
-            $"private {config.GetType(property, classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")} ${property.NameByClassCamel}{suffix};"
+            $"private {config.GetType(property, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")} ${property.NameByClassCamel}{suffix};"
         );
     }
 }

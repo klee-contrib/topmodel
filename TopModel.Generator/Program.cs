@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
@@ -219,6 +220,9 @@ var providers = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
 var modgenAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.ManifestModule.Name).ToHashSet();
+
+var proxyGenerator = new ProxyGenerator();
+var interceptor = new ReferencedTagInterceptor();
 
 for (var i = 0; i < configs.Count; i++)
 {
@@ -708,10 +712,39 @@ for (var i = 0; i < configs.Count; i++)
                     ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                     ModelUtils.CombinePath(config.ConfigRoot, genConfig, c => c.OutputDirectory);
 
+                    genConfig.Name ??= $"{configName}@{number}";
+                    try
+                    {
+                        config.Configs.Add(genConfig.Name, genConfig);
+                    }
+                    catch (ArgumentException)
+                    {
+                        logger.LogError($"Le nom de configuration '{genConfig.Name}' est déjà utilisé.");
+                        return 1;
+                    }
+
+                    foreach (var referencedTag in genConfig.ReferencedTags)
+                    {
+                        if (config.Configs.TryGetValue(referencedTag.Value, out var referencedConfig))
+                        {
+                            genConfig.ReferencedTagConfigs.Add(referencedTag.Key, referencedConfig);
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                $"La configuration '{referencedTag.Value}' n'existe pas, le tag référencé '{referencedTag.Key}' pour la config '{genConfig.Name}' sera ignoré."
+                            );
+                        }
+                    }
+
+                    if (genConfig.ReferencedTagConfigs.Any())
+                    {
+                        genConfig = (GeneratorConfigBase)
+                            proxyGenerator.CreateClassProxyWithTarget(genConfig.GetType(), genConfig, interceptor);
+                    }
+
                     var instance = Activator.CreateInstance(generator);
                     instance!.GetType().GetMethod("Register")!.Invoke(instance, [services, genConfig, number]);
-
-                    config.Configs.Add($"{configName}@{number}", genConfig);
                 }
                 catch (ModelException me)
                 {

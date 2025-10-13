@@ -36,65 +36,65 @@ public class CsharpConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
     /// </summary>
-    public string PersistentModelPath { get; set; } = "{app}.{module}.Models";
+    public virtual string PersistentModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
     /// Localisation des classes de références, relative au répertoire de génération.
     /// Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
     /// </summary>
-    public string? ReferencesModelPath { get; set; }
+    public virtual string? ReferencesModelPath { get; set; }
 
     /// <summary>
     /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
     /// </summary>
-    public string NonPersistentModelPath { get; set; } = "{app}.{module}.Models/Dto";
+    public virtual string NonPersistentModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
     /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : "{app}.Web".
     /// </summary>
-    public string ApiRootPath { get; set; } = "{app}.Web";
+    public virtual string ApiRootPath { get; set; } = "{app}.Web";
 
     /// <summary>
     /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module:path}".
     /// </summary>
-    public string ApiFilePath { get; set; } = "{module:path}";
+    public virtual string ApiFilePath { get; set; } = "{module:path}";
 
     /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
     /// </summary>
-    public string? ApiGeneration { get; set; }
+    public virtual string? ApiGeneration { get; set; }
 
     /// <summary>
     /// Génère des contrôleurs d'API synchrones.
     /// </summary>
-    public bool NoAsyncControllers { get; set; }
+    public virtual bool NoAsyncControllers { get; set; }
 
     /// <summary>
     /// Localisation du DbContext, relative au répertoire de génération.
     /// </summary>
-    public string? DbContextPath { get; set; }
+    public virtual string? DbContextPath { get; set; }
 
     /// <summary>
     /// Nom du DbContext. Par défaut : {app}DbContext.
     /// </summary>
-    public string DbContextName { get; set; } = "{app}DbContext";
+    public virtual string DbContextName { get; set; } = "{app}DbContext";
 
     /// <summary>
     /// Location des flux de données générés.
     /// </summary>
-    public string? DataFlowsPath { get; set; }
+    public virtual string? DataFlowsPath { get; set; }
 
     /// <summary>
     /// Chemin vers lequel générer les interfaces d'accesseurs de référence.
     /// </summary>
-    public string? ReferenceAccessorsInterfacePath { get; set; }
+    public virtual string? ReferenceAccessorsInterfacePath { get; set; }
 
 #nullable disable
 
     /// <summary>
     /// Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference.
     /// </summary>
-    public string ReferenceAccessorsImplementationPath { get; set; }
+    public virtual string ReferenceAccessorsImplementationPath { get; set; }
 
 #nullable enable
 
@@ -102,103 +102,103 @@ public class CsharpConfig : GeneratorConfigBase
     /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). Par défaut : {module}ReferenceAccessors.
     /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
     /// </summary>
-    public string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
+    public virtual string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
 
     /// <summary>
     /// Nom des mappers. Par défaut : {module}Mappers.
     /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
     /// </summary>
-    public string MappersName { get; set; } = "{module}Mappers";
+    public virtual string MappersName { get; set; } = "{module}Mappers";
 
     /// <summary>
     /// Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'.
     /// </summary>
-    public bool UseEFMigrations { get; set; } = true;
+    public virtual bool UseEFMigrations { get; set; } = true;
 
     /// <summary>
     /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
     /// </summary>
-    public bool UseLowerCaseSqlNames { get; set; } = true;
+    public virtual bool UseLowerCaseSqlNames { get; set; } = true;
 
     /// <summary>
     /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
     /// </summary>
-    public string? DbSchema { get; set; }
+    public virtual string? DbSchema { get; set; }
 
     /// <summary>
     /// Si on génère avec Kinetix.
     /// </summary>
-    public bool Kinetix { get; set; } = true;
+    public virtual bool Kinetix { get; set; } = true;
 
     /// <summary>
     /// Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'.
     /// </summary>
-    public string DomainNamespace { get; set; } = "{app}.Common";
+    public virtual string DomainNamespace { get; set; } = "{app}.Common";
 
     /// <summary>
     /// Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'),
     /// qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.
     /// </summary>
-    public string[] ValueTypes { get; set; } = [];
+    public virtual string[] ValueTypes { get; set; } = [];
 
-    public string[] AllValueTypes => _builtInNonNullableTypes.Concat(ValueTypes).Distinct().ToArray();
+    public virtual string[] AllValueTypes => _builtInNonNullableTypes.Concat(ValueTypes).Distinct().ToArray();
 
     /// <summary>
     /// Prend en compte l'activation du paramètre `nullable: enable` dans le code généré.
     /// </summary>
-    public bool NullableEnable { get; set; }
+    public virtual bool NullableEnable { get; set; }
 
     /// <summary>
     /// Génère des types non-nullables pour les propriétés obligatoires.
     /// </summary>
     [YamlMember(Alias = "requiredNonNullable")]
-    public string? RequiredNonNullableParam { get; set; }
+    public virtual string? RequiredNonNullableParam { get; set; }
 
     /// <summary>
     /// Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. Par défaut : 'true'.
     /// </summary>
-    public bool NoColumnOnAlias { get; set; } = true;
+    public virtual bool NoColumnOnAlias { get; set; } = true;
 
     /// <summary>
     /// Considère tous les classes comme étant non-Persistentes (= pas d'attribut SQL).
     /// </summary>
     [YamlMember(Alias = "noPersistence")]
-    public string? NoPersistenceParam { get; set; }
+    public virtual string? NoPersistenceParam { get; set; }
 
     /// <summary>
     /// Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
     /// </summary>
-    public string[] MapperTagsOverrides { get; set; } = [];
+    public virtual string[] MapperTagsOverrides { get; set; } = [];
 
     /// <summary>
     /// Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : "persistent".
     /// </summary>
-    public AnnotationConstraint MapperLocationPriority { get; set; } = AnnotationConstraint.Persisted;
+    public virtual AnnotationConstraint MapperLocationPriority { get; set; } = AnnotationConstraint.Persisted;
 
     /// <summary>
     /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'.
     /// </summary>
-    public bool EnumsForStaticReferences { get; set; } = true;
+    public virtual bool EnumsForStaticReferences { get; set; } = true;
 
     /// <summary>
     /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`). Par défaut : 'true'.
     /// </summary>
-    public bool UseEFComments { get; set; }
+    public virtual bool UseEFComments { get; set; }
 
     /// <summary>
     /// Utilise des records (mutables) au lieu de classes pour la génération de classes.
     /// </summary>
-    public bool UseRecords { get; set; } = true;
+    public virtual bool UseRecords { get; set; } = true;
 
     /// <summary>
     /// Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références). Par défaut : 'true'.
     /// </summary>
-    public bool UsePrimaryConstructors { get; set; } = true;
+    public virtual bool UsePrimaryConstructors { get; set; } = true;
 
     /// <summary>
     /// Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).
     /// </summary>
-    public bool UseCancellationTokens { get; set; }
+    public virtual bool UseCancellationTokens { get; set; }
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [
@@ -233,13 +233,9 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(DataFlowsPath),
         ];
 
-    public override bool CanClassUseEnums(
-        Class classe,
-        IEnumerable<Class>? availableClasses = null,
-        IProperty? prop = null
-    )
+    public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {
-        return EnumsForStaticReferences && base.CanClassUseEnums(classe, availableClasses, prop);
+        return EnumsForStaticReferences && base.CanClassUseEnums(classe, prop);
     }
 
     public virtual string GetApiPath(ModelFile file, string tag, bool withControllers = false)
@@ -538,14 +534,9 @@ public class CsharpConfig : GeneratorConfigBase
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers ? typeName : $"async Task<{typeName}>";
     }
 
-    public virtual string GetType(
-        IProperty prop,
-        IEnumerable<Class>? availableClasses = null,
-        bool useClassForAssociation = false,
-        bool nonNullable = false
-    )
+    public virtual string GetType(IProperty prop, bool useClassForAssociation = false, bool nonNullable = false)
     {
-        var type = base.GetType(prop, availableClasses, useClassForAssociation);
+        var type = base.GetType(prop, useClassForAssociation);
 
         if (
             !nonNullable
@@ -563,20 +554,20 @@ public class CsharpConfig : GeneratorConfigBase
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
     }
 
-    public virtual bool IsValueType(IProperty prop, IEnumerable<Class>? availableClasses)
+    public virtual bool IsValueType(IProperty prop)
     {
         return prop switch
         {
-            AssociationProperty ap when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => true,
+            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => true,
             AliasProperty { Property: AssociationProperty ap } alp
-                when CanClassUseEnums(ap.Association, availableClasses)
+                when CanClassUseEnums(ap.Association)
                     && string.IsNullOrEmpty(GetImplementation(alp.Domain)?.GenericType) => true,
-            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => true,
+            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => true,
             AliasProperty { Property: RegularProperty { Class: not null } rp } alp
-                when CanClassUseEnums(rp.Class, availableClasses, rp)
+                when CanClassUseEnums(rp.Class, rp)
                     && string.IsNullOrEmpty(GetImplementation(alp.Domain)?.GenericType) => true,
             CompositionProperty => false,
-            _ => AllValueTypes.Contains(GetType(prop, availableClasses, nonNullable: true)),
+            _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
         };
     }
 

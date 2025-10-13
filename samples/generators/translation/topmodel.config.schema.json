@@ -115,12 +115,24 @@
           "tags"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de cette configuration."
+          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "referencedTags": {
+            "type": "object",
+            "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Le nom de la config dans laquelle aller chercher le tag."
             }
           },
           "variables": {

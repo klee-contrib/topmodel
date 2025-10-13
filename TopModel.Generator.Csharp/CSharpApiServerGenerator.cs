@@ -34,7 +34,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
     {
         var sb = new StringBuilder();
 
-        string defaultValue = Config.GetValue(param, Classes);
+        string defaultValue = Config.GetValue(param);
 
         var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam();
 

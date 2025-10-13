@@ -14,8 +14,6 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 {
     public override string Name => "SsdtTableTypeGen";
 
-    protected override bool PersistentOnly => true;
-
     protected override bool FilterClass(Class classe)
     {
         return classe.IsPersistent
@@ -112,7 +110,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         var sb = new StringBuilder();
 
         // Colonnes
-        foreach (var property in table.GetAllProperties(Classes))
+        foreach (var property in table.GetAllProperties(Config.Classes))
         {
             if (
                 (!property.PrimaryKey || Config.ShouldQuoteValue(property))

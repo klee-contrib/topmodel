@@ -15,33 +15,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && !classe.IsPersistent && !Config.CanClassUseEnums(classe, Classes);
-    }
-
-    protected override string GetFileName(Class classe, string tag)
-    {
-        return Path.Combine(
-            Config.OutputDirectory,
-            Config.ResolveVariables(Config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}.java"
-        );
-    }
-
-    protected override JavaClass InitClass(Class classe, string tag)
-    {
-        var javaClass = base.InitClass(classe, tag);
-        javaClass.Implements.Add("Serializable");
-        javaClass.Imports.Add("java.io.Serializable");
-        return javaClass;
-    }
-
-    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
-    {
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
-        {
-            var fieldEnum = GetFieldsEnum(classe, tag);
-            yield return fieldEnum;
-        }
+        return !classe.Abstract && !classe.IsPersistent && !Config.CanClassUseEnums(classe);
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
@@ -58,5 +32,31 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         {
             yield return property;
         }
+    }
+
+    protected override string GetFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            Config.OutputDirectory,
+            Config.ResolveVariables(Config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            $"{classe.NamePascal}.java"
+        );
+    }
+
+    protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
+    {
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
+        {
+            var fieldEnum = GetFieldsEnum(classe, tag);
+            yield return fieldEnum;
+        }
+    }
+
+    protected override JavaClass InitClass(Class classe, string tag)
+    {
+        var javaClass = base.InitClass(classe, tag);
+        javaClass.Implements.Add("Serializable");
+        javaClass.Imports.Add("java.io.Serializable");
+        return javaClass;
     }
 }

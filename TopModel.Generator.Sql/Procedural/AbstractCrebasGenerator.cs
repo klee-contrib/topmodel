@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -13,8 +12,6 @@ public abstract class AbstractCrebasGenerator(
     IFileWriterProvider writerProvider
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    protected override bool PersistentOnly => true;
-
     /// <summary>
     /// Type json pour les compositions.
     /// </summary>
@@ -42,11 +39,6 @@ public abstract class AbstractCrebasGenerator(
                 $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
             )
             : identifier;
-    }
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
     }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
@@ -220,11 +212,11 @@ public abstract class AbstractCrebasGenerator(
         writer.WriteLine(" **/");
         writer.WriteLine("create table " + tableName + " (");
 
-        var properties = classe.GetAllProperties(Classes);
+        var properties = classe.GetAllProperties(Config.Classes);
 
         foreach (var property in properties)
         {
-            var persistentType = property is not CompositionProperty ? Config.GetType(property, Classes) : JsonType;
+            var persistentType = property is not CompositionProperty ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {
@@ -257,7 +249,7 @@ public abstract class AbstractCrebasGenerator(
                 writer.Write(" not null");
             }
 
-            var defaultValue = Config.GetValue(property, Classes);
+            var defaultValue = Config.GetValue(property);
             if (defaultValue != "null")
             {
                 writer.Write($" default {defaultValue}");

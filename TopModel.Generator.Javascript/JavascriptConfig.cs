@@ -14,72 +14,72 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si '{module}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.
     /// </summary>
-    public string? ModelRootPath { get; set; }
+    public virtual string? ModelRootPath { get; set; }
 
     /// <summary>
     /// Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si '{lang}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.
     /// </summary>
-    public string? ResourceRootPath { get; set; }
+    public virtual string? ResourceRootPath { get; set; }
 
     /// <summary>
     /// Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
     /// </summary>
-    public string? ApiClientRootPath { get; set; }
+    public virtual string? ApiClientRootPath { get; set; }
 
     /// <summary>
     /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
     /// </summary>
-    public string? ApiClientFilePath { get; set; }
+    public virtual string? ApiClientFilePath { get; set; }
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération.
     /// </summary>
-    public string FetchPath { get; set; } = "@focus4/core";
+    public virtual string FetchPath { get; set; } = "@focus4/core";
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
     /// </summary>
-    public string DomainPath { get; set; } = "./domains";
+    public virtual string DomainPath { get; set; } = "./domains";
 
     /// <summary>
     /// Framework cible pour la génération.
     /// </summary>
-    public TargetFramework ApiMode { get; set; } = TargetFramework.VANILLA;
+    public virtual TargetFramework ApiMode { get; set; } = TargetFramework.VANILLA;
 
     /// <summary>
     /// Typage des entités générées
     /// </summary>
-    public EntityMode EntityMode { get; set; } = EntityMode.TYPED;
+    public virtual EntityMode EntityMode { get; set; } = EntityMode.TYPED;
 
     /// <summary>
     /// Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées.
     /// </summary>
-    public bool ExtendedCompositions { get; set; }
+    public virtual bool ExtendedCompositions { get; set; }
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
     /// </summary>
-    public string EntityTypesPath { get; set; } = "@focus4/stores";
+    public virtual string EntityTypesPath { get; set; } = "@focus4/stores";
 
     /// <summary>
     /// Mode de génération (JS, JSON ou JSON Schema).
     /// </summary>
-    public ResourceMode ResourceMode { get; set; }
+    public virtual ResourceMode ResourceMode { get; set; }
 
     /// <summary>
     /// Mode de génération des listes de références (définitions ou valeurs).
     /// </summary>
-    public ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
+    public virtual ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
 
     /// <summary>
     /// Ajoute les commentaires dans les entités JS générées.
     /// </summary>
-    public bool GenerateComments { get; set; }
+    public virtual bool GenerateComments { get; set; }
 
     /// <summary>
     /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`.
     /// </summary>
-    public bool GenerateMainResourceFiles { get; set; }
+    public virtual bool GenerateMainResourceFiles { get; set; }
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [nameof(ModelRootPath), nameof(ApiClientFilePath), nameof(ResourceRootPath)];
@@ -136,8 +136,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual IList<(string Import, string Path)> GetEndpointImports(
         string fileName,
         IEnumerable<Endpoint> endpoints,
-        string tag,
-        IEnumerable<Class> availableClasses
+        string tag
     )
     {
         return endpoints
@@ -145,18 +144,18 @@ public class JavascriptConfig : GeneratorConfigBase
             .Select(dep =>
                 (
                     Import: dep
-                        is {
-                            Source: IProperty fp
+                        is
+                    {
+                        Source: IProperty fp
                                 and not CompositionProperty
                                 and not AliasProperty { Property: CompositionProperty }
-                        }
+                    }
                         ? GetEnumType(fp)
                         : dep.Classe.NamePascal,
                     Path: GetImportPathForClass(
                         dep,
                         dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag,
-                        tag,
-                        availableClasses
+                        tag
                     )!
                 )
             )
@@ -182,12 +181,7 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
-    public virtual string? GetImportPathForClass(
-        ClassDependency dep,
-        string targetTag,
-        string sourceTag,
-        IEnumerable<Class> availableClasses
-    )
+    public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag)
     {
         string target;
         if (
@@ -195,7 +189,7 @@ public class JavascriptConfig : GeneratorConfigBase
             { Source: IProperty and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
         )
         {
-            if (dep.Classe.EnumKey != null && availableClasses.Contains(dep.Classe))
+            if (dep.Classe.EnumKey != null && AvailableClasses.Contains(dep.Classe))
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }

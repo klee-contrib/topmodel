@@ -94,15 +94,14 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             switch (property)
             {
-                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association, Classes):
+                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }
-                    when Config.CanClassUseEnums(ap2.Association, Classes):
+                case AliasProperty { Property: AssociationProperty ap2 } when Config.CanClassUseEnums(ap2.Association):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }
-                    when Config.CanClassUseEnums(rp.Class, Classes):
+                    when Config.CanClassUseEnums(rp.Class):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
@@ -201,12 +200,12 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             foreach (var param in endpoint.Params)
             {
                 fw.Write(
-                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}"
+                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param) != "null")} {param.GetParamName().Verbatim()}"
                 );
 
                 if (param.IsQueryParam())
                 {
-                    fw.Write($" = {Config.GetValue(param, Classes)}");
+                    fw.Write($" = {Config.GetValue(param)}");
                 }
 
                 if (endpoint.Params[^1] != param || Config.UseCancellationTokens)

@@ -26,7 +26,15 @@ var server = await LanguageServer.From(options =>
 
                     var genConfig = fileChecker.GetWatcherConfigBase(genConfigMap);
                     genConfig.InitVariables(config.App, number);
-                    config.Configs.Add($"{configName}@{number}", genConfig);
+                    genConfig.Name ??= $"{configName}@{number}";
+                    try
+                    {
+                        config.Configs.Add(genConfig.Name, genConfig);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // On ignore l'erreur, tant pis pour la configuration manquante.
+                    }
                 }
             }
 

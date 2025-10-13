@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -11,8 +10,6 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlCommentGen";
-
-    protected override bool PersistentOnly => true;
 
     /// <summary>
     /// Indique la limite de longueur d'un identifiant.
@@ -31,11 +28,6 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
                 $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
             )
             : identifier;
-    }
-
-    protected override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file.GetExtraClasses();
     }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
@@ -86,7 +78,7 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
     private void WriteTableDeclaration(Class classe, IFileWriter writerComment)
     {
         var tableName = CheckIdentifierLength(classe.SqlName);
-        var properties = classe.GetAllProperties(Classes);
+        var properties = classe.GetAllProperties(Config.Classes);
         WriteComments(writerComment, classe, tableName, properties);
     }
 }

@@ -8,11 +8,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JpaModelPropertyGenerator(
-    JpaConfig config,
-    IEnumerable<Class> classes,
-    IDictionary<string, string> newableTypes
-)
+public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, string> newableTypes)
 {
     public JavaAnnotation EnumAnnotation =>
         new JavaAnnotation("Enumerated", imports: $"{JavaxOrJakarta}.persistence.Enumerated").AddAttribute(
@@ -24,8 +20,6 @@ public class JpaModelPropertyGenerator(
     public virtual JavaAnnotation IdAnnotation => new("Id", imports: $"{JavaxOrJakarta}.persistence.Id");
 
     public virtual JavaAnnotation MapsIdAnnotation => new("MapsId", imports: $"{JavaxOrJakarta}.persistence.MapsId");
-
-    protected IEnumerable<Class> Classes { get; } = classes;
 
     protected JpaConfig Config { get; } = config;
 
@@ -143,6 +137,65 @@ public class JpaModelPropertyGenerator(
         }
     }
 
+    public virtual JavaField GetField(IProperty property, string tag)
+    {
+        var javaField = new JavaField(GetPropertyType(property), GetPropertyName(property))
+        {
+            Comment = { property.Comment },
+        };
+
+        if (
+            property is AliasProperty ap
+            && Config.AvailableClasses.Contains(ap.Property.Class)
+            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class))
+        )
+        {
+            var getter = $"#{GetGetterName(ap.Property)}()";
+            javaField.Comment.Add(
+                $"Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
+            );
+        }
+        IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
+
+        if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)
+        {
+            annotations = GetDomainAnnotations(property, tag).Concat(annotations).ToList();
+        }
+
+        javaField.AddRange(annotations);
+        javaField.DefaultValue = GetDefaultValue(property);
+        javaField.Imports.AddRange(GetDefaultValueImports(property, tag));
+        javaField.Imports.AddRange(property.GetTypeImports(Config, tag));
+        return javaField;
+    }
+
+    public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
+    {
+        foreach (var property in classe.Properties)
+        {
+            yield return GetField(property, tag);
+        }
+    }
+
+    public virtual JavaMethod GetGetter(string tag, IProperty property)
+    {
+        var field = GetField(property, tag);
+        var method = field.DefaultGetter;
+        var genericType = field.Type.Split('<')[0];
+        if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
+        {
+            method.Imports.Add($"java.util.{newableType}");
+            method.Body.Clear();
+            method
+                .AddBodyLine($"if (this.{field.Name} == null) {{")
+                .AddBodyLine(1, $"this.{field.Name} = new {newableType}<>();")
+                .AddBodyLine($"}}");
+            method.AddBodyLine(@$"return this.{field.Name};");
+        }
+
+        return method;
+    }
+
     public virtual string GetGetterName(IProperty property)
     {
         var propertyName = GetPropertyName(property);
@@ -178,7 +231,12 @@ public class JpaModelPropertyGenerator(
     {
         var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
         var useClassForAssociation = property.Class.IsPersistent && !isAssociationNotPersistent;
-        return Config.GetType(property, Classes, useClassForAssociation);
+        return Config.GetType(property, useClassForAssociation);
+    }
+
+    public virtual JavaMethod GetSetter(string tag, IProperty property)
+    {
+        return GetField(property, tag).DefaulSetter;
     }
 
     public virtual string GetSetterName(IProperty property)
@@ -196,80 +254,16 @@ public class JpaModelPropertyGenerator(
     {
         if (property is AliasProperty ap)
         {
-            return Config.CanClassUseEnums(ap.Property.Class, Classes, ap.Property) && property.Class.IsPersistent;
+            return Config.CanClassUseEnums(ap.Property.Class, ap.Property) && property.Class.IsPersistent;
         }
         else if (property is AssociationProperty asp && Config.EnumsAsEnums)
         {
-            return Config.CanClassUseEnums(asp.Association, Classes) && property.Class.IsPersistent;
+            return Config.CanClassUseEnums(asp.Association) && property.Class.IsPersistent;
         }
         else
         {
-            return Config.CanClassUseEnums(property.Class, Classes, property) && property.Class.IsPersistent;
+            return Config.CanClassUseEnums(property.Class, property) && property.Class.IsPersistent;
         }
-    }
-
-    public virtual JavaMethod GetGetter(string tag, IProperty property)
-    {
-        var field = GetField(property, tag);
-        var method = field.DefaultGetter;
-        var genericType = field.Type.Split('<')[0];
-        if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
-        {
-            method.Imports.Add($"java.util.{newableType}");
-            method.Body.Clear();
-            method
-                .AddBodyLine($"if (this.{field.Name} == null) {{")
-                .AddBodyLine(1, $"this.{field.Name} = new {newableType}<>();")
-                .AddBodyLine($"}}");
-            method.AddBodyLine(@$"return this.{field.Name};");
-        }
-
-        return method;
-    }
-
-    public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
-    {
-        foreach (var property in classe.Properties)
-        {
-            yield return GetField(property, tag);
-        }
-    }
-
-    public virtual JavaField GetField(IProperty property, string tag)
-    {
-        var javaField = new JavaField(GetPropertyType(property), GetPropertyName(property))
-        {
-            Comment = { property.Comment },
-        };
-
-        if (
-            property is AliasProperty ap
-            && Classes.Contains(ap.Property.Class)
-            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class))
-        )
-        {
-            var getter = $"#{GetGetterName(ap.Property)}()";
-            javaField.Comment.Add(
-                $"Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
-            );
-        }
-        IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
-
-        if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)
-        {
-            annotations = GetDomainAnnotations(property, tag).Concat(annotations).ToList();
-        }
-
-        javaField.AddRange(annotations);
-        javaField.DefaultValue = GetDefaultValue(property);
-        javaField.Imports.AddRange(GetDefaultValueImports(property, tag));
-        javaField.Imports.AddRange(property.GetTypeImports(Config, tag));
-        return javaField;
-    }
-
-    public virtual JavaMethod GetSetter(string tag, IProperty property)
-    {
-        return GetField(property, tag).DefaulSetter;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(CompositionProperty property, string tag)
@@ -327,7 +321,7 @@ public class JpaModelPropertyGenerator(
                 }
             }
 
-            if (Config.CanClassUseEnums(property.Property.Class, Classes, property.Property))
+            if (Config.CanClassUseEnums(property.Property.Class, property.Property))
             {
                 yield return EnumAnnotation;
             }
@@ -344,9 +338,7 @@ public class JpaModelPropertyGenerator(
         {
             if (
                 property.Association.IsPersistent
-                && !(
-                    Config.EnumsAsEnums && Config.CanClassUseEnums(property.Property.Class, Classes, property.Property)
-                )
+                && !(Config.EnumsAsEnums && Config.CanClassUseEnums(property.Property.Class, property.Property))
             )
             {
                 if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)
@@ -498,12 +490,12 @@ public class JpaModelPropertyGenerator(
 
     protected virtual string GetDefaultValue(IProperty property)
     {
-        var defaultValue = Config.GetValue(property, Classes);
+        var defaultValue = Config.GetValue(property);
         if (property is AssociationProperty ap)
         {
             if (
                 ap.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap.Association, Classes, prop: ap.Association.PrimaryKey.Single())
+                && Config.CanClassUseEnums(ap.Association, prop: ap.Association.PrimaryKey.Single())
                 && defaultValue != "null"
             )
             {
@@ -528,12 +520,12 @@ public class JpaModelPropertyGenerator(
 
     protected virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)
     {
-        var defaultValue = Config.GetValue(property, Classes);
+        var defaultValue = Config.GetValue(property);
         if (property is AssociationProperty ap)
         {
             if (
                 ap.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap.Association, Classes, prop: ap.Association.PrimaryKey.Single())
+                && Config.CanClassUseEnums(ap.Association, prop: ap.Association.PrimaryKey.Single())
                 && defaultValue != "null"
             )
             {

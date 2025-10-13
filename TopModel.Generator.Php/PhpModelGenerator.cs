@@ -20,7 +20,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
     {
         get
         {
-            _phpModelPropertyGenerator ??= new PhpModelPropertyGenerator(Config, Classes);
+            _phpModelPropertyGenerator ??= new PhpModelPropertyGenerator(Config);
             return _phpModelPropertyGenerator;
         }
     }
@@ -47,7 +47,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
         fw.WriteClassDeclaration(classe.NamePascal, modifier: null, extends, implements);
 
-        PhpModelPropertyGenerator.WriteProperties(fw, classe, Classes, tag);
+        PhpModelPropertyGenerator.WriteProperties(fw, classe, tag);
 
         WriteConstructor(fw, classe);
         WriteGetters(fw, classe);
@@ -93,7 +93,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
     private void WriteConstructor(PhpWriter fw, Class classe)
     {
         var collectionProperties = classe.Properties.Where(p =>
-            Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection"
+            Config.GetType(p, p.Class.IsPersistent) == "Collection"
         );
         if (collectionProperties.Any())
         {
@@ -123,10 +123,10 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
                 fw.WriteDocEnd(1);
             }
 
-            var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetType(property, classe.IsPersistent) == "boolean" ? "is" : "get";
             fw.WriteLine(
                 1,
-                @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")}"
+                @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")}"
             );
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"return $this->{property.NameByClassCamel};");
@@ -153,7 +153,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
             fw.WriteLine(
                 1,
-                @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}): self"
+                @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, classe.IsPersistent)}|null ${propertyName}): self"
             );
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"$this->{propertyName} = ${propertyName};");

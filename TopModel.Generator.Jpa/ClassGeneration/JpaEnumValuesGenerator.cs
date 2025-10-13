@@ -13,8 +13,8 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
     public override string Name => "JpaEnumValuesGen";
 
     public override IEnumerable<string> GeneratedFiles =>
-        Files
-            .Values.SelectMany(f => f.Classes.Where(FilterClass))
+        Config
+            .Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
             .SelectMany(c =>
                 Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(c, tag)))
             )
@@ -23,19 +23,13 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
     protected override bool FilterClass(Class classe)
     {
         return !classe.Abstract
-            && (Config.CanClassUseEnums(classe, Classes.ToList()) || Config.EnumsAsEnums && classe.Enum)
+            && (Config.CanClassUseEnums(classe) || Config.EnumsAsEnums && classe.Enum)
             && classe.Enum;
     }
 
     protected override string GetFileName(Class classe, string tag)
     {
         return Config.GetEnumValueFileName(classe, tag);
-    }
-
-    private void WriteAnnotations(JavaWriter fw, Class classe, string tag)
-    {
-        fw.AddImports(Config.GetDecoratorImports(classe, tag).ToList());
-        fw.Write(0, GetAnnotations(classe, tag));
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -57,7 +51,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         fw.WriteClassDeclaration(classe.NamePascal, modifier: null, inheritedClass: null, implements, "enum");
         var i = 0;
 
-        var refs = GetAllValues(classe).ToList();
+        var refs = Config.GetAllValues(classe).ToList();
 
         var notPkProperties = classe.Properties.Where(p => p != classe.EnumKey);
         foreach (var refValue in refs)
@@ -156,7 +150,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         {
             var fieldName = prop.NameByClassCamel;
             var fieldType = Config.GetType(prop);
-            if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Association, Classes))
+            if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Association))
             {
                 fieldName = $"{ap.NameByClassCamel}";
                 fieldType = $"{ap.Association.NamePascal}";
@@ -180,7 +174,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         if (
             classe.EnumKey != null
             && Config.CanClassUseEnums(classe, prop: classe.EnumKey)
-            && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))
+            && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
         )
         {
             result.Add(classe.EnumKey);
@@ -189,12 +183,18 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         var uks = classe
             .UniqueKeys.Where(uk =>
                 uk.Count == 1
-                && Config.CanClassUseEnums(classe, Classes, uk.Single())
-                && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))
+                && Config.CanClassUseEnums(classe, uk.Single())
+                && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
             )
             .Select(uk => uk.Single());
         result.AddRange(uks);
         return result;
+    }
+
+    private void WriteAnnotations(JavaWriter fw, Class classe, string tag)
+    {
+        fw.AddImports(Config.GetDecoratorImports(classe, tag).ToList());
+        fw.Write(0, GetAnnotations(classe, tag));
     }
 
     private void WriteConstructor(Class classe, JavaWriter fw)

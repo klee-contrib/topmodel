@@ -22,20 +22,20 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         get
         {
             _jpaModelPropertyGenerator ??= Config.UseJdbc
-                ? new JdbcModelPropertyGenerator(Config, Classes, new Dictionary<string, string>())
-                : new JpaModelPropertyGenerator(Config, Classes, new Dictionary<string, string>());
+                ? new JdbcModelPropertyGenerator(Config, new Dictionary<string, string>())
+                : new JpaModelPropertyGenerator(Config, new Dictionary<string, string>());
             return _jpaModelPropertyGenerator;
         }
     }
 
     protected override string GetFileName((Class Classe, FromMapper Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, GetBestClassTag(mapper.Classe, tag));
+        return Config.GetMapperFilePath(mapper, Config.GetBestClassTag(mapper.Classe, tag));
     }
 
     protected override string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, GetBestClassTag(mapper.Classe, tag));
+        return Config.GetMapperFilePath(mapper, Config.GetBestClassTag(mapper.Classe, tag));
     }
 
     protected virtual JavaMethod GetFromMapperNoTarget(Class classe, FromMapper mapper, string tag)
@@ -361,14 +361,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 if (apSource.Type == AssociationType.OneToOne || apSource.Type == AssociationType.ManyToOne)
                 {
-                    if (
-                        Config.EnumsAsEnums
-                        && Config.CanClassUseEnums(
-                            apSource.Association,
-                            prop: apSource.Property,
-                            availableClasses: Classes
-                        )
-                    )
+                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property))
                     {
                         getter = $"{sourceName}.{getterName}()";
                         checkSourceNull = false;
@@ -383,14 +376,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     checkSourceNull = true;
                     imports.Add("java.util.stream.Collectors");
                     imports.Add("java.util.Objects");
-                    if (
-                        Config.EnumsAsEnums
-                        && Config.CanClassUseEnums(
-                            apSource.Association,
-                            prop: apSource.Property,
-                            availableClasses: Classes
-                        )
-                    )
+                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property))
                     {
                         getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect({collector})";
                     }
@@ -654,7 +640,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var package = Config.GetPackageName(
             mapperNs,
             modelPath,
-            GetBestClassTag(sampleFromMapper.Classe ?? sampleToMapper.Classe, tag)
+            Config.GetBestClassTag(sampleFromMapper.Classe ?? sampleToMapper.Classe, tag)
         );
 
         using var fw = this.OpenJavaWriter(fileName, package, codePage: null);
@@ -662,7 +648,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var imports = fromMappers
             .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
-            .Where(c => Classes.Contains(c))
+            .Where(c => Config.AvailableClasses.Contains(c))
             .Select(c => c.GetImport(Config, c.Tags.Contains(tag) ? tag : c.Tags.Intersect(Config.Tags).First()))
             .Distinct()
             .ToArray();
@@ -683,12 +669,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var (classe1, mapper) in fromMappers)
         {
-            WriteFromMappers(classe1, mapper, fw, GetBestClassTag(classe1, tag));
+            WriteFromMappers(classe1, mapper, fw, Config.GetBestClassTag(classe1, tag));
         }
 
         foreach (var (classe, mapper1) in toMappers)
         {
-            WriteToMapper(classe, mapper1, fw, GetBestClassTag(classe, tag));
+            WriteToMapper(classe, mapper1, fw, Config.GetBestClassTag(classe, tag));
         }
 
         fw.WriteLine("}");
@@ -699,7 +685,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual void WriteFromMappers(Class classe, FromMapper mapper, JavaWriter fw, string tag)
     {
-        if (Config.CanClassUseEnums(classe, Classes))
+        if (Config.CanClassUseEnums(classe))
         {
             _logger.LogWarning($"La classe {classe.Name} ne peut pas être mappée car c'est une enum");
             return;
@@ -711,7 +697,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
     {
-        if (Config.CanClassUseEnums(mapper.Class, Classes))
+        if (Config.CanClassUseEnums(mapper.Class))
         {
             _logger.LogWarning($"La classe {mapper.Class.Name} ne peut pas être mappée car c'est une enum");
             return;
@@ -736,11 +722,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         foreach (var param in mapper.PropertyParams)
         {
             var methodParameter = new JavaMethodParameter(
-                Config.GetType(
-                    param.Property,
-                    Classes,
-                    useClassForAssociation: UseClassForAssociation(param.Property, classe)
-                ),
+                Config.GetType(param.Property, useClassForAssociation: UseClassForAssociation(param.Property, classe)),
                 param.Property.NameCamel
             )
             {

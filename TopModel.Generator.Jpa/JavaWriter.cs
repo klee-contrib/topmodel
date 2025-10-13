@@ -111,7 +111,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
                         Line =
                             value.ToString()
                             + (
-                                value != javaEnum.Values.Last() ? ","
+                                value != javaEnum.Values[^1] ? ","
                                 : javaEnum.Fields.Any() ? ";"
                                 : string.Empty
                             ),
@@ -156,6 +156,29 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         {
             WriteLine(indentationLevel, annotation);
         }
+    }
+
+    /// <summary>
+    /// Ecrit la déclaration d'un champ.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="field">Champ à écrire.</param>
+    public void Write(int indentationLevel, JavaField field)
+    {
+        WriteLine();
+        AddImports(field.Imports);
+        if (field.Comment.Any())
+        {
+            WriteDocStart(indentationLevel, field.Comment[0]);
+            for (var i = 1; i < field.Comment.Count; i++)
+            {
+                WriteLine(indentationLevel, $" * {field.Comment[i]}");
+            }
+            WriteDocEnd(indentationLevel);
+        }
+
+        Write(indentationLevel, field.Annotations);
+        _toWrite.Add(new WriterLine() { Line = field.ToString(), Indent = indentationLevel });
     }
 
     /// <summary>
@@ -257,29 +280,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         {
             WriteLine(indentationLevel, LoadDocStart(value));
         }
-    }
-
-    /// <summary>
-    /// Ecrit la déclaration d'un champ.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="field">Champ à écrire.</param>
-    public void Write(int indentationLevel, JavaField field)
-    {
-        WriteLine();
-        AddImports(field.Imports);
-        if (field.Comment.Any())
-        {
-            WriteDocStart(indentationLevel, field.Comment[0]);
-            for (var i = 1; i < field.Comment.Count; i++)
-            {
-                WriteLine(indentationLevel, $" * {field.Comment[i]}");
-            }
-            WriteDocEnd(indentationLevel);
-        }
-
-        Write(indentationLevel, field.Annotations);
-        _toWrite.Add(new WriterLine() { Line = field.ToString(), Indent = indentationLevel });
     }
 
     /// <summary>

@@ -11,8 +11,8 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
     : GeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override IEnumerable<string> GeneratedFiles =>
-        Files
-            .Values.SelectMany(f => f.DataFlows)
+        Config
+            .Files.Values.SelectMany(f => f.DataFlows)
             .SelectMany(df =>
                 Config
                     .Tags.Intersect(df.ModelFile.Tags)
@@ -20,13 +20,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             )
             .Distinct()
             .Concat(
-                Files
-                    .Values.Where(f => f.DataFlows.Count > 0)
+                Config
+                    .Files.Values.Where(f => f.DataFlows.Count > 0)
                     .Select(f => Config.GetDataFlowConfigFilePath(f.Namespace.Module))
             )
             .Concat(
-                Files
-                    .Values.SelectMany(f => f.DataFlows)
+                Config
+                    .Files.Values.SelectMany(f => f.DataFlows)
                     .Where(df =>
                         df.Hooks.Count > 0 || df.Sources.Any(source => source.Mode == DataFlowSourceMode.Partial)
                     )

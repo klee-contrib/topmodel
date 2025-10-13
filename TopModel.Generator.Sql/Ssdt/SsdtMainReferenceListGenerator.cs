@@ -16,8 +16,6 @@ public class SsdtMainReferenceListGenerator(
 {
     public override string Name => "SsdtMainRefListGen";
 
-    protected override bool PersistentOnly => true;
-
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsPersistent && !classe.Abstract && classe.Values.Count > 0)

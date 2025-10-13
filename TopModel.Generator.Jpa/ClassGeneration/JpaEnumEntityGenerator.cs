@@ -25,13 +25,13 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && Config.CanClassUseEnums(classe, Classes) && classe.IsPersistent;
+        return !classe.Abstract && Config.CanClassUseEnums(classe) && classe.IsPersistent;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
         yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
-        yield return ConstructorGenerator.GetEnumConstructor(classe, Classes, tag);
+        yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)

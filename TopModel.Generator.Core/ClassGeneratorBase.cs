@@ -10,8 +10,8 @@ public abstract class ClassGeneratorBase<T>(ILogger<ClassGeneratorBase<T>> logge
     where T : GeneratorConfigBase
 {
     public override IEnumerable<string> GeneratedFiles =>
-        Files
-            .Values.SelectMany(f => f.Classes.Where(FilterClass).Concat(GetExtraClasses(f)))
+        Config
+            .Files.Values.SelectMany(f => f.Classes.Where(FilterClass).Concat(Config.GetExtraClasses(f)))
             .SelectMany(c => Config.Tags.Intersect(c.Tags).Select(tag => GetFileName(c, tag)).Distinct());
 
     protected virtual bool FilterClass(Class classe)
@@ -29,7 +29,7 @@ public abstract class ClassGeneratorBase<T>(ILogger<ClassGeneratorBase<T>> logge
             files,
             file =>
                 Parallel.ForEach(
-                    file.Classes.Where(FilterClass).Concat(GetExtraClasses(file)),
+                    file.Classes.Where(FilterClass).Concat(Config.GetExtraClasses(file)),
                     classe =>
                         Parallel.ForEach(
                             Config

@@ -18,22 +18,6 @@ public class JavaField(string type, string name)
 
     public IList<string> Comment { get; set; } = [];
 
-    public JavaField Add(JavaAnnotation annotation)
-    {
-        Imports.AddRange(annotation.Imports);
-        Annotations.Add(annotation);
-        return this;
-    }
-
-    public JavaField AddRange(IEnumerable<JavaAnnotation> annotations)
-    {
-        foreach (var annotation in annotations)
-        {
-            Add(annotation);
-        }
-        return this;
-    }
-
     public JavaMethod DefaultGetter =>
         new(Type, $"get{Name.ToPascalCase()}")
         {
@@ -57,6 +41,22 @@ public class JavaField(string type, string name)
             },
             Visibility = "public",
         };
+
+    public JavaField Add(JavaAnnotation annotation)
+    {
+        Imports.AddRange(annotation.Imports);
+        Annotations.Add(annotation);
+        return this;
+    }
+
+    public JavaField AddRange(IEnumerable<JavaAnnotation> annotations)
+    {
+        foreach (var annotation in annotations)
+        {
+            Add(annotation);
+        }
+        return this;
+    }
 
     public override string ToString()
     {
