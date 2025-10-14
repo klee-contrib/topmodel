@@ -176,7 +176,7 @@ public static class ModelUtils
             invalidCharsRgx
                 .Replace(whiteSpace.Replace(text.Replace('-', '_'), "_"), string.Empty)
                 // split by underscores
-                .Split(['_'], StringSplitOptions.RemoveEmptyEntries)
+                .Split('_', StringSplitOptions.RemoveEmptyEntries)
                 // set first letter to uppercase
                 .Select(w => startsWithLowerCaseChar.Replace(w, m => m.Value.ToUpper()));
 
