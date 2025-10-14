@@ -74,7 +74,7 @@ public class JpaResourceGenerator(
     {
         if (Config.TranslateProperties == true)
         {
-            foreach (var property in container)
+            foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
             {
                 if (property.Label != null)
                 {
@@ -85,7 +85,7 @@ public class JpaResourceGenerator(
 
         if (container.Key is Class classe && classe.DefaultProperty != null && Config.TranslateReferences == true)
         {
-            foreach (var val in classe.Values)
+            foreach (var val in classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal))
             {
                 fw.WriteLine($"{val.ResourceKey}={_translationStore.GetTranslation(val, lang)}");
             }
