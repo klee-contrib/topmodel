@@ -138,6 +138,18 @@ public class {className} : Controller
 
         foreach (var endpoint in endpoints)
         {
+            string GetSafeVariableName(string varName)
+            {
+                while (endpoint.Params.Any(p => p.NameCamel == varName))
+                {
+                    varName = $"_{varName}";
+                }
+
+                return varName;
+            }
+
+            var ct = GetSafeVariableName("ct");
+
             var wd = new StringBuilder();
 
             wd.AppendLine();
@@ -154,7 +166,7 @@ public class {className} : Controller
             if (Config.UseCancellationTokens)
             {
                 wd.AppendLine(
-                    $@"{indent}/// <param name=""ct"">CancellationToken (HttpContext.RequestAborted).</param>"
+                    $@"{indent}/// <param name=""{ct}"">CancellationToken (HttpContext.RequestAborted).</param>"
                 );
             }
 
@@ -177,7 +189,7 @@ public class {className} : Controller
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken ct = default" : string.Empty)})"
+                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
