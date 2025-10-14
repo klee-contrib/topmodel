@@ -8,12 +8,40 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.3.0
+
+**Cette version n'est pas compatible avec les anciennes versions des générateurs, vous devez lancer `modgen -u all` pour les mettre à jour**. Les générateurs eux même n'ont pas (vraiment) de breaking changes, donc cela ne devrait pas poser de blocage particulier pour la montée de version. Cette version n'a pas non plus de breaking change hormis cette compatibilité de toute façon. On avait promis qu'on ne ferait pas ça, désolé 🥺
+
+- [`f001275`](https://github.com/klee-contrib/topmodel/commit/f001275632190941ed719af6c3570cec3d2727c8) - Références à d'autres configurations, et refactoring pour gérer les fichiers cibles dans les configurations (au lieu des générateurs)
+
+  TopModel considère qu'une configuration de générateurs équivaut à une "application", et que par conséquent toutes les classes et endpoints générés dans une configuration peuvent se référencer mutuellement sans problème. En revanche, lorsque l'une de ces classes ou endpoints référencent une classe qui n'est pas dans la configuration (parce qu'elle n'a pas le tag qui va bien), parce qu'on souhaite justement ne pas générer cette classe, alors la référence est omise de la génération. Cela veut dire que les mappers vers/depuis une classe "externe" ne sont pas générés, ni les compositions, et les associations sont rétrogradées en propriétés simples.
+
+  Or, l'architecture de votre projet pourrait être faite de telle façon à ce que dans le code final, les références entre fichiers générés par des configurations différentes soient effectivement possibles. Par exemple, si vous avez un module "common" qui a sa propre configuration, et différents modules séparés avec eux aussi leur propre config qui veulent référencer des classes de "common". Vous pouvez donc désormais, via la propriété `referencedTags` sur les configs de générateurs, faire correspondre des tags "externes" vers d'autres configurations, afin que les générateurs puissent résoudre les dépendances avec. Par exemple :
+
+  ```yaml
+  jpa:
+    - name: back-common # Les configurations peuvent aussi désormais être nommées, ce qui est plus pratique pour les référencer :)
+      tags: [BackCommon]
+      outputDirectory: ../sources/back/common
+    - name: back-service
+      tags: [BackService]
+      referencedTags:
+        BackCommon: back-common # Les classes référencées avec le tag `BackCommon` (et pas de tag `BackService`) auront leurs imports résolus avec la config `back-common`.
+      outputDirectory: ../sources/back/service
+  ```
+
+  Cette évolution a nécessité un refactoring important dans TopModel pour fonctionner de manière satisfaisante. En revanche, elle n'apporte aucun breaking change fonctionnel (à défaut de casser la compatibilité avec les versions de générateurs précédentes).
+
+  De plus, cette évolution a permis de remonter l'erreur sur une implémentation manquante pour un générateur directement dans le modèle et l'IDE, au lieu que ça soit une erreur de génération.
+
+- [`2d5cbc9`](https://github.com/klee-contrib/topmodel/commit/2d5cbc9b9c87dbdba5c337178fcfd07676b2ac5a) - Erreur si une classe dérivée n'a pas sa classe parente disponible dans la même config.
+
+  En lien avec l'évol précédente, on détecte désormais ce problème (une classe dérivée ne peut pas être générée sans référence à son parent) et on remonte une erreur.
+
 ## 3.2.2
 
 - [`f069f54`](https://github.com/klee-contrib/topmodel/commit/f069f5438b5ba6076e4dac347c251d922f3fd558) - [Core] Tri des alias à résoudre en fonction de leur dépendances
-
 - [`31c86e0`](https://github.com/klee-contrib/topmodel/commit/31c86e0d797c677722b7347df1c48436016729e7) - [Core] Vérifier le préfix des endpoints uniquement pour les fichiers qui en ont
-
 - [`69a7501`](https://github.com/klee-contrib/topmodel/commit/69a7501989de85385c4beb4274c2c88f4fb3b1bb) - [Core] Ajouter un warning si le fichier contient des options d'endpoints alors qu'il ne déclare par de endpoint
 
 ## 3.2.1

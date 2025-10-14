@@ -1,5 +1,17 @@
 # Changelog JPA
 
+## 3.3.0
+
+Compatibilité avec TopModel 3.3
+
+- [`d529c36`](https://github.com/klee-contrib/topmodel/commit/d529c36d06685af01c17bef50a11f50ccec12b16) - [JPA] Le commentaire dans une interface doit être celui de la property
+- [`40e873a`](https://github.com/klee-contrib/topmodel/commit/40e873a97c12f57a1547b07f392f5e3ecc93a50f) - [JPA] Fix résolution variables resourcesPath. Suppression du noArgConstructor dans le cas extends
+- [`5608767`](https://github.com/klee-contrib/topmodel/commit/5608767f480de928feb120a3e4d09105720d292d) - [JPA] Fix espaces en trop dans la génération enumsAsEnums
+- [`613a307`](https://github.com/klee-contrib/topmodel/commit/613a3070c812b8b18bb0a0cbc35b359906dbddd9) - [JPA] Gestion du cas où il y a des '.' dans le rootModule
+- [`cf672ca`](https://github.com/klee-contrib/topmodel/commit/cf672ca8953e51bf9e6243ffd65649c4c7456a47) - [JPA] Tri des propriétés par ordre alphabétique pour obtenir un ordre déterministe
+
+Ces évolutions vont impacter le code généré, mais la plupart d'entre-elles ne sont que de la mise en forme (corrigée). Cette mise à jour peut être faite sans crainte 😉
+
 ## 3.2.1
 
 - [`0637de6`](https://github.com/klee-contrib/topmodel/commit/0637de6e18cc64f5cce07897574517feafbc8dcb) - [JPA] Uniformisation cascade=ALL sur le oneToMany et reverse ManyToOne

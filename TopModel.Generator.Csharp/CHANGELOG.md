@@ -1,3 +1,9 @@
+## 3.2.0
+
+Compatibilité avec TopModel 3.3
+
+- [`58803dc`](https://github.com/klee-contrib/topmodel/commit/58803dcb1d838471e883143e5615c483bb413bc0) - [C#] Auto-préfixage des variables générées dans les clients/contrôleurs d'API
+
 ## 3.1.3
 
 - [`f7b3475`](https://github.com/klee-contrib/topmodel/commit/f7b347537de55e0359c27053c9d461458be11f46) - [C#] Fix annotation [Column] en trop sur xxToMany
