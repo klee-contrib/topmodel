@@ -10,6 +10,11 @@ namespace TopModel.Generator.Jpa;
 public class JpaConfig : GeneratorConfigBase
 {
     /// <summary>
+    /// Si on doit générer le meta model
+    /// </summary>
+    public virtual bool MetaModel { get; set; } = false;
+
+    /// <summary>
     /// Transforme les classes contenant des values en enum. Par défaut, false.
     /// </summary>
     public virtual bool EnumsAsEnums { get; set; } = false;
