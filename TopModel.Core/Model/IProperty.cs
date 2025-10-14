@@ -35,9 +35,7 @@ public interface IProperty : IAnnotationContainer
 
     LocatedString? Trigram { get; set; }
 
-#pragma warning disable MA0016
-    Dictionary<string, string> CustomProperties { get; }
-#pragma warning restore MA0016
+    IDictionary<string, string> CustomProperties { get; }
 
     Class Class { get; set; }
 

@@ -11,9 +11,7 @@ public class ClassValue
 
     public Reference Reference { get; set; }
 
-#pragma warning disable MA0016
-    public Dictionary<IProperty, string> Value { get; } = [];
-#pragma warning restore MA0016
+    public IDictionary<IProperty, string> Value { get; } = new Dictionary<IProperty, string>();
 
     public string ResourceKey => $"{Class.Namespace.ModuleCamel}.{Class.NameCamel}.values.{Name}";
 

@@ -36,9 +36,8 @@ public class Domain : IAnnotationContainer, IVariableContainer
     public IDictionary<string, DomainReference> AsDomainReferences { get; set; } =
         new Dictionary<string, DomainReference>();
 
-#pragma warning disable MA0016
-    public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
-#pragma warning restore MA0016
+    public IDictionary<string, DomainImplementation> Implementations { get; set; } =
+        new Dictionary<string, DomainImplementation>();
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 

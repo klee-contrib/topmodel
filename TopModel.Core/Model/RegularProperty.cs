@@ -41,7 +41,7 @@ public class RegularProperty : IProperty
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
-    public Dictionary<string, string> CustomProperties { get; private set; } = [];
+    public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
     public Class Class { get; set; }
 

@@ -6,7 +6,7 @@ namespace TopModel.Core.Model;
 public class AliasProperty : IProperty
 {
     private string? _comment;
-    private Dictionary<string, string> _customProperties = [];
+    private IDictionary<string, string> _customProperties = new Dictionary<string, string>();
     private string? _defaultValue;
     private Domain? _domain;
     private IDictionary<string, string>? _domainParameters;
@@ -152,7 +152,7 @@ public class AliasProperty : IProperty
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
-    public Dictionary<string, string> CustomProperties
+    public IDictionary<string, string> CustomProperties
     {
         get
         {

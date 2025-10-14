@@ -299,9 +299,9 @@ internal class PropertyResolver(
                 }
                 else if (alp.PropertyMapping != null)
                 {
-                    var index = alp.PropertyMapping.FromMapper.Params.FindIndex(param =>
-                        param.TryPickT1(out var pm, out var _) && pm.Property == alp
-                    );
+                    var index = alp
+                        .PropertyMapping.FromMapper.Params.ToList()
+                        .FindIndex(param => param.TryPickT1(out var pm, out var _) && pm.Property == alp);
                     if (index >= 0)
                     {
                         var mapping = new PropertyMapping
@@ -327,9 +327,16 @@ internal class PropertyResolver(
             }
             else if (alp.PropertyMapping != null)
             {
-                alp.PropertyMapping.FromMapper.Params.RemoveAll(param =>
-                    param.TryPickT1(out var pm, out var _) && pm.Property == alp
-                );
+                foreach (
+                    var param in alp
+                        .PropertyMapping.FromMapper.Params.Where(param =>
+                            param.TryPickT1(out var pm, out var _) && pm.Property == alp
+                        )
+                        .ToList()
+                )
+                {
+                    alp.PropertyMapping.FromMapper.Params.Remove(param);
+                }
             }
             else
             {

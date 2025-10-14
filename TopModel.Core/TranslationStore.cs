@@ -4,9 +4,8 @@ namespace TopModel.Core;
 
 public class TranslationStore
 {
-#pragma warning disable MA0016
-    public Dictionary<string, Dictionary<string, string>> Translations { get; } = [];
-#pragma warning restore MA0016
+    public IDictionary<string, Dictionary<string, string>> Translations { get; } =
+        new Dictionary<string, Dictionary<string, string>>();
 
     public string GetTranslation(IProperty property, string lang)
     {

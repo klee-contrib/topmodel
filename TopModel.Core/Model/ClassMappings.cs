@@ -18,9 +18,7 @@ public class ClassMappings
 #nullable enable
     public string? Comment { get; set; }
 
-#pragma warning disable MA0016
-    public Dictionary<IProperty, IProperty> Mappings { get; } = [];
-#pragma warning restore MA0016
+    public IDictionary<IProperty, IProperty> Mappings { get; } = new Dictionary<IProperty, IProperty>();
 
     public IDictionary<Reference, Reference> MappingReferences { get; } = new Dictionary<Reference, Reference>();
 

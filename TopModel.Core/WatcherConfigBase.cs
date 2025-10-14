@@ -107,9 +107,7 @@ public class WatcherConfigBase
     /// <summary>
     /// Propriétés qui peuvent contenir des templates à ne pas interprêter dans la résolution des variables globales ou par tag.
     /// </summary>
-#pragma warning disable MA0016
-    public virtual Dictionary<string, List<string>> TemplateAttributes => [];
-#pragma warning restore MA0016
+    public virtual IDictionary<string, List<string>> TemplateAttributes => new Dictionary<string, List<string>>();
 
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.

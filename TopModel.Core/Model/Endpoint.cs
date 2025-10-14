@@ -50,9 +50,7 @@ public class Endpoint : IPropertyContainer
 
     public bool PreservePropertyCasing { get; set; }
 
-#pragma warning disable MA0016
-    public Dictionary<string, string> CustomProperties { get; } = [];
-#pragma warning restore MA0016
+    public IDictionary<string, string> CustomProperties { get; } = new Dictionary<string, string>();
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 

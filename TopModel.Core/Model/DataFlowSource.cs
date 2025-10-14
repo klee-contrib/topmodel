@@ -13,9 +13,7 @@ public class DataFlowSource
 
     public DataFlowSourceMode Mode { get; set; }
 
-#pragma warning disable MA0016
-    public List<IProperty> JoinProperties { get; set; } = [];
-#pragma warning restore MA0016
+    public IList<IProperty> JoinProperties { get; set; } = [];
 
     public IList<Reference> JoinPropertyReferences { get; set; } = [];
 
