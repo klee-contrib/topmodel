@@ -27,6 +27,11 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         TrimSlashes(config, c => c.DataFlowsPath);
 
         services.AddGenerator<JavaDtoGenerator, JpaConfig>(config, number);
+        if (config.MetaModel)
+        {
+            services.AddGenerator<JpaMetaModelGenerator, JpaConfig>(config, number);
+        }
+
         if (config.UseJdbc)
         {
             services.AddGenerator<JdbcEntityGenerator, JpaConfig>(config, number);

@@ -6,7 +6,7 @@ version: 3.4.1
 custom:
   ../../TopModel.Generator.Csharp: a04debe01202fb12125d2871196d720d
   ../../TopModel.Generator.Javascript: 125a6e136adfd306b3ed6bc6e64adbfd
-  ../../TopModel.Generator.Jpa: ae6e25c94d2d437227906430012ecb6e
+  ../../TopModel.Generator.Jpa: 87e1efd084cf7828ba91c4da502c5fd8
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
   ../../TopModel.Generator.Sql: 2ef75bbf77d1a171d3f0bc32e552fde4
   ../../TopModel.Generator.Translation: 4f3eeaa5ea9076cf360f586fe4f681b5
@@ -77,14 +77,21 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurItem.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurRead.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurWrite.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/common/Traduction_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/common/Traduction.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Droit_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Droit.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Profil_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Profil.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/ProfilDroit_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/ProfilDroit.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/SecuriteProfilMappers.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/TypeDroit_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/TypeDroit.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/SecuriteUtilisateurMappers.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/TypeUtilisateur_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/TypeUtilisateur.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/Utilisateur_.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/Utilisateur.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/profil/DroitCode.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/profil/TypeDroitCode.java
