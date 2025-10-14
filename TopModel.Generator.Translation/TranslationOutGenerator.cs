@@ -40,7 +40,7 @@ public class TranslationOutGenerator(
             return Path.Combine(
                 Config.OutputDirectory,
                 Config.ResolveVariables(Config.RootPath, tag: tag, lang: lang),
-                $"{Config.GetRootModule(p.Parent.Namespace).ToKebabCase()}_{lang}.properties"
+                $"{string.Join('_', Config.GetRootModule(p.Parent.Namespace).Split(".").Select(part => part.ToKebabCase()))}_{lang}.properties"
             );
         }
 
