@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.1
+
+- [`247c52c`](https://github.com/klee-contrib/topmodel/commit/247c52c3a131603ef7175c77db21773380349e78) - [JPA] Fix ignorer les propriétés non accessibles dans le cas alias
+
 ## 3.3.0
 
 Compatibilité avec TopModel 3.3
