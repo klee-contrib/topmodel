@@ -34,14 +34,15 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
-        return classe.Properties.Where(p =>
-            !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
-            && !(
-                p is AliasProperty ap
-                && ap.Property is CompositionProperty cp2
-                && !Config.AvailableClasses.Contains(cp2.Composition)
-            )
-        );
+        return classe
+            .Properties.Where(p => !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition)))
+            .Where(p =>
+                !(
+                    p is AliasProperty ap
+                    && ap.Property is CompositionProperty cp
+                    && !Config.AvailableClasses.Contains(cp.Composition)
+                )
+            );
     }
 
     public virtual JavaAnnotation GetColumnAnnotation(IProperty property)
