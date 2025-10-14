@@ -34,9 +34,15 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
-        return classe.Properties.Where(p =>
-            !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
-        );
+        return classe
+            .Properties.Where(p => !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition)))
+            .Where(p =>
+                !(
+                    p is AliasProperty ap
+                    && ap.Property is CompositionProperty cp
+                    && !Config.AvailableClasses.Contains(cp.Composition)
+                )
+            );
     }
 
     public virtual JavaAnnotation GetColumnAnnotation(IProperty property)
@@ -275,8 +281,15 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         var isAssociationToNotAvailableClass =
             property is AssociationProperty asp && !Config.AvailableClasses.Contains(asp.Association);
+        var isAliasToAssociationToNotAvailableClass =
+            property is AliasProperty alp
+            && alp.Property is AssociationProperty asop
+            && !Config.AvailableClasses.Contains(asop.Association);
         var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
-        return property.Class.IsPersistent && !isAssociationNotPersistent && !isAssociationToNotAvailableClass;
+        return property.Class.IsPersistent
+            && !isAssociationNotPersistent
+            && !isAssociationToNotAvailableClass
+            && !isAliasToAssociationToNotAvailableClass;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(CompositionProperty property, string tag)
