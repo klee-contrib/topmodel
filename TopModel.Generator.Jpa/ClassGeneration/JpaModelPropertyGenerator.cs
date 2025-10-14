@@ -32,6 +32,13 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual JavaAnnotation ValidAnnotation => new("Valid", imports: $"{JavaxOrJakarta}.validation.Valid");
 
+    public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
+    {
+        return classe.Properties.Where(p =>
+            !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
+        );
+    }
+
     public virtual JavaAnnotation GetColumnAnnotation(IProperty property)
     {
         JavaAnnotation column = new JavaAnnotation(
@@ -169,13 +176,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         return javaField;
     }
 
-    public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
-    {
-        return classe.Properties.Where(p =>
-            !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
-        );
-    }
-
     public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
         var availableProperties = GetAvailableProperties(classe);
@@ -239,14 +239,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         return Config.GetType(property, UseClassForAssociation(property));
     }
 
-    public virtual bool UseClassForAssociation(IProperty property)
-    {
-        var isAssociationToNotAvailableClass =
-            property is AssociationProperty asp && !Config.AvailableClasses.Contains(asp.Association);
-        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
-        return property.Class.IsPersistent && !isAssociationNotPersistent && !isAssociationToNotAvailableClass;
-    }
-
     public virtual JavaMethod GetSetter(string tag, IProperty property)
     {
         return GetField(property, tag).DefaulSetter;
@@ -277,6 +269,14 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         {
             return Config.CanClassUseEnums(property.Class, property) && property.Class.IsPersistent;
         }
+    }
+
+    public virtual bool UseClassForAssociation(IProperty property)
+    {
+        var isAssociationToNotAvailableClass =
+            property is AssociationProperty asp && !Config.AvailableClasses.Contains(asp.Association);
+        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
+        return property.Class.IsPersistent && !isAssociationNotPersistent && !isAssociationToNotAvailableClass;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(CompositionProperty property, string tag)
