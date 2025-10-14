@@ -35,7 +35,7 @@ public class JpaResourceGenerator(
                         module: p.Parent.Namespace.ModulePath
                     )
                     .ToLower(),
-                $"{Config.GetRootModule(p.Parent.Namespace).ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties"
+                $"{string.Join('_', Config.GetRootModule(p.Parent.Namespace).Split(".").Select(part => part.ToKebabCase()))}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties"
             );
         }
 
