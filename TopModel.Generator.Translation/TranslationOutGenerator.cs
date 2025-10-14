@@ -67,7 +67,7 @@ public class TranslationOutGenerator(
 
     private void WriteClasse(IFileWriter fw, IGrouping<IPropertyContainer, IProperty> container, string lang)
     {
-        foreach (var property in container)
+        foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
         {
             if (
                 property.Label != null
@@ -84,7 +84,7 @@ public class TranslationOutGenerator(
 
         if (container.Key is Class classe && classe.DefaultProperty != null)
         {
-            foreach (var reference in classe.Values)
+            foreach (var reference in classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal))
             {
                 if (!ExistsInStore(lang, reference.ResourceKey))
                 {
