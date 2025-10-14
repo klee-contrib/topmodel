@@ -352,14 +352,6 @@ public class WatcherConfigBase
         }
     }
 
-    internal void DeleteFiles(IEnumerable<string> fileNames)
-    {
-        foreach (var fileName in fileNames)
-        {
-            Files.Remove(fileName);
-        }
-    }
-
     internal string ResolveGlobalVariables(string input)
     {
         foreach (var varName in GlobalVariableNames)
@@ -368,14 +360,6 @@ public class WatcherConfigBase
         }
 
         return input;
-    }
-
-    internal void UpdateFiles(IEnumerable<ModelFile> files)
-    {
-        foreach (var file in files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any()))
-        {
-            Files[file.Name] = file;
-        }
     }
 
     /// <summary>

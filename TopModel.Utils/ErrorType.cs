@@ -186,6 +186,11 @@ public enum ErrorType
     /// </summary>
     TMD3012,
 
+    /// <summary>
+    /// La classe '{classe}' ne peut pas faire partie de la configuration '{genConfig.Name}' car elle hérite de la classe '{classe.Extends}' qui n'y est pas disponible.
+    /// </summary>
+    TMD3013,
+
     #endregion
 
     #region Erreurs de dataflows (4)

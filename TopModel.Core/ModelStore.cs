@@ -236,19 +236,14 @@ public class ModelStore(
 
                     if (modelFile != null)
                     {
-                        _modelFiles[fileName] = modelFile;
+                        UpdateFile(fileName, modelFile);
                     }
                     else
                     {
-                        _modelFiles.Remove(fileName);
+                        RemoveFile(fileName);
                         pendingFileDeletes.Add(fileName);
                     }
                 }
-            }
-
-            foreach (var genConfig in config.Configs.Values)
-            {
-                genConfig.DeleteFiles(pendingFileDeletes);
             }
 
             foreach (var modelWatcher in _modelWatchers)
@@ -322,16 +317,9 @@ public class ModelStore(
 
                 logger.LogInformation("Modèle chargé avec succès.");
 
-                var changedFiles = sortedFileCycles.SelectMany(x => x);
-
-                foreach (var genConfig in config.Configs.Values)
-                {
-                    genConfig.UpdateFiles(changedFiles);
-                }
-
                 Parallel.ForEach(
                     _modelWatchers,
-                    modelWatcher => modelWatcher.OnFilesChanged(changedFiles, _storeConfig)
+                    modelWatcher => modelWatcher.OnFilesChanged(sortedFileCycles.SelectMany(x => x), _storeConfig)
                 );
 
                 var generatedFiles = _modelWatchers
@@ -514,6 +502,7 @@ public class ModelStore(
                 }
             }
         }
+
         foreach (var file in Files.Where(f => !f.Endpoints.Any()))
         {
             if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
@@ -525,6 +514,21 @@ public class ModelStore(
                     file.Options.Endpoints.Prefix?.GetLocation(),
                     isError: false
                 );
+            }
+        }
+
+        foreach (var classe in Classes.Where(c => c.Extends != null))
+        {
+            foreach (var genConfig in config.Configs.Values.Where(c => c.Classes.Contains(classe)))
+            {
+                if (!genConfig.AvailableClasses.Contains(classe.Extends))
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3013,
+                        classe,
+                        $"La classe '{classe}' ne peut pas faire partie de la configuration '{genConfig.Name}' car elle hérite de la classe '{classe.Extends}' qui n'y est pas disponible."
+                    );
+                }
             }
         }
     }
@@ -636,6 +640,16 @@ public class ModelStore(
                     }
                 )
         );
+    }
+
+    private void RemoveFile(string fileName)
+    {
+        _modelFiles.Remove(fileName);
+
+        foreach (var genConfig in config.Configs.Values)
+        {
+            genConfig.Files.Remove(fileName);
+        }
     }
 
     private IEnumerable<ModelError> ResolveReferences(IList<ModelFile> modelFiles)
@@ -899,6 +913,19 @@ public class ModelStore(
                     use,
                     isError: false
                 );
+            }
+        }
+    }
+
+    private void UpdateFile(string fileName, ModelFile modelFile)
+    {
+        _modelFiles[fileName] = modelFile;
+
+        foreach (var genConfig in config.Configs.Values)
+        {
+            if (genConfig.Tags.Intersect(modelFile.AllTags.Except(genConfig.ExcludedTags)).Any())
+            {
+                genConfig.Files[fileName] = modelFile;
             }
         }
     }
