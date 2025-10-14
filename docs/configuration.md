@@ -19,17 +19,37 @@ Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM D
 
 ## Modules de générateurs
 
-Chaque module de générateurs possède sa propre configuration. Néanmoins, la structure globale reste identique pour tous.
+Chaque module de générateurs définit sa propre configuration. Il est possible d'instancier **plusieurs fois** le même module, avec des configurations différentes, afin de pouvoir générer du code dans plusieurs d'applications mais à partir du même modèle par exemple.
 
-1. Commencer par le nom du module
-2. Ajouter ensuite une liste de configurations
-3. Chaque configuration **doit** préciser une liste de `tags`
-4. Chaque configuration **doit** préciser le `outputDirectory`
-5. Chaque configuration peut préciser des variables globales.
-6. Chaque configuration peut préciser des variables par `tag`.
-7. Chaque configuration peut préciser si elle doit ignorer les valeurs par défaut (`ignoreDefaultValues`).
+Chaque module à son propre nom (par exemple `csharp` pour le module de générateurs C#, `jpa` pour le module de générateurs Java/JPA..), qui sera le nom de la propriété à utiliser dans le fichier de configuration, et qui prendra une liste de configurations.
 
-Exemple :
+Toutes les configurations partagent le même socle commun de propriétés :
+
+- `name` : Le nom de cette configuration. Il pourra être utilisé pour référencer cette configuration dans certains messages d'erreurs ou d'autres configuration. Il vaudra `{nom de la config}@{index de la config + 1}` si non renseigné.
+- `language` : Le (ou les, le champ accepte aussi une liste) langage(s) d'implémentation(s) utilisé(s) par cette configuration. Il doit correspondre à l'un des langages définis sur les domaines, décorateurs, annotations et converters du modèle. Chaque module définit déjà un langage par défaut (`csharp` pour `csharp`, `java` pour `jpa`...), ce qui sera souvent suffisant. Si vous spécifiez plusieurs languages, alors l'implémentation sera choisie par ordre de priorité parmi les implémentations existantes sur l'objet en question.
+- `tags` : Les tags des objets qui seront générés par cette configuration de générateurs. Ce champ est **obligatoire**.
+- `referencedTags` : Chaque configuration considère par défaut que les objets "disponibles" sont limités aux objets générés, donc aux objets qui ont les tags du générateur. Cela veut dire que si un objet en référence un autre (via une composition/association, un mapper...) qui n'a **pas de tag en commun** avec ceux de la configuration, alors la référence sera **omise** de la génération, puisqu'elle référence un objet qui ne sera pas généré ici. Cette propriété permet donc de **référencer des tags d'autres configurations**, afin de pouvoir résoudre ces références d'objet et les inclure au lieu de les omettre. Cela demandera nécessairement à ce que la référence puisse être effectivement résolue dans le code généré, mais ce n'est pas le problème du générateur de code 😉
+  Exemple :
+  ```yaml
+  jpa:
+    - name: back-common
+      tags: [BackCommon]
+      outputDirectory: ../sources/back/common
+    - name: back-service
+      tags: [BackService]
+      referencedTags:
+        BackCommon: back-common # Les classes référencées avec le tag `BackCommon` (et pas de tag `BackService`) auront leurs imports résolus avec la config `back-common`.
+      outputDirectory: ../sources/back/service
+  ```
+- `disable`: Liste des générateurs à désactiver dans le module.
+- `outputDirectory` : Chemin vers la racine du répertoire de génération. Ce champ est **obligatoire**.
+- `variables` : Décrit plus bas
+- `tagVariables` : Décrit plus bas
+- `translateProperties` : Si les libellés des propriétés doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supporte pas la traduction).
+- `translateReferences` : Si les libellés des listes de références doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supporte pas la traduction).
+- `ignoreDefautValues` : Si renseigné, les valeurs par défaut des propriétés dans les classes et les endpoints ne seront pas générés dans cette configuration. La valeur par défaut de cette propriété dépend du module de générateurs.
+
+Exemple de configuration de module :
 
 ```yaml
 javascript:
