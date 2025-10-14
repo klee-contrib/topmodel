@@ -110,24 +110,26 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
     {
-        return classe.Properties.Select(prop =>
-        {
-            string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
-            var javaType = JpaModelPropertyGenerator.GetPropertyType(prop);
-            javaType = javaType.Split("<")[0];
-            return new JavaEnumValue(name)
+        return JpaModelPropertyGenerator
+            .GetAvailableProperties(classe)
+            .Select(prop =>
             {
-                Parameters = { $"{javaType}.class" },
-                Imports = prop.GetTypeImports(Config, tag).ToList(),
-            };
-        });
+                string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
+                var javaType = JpaModelPropertyGenerator.GetPropertyType(prop);
+                javaType = javaType.Split("<")[0];
+                return new JavaEnumValue(name)
+                {
+                    Parameters = { $"{javaType}.class" },
+                    Imports = prop.GetTypeImports(Config, tag).ToList(),
+                };
+            });
     }
 
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
         if (!Config.HasAnnotation(classe, "Getter"))
         {
-            foreach (var property in classe.Properties)
+            foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
             {
                 if (!Config.HasAnnotation(property, "Getter"))
                 {
@@ -165,7 +167,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         if (!Config.HasAnnotation(classe, "Setter"))
         {
-            foreach (var property in classe.Properties)
+            foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
             {
                 if (!Config.HasAnnotation(property, "Setter"))
                 {

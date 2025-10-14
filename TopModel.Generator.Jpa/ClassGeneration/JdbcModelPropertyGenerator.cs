@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Core.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -9,6 +10,14 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
     : JpaModelPropertyGenerator(config, newableTypes)
 {
     private static new JavaAnnotation IdAnnotation => new("Id", imports: "org.springframework.data.annotation.Id");
+
+    public override IEnumerable<IProperty> GetAvailableProperties(Class classe)
+    {
+        return classe.Properties.Where(p =>
+            !(p is AssociationProperty ap && ap.Type.IsToMany())
+            && !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
+        );
+    }
 
     public override JavaAnnotation GetColumnAnnotation(IProperty property)
     {

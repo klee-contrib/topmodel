@@ -169,9 +169,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         return javaField;
     }
 
+    public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
+    {
+        return classe.Properties.Where(p =>
+            !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
+        );
+    }
+
     public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        foreach (var property in classe.Properties)
+        var availableProperties = GetAvailableProperties(classe);
+        foreach (var property in availableProperties)
         {
             yield return GetField(property, tag);
         }
@@ -223,15 +231,20 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual string GetPropertyName(IProperty property)
     {
-        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
-        return isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel;
+        return UseClassForAssociation(property) ? property.NameByClassCamel : property.NameCamel;
     }
 
     public virtual string GetPropertyType(IProperty property)
     {
+        return Config.GetType(property, UseClassForAssociation(property));
+    }
+
+    public virtual bool UseClassForAssociation(IProperty property)
+    {
+        var isAssociationToNotAvailableClass =
+            property is AssociationProperty asp && !Config.AvailableClasses.Contains(asp.Association);
         var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
-        var useClassForAssociation = property.Class.IsPersistent && !isAssociationNotPersistent;
-        return Config.GetType(property, useClassForAssociation);
+        return property.Class.IsPersistent && !isAssociationNotPersistent && !isAssociationToNotAvailableClass;
     }
 
     public virtual JavaMethod GetSetter(string tag, IProperty property)
@@ -292,7 +305,10 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         if (property.Class.IsPersistent)
         {
-            var shouldWriteAssociation = property.Property is AssociationProperty ap && ap.Association.IsPersistent;
+            var shouldWriteAssociation =
+                property.Property is AssociationProperty ap
+                && ap.Association.IsPersistent
+                && Config.AvailableClasses.Contains(ap.Association);
             if (property.PrimaryKey && property.Class.IsPersistent)
             {
                 foreach (var a in GetIdAnnotations(property))
@@ -339,6 +355,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             if (
                 property.Association.IsPersistent
                 && !(Config.EnumsAsEnums && Config.CanClassUseEnums(property.Property.Class, property.Property))
+                && Config.AvailableClasses.Contains(property.Association)
             )
             {
                 if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)

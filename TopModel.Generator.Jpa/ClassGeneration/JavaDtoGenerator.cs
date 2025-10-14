@@ -45,7 +45,10 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
+        if (
+            Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted)
+            && JpaModelPropertyGenerator.GetAvailableProperties(classe).Any()
+        )
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
             yield return fieldEnum;

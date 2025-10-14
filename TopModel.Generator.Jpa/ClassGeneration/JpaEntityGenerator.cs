@@ -209,7 +209,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
+        if (
+            Config.FieldsEnum.Contains(AnnotationConstraint.Persisted)
+            && JpaModelPropertyGenerator.GetAvailableProperties(classe).Any()
+        )
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
             yield return fieldEnum;

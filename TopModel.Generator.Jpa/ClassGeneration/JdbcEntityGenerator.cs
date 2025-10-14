@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -58,7 +57,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                 }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
             }
         }
-        foreach (var property in GetFilteredProperties(classe))
+        foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
             yield return JpaModelPropertyGenerator.GetField(property, tag);
         }
@@ -66,7 +65,8 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
     {
-        return GetFilteredProperties(classe)
+        return JpaModelPropertyGenerator
+            .GetAvailableProperties(classe)
             .Select(prop =>
             {
                 string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
@@ -93,7 +93,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        var properties = GetFilteredProperties(classe);
+        var properties = JpaModelPropertyGenerator.GetAvailableProperties(classe);
         foreach (var property in properties)
         {
             yield return JpaModelPropertyGenerator!.GetGetter(tag, property);
@@ -102,7 +102,10 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
-        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
+        if (
+            Config.FieldsEnum.Contains(AnnotationConstraint.Persisted)
+            && JpaModelPropertyGenerator.GetAvailableProperties(classe).Any()
+        )
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
             yield return fieldEnum;
@@ -111,7 +114,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        var properties = GetFilteredProperties(classe);
+        var properties = JpaModelPropertyGenerator.GetAvailableProperties(classe);
         if (!Config.CanClassUseEnums(classe))
         {
             foreach (var property in properties)
@@ -119,10 +122,5 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                 yield return JpaModelPropertyGenerator!.GetSetter(tag, property);
             }
         }
-    }
-
-    private static IEnumerable<IProperty> GetFilteredProperties(Class classe)
-    {
-        return classe.Properties.Where(p => !(p is AssociationProperty ap && ap.Type.IsToMany()));
     }
 }
