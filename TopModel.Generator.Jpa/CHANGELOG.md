@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.3
+
+- [`2c9b3`](https://github.com/klee-contrib/topmodel/commit/2c9b38b8e122e5182121437ec8cd17845eaf12f5) - [JPA] Fix disparition des extends
+
 ## 3.3.2
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
