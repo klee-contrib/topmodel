@@ -32,8 +32,6 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
         TrimSlashes(config, c => c.ModelRootPath);
         TrimSlashes(config, c => c.ResourceRootPath);
 
-        config.DefaultLanguage = "ts";
-
         if (config.ModelRootPath != null)
         {
             if (!config.ModelRootPath.Contains("{module}"))

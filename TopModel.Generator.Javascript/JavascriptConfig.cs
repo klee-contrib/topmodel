@@ -81,6 +81,8 @@ public class JavascriptConfig : GeneratorConfigBase
     /// </summary>
     public virtual bool GenerateMainResourceFiles { get; set; }
 
+    public override string? DefaultLanguage => "ts";
+
     public override string[] PropertiesWithModuleVariableSupport =>
         [nameof(ModelRootPath), nameof(ApiClientFilePath), nameof(ResourceRootPath)];
 

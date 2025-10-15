@@ -8,8 +8,6 @@ public class GeneratorRegistration : IGeneratorRegistration<TranslationConfig>
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, TranslationConfig config, int number)
     {
-        config.DefaultLanguage = "properties";
-
         services.AddGenerator<TranslationOutGenerator, TranslationConfig>(config, number);
     }
 }

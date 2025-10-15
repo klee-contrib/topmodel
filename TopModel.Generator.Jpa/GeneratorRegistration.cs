@@ -26,8 +26,6 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         TrimSlashes(config, c => c.ResourcesPath);
         TrimSlashes(config, c => c.DataFlowsPath);
 
-        config.DefaultLanguage = "java";
-
         services.AddGenerator<JavaDtoGenerator, JpaConfig>(config, number);
         if (config.UseJdbc)
         {

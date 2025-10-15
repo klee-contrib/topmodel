@@ -200,6 +200,8 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public virtual bool UseCancellationTokens { get; set; }
 
+    public override string? DefaultLanguage => "csharp";
+
     public override string[] PropertiesWithModuleVariableSupport =>
         [
             nameof(PersistentModelPath),

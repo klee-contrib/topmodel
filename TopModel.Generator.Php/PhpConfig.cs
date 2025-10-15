@@ -25,6 +25,8 @@ public class PhpConfig : GeneratorConfigBase
     /// </summary>
     public virtual IdentityConfig Identity { get; set; } = new() { Mode = IdentityMode.IDENTITY };
 
+    public override string? DefaultLanguage => "php";
+
     public override string[] PropertiesWithTagVariableSupport =>
         [nameof(EntitiesPath), nameof(RepositoriesPath), nameof(DtosPath)];
 

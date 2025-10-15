@@ -167,6 +167,8 @@ public class JpaConfig : GeneratorConfigBase
     /// </summary>
     public virtual IList<string> DataFlowsListeners { get; set; } = [];
 
+    public override string? DefaultLanguage => "java";
+
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesPath)];
 
     public override string[] PropertiesWithTagVariableSupport =>

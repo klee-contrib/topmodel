@@ -49,18 +49,9 @@ public class WatcherConfigBase
     public virtual IList<string> Language { get; set; } = [];
 
     /// <summary>
-    /// Setter pour le language par défaut.
+    /// Langage par défaut.
     /// </summary>
-    public virtual string DefaultLanguage
-    {
-        set
-        {
-            if (Language.Count == 0)
-            {
-                Language.Add(value);
-            }
-        }
-    }
+    public virtual string? DefaultLanguage { get; }
 
     /// <summary>
     /// Variables globales du module.
@@ -134,8 +125,6 @@ public class WatcherConfigBase
 
     protected virtual bool PersistentOnly => false;
 
-    protected virtual bool NoLanguage => false;
-
     public virtual IEnumerable<Class> GetExtraClasses(ModelFile file)
     {
         return [];
@@ -188,6 +177,11 @@ public class WatcherConfigBase
     /// <param name="number">Numéro du générateur.</param>
     public virtual void InitVariables(string app, int number)
     {
+        if (Language.Count == 0 && DefaultLanguage != null)
+        {
+            Language.Add(DefaultLanguage);
+        }
+
         if (!Variables.ContainsKey("app"))
         {
             Variables["app"] = app;
@@ -212,11 +206,7 @@ public class WatcherConfigBase
         }
 
         var hasMissingVar = false;
-        foreach (
-            var property in GetType()
-                .GetProperties()
-                .Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(DefaultLanguage))
-        )
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite))
         {
             var value = (string?)property.GetValue(this);
             if (value != null)
@@ -324,7 +314,7 @@ public class WatcherConfigBase
     {
         var handledFiles = files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any());
 
-        if (!NoLanguage)
+        if (Language.Count > 0)
         {
             foreach (
                 var domain in handledFiles

@@ -19,6 +19,8 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public virtual SsdtConfig? Ssdt { get; set; }
 
+    public override string? DefaultLanguage => "sql";
+
     public override Dictionary<string, List<string>> TemplateAttributes =>
         new()
         {
