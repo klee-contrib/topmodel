@@ -79,19 +79,19 @@ public class Droit {
 	public Droit(DroitCode code) {
 		this.code = code;
 		switch(code) {
-			case CREATE :
+			case CREATE:
 				this.libelle = "securite.profil.droit.values.Create";
 				this.typeDroit = TypeDroit.WRITE;
 				break;
-			case DELETE :
+			case DELETE:
 				this.libelle = "securite.profil.droit.values.Delete";
 				this.typeDroit = TypeDroit.ADMIN;
 				break;
-			case READ :
+			case READ:
 				this.libelle = "securite.profil.droit.values.Read";
 				this.typeDroit = TypeDroit.READ;
 				break;
-			case UPDATE :
+			case UPDATE:
 				this.libelle = "securite.profil.droit.values.Update";
 				this.typeDroit = TypeDroit.WRITE;
 				break;

@@ -77,8 +77,11 @@ public class JavaConstructorGenerator(JpaConfig config)
         {
             constructor.AddBodyLine("super();");
         }
+        else
+        {
+            constructor.AddBodyLine("// No arg constructor");
+        }
 
-        constructor.AddBodyLine("// No arg constructor");
         return constructor;
     }
 }

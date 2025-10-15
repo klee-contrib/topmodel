@@ -34,7 +34,7 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
-                constructor.AddBodyLine(1, $@"case {code} :");
+                constructor.AddBodyLine(1, $@"case {code}:");
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
                     var isString = Config.GetType(prop) == "String";
