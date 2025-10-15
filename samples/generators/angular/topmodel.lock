@@ -2,9 +2,9 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.3.0
+version: 3.3.1
 custom:
-  ../../../TopModel.Generator.Javascript: 160f977b16b4d32eac248aaf390b5230
+  ../../../TopModel.Generator.Javascript: d6b39a1f2a00bfe9da9973e35ae7deec
 generatedFiles:
   - ./src/appgenerated/api/securite/profil/profil.service.ts
   - ./src/appgenerated/api/securite/utilisateur/utilisateur.service.ts

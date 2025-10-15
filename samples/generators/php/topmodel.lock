@@ -2,9 +2,9 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.3.0
+version: 3.3.1
 custom:
-  ../../../TopModel.Generator.Php: f6ee914bc65f86c152c2494fc3856321
+  ../../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
 generatedFiles:
   - ./src/Entity/Securite/Profil/Droit.php
   - ./src/Entity/Securite/Profil/Profil.php

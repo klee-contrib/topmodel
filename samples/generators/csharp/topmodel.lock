@@ -2,9 +2,9 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.3.0
+version: 3.3.1
 custom:
-  ../../../TopModel.Generator.Csharp: 275edec07e1234b3f44e000f6281bdbf
+  ../../../TopModel.Generator.Csharp: ebf038e87e101ef17b9850dadfd8e12e
 generatedFiles:
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs

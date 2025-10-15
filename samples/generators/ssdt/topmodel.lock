@@ -2,9 +2,9 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.3.0
+version: 3.3.1
 custom:
-  ../../../TopModel.Generator.Sql: 42e6a4bfa5115b6e505951124cc2de48
+  ../../../TopModel.Generator.Sql: 17ec0cca6b894893358fa7eaa8bcb324
 generatedFiles:
   - ./src/init/DROIT.insert.sql
   - ./src/init/main.sql
