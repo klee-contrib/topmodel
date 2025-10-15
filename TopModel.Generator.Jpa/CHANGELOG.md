@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.2
+
+- [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
+
 ## 3.3.1
 
 - [`247c52c`](https://github.com/klee-contrib/topmodel/commit/247c52c3a131603ef7175c77db21773380349e78) - [JPA] Fix ignorer les propriétés non accessibles dans le cas alias

@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.3.1
+
+- [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
+
 ## 3.3.0
 
 **Cette version n'est pas compatible avec les anciennes versions des générateurs, vous devez lancer `modgen -u all` pour les mettre à jour**. Les générateurs eux même n'ont pas (vraiment) de breaking changes, donc cela ne devrait pas poser de blocage particulier pour la montée de version. Cette version n'a pas non plus de breaking change hormis cette compatibilité de toute façon. On avait promis qu'on ne ferait pas ça, désolé 🥺

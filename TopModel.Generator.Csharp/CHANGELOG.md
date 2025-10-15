@@ -1,3 +1,7 @@
+## 3.2.1
+
+- [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
+
 ## 3.2.0
 
 Compatibilité avec TopModel 3.3
