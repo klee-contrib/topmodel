@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	pg 
+--   Application Name	:	Sample 
 --   Script Name		:	06_resources.sql
 --   Description		:	Script de création des resources (libellés traduits).
 -- ===========================================================================================

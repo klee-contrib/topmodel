@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	pg 
+--   Application Name	:	Sample 
 --   Script Name		:	05_comments.sql
 --   Description		:	Script de création des commentaires.
 -- ===========================================================================================

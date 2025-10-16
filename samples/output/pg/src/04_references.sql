@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	pg 
+--   Application Name	:	Sample 
 --   Script Name		:	04_references.sql
 --   Description		:	Script d'insertion des données de références.
 -- ===========================================================================================

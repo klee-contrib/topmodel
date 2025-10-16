@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	pg 
+--   Application Name	:	Sample 
 --   Script Name		:	03_unique_keys.sql
 --   Description		:	Script de création des contraintes d'unicité.
 -- ===========================================================================================

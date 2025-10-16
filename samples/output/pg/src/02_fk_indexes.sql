@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	pg 
+--   Application Name	:	Sample 
 --   Script Name		:	02_fk_indexes.sql
 --   Description		:	Script de création des indexes et des clef étrangères.
 -- ===========================================================================================
