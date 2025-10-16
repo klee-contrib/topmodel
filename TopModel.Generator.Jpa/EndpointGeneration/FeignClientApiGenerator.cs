@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -33,17 +34,16 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
         )
             .AddAttribute("name", $@"""{Config.GetRootModule(file.Namespace)}""")
             .AddAttribute("contextId", $@"""{GetClassName(fileName)}""");
-
-        if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
-        {
-            feignClientAnnotation.AddAttribute("path", $@"""{file.Options.Endpoints.Prefix}""");
-        }
-
         yield return feignClientAnnotation;
     }
 
     protected override string GetClassName(string fileName)
     {
         return $"{fileName.ToPascalCase()}Api";
+    }
+
+    protected override string GetRoute(Endpoint endpoint)
+    {
+        return endpoint.FullRoute;
     }
 }

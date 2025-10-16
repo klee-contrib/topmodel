@@ -73,7 +73,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         var mappingAnnotation = new JavaAnnotation(
             $@"@{endpoint.Method.ToPascalCase(strict: true)}Mapping",
             imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(strict: true)}Mapping"
-        ).AddAttribute("path", $@"""{endpoint.Route.Trim('/')}""");
+        ).AddAttribute("path", $@"""{GetRoute(endpoint)}""");
         if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
         {
             mappingAnnotation.AddAttribute("produces", @$"""{endpoint.Returns.Domain.MediaType}""");
@@ -262,6 +262,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         return method;
+    }
+
+    protected virtual string GetRoute(Endpoint endpoint)
+    {
+        return endpoint.Route.Trim('/');
     }
 
     protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
