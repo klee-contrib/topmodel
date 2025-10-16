@@ -209,3 +209,4 @@ domain:
     genericType: "{T}[]"
   php:
     genericType: Collection
+  sql: {}

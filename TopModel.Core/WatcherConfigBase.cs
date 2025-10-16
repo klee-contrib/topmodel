@@ -354,16 +354,8 @@ public class WatcherConfigBase
             foreach (
                 var domain in handledFiles
                     .SelectMany(f => f.Properties)
-                    .Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false))
-                    .Select(fp => fp.Domain)
-                    .Concat(
-                        PersistentOnly
-                            ? []
-                            : handledFiles
-                                .SelectMany(f => f.Properties)
-                                .OfType<CompositionProperty>()
-                                .Select(fp => fp.Domain!)
-                    )
+                    .Where(p => !PersistentOnly || (p.Class?.IsPersistent ?? false))
+                    .Select(p => p.Domain)
                     .Where(domain => domain != null && GetImplementation(domain) == null)
                     .Distinct()
             )
