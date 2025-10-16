@@ -12,6 +12,9 @@ namespace TopModel.Core;
 
 public class WatcherConfigBase
 {
+    private HashSet<Class>? _classes = null;
+    private HashSet<Endpoint>? _endpoints = null;
+
     /// <summary>
     /// Nom de la configuration.
     /// </summary>
@@ -110,10 +113,23 @@ public class WatcherConfigBase
     /// <summary>
     /// Classes concernées par cette configuration.
     /// </summary>
-    public virtual IEnumerable<Class> Classes =>
-        Files
-            .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value)))
-            .Distinct();
+    public virtual IEnumerable<Class> Classes
+    {
+        get
+        {
+            if (_classes == null)
+            {
+                _classes = Files
+                    .SelectMany(f =>
+                        f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value))
+                    )
+                    .Distinct()
+                    .ToHashSet();
+            }
+
+            return _classes;
+        }
+    }
 
     /// <summary>
     /// Classes disponibles pour cette configuration. Peut contenir des classes d'autres configurations.
@@ -122,6 +138,25 @@ public class WatcherConfigBase
         Classes
             .Concat(ReferencedTagConfigs.SelectMany(rtc => rtc.Value.Classes.Where(c => c.Tags.Contains(rtc.Key))))
             .Distinct();
+
+    /// <summary>
+    /// Endpoints concernés par cette configuration.
+    /// </summary>
+    public virtual IEnumerable<Endpoint> Endpoints
+    {
+        get
+        {
+            if (_endpoints == null)
+            {
+                _endpoints = Files
+                    .SelectMany(f => f.Value.Endpoints.Where(c => Tags.Intersect(c.Tags).Any()))
+                    .Distinct()
+                    .ToHashSet();
+            }
+
+            return _endpoints;
+        }
+    }
 
     protected virtual bool PersistentOnly => false;
 
@@ -340,6 +375,12 @@ public class WatcherConfigBase
                 );
             }
         }
+    }
+
+    internal void OnFileChanged()
+    {
+        _classes = null;
+        _endpoints = null;
     }
 
     internal string ResolveGlobalVariables(string input)

@@ -272,6 +272,11 @@ public enum ErrorType
     /// </summary>
     TMD7005,
 
+    /// <summary>
+    /// L'endpoint '{endpoint}' ne peut pas faire partie de la configuration '{genConfig.Name}' car il dépend la classe '{composition}' qui n'y est pas disponible.
+    /// </summary>
+    TMD7006,
+
     #endregion
 
     #region Erreurs de mappers (8)
