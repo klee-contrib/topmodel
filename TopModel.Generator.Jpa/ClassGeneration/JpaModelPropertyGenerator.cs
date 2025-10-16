@@ -246,7 +246,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual JavaMethod GetSetter(string tag, IProperty property)
     {
-        return GetField(property, tag).DefaulSetter;
+        return GetField(property, tag).DefaultSetter;
     }
 
     public virtual string GetSetterName(IProperty property)

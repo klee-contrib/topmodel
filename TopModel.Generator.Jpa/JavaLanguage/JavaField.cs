@@ -19,7 +19,7 @@ public class JavaField(string type, string name)
     public IList<string> Comment { get; set; } = [];
 
     public JavaMethod DefaultGetter =>
-        new(Type, $"get{Name.ToPascalCase()}")
+        new(Type, Name.ToPascalCase().WithPrefix(Type == "boolean" ? "is" : "get"))
         {
             Comment = $"Getter for {Name}",
             Body =
@@ -30,7 +30,7 @@ public class JavaField(string type, string name)
             Visibility = "public",
         };
 
-    public JavaMethod DefaulSetter =>
+    public JavaMethod DefaultSetter =>
         new("void", $"set{Name.ToPascalCase()}")
         {
             Comment = $@"Set the value of {{@link #{Name} {Name}}}",

@@ -264,17 +264,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return method;
     }
 
-    protected virtual string GetRoute(Endpoint endpoint)
-    {
-        return endpoint.Route.Trim('/');
-    }
-
     protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
     {
         foreach (var endpoint in endpoints)
         {
             yield return GetMethod(endpoint, tag);
         }
+    }
+
+    protected virtual string GetRoute(Endpoint endpoint)
+    {
+        return endpoint.Route.Trim('/');
     }
 
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
