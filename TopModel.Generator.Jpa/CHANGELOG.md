@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.4
+
+- [`69bdc`](https://github.com/klee-contrib/topmodel/commit/69bdc5797ea6917cb0291509d947ea34e01d8a1e) - [JPA] URLs d'API incohérentes entre Spring et FeignClient Fix [#505](https://github.com/klee-contrib/topmodel/issues/505)
+
 ## 3.3.3
 
 - [`2c9b3`](https://github.com/klee-contrib/topmodel/commit/2c9b38b8e122e5182121437ec8cd17845eaf12f5) - [JPA] Fix disparition des extends
