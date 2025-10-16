@@ -8,6 +8,11 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.3.2
+
+- [`9d67b66`](https://github.com/klee-contrib/topmodel/commit/9d67b669d69c26367eaac9396ab95eef73f436d1) - [Core] Détection dépendances circulaires de décorateurs
+- [`b6028ee`](https://github.com/klee-contrib/topmodel/commit/b6028ee0fc1a14fd743c2dd3c683f9b11b064f15) - [Core] Check composition disponible dans les endpoints générés
+
 ## 3.3.1
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
