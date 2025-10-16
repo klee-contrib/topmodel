@@ -71,7 +71,15 @@ internal class DecoratorResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDecorators()
     {
-        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
+        var decorators = modelFiles.SelectMany(mf => mf.Decorators);
+        var sortedDecorators = CoreUtils
+            .Sort(
+                decorators,
+                g => g.DecoratorReferences.Select(c => decorators.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+            )
+            .Where(c => c != null);
+
+        foreach (var decorator in sortedDecorators)
         {
             decorator.Variables.Clear();
 
