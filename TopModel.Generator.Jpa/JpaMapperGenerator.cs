@@ -549,7 +549,6 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
-            var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
             var (getter, checkSourceNull, imports) = GetSourceGetter(
                 propertySource,
                 propertyTarget!,
@@ -575,7 +574,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                 if (checkSourceNull)
                 {
-                    hydrate += $"source.{propertyTargetName.WithPrefix(getterPrefix)}() != null ? {getter} : null";
+                    hydrate +=
+                        $"source.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}() != null ? {getter} : null";
                 }
                 else
                 {
@@ -589,7 +589,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     if (checkSourceNull)
                     {
                         toMapperMethod.AddBodyLine(
-                            $"if (source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{"
+                            $"if (source.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
                         );
                     }
 

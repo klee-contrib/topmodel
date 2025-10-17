@@ -195,6 +195,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var field = GetField(property, tag);
         var method = field.DefaultGetter;
         var genericType = field.Type.Split('<')[0];
+        method.Imports.AddRange(property.GetTypeImports(Config, tag));
         if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
         {
             method.Imports.Add($"java.util.{newableType}");
