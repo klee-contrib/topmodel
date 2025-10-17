@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.6
+
+- [`01e502e`](https://github.com/klee-contrib/topmodel/commit/01e502e4557d7f365e0b27edcae50d9133f25a2f) - [JPA] Fix imports et nom des getters dans les mappers
+
 ## 3.3.5
 
 - [`4b17b5f`](https://github.com/klee-contrib/topmodel/commit/4b17b5f88eb2eca970a37662d4f7eef8c16378b2) - [JPA] Fix régression getter "boolean" avec "get" au lieu du "is" attendu
