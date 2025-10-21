@@ -139,7 +139,6 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)
     {
         var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
-        parameter.AddAnnotation(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
         if (bodyParam.Endpoint.IsMultipart)
         {
             if (!(bodyParam.Domain?.IsMultipart ?? false))
@@ -149,6 +148,9 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                         "ModelAttribute",
                         imports: "org.springframework.web.bind.annotation.ModelAttribute"
                     )
+                );
+                parameter.AddAnnotation(
+                    new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid")
                 );
             }
             else
@@ -170,6 +172,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 "RequestBody",
                 imports: "org.springframework.web.bind.annotation.RequestBody"
             );
+            parameter.AddAnnotation(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
             parameter.AddAnnotation(annotation);
             parameter.Comment = bodyParam.Comment;
             parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
