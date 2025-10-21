@@ -103,7 +103,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             {
                 method.AddParameter(GetQueryParam(tag, param));
             }
-            else if (param.IsJsonBodyParam())
+            else
             {
                 method.AddParameter(GetBodyParam(tag, param));
             }
@@ -140,7 +140,6 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     {
         var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
         parameter.AddAnnotation(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
-
         if (bodyParam.Endpoint.IsMultipart)
         {
             if (!(bodyParam.Domain?.IsMultipart ?? false))
