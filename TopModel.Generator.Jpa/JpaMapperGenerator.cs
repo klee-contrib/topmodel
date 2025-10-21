@@ -320,7 +320,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     getter =
-                        $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apSource.NameByClassPascal}())";
+                        $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.{JpaModelPropertyGenerator.GetGetterName(apSource)}())";
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
                 else if (
@@ -344,7 +344,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     else
                     {
                         getter =
-                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.get{propertyTarget.NameByClassPascal}())";
+                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}())";
                     }
 
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
@@ -368,7 +368,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     }
                     else
                     {
-                        getter = $"{sourceName}.{getterName}().get{apSource.Property.NameByClassPascal}()";
+                        getter =
+                            $"{sourceName}.{getterName}().{JpaModelPropertyGenerator.GetGetterName(apSource.Property)}()";
                     }
                 }
                 else
@@ -383,7 +384,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     else
                     {
                         getter =
-                            $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.NameByClassPascal}).collect({collector})";
+                            $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::{JpaModelPropertyGenerator.GetGetterName(apSource.Property)}).collect({collector})";
                         imports.Add(apSource.Association.GetImport(Config, tag));
                     }
                 }
@@ -468,7 +469,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         checkSourceNull = true;
                         getter =
-                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apTarget.NameByClassPascal}())";
+                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.{JpaModelPropertyGenerator.GetGetterName(apTarget)}())";
                         imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                     }
                 }

@@ -93,147 +93,19 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         method.AddAnnotation(mappingAnnotation);
-
-        foreach (var routeParam in endpoint.GetRouteParams())
+        foreach (var param in endpoint.Params)
         {
-            var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
-            var pathParamAnnotation = new JavaAnnotation(
-                "PathVariable",
-                @$"""{routeParam.GetParamName()}""",
-                "org.springframework.web.bind.annotation.PathVariable"
-            );
-            param.AddAnnotation(pathParamAnnotation);
-            param.Comment = routeParam.Comment;
-            param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetAnnotations(routeParam, tag))
+            if (param.IsRouteParam())
             {
-                param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+                method.AddParameter(GetRouteParam(tag, param));
             }
-
-            if (Config.OpenApiAnnotations)
+            else if (param.IsQueryParam())
             {
-                param.AddAnnotation(
-                    new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
-                        "description",
-                        @$"""{routeParam.Comment}"""
-                    )
-                );
+                method.AddParameter(GetQueryParam(tag, param));
             }
-
-            method.AddParameter(param);
-        }
-
-        foreach (var queryParam in endpoint.GetQueryParams())
-        {
-            var param = new JavaMethodParameter(Config.GetType(queryParam), queryParam.GetParamName());
-            var queryParamAnnotation = new JavaAnnotation(
-                "RequestParam",
-                imports: "org.springframework.web.bind.annotation.RequestParam",
-                value: @$"""{queryParam.GetParamName()}"""
-            ).AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
-            param.AddAnnotation(queryParamAnnotation);
-            param.Comment = queryParam.Comment;
-            param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetAnnotations(queryParam, tag))
+            else if (param.IsJsonBodyParam())
             {
-                param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
-            }
-
-            if (Config.OpenApiAnnotations)
-            {
-                param.AddAnnotation(
-                    new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
-                        "description",
-                        @$"""{queryParam.Comment}"""
-                    )
-                );
-            }
-
-            method.AddParameter(param);
-        }
-
-        if (endpoint.IsMultipart)
-        {
-            foreach (
-                var param in endpoint.Params.Where(param =>
-                    param is CompositionProperty
-                    || (param.Domain?.BodyParam ?? false)
-                    || (param.Domain?.IsMultipart ?? false)
-                )
-            )
-            {
-                var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
-
-                if (!(param.Domain?.IsMultipart ?? false))
-                {
-                    parameter.AddAnnotation(
-                        new JavaAnnotation(
-                            "ModelAttribute",
-                            imports: "org.springframework.web.bind.annotation.ModelAttribute"
-                        )
-                    );
-                    parameter.AddAnnotation(
-                        new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid")
-                    );
-                }
-                else
-                {
-                    parameter.AddAnnotation(
-                        new JavaAnnotation(
-                            "RequestPart",
-                            @$"""{param.GetParamName()}""",
-                            "org.springframework.web.bind.annotation.RequestPart"
-                        ).AddAttribute("required", param.Required.ToString().ToFirstLower())
-                    );
-                }
-
-                parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
-                if (Config.OpenApiAnnotations)
-                {
-                    parameter.AddAnnotation(
-                        new JavaAnnotation(
-                            "Parameter",
-                            imports: "io.swagger.v3.oas.annotations.Parameter"
-                        ).AddAttribute("description", @$"""{param.Comment}""")
-                    );
-                }
-
-                method.AddParameter(parameter);
-            }
-        }
-        else
-        {
-            var bodyParam = endpoint.GetJsonBodyParam();
-            if (bodyParam != null)
-            {
-                var annotation = new JavaAnnotation(
-                    "RequestBody",
-                    imports: "org.springframework.web.bind.annotation.RequestBody"
-                );
-                var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
-                parameter.AddAnnotation(annotation);
-                parameter.Comment = bodyParam.Comment;
-                parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
-                foreach (var (a, i) in Config.GetAnnotations(bodyParam, tag))
-                {
-                    parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
-                }
-
-                parameter.AddAnnotation(
-                    new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid")
-                );
-
-                if (Config.OpenApiAnnotations)
-                {
-                    parameter.AddAnnotation(
-                        new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody").AddAttribute(
-                            "description",
-                            @$"""{bodyParam.Comment}"""
-                        )
-                    );
-                }
-
-                method.AddParameter(parameter);
+                method.AddParameter(GetBodyParam(tag, param));
             }
         }
 
@@ -262,6 +134,121 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         return method;
+    }
+
+    private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)
+    {
+        var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
+        parameter.AddAnnotation(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
+
+        if (bodyParam.Endpoint.IsMultipart)
+        {
+            if (!(bodyParam.Domain?.IsMultipart ?? false))
+            {
+                parameter.AddAnnotation(
+                    new JavaAnnotation(
+                        "ModelAttribute",
+                        imports: "org.springframework.web.bind.annotation.ModelAttribute"
+                    )
+                );
+            }
+            else
+            {
+                parameter.AddAnnotation(
+                    new JavaAnnotation(
+                        "RequestPart",
+                        @$"""{bodyParam.GetParamName()}""",
+                        "org.springframework.web.bind.annotation.RequestPart"
+                    ).AddAttribute("required", bodyParam.Required.ToString().ToFirstLower())
+                );
+            }
+
+            parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
+        }
+        else
+        {
+            var annotation = new JavaAnnotation(
+                "RequestBody",
+                imports: "org.springframework.web.bind.annotation.RequestBody"
+            );
+            parameter.AddAnnotation(annotation);
+            parameter.Comment = bodyParam.Comment;
+            parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
+            foreach (var (a, i) in Config.GetAnnotations(bodyParam, tag))
+            {
+                parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            }
+        }
+
+        if (Config.OpenApiAnnotations)
+        {
+            parameter.AddAnnotation(
+                new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody").AddAttribute(
+                    "description",
+                    @$"""{bodyParam.Comment}"""
+                )
+            );
+        }
+
+        return parameter;
+    }
+
+    private JavaMethodParameter GetQueryParam(string tag, IProperty queryParam)
+    {
+        var param = new JavaMethodParameter(Config.GetType(queryParam), queryParam.GetParamName());
+        var queryParamAnnotation = new JavaAnnotation(
+            "RequestParam",
+            imports: "org.springframework.web.bind.annotation.RequestParam",
+            value: @$"""{queryParam.GetParamName()}"""
+        ).AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
+        param.AddAnnotation(queryParamAnnotation);
+        param.Comment = queryParam.Comment;
+        param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
+        foreach (var (a, i) in Config.GetAnnotations(queryParam, tag))
+        {
+            param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+        }
+
+        if (Config.OpenApiAnnotations)
+        {
+            param.AddAnnotation(
+                new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
+                    "description",
+                    @$"""{queryParam.Comment}"""
+                )
+            );
+        }
+
+        return param;
+    }
+
+    private JavaMethodParameter GetRouteParam(string tag, IProperty routeParam)
+    {
+        var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
+        var pathParamAnnotation = new JavaAnnotation(
+            "PathVariable",
+            @$"""{routeParam.GetParamName()}""",
+            "org.springframework.web.bind.annotation.PathVariable"
+        );
+        param.AddAnnotation(pathParamAnnotation);
+        param.Comment = routeParam.Comment;
+        param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
+        foreach (var (a, i) in Config.GetAnnotations(routeParam, tag))
+        {
+            param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+        }
+
+        if (Config.OpenApiAnnotations)
+        {
+            param.AddAnnotation(
+                new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
+                    "description",
+                    @$"""{routeParam.Comment}"""
+                )
+            );
+        }
+
+        return param;
     }
 
     protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
