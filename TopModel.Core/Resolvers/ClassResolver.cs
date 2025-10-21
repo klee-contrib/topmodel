@@ -5,7 +5,11 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Class> referencedClasses)
+internal class ClassResolver(
+    IList<ModelFile> modelFiles,
+    IDictionary<string, Class> referencedClasses,
+    TranslationStore translationStore
+)
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des classes.
@@ -295,6 +299,84 @@ internal class ClassResolver(IList<ModelFile> modelFiles, IDictionary<string, Cl
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
                 classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Flag");
+            }
+
+            if (classe.LocalePropertyReference != null)
+            {
+                classe.LocaleProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
+                    fp.Name == classe.LocalePropertyReference.ReferenceName
+                );
+                if (classe.LocaleProperty == null)
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD0004,
+                        classe,
+                        $"La propriété '{classe.LocalePropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
+                        classe.LocalePropertyReference
+                    );
+                }
+            }
+            else
+            {
+                // Si la classe a une propriété "Locale", alors on la considère par défaut comme propriété de locale.
+                classe.LocaleProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Locale");
+            }
+
+            if (classe.Translation)
+            {
+                if (classe.DefaultProperty == null)
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3014,
+                        classe,
+                        "Une classe de traduction doit contenir une 'DefaultProperty'."
+                    );
+                }
+
+                if (classe.LocaleProperty != null)
+                {
+                    if (!classe.LocaleProperty.PrimaryKey || classe.PrimaryKey.Count() != 2)
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD3015,
+                            classe,
+                            "Si une classe de traduction définit une 'LocaleProperty', elle doit faire partie d'une clé primaire composite avec la clé de traduction."
+                        );
+                    }
+                }
+                else
+                {
+                    if (classe.PrimaryKey.Count() != 1)
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD3016,
+                            classe,
+                            "Une classe de traduction sans 'LocaleProperty' doit avoir une clé primaire simple."
+                        );
+                    }
+
+                    if (translationStore.Translations.Keys.Count > 1)
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD3017,
+                            classe,
+                            "Une classe de traduction doit avoir une 'LocaleProperty' si votre configuration définit plusieurs locales."
+                        );
+                    }
+                }
+
+                if (
+                    classe.Properties.Any(p =>
+                        p.Required && !p.PrimaryKey && p != classe.DefaultProperty && p != classe.LocaleProperty
+                    )
+                )
+                {
+                    yield return new ModelError(
+                        ErrorType.TMD3018,
+                        classe,
+                        "Une classe de traduction ne peut pas avoir de propriétés obligatoires autres que sa `DefaultProperty`."
+                    );
+                }
             }
         }
     }

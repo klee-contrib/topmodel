@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.SqlServer;
 
-public class SqlServerCrebasGenerator(
-    ILogger<SqlServerCrebasGenerator> logger,
-    TranslationStore translationStore,
-    IFileWriterProvider writerProvider
-) : AbstractCrebasGenerator(logger, translationStore, writerProvider)
+public class SqlServerCrebasGenerator(ILogger<SqlServerCrebasGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractCrebasGenerator(logger, writerProvider)
 {
     public override string Name => "SqlServerCrebasGen";
 

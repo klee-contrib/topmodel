@@ -36,10 +36,7 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
             GenerateConstraintForeignKey(fkProperty, writer);
         }
 
-        if (
-            (Config.TranslateReferences == true || Config.TranslateProperties == true)
-            && Config.ResourcesTableName != null
-        )
+        if (Config.TranslateReferences == true && Config.AvailableClasses.Any(c => c.Translation))
         {
             var resourceProperties = classes
                 .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)

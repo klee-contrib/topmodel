@@ -434,6 +434,11 @@ public static class ModelExtensions
             {
                 yield return (property.Class.FlagPropertyReference, property.Class.GetFile());
             }
+
+            if (property.Class.LocalePropertyReference?.ReferenceName == property.Name)
+            {
+                yield return (property.Class.LocalePropertyReference, property.Class.GetFile());
+            }
         }
 
         foreach (var classe in modelStore.Classes)

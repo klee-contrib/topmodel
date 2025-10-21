@@ -8,7 +8,7 @@ custom:
   ../../TopModel.Generator.Javascript: d6b39a1f2a00bfe9da9973e35ae7deec
   ../../TopModel.Generator.Jpa: 5d50d1384959d3b432f172a93b5877b6
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
-  ../../TopModel.Generator.Sql: 17ec0cca6b894893358fa7eaa8bcb324
+  ../../TopModel.Generator.Sql: 2ef75bbf77d1a171d3f0bc32e552fde4
   ../../TopModel.Generator.Translation: b28d493ae23c29271eebb6e5c1d0f81f
 generatedFiles:
   - ../output/angular/src/appgenerated/api/securite/profil/profil.service.ts
@@ -25,6 +25,7 @@ generatedFiles:
   - ../output/angular/src/appgenerated/resources/securite.json
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Common/generated/Traduction.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/Profil.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/ProfilDroit.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/ProfilMappers.cs
@@ -63,6 +64,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/UtilisateurClient.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/profil/ProfilController.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurController.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/common/TraductionDAO.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDAO.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDroitDAO.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/UtilisateurDAO.java
@@ -72,6 +74,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurItem.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurRead.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurWrite.java
+  - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/common/Traduction.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Droit.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Profil.java
   - ../output/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/ProfilDroit.java
@@ -91,6 +94,7 @@ generatedFiles:
   - ../output/pg/src/04_references.sql
   - ../output/pg/src/05_comments.sql
   - ../output/pg/src/06_resources.sql
+  - ../output/php/src/Entity/Common/Traduction.php
   - ../output/php/src/Entity/Securite/Profil/Droit.php
   - ../output/php/src/Entity/Securite/Profil/Profil.php
   - ../output/php/src/Entity/Securite/Profil/ProfilDroit.php
@@ -101,6 +105,7 @@ generatedFiles:
   - ../output/php/src/Model/Securite/Profil/ProfilWrite.php
   - ../output/php/src/Model/Securite/Utilisateur/UtilisateurRead.php
   - ../output/php/src/Model/Securite/Utilisateur/UtilisateurWrite.php
+  - ../output/php/src/Repository/Common/TraductionRepository.php
   - ../output/php/src/Repository/Securite/Profil/DroitRepository.php
   - ../output/php/src/Repository/Securite/Profil/ProfilDroitRepository.php
   - ../output/php/src/Repository/Securite/Profil/ProfilRepository.php
@@ -114,6 +119,7 @@ generatedFiles:
   - ../output/ssdt/src/tables/DROIT.sql
   - ../output/ssdt/src/tables/PROFIL_DROIT.sql
   - ../output/ssdt/src/tables/PROFIL.sql
+  - ../output/ssdt/src/tables/TRADUCTION.sql
   - ../output/ssdt/src/tables/TYPE_DROIT.sql
   - ../output/ssdt/src/tables/TYPE_UTILISATEUR.sql
   - ../output/ssdt/src/tables/UTILISATEUR.sql

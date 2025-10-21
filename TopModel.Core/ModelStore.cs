@@ -800,7 +800,7 @@ public class ModelStore(
             .ToDictionary(c => c.Name.Value, c => c);
 
         var annotationResolver = new AnnotationResolver(modelFiles, config, referencedAnnotations);
-        var classResolver = new ClassResolver(modelFiles, referencedClasses);
+        var classResolver = new ClassResolver(modelFiles, referencedClasses, translationStore);
         var dataFlowResolver = new DataFlowResolver(modelFiles, referencedDataFlows, referencedClasses);
         var decoratorResolver = new DecoratorResolver(modelFiles, config, referencedDecorators);
         var domainResolver = new DomainResolver(modelFiles, config, Domains, Converters);

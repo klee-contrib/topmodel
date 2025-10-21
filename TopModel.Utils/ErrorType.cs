@@ -191,6 +191,31 @@ public enum ErrorType
     /// </summary>
     TMD3013,
 
+    /// <summary>
+    /// Une classe de traduction doit contenir une 'DefaultProperty'.
+    /// </summary>
+    TMD3014,
+
+    /// <summary>
+    /// Si une classe de traduction définit une 'LocaleProperty', elle doit faire partie d'une clé primaire composite avec la clé de traduction.
+    /// </summary>
+    TMD3015,
+
+    /// <summary>
+    /// Une classe de traduction sans 'LocaleProperty' doit avoir une clé primaire simple.
+    /// </summary>
+    TMD3016,
+
+    /// <summary>
+    /// Une classe de traduction doit avoir une 'LocaleProperty' si votre configuration définit plusieurs locales.
+    /// </summary>
+    TMD3017,
+
+    /// <summary>
+    /// Une classe de traduction ne peut pas avoir de propriétés obligatoires autres que sa `DefaultProperty`.
+    /// </summary>
+    TMD3018,
+
     #endregion
 
     #region Erreurs de dataflows (4)

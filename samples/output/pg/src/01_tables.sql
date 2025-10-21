@@ -44,6 +44,15 @@ create table PROFIL_DROIT (
 );
 
 /**
+  * Création de la table TRADUCTION
+ **/
+create table TRADUCTION (
+	TRD_RESOURCE_KEY varchar(100) not null,
+	TRD_LABEL varchar(100) not null,
+	constraint PK_TRADUCTION primary key (TRD_RESOURCE_KEY)
+);
+
+/**
   * Création de la table TYPE_DROIT
  **/
 create table TYPE_DROIT (
@@ -83,19 +92,3 @@ create table UTILISATEUR (
   * Création de la séquence pour la clé primaire de la table UTILISATEUR
  **/
 create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.UTI_ID;
-
-/**
-  * Création de ta table TRANSLATION contenant les traductions
- **/
-create table TRANSLATION (
-    RESOURCE_KEY varchar(255),
-    LABEL varchar(4000),
-    constraint PK_TRANSLATION primary key (RESOURCE_KEY, LOCALE)
-);
-
-/**
-  * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
- **/
-create index IDX_TRANSLATION_RESOURCE_KEY on TRANSLATION (
-	RESOURCE_KEY ASC
-);

@@ -3,6 +3,7 @@
 ////
 
 using Microsoft.EntityFrameworkCore;
+using TopModel.Sample.Clients.Db.Models.Common;
 using TopModel.Sample.Clients.Db.Models.Securite.Profil;
 using TopModel.Sample.Clients.Db.Models.Securite.Utilisateur;
 using TopModel.Sample.Securite.Models.Profil;
@@ -38,6 +39,11 @@ public partial class TopModelSampleDbContext : DbContext
     /// Accès à l'entité ProfilDroit.
     /// </summary>
     public DbSet<ProfilDroit> ProfilDroits { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Traduction.
+    /// </summary>
+    public DbSet<Traduction> Traductions { get; set; }
 
     /// <summary>
     /// Accès à l'entité TypeDroit.

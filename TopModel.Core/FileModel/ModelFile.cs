@@ -254,9 +254,13 @@ public class ModelFile
             )
             .Concat(
                 Classes.SelectMany(c =>
-                    new[] { c.DefaultPropertyReference, c.OrderPropertyReference, c.FlagPropertyReference }.Select(r =>
-                        (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName))
-                    )
+                    new[]
+                    {
+                        c.DefaultPropertyReference,
+                        c.OrderPropertyReference,
+                        c.FlagPropertyReference,
+                        c.LocalePropertyReference,
+                    }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName)))
                 )
             )
             .Concat(

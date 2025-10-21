@@ -8,7 +8,6 @@ namespace TopModel.Generator.Sql.Procedural;
 
 public abstract class AbstractCrebasGenerator(
     ILogger<AbstractCrebasGenerator> logger,
-    TranslationStore translationStore,
     IFileWriterProvider writerProvider
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
@@ -60,11 +59,6 @@ public abstract class AbstractCrebasGenerator(
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
             WriteTableDeclaration(classe, writer);
-        }
-
-        if (Config.TranslateProperties == true || Config.TranslateReferences == true)
-        {
-            WriteResourceTableDeclaration(writer);
         }
     }
 
@@ -144,48 +138,6 @@ public abstract class AbstractCrebasGenerator(
         }
 
         writer.WriteLine($"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => pk.SqlName))})");
-    }
-
-    private void WriteResourceTableDeclaration(IFileWriter writer)
-    {
-        if (Config.ResourcesTableName != null)
-        {
-            var tableName = Config.ResourcesTableName;
-            writer.WriteLine();
-            writer.WriteLine("/**");
-            writer.WriteLine("  * Création de ta table " + tableName + " contenant les traductions");
-            writer.WriteLine(" **/");
-            writer.WriteLine($"create table {Config.ResourcesTableName} (");
-            writer.WriteLine(1, "RESOURCE_KEY varchar(255),");
-            var hasLocale =
-                translationStore.Translations.Keys.Count > 1
-                || translationStore.Translations.Keys.Any(a => a != string.Empty);
-            if (hasLocale)
-            {
-                writer.WriteLine(1, "LOCALE varchar(10),");
-            }
-
-            writer.WriteLine(1, "LABEL varchar(4000),");
-            writer.WriteLine(
-                1,
-                $"constraint PK_{Config.ResourcesTableName.ToConstantCase()} primary key (RESOURCE_KEY, LOCALE)"
-            );
-            writer.WriteLine($"){Config.BatchSeparator}");
-
-            writer.WriteLine();
-            writer.WriteLine("/**");
-            writer.WriteLine("  * Création de l'index pour " + tableName + " (RESOURCE_KEY, LOCALE)");
-            writer.WriteLine(" **/");
-            writer.WriteLine(
-                "create index "
-                    + $"IDX_{Config.ResourcesTableName}_RESOURCE_KEY{(hasLocale ? "_LOCALE" : string.Empty)}"
-                    + " on "
-                    + tableName
-                    + " ("
-            );
-            writer.WriteLine("\t" + $"RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}" + " ASC");
-            writer.WriteLine($"){Config.BatchSeparator}");
-        }
     }
 
     private void WriteSequence(Class classe, IFileWriter writer, string tableName)

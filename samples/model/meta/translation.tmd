@@ -1,0 +1,20 @@
+---
+module: Common
+tags:
+  - back
+---
+class:
+  name: Traduction
+  trigram: TRD
+  translation: true
+  comment: Classe pour contenir les traductions en base de données.
+  properties:
+    - name: ResourceKey
+      primaryKey: true
+      domain: DO_LIBELLE
+      comment: Clé de traduction.
+
+    - name: Label
+      domain: DO_LIBELLE
+      required: true
+      comment: Valeur.

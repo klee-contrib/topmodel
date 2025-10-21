@@ -74,10 +74,6 @@
       "description": "Si les libellés des propriétés doivent être traduits.",
       "default": "true"
     },
-    "resourcesTableName": {
-      "type": "string",
-      "description": "Nom de la table dans laquelle doivent être insérées les traductions."
-    },
     "tableTablespace": {
       "type": "string",
       "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."

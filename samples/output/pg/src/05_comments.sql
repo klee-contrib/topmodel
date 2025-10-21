@@ -33,6 +33,13 @@ COMMENT ON COLUMN PROFIL_DROIT.PRO_ID IS 'Profil.';
 COMMENT ON COLUMN PROFIL_DROIT.DRO_CODE IS 'Droit.';
 
 /**
+  * Commentaires pour la table TRADUCTION
+ **/
+COMMENT ON TABLE TRADUCTION IS 'Classe pour contenir les traductions en base de données.';
+COMMENT ON COLUMN TRADUCTION.TRD_RESOURCE_KEY IS 'Clé de traduction.';
+COMMENT ON COLUMN TRADUCTION.TRD_LABEL IS 'Valeur.';
+
+/**
   * Commentaires pour la table TYPE_DROIT
  **/
 COMMENT ON TABLE TYPE_DROIT IS 'Type de droit';

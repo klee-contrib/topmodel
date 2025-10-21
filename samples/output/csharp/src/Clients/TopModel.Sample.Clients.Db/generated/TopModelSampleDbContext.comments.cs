@@ -3,6 +3,7 @@
 ////
 
 using Microsoft.EntityFrameworkCore;
+using TopModel.Sample.Clients.Db.Models.Common;
 using TopModel.Sample.Clients.Db.Models.Securite.Profil;
 using TopModel.Sample.Clients.Db.Models.Securite.Utilisateur;
 using TopModel.Sample.Securite.Models.Profil;
@@ -34,6 +35,11 @@ public partial class TopModelSampleDbContext : DbContext
         profilDroit.ToTable(t => t.HasComment("Association N-N Profils <> Droits"));
         profilDroit.Property(p => p.ProfilId).HasComment("Profil.");
         profilDroit.Property(p => p.DroitCode).HasComment("Droit.");
+
+        var traduction = modelBuilder.Entity<Traduction>();
+        traduction.ToTable(t => t.HasComment("Classe pour contenir les traductions en base de données."));
+        traduction.Property(p => p.ResourceKey).HasComment("Clé de traduction.");
+        traduction.Property(p => p.Label).HasComment("Valeur.");
 
         var typeDroit = modelBuilder.Entity<TypeDroit>();
         typeDroit.ToTable(t => t.HasComment("Type de droit"));

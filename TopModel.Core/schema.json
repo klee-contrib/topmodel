@@ -1005,7 +1005,7 @@
             },
             "defaultProperty": {
               "type": "string",
-              "description": "Propriété de la classe qui sera utilisée comme libellé pour la liste de référence et les trier. Renseigné par défaut par la propriété 'Label' ou 'Libelle', si elle existe sur la classe."
+              "description": "Propriété de la classe qui sera utilisée comme libellé si la classe est une liste de référence ou un container de traductions. Renseigné par défaut par la propriété 'Label' ou 'Libelle', si elle existe sur la classe."
             },
             "orderProperty": {
               "type": "string",
@@ -1014,6 +1014,14 @@
             "flagProperty": {
               "type": "string",
               "description": "Propriété de la classe qui sera utilisée comme flag binaire, en plus du code dans une liste de référence statique. Renseigné par défaut par la propriété 'Flag', si elle existe sur la classe."
+            },
+            "localeProperty": {
+              "type": "string",
+              "description": "Pour une classe de traduction, propriété de la classe qui sera identifiée comme la locale. Doit faire partie de la clé primaire de la classe. Renseigné par défaut par la propriété 'Locale', si elle existe sur la classe."
+            },
+            "translation": {
+              "type": "boolean",
+              "description": "Définit cette classe comme étant une classe qui devra contenir les traductions du modèle (libellés de propriétés et de listes de référence)."
             },
             "preservePropertyCasing": {
               "type": "boolean",

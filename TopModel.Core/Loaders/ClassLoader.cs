@@ -59,6 +59,12 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "flagProperty":
                     classe.FlagPropertyReference = new Reference(value!);
                     break;
+                case "localeProperty":
+                    classe.LocalePropertyReference = new Reference(value!);
+                    break;
+                case "translation":
+                    classe.Translation = value!.Value == "true";
+                    break;
                 case "comment":
                     classe.Comment = value!.Value;
                     break;

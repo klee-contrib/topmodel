@@ -52,9 +52,6 @@ public class SqlResourceGenerator(
         {
             if (propertiesMap.TryGetValue(modelClass, out var properties))
             {
-                var hasLocale =
-                    translationStore.Translations.Keys.Count > 1
-                    || translationStore.Translations.Keys.Any(a => a != string.Empty);
                 if (
                     Config.TranslateProperties == true
                     && properties.Any(p => p.Label != null)
@@ -76,9 +73,12 @@ public class SqlResourceGenerator(
                                 .DistinctBy(property => property.ResourceKey)
                         )
                         {
-                            writer.WriteLine(
-                                $@"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
-                            );
+                            foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
+                            {
+                                writer.WriteLine(
+                                    $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
+                                );
+                            }
                         }
                     }
                 }
@@ -99,9 +99,12 @@ public class SqlResourceGenerator(
                     {
                         foreach (var val in modelClass.Values)
                         {
-                            writer.WriteLine(
-                                @$"INSERT INTO {Config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
-                            );
+                            foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
+                            {
+                                writer.WriteLine(
+                                    $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
+                                );
+                            }
                         }
                     }
                 }

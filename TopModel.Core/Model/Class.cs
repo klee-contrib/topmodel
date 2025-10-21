@@ -46,6 +46,8 @@ public class Class : IPropertyContainer
 
     public IProperty? FlagProperty { get; set; }
 
+    public IProperty? LocaleProperty { get; set; }
+
     public IList<IProperty> Properties { get; } = [];
 
     public IList<IProperty> ExtendedProperties =>
@@ -65,6 +67,8 @@ public class Class : IPropertyContainer
     public IProperty? EnumKey => Enum ? ReferenceKey : null;
 
     public bool Enum { get; set; }
+
+    public bool Translation { get; set; }
 
     public IList<ClassValue> Values { get; } = [];
 
@@ -98,6 +102,8 @@ public class Class : IPropertyContainer
     public Reference? DefaultPropertyReference { get; set; }
 
     public Reference? FlagPropertyReference { get; set; }
+
+    public Reference? LocalePropertyReference { get; set; }
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 

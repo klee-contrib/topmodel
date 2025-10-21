@@ -1,15 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Oracle;
 
-public class OracleCrebasGenerator(
-    ILogger<OracleCrebasGenerator> logger,
-    TranslationStore translationStore,
-    IFileWriterProvider writerProvider
-) : AbstractCrebasGenerator(logger, translationStore, writerProvider)
+public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractCrebasGenerator(logger, writerProvider)
 {
     public override string Name => "OracleCrebasGen";
 

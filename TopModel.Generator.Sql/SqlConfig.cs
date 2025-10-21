@@ -34,11 +34,6 @@ public class SqlConfig : GeneratorConfigBase
     public override bool IgnoreDefaultValues { get; set; } = true;
 
     /// <summary>
-    /// Retourne ou définit le nom de la table contenant les traductions.
-    /// </summary>
-    public virtual string? ResourcesTableName { get; set; }
-
-    /// <summary>
     /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).
     /// </summary>
     public virtual string? TableTablespace { get; set; }
