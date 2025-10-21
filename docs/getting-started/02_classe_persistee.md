@@ -135,6 +135,7 @@ Ajoutons maintenant quelques propriétés à la classe utilisateur, qui nous ser
 - `label` : Libellé d'affichage de la propriété
 
 Notre fichier `"Utilisateur.tmd"` devrait donc ressembler à ça :
+
 ```yaml
 # Utilisateur.tmd
 ---
@@ -172,7 +173,9 @@ Nous avons donc créé une classe `Utilisateur` dans le module `Users` contenant
 Aller plus loin dans la documentation complète de [classes](/model/classes.md)
 
 ## Répertoire Projet
+
 A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:
+
 - Projet
   - topmodel.config
   - Utilisateur.tmd
@@ -195,31 +198,31 @@ package tuto.entities.users;
 @Table(name = "UTILISATEUR")
 public class Utilisateur {
 
-	/**
-	 * Identifiant unique de l'utilisateur.
-	 */
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name = "ID", nullable = false, columnDefinition = "int")
-	private Integer id;
+ /**
+  * Identifiant unique de l'utilisateur.
+  */
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+ @Id
+ @Column(name = "ID", nullable = false, columnDefinition = "int")
+ private Integer id;
 
-	/**
-	 * Adresse mail de l'utilisateur.
-	 */
-	@Column(name = "EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
-	private String email;
+ /**
+  * Adresse mail de l'utilisateur.
+  */
+ @Column(name = "EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
+ private String email;
 
-	/**
-	 * Nom de l'utilisateur.
-	 */
-	@Column(name = "NOM", length = 100, columnDefinition = "varchar")
-	private String nom;
+ /**
+  * Nom de l'utilisateur.
+  */
+ @Column(name = "NOM", length = 100, columnDefinition = "varchar")
+ private String nom;
 
-	/**
-	 * Date d'inscription.
-	 */
-	@Column(name = "DATE_INSCRIPTION", columnDefinition = "date")
-	private LocalDate dateInscription;
+ /**
+  * Date d'inscription.
+  */
+ @Column(name = "DATE_INSCRIPTION", columnDefinition = "date")
+ private LocalDate dateInscription;
 
    // Getters and Setters
 }
@@ -227,7 +230,6 @@ public class Utilisateur {
 ```
 
 #### **C#**
-
 
 ```csharp
 namespace Tuto.Clients.Db.Models.Users;
@@ -273,7 +275,6 @@ public partial record Utilisateur
 
 ```
 
-
 #### **SQL**
 
 ```sql
@@ -281,11 +282,11 @@ public partial record Utilisateur
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
-	ID int not null,
-	EMAIL varchar(50) not null,
-	NOM varchar(100),
-	DATE_INSCRIPTION date,
-	constraint PK_UTILISATEUR primary key (ID)
+ ID int not null,
+ EMAIL varchar(50) not null,
+ NOM varchar(100),
+ DATE_INSCRIPTION date,
+ constraint PK_UTILISATEUR primary key (ID)
 );
 
 /**

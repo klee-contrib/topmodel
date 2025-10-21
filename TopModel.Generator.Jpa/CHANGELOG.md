@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.8
+
+- [`bc8803a`](https://github.com/klee-contrib/topmodel/commit/bc8803a50db86437fe87116931d63b2ad531a8fc) - [JPA] Fix Respect de l'ordre de déclaration des paramètres dans les endpoints d'api server
+
 ## 3.3.7
 
 - [`2fcb8d7`](https://github.com/klee-contrib/topmodel/commit/2fcb8d789d38b8a9bda1ea35d644f871f412245d) -[JPA] Respect de l'ordre de déclaration des paramètres dans les endpoints d'api server

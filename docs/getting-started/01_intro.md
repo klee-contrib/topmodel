@@ -8,6 +8,7 @@ Commençons par créer un environnement de travail propice à une expérience de
 - Installer le générateur avec la commande `dotnet tool install --global TopModel.Generator`
 
 ## Installation sous Linux / WSL
+
 1. Installer le [SDK .NET sous Linux](https://learn.microsoft.com/fr-fr/dotnet/core/install/linux)
 
 2. Installer TopModel via dotnet :
@@ -35,6 +36,7 @@ Commençons par créer un environnement de travail propice à une expérience de
     ```bash
     modgen --version
     ```
+
 ## Initialisation du fichier de configuration
 
 Dans un nouveau dossier nommé "Projet", nous allons créer un fichier de configuration. Celui-ci permettra à l'extension TopModel de démarrer et de vous offrir les fonctionnalités d'auto-complétion, coloration syntaxique etc.
