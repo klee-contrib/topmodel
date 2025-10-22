@@ -200,6 +200,26 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public virtual bool UseCancellationTokens { get; set; }
 
+    /// <summary>
+    /// Si renseigné avec `TranslateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+    /// </summary>
+    public string? ReferencesResxPath { get; set; }
+
+    /// <summary>
+    /// Si renseigné avec `TranslateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+    /// </summary>
+    public string? PropertiesResxPath { get; set; }
+
+    public bool PersistedReferencesResources =>
+        TranslateReferences == true && string.IsNullOrWhiteSpace(ReferencesResxPath);
+
+    public bool PersistedPropertiesResources =>
+        TranslateProperties == true && string.IsNullOrWhiteSpace(PropertiesResxPath);
+
+    public bool ReferencesResx => TranslateReferences == true && !string.IsNullOrWhiteSpace(ReferencesResxPath);
+
+    public bool PropertiesResx => TranslateProperties == true && !string.IsNullOrWhiteSpace(PropertiesResxPath);
+
     public override string? DefaultLanguage => "csharp";
 
     public override string[] PropertiesWithModuleVariableSupport =>
@@ -214,6 +234,8 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ReferenceAccessorsImplementationPath),
             nameof(MappersName),
             nameof(DataFlowsPath),
+            nameof(ReferencesResxPath),
+            nameof(PropertiesResxPath),
         ];
 
     public override string[] PropertiesWithTagVariableSupport =>
@@ -233,7 +255,12 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ApiRootPath),
             nameof(ApiFilePath),
             nameof(DataFlowsPath),
+            nameof(ReferencesResxPath),
+            nameof(PropertiesResxPath),
         ];
+
+    public override string[] PropertiesWithLangVariableSupport =>
+        [nameof(ReferencesResxPath), nameof(PropertiesResxPath)];
 
     public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {

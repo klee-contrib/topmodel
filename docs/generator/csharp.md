@@ -344,3 +344,19 @@ _(en preview, documentation à venir)_
 - `useEFComments`
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).
+
+- `referencesResxPath`
+
+  Si renseigné avec `translateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+
+  _Templating_: `{module}`, `{lang}`
+
+  _Variables par tag_: **oui**
+
+- `propertiesResxPath`
+
+  Si renseigné avec `translateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+
+  _Templating_: `{module}`, `{lang}`
+
+  _Variables par tag_: **oui**

@@ -271,6 +271,14 @@
     "useCancellationTokens": {
       "type": "boolean",
       "description": "Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur)."
+    },
+    "referencesResxPath": {
+      "type": "string",
+      "description": "Si renseigné avec `translateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données."
+    },
+    "propertiesResxPath": {
+      "type": "string",
+      "description": "Si renseigné avec `translateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données."
     }
   }
 }

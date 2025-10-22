@@ -4,7 +4,7 @@
 
 version: 3.4.1
 custom:
-  ../../TopModel.Generator.Csharp: ebf038e87e101ef17b9850dadfd8e12e
+  ../../TopModel.Generator.Csharp: d46433834b10a803b17ec01d68180015
   ../../TopModel.Generator.Javascript: dc3de710215995877940b2a5763cea0e
   ../../TopModel.Generator.Jpa: bf936f66ff724fa97603a4a593fb489b
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
@@ -25,6 +25,7 @@ generatedFiles:
   - ../output/angular/src/appgenerated/resources/securite.json
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.resources.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Common/generated/Traduction.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/Profil.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/ProfilDroit.cs

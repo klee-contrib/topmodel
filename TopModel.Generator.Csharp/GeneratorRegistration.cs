@@ -26,6 +26,11 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         if (config.DbContextPath != null)
         {
             services.AddGenerator<DbContextGenerator, CsharpConfig>(config, number);
+
+            if (config.UseEFMigrations && (config.PersistedPropertiesResources || config.PersistedReferencesResources))
+            {
+                services.AddGenerator<DbContextResourcesGenerator, CsharpConfig>(config, number);
+            }
         }
 
         if (config.Kinetix && config.ReferenceAccessorsInterfacePath != null)

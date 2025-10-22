@@ -83,25 +83,32 @@ public partial class TopModelSampleDbContext : DbContext
 
         modelBuilder.Entity<Utilisateur>().HasIndex(p => p.Email).IsUnique();
 
+        modelBuilder.Entity<Droit>().HasIndex(p => p.Libelle);
+        modelBuilder.Entity<TypeDroit>().HasIndex(p => p.Libelle);
+        modelBuilder.Entity<TypeUtilisateur>().HasIndex(p => p.Libelle);
+
         modelBuilder.Entity<Droit>().HasData(
-            new Droit { Code = Droit.Codes.CREATE, Libelle = "Création", TypeDroitCode = TypeDroit.Codes.WRITE },
-            new Droit { Code = Droit.Codes.READ, Libelle = "Lecture", TypeDroitCode = TypeDroit.Codes.READ },
-            new Droit { Code = Droit.Codes.UPDATE, Libelle = "Mise à jour", TypeDroitCode = TypeDroit.Codes.WRITE },
-            new Droit { Code = Droit.Codes.DELETE, Libelle = "Suppression", TypeDroitCode = TypeDroit.Codes.ADMIN });
+            new Droit { Code = Droit.Codes.CREATE, Libelle = "securite.profil.droit.values.Create", TypeDroitCode = TypeDroit.Codes.WRITE },
+            new Droit { Code = Droit.Codes.READ, Libelle = "securite.profil.droit.values.Read", TypeDroitCode = TypeDroit.Codes.READ },
+            new Droit { Code = Droit.Codes.UPDATE, Libelle = "securite.profil.droit.values.Update", TypeDroitCode = TypeDroit.Codes.WRITE },
+            new Droit { Code = Droit.Codes.DELETE, Libelle = "securite.profil.droit.values.Delete", TypeDroitCode = TypeDroit.Codes.ADMIN });
         modelBuilder.Entity<TypeDroit>().HasData(
-            new TypeDroit { Code = TypeDroit.Codes.READ, Libelle = "Lecture" },
-            new TypeDroit { Code = TypeDroit.Codes.WRITE, Libelle = "Ecriture" },
-            new TypeDroit { Code = TypeDroit.Codes.ADMIN, Libelle = "Administration" });
+            new TypeDroit { Code = TypeDroit.Codes.READ, Libelle = "securite.profil.typeDroit.values.Read" },
+            new TypeDroit { Code = TypeDroit.Codes.WRITE, Libelle = "securite.profil.typeDroit.values.Write" },
+            new TypeDroit { Code = TypeDroit.Codes.ADMIN, Libelle = "securite.profil.typeDroit.values.Admin" });
         modelBuilder.Entity<TypeUtilisateur>().HasData(
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.ADMIN, Libelle = "Administrateur" },
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.GEST, Libelle = "Gestionnaire" },
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.CLIENT, Libelle = "Client" });
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.ADMIN, Libelle = "securite.utilisateur.typeUtilisateur.values.Admin" },
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.GEST, Libelle = "securite.utilisateur.typeUtilisateur.values.Gestionnaire" },
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.CLIENT, Libelle = "securite.utilisateur.typeUtilisateur.values.Client" });
 
         AddComments(modelBuilder);
+        AddResources(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void AddComments(ModelBuilder modelBuilder);
+
+    partial void AddResources(ModelBuilder modelBuilder);
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

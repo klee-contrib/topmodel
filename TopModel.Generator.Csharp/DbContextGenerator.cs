@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
 
-public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterProvider writerProvider)
-    : ClassGroupGeneratorBase<CsharpConfig>(logger, writerProvider)
+public class DbContextGenerator(
+    ILogger<DbContextGenerator> logger,
+    IFileWriterProvider writerProvider,
+    TranslationStore translationStore
+) : ClassGroupGeneratorBase<CsharpConfig>(logger, writerProvider)
 {
     public override string Name => "CSharpDbContextGen";
 
@@ -274,6 +278,29 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                 w.WriteLine();
             }
 
+            var hasResourceIndex = false;
+            if (Config.PersistedReferencesResources && Config.AvailableClasses.Any(c => c.Translation))
+            {
+                var resourceProperties = classes
+                    .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)
+                    .OrderBy(c => c.SqlName)
+                    .Select(c => c.DefaultProperty!);
+
+                foreach (var fkProperty in resourceProperties)
+                {
+                    hasResourceIndex = true;
+                    w.WriteLine(
+                        2,
+                        $"modelBuilder.Entity<{fkProperty.Class.NamePascal}>().HasIndex(p => p.{fkProperty.NamePascal});"
+                    );
+                }
+            }
+
+            if (hasResourceIndex)
+            {
+                w.WriteLine();
+            }
+
             var hasData = false;
             foreach (var classe in classes.Distinct().Where(c => c.Values.Count > 0).OrderBy(c => c.NamePascal))
             {
@@ -299,6 +326,11 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                                 targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i))
                             );
                             value = $"{targetNs}.{value}";
+                        }
+
+                        if (refProp.Key == classe.DefaultProperty && Config.TranslateReferences == true)
+                        {
+                            value = $"\"{refValue.ResourceKey}\"";
                         }
 
                         w.Write($" {refProp.Key.NamePascal} = {value}");
@@ -327,6 +359,17 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             {
                 w.WriteLine(2, "AddComments(modelBuilder);");
             }
+
+            if (
+                (Config.PersistedPropertiesResources || Config.PersistedReferencesResources)
+                && Config.AvailableClasses.Any(c => c.Translation)
+            )
+            {
+                foreach (var lang in translationStore.Translations.Keys)
+                {
+                    w.WriteLine(2, $"Add{lang.ToPascalCase()}Resources(modelBuilder);");
+                }
+            }
         }
 
         w.WriteLine(2, "OnModelCreatingPartial(modelBuilder);");
@@ -336,6 +379,19 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
         {
             w.WriteLine();
             w.WriteLine(1, "partial void AddComments(ModelBuilder modelBuilder);");
+        }
+
+        if (
+            Config.UseEFMigrations
+            && (Config.PersistedPropertiesResources || Config.PersistedReferencesResources)
+            && Config.AvailableClasses.Any(c => c.Translation)
+        )
+        {
+            foreach (var lang in translationStore.Translations.Keys)
+            {
+                w.WriteLine();
+                w.WriteLine(1, $"partial void Add{lang.ToPascalCase()}Resources(ModelBuilder modelBuilder);");
+            }
         }
 
         w.WriteLine();
