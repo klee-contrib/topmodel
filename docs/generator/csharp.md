@@ -82,6 +82,17 @@ Les clients d'API sont générés comme des classes partielles avec 2 méthodes 
 - `EnsureAuthentication` a pour but principal de renseigner un header d'authentification sur la requête (qui peut supposer d'avoir à faire un appel à un fournisseur d'identité externe)
 - `EnsureSuccess` a pour but principal de gérer les erreurs éventuelles retournées par l'API appelée. Il faudrait au minimum vérifier `response.IsSuccessStatusCode` à l'intérieur et renvoyer une exception si l'appel est en erreur. La gestion précise de l'erreur est à priori spécifique à chaque API et dépend du besoin fonctionnel. Si on attend un résultat en JSON de l'API et qu'on sait qu'elle ne va pas le renvoyer (à priori parce qu'il y a une réponse en erreur), il est important de lever une exception puisque sinon on va essayer de désérialiser la réponse dans la foulée.
 
+### Traductions
+
+Les traductions de libellés de propriétés (via `translateProperties` et) et de valeurs de listes de référence (via `translateReferences`) peuvent être générées de 2 manières différentes :
+
+- Soit en base de données, si une [classe de traductions](/model/classes.md?id=classe-de-traductions) existe dans la configuration des générateurs C#.
+- Soit des dans fichiers ResX, si les propriétés `propertiesResxPath` et/ou `referencesResxPath` sont renseignées.
+
+Si `translateReferences` et à `true`, alors les inserts libellées de valeurs de listes de référence se feront avec la clé de traduction, indépendemment de la solution de génération de traductions choisies (s'il y en a une).
+
+_Remarque : La génération des fichiers ResX pour les traductions **n'est pas encore implémentée**, malgré la présence des options de configuration associées..._
+
 ### Génération des accesseurs de références
 
 Cette fonctionnalité n'est disponible qu'en utilisant Kinetix.
@@ -91,6 +102,8 @@ Le générateur va générer jusqu'à 2 interfaces par module, en séparant les 
 Seule l'implémentation pour les listes de référence persistées sera générée, en utilisent EF Core si un DbContext est configuré et l'ORM Kinetix (`Kinetix.DataAccess.Sql`) dans le cas contraire.
 
 Il est nécessaire de spécifier le chemin de génération des interfaces (`referenceAccessorsInterfacePath`) pour que l'ensemble soit généré (le chemin des implémentations à une valeur par défaut).
+
+Si les libellés de valeurs de listes de références sont traduits en base de données via EF Core, alors les accesseurs générés résoudront le libellés avec la culture courante de la requête.
 
 ### Génération des flux de données
 

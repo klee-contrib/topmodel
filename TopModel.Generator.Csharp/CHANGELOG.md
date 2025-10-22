@@ -1,3 +1,14 @@
+## 3.3.0
+
+- [`4c8cfb2`](https://github.com/klee-contrib/topmodel/commit/4c8cfb2c9bc1938150a8142bd1f4decf6dd37ea5) - [C#] Génération des inserts de traductions dans le DbContext
+- [`c5c042e`](https://github.com/klee-contrib/topmodel/commit/c5c042e5012058db7189edaaedb8e8d100a6ff1a) - [C#] Accesseurs de liste de références qui utilisent la table de traduction, si configurée
+
+  Les générateurs C# respectent désormais la valeur de `translateProperties` et `translateReferences` : ils peuvent générer les inserts de traductions en SQL via EF Core, et générer des accesseurs de listes de référence qui traduisent les libellés s'ils sont dans le DbContext.
+
+  Il est prévu de pouvoir aussi générer des ResX (les options de configuration existent, même), mais ce n'est pas encore implémenté...
+
+  **petit breaking change** : La valeur de `translateReferences` étant à `true` par défaut (récupérée depuis la configuration i18n globale), les libellés des valeurs de listes de références seront générés avec la clé de traduction dans les inserts du DbContext par défaut. Vous pouvez renseigner `false` globalement ou sur la configuration C# pour retrouver le comportement précédent.
+
 ## 3.2.1
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
