@@ -2,11 +2,11 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.3.2
+version: 3.4.0
 custom:
   ../../TopModel.Generator.Csharp: ebf038e87e101ef17b9850dadfd8e12e
   ../../TopModel.Generator.Javascript: d6b39a1f2a00bfe9da9973e35ae7deec
-  ../../TopModel.Generator.Jpa: f3891db36a2a0c3f1035f74c57fda579
+  ../../TopModel.Generator.Jpa: 91c0d0073a89293916f8bed49bbff8fe
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
   ../../TopModel.Generator.Sql: 2ef75bbf77d1a171d3f0bc32e552fde4
   ../../TopModel.Generator.Translation: b28d493ae23c29271eebb6e5c1d0f81f

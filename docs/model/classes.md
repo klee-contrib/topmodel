@@ -21,6 +21,7 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
 - `defaultProperty` : Propriété "par défaut" de la classe, parfois utilisée comme libellé ou pour le tri. Doit référencer une propriété existante de la classe. Si non renseignée et qu'il existe une propriété nommée `Label` ou `Libelle`, elle sera automatiquement ajoutée comme `defaultProperty`.
 - `orderProperty` : Propriété de tri de la classe, remplace `defaultProperty` pour cet usage. Si non renseignée et qu'il existe une propriété nommée `Order` ou `Ordre`, elle sera automatiquement ajoutée comme `orderProperty`.
 - `flagProperty` : Propriété de la classe à utiliser comme flag binaire (ayant des valeurs comme 1, 10, 100, 1000...). Si non renseignée et qu'il existe une propriété nommée `Flag`, elle sera automatiquement ajoutée comme `flagProperty`.
+- `localeProperty` : Propriété de la classe à utiliser pour indiquer la locale. Si non renseignée et qu'il existe une propriété nommée `Locale`, elle sera automatiquement ajoutée comme `localeProperty`.
 - `unique` : Clés d'unicité de la classe. Une clé d'unicité est définie comme la liste des propriétés qui la compose (il peut bien évidemment y en avoir qu'une seule). Cela se présente donc comme une liste de liste de propriétés, qu'il vaut mieux représenter de la façon suivante pour que l'autocomplétion fonctionne correctement :
 
   ```yaml
@@ -64,6 +65,18 @@ Une classe peut être définie comme **abstraite** (via `abstract: true`), pour 
 TopModel considère une classe comme étant **persistée** si elle définit **au moins une propriété de clé primaire** (`primaryKey: true`). Cette catégorisation est largement utilisée par les divers générateurs pour déterminer si une classe fait partie du modèle de base de données ou s'il d'agit d'un DTO. Cette distinction, bien qu'importante dans l'architecture générale du modèle d'une application, n'a (presque) aucun impact dans la façon de modéliser des classes dans TopModel. De ce fait, **il n'est pas possible de surcharger cette classification**.
 
 _Remarque : en particulier, une classe enum, une classe de référence, une classe abstraite, ou une classe avec des valeurs peuvent tout à fait être persistées comme non persistées. Naturellement, cela impactera ce qui sera généré._
+
+## Classe de traductions
+
+Si vous souhaitez persister vos traductions (de libellés et/ou de listes de référence) en base de données, vous pouvez renseigner sur l'une de vos classes dans le modèle la propriété `translation: true`. Cela indiquera à TopModel, dans les générateurs qui le supportent, de générer des inserts en base de données avec les traductions, un peu sur le même principe que les valeurs de classes.
+
+Le format d'une classe de traductions est assez rigide, elle doit avoir :
+
+- Une clé primaire simple pour la clé de traduction si l'appli est mono-langue, ou une clé primaire multiple avec la clé + une `localeProperty` si l'appli est multi-langue.
+- Une `defaultProperty` pour y mettre la traduction.
+- Aucune autre propriété obligatoire.
+
+Puisqu'il s'agit d'une classe normale du modèle, vous pouvez la taguer pour qu'elle ne soit prise en compte que par les générateurs que vous voulez (par exemple, si elle ne doit exister qu'en SQL, alors mettez lui un tag qui ne cible que les générateurs SQL).
 
 ## Décorateurs et mappers
 

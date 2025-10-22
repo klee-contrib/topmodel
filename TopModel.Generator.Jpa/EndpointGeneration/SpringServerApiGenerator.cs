@@ -136,6 +136,56 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return method;
     }
 
+    protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
+    {
+        foreach (var endpoint in endpoints)
+        {
+            yield return GetMethod(endpoint, tag);
+        }
+    }
+
+    protected virtual string GetRoute(Endpoint endpoint)
+    {
+        return endpoint.Route.Trim('/');
+    }
+
+    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
+    {
+        var properties = endpoints
+            .SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        return properties
+            .SelectMany(property => property!.GetTypeImports(Config, tag))
+            .Concat(
+                endpoints
+                    .Where(endpoint => endpoint.Returns is not null)
+                    .Select(e => e.Returns)
+                    .OfType<CompositionProperty>()
+                    .SelectMany(c => c.GetKindImports(Config, tag))
+            );
+    }
+
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    {
+        var className = GetClassName(fileName);
+        var packageName = Config.GetPackageName(endpoints[0], tag);
+        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+
+        var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
+        var annotations = GetClassAnnotations(endpoints[0].ModelFile);
+        javaInterface.AddRange(annotations);
+        javaInterface.AddRange(GetMethods(endpoints, tag));
+        fw.Write(0, javaInterface);
+    }
+
+    protected virtual void WriteMethods(JavaWriter fw, IEnumerable<Endpoint> endpoints, string tag)
+    {
+        foreach (var method in GetMethods(endpoints, tag))
+        {
+            fw.Write(1, method);
+        }
+    }
+
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)
     {
         var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
@@ -251,55 +301,5 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         return param;
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        foreach (var endpoint in endpoints)
-        {
-            yield return GetMethod(endpoint, tag);
-        }
-    }
-
-    protected virtual string GetRoute(Endpoint endpoint)
-    {
-        return endpoint.Route.Trim('/');
-    }
-
-    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        var properties = endpoints
-            .SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties
-            .SelectMany(property => property!.GetTypeImports(Config, tag))
-            .Concat(
-                endpoints
-                    .Where(endpoint => endpoint.Returns is not null)
-                    .Select(e => e.Returns)
-                    .OfType<CompositionProperty>()
-                    .SelectMany(c => c.GetKindImports(Config, tag))
-            );
-    }
-
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
-    {
-        var className = GetClassName(fileName);
-        var packageName = Config.GetPackageName(endpoints[0], tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
-
-        var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
-        var annotations = GetClassAnnotations(endpoints[0].ModelFile);
-        javaInterface.AddRange(annotations);
-        javaInterface.AddRange(GetMethods(endpoints, tag));
-        fw.Write(0, javaInterface);
-    }
-
-    protected virtual void WriteMethods(JavaWriter fw, IEnumerable<Endpoint> endpoints, string tag)
-    {
-        foreach (var method in GetMethods(endpoints, tag))
-        {
-            fw.Write(1, method);
-        }
     }
 }

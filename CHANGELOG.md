@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.4.0
+
+- [`815054e`](https://github.com/klee-contrib/topmodel/commit/815054eb031b1e3943e9a9d5362b21a63abee4f6) - Classe de traductions explicite dans le modèle
+
+  Vous pouvez désormais définir dans le modèle une classe dans laquelle les générateurs pourront générer des inserts SQL de traductions en base de données, via `translation: true` et `localeProperty`. C'était auparavant directement géré dans le générateur SQL, ce qui n'était pas très pratique pour l'implémenter ailleurs (en C# avec EF Core, par exemple 😉).
+
 ## 3.3.2
 
 - [`9d67b66`](https://github.com/klee-contrib/topmodel/commit/9d67b669d69c26367eaac9396ab95eef73f436d1) - [Core] Détection dépendances circulaires de décorateurs

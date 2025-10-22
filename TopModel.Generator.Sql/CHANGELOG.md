@@ -1,3 +1,9 @@
+## 3.3.0
+
+- [`815054e`](https://github.com/klee-contrib/topmodel/commit/815054eb031b1e3943e9a9d5362b21a63abee4f6) - Classe de traductions explicite dans le modèle
+
+  Le générateur SQL utilise maintenant les classes de traductions explicites dans le modèle pour générer les traductions en SQL, au lieu d'une table en dur.
+
 ## 3.2.1
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut

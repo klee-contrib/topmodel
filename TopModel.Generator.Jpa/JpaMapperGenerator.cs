@@ -558,10 +558,6 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 tag
             );
             toMapperMethod.Imports.AddRange(imports);
-            var propertyTargetName =
-                Config.UseJdbc || propertyTarget is AssociationProperty asp && !asp.Association.IsPersistent
-                    ? propertyTarget!.NamePascal
-                    : propertyTarget!.NameByClassPascal;
             if (mapper.Class.Abstract)
             {
                 if (!isFirst)
