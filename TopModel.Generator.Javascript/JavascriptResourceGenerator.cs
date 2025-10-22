@@ -114,7 +114,12 @@ public class JavascriptResourceGenerator(
         }
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
+    protected override void HandleResourceFile(
+        string filePath,
+        string tag,
+        string lang,
+        IEnumerable<IProperty> properties
+    )
     {
         using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;

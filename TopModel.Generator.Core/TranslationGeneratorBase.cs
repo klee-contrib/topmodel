@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿#pragma warning disable CS0618, S1133
+
+using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -66,7 +68,7 @@ public abstract class TranslationGeneratorBase<T>(
                                                     ModuleFilePath: f.FilePath,
                                                     f.Lang
                                                 ),
-                                                p
+                                                value: (p, tag)
                                             )
                                         )
                                 )
@@ -75,8 +77,9 @@ public abstract class TranslationGeneratorBase<T>(
                 .GroupBy(f => f.key),
             resources =>
             {
-                var properties = resources.Select(r => r.p.ResourceProperty).Distinct();
-                HandleResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
+                var properties = resources.Select(r => (r.value.p.ResourceProperty)).Distinct();
+                var tag = resources.First().value.tag;
+                HandleResourceFile(resources.Key.ModuleFilePath, tag, resources.Key.Lang, properties);
 
                 if (resources.Key.MainFilePath != null)
                 {
@@ -148,7 +151,18 @@ public abstract class TranslationGeneratorBase<T>(
         IEnumerable<(string ModuleFilePath, string ModuleName)> modules
     ) { }
 
-    protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties);
+    protected virtual void HandleResourceFile(
+        string filePath,
+        string tag,
+        string lang,
+        IEnumerable<IProperty> properties
+    )
+    {
+        HandleResourceFile(filePath, lang, properties);
+    }
+
+    [Obsolete("Utiliser la surcharge avec le tag en paramètres.")]
+    protected virtual void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties) { }
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IProperty property, string tag)
     {

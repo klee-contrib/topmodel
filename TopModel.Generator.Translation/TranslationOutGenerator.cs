@@ -47,7 +47,12 @@ public class TranslationOutGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
+    protected override void HandleResourceFile(
+        string filePath,
+        string tag,
+        string lang,
+        IEnumerable<IProperty> properties
+    )
     {
         using var fw = OpenFileWriter(filePath);
         fw.EnableHeader = false;

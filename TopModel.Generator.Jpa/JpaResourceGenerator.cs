@@ -42,7 +42,12 @@ public class JpaResourceGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
+    protected override void HandleResourceFile(
+        string filePath,
+        string tag,
+        string lang,
+        IEnumerable<IProperty> properties
+    )
     {
         var encoding = Encoding.Latin1;
         if (Config.ResourcesEncoding is not null)
