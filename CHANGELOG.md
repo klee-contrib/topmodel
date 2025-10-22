@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.4.1
+
+- [`431b736`](https://github.com/klee-contrib/topmodel/commit/431b736ed67a4dccc9e9ed26c5a01fdfe1a0d5fd) - [Generator.Core] Ajout surcharge (principale) dans TranslationGeneratorBase avec le tag en paramètre
+
 ## 3.4.0
 
 - [`815054e`](https://github.com/klee-contrib/topmodel/commit/815054eb031b1e3943e9a9d5362b21a63abee4f6) - Classe de traductions explicite dans le modèle
