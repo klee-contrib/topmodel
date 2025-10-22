@@ -64,8 +64,7 @@ public class DbContextResourcesGenerator(
                 .Select(container =>
                     (
                         container,
-                        values: container.Key is Class classe
-                        && classe.DefaultProperty != null
+                        values: container.Key is Class { Reference: true, DefaultProperty: not null } classe
                         && Config.PersistedReferencesResources
                             ? classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal).ToList()
                             : []
@@ -74,7 +73,7 @@ public class DbContextResourcesGenerator(
                 .ToList();
 
             var lastContainer = orderedContainers[^1].container;
-            var lastContainerWithValues = orderedContainers.Where(c => c.values.Any()).ToList()[^1].container;
+            var lastContainerWithValues = orderedContainers.LastOrDefault(c => c.values.Any()).container;
 
             foreach (var (container, values) in orderedContainers)
             {

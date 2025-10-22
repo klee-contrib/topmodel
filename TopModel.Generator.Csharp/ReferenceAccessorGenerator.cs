@@ -35,6 +35,16 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             usings.Add(interfaceNamespace);
         }
 
+        if (
+            Config.PersistedReferencesResources
+            && Config.DbContextPath != null
+            && Config.AvailableClasses.Any(c => c.Translation && c.LocaleProperty != null)
+            && classList.Any(c => c.DefaultProperty != null)
+        )
+        {
+            usings.Add("System.Globalization");
+        }
+
         foreach (var classe in classList)
         {
             var classNs = Config.GetNamespace(classe, tag);
@@ -158,7 +168,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(1, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
             w.WriteLine(1, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
-            w.WriteLine(2, LoadReferenceAccessorBody(classe));
+            WriteReferenceAccessorBody(w, classe);
             w.WriteLine(1, "}");
 
             if (classList.IndexOf(classe) != classList.Count - 1)
@@ -277,29 +287,79 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <summary>
     /// Retourne le code associé au corps de l'implémentation d'un service de type ReferenceAccessor.
     /// </summary>
+    /// <param name="w">Writer.</param>
     /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
     /// <returns>Code généré.</returns>
-    protected virtual string LoadReferenceAccessorBody(Class classe)
+    protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
     {
         if (!classe.IsPersistent)
         {
-            return $@"return new List<{classe.NamePascal}>
+            w.WriteLine(
+                2,
+                $@"return new List<{classe.NamePascal}>
 {{
     {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
-}};";
+}};"
+            );
+            return;
         }
 
         var defaultProperty = classe.OrderProperty ?? classe.DefaultProperty;
 
         var queryParameter = string.Empty;
+        var dbContext = $"{(Config.UsePrimaryConstructors ? string.Empty : "_")}dbContext";
         if (Config.DbContextPath != null)
         {
+            if (Config.PersistedReferencesResources)
+            {
+                var translationClass = Config.AvailableClasses.FirstOrDefault(c => c.Translation);
+                if (translationClass != null && classe.DefaultProperty != null)
+                {
+                    w.WriteLine(2, "return (");
+                    w.WriteLine(3, $"from row in {dbContext}.{classe.PluralNamePascal}");
+                    w.Write(3, $"join tra in {dbContext}.{translationClass.PluralNamePascal} on ");
+
+                    if (translationClass.LocaleProperty != null)
+                    {
+                        var rk = translationClass
+                            .PrimaryKey.Single(p => p != translationClass.LocaleProperty)
+                            .NamePascal;
+                        w.WriteLine(
+                            $"new {{ {rk} = row.{classe.DefaultProperty.NamePascal}, {translationClass.LocaleProperty.NamePascal} = CultureInfo.CurrentCulture.Name }} equals new {{ tra.{rk}, tra.{translationClass.LocaleProperty.NamePascal} }}"
+                        );
+                    }
+                    else
+                    {
+                        w.WriteLine(
+                            $"row.{classe.DefaultProperty.NamePascal} equals tra.{translationClass.PrimaryKey.Single()}"
+                        );
+                    }
+
+                    w.WriteLine(3, $"orderby row.{defaultProperty!.NamePascal}");
+                    w.WriteLine(3, $"select new {classe.NamePascal}");
+                    w.WriteLine(3, "{");
+
+                    foreach (var prop in classe.Properties)
+                    {
+                        w.Write(
+                            4,
+                            $"{prop.NamePascal} = {(prop == classe.DefaultProperty ? $"tra.{translationClass.DefaultProperty!.NamePascal}" : $"row.{prop.NamePascal}")}"
+                        );
+                        w.WriteLine(prop == classe.Properties[^1] ? string.Empty : ",");
+                    }
+
+                    w.WriteLine(3, "}");
+                    w.WriteLine(2, ").ToList();");
+                    return;
+                }
+            }
+
             if (defaultProperty != null)
             {
                 queryParameter = $".OrderBy(row => row.{defaultProperty.NamePascal})";
             }
 
-            return $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}dbContext.{classe.PluralNamePascal}{queryParameter}.ToList();";
+            w.WriteLine(2, $"return {dbContext}.{classe.PluralNamePascal}{queryParameter}.ToList();");
         }
         else
         {
@@ -309,7 +369,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }
 
-            return $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter});";
+            w.WriteLine(
+                2,
+                $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter});"
+            );
         }
     }
 }

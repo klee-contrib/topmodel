@@ -281,6 +281,19 @@ public class DbContextGenerator(
             var hasResourceIndex = false;
             if (Config.PersistedReferencesResources && Config.AvailableClasses.Any(c => c.Translation))
             {
+                foreach (
+                    var translationClass in Config.AvailableClasses.Where(c =>
+                        c.Translation && c.LocaleProperty != null
+                    )
+                )
+                {
+                    hasResourceIndex = true;
+                    w.WriteLine(
+                        2,
+                        $"modelBuilder.Entity<{translationClass.NamePascal}>().HasIndex(p => p.{translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal});"
+                    );
+                }
+
                 var resourceProperties = classes
                     .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)
                     .OrderBy(c => c.SqlName)
@@ -328,7 +341,11 @@ public class DbContextGenerator(
                             value = $"{targetNs}.{value}";
                         }
 
-                        if (refProp.Key == classe.DefaultProperty && Config.TranslateReferences == true)
+                        if (
+                            classe.Reference
+                            && refProp.Key == classe.DefaultProperty
+                            && Config.TranslateReferences == true
+                        )
                         {
                             value = $"\"{refValue.ResourceKey}\"";
                         }

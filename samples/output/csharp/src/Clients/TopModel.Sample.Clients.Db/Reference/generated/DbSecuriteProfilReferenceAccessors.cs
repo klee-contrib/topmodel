@@ -17,12 +17,31 @@ public partial class DbSecuriteProfilReferenceAccessors(TopModelSampleDbContext 
     /// <inheritdoc cref="IDbSecuriteProfilReferenceAccessors.LoadDroits" />
     public ICollection<Droit> LoadDroits()
     {
-        return dbContext.Droits.OrderBy(row => row.Code).ToList();
+        return (
+            from row in dbContext.Droits
+            join tra in dbContext.Traductions on row.Libelle equals tra.ResourceKey
+            orderby row.Code
+            select new Droit
+            {
+                Code = row.Code,
+                Libelle = tra.Label,
+                TypeDroitCode = row.TypeDroitCode
+            }
+        ).ToList();
     }
 
     /// <inheritdoc cref="IDbSecuriteProfilReferenceAccessors.LoadTypeDroits" />
     public ICollection<TypeDroit> LoadTypeDroits()
     {
-        return dbContext.TypeDroits.OrderBy(row => row.Libelle).ToList();
+        return (
+            from row in dbContext.TypeDroits
+            join tra in dbContext.Traductions on row.Libelle equals tra.ResourceKey
+            orderby row.Libelle
+            select new TypeDroit
+            {
+                Code = row.Code,
+                Libelle = tra.Label
+            }
+        ).ToList();
     }
 }

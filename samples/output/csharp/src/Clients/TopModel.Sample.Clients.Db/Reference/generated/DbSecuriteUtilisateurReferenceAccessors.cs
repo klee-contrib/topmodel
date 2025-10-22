@@ -17,6 +17,15 @@ public partial class DbSecuriteUtilisateurReferenceAccessors(TopModelSampleDbCon
     /// <inheritdoc cref="IDbSecuriteUtilisateurReferenceAccessors.LoadTypeUtilisateurs" />
     public ICollection<TypeUtilisateur> LoadTypeUtilisateurs()
     {
-        return dbContext.TypeUtilisateurs.OrderBy(row => row.Libelle).ToList();
+        return (
+            from row in dbContext.TypeUtilisateurs
+            join tra in dbContext.Traductions on row.Libelle equals tra.ResourceKey
+            orderby row.Libelle
+            select new TypeUtilisateur
+            {
+                Code = row.Code,
+                Libelle = tra.Label
+            }
+        ).ToList();
     }
 }
