@@ -2,8 +2,8 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2} from "ngx-focus-entities";
 import {DO_CODE_LISTE, DO_LIBELLE} from "@/domains";
+import {EntityToType, FieldEntry2} from "ngx-focus-entities";
 
 import {DroitCode} from "./references";
 

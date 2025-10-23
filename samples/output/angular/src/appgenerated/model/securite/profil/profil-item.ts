@@ -2,8 +2,8 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2} from "ngx-focus-entities";
 import {DO_ENTIER, DO_ID, DO_LIBELLE} from "@/domains";
+import {EntityToType, FieldEntry2} from "ngx-focus-entities";
 
 export type ProfilItem = EntityToType<ProfilItemEntityType>;
 export interface ProfilItemEntityType {

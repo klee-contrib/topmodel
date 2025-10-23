@@ -31,10 +31,13 @@ public class TypescriptDefinitionGenerator(
     {
         using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
+        var commonImports = new List<(string Import, string Path)>();
+
         if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.WriteLine(
-                $"import {{{string.Join(", ", GetFocusStoresImports(fileName, classe, tag).Order())}}} from \"{Config.GetRelativePath(Config.EntityTypesPath, fileName)}\";"
+            var storeImport = Config.GetRelativePath(Config.EntityTypesPath, fileName);
+            commonImports.AddRange(
+                GetFocusStoresImports(fileName, classe, tag).Select(import => (import, storeImport))
             );
         }
 
@@ -44,20 +47,27 @@ public class TypescriptDefinitionGenerator(
         )
         {
             var domainImport = Config.GetRelativePath(Config.ResolveVariables(Config.DomainPath, tag), fileName);
-            fw.WriteLine(
-                $"import {{{string.Join(", ", classe.Properties
-                .Select(p => p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-                    ? p.Domain
-                    : p is CompositionProperty or AliasProperty { Property: CompositionProperty } && !Config.IsListComposition(p)
-                        ? p.Domain
-                        : null!)
-                .Where(d => d != null)
-                .OrderBy(d => d.Name)
-                .Select(d => d.Name).Distinct())}}} from \"{domainImport}\";"
+            commonImports.AddRange(
+                classe
+                    .Properties.Select(p =>
+                        p is not CompositionProperty and not AliasProperty { Property: CompositionProperty } ? p.Domain
+                        : p is CompositionProperty or AliasProperty { Property: CompositionProperty }
+                        && !Config.IsListComposition(p)
+                            ? p.Domain
+                        : null!
+                    )
+                    .Where(d => d != null)
+                    .Distinct()
+                    .Select(domain => (domain.Name.Value, domainImport))
             );
         }
 
-        var imports = classe
+        foreach (var import in commonImports.GroupAndSort())
+        {
+            fw.WriteLine($"import {{{import.Import}}} from \"{import.Path}\";");
+        }
+
+        var dependencyImports = classe
             .ClassDependencies.Select(dep =>
                 (
                     Import: (
@@ -69,12 +79,11 @@ public class TypescriptDefinitionGenerator(
                     )
                         ? dep.Classe.NamePascal
                     : dep
-                        is
-                    {
-                        Source: IProperty fp
+                        is {
+                            Source: IProperty fp
                                 and not CompositionProperty
                                 and not AliasProperty { Property: CompositionProperty }
-                    }
+                        }
                         ? Config.GetEnumType(fp)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
@@ -93,12 +102,12 @@ public class TypescriptDefinitionGenerator(
 
         fw.WriteLine();
 
-        foreach (var import in imports)
+        foreach (var import in dependencyImports)
         {
             fw.WriteLine($"import {{{import.Import}}} from \"{import.Path}\";");
         }
 
-        if (imports.Count > 0)
+        if (dependencyImports.Count > 0)
         {
             fw.WriteLine();
         }

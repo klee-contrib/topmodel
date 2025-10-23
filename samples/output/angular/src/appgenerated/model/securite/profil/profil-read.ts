@@ -2,8 +2,8 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2, ListEntry} from "ngx-focus-entities";
 import {DO_CODE_LISTE, DO_DATE_HEURE, DO_ID, DO_LIBELLE} from "@/domains";
+import {EntityToType, FieldEntry2, ListEntry} from "ngx-focus-entities";
 
 import {UtilisateurItemEntity, UtilisateurItemEntityType} from "../utilisateur/utilisateur-item";
 import {DroitCode} from "./references";
