@@ -1,3 +1,7 @@
+## 3.3.1
+
+- [`353b306`](https://github.com/klee-contrib/topmodel/commit/353b306187785139b5fcdd6bbbfc1efb46b604de) - [C#] Génération des traductions dans des resx (à choisir avec en BDD)
+
 ## 3.3.0
 
 - [`4c8cfb2`](https://github.com/klee-contrib/topmodel/commit/4c8cfb2c9bc1938150a8142bd1f4decf6dd37ea5) - [C#] Génération des inserts de traductions dans le DbContext
