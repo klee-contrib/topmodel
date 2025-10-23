@@ -201,24 +201,22 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseCancellationTokens { get; set; }
 
     /// <summary>
-    /// Si renseigné avec `TranslateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+    /// Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références.
     /// </summary>
-    public string? ReferencesResxPath { get; set; }
+    public string? ResourcesResxPath { get; set; }
 
     /// <summary>
-    /// Si renseigné avec `TranslateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+    /// Précise les resources à générer dans les fichiers resx (si `ResourcesResxPath` est renseigné), au lieu de les générer en base de données.
     /// </summary>
-    public string? PropertiesResxPath { get; set; }
+    public ResxResource ResourcesInResx { get; set; } = ResxResource.All;
 
     public bool PersistedReferencesResources =>
-        TranslateReferences == true && string.IsNullOrWhiteSpace(ReferencesResxPath);
+        TranslateReferences == true
+        && (string.IsNullOrWhiteSpace(ResourcesResxPath) || ResourcesInResx == ResxResource.Properties);
 
     public bool PersistedPropertiesResources =>
-        TranslateProperties == true && string.IsNullOrWhiteSpace(PropertiesResxPath);
-
-    public bool ReferencesResx => TranslateReferences == true && !string.IsNullOrWhiteSpace(ReferencesResxPath);
-
-    public bool PropertiesResx => TranslateProperties == true && !string.IsNullOrWhiteSpace(PropertiesResxPath);
+        TranslateProperties == true
+        && (string.IsNullOrWhiteSpace(ResourcesResxPath) || ResourcesInResx == ResxResource.References);
 
     public override string? DefaultLanguage => "csharp";
 
@@ -234,8 +232,7 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ReferenceAccessorsImplementationPath),
             nameof(MappersName),
             nameof(DataFlowsPath),
-            nameof(ReferencesResxPath),
-            nameof(PropertiesResxPath),
+            nameof(ResourcesResxPath),
         ];
 
     public override string[] PropertiesWithTagVariableSupport =>
@@ -255,12 +252,10 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ApiRootPath),
             nameof(ApiFilePath),
             nameof(DataFlowsPath),
-            nameof(ReferencesResxPath),
-            nameof(PropertiesResxPath),
+            nameof(ResourcesResxPath),
         ];
 
-    public override string[] PropertiesWithLangVariableSupport =>
-        [nameof(ReferencesResxPath), nameof(PropertiesResxPath)];
+    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesResxPath)];
 
     public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {
@@ -550,6 +545,15 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string GetReferenceInterfaceNamespace(Namespace ns, string tag)
     {
         return ResolveVariables(ReferenceAccessorsInterfacePath!, tag: tag, module: ns.Module).ToNamespace();
+    }
+
+    public virtual string GetResourcesResxPath(Namespace ns, string tag, string lang)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ResourcesResxPath!, module: ns.Module, tag: tag, lang: lang).ToFilePath(),
+            $"{GetRootModule(ns)}.{lang}.resx".Replace("..", ".")
+        );
     }
 
     public virtual string GetReturnTypeName(IProperty? prop)

@@ -390,13 +390,18 @@
             "type": "boolean",
             "description": "Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur)."
           },
-          "referencesResxPath": {
+          "resourcesResxPath": {
             "type": "string",
-            "description": "Si renseigné avec `translateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données."
+            "description": "Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références."
           },
-          "propertiesResxPath": {
+          "resourcesInResx": {
             "type": "string",
-            "description": "Si renseigné avec `translateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données."
+            "description": "Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.",
+            "enum": [
+              "all",
+              "properties",
+              "references"
+            ]
           }
         }
       }

@@ -325,7 +325,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                             .PrimaryKey.Single(p => p != translationClass.LocaleProperty)
                             .NamePascal;
                         w.WriteLine(
-                            $"new {{ {rk} = row.{classe.DefaultProperty.NamePascal}, {translationClass.LocaleProperty.NamePascal} = CultureInfo.CurrentCulture.Name }} equals new {{ tra.{rk}, tra.{translationClass.LocaleProperty.NamePascal} }}"
+                            $"new {{ {rk} = row.{classe.DefaultProperty.NamePascal}, {translationClass.LocaleProperty.NamePascal} = CultureInfo.CurrentUICulture.Name }} equals new {{ tra.{rk}, tra.{translationClass.LocaleProperty.NamePascal} }}"
                         );
                     }
                     else

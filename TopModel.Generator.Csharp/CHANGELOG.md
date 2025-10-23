@@ -5,8 +5,6 @@
 
   Les générateurs C# respectent désormais la valeur de `translateProperties` et `translateReferences` : ils peuvent générer les inserts de traductions en SQL via EF Core, et générer des accesseurs de listes de référence qui traduisent les libellés s'ils sont dans le DbContext.
 
-  Il est prévu de pouvoir aussi générer des ResX (les options de configuration existent, même), mais ce n'est pas encore implémenté...
-
   **petit breaking change** : La valeur de `translateReferences` étant à `true` par défaut (récupérée depuis la configuration i18n globale), les libellés des valeurs de listes de références seront générés avec la clé de traduction dans les inserts du DbContext par défaut. Vous pouvez renseigner `false` globalement ou sur la configuration C# pour retrouver le comportement précédent.
 
 ## 3.2.1

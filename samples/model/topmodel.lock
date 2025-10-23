@@ -4,7 +4,7 @@
 
 version: 3.4.1
 custom:
-  ../../TopModel.Generator.Csharp: c024aa5609d33488ecce97bc9f40f13f
+  ../../TopModel.Generator.Csharp: a04debe01202fb12125d2871196d720d
   ../../TopModel.Generator.Javascript: dc3de710215995877940b2a5763cea0e
   ../../TopModel.Generator.Jpa: bf936f66ff724fa97603a4a593fb489b
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
@@ -38,11 +38,13 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Reference/generated/IDbSecuriteUtilisateurReferenceAccessors.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Securite/Profil/generated/ProfilClient.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Securite/Utilisateur/generated/UtilisateurClient.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.resx
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Profil/generated/Droit.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Profil/generated/IProfilItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Profil/generated/ProfilRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Profil/generated/ProfilWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Profil/generated/TypeDroit.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Securite.resx
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/IUtilisateurItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/TypeUtilisateur.cs
   - ../output/csharp/src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/UtilisateurRead.cs

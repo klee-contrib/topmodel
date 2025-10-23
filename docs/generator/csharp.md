@@ -87,11 +87,11 @@ Les clients d'API sont générés comme des classes partielles avec 2 méthodes 
 Les traductions de libellés de propriétés (via `translateProperties` et) et de valeurs de listes de référence (via `translateReferences`) peuvent être générées de 2 manières différentes :
 
 - Soit en base de données, si une [classe de traductions](/model/classes.md?id=classe-de-traductions) existe dans la configuration des générateurs C#.
-- Soit des dans fichiers ResX, si les propriétés `propertiesResxPath` et/ou `referencesResxPath` sont renseignées.
+- Soit des dans fichiers Resx, si la propriété `resourcesResxPath` est renseignée.
 
-Si `translateReferences` et à `true`, alors les inserts libellées de valeurs de listes de référence se feront avec la clé de traduction, indépendemment de la solution de génération de traductions choisies (s'il y en a une).
+Via `resourcesInResx`, vous pouvez partager la génération des traductions entre la base de données et des fichiers de ressources, en générant par exemples les références en BDD et les propriétés dans l'application.
 
-_Remarque : La génération des fichiers ResX pour les traductions **n'est pas encore implémentée**, malgré la présence des options de configuration associées..._
+Si `translateReferences` et à `true`, alors les inserts de libellés de valeurs de listes de référence se feront avec la clé de traduction, indépendemment de la solution de génération de traductions choisies (s'il y en a une).
 
 ### Génération des accesseurs de références
 
@@ -358,18 +358,16 @@ _(en preview, documentation à venir)_
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).
 
-- `referencesResxPath`
+- `resourcesResxPath`
 
-  Si renseigné avec `translateReferences`, génère les traductions dans un ResX au lieu de les insérer en base de données.
-
-  _Templating_: `{module}`, `{lang}`
-
-  _Variables par tag_: **oui**
-
-- `propertiesResxPath`
-
-  Si renseigné avec `translateProperties`, génère les traductions dans un ResX au lieu de les insérer en base de données.
+  Chemin vers les fichiers de resources (\*.resx) à générer pour les traductions de libellés de propriétés et de listes de références.
 
   _Templating_: `{module}`, `{lang}`
 
   _Variables par tag_: **oui**
+
+- `resourcesInResx`
+
+  Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.
+
+  Valeurs possibles : `all` (par défaut), `properties` ou `references`.
