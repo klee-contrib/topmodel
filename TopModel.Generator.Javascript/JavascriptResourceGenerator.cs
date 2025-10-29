@@ -66,6 +66,7 @@ public class JavascriptResourceGenerator(
             modelConfig.I18n.DefaultLang,
             properties.Where(p =>
                 Config.ExtendedCompositions
+                || Config.EntityMode == EntityMode.FOCUS
                 || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
             ),
             isComment: true,
@@ -140,6 +141,7 @@ public class JavascriptResourceGenerator(
             lang,
             properties.Where(p =>
                 Config.ExtendedCompositions
+                || Config.EntityMode == EntityMode.FOCUS
                 || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
             ),
             isComment: false,

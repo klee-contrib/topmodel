@@ -550,7 +550,8 @@
             "enum": [
               "untyped",
               "typed",
-              "none"
+              "none",
+              "focus"
             ]
           },
           "extendedCompositions": {

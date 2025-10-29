@@ -33,16 +33,18 @@ public class TypescriptDefinitionGenerator(
 
         var commonImports = new List<(string Import, string Path)>();
 
-        if (Config.EntityMode == EntityMode.TYPED)
+        if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.FOCUS)
         {
-            var storeImport = Config.GetRelativePath(Config.EntityTypesPath, fileName);
-            commonImports.AddRange(
-                GetFocusStoresImports(fileName, classe, tag).Select(import => (import, storeImport))
+            var storeImport = Config.GetRelativePath(
+                Config.EntityTypesPath
+                    ?? (Config.EntityMode == EntityMode.FOCUS ? "@focus4/entities" : "@focus4/stores"),
+                fileName
             );
+            commonImports.AddRange(GetEntityImports(fileName, classe, tag).Select(import => (import, storeImport)));
         }
 
         if (
-            (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED)
+            (Config.EntityMode != EntityMode.NONE)
             && classe.Properties.Any(c => c.Domain is not null && !Config.IsListComposition(c))
         )
         {
@@ -85,7 +87,7 @@ public class TypescriptDefinitionGenerator(
                                 and not AliasProperty { Property: CompositionProperty }
                         }
                         ? Config.GetEnumType(fp)
-                    : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
+                    : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : Config.EntityMode == EntityMode.FOCUS ? "Entity" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
                         dep,
                         dep.Classe.Tags.Contains(tag)
@@ -123,6 +125,11 @@ public class TypescriptDefinitionGenerator(
                 fw.Write($"extends {classe.Extends.NamePascal}EntityType ");
             }
         }
+        else if (Config.EntityMode == EntityMode.FOCUS)
+        {
+            fw.WriteLine($"export type {classe.NamePascal} = EntityToType<{classe.NamePascal}EntityType>;");
+            fw.WriteLine($"export type {classe.NamePascal}EntityType = typeof {classe.NamePascal}Entity;");
+        }
         else
         {
             fw.Write("export interface ");
@@ -133,59 +140,61 @@ public class TypescriptDefinitionGenerator(
                 fw.Write($"extends {classe.Extends.NamePascal} ");
             }
         }
-
-        fw.Write("{\r\n");
-
-        foreach (var property in classe.Properties)
+        if (Config.EntityMode != EntityMode.FOCUS)
         {
-            fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
+            fw.Write("{\r\n");
 
-            if (Config.EntityMode == EntityMode.TYPED)
+            foreach (var property in classe.Properties)
             {
-                switch (property)
+                fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
+
+                if (Config.EntityMode == EntityMode.TYPED)
                 {
-                    case CompositionProperty { Domain: null } cp:
-                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
-                        break;
-                    case AliasProperty { Property: CompositionProperty { Domain: null } cp }:
-                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
-                        break;
-                    case CompositionProperty cp when Config.IsListComposition(cp):
-                        if (cp.Composition.Name == classe.Name)
-                        {
-                            fw.Write($"RecursiveListEntry");
-                        }
-                        else
-                        {
-                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
-                        }
+                    switch (property)
+                    {
+                        case CompositionProperty { Domain: null } cp:
+                            fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
+                            break;
+                        case AliasProperty { Property: CompositionProperty { Domain: null } cp }:
+                            fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
+                            break;
+                        case CompositionProperty cp when Config.IsListComposition(cp):
+                            if (cp.Composition.Name == classe.Name)
+                            {
+                                fw.Write($"RecursiveListEntry");
+                            }
+                            else
+                            {
+                                fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
+                            }
 
-                        break;
-                    case AliasProperty { Property: CompositionProperty cp } when Config.IsListComposition(cp):
-                        if (cp.Composition.Name == classe.Name)
-                        {
-                            fw.Write($"RecursiveListEntry;");
-                        }
-                        else
-                        {
-                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
-                        }
+                            break;
+                        case AliasProperty { Property: CompositionProperty cp } when Config.IsListComposition(cp):
+                            if (cp.Composition.Name == classe.Name)
+                            {
+                                fw.Write($"RecursiveListEntry;");
+                            }
+                            else
+                            {
+                                fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
+                            }
 
-                        break;
-                    default:
-                        fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property)}>;");
-                        break;
+                            break;
+                        default:
+                            fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property)}>;");
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                fw.Write($"{Config.GetType(property)};");
+                else
+                {
+                    fw.Write($"{Config.GetType(property)};");
+                }
+
+                fw.Write("\r\n");
             }
 
-            fw.Write("\r\n");
+            fw.Write("}\r\n\r\n");
         }
-
-        fw.Write("}\r\n\r\n");
 
         if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED)
         {
@@ -314,6 +323,111 @@ public class TypescriptDefinitionGenerator(
 
             fw.WriteLine($"}}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : " as const")};");
         }
+        else if (Config.EntityMode == EntityMode.FOCUS)
+        {
+            fw.WriteLine();
+            fw.WriteLine($"export const {classe.NamePascal}Entity = entity({{");
+
+            if (classe.Extends != null)
+            {
+                fw.WriteLine(1, $"...{classe.Extends.NamePascal}Entity,");
+            }
+
+            foreach (var property in classe.Properties)
+            {
+                fw.Write(1, $"{property.NameCamel}: e.");
+
+                var cp = property switch
+                {
+                    CompositionProperty c => c,
+                    AliasProperty { Property: CompositionProperty c } => c,
+                    _ => null,
+                };
+
+                switch (property)
+                {
+                    case CompositionProperty { Domain: null }:
+                    case AliasProperty { Property: CompositionProperty { Domain: null } }:
+                        fw.Write("object");
+                        break;
+                    case CompositionProperty cp1
+                        when Config.IsListComposition(cp1) && cp1.Composition.Name == classe.Name:
+                    case AliasProperty { Property: CompositionProperty cp2 }
+                        when Config.IsListComposition(cp2) && cp2.Composition.Name == classe.Name:
+                        fw.Write("recursiveList");
+                        break;
+                    case CompositionProperty when Config.IsListComposition(property):
+                    case AliasProperty { Property: CompositionProperty } when Config.IsListComposition(property):
+                        fw.Write("list");
+                        break;
+                    default:
+                        fw.Write("field");
+                        break;
+                }
+                fw.Write("(");
+
+                if (cp != null && (Config.IsListComposition(cp) || cp.Domain == null))
+                {
+                    fw.Write($"{cp.Composition.NamePascal}Entity");
+                }
+                else
+                {
+                    fw.Write(property.Domain.Name);
+                }
+
+                fw.Write(", f => f");
+
+                var type = Config.GetType(property);
+                if (
+                    cp == null && type != Config.GetImplementation(property.Domain)?.Type
+                    || cp?.Domain != null && !Config.IsListComposition(cp)
+                )
+                {
+                    fw.Write($".type<{type}>()");
+                }
+
+                var defaultValue = Config.GetValue(property);
+                if (defaultValue != "undefined")
+                {
+                    fw.Write($".defaultValue({defaultValue})");
+                }
+
+                if (
+                    !(
+                        property.Required
+                        && !(
+                            (property.PrimaryKey || property is AliasProperty { AliasedPrimaryKey: true })
+                            && property.Domain.AutoGeneratedValue
+                        )
+                    )
+                )
+                {
+                    fw.WriteLine(".optional()");
+                }
+                else
+                {
+                    fw.WriteLine();
+                }
+
+                fw.WriteLine(
+                    2,
+                    $".label(\"{(Config.TranslateProperties == true ? property.ResourceKey : property.Label)}\")"
+                );
+
+                if (Config.GenerateComments)
+                {
+                    fw.WriteLine(
+                        2,
+                        $".comment(\"{(Config.TranslateProperties == true ? property.CommentResourceKey : property.Comment)}\")"
+                    );
+                }
+
+                fw.Write(1, ")");
+                fw.WriteLine(property == classe.Properties[^1] ? "" : ",");
+            }
+
+            fw.WriteLine("});");
+        }
 
         if (classe.Reference)
         {
@@ -322,8 +436,16 @@ public class TypescriptDefinitionGenerator(
         }
     }
 
-    private IEnumerable<string> GetFocusStoresImports(string fileName, Class classe, string tag)
+    private IEnumerable<string> GetEntityImports(string fileName, Class classe, string tag)
     {
+        if (Config.EntityMode == EntityMode.FOCUS)
+        {
+            yield return "e";
+            yield return "entity";
+            yield return "EntityToType";
+            yield break;
+        }
+
         if (classe.Properties.Any(p => p.Domain is not null && !Config.IsListComposition(p)))
         {
             yield return "FieldEntry2";

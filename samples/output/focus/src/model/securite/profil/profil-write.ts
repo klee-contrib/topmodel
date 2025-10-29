@@ -2,30 +2,19 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2} from "@focus4/stores";
+import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE_LISTE, DO_LIBELLE} from "../../../domains";
 
 import {DroitCode} from "./references";
 
 export type ProfilWrite = EntityToType<ProfilWriteEntityType>;
-export interface ProfilWriteEntityType {
-    libelle: FieldEntry2<typeof DO_LIBELLE, string>;
-    droits: FieldEntry2<typeof DO_CODE_LISTE, DroitCode[]>;
-}
+export type ProfilWriteEntityType = typeof ProfilWriteEntity;
 
-export const ProfilWriteEntity: ProfilWriteEntityType = {
-    libelle: {
-        type: "field",
-        name: "libelle",
-        domain: DO_LIBELLE,
-        isRequired: true,
-        label: "securite.profil.profil.libelle"
-    },
-    droits: {
-        type: "field",
-        name: "droits",
-        domain: DO_CODE_LISTE,
-        isRequired: false,
-        label: "securite.profil.profilRead.droits"
-    }
-};
+export const ProfilWriteEntity = entity({
+    libelle: e.field(DO_LIBELLE, f => f
+        .label("securite.profil.profil.libelle")
+    ),
+    droits: e.field(DO_CODE_LISTE, f => f.type<DroitCode[]>().optional()
+        .label("securite.profil.profilRead.droits")
+    )
+});

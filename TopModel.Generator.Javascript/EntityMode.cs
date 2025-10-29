@@ -16,4 +16,9 @@ public enum EntityMode
     /// DTO sans entité.
     /// </summary>
     NONE,
+
+    /// <summary>
+    /// Définition d'entités @focus4/entities
+    /// </summary>
+    FOCUS,
 }

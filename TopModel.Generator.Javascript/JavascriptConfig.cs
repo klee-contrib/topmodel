@@ -57,9 +57,9 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual bool ExtendedCompositions { get; set; }
 
     /// <summary>
-    /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
+    /// Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération.
     /// </summary>
-    public virtual string EntityTypesPath { get; set; } = "@focus4/stores";
+    public virtual string? EntityTypesPath { get; set; }
 
     /// <summary>
     /// Mode de génération (JS, JSON ou JSON Schema).
@@ -146,12 +146,11 @@ public class JavascriptConfig : GeneratorConfigBase
             .Select(dep =>
                 (
                     Import: dep
-                        is
-                    {
-                        Source: IProperty fp
+                        is {
+                            Source: IProperty fp
                                 and not CompositionProperty
                                 and not AliasProperty { Property: CompositionProperty }
-                    }
+                        }
                         ? GetEnumType(fp)
                         : dep.Classe.NamePascal,
                     Path: GetImportPathForClass(

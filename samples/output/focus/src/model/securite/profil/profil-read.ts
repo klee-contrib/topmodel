@@ -2,62 +2,32 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2, ListEntry} from "@focus4/stores";
+import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE_LISTE, DO_DATE_HEURE, DO_ID, DO_LIBELLE} from "../../../domains";
 
-import {UtilisateurItemEntity, UtilisateurItemEntityType} from "../utilisateur/utilisateur-item";
+import {UtilisateurItemEntity} from "../utilisateur/utilisateur-item";
 import {DroitCode} from "./references";
 
 export type ProfilRead = EntityToType<ProfilReadEntityType>;
-export interface ProfilReadEntityType {
-    id: FieldEntry2<typeof DO_ID, number>;
-    libelle: FieldEntry2<typeof DO_LIBELLE, string>;
-    droits: FieldEntry2<typeof DO_CODE_LISTE, DroitCode[]>;
-    dateCreation: FieldEntry2<typeof DO_DATE_HEURE, string>;
-    dateModification: FieldEntry2<typeof DO_DATE_HEURE, string>;
-    utilisateurs: ListEntry<UtilisateurItemEntityType>;
-}
+export type ProfilReadEntityType = typeof ProfilReadEntity;
 
-export const ProfilReadEntity: ProfilReadEntityType = {
-    id: {
-        type: "field",
-        name: "id",
-        domain: DO_ID,
-        isRequired: false,
-        label: "securite.profil.profil.id"
-    },
-    libelle: {
-        type: "field",
-        name: "libelle",
-        domain: DO_LIBELLE,
-        isRequired: true,
-        label: "securite.profil.profil.libelle"
-    },
-    droits: {
-        type: "field",
-        name: "droits",
-        domain: DO_CODE_LISTE,
-        isRequired: false,
-        label: "securite.profil.profilRead.droits"
-    },
-    dateCreation: {
-        type: "field",
-        name: "dateCreation",
-        domain: DO_DATE_HEURE,
-        isRequired: true,
-        label: "common.entityListeners.dateCreation"
-    },
-    dateModification: {
-        type: "field",
-        name: "dateModification",
-        domain: DO_DATE_HEURE,
-        isRequired: false,
-        label: "common.entityListeners.dateModification"
-    },
-    utilisateurs: {
-        type: "list",
-        entity: UtilisateurItemEntity,
-        isRequired: true,
-        label: "securite.profil.profilRead.utilisateurs"
-    }
-};
+export const ProfilReadEntity = entity({
+    id: e.field(DO_ID, f => f.optional()
+        .label("securite.profil.profil.id")
+    ),
+    libelle: e.field(DO_LIBELLE, f => f
+        .label("securite.profil.profil.libelle")
+    ),
+    droits: e.field(DO_CODE_LISTE, f => f.type<DroitCode[]>().optional()
+        .label("securite.profil.profilRead.droits")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.entityListeners.dateCreation")
+    ),
+    dateModification: e.field(DO_DATE_HEURE, f => f.optional()
+        .label("common.entityListeners.dateModification")
+    ),
+    utilisateurs: e.list(UtilisateurItemEntity, f => f
+        .label("securite.profil.profilRead.utilisateurs")
+    )
+});

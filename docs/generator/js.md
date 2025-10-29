@@ -14,7 +14,7 @@ Le mode `angular` permet de générer un service injectable au sens `Angular`, c
 
 ##### Observe
 
-Lorsque l'objet retourné par l'API est `HttpEvent<>` ou bien `HttpResponse<>`, alors le service créé  ajoutera automatiquement l'option `observe: 'events'` ou `observe: 'response'` à la requête.
+Lorsque l'objet retourné par l'API est `HttpEvent<>` ou bien `HttpResponse<>`, alors le service créé ajoutera automatiquement l'option `observe: 'events'` ou `observe: 'response'` à la requête.
 Sinon, l'option `observe: 'body'` sera ajoutée.
 
 #### Vanilla
@@ -37,20 +37,54 @@ L'extension `.ts` est ajoutée automatiquement
 
 ### Modes de génération des entités
 
-Il est possible de générer les entités selon trois modes (`entityMode`) : 
-- `typed` : génération du DTO et de l'entité, avec typage du DTO via l'entité,
-- `untyped` : génération du DTO et de l'entité, sans typage du DTO via l'entité,
+Il est possible de générer les entités selon trois modes (`entityMode`) :
+
+- `focus` : génération avec les APIs du module `@focus4/entities`.
+- `typed` : génération du DTO et de l'entité, avec typage du DTO via l'entité.
+- `untyped` : génération du DTO et de l'entité, sans typage du DTO via l'entité.
 - `none` : génération du DTO uniquement.
 
-Dans les deux premiers cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. 
+Dans les deux premiers cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine.
 
 Par défaut `domainPath` vaut `../domains`
 
+#### Focus
+
+Le mode `focus` permet de générer la description des entités métier en utilisant les APIs et les types exposés par le module NPM `@focus4/entities`, [documenté ici](https://klee-contrib.github.io/focus4/?path=/docs/mod%C3%A8le-m%C3%A9tier-entit%C3%A9s-et-champs--docs). Ce module n'est **pas lié à Focus** et peut être utilisé par **n'importe quel framework JS**.
+
+Il génère des entitiés sous la forme :
+
+```ts
+import {e, entity} from "@focus4/entities";
+
+export const ProfilDtoEntity = entity({
+  id: e.field(DO_ID, f => f.optional()
+    .label("securite.profil.id")
+  ),
+  typeProfilCode: e.field(DO_CODE, f => f.optional()
+    .label(securite.profil.typeProfilCode")
+  ),
+  droits: e.field(DO_CODE_LIST, f => f.optional().type<DroitCode[]>()
+    .label("securite.profil.droits")
+  ),
+  utilisateurs: e.list(UtilisateurDtoEntity, f => f
+    .label("securite.profilDto.utilisateurs")
+  ),
+  secteurs: e.list(SecteurDtoEntity, f => f
+    .label("securite.profilDto.secteurs")
+  )
+}
+```
+
+Vous pouvez surcharger l'import de `@focus4/entities` avec la propriété `entityTypesPath`.
+
 #### Typed
 
-Le mode `typed` permet de générer la description des entités métier contenant des types. Ces types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
+Le mode `typed` permet de générer la description des entités métier avec les mêmes types que le mode `Focus`, mais sans les APIs pour les construire. Les objets sont écrits en JS et en TS pur. Il s'agit d'un mode "legacy", car il faut mieux utiliser le mode `Focus` si on veut des objets typés.
 
 Vous pouvez également activer l'option `extendedCompositions` pour générer toutes les propriétés sur les compositions (`label`, `isRequired`, `comment`), qui ne sont pas générées par défaut.
+
+Les types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
 
 #### Untyped
 
