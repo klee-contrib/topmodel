@@ -1,3 +1,9 @@
+## 3.3.0
+
+- [`be78f05`](https://github.com/klee-contrib/topmodel/commit/be78f056081d47e76b87b9cb6a1a7dd6f9b4c5d6) - [JS] `entityMode: focus`, pour cibler `@focus4/entities`
+- [`c0605fb`](https://github.com/klee-contrib/topmodel/commit/c0605fbbd5315fc422991f9346ab5f89615ddf78) - [JS] Regroupe les imports des domaines et des types si nécessaire (fix #499)
+- [`343e7d2`](https://github.com/klee-contrib/topmodel/commit/343e7d24ab02baab73a08a331e2812a41d5c826d) - [AngularApiClient] `observe: "response"` si `responseType: "blob"` (fix #508)
+
 ## 3.2.1
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
