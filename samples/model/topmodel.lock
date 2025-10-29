@@ -5,7 +5,7 @@
 version: 3.4.1
 custom:
   ../../TopModel.Generator.Csharp: a04debe01202fb12125d2871196d720d
-  ../../TopModel.Generator.Javascript: e7d00dfeb227c97bebe776a03de42052
+  ../../TopModel.Generator.Javascript: 1903443bbaa9dc01e74353c2499e3d84
   ../../TopModel.Generator.Jpa: bf936f66ff724fa97603a4a593fb489b
   ../../TopModel.Generator.Php: de7a4698812843f0477c73a6c3a3b350
   ../../TopModel.Generator.Sql: 2ef75bbf77d1a171d3f0bc32e552fde4

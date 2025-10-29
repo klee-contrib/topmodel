@@ -176,7 +176,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         {
             observe = "events";
         }
-        else if (genericType == "HttpResponse")
+        else if (genericType == "HttpResponse" || returnType == "Blob")
         {
             observe = "response";
         }
@@ -245,7 +245,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         var needResponseType = returnType == "string" || returnType == "Blob" || returnType == "ArrayBuffer";
         var getter = $"{endpoint.Method.ToLower()}<{returnType}>";
 
-        if (observe != "body")
+        if (observe != "body" && returnType != "Blob")
         {
             getter = $"{endpoint.Method.ToLower()}<{returnType.Split('<')[1].Split('>')[0]}>";
         }

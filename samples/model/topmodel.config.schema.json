@@ -560,8 +560,7 @@
           },
           "entityTypesPath": {
             "type": "string",
-            "description": "Chemin d'import des type d'entités",
-            "default": "@focus4/stores"
+            "description": "Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération."
           },
           "resourceMode": {
             "type": "string",
