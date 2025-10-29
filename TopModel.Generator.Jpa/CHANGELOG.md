@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.9
+
+- [`9d8418`](https://github.com/klee-contrib/topmodel/commit/9d8418e6b36c6a84d4aebc71c363a4f0bfcd0ca5) - [JPA] Ordonner par ordre alphabétique les annotations des paramètres des méthodes
+
 ## 3.3.8
 
 - [`bc8803a`](https://github.com/klee-contrib/topmodel/commit/bc8803a50db86437fe87116931d63b2ad531a8fc) - [JPA] Fix Respect de l'ordre de déclaration des paramètres dans les endpoints d'api server
