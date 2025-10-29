@@ -39,7 +39,7 @@ public interface UtilisateurController {
 	 */
 	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
-	UtilisateurRead addUtilisateur(@Valid @RequestBody UtilisateurWrite utilisateur);
+	UtilisateurRead addUtilisateur(@RequestBody @Valid UtilisateurWrite utilisateur);
 
 	/**
 	 * Supprime un utilisateur.
@@ -86,5 +86,5 @@ public interface UtilisateurController {
 	 */
 	@PutMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")
-	UtilisateurRead updateUtilisateur(@PathVariable("utiId") Integer utiId, @Valid @RequestBody UtilisateurWrite utilisateur);
+	UtilisateurRead updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
 }

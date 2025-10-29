@@ -137,8 +137,8 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             {
                 Comment = param.Comment,
             }
-                .AddAnnotation(pathParamAnnotation)
-                .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
+                .AddRange(Config.GetDomainJavaAnnotations(param, tag))
+                .Add(pathParamAnnotation);
             parameter.Imports.AddRange(Config.GetDomainImports(param, tag));
             method.AddParameter(parameter);
         }
@@ -155,8 +155,8 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             {
                 Comment = param.Comment,
             }
-                .AddAnnotation(requestParamAnnotation)
-                .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
+                .AddRange(Config.GetDomainJavaAnnotations(param, tag))
+                .Add(requestParamAnnotation);
             method.AddParameter(parameter);
         }
 
@@ -187,8 +187,8 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                     {
                         Comment = param.Comment,
                     }
-                        .AddAnnotation(requestPartAnnotation)
-                        .AddAnnotations(Config.GetDomainJavaAnnotations(param, tag));
+                        .AddRange(Config.GetDomainJavaAnnotations(param, tag))
+                        .Add(requestPartAnnotation);
                     method.AddParameter(parameter).AddGenericType("K").AddGenericType("V");
                 }
                 else
@@ -203,7 +203,9 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                     var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
                     {
                         Comment = param.Comment,
-                    }.AddAnnotation(requestPartAnnotation);
+                    }
+                        .AddRange(Config.GetDomainJavaAnnotations(param, tag))
+                        .Add(requestPartAnnotation);
                     method.AddParameter(parameter);
                 }
             }
@@ -222,8 +224,8 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 {
                     Comment = bodyParam.Comment,
                 }
-                    .AddAnnotation(requestBodyAnnotation)
-                    .AddAnnotation(validAnnotation);
+                    .Add(requestBodyAnnotation)
+                    .Add(validAnnotation);
                 method.AddParameter(parameter);
             }
         }

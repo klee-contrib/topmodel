@@ -193,19 +193,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         {
             if (!(bodyParam.Domain?.IsMultipart ?? false))
             {
-                parameter.AddAnnotation(
+                parameter.Add(
                     new JavaAnnotation(
                         "ModelAttribute",
                         imports: "org.springframework.web.bind.annotation.ModelAttribute"
                     )
                 );
-                parameter.AddAnnotation(
-                    new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid")
-                );
+                parameter.Add(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
             }
             else
             {
-                parameter.AddAnnotation(
+                parameter.Add(
                     new JavaAnnotation(
                         "RequestPart",
                         @$"""{bodyParam.GetParamName()}""",
@@ -222,19 +220,19 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 "RequestBody",
                 imports: "org.springframework.web.bind.annotation.RequestBody"
             );
-            parameter.AddAnnotation(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
-            parameter.AddAnnotation(annotation);
+            parameter.Add(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
+            parameter.Add(annotation);
             parameter.Comment = bodyParam.Comment;
             parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
             foreach (var (a, i) in Config.GetAnnotations(bodyParam, tag))
             {
-                parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+                parameter.Add(new JavaAnnotation(a, imports: i.ToArray()));
             }
         }
 
         if (Config.OpenApiAnnotations)
         {
-            parameter.AddAnnotation(
+            parameter.Add(
                 new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody").AddAttribute(
                     "description",
                     @$"""{bodyParam.Comment}"""
@@ -253,17 +251,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             imports: "org.springframework.web.bind.annotation.RequestParam",
             value: @$"""{queryParam.GetParamName()}"""
         ).AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
-        param.AddAnnotation(queryParamAnnotation);
+        param.Add(queryParamAnnotation);
         param.Comment = queryParam.Comment;
         param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
         foreach (var (a, i) in Config.GetAnnotations(queryParam, tag))
         {
-            param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            param.Add(new JavaAnnotation(a, imports: i.ToArray()));
         }
 
         if (Config.OpenApiAnnotations)
         {
-            param.AddAnnotation(
+            param.Add(
                 new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
                     "description",
                     @$"""{queryParam.Comment}"""
@@ -282,17 +280,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             @$"""{routeParam.GetParamName()}""",
             "org.springframework.web.bind.annotation.PathVariable"
         );
-        param.AddAnnotation(pathParamAnnotation);
+        param.Add(pathParamAnnotation);
         param.Comment = routeParam.Comment;
         param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
         foreach (var (a, i) in Config.GetAnnotations(routeParam, tag))
         {
-            param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            param.Add(new JavaAnnotation(a, imports: i.ToArray()));
         }
 
         if (Config.OpenApiAnnotations)
         {
-            param.AddAnnotation(
+            param.Add(
                 new JavaAnnotation("Parameter", imports: "io.swagger.v3.oas.annotations.Parameter").AddAttribute(
                     "description",
                     @$"""{routeParam.Comment}"""

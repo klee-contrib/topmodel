@@ -33,7 +33,7 @@ public interface ProfilController {
 	 */
 	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
-	ProfilRead addProfil(@Valid @RequestBody ProfilWrite profil);
+	ProfilRead addProfil(@RequestBody @Valid ProfilWrite profil);
 
 	/**
 	 * Charge le détail d'un Profil.
@@ -63,5 +63,5 @@ public interface ProfilController {
 	 */
 	@PutMapping(path = "{proId}")
 	@PreAuthorize("hasRole('UPDATE')")
-	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @Valid @RequestBody ProfilWrite profil);
+	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }
