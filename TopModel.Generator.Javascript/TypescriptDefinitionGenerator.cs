@@ -33,14 +33,15 @@ public class TypescriptDefinitionGenerator(
 
         var commonImports = new List<(string Import, string Path)>();
 
+        var entityTypesPath =
+            Config.EntityTypesPath ?? (Config.EntityMode == EntityMode.FOCUS ? "@focus4/entities" : "@focus4/stores");
+
         if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.FOCUS)
         {
-            var storeImport = Config.GetRelativePath(
-                Config.EntityTypesPath
-                    ?? (Config.EntityMode == EntityMode.FOCUS ? "@focus4/entities" : "@focus4/stores"),
-                fileName
+            var storeImport = Config.GetRelativePath(entityTypesPath, fileName);
+            commonImports.AddRange(
+                GetEntityImports(fileName, classe, tag, entityTypesPath).Select(import => (import, storeImport))
             );
-            commonImports.AddRange(GetEntityImports(fileName, classe, tag).Select(import => (import, storeImport)));
         }
 
         if (
@@ -81,11 +82,12 @@ public class TypescriptDefinitionGenerator(
                     )
                         ? dep.Classe.NamePascal
                     : dep
-                        is {
-                            Source: IProperty fp
+                        is
+                    {
+                        Source: IProperty fp
                                 and not CompositionProperty
                                 and not AliasProperty { Property: CompositionProperty }
-                        }
+                    }
                         ? Config.GetEnumType(fp)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : Config.EntityMode == EntityMode.FOCUS ? "Entity" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
@@ -99,7 +101,7 @@ public class TypescriptDefinitionGenerator(
             )
             .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)))
             .Concat(classe.Properties.SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
-            .Where(p => p.Path != null && p.Path != Config.EntityTypesPath)
+            .Where(p => p.Path != null && p.Path != entityTypesPath)
             .GroupAndSort();
 
         fw.WriteLine();
@@ -436,7 +438,7 @@ public class TypescriptDefinitionGenerator(
         }
     }
 
-    private IEnumerable<string> GetEntityImports(string fileName, Class classe, string tag)
+    private IEnumerable<string> GetEntityImports(string fileName, Class classe, string tag, string entityTypesPath)
     {
         if (Config.EntityMode == EntityMode.FOCUS)
         {
@@ -493,7 +495,7 @@ public class TypescriptDefinitionGenerator(
         foreach (
             var p in classe
                 .Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
-                .Where(p => p.Path == Config.EntityTypesPath)
+                .Where(p => p.Path == entityTypesPath)
         )
         {
             yield return p.Import;
