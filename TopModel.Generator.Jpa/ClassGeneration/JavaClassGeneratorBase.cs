@@ -127,11 +127,11 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        if (!Config.HasAnnotation(classe, "Getter"))
+        if (!(Config.HasAnnotation(classe, "Getter") || Config.HasAnnotation(classe, "Data")))
         {
             foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
             {
-                if (!Config.HasAnnotation(property, "Getter"))
+                if (!Config.HasAnnotation(property, "Getter") || Config.HasAnnotation(classe, "Data"))
                 {
                     yield return JpaModelPropertyGenerator.GetGetter(tag, property);
                 }
@@ -165,11 +165,11 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        if (!Config.HasAnnotation(classe, "Setter"))
+        if (!(Config.HasAnnotation(classe, "Setter") || Config.HasAnnotation(classe, "Data")))
         {
             foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
             {
-                if (!Config.HasAnnotation(property, "Setter"))
+                if (!(Config.HasAnnotation(property, "Setter") || Config.HasAnnotation(classe, "Data")))
                 {
                     yield return JpaModelPropertyGenerator.GetSetter(tag, property);
                 }
