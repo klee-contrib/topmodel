@@ -297,7 +297,10 @@ public class TypescriptDefinitionGenerator(
                     }
                     else
                     {
-                        fw.WriteLine(2, $"label: \"{property.Label}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                        fw.WriteLine(
+                            2,
+                            $"label: \"{property.Label ?? property.Name}\"{(Config.GenerateComments ? "," : string.Empty)}"
+                        );
                     }
 
                     if (Config.GenerateComments)
@@ -413,7 +416,7 @@ public class TypescriptDefinitionGenerator(
 
                 fw.WriteLine(
                     2,
-                    $".label(\"{(Config.TranslateProperties == true ? property.ResourceKey : property.Label)}\")"
+                    $".label(\"{(Config.TranslateProperties == true ? property.ResourceKey : (property.Label ?? property.Name))}\")"
                 );
 
                 if (Config.GenerateComments)
