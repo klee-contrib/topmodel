@@ -1,3 +1,8 @@
+## 3.3.1
+
+- [`c6f28d9`](https://github.com/klee-contrib/topmodel/commit/c6f28d9ca2490e03eb1457baec14528872b5eeac) - [JS] Fix régression regroupement import domaine + entityTypesPath
+- [`cdbc565`](https://github.com/klee-contrib/topmodel/commit/cdbc5654f785cb559e75cdef9cbb6f9c3af21fac) - [JS] Génération du nom de propriété à la place du label si non traduit
+
 ## 3.3.0
 
 - [`be78f05`](https://github.com/klee-contrib/topmodel/commit/be78f056081d47e76b87b9cb6a1a7dd6f9b4c5d6) - [JS] `entityMode: focus`, pour cibler `@focus4/entities`
