@@ -12,6 +12,8 @@ public class JavaField(string type, string name)
     public bool Static { get; set; } = false;
     public bool Final { get; set; } = false;
 
+    public bool Volatile { get; set; } = false;
+
     public IList<JavaAnnotation> Annotations { get; } = [];
 
     public IList<string> Imports { get; } = [];
@@ -60,6 +62,6 @@ public class JavaField(string type, string name)
 
     public override string ToString()
     {
-        return $"{Visibility}{(Static ? " static" : string.Empty)}{(Final ? " final" : string.Empty)} {Type} {Name}{(DefaultValue != string.Empty ? $" = {DefaultValue}" : string.Empty)};";
+        return $"{Visibility}{(Static ? " static" : string.Empty)}{(Final ? " final" : string.Empty)}{(Volatile ? " volatile" : string.Empty)} {Type} {Name}{(DefaultValue != string.Empty ? $" = {DefaultValue}" : string.Empty)};";
     }
 }

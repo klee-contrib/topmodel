@@ -11,7 +11,11 @@ import jakarta.persistence.StaticMetaModel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilDroit_ {
 
-	private static final String PROFIL = "profil";
+	public static volatile SingularAttribute<ProfilDroit, Profil> profil;
 
-	private static final String DROIT = "droit";
+	public static volatile SingularAttribute<ProfilDroit, Droit> droit;
+
+	public static final String PROFIL = "profil";
+
+	public static final String DROIT = "droit";
 }
