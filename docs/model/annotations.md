@@ -153,10 +153,11 @@ Remarques :
 
 ### Priorité des annotations
 
-Il est interdit de déclarer plusieurs fois la même annotation sur un objet, y compris pour les annotations ajoutées sur les propriétés d'alias. En revanche, les annotations effectives sur les classes, endpoints et propriétés peuvent se retrouver en doublon (par exemple, si une même annotation est définie sur un domaine et une propriété qui utilise ce domaine). Dans le cas où l'annotation définit des paramètres, il est possible que l'instanciation des annotations ne soit pas faite avec les mêmes valeurs. Dans ce cas, la priorité suivante est établie :
+Il est interdit de déclarer plusieurs fois la même annotation sur un objet. En revanche, les annotations effectives sur les classes, endpoints et propriétés peuvent se retrouver en doublon (par exemple, si une même annotation est définie sur un domaine et une propriété qui utilise ce domaine). Dans le cas où l'annotation définit des paramètres, il est possible que l'instanciation des annotations ne soit pas faite avec les mêmes valeurs. Dans ce cas, la priorité suivante est établie :
 
 - Pour une **propriété**, les paramètres sont récupérés en priorité :
   - Sur la propriété elle-même.
+  - Si c'est un alias, sur la propriété originale de l'alias.
   - Sur la classe (via `propertyAnnotations`).
   - Sur le décorateur qui définit la propriété, s'il y en a un (via `propertyAnnotations`).
   - Sur le domaine.
@@ -211,9 +212,37 @@ annotation:
 
 ### `global`
 
-Une annotation peut également être marquée avec `global: true`, ce qui aura pour effet de la **poser automatiquement sur tous les objets ciblés par l'annotation**. Cela l'ajoute donc automatiquement dans les dépendances de tous les fichiers, à l'image des domaines.
+Une annotation peut également être marquée avec `global: true`, ce qui aura pour effet de la **poser automatiquement sur tous les objets ciblés par l'annotation**. Cela l'ajoute donc automatiquement dans les dépendances de tous les fichiers, à l'image des domaines. Ces annotations ne peuvent pas avoir de paramètres.
 
 Cette fonctionnalité peut être utilisée pour compléter les annotations posées systématiquement par un générateur, par exemple pour ajouter des fonctionnalités non gérées à moindre frais.
+
+## Exclusion d'annotations
+
+A tous les endroits où il est possible de définir des annotations, il est également possible de définir des **exclusions**. Cela permet de gérer des exceptions, pour ne pas à avoir à définir une même annotation partout, sauf à un seul endroit.
+
+Par exemple :
+
+```yaml
+domain:
+  name: DO_LIBELLE
+  label: Libellé
+  annotations:
+    - MyAnnotation
+---
+class:
+  name: MyClass
+  comment: Ma classe
+  properties:
+    - name: Libelle
+      domain: DO_LIBELLE
+      comment: Mon libellé sans annotation.
+      excludedAnnotations:
+        - MyAnnotation
+```
+
+Ici, l'annotation `MyAnnotation` sera posée sur tous les propriétés de `DO_LIBELLE`, sauf sur la propriété `Libelle` de `MyClass`.
+
+Ces exclusions sont utilisables à tous les niveaux et pour toutes les sources d'annotations, en particulier les annotations globales (qui pourraient être exclues au niveau d'un domaine par exemple, et pas seulement sur une propriété), ou pour une annotation sur une propriété qu'on ne veut pas reprendre sur un alias.
 
 ## Templating et paramètres
 
