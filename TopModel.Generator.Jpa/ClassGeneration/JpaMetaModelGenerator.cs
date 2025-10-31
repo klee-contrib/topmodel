@@ -61,9 +61,10 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             };
 
             var propertyType = jpaModelPropertyGenerator.GetPropertyType(property);
-            if (property is AssociationProperty ap)
+
+            if (javaType != genericType)
             {
-                propertyType = ap.Association.Name;
+                propertyType = javaType.Split('<')[1].Split('>')[0];
             }
 
             javaClass.Add(
