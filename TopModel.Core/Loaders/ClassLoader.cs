@@ -117,6 +117,12 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                         }
                     });
                     break;
+                case "excludedAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        classe.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                    });
+                    break;
                 case "propertyAnnotations":
                     parser.ConsumeSequence(() =>
                     {

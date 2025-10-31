@@ -21,6 +21,20 @@ public static class ModelExtensions
             )
             .Concat(
                 modelStore
+                    .AnnotationContainers.Where(c =>
+                        c.ExcludedAnnotations.Select(d => d.Annotation).Contains(annotation)
+                    )
+                    .Select(c =>
+                        (
+                            Reference: c.ExcludedAnnotationReferences.FirstOrDefault(dr =>
+                                dr.ReferenceName == annotation.Name
+                            )!,
+                            File: c.GetFile()
+                        )
+                    )
+            )
+            .Concat(
+                modelStore
                     .PropertyContainers.Where(c => c.PropertyAnnotations.Select(d => d.Annotation).Contains(annotation))
                     .Select(c =>
                         (

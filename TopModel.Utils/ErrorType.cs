@@ -113,11 +113,6 @@ public enum ErrorType
     TMD2002,
 
     /// <summary>
-    /// L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.
-    /// </summary>
-    TMD2003,
-
-    /// <summary>
     /// Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.
     /// </summary>
     TMD2004,

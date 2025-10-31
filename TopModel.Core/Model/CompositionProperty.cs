@@ -54,6 +54,10 @@ public class CompositionProperty : IProperty
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
     public IProperty? CompositionPrimaryKey

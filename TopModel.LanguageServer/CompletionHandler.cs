@@ -110,7 +110,7 @@ public class CompletionHandler(
             return CompleteDecorator(request, file, useIndex);
         }
         // Annotation
-        else if (currentKey.Contains("annotation"))
+        else if (currentKey.ToLowerInvariant().Contains("annotation"))
         {
             return CompleteAnnotation(request, file, useIndex);
         }

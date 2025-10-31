@@ -74,6 +74,12 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                 }
                             });
                             break;
+                        case "excludedAnnotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                rp.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                            });
+                            break;
                         case "customProperties":
                             parser.ConsumeMapping(prop =>
                                 rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
@@ -188,6 +194,14 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                                     }
                                                 });
                                                 break;
+                                            case "excludedAnnotations":
+                                                parser.ConsumeSequence(() =>
+                                                {
+                                                    ap.WithReverse.ExcludedAnnotationReferences.Add(
+                                                        new AnnotationReference(parser.Consume<Scalar>())
+                                                    );
+                                                });
+                                                break;
                                         }
                                     });
                                 }
@@ -227,6 +241,13 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                 {
                                     ap.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                                 }
+                            });
+                            break;
+
+                        case "excludedAnnotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                ap.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                             });
                             break;
                         case "customProperties":
@@ -312,6 +333,12 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                 {
                                     cp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                                 }
+                            });
+                            break;
+                        case "excludedAnnotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                cp.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                             });
                             break;
                         case "customProperties":
@@ -454,6 +481,12 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                                 {
                                     alp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                                 }
+                            });
+                            break;
+                        case "excludedAnnotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                alp.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                             });
                             break;
                         case "customProperties":

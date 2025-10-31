@@ -94,6 +94,12 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                         }
                     });
                     break;
+                case "excludedAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        endpoint.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                    });
+                    break;
                 case "propertyAnnotations":
                     parser.ConsumeSequence(() =>
                     {

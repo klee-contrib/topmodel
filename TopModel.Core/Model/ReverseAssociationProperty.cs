@@ -37,4 +37,10 @@ public class ReverseAssociationProperty : AssociationProperty
 
     public override IList<AnnotationReference> AnnotationReferences =>
         ReverseProperty.WithReverse?.AnnotationReferences ?? [];
+
+    public override IList<AnnotationInstance> ExcludedAnnotations =>
+        ReverseProperty.WithReverse?.ExcludedAnnotations ?? [];
+
+    public override IList<AnnotationReference> ExcludedAnnotationReferences =>
+        ReverseProperty.WithReverse?.ExcludedAnnotationReferences ?? [];
 }

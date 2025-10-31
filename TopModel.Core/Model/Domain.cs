@@ -33,6 +33,10 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+
     public IDictionary<string, DomainReference> AsDomainReferences { get; set; } =
         new Dictionary<string, DomainReference>();
 
