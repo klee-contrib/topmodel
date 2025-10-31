@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.3.10
+
+- [`897874`](https://github.com/klee-contrib/topmodel/commit/89787487c8ef32aabe4126d3bf22fbfd8e70159e) - [JPA] Ne pas écrire les getter ni les setter dans le cas où l'annotation Data a été posée
+
 ## 3.3.9
 
 - [`9d8418`](https://github.com/klee-contrib/topmodel/commit/9d8418e6b36c6a84d4aebc71c363a4f0bfcd0ca5) - [JPA] Ordonner par ordre alphabétique les annotations des paramètres des méthodes
