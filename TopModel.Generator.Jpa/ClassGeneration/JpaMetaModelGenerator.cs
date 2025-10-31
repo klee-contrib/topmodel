@@ -1,5 +1,7 @@
+using System.Numerics;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -47,11 +49,44 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
+            var javaType = jpaModelPropertyGenerator.GetPropertyType(property);
+            var genericType = javaType.Split("<")[0];
+            var attributeType = genericType switch
+            {
+                "List" => "ListAttribute",
+                "Collection" => "CollectionAttribute",
+                "Set" => "SetAttribute",
+                "Map" => "MapAttribute",
+                _ => "SingularAttribute",
+            };
+
+            var propertyType = jpaModelPropertyGenerator.GetPropertyType(property);
+            if (property is AssociationProperty ap)
+            {
+                propertyType = ap.Association.Name;
+            }
+
+            javaClass.Add(
+                new JavaField(
+                    $"{attributeType}<{classe.NamePascal}, {propertyType}>",
+                    jpaModelPropertyGenerator.GetPropertyName(property)
+                )
+                {
+                    Static = true,
+                    Visibility = "public",
+                    Volatile = true,
+                }
+            );
+        }
+
+        foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
+        {
             javaClass.Add(
                 new JavaField("String", jpaModelPropertyGenerator.GetPropertyName(property).ToConstantCase())
                 {
                     Static = true,
                     Final = true,
+                    Visibility = "public",
                     DefaultValue = $"\"{jpaModelPropertyGenerator.GetPropertyName(property)}\"",
                 }
             );

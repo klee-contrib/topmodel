@@ -11,25 +11,47 @@ import jakarta.persistence.StaticMetaModel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Utilisateur_ {
 
-	private static final String ID = "id";
+	public static volatile SingularAttribute<Utilisateur, Integer> id;
 
-	private static final String NOM = "nom";
+	public static volatile SingularAttribute<Utilisateur, String> nom;
 
-	private static final String PRENOM = "prenom";
+	public static volatile SingularAttribute<Utilisateur, String> prenom;
 
-	private static final String EMAIL = "email";
+	public static volatile SingularAttribute<Utilisateur, String> email;
 
-	private static final String DATE_NAISSANCE = "dateNaissance";
+	public static volatile SingularAttribute<Utilisateur, LocalDate> dateNaissance;
 
-	private static final String ADRESSE = "adresse";
+	public static volatile SingularAttribute<Utilisateur, String> adresse;
 
-	private static final String ACTIF = "actif";
+	public static volatile SingularAttribute<Utilisateur, Boolean> actif;
 
-	private static final String PROFIL = "profil";
+	public static volatile SingularAttribute<Utilisateur, Profil> profil;
 
-	private static final String TYPE_UTILISATEUR = "typeUtilisateur";
+	public static volatile SingularAttribute<Utilisateur, TypeUtilisateur> typeUtilisateur;
 
-	private static final String DATE_CREATION = "dateCreation";
+	public static volatile SingularAttribute<Utilisateur, LocalDateTime> dateCreation;
 
-	private static final String DATE_MODIFICATION = "dateModification";
+	public static volatile SingularAttribute<Utilisateur, LocalDateTime> dateModification;
+
+	public static final String ID = "id";
+
+	public static final String NOM = "nom";
+
+	public static final String PRENOM = "prenom";
+
+	public static final String EMAIL = "email";
+
+	public static final String DATE_NAISSANCE = "dateNaissance";
+
+	public static final String ADRESSE = "adresse";
+
+	public static final String ACTIF = "actif";
+
+	public static final String PROFIL = "profil";
+
+	public static final String TYPE_UTILISATEUR = "typeUtilisateur";
+
+	public static final String DATE_CREATION = "dateCreation";
+
+	public static final String DATE_MODIFICATION = "dateModification";
 }

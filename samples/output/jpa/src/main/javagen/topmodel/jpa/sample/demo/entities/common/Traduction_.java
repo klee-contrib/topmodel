@@ -11,7 +11,11 @@ import jakarta.persistence.StaticMetaModel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Traduction_ {
 
-	private static final String RESOURCE_KEY = "resourceKey";
+	public static volatile SingularAttribute<Traduction, String> resourceKey;
 
-	private static final String LABEL = "label";
+	public static volatile SingularAttribute<Traduction, String> label;
+
+	public static final String RESOURCE_KEY = "resourceKey";
+
+	public static final String LABEL = "label";
 }

@@ -11,15 +11,27 @@ import jakarta.persistence.StaticMetaModel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Profil_ {
 
-	private static final String ID = "id";
+	public static volatile SingularAttribute<Profil, Integer> id;
 
-	private static final String LIBELLE = "libelle";
+	public static volatile SingularAttribute<Profil, String> libelle;
 
-	private static final String PROFIL_DROITS = "profilDroits";
+	public static volatile ListAttribute<Profil, ProfilDroit> profilDroits;
 
-	private static final String UTILISATEURS = "utilisateurs";
+	public static volatile ListAttribute<Profil, Utilisateur> utilisateurs;
 
-	private static final String DATE_CREATION = "dateCreation";
+	public static volatile SingularAttribute<Profil, LocalDateTime> dateCreation;
 
-	private static final String DATE_MODIFICATION = "dateModification";
+	public static volatile SingularAttribute<Profil, LocalDateTime> dateModification;
+
+	public static final String ID = "id";
+
+	public static final String LIBELLE = "libelle";
+
+	public static final String PROFIL_DROITS = "profilDroits";
+
+	public static final String UTILISATEURS = "utilisateurs";
+
+	public static final String DATE_CREATION = "dateCreation";
+
+	public static final String DATE_MODIFICATION = "dateModification";
 }

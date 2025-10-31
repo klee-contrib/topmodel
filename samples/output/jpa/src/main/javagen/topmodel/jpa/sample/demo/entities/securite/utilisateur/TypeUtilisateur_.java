@@ -11,7 +11,11 @@ import jakarta.persistence.StaticMetaModel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeUtilisateur_ {
 
-	private static final String CODE = "code";
+	public static volatile SingularAttribute<TypeUtilisateur, TypeUtilisateurCode> code;
 
-	private static final String LIBELLE = "libelle";
+	public static volatile SingularAttribute<TypeUtilisateur, String> libelle;
+
+	public static final String CODE = "code";
+
+	public static final String LIBELLE = "libelle";
 }
