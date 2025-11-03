@@ -1,3 +1,7 @@
+## 3.3.1
+
+- [`1c9ef05`](https://github.com/klee-contrib/topmodel/commit/1c9ef050c3520a42a6d0912016ad0e0a9f52ecee) - [SQL] Fix alias d'association xxxToMany en trop dans les tables générées
+
 ## 3.3.0
 
 - [`815054e`](https://github.com/klee-contrib/topmodel/commit/815054eb031b1e3943e9a9d5362b21a63abee4f6) - Classe de traductions explicite dans le modèle
