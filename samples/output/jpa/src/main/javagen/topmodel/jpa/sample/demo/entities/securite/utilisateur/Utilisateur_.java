@@ -4,10 +4,16 @@
 
 package topmodel.jpa.sample.demo.entities.securite.utilisateur;
 
-import jakarta.annotation.Generated;
-import jakarta.persistence.StaticMetaModel;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@StaticMetaModel(Utilisateur.class)
+import jakarta.annotation.Generated;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
+
+import topmodel.jpa.sample.demo.entities.securite.profil.Profil;
+
+@StaticMetamodel(Utilisateur.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Utilisateur_ {
 
