@@ -5,9 +5,10 @@
 package topmodel.jpa.sample.demo.entities.common;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.StaticMetaModel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetaModel(Traduction.class)
+@StaticMetamodel(Traduction.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Traduction_ {
 

@@ -5,9 +5,12 @@
 package topmodel.jpa.sample.demo.entities.securite.profil;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.StaticMetaModel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetaModel(TypeDroit.class)
+import topmodel.jpa.sample.demo.enums.securite.profil.TypeDroitCode;
+
+@StaticMetamodel(TypeDroit.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeDroit_ {
 

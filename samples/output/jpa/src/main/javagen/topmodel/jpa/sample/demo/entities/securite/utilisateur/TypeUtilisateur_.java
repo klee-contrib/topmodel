@@ -5,9 +5,12 @@
 package topmodel.jpa.sample.demo.entities.securite.utilisateur;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.StaticMetaModel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetaModel(TypeUtilisateur.class)
+import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
+
+@StaticMetamodel(TypeUtilisateur.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeUtilisateur_ {
 

@@ -10,7 +10,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFileWriterProvider writerProvider)
     : ClassGeneratorBase<JpaConfig>(logger, writerProvider)
 {
-    private JpaModelPropertyGenerator _jpaModelConstructorGenerator;
+    private JpaModelPropertyGenerator? _jpaModelConstructorGenerator;
     protected virtual JpaModelPropertyGenerator jpaModelPropertyGenerator
     {
         get
@@ -19,7 +19,6 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             return _jpaModelConstructorGenerator;
         }
     }
-    public override string Name => "JpaMetaModelGen";
 
     protected override string GetFileName(Class classe, string tag)
     {
@@ -38,8 +37,8 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         var javaClass = new JavaClass($"{classe.NamePascal}_");
         javaClass.Add(
             new JavaAnnotation(
-                "StaticMetaModel",
-                imports: $"{Config.JavaxOrJakarta}.persistence.StaticMetaModel"
+                "StaticMetamodel",
+                imports: $"{Config.JavaxOrJakarta}.persistence.metamodel.StaticMetamodel"
             ).AddAttribute($"{classe.NamePascal}.class")
         );
         if (Config.GeneratedHint)
@@ -67,17 +66,25 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
                 propertyType = javaType.Split('<')[1].Split('>')[0];
             }
 
-            javaClass.Add(
-                new JavaField(
-                    $"{attributeType}<{classe.NamePascal}, {propertyType}>",
-                    jpaModelPropertyGenerator.GetPropertyName(property)
-                )
-                {
-                    Static = true,
-                    Visibility = "public",
-                    Volatile = true,
-                }
-            );
+            var javaField = new JavaField(
+                $"{attributeType}<{classe.NamePascal}, {propertyType}>",
+                jpaModelPropertyGenerator.GetPropertyName(property)
+            )
+            {
+                Static = true,
+                Visibility = "public",
+                Volatile = true,
+            };
+
+            var imports = property.GetTypeImports(Config, tag);
+            javaField.Imports.Add($"jakarta.persistence.metamodel.{attributeType}");
+
+            foreach (var import in imports.ToList())
+            {
+                javaField.Imports.Add(import);
+            }
+
+            javaClass.Add(javaField);
         }
 
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
@@ -95,4 +102,6 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         fw.Write(0, javaClass);
     }
+
+    public override string Name => "JpaMetaModelGen";
 }
