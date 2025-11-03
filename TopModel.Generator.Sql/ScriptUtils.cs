@@ -15,7 +15,15 @@ public static class ScriptUtils
     {
         foreach (
             var prop in classe.Properties.Where(p =>
-                p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                p
+                    is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                        and not AliasProperty
+                        {
+                            Property: AssociationProperty
+                            {
+                                Type: AssociationType.OneToMany or AssociationType.ManyToMany
+                            }
+                        }
             )
         )
         {
