@@ -19,4 +19,9 @@ public class ReverseAssociationDefinition : IAnnotationContainer
     public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
 
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+
+    public override string ToString()
+    {
+        return $"Reverse{Property?.Name}";
+    }
 }

@@ -163,7 +163,7 @@ public class AnnotationResolver(
                             && container is not AliasProperty
                         || container is Class && annotation.Target.Contains(Target.Class)
                         || container is Endpoint && annotation.Target.Contains(Target.Endpoint)
-                        || container is AssociationProperty
+                        || container is AssociationProperty or ReverseAssociationDefinition
                             && (
                                 annotation.Target.Contains(Target.Property)
                                 || annotation.Target.Contains(Target.AssociationProperty)
@@ -288,7 +288,7 @@ public class AnnotationResolver(
                             || container is Decorator { Target: Target dt }
                                 && !annotation.Target.Contains(dt)
                                 && !isProperty
-                            || (container is Domain or IProperty || isProperty)
+                            || (container is Domain or IProperty or ReverseAssociationDefinition || isProperty)
                                 && !annotation.Target.Contains(Target.Property)
                                 && !annotation.Target.Contains(Target.AssociationProperty)
                                 && !annotation.Target.Contains(Target.CompositionProperty)
