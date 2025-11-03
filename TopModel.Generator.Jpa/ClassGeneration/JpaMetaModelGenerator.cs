@@ -85,10 +85,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             var imports = property.GetTypeImports(Config, tag);
             javaField.Imports.Add($"jakarta.persistence.metamodel.{attributeType}");
 
-            foreach (var import in imports.ToList())
-            {
-                javaField.Imports.Add(import);
-            }
+            javaField.Imports.AddRange(imports);
 
             javaClass.Add(javaField);
         }
