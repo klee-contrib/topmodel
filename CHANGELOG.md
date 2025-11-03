@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.5.1
+
+- [`a0c6532`](https://github.com/klee-contrib/topmodel/commit/a0c6532340aa09a4eeff65170cc1c91586fe8a90) - [Core] Fix association sur décorateur qui ne pouvait pas être PK
+
 ## 3.5.0
 
 - [`#510`](https://github.com/klee-contrib/topmodel/pull/510) - Exclusion d'annotations
