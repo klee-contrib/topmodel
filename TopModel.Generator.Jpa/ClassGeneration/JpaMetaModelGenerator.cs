@@ -49,7 +49,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         if (classe.Extends is not null)
         {
             javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)) + "_");
-            javaClass.Extends = classe.Extends + "_";
+            javaClass.Extends = classe.Extends.NamePascal + "_";
         }
 
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
