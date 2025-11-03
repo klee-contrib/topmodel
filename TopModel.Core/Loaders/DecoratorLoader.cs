@@ -77,6 +77,12 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         }
                     });
                     break;
+                case "excludedAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        decorator.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                    });
+                    break;
                 case "propertyAnnotations":
                     parser.ConsumeSequence(() =>
                     {

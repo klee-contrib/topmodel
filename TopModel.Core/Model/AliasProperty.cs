@@ -146,11 +146,22 @@ public class AliasProperty : IProperty
 
     public string? As { get; set; }
 
-    public IList<AnnotationInstance> Annotations => [.. OriginalProperty?.Annotations ?? [], .. OwnAnnotations];
+    public IList<AnnotationInstance> Annotations =>
+        [
+            .. OriginalProperty?.Annotations.Where(ann =>
+                !OriginalProperty.ExcludedAnnotations.Any(ann2 => ann.Annotation == ann2.Annotation)
+                && !OwnAnnotations.Any(ann2 => ann.Annotation == ann2.Annotation)
+            ) ?? [],
+            .. OwnAnnotations,
+        ];
 
     public IList<AnnotationInstance> OwnAnnotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<AnnotationInstance> ExcludedAnnotations { get; set; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; set; } = [];
 
     public IDictionary<string, string> CustomProperties
     {
@@ -228,6 +239,7 @@ public class AliasProperty : IProperty
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,
+            ExcludedAnnotations = ExcludedAnnotations,
         };
 
         if (_domain != null)
@@ -280,7 +292,9 @@ public class AliasProperty : IProperty
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,
+            ExcludedAnnotations = ExcludedAnnotations,
             AnnotationReferences = AnnotationReferences,
+            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
         };
 
         if (_domain != null)

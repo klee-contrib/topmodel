@@ -122,6 +122,13 @@
                 "$ref": "#/definitions/annotation"
               }
             },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "items": {
+                "type": "string"
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
@@ -210,6 +217,13 @@
                       "items": {
                         "$ref": "#/definitions/annotation"
                       }
+                    },
+                    "excludedAnnotations": {
+                      "type": "array",
+                      "description": "Annotations globales ou du domaine à retirer de la propriété d'association réciproque.",
+                      "items": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -236,6 +250,13 @@
               "description": "Annotations de la propriété.",
               "items": {
                 "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "items": {
+                "type": "string"
               }
             },
             "customProperties": {
@@ -437,6 +458,13 @@
                 "$ref": "#/definitions/annotation"
               }
             },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales, du domaine ou de la propriété originale à retirer de cette propriété.",
+              "items": {
+                "type": "string"
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
@@ -492,6 +520,13 @@
               "description": "Annotations de la propriété.",
               "items": {
                 "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "items": {
+                "type": "string"
               }
             },
             "customProperties": {
@@ -751,6 +786,13 @@
                 "$ref": "#/definitions/annotation"
               }
             },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales à retirer de ce domaine.",
+              "items": {
+                "type": "string"
+              }
+            },
             "parameters": {
               "type": "array",
               "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
@@ -898,6 +940,13 @@
               "description": "Annotations du décorateur.",
               "items": {
                 "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou d'un décorateur à retirer de ce décorateur.",
+              "items": {
+                "type": "string"
               }
             },
             "propertyAnnotations": {
@@ -1051,6 +1100,13 @@
               "description": "Annotations de la classe.",
               "items": {
                 "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou d'un décorateur à retirer de cette classe.",
+              "items": {
+                "type": "string"
               }
             },
             "propertyAnnotations": {
@@ -1300,6 +1356,13 @@
               "description": "Annotations de l'endpoint.",
               "items": {
                 "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Annotations globales ou d'un décorateur à retirer de cet endpoint.",
+              "items": {
+                "type": "string"
               }
             },
             "propertyAnnotations": {

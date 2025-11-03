@@ -78,6 +78,12 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                         }
                     });
                     break;
+                case "excludedAnnotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        domain.ExcludedAnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                    });
+                    break;
                 default:
                     var implementation = new DomainImplementation();
 

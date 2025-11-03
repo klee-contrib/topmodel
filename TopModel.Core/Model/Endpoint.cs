@@ -56,6 +56,8 @@ public class Endpoint : IPropertyContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
@@ -63,6 +65,8 @@ public class Endpoint : IPropertyContainer
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
 

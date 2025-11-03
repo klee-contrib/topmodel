@@ -32,6 +32,8 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
 
     public IList<IProperty> Properties { get; } = [];
@@ -76,6 +78,8 @@ public class Decorator : IPropertyContainer, IVariableContainer
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
 

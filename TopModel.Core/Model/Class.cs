@@ -32,6 +32,8 @@ public class Class : IPropertyContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
 
     public string? Label { get; set; }
@@ -108,6 +110,8 @@ public class Class : IPropertyContainer
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
 

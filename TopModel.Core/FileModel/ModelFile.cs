@@ -106,6 +106,17 @@ public class ModelFile
                 )
             )
             .Concat(
+                AnnotationContainers.SelectMany(d =>
+                    d.ExcludedAnnotationReferences.Select(ar =>
+                        (
+                            ar as Reference,
+                            d.ExcludedAnnotations.Select(a => a.Annotation)
+                                .FirstOrDefault(d => d.Name == ar.ReferenceName) as object
+                        )
+                    )
+                )
+            )
+            .Concat(
                 VariableContainers.SelectMany(d =>
                     d.VariableReferences.Select(pr =>
                         (

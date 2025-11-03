@@ -11,26 +11,6 @@ public class AnnotationResolver(
     IDictionary<string, Annotation> referencedAnnotations
 )
 {
-    public IEnumerable<ModelError> CheckAliasAnnotations()
-    {
-        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>())
-        {
-            foreach (var g in alp.Annotations.GroupBy(a => a.Annotation.Name).Where(g => g.Count() > 1))
-            {
-                var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == g.Key);
-                if (annotationRef != null)
-                {
-                    yield return new ModelError(
-                        ErrorType.TMD2003,
-                        alp,
-                        $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.",
-                        annotationRef
-                    );
-                }
-            }
-        }
-    }
-
     /// <summary>
     /// Résout les annotations.
     /// </summary>
@@ -106,44 +86,16 @@ public class AnnotationResolver(
             }
         }
 
-        foreach (var container in modelFiles.SelectMany(mf => mf.AnnotationContainers))
+        foreach (
+            var container in modelFiles
+                .SelectMany(mf => mf.AnnotationContainers)
+                .OrderBy(ac => ac is Domain or Decorator ? 0 : 1)
+        )
         {
-            var annotationsToResolve = container is AliasProperty alp ? alp.OwnAnnotations : container.Annotations;
-
-            annotationsToResolve.Clear();
-
             var isError = false;
 
-            foreach (var annotation in referencedAnnotations.Values.Where(a => a.Global))
-            {
-                if (
-                    annotation.Target.Count == 0
-                        && container is not Decorator
-                        && container is not Domain
-                        && container is not AliasProperty
-                    || container is Class && annotation.Target.Contains(Target.Class)
-                    || container is Endpoint && annotation.Target.Contains(Target.Endpoint)
-                    || container is AssociationProperty
-                        && (
-                            annotation.Target.Contains(Target.Property)
-                            || annotation.Target.Contains(Target.AssociationProperty)
-                        )
-                    || container is CompositionProperty
-                        && (
-                            annotation.Target.Contains(Target.Property)
-                            || annotation.Target.Contains(Target.CompositionProperty)
-                        )
-                    || container is RegularProperty
-                        && (
-                            annotation.Target.Contains(Target.Property)
-                            || annotation.Target.Contains(Target.RegularProperty)
-                        )
-                )
-                {
-                    annotationsToResolve.Add(new(annotation, new Dictionary<string, string>()));
-                }
-            }
-
+            var annotationsToResolve = container is AliasProperty alp ? alp.OwnAnnotations : container.Annotations;
+            annotationsToResolve.Clear();
             foreach (
                 var error in ResolveAnnotationReferences(
                     container,
@@ -154,6 +106,83 @@ public class AnnotationResolver(
             {
                 isError = true;
                 yield return error;
+            }
+
+            container.ExcludedAnnotations.Clear();
+            foreach (
+                var error in ResolveAnnotationReferences(
+                    container,
+                    container.ExcludedAnnotationReferences,
+                    container.ExcludedAnnotations
+                )
+            )
+            {
+                isError = true;
+                yield return error;
+            }
+
+            var globalExclusions = container.ExcludedAnnotations.Select(a => a.Annotation).ToList();
+
+            void AddDecoratorExclusions(Decorator decorator)
+            {
+                globalExclusions.AddRange(decorator.ExcludedAnnotations.Select(a => a.Annotation));
+                foreach (var subD in decorator.Decorators)
+                {
+                    AddDecoratorExclusions(subD.Decorator);
+                }
+            }
+
+            switch (container)
+            {
+                case IProperty { Domain.ExcludedAnnotations: var dea }:
+                    globalExclusions.AddRange(dea.Select(a => a.Annotation));
+                    break;
+                case Class c:
+                    foreach (var d in c.Decorators)
+                    {
+                        AddDecoratorExclusions(d.Decorator);
+                    }
+                    break;
+                case Endpoint e:
+                    foreach (var d in e.Decorators)
+                    {
+                        AddDecoratorExclusions(d.Decorator);
+                    }
+                    break;
+            }
+
+            foreach (var annotation in referencedAnnotations.Values.Where(a => a.Global))
+            {
+                if (
+                    !globalExclusions.Contains(annotation)
+                    && !annotationsToResolve.Any(a => a.Annotation == annotation)
+                    && (
+                        annotation.Target.Count == 0
+                            && container is not Decorator
+                            && container is not Domain
+                            && container is not AliasProperty
+                        || container is Class && annotation.Target.Contains(Target.Class)
+                        || container is Endpoint && annotation.Target.Contains(Target.Endpoint)
+                        || container is AssociationProperty
+                            && (
+                                annotation.Target.Contains(Target.Property)
+                                || annotation.Target.Contains(Target.AssociationProperty)
+                            )
+                        || container is CompositionProperty
+                            && (
+                                annotation.Target.Contains(Target.Property)
+                                || annotation.Target.Contains(Target.CompositionProperty)
+                            )
+                        || container is RegularProperty
+                            && (
+                                annotation.Target.Contains(Target.Property)
+                                || annotation.Target.Contains(Target.RegularProperty)
+                            )
+                    )
+                )
+                {
+                    annotationsToResolve.Add(new(annotation, new Dictionary<string, string>()));
+                }
             }
 
             if (container is IPropertyContainer pContainer)

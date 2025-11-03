@@ -15,4 +15,8 @@ public class ReverseAssociationDefinition : IAnnotationContainer
     public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; } = [];
+
+    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 }

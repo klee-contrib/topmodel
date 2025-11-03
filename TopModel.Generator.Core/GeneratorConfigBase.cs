@@ -108,6 +108,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             }
         }
 
+        foreach (var excludedAnnotation in container.ExcludedAnnotations)
+        {
+            var annotationsToRemove = annotations.Where(a => a.Annotation == excludedAnnotation.Annotation).ToList();
+            foreach (var annotation in annotationsToRemove)
+            {
+                annotations.Remove(annotation);
+            }
+        }
+
         foreach (
             var (implementation, annotation, parameters) in annotations.SelectMany(a =>
                 GetImplementation(a.Annotation)
@@ -152,7 +161,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             foreach (
                 var annotation in pc
-                    .Decorators.SelectMany(d => GetDecoratorAnnotations(pc, d.Decorator, d.Parameters, tag))
+                    .Decorators.SelectMany(d =>
+                        GetDecoratorAnnotations(
+                            pc,
+                            d.Decorator,
+                            d.Parameters,
+                            container.ExcludedAnnotations.Select(e => e.Annotation),
+                            tag
+                        )
+                    )
                     .Distinct()
             )
             {
@@ -170,7 +187,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 )
             )
             {
-                if (!annotations.Any(a => a.Annotation == annotation))
+                if (
+                    !annotations.Any(a => a.Annotation == annotation)
+                    && !container.ExcludedAnnotations.Any(e => e.Annotation == annotation)
+                )
                 {
                     var resolvedParameters = parameters.ToDictionary(
                         p => p.Key,
@@ -575,12 +595,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         IPropertyContainer container,
         Decorator decorator,
         IDictionary<string, string> parameters,
+        IEnumerable<Annotation> excludedAnnotations,
         string tag
     )
     {
         foreach (
             var (implementation, annotation, annotationParameters) in decorator
-                .Annotations.SelectMany(a =>
+                .Annotations.Where(a => !excludedAnnotations.Contains(a.Annotation))
+                .SelectMany(a =>
                     GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))
                 )
                 .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))
@@ -617,6 +639,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                         p => p.Key,
                         p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)
                     ),
+                    excludedAnnotations.Concat(decorator.ExcludedAnnotations.Select(e => e.Annotation)),
                     tag
                 )
             )

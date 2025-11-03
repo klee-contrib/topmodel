@@ -869,11 +869,6 @@ public class ModelStore(
             yield return error;
         }
 
-        foreach (var error in annotationResolver.CheckAliasAnnotations())
-        {
-            yield return error;
-        }
-
         foreach (var error in propertyResolver.ResolveAssociationProperties())
         {
             yield return error;
