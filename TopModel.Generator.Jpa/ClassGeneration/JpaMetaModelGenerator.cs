@@ -46,6 +46,12 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             javaClass.Add(Config.GeneratedAnnotation);
         }
 
+        if (classe.Extends is not null)
+        {
+            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)) + "_");
+            javaClass.Extends = classe.Extends + "_";
+        }
+
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
             var javaType = jpaModelPropertyGenerator.GetPropertyType(property);
