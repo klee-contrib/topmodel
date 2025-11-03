@@ -8,6 +8,13 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.5.0
+
+- [`#510`](https://github.com/klee-contrib/topmodel/pull/510) - Exclusion d'annotations
+- [`d2f7346`](https://github.com/klee-contrib/topmodel/commit/d2f734613e5277a358597bb0698ab62e6c003b8f) - [Core] Fix contraintes sur les annotations sur reverse association non respectées
+
+  Il est maintenant possible de spéficier `excludedAnnotations` à tous les endroits où on peut mettre `annotations` : cela permet de ne pas hériter des annotations posées "au dessus", comme sur le domaine pour une propriété, la propriété originale pour un alias, ou une annnotation globale.
+
 ## 3.4.1
 
 - [`431b736`](https://github.com/klee-contrib/topmodel/commit/431b736ed67a4dccc9e9ed26c5a01fdfe1a0d5fd) - [Generator.Core] Ajout surcharge (principale) dans TranslationGeneratorBase avec le tag en paramètre

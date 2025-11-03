@@ -749,7 +749,12 @@
           },
           "enumsAsEnums": {
             "type": "boolean",
-            "description": "Transforme les classes contenant des values en enum. Par défaut, false",
+            "description": "Transforme les classes contenant des values en enum",
+            "default": "false"
+          },
+          "metaModel": {
+            "type": "boolean",
+            "description": "Si le meta model jpa doit être généré",
             "default": "false"
           },
           "apiPath": {
