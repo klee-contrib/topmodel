@@ -225,6 +225,7 @@ public class AssociationProperty : IProperty
             Role = Role,
             Type = Type,
             Readonly = Readonly,
+            PrimaryKey = PrimaryKey,
             WithReverse = WithReverse,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
