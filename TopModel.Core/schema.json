@@ -436,6 +436,10 @@
               "type": "boolean",
               "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée. **Un alias ne récupère pas `primaryKey: true` de la propriété qu'il recopie.**"
             },
+            "preservePrimaryKey": {
+              "type": "boolean",
+              "description": "Conserve la valeur de `primaryKey` de de la propriété aliasée."
+            },
             "readonly": {
               "type": "boolean",
               "description": "Surcharge le caractère readonly de la propriété aliasée."

@@ -5,6 +5,16 @@ namespace TopModel.Core.Utils;
 
 public static class CoreUtils
 {
+    public static bool IsAssociationToMany(this IProperty property)
+    {
+        return property
+            is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                or AliasProperty
+            {
+                Property: AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+            };
+    }
+
     public static bool IsToMany(this AssociationType associationType)
     {
         return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
@@ -55,7 +65,10 @@ public static class CoreUtils
         return sorted;
     }
 
-    public static IList<IList<ModelFile>> SortWithCycles(IEnumerable<ModelFile> source, Func<ModelFile, IEnumerable<ModelFile>> getDependencies)
+    public static IList<IList<ModelFile>> SortWithCycles(
+        IEnumerable<ModelFile> source,
+        Func<ModelFile, IEnumerable<ModelFile>> getDependencies
+    )
     {
         var indexMap = new Dictionary<ModelFile, int>();
         var lowLinkMap = new Dictionary<ModelFile, int>();

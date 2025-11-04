@@ -205,7 +205,7 @@ De plus, il est possible de surcharger les propriétés suivantes de la proprié
 
 Ces surcharges s'appliqueront, comme toutes les autres propriétés de configuration de l'alias, sur toutes les propriétés incluses dans la définition. Par conséquent, si vous voulez changer le libellé ou le nom d'un champ dans un alias, il vous faudra très certainement séparer vos définitions d'alias.
 
-La valeur de `primaryKey` n'est **pas recopiée** depuis la définition de la propriété initiale. Un alias peut néanmoins faire partie de la clé primaire de la classe qui le défini (avec `primaryKey: true`, comme pour les autres propriétés). La notion de clé primaire étant liée à la classe (et permettant de déterminer si la classe est [persistée](./classes.md#classe-persistée)), il est logique qu'elle ne soit pas recopiée sur l'alias.
+**La valeur de `primaryKey` n'est par défaut pas recopiée** depuis la définition de la propriété initiale : la notion de clé primaire étant liée à la classe (et permettant de déterminer si la classe est [persistée](./classes.md#classe-persistée)), il est logique qu'elle ne soit pas recopiée sur l'alias. Un alias peut néanmoins faire partie de la clé primaire de la classe qui le défini, soit avec `primaryKey: true` comme pour les autres propriétés, soit en renseignant `preservePrimaryKey: true` sur l'alias pour surcharger le comportement par défaut qui ne le reprend pas.
 
 ## Valeurs par défaut
 

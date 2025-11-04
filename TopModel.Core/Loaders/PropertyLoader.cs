@@ -442,6 +442,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                         case "primaryKey":
                             alp.PrimaryKey = value!.Value == "true";
                             break;
+                        case "preservePrimaryKey":
+                            alp.PreservePrimaryKey = value!.Value == "true";
+                            break;
                         case "readonly":
                             alp.Readonly = value!.Value == "true";
                             break;

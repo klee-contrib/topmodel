@@ -1,7 +1,5 @@
-using System.Numerics;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -11,6 +9,8 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
     : ClassGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     private JpaModelPropertyGenerator? _jpaModelConstructorGenerator;
+
+    public override string Name => "JpaMetaModelGen";
     protected virtual JpaModelPropertyGenerator jpaModelPropertyGenerator
     {
         get
@@ -20,14 +20,14 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         }
     }
 
-    protected override string GetFileName(Class classe, string tag)
-    {
-        return $"{Config.GetClassFileName(classe, tag).Split(".java")[0]}_.java";
-    }
-
     protected override bool FilterClass(Class classe)
     {
         return classe.IsPersistent && !classe.Abstract && !(Config.EnumsAsEnums && Config.CanClassUseEnums(classe));
+    }
+
+    protected override string GetFileName(Class classe, string tag)
+    {
+        return $"{Config.GetClassFileName(classe, tag).Split(".java")[0]}_.java";
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -105,6 +105,4 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         fw.Write(0, javaClass);
     }
-
-    public override string Name => "JpaMetaModelGen";
 }
