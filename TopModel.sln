@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11201.2 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Core", "TopModel.Core\TopModel.Core.csproj", "{B074EB43-CF5C-40B5-BE40-71F6C2ADBA10}"
 EndProject
@@ -29,8 +29,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Sql", "TopModel.Generator.Sql\TopModel.Generator.Sql.csproj", "{1B29BF83-3C15-48A5-BCC6-1606487CF5EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Translation", "TopModel.Generator.Translation\TopModel.Generator.Translation.csproj", "{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Php", "TopModel.Generator.Php\TopModel.Generator.Php.csproj", "{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,10 +80,6 @@ Global
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

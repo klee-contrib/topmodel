@@ -31,7 +31,6 @@
   - [C#](/generator/csharp.md)
   - [Jpa](/generator/jpa.md)
   - [Javascript / Typescript](/generator/js.md)
-  - [Php](/generator/php.md)
   - [Traductions manquantes](/generator/translation.md)
   - [SQL](/generator/sql.md)
 

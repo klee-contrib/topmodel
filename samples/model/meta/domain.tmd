@@ -27,8 +27,6 @@ domain:
     type: Boolean
   sql:
     type: boolean
-  php:
-    type: bool
 ---
 domain:
   name: DO_CODE
@@ -44,8 +42,6 @@ domain:
     type: String
   sql:
     type: varchar
-  php:
-    type: string
 ---
 domain:
   name: DO_CODE_LISTE
@@ -64,8 +60,6 @@ domain:
       - java.util.List
   sql:
     type: varchar
-  php:
-    type: Collection
 ---
 domain:
   name: DO_DATE
@@ -80,8 +74,6 @@ domain:
       - java.time.LocalDate
   sql:
     type: date
-  php:
-    type: Date
 ---
 domain:
   name: DO_DATE_HEURE
@@ -111,8 +103,6 @@ domain:
     values:
       overrides:
         now: now()
-  php:
-    type: Date
 ---
 domain:
   name: DO_EMAIL
@@ -128,8 +118,6 @@ domain:
   sql:
     type: varchar
   length: 50
-  php:
-    type: string
 ---
 domain:
   name: DO_ENTIER
@@ -142,8 +130,6 @@ domain:
     type: Long
   sql:
     type: bigint
-  php:
-    type: long
 ---
 domain:
   name: DO_ID
@@ -158,8 +144,6 @@ domain:
   java:
     type: Integer
   sql:
-    type: int
-  php:
     type: int
 ---
 domain:
@@ -178,8 +162,6 @@ domain:
       - java.util.List
   sql:
     type: int
-  php:
-    type: Collection
 ---
 domain:
   name: DO_LIBELLE
@@ -193,8 +175,6 @@ domain:
     type: String
   sql:
     type: varchar
-  php:
-    type: string
 ---
 domain:
   name: DO_LISTE
@@ -207,6 +187,4 @@ domain:
       - java.util.List
   ts:
     genericType: "{T}[]"
-  php:
-    genericType: Collection
   sql: {}
