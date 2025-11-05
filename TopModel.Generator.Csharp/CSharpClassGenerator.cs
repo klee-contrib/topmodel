@@ -406,7 +406,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     && !Config.RequiredNonNullable(tag)
                     && !property.PrimaryKey
                     && !property.IsAssociationToMany()
-                || property is AliasProperty { PrimaryKey: true, PreservePrimaryKey: false }
                 || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
             )
             {

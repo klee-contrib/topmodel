@@ -508,6 +508,12 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 }
 
                 alp.Reference = aliasReference;
+
+                if (alp.PrimaryKey)
+                {
+                    alp.Required = true;
+                }
+
                 parser.Consume<MappingEnd>();
                 return alp;
 
