@@ -8,6 +8,17 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.0
+
+- [`52cf4b8`](https://github.com/klee-contrib/topmodel/commit/52cf4b894b225d97c704dbaa533669c2f6653864) - `preservePrimaryKey: true` sur les alias
+- [`f335a80`](https://github.com/klee-contrib/topmodel/commit/f335a803b6139f8bdabdfa6bdebf3d1d79c418ff) - `preserveTrigram: true` sur les alias
+
+  Ces deux nouvelles options sur les alias simplifient les usages d'alias dans les classes persistées, afin de pouvoir directement hériter des clés primaires et trigrammes des propriétés originales au lieu de devoir les redéfinir dans les classes cibles.
+
+  A noter que vous aurez besoin d'une mise à jour de votre générateur (JPA/C#/SQL/JS) si vous voulez que `preservePrimaryKey: true` ne recrée pas de séquence/identité sur vos IDs aliasés 😉
+
+  **impact potentiel en génération** : Les trigrammes sont désormais convertis en CONSTANT_CASE comme le reste du nom SQL, ce qui ne devrait pas poser trop de soucis puisque les noms de colonnes sont insensibles à la casse (enfin, c'est tout comme sur Postgres) et que quasiment tout le monde utilisait des trigrammes en majuscule déjà.
+
 ## 3.5.1
 
 - [`a0c6532`](https://github.com/klee-contrib/topmodel/commit/a0c6532340aa09a4eeff65170cc1c91586fe8a90) - [Core] Fix association sur décorateur qui ne pouvait pas être PK

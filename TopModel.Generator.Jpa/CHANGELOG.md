@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.4.0 (TODO)
+
+Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
+
 ## 3.3.10
 
 - [`897874`](https://github.com/klee-contrib/topmodel/commit/89787487c8ef32aabe4126d3bf22fbfd8e70159e) - [JPA] Ne pas écrire les getter ni les setter dans le cas où l'annotation Data a été posée
@@ -15,7 +19,7 @@
 ## 3.3.7
 
 - [`2fcb8d7`](https://github.com/klee-contrib/topmodel/commit/2fcb8d789d38b8a9bda1ea35d644f871f412245d) -[JPA] Respect de l'ordre de déclaration des paramètres dans les endpoints d'api server
-Fix [#506](https://github.com/klee-contrib/topmodel/issues/506)
+  Fix [#506](https://github.com/klee-contrib/topmodel/issues/506)
 
 ## 3.3.6
 

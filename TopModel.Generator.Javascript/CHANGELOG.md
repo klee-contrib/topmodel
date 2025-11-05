@@ -1,3 +1,7 @@
+## 3.4.0
+
+Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
+
 ## 3.3.1
 
 - [`c6f28d9`](https://github.com/klee-contrib/topmodel/commit/c6f28d9ca2490e03eb1457baec14528872b5eeac) - [JS] Fix régression regroupement import domaine + entityTypesPath

@@ -1,3 +1,7 @@
+## 3.4.0
+
+Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
+
 ## 3.3.1
 
 - [`1c9ef05`](https://github.com/klee-contrib/topmodel/commit/1c9ef050c3520a42a6d0912016ad0e0a9f52ecee) - [SQL] Fix alias d'association xxxToMany en trop dans les tables générées
