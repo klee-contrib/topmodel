@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>3.4.0</Version>
+    <Version>3.4.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX</Authors>
     <Description>Générateurs C# pour TopModel</Description>

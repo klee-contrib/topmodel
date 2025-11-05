@@ -1,3 +1,7 @@
+## 3.4.1
+
+- [`f6b2234`](https://github.com/klee-contrib/topmodel/commit/f6b2234526f842e32ee523bbb987cfad1ec4cc8f) - [C#] Fix [Required] en trop sur les alias PK
+
 ## 3.4.0
 
 Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
