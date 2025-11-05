@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.1
+
+- [`32e8c76`](https://github.com/klee-contrib/topmodel/commit/32e8c766ac6fedd154dc6b6570f49261566bad82) - Fix plantage si association sur classe avec une PK en alias
+
 ## 3.6.0
 
 - [`52cf4b8`](https://github.com/klee-contrib/topmodel/commit/52cf4b894b225d97c704dbaa533669c2f6653864) - `preservePrimaryKey: true` sur les alias
