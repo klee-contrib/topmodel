@@ -357,6 +357,32 @@ internal class PropertyResolver(
                 .Where(ap => ap.Association != null)
         )
         {
+            if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
+            {
+                yield return new ModelError(
+                    ErrorType.TMD9002,
+                    ap,
+                    "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.",
+                    ap.Reference
+                );
+                break;
+            }
+
+            if (
+                ap.PropertyReference == null
+                && ap.Association.Properties.Count(p => p.PrimaryKey) > 1
+                && ap.PropertyReference == null
+            )
+            {
+                yield return new ModelError(
+                    ErrorType.TMD9002,
+                    ap,
+                    "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.",
+                    ap.Reference
+                );
+                break;
+            }
+
             if (ap.Type.IsToMany() && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
                 yield return new ModelError(
@@ -512,32 +538,6 @@ internal class PropertyResolver(
                             ErrorType.TMD0002,
                             ap,
                             "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
-                            ap.Reference
-                        );
-                        break;
-                    }
-
-                    if (ap.PropertyReference == null && !association.ExtendedProperties.Any(p => p.PrimaryKey))
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD9002,
-                            ap,
-                            "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.",
-                            ap.Reference
-                        );
-                        break;
-                    }
-
-                    if (
-                        ap.PropertyReference == null
-                        && association.Properties.Count(p => p.PrimaryKey) > 1
-                        && ap.PropertyReference == null
-                    )
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD9002,
-                            ap,
-                            "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.",
                             ap.Reference
                         );
                         break;

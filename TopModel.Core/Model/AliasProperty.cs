@@ -115,7 +115,7 @@ public class AliasProperty : IProperty
 
     public bool PrimaryKey
     {
-        get => _primaryKey ?? (PreservePrimaryKey && _property.PrimaryKey);
+        get => _primaryKey ?? (PreservePrimaryKey && (_property?.PrimaryKey ?? false));
         set => _primaryKey = value;
     }
 
