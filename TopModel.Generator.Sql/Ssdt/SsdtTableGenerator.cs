@@ -96,7 +96,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         var fkList = properties.OfType<AssociationProperty>().ToList();
         foreach (var property in fkList)
         {
-            var propertyName = ((IProperty)property).SqlName;
+            var propertyName = property.SqlName;
             var indexName = "IDX_" + tableName + "_" + propertyName + "_FK";
 
             writer.WriteLine("/* Index on foreign key column for " + tableName + "." + propertyName + " */");
@@ -190,7 +190,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     {
         var tableName = property.Class.SqlName;
 
-        var propertyName = ((IProperty)property).SqlName;
+        var propertyName = property.SqlName;
         var referenceClass = property.Association;
 
         if (Config.TargetDBMS == TargetDBMS.Sqlserver)

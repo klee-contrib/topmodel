@@ -3,6 +3,8 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
+using static Utils.CoreUtils;
+
 public class CompositionProperty : IProperty
 {
 #nullable disable
@@ -19,6 +21,8 @@ public class CompositionProperty : IProperty
     public string NameByClassPascal => NamePascal;
 
     public string NameByClassCamel => NameCamel;
+
+    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(this);
 
     public Domain Domain { get; set; }
 
@@ -38,17 +42,18 @@ public class CompositionProperty : IProperty
 
     public string Label { get; set; }
 
+#nullable enable
     public bool IsMultipart => Composition.Properties.Any(cpp => cpp.Domain?.IsMultipart ?? false);
 
     public bool PrimaryKey => false;
 
     public bool Required { get; set; } = true;
 
-#nullable enable
-
     public string DefaultValue => throw new NotSupportedException();
 
     public LocatedString? Trigram { get; set; }
+
+    public string? FinalTrigram => Trigram ?? Class?.Trigram;
 
     public IList<AnnotationInstance> Annotations { get; private set; } = [];
 

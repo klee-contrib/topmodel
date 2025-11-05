@@ -445,6 +445,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                         case "preservePrimaryKey":
                             alp.PreservePrimaryKey = value!.Value == "true";
                             break;
+                        case "preserveTrigram":
+                            alp.PreserveTrigram = value!.Value == "true";
+                            break;
                         case "readonly":
                             alp.Readonly = value!.Value == "true";
                             break;

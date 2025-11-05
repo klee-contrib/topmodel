@@ -3,6 +3,8 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
+using static Utils.CoreUtils;
+
 public class RegularProperty : IProperty
 {
 #nullable disable
@@ -20,6 +22,8 @@ public class RegularProperty : IProperty
 
 #nullable enable
 
+    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(this);
+
     public string? Label { get; set; }
 
     public bool PrimaryKey { get; set; }
@@ -29,6 +33,8 @@ public class RegularProperty : IProperty
     public bool Readonly { get; set; }
 
     public LocatedString? Trigram { get; set; }
+
+    public string? FinalTrigram => Trigram ?? Class?.Trigram;
 
 #nullable disable
     public Domain Domain { get; set; }
@@ -69,7 +75,6 @@ public class RegularProperty : IProperty
     internal Reference Location { get; set; }
 #nullable enable
 #pragma warning disable KTA1600
-
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {

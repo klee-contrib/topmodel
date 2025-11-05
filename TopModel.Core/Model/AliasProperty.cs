@@ -3,6 +3,8 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
+using static Utils.CoreUtils;
+
 public class AliasProperty : IProperty
 {
     private string? _comment;
@@ -46,6 +48,21 @@ public class AliasProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
+    public string? FinalTrigram
+    {
+        get
+        {
+            if (PreserveTrigram)
+            {
+                return OriginalProperty?.FinalTrigram;
+            }
+
+            var prop = PersistentProperty ?? this;
+            var ap = prop as AssociationProperty ?? (prop as AliasProperty)?.Property as AssociationProperty;
+            return prop.Trigram ?? ap?.FinalTrigram ?? prop.Class?.Trigram;
+        }
+    }
+
     public string Name
     {
         get => (Prefix ?? string.Empty) + (_name ?? _property?.Name) + (Suffix ?? string.Empty);
@@ -88,6 +105,8 @@ public class AliasProperty : IProperty
                 + (Suffix ?? string.Empty)
             : NameCamel;
 
+    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(PersistentProperty ?? this);
+
     public string? Label
     {
         get => _label ?? _property?.Label;
@@ -113,6 +132,8 @@ public class AliasProperty : IProperty
     }
 
     public bool PreservePrimaryKey { get; set; }
+
+    public bool PreserveTrigram { get; set; }
 
 #nullable disable
     public Domain Domain
@@ -245,6 +266,7 @@ public class AliasProperty : IProperty
             Name = _name!,
             Trigram = Trigram,
             PreservePrimaryKey = PreservePrimaryKey,
+            PreserveTrigram = PreserveTrigram,
             UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
@@ -302,6 +324,7 @@ public class AliasProperty : IProperty
             Label = _label,
             As = As,
             PreservePrimaryKey = PreservePrimaryKey,
+            PreserveTrigram = PreserveTrigram,
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,

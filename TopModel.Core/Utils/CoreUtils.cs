@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using TopModel.Utils;
 
 namespace TopModel.Core.Utils;
 
@@ -121,5 +122,24 @@ public static class CoreUtils
         }
 
         return sorted;
+    }
+
+    internal static string GetSqlName(IProperty? property)
+    {
+        return property switch
+        {
+            IProperty { Class.Extends: not null, PrimaryKey: true }
+                when property.Name.StartsWith(property.Class.Name) => property
+                .Name[property.Class.Name.Length..]
+                .ToConstantCase(),
+            AssociationProperty ap => ap.RawSqlName,
+            AliasProperty { Property: AssociationProperty ap } => ap.RawSqlName,
+            _ => (property?.Name ?? string.Empty).ToConstantCase(),
+        };
+    }
+
+    internal static string GetSqlTrigram(string? trigram)
+    {
+        return (!string.IsNullOrWhiteSpace(trigram) ? $"{trigram}_" : string.Empty).ToConstantCase();
     }
 }

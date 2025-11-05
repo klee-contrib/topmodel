@@ -595,7 +595,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual IEnumerable<JavaAnnotation> GetManyToManyAnnotations(AssociationProperty property)
     {
         var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
-        var fk = ((IProperty)property).SqlName;
+        var fk = property.SqlName;
         var pk = property.Class.PrimaryKey.Single().SqlName + role;
         var association = new JavaAnnotation(
             $"{property.Type}",
@@ -658,7 +658,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             );
         yield return association;
 
-        var fk = ((IProperty)property).SqlName;
+        var fk = property.SqlName;
         var apk = property.Property.SqlName;
         var joinColumn = new JavaAnnotation("JoinColumn", imports: $"{JavaxOrJakarta}.persistence.JoinColumn")
             .AddAttribute("name", $@"""{fk}""")
@@ -702,7 +702,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual IEnumerable<JavaAnnotation> GetOneToOneAnnotations(AssociationProperty property)
     {
-        var fk = ((IProperty)property).SqlName;
+        var fk = property.SqlName;
         var apk = property.Property.SqlName;
         var association = new JavaAnnotation(
             @$"{property.Type}",

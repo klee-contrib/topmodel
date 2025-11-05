@@ -440,6 +440,10 @@
               "type": "boolean",
               "description": "Conserve la valeur de `primaryKey` de de la propriété aliasée."
             },
+            "preserveTrigram": {
+              "type": "boolean",
+              "description": "Conserve le trigramme de de la propriété aliasée."
+            },
             "readonly": {
               "type": "boolean",
               "description": "Surcharge le caractère readonly de la propriété aliasée."

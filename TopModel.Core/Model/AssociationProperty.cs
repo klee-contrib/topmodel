@@ -1,15 +1,18 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
+
+using static Utils.CoreUtils;
 
 public class AssociationProperty : IProperty
 {
     private IProperty? _property;
 
     public LocatedString? Trigram { get; set; }
+
+    public string? FinalTrigram => Trigram ?? Property.FinalTrigram ?? Class?.Trigram;
 
     public virtual string? ClassName { get; set; }
 
@@ -184,6 +187,8 @@ public class AssociationProperty : IProperty
             ? $"{NameCamel}"
             : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
+    public string SqlName => GetSqlTrigram(FinalTrigram) + RawSqlName;
+
     public Domain Domain =>
         Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
@@ -204,8 +209,20 @@ public class AssociationProperty : IProperty
     public bool UseLegacyRoleName { get; init; }
 
     internal Reference Location { get; set; }
+
 #nullable enable
-#pragma warning disable KTA1600
+    internal string RawSqlName
+    {
+        get
+        {
+            var sqlName = GetSqlName(Property);
+            if (!string.IsNullOrWhiteSpace(Role))
+            {
+                sqlName += UseLegacyRoleName ? $"_{Role.Replace(' ', '_').ToUpper()}" : $"_{Role.ToConstantCase()}";
+            }
+            return sqlName;
+        }
+    }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
