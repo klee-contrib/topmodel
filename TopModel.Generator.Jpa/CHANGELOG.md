@@ -2,6 +2,17 @@
 
 ## 3.4.0 (TODO)
 
+- [`509`](https://github.com/klee-contrib/topmodel/pull/509) - [JPA] Met en place la génération du métamodèle
+
+  Le metamodèle est une représentation typée et statique des entités, leurs attributs et relations.
+
+  Il permet notamment de faciliter l'utilisation des criteria builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités.
+
+  Documentation:
+
+  - Spec (Voir le chapitre 5): https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/
+  - Exemple d'utilisation: https://www.baeldung.com/hibernate-criteria-queries-metamodel
+
 Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
 
 ## 3.3.10
