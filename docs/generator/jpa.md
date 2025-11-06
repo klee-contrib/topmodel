@@ -669,23 +669,49 @@ Si la classe source et la classe cible sont différentes, un processor est ajout
 
 #### Writer
 
-Il existe deux mode de génération des writers : `jpa` ou `bulk`.
+Il existe deux modes de génération des writers : `jpa` ou `bulk`. Le mode est configuré via la propriété `dataFlowsWriter` dans la configuration.
 
 ##### JPA
 
-Le writer utilise le `JpaItemWriter` de spring-batch.
+Le writer utilise le `JpaItemWriter` de spring-batch. Ce mode est adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.).
 
 ##### Bulk
 
-Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`.
+Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`. Ce mode offre des performances exceptionnelles grâce à l'utilisation du bulk insert PostgreSQL (avec la commande `COPY`). Il est recommandé pour traiter de très gros volumes de données.
+
+**Configuration :**
+
+```yaml
+jpa:
+  - tags:
+      - entity
+    dataFlowsPath: topmodel/exemple/flows
+    dataFlowsWriter: Bulk # ou Jpa
+    dataFlowsBulkSize: 100000 # Taille des chunks pour le bulk insert (par défaut: 100000)
+```
 
 ##### Insert
 
-Le writer copy directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
+Le writer copie directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
 
 ##### Upsert
 
-Le writer copy les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
+Le writer copie les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
+
+#### Listeners
+
+Il est possible d'ajouter des listeners aux dataflows via la propriété `dataFlowsListeners`. Ces listeners seront appelés aux différents hooks du flow (beforeFlow, afterFlow, etc.).
+
+**Configuration :**
+
+```yaml
+jpa:
+  - tags:
+      - entity
+    dataFlowsPath: topmodel/exemple/flows
+    dataFlowsListeners:
+      - topmodel.exemple.listeners.CustomFlowListener
+```
 
 #### Job
 
@@ -851,13 +877,43 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
 
+- `clientApiGeneration`
+
+  Mode de génération de l'API Client. Les valeurs possibles sont :
+
+  - `RestClient` : Génération d'un client en mode RestClient (interface Exchange) - valeur par défaut
+  - `RestTemplate` : Génération d'un client en mode RestTemplate (classe abstraite à initialiser)
+  - `FeignClient` : Génération d'un client en mode Feign (interface spring controller avec l'annotation Feign)
+
+  Cette propriété n'est utilisée que lorsque `apiGeneration` est défini à `"client"` ou contient une variable qui peut être résolue à `"client"`.
+
+  _Valeur par défaut_: `RestClient`
+
+  _Variables par tag_: **non**
+
 - `compositionConverterCanonicalName`
-  Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd.
+
+  Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données. Les compositions sont des propriétés de type classe non persistée qui sont sérialisées en JSON dans une colonne de la base de données.
+
   _Templating_:
 
   - `{package}` : remplacé par le package de la classe composée
   - `{class}` : remplacé par le nom de la classe composée
-    _Variables par tag_: **non**
+
+  _Valeur par défaut_: `"{package}.{class}Converter"`
+
+  _Variables par tag_: **non**
+
+  **Exemple :**
+
+  Pour une classe `Adresse` dans le package `topmodel.exemple.entities.common`, le converter généré sera `topmodel.exemple.entities.common.AdresseConverter` par défaut. Vous pouvez personnaliser ce nom :
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+    compositionConverterCanonicalName: "{package}.converters.{class}JsonConverter"
+  ```
 
 - `resourcesPath`
 
@@ -889,15 +945,23 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `associationAdders`
 
-  Option pour générer des méthodes d'ajouts pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets ajoutés.
+  Option pour générer des méthodes d'ajout pour les associations `oneToMany` et `manyToMany`. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproques.
 
   _Valeur par défaut_: `false`
+
+  **Exemple :**
+
+  Pour une association `OneToMany` entre `Utilisateur` et `Commande`, si `associationAdders: true`, une méthode `addCommande(Commande commande)` sera générée dans la classe `Utilisateur`. Cette méthode ajoutera la commande à la liste et mettra à jour la référence réciproque (`commande.setUtilisateur(this)`).
 
 - `associationRemovers`
 
-  Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés.
+  Option pour générer des méthodes de suppression pour les associations `oneToMany` et `manyToMany`. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
 
   _Valeur par défaut_: `false`
+
+  **Exemple :**
+
+  Pour une association `OneToMany` entre `Utilisateur` et `Commande`, si `associationRemovers: true`, une méthode `removeCommande(Commande commande)` sera générée dans la classe `Utilisateur`. Cette méthode retirera la commande de la liste et mettra à jour la référence réciproque (`commande.setUtilisateur(null)`).
 
 - `generatedHint`
 
@@ -947,8 +1011,85 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Documentation:
 
-  - Spec (Voir le chapitre 5): https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/
-  - Exemple d'utilisation: https://www.baeldung.com/hibernate-criteria-queries-metamodel
+  - Spec (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
+  - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
+
+- `useJdbc`
+
+  Génération en mode JDBC au lieu de JPA. Dans ce mode, les entités sont générées sans annotations JPA, mais avec des annotations JDBC simples. Les DAOs héritent de `CrudRepository` au lieu de `JpaRepository`.
+
+  _Valeur par défaut_: `false`
+
+  **Note :** En mode JDBC, les enums ne sont pas supportés de la même manière qu'en mode JPA. Les classes avec des valeurs ne peuvent pas utiliser le mode enum.
+
+- `dbSchema`
+
+  Nom du schéma de base de données sur lequel les entités sont sauvegardées. Cette propriété est utilisée pour générer les annotations `@Table` avec le schéma approprié.
+
+  _Templating_: `{module}`
+
+  _Variables par tag_: **oui** (plusieurs schémas pourraient être utilisés si un fichier a plusieurs tags)
+
+  **Exemple :**
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+    dbSchema: public
+  ```
+
+  Pour un schéma par module :
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+    dbSchema: "{module}"
+  ```
+
+- `dataFlowsPath`
+
+  Localisation des flux de données générés. Cette variable doit être renseignée pour que les flux soient générés.
+
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+
+  _Templating_: `{module}`
+
+  _Variables par tag_: **oui** (plusieurs flux de données pourraient être générés si un fichier a plusieurs tags)
+
+- `dataFlowsWriter`
+
+  Writer à utiliser pour les flux de données. Les valeurs possibles sont :
+
+  - `Jpa` : Utilise le `JpaItemWriter` de spring-batch (par défaut)
+  - `Bulk` : Utilise le `PgBulkWriter` de la librairie `spring-batch-bulk` pour des performances optimales
+
+  _Valeur par défaut_: `Jpa`
+
+- `dataFlowsBulkSize`
+
+  Taille des chunks à extraire et insérer lors de l'utilisation du mode `Bulk` pour les flux de données.
+
+  _Valeur par défaut_: `100000`
+
+- `dataFlowsListeners`
+
+  Liste des listeners à ajouter aux dataflows. Ces listeners seront appelés aux différents hooks du flow (beforeFlow, afterFlow, etc.).
+
+  _Valeur par défaut_: `[]`
+
+  **Exemple :**
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+    dataFlowsPath: topmodel/exemple/flows
+    dataFlowsListeners:
+      - topmodel.exemple.listeners.CustomFlowListener
+      - topmodel.exemple.listeners.AnotherListener
+  ```
 
 ### Exemple
 
