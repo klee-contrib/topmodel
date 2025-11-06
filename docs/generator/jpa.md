@@ -34,6 +34,7 @@ Sur toutes les classes, interfaces générées, est ajoutée l'annotation `@Gene
 | SpringApiServerGen    | `apiGeneration: server`                                            | Endpoints                                                                                                                        | Interface définissant les méthodes annotées permettant de définir une api server. L'implémentation est à la main du développeur                                                                                                                                            |
 | JpaMapperGenerator    | Toujours                                                           | Mappers                                                                                                                          | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèles                                                                                                                                                                        |
 | JpaResourceGen        | `resourcesPath` défini                                             | Classes qui contiennent des labels ou des values qui ont des defaultProperty                                                     | Fichiers de resource `.properties` dans les différentes langues de l'application. Les clés sont les clés de traduction des labels des propriétés du modèle, et dont les valeurs sont les labels définis dans le modèle dans la langue de développement, ou leur traduction |
+| JpaMetaModelGenerator | `metaModel: true`                                                  | Entités persistées                                                                                                               | Classes représentant le métamodèle des entités persistées. Une classe par entité.                                                                                                                                                                                          |
 
 ## Génération des classes
 
@@ -933,6 +934,21 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
   - `start`
 
     Début de la séquence générée.
+
+- `metaModel`
+
+  Option pour générer le métamodèle.
+
+  _Valeur par défaut_: `false`
+
+  Le metamodèle est une représentation typée et statique des entités, leurs attributs et relations.
+
+  Il permet notamment de faciliter l'utilisation des criteria builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités.
+
+  Documentation:
+
+  - Spec (Voir le chapitre 5): https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/
+  - Exemple d'utilisation: https://www.baeldung.com/hibernate-criteria-queries-metamodel
 
 ### Exemple
 
