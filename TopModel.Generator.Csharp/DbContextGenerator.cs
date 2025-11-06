@@ -248,12 +248,21 @@ public class DbContextGenerator(
         if (Config.UseEFMigrations)
         {
             var hasFk = false;
-            foreach (var (prop, ap) in GetAssociationProperties(classes, tag))
+            foreach (
+                var g in GetAssociationProperties(classes, tag)
+                    .GroupBy(c => new
+                    {
+                        c.Property.Class,
+                        c.AssociationProperty.Association,
+                        c.AssociationProperty.Type,
+                        c.AssociationProperty.Role,
+                    })
+            )
             {
                 hasFk = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.NamePascal}).OnDelete(DeleteBehavior.Restrict);"
+                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{g.Key.Association}>().With{(g.Key.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(g.Key.Type == AssociationType.ManyToOne ? string.Empty : $"<{g.Key.Class}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().Property.NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.Property.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
                 );
             }
 
