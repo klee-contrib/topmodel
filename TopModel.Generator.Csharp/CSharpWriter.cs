@@ -202,6 +202,28 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     }
 
     /// <summary>
+    /// Ecrit la valeur de l'example du commentaire..
+    /// </summary>
+    /// <param name="value">Valeur à écrire.</param>
+    public void WriteExample(string value)
+    {
+        WriteExample(0, value);
+    }
+
+    /// <summary>
+    /// Ecrit la valeur de l'example du commentaire.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="value">Valeur à écrire.</param>
+    public virtual void WriteExample(int indentationLevel, string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            WriteLine(indentationLevel, LoadExample(value));
+        }
+    }
+
+    /// <summary>
     /// Ecrit la chaine de caractère dans le flux.
     /// </summary>
     /// <param name="value">Valeur à écrire dans le flux.</param>
@@ -300,6 +322,25 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         {
             WriteLine(indentationLevel, LoadParam(paramName, value, "typeparam"));
         }
+    }
+
+    /// <summary>
+    /// Retourne le commentaire de l'exemple formatté.
+    /// </summary>
+    /// <param name="value">Description de l'exemple.</param>
+    /// <returns>Code généré.</returns>
+    protected static string LoadExample(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        var sb = new StringBuilder();
+        sb.Append("/// <example>");
+        sb.Append(value.Replace("<", "&lt;").Replace(">", "&gt;"));
+        sb.Append("</example>");
+        return sb.ToString();
     }
 
     /// <summary>

@@ -368,6 +368,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         w.WriteSummary(1, property.Comment);
 
+        if (property.CustomProperties.TryGetValue("example", out var example))
+        {
+            w.WriteExample(1, example);
+        }
+
         var cp = property switch
         {
             CompositionProperty c => c,
