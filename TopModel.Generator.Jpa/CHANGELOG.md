@@ -1,6 +1,6 @@
 # Changelog JPA
 
-## 3.4.0 (TODO)
+## 3.4.0
 
 - [`509`](https://github.com/klee-contrib/topmodel/pull/509) - [JPA] Met en place la génération du métamodèle
 
@@ -8,12 +8,14 @@
 
   Il permet notamment de faciliter l'utilisation des criteria builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités.
 
+  Le metamodèle devant respecter des règles de nommage et de localisation dans les fichiers sources (entre autres), des solutions existent pour le générer automatiquement (voir hibernate-jpamodelgen). La génération de code étant le coeur de topmodel, nous avons fait le choix d'inclure aussi les métamodèles afin de réduire les dépendances des projets à des librairies.
+
   Documentation:
 
   - Spec (Voir le chapitre 5): https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/
   - Exemple d'utilisation: https://www.baeldung.com/hibernate-criteria-queries-metamodel
 
-Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
+- Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
 
 ## 3.3.10
 
