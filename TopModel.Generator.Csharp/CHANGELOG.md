@@ -1,3 +1,7 @@
+## 3.4.3
+
+- [`e5a0344`](https://github.com/klee-contrib/topmodel/commit/e5a03441170d77848c45a548ffb2d89f7d11b51e) - [C#] DbContext : fix #495
+
 ## 3.4.2
 
 - [`4162042`](https://github.com/klee-contrib/topmodel/commit/41620425326d3be0a344668fb4bb2b0ad2a644b0) - [C#] Ajout gestion "customProperty" "example" pour les propriétés dans les classes
