@@ -1,3 +1,7 @@
+## 3.4.2
+
+- [`4162042`](https://github.com/klee-contrib/topmodel/commit/41620425326d3be0a344668fb4bb2b0ad2a644b0) - [C#] Ajout gestion "customProperty" "example" pour les propriétés dans les classes
+
 ## 3.4.1
 
 - [`f6b2234`](https://github.com/klee-contrib/topmodel/commit/f6b2234526f842e32ee523bbb987cfad1ec4cc8f) - [C#] Fix [Required] en trop sur les alias PK
