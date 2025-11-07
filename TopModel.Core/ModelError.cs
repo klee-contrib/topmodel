@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Localization;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
@@ -27,6 +28,16 @@ public class ModelError
         ErrorType = errorType;
         IsError = isError;
     }
+
+    internal ModelError(
+        IStringLocalizer localizer,
+        ErrorType errorType,
+        string[] messageArgs,
+        object objet,
+        Reference? reference = null,
+        bool isError = true
+    )
+        : this(errorType, objet, localizer.GetString(Enum.GetName(errorType)!, messageArgs), reference, isError) { }
 
     public bool IsError { get; }
 

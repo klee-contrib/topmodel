@@ -1,10 +1,12 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
 internal class DataFlowResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, DataFlow> referencedDataFlows,
     IDictionary<string, Class> referencedClasses
@@ -21,9 +23,10 @@ internal class DataFlowResolver(
             if (!referencedClasses.TryGetValue(dataFlow.ClassReference.ReferenceName, out var classe))
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0002,
+                    [dataFlow.ClassReference.ReferenceName],
                     dataFlow,
-                    "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                     dataFlow.ClassReference
                 );
                 continue;
@@ -39,9 +42,10 @@ internal class DataFlowResolver(
                 if (dataFlow.ActiveProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [dataFlow.ActivePropertyReference.ReferenceName, classe.Name],
                         dataFlow,
-                        $"La propriété '{dataFlow.ActivePropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                         dataFlow.ActivePropertyReference
                     );
                 }
@@ -70,9 +74,10 @@ internal class DataFlowResolver(
                 if (!referencedClasses.TryGetValue(source.ClassReference.ReferenceName, out var sourceClass))
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0002,
+                        [source.ClassReference.ReferenceName],
                         dataFlow,
-                        "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         source.ClassReference
                     );
                     continue;
@@ -89,9 +94,10 @@ internal class DataFlowResolver(
                     if (joinProperty == null)
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0004,
+                            [joinPropertyReference.ReferenceName, classe.Name],
                             dataFlow,
-                            $"La propriété '{joinPropertyReference.ReferenceName}' n'existe pas sur la classe '{sourceClass}'.",
                             joinPropertyReference
                         );
                     }

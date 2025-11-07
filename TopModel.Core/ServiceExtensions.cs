@@ -13,6 +13,7 @@ public static class ServiceExtensions
     )
     {
         services
+            .AddLocalization()
             .AddMemoryCache()
             .AddSingleton(fileChecker)
             .AddSingleton<AnnotationLoader>()

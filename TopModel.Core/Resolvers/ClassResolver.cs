@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class ClassResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     TranslationStore translationStore
@@ -28,9 +30,10 @@ internal class ClassResolver(
                 )
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0001,
+                        [property.Name],
                         modelFile,
-                        $"Le nom '{property.Name}' est déjà utilisé.",
                         property.Decorator is not null
                             ? classe.DecoratorReferences.FirstOrDefault(dr =>
                                 dr.ReferenceName == property.Decorator.Name
@@ -190,9 +193,10 @@ internal class ClassResolver(
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0002,
+                    [classe.ExtendsReference.ReferenceName],
                     classe,
-                    "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                     classe.ExtendsReference!
                 );
                 continue;
@@ -240,9 +244,10 @@ internal class ClassResolver(
                 if (classe.DefaultProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [classe.DefaultPropertyReference.ReferenceName, classe.Name],
                         classe,
-                        $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                         classe.DefaultPropertyReference
                     );
                 }
@@ -263,9 +268,10 @@ internal class ClassResolver(
                 if (classe.OrderProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [classe.OrderPropertyReference.ReferenceName, classe.Name],
                         classe,
-                        $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                         classe.OrderPropertyReference
                     );
                 }
@@ -286,9 +292,10 @@ internal class ClassResolver(
                 if (classe.FlagProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [classe.FlagPropertyReference.ReferenceName, classe.Name],
                         classe,
-                        $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                         classe.FlagPropertyReference
                     );
                 }
@@ -307,9 +314,10 @@ internal class ClassResolver(
                 if (classe.LocaleProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [classe.LocalePropertyReference.ReferenceName, classe.Name],
                         classe,
-                        $"La propriété '{classe.LocalePropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                         classe.LocalePropertyReference
                     );
                 }
@@ -427,9 +435,10 @@ internal class ClassResolver(
                     if (property == null)
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0004,
+                            [ukPropRef.ReferenceName, classe.Name],
                             classe,
-                            $"La propriété '{ukPropRef.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                             ukPropRef
                         );
                     }
@@ -478,9 +487,10 @@ internal class ClassResolver(
                     if (property == null)
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0004,
+                            [value.Key.ReferenceName, classe.Name],
                             classe,
-                            $"La propriété '{value.Key.ReferenceName}' n'existe pas sur la classe '{classe}'.",
                             value.Key
                         );
                     }

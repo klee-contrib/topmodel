@@ -1,10 +1,11 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class EndpointResolver(IList<ModelFile> modelFiles)
+internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> modelFiles)
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des endpoints.
@@ -23,9 +24,10 @@ internal class EndpointResolver(IList<ModelFile> modelFiles)
                 )
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0001,
+                        [property.Name],
                         modelFile,
-                        $"Le nom '{property.Name}' est déjà utilisé.",
                         property.Decorator is not null
                             ? endpoint.DecoratorReferences.FirstOrDefault(dr =>
                                 dr.ReferenceName == property.Decorator.Name

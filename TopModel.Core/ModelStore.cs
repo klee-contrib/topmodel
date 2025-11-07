@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using NeoSmart.AsyncLock;
@@ -18,7 +19,8 @@ public class ModelStore(
     ILogger<ModelStore> logger,
     ModelConfig config,
     IEnumerable<IModelWatcher> modelWatchers,
-    TranslationStore translationStore
+    TranslationStore translationStore,
+    IStringLocalizer<ErrorType> localizer
 ) : IDisposable
 {
     private readonly AsyncLock _lockInit = new();
@@ -436,22 +438,12 @@ public class ModelStore(
 
         foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
         {
-            yield return new ModelError(
-                ErrorType.TMD0009,
-                domain,
-                $"Le domaine '{domain.Name}' n'est pas utilisé.",
-                isError: false
-            );
+            yield return new ModelError(localizer, ErrorType.TMD0009, [domain.Name], domain, isError: false);
         }
 
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
-            yield return new ModelError(
-                ErrorType.TMD0010,
-                decorator,
-                $"Le décorateur '{decorator.Name}' n'est pas utilisé.",
-                isError: false
-            );
+            yield return new ModelError(localizer, ErrorType.TMD0010, [decorator.Name], decorator, isError: false);
         }
 
         foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
@@ -465,9 +457,10 @@ public class ModelStore(
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0001,
+                    [endpoint.Name],
                     endpoint,
-                    $"Le nom '{endpoint.Name}' est déjà utilisé.",
                     endpoint.Name.GetLocation()
                 );
             }
@@ -799,19 +792,21 @@ public class ModelStore(
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var annotationResolver = new AnnotationResolver(modelFiles, config, referencedAnnotations);
-        var classResolver = new ClassResolver(modelFiles, referencedClasses, translationStore);
-        var dataFlowResolver = new DataFlowResolver(modelFiles, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(modelFiles, config, referencedDecorators);
-        var domainResolver = new DomainResolver(modelFiles, config, Domains, Converters);
-        var endpointResolver = new EndpointResolver(modelFiles);
+        var annotationResolver = new AnnotationResolver(localizer, modelFiles, config, referencedAnnotations);
+        var classResolver = new ClassResolver(localizer, modelFiles, referencedClasses, translationStore);
+        var dataFlowResolver = new DataFlowResolver(localizer, modelFiles, referencedDataFlows, referencedClasses);
+        var decoratorResolver = new DecoratorResolver(localizer, modelFiles, config, referencedDecorators);
+        var domainResolver = new DomainResolver(localizer, modelFiles, config, Domains, Converters);
+        var endpointResolver = new EndpointResolver(localizer, modelFiles);
         var mapperResolver = new MapperResolver(
+            localizer,
             modelFiles,
             referencedClasses,
             Converters,
             config.UseLegacyAssociationCompositionMappers
         );
         var propertyResolver = new PropertyResolver(
+            localizer,
             modelFiles,
             Domains,
             referencedClasses,

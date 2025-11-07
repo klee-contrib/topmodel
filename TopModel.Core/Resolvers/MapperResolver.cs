@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class MapperResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     IEnumerable<Converter> converters,
@@ -25,9 +27,10 @@ internal class MapperResolver(
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0002,
+                        [mappings.ClassReference.ReferenceName],
                         classe,
-                        "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         mappings.ClassReference
                     );
                     continue;
@@ -45,9 +48,10 @@ internal class MapperResolver(
                     if (currentProperty == null)
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0004,
+                            [mapping.Key.ReferenceName, classe.Name],
                             classe,
-                            $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.",
                             mapping.Key
                         );
                     }
@@ -63,9 +67,10 @@ internal class MapperResolver(
                     if (mappedProperty == null)
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0004,
+                            [mapping.Value.ReferenceName, mappedClass.Name],
                             classe,
-                            $"La propriété '{{0}}' est introuvable sur la classe '{mappedClass}'.",
                             mapping.Value
                         );
                     }
@@ -180,9 +185,10 @@ internal class MapperResolver(
                         if (currentProperty == null)
                         {
                             yield return new ModelError(
+                                localizer,
                                 ErrorType.TMD0004,
+                                [mapping.TargetPropertyReference.ReferenceName, classe.Name],
                                 classe,
-                                $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.",
                                 mapping.TargetPropertyReference
                             );
                         }
@@ -197,9 +203,10 @@ internal class MapperResolver(
                         if (mappedProperty == null)
                         {
                             yield return new ModelError(
+                                localizer,
                                 ErrorType.TMD0004,
+                                [mapping.Property.Name, classe.Name],
                                 classe,
-                                $"La propriété '{mapping.Property.Name}' est introuvable sur la classe '{classe}'.",
                                 mapping.Property.GetLocation()
                             );
                         }
@@ -270,9 +277,10 @@ internal class MapperResolver(
                 )
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0001,
+                        [param.GetName()],
                         classe,
-                        $"Le nom '{param.GetName()}' est déjà utilisé.",
                         param.GetLocation()
                     );
                 }
@@ -455,12 +463,7 @@ internal class MapperResolver(
                 )
             )
             {
-                yield return new ModelError(
-                    ErrorType.TMD0001,
-                    classe,
-                    $"Le nom '{mapper.Name}' est déjà utilisé.",
-                    mapper.GetLocation()
-                );
+                yield return new ModelError(localizer, ErrorType.TMD0001, [mapper.Name], classe, mapper.GetLocation());
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))

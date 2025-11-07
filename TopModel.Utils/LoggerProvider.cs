@@ -48,7 +48,7 @@ public class LoggerProvider : ILoggerProvider
         /// <inheritdoc cref="ILogger.IsEnabled" />
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return logLevel != LogLevel.Debug;
         }
 
         /// <inheritdoc cref="ILogger.Log{TState}" />

@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using Spectre.Console;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +8,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class PropertyResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Domain> domains,
     IDictionary<string, Class> referencedClasses,
@@ -127,9 +130,10 @@ internal class PropertyResolver(
                 if (!referencedClasses!.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0002,
+                        [alp.Reference.ClassReference.ReferenceName],
                         alp,
-                        "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         alp.Reference.ClassReference
                     );
                     continue;
@@ -147,9 +151,10 @@ internal class PropertyResolver(
                 )
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0006,
+                        [alp.Reference.EndpointReference.ReferenceName],
                         alp,
-                        "L'endpoint '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         alp.Reference.EndpointReference
                     );
                     continue;
@@ -167,9 +172,10 @@ internal class PropertyResolver(
                 )
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0005,
+                        [alp.Reference.DecoratorReference.ReferenceName],
                         alp,
-                        "Le décorateur '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         alp.Reference.DecoratorReference
                     );
                     continue;
@@ -192,9 +198,10 @@ internal class PropertyResolver(
                 if (aliasedProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [propReference.ReferenceName, propertyContainer.Name],
                         alp,
-                        $"La propriété '{{0}}' est introuvable sur la classe '{propertyContainer}'.",
                         propReference
                     );
                     shouldBreak = true;
@@ -417,9 +424,10 @@ internal class PropertyResolver(
                 if (referencedProperty == null)
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0004,
+                        [ap.PropertyReference.ReferenceName, ap.Association.Name],
                         ap,
-                        $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.",
                         ap.PropertyReference
                     );
                 }
@@ -458,9 +466,10 @@ internal class PropertyResolver(
                     )
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0003,
+                            [rp.DomainReference?.ReferenceName ?? string.Empty],
                             rp,
-                            "Le domaine '{0}' est introuvable.",
                             rp.DomainReference
                         );
                         break;
@@ -535,9 +544,10 @@ internal class PropertyResolver(
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0002,
+                            [ap.Reference.ReferenceName],
                             ap,
-                            "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                             ap.Reference
                         );
                         break;
@@ -572,9 +582,10 @@ internal class PropertyResolver(
                     if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0002,
+                            [cp.Reference.ReferenceName],
                             cp,
-                            "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
                             cp.Reference
                         );
                         break;
@@ -587,9 +598,10 @@ internal class PropertyResolver(
                         if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
                         {
                             yield return new ModelError(
+                                localizer,
                                 ErrorType.TMD0003,
+                                [cp.DomainReference.ReferenceName],
                                 cp,
-                                "Le domaine '{0}' est introuvable.",
                                 cp.DomainReference
                             );
                             break;
@@ -613,9 +625,10 @@ internal class PropertyResolver(
                     if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
                     {
                         yield return new ModelError(
+                            localizer,
                             ErrorType.TMD0003,
+                            [alp.DomainReference.ReferenceName],
                             alp,
-                            "Le domaine '{0}' est introuvable.",
                             alp.DomainReference
                         );
                         break;
@@ -636,11 +649,7 @@ internal class PropertyResolver(
         }
     }
 
-    private static IEnumerable<ModelError> CheckDomainParameters(
-        IProperty property,
-        DomainReference domainRef,
-        Domain domain
-    )
+    private IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
     {
         foreach (
             var extraParameter in domainRef.ParameterReferences.Keys.Where(pr =>
@@ -649,9 +658,10 @@ internal class PropertyResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0007,
+                [extraParameter.ReferenceName, domain.Name],
                 property,
-                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le domaine '{domain.Name}'.",
                 extraParameter
             );
         }
@@ -663,9 +673,10 @@ internal class PropertyResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0008,
+                [missingParameter.Name, domain.Name],
                 property,
-                $"Le paramètre '{missingParameter.Name}' du domaine '{domain.Name}' est obligatoire.",
                 domainRef
             );
         }

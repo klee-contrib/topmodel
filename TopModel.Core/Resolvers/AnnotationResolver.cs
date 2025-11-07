@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using Spectre.Console;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +8,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 public class AnnotationResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Annotation> referencedAnnotations
@@ -53,9 +56,10 @@ public class AnnotationResolver(
                 else
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0011,
+                        [varName.ReferenceName],
                         annotation,
-                        $"La variable '{varName.ReferenceName}' est introuvable.",
                         varName,
                         isError: false
                     );
@@ -69,9 +73,10 @@ public class AnnotationResolver(
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0001,
+                    [templateParam.Name],
                     annotation,
-                    $"Le nom '{templateParam.Name}' est déjà utilisé.",
                     templateParam.GetLocation()
                 );
             }
@@ -210,7 +215,7 @@ public class AnnotationResolver(
         }
     }
 
-    private static IEnumerable<ModelError> CheckAnnotationParameters(
+    private IEnumerable<ModelError> CheckAnnotationParameters(
         object target,
         AnnotationReference annotationRef,
         Annotation annotation
@@ -223,9 +228,10 @@ public class AnnotationResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0007,
+                [extraParameter.ReferenceName, annotation.Name],
                 target,
-                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur l'annotation '{annotation.Name}'.",
                 extraParameter
             );
         }
@@ -237,9 +243,10 @@ public class AnnotationResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0008,
+                [missingParameter.Name, annotation.Name],
                 target,
-                $"Le paramètre '{missingParameter.Name}' de l'annotation '{annotation.Name}' est obligatoire.",
                 annotationRef
             );
         }

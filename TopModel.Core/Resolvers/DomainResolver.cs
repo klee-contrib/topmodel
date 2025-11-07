@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DomainResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Domain> domains,
@@ -25,9 +27,10 @@ internal class DomainResolver(
                 if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0003,
+                        [domainReference.ReferenceName],
                         domain,
-                        "Le domaine '{0}' est introuvable.",
                         domainReference
                     );
                     continue;
@@ -43,9 +46,10 @@ internal class DomainResolver(
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0001,
+                    [templateParam.Name],
                     domain,
-                    $"Le nom '{templateParam.Name}' est déjà utilisé.",
                     templateParam.GetLocation()
                 );
             }
@@ -71,9 +75,10 @@ internal class DomainResolver(
                 else
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0011,
+                        [varName.ReferenceName],
                         converter,
-                        $"La variable '{varName.ReferenceName}' est introuvable.",
                         varName,
                         isError: false
                     );
@@ -93,7 +98,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
+                    yield return new ModelError(localizer, ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
                     break;
                 }
 
@@ -104,7 +109,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
+                    yield return new ModelError(localizer, ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
                     break;
                 }
 
@@ -143,9 +148,10 @@ internal class DomainResolver(
                 else
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0011,
+                        [varName.ReferenceName],
                         domain,
-                        $"La variable '{varName.ReferenceName}' est introuvable.",
                         varName,
                         isError: false
                     );

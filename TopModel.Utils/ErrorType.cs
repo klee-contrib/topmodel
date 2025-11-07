@@ -5,62 +5,62 @@ public enum ErrorType
     #region Erreurs génériques (0)
 
     /// <summary>
-    /// Code d'erreur par défaut
+    /// Code d'erreur par défaut.
     /// </summary>
     TMD0000,
 
     /// <summary>
-    /// Le nom '{0}' est déjà utilisé.
+    /// Nom déjà utilisé.
     /// </summary>
     TMD0001,
 
     /// <summary>
-    /// La classe '{0}' est introuvable.
+    /// Classe introuvable.
     /// </summary>
     TMD0002,
 
     /// <summary>
-    /// Le domaine '{0}' est introuvable.
+    /// Domaine introuvable.
     /// </summary>
     TMD0003,
 
     /// <summary>
-    /// La propriété '{0}' est introuvable.
+    /// Propriété introuvable.
     /// </summary>
     TMD0004,
 
     /// <summary>
-    /// Le décorateur '{0}' est introuvable.
+    /// Décorateur introuvable.
     /// </summary>
     TMD0005,
 
     /// <summary>
-    /// L'endpoint est introuvable dans le fichier
+    /// Endpoint introuvable.
     /// </summary>
     TMD0006,
 
     /// <summary>
-    /// Le paramètre '{0}' n'existe pas.
+    /// Paramètre introuvable.
     /// </summary>
     TMD0007,
 
     /// <summary>
-    /// Le paramètre '{0}' est obligatoire.
+    /// Paramètre obligatoire.
     /// </summary>
     TMD0008,
 
     /// <summary>
-    /// Le domaine '{domain.Name}' n'est pas utilisé.
+    /// Domaine non utilisé.
     /// </summary>
     TMD0009,
 
     /// <summary>
-    /// Le décorateur '{decorateur.Name}' n'est pas utilisé.
+    /// Décorateur non utilisé.
     /// </summary>
     TMD0010,
 
     /// <summary>
-    /// La variable {varName.ReferenceName} est introuvable.
+    /// Variable introuvable.
     /// </summary>
     TMD0011,
 

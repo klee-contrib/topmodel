@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using Microsoft.Extensions.Localization;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -6,6 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DecoratorResolver(
+    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Decorator> referencedDecorators
@@ -104,9 +106,10 @@ internal class DecoratorResolver(
                 else
                 {
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0011,
+                        [varName.ReferenceName],
                         decorator,
-                        $"La variable '{varName.ReferenceName}' est introuvable.",
                         varName,
                         isError: false
                     );
@@ -120,9 +123,10 @@ internal class DecoratorResolver(
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD0001,
+                    [templateParam.Name],
                     decorator,
-                    $"Le nom '{templateParam.Name}' est déjà utilisé.",
                     templateParam.GetLocation()
                 );
             }
@@ -143,9 +147,10 @@ internal class DecoratorResolver(
                 {
                     isError = true;
                     yield return new ModelError(
+                        localizer,
                         ErrorType.TMD0005,
+                        [decoratorRef.ReferenceName],
                         container,
-                        $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.",
                         decoratorRef
                     );
                 }
@@ -229,7 +234,7 @@ internal class DecoratorResolver(
         }
     }
 
-    private static IEnumerable<ModelError> CheckDecoratorParameters(
+    private IEnumerable<ModelError> CheckDecoratorParameters(
         IPropertyContainer container,
         DecoratorReference decoratorRef,
         Decorator decorator
@@ -242,9 +247,10 @@ internal class DecoratorResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0007,
+                [extraParameter.ReferenceName, decorator.Name],
                 container,
-                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le décorateur '{decorator.Name}'.",
                 extraParameter
             );
         }
@@ -256,9 +262,10 @@ internal class DecoratorResolver(
         )
         {
             yield return new ModelError(
+                localizer,
                 ErrorType.TMD0008,
+                [missingParameter.Name, decorator.Name],
                 container,
-                $"Le paramètre '{missingParameter.Name}' du décorateur '{decorator.Name}' est obligatoire.",
                 decoratorRef
             );
         }
