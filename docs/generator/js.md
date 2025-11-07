@@ -14,8 +14,13 @@ Le mode `angular` permet de générer un service injectable au sens `Angular`, c
 
 ##### Observe
 
-Lorsque l'objet retourné par l'API est `HttpEvent<>` ou bien `HttpResponse<>`, alors le service créé ajoutera automatiquement l'option `observe: 'events'` ou `observe: 'response'` à la requête.
-Sinon, l'option `observe: 'body'` sera ajoutée.
+Le générateur Angular détecte automatiquement le type de retour de l'endpoint pour configurer l'option `observe` de la requête HTTP :
+
+- **`HttpResponse<TonObjet>`** : Si le type de retour est `HttpResponse<UnObjet>`, le générateur ajoutera automatiquement `observe: 'response'` à la requête. Cela permet d'accéder à l'objet `HttpResponse` complet, incluant les headers et le status code, en plus du body.
+
+- **`HttpEvent<>`** : Si le type de retour est `HttpEvent<>`, le générateur ajoutera automatiquement `observe: 'events'` à la requête.
+
+- **Par défaut** : Pour tous les autres types de retour, l'option `observe: 'body'` sera ajoutée, ce qui retourne uniquement le body de la réponse.
 
 #### Vanilla
 
