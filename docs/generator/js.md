@@ -6,11 +6,11 @@ _Remarque : tous les imports spécifiés pour le générateur JS dans les domain
 
 ### Modes de génération de l'API client
 
-Il est possible de générer l'API cliente selon deux modes (`apiMode`) : `vanilla`, `nuxt` ou `angular`.
+Il est possible de générer l'API cliente selon quatre modes (`apiMode`) : `vanilla`, `nuxt`, `angular` ou `angular_promise`.
 
 #### Angular
 
-Le mode `angular` permet de générer un service injectable au sens `Angular`, contenant les méthodes d'appels à l'API.
+Le mode `angular` permet de générer un service injectable au sens `Angular`, contenant les méthodes d'appels à l'API. Les méthodes retournent des `Observable` de RxJS.
 
 ##### Observe
 
@@ -22,27 +22,82 @@ Le générateur Angular détecte automatiquement le type de retour de l'endpoint
 
 - **Par défaut** : Pour tous les autres types de retour, l'option `observe: 'body'` sera ajoutée, ce qui retourne uniquement le body de la réponse.
 
+##### Angular Promise
+
+Le mode `angular_promise` fonctionne de la même manière que le mode `angular`, mais les méthodes retournent des `Promise` au lieu d'`Observable`. Ce mode utilise `lastValueFrom` de RxJS pour convertir les observables en promesses.
+
+#### Nuxt
+
+Le mode `nuxt` permet de générer des fonctions d'appels à l'API compatibles avec Nuxt 3, utilisant `useAsyncData` et `$fetch` de Nuxt. Les fonctions retournent un objet `AsyncData` qui peut être utilisé directement dans les composants Nuxt.
+
+Exemple de code généré :
+
+```typescript
+export function getProfil(
+  id: number,
+  options: AsyncDataOptions<ProfilDto> = {}
+): AsyncData<ProfilDto | null, Error | null> {
+  return useAsyncData(`/api/profil/${id}`, () =>
+    $fetch<ProfilDto>(`/api/profil/${id}`, {
+      method: 'GET',
+    }),
+    options
+  );
+}
+```
+
 #### Vanilla
 
-Le mode `vanilla` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définission d'une méthode `fetch`. Par défaut, cette méthode est importée de `focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
+Le mode `vanilla` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définition d'une méthode `fetch`. Par défaut, cette méthode est importée de `@focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
 
-exemple :
+Exemple :
 
 ```yaml
 fetchPath: "@api-services"
 ```
 
-### ApiFilePath
+### Chemins de configuration
 
-Par défaut, les fichiers d'api client sont placés dans le dossier `{module}`. Ils sont nommés d'après le fichier qui les contient, sauf dans le cas du mode `angular`, où le nom du fichier sera de la forme `{fileName}.service.ts`.
+#### modelRootPath
 
-Pour modifier ce comportement, ajuster le paramètre `apiFilePath`.
+Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si `{module}` n'est pas présent dans le chemin, alors il sera ajouté à la fin.
 
-L'extension `.ts` est ajoutée automatiquement
+Par défaut, les fichiers de modèle sont générés dans `{module}/` avec le nom de la classe en kebab-case (ex: `profil-dto.ts`).
+
+#### resourceRootPath
+
+Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si `{lang}` n'est pas présent dans le chemin, alors il sera ajouté à la fin.
+
+Les fichiers de ressources sont générés par module et par langue (ex: `{module}/{lang}/securite.ts`).
+
+#### apiClientRootPath
+
+Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
+
+#### apiClientFilePath
+
+Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API (`apiClientRootPath`).
+
+Par défaut, les fichiers d'API client sont placés dans le dossier `{module}`. Ils sont nommés d'après le fichier qui les contient, sauf dans le cas du mode `angular` ou `angular_promise`, où le nom du fichier sera de la forme `{fileName}.service.ts`.
+
+Pour modifier ce comportement, ajuster le paramètre `apiClientFilePath`.
+
+L'extension `.ts` est ajoutée automatiquement.
+
+**Variables disponibles dans les chemins :**
+- `{module}` : Le module de la classe/endpoint (ex: `securite`)
+- `{lang}` : La langue pour les fichiers de ressources (ex: `fr`, `en`)
+- `{fileName}` : Le nom du fichier pour les endpoints (défini dans la configuration des endpoints du modèle)
+
+Exemple :
+
+```yaml
+apiClientFilePath: "api/{module}/{fileName}"
+```
 
 ### Modes de génération des entités
 
-Il est possible de générer les entités selon trois modes (`entityMode`) :
+Il est possible de générer les entités selon quatre modes (`entityMode`) :
 
 - `focus` : génération avec les APIs du module `@focus4/entities`.
 - `typed` : génération du DTO et de l'entité, avec typage du DTO via l'entité.
@@ -67,7 +122,7 @@ export const ProfilDtoEntity = entity({
     .label("securite.profil.id")
   ),
   typeProfilCode: e.field(DO_CODE, f => f.optional()
-    .label(securite.profil.typeProfilCode")
+    .label("securite.profil.typeProfilCode")
   ),
   droits: e.field(DO_CODE_LIST, f => f.optional().type<DroitCode[]>()
     .label("securite.profil.droits")
@@ -90,6 +145,22 @@ Le mode `typed` permet de générer la description des entités métier avec les
 Vous pouvez également activer l'option `extendedCompositions` pour générer toutes les propriétés sur les compositions (`label`, `isRequired`, `comment`), qui ne sont pas générées par défaut.
 
 Les types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
+
+#### None
+
+Le mode `none` permet de générer uniquement les interfaces TypeScript (DTO) sans générer les entités. Ce mode est utile lorsque vous n'avez pas besoin des métadonnées des entités.
+
+Exemple :
+
+```ts
+export interface ProfilDto {
+  id?: number;
+  typeProfilCode?: TypeProfilCode;
+  droits?: DroitCode[];
+  utilisateurs?: UtilisateurDto[];
+  secteurs?: SecteurDto[];
+}
+```
 
 #### Untyped
 
@@ -154,13 +225,88 @@ export const ProfilDtoEntity = {
 
 ### Modes de génération des fichiers de ressource
 
+Le paramètre `resourceMode` permet de choisir le format de génération des fichiers de ressources (traductions).
+
 #### JS
 
-La génération des listes de références se met en mode **JavaScript** lorsque le paramètre `resourceMode` est défini à `js`.
+La génération des ressources se met en mode **JavaScript** lorsque le paramètre `resourceMode` est défini à `js`. Les fichiers générés sont des fichiers TypeScript exportant des objets JavaScript.
+
+Exemple :
+
+```typescript
+export const securite = {
+  profil: {
+    id: "Identifiant",
+    typeProfilCode: "Type de profil",
+    droits: "Droits"
+  },
+  profilDto: {
+    utilisateurs: "Utilisateurs",
+    secteurs: "Secteurs"
+  }
+};
+```
 
 #### JSON
 
-La génération des listes de références se met en mode **JSON** lorsque le paramètre `resourceMode` est défini à `json`.
+La génération des ressources se met en mode **JSON** lorsque le paramètre `resourceMode` est défini à `json`. Les fichiers générés sont des fichiers JSON standard.
+
+Exemple :
+
+```json
+{
+  "profil": {
+    "id": "Identifiant",
+    "typeProfilCode": "Type de profil",
+    "droits": "Droits"
+  },
+  "profilDto": {
+    "utilisateurs": "Utilisateurs",
+    "secteurs": "Secteurs"
+  }
+}
+```
+
+### Options de génération des ressources
+
+#### generateMainResourceFiles
+
+Génère un fichier `index.ts` qui importe et réexporte tous les fichiers de ressources générés par langue. Cette option est uniquement compatible avec `resourceMode: js`.
+
+Exemple de fichier `index.ts` généré :
+
+```typescript
+import { securite } from "./securite";
+import { common } from "./common";
+
+export { securite, common };
+```
+
+#### translateProperties
+
+Si cette option est définie à `true` (par défaut), les libellés des propriétés seront traduits dans les fichiers de ressources. Si elle est définie à `false`, les clés de traduction seront utilisées directement.
+
+#### translateReferences
+
+Si cette option est définie à `true` (par défaut), les libellés des listes de références seront traduits. Si elle est définie à `false`, les libellés seront remplacés par les valeurs réelles définies dans le modèle.
+
+### Génération de commentaires
+
+#### generateComments
+
+Si cette option est activée, un fichier de commentaires sera généré pour chaque module, contenant les commentaires des propriétés. Le fichier sera nommé `{module}.comments.ts` (ou `.json` selon le `resourceMode`) et placé dans le même répertoire que les fichiers de ressources.
+
+Exemple de fichier de commentaires généré :
+
+```typescript
+export const securiteComments = {
+  profil: {
+    id: "Identifiant unique du profil",
+    typeProfilCode: "Code du type de profil",
+    droits: "Liste des droits associés au profil"
+  }
+};
+```
 
 ### Modes de génération des listes de références
 
@@ -214,3 +360,49 @@ export const typeProfilList: TypeProfil[] = [
 ```
 
 Si le paramètre `translateReferences` est passé à `false`, les clés de traductions ci-dessus seront remplacées par les libellés correspondant.
+
+### Configuration complète
+
+Exemple de configuration complète :
+
+```yaml
+javascript:
+  outputDirectory: "./src/generated"
+  tags:
+    - front
+  modelRootPath: "./model/{module}"
+  resourceRootPath: "./resources/{lang}"
+  apiClientRootPath: "./api"
+  apiClientFilePath: "{module}/{fileName}"
+  apiMode: angular
+  entityMode: focus
+  resourceMode: js
+  referenceMode: definition
+  domainPath: "../domains"
+  fetchPath: "@focus4/core"
+  entityTypesPath: "@focus4/entities"
+  generateComments: true
+  generateMainResourceFiles: true
+  translateProperties: true
+  translateReferences: true
+  extendedCompositions: false
+```
+
+### Générateurs disponibles
+
+Le module JavaScript génère plusieurs types de fichiers :
+
+1. **TypescriptDefinitionGenerator** (`JSDefinitionGen`) : Génère les définitions TypeScript des classes (DTOs et entités)
+2. **TypescriptReferenceGenerator** (`JSReferenceGen`) : Génère les définitions des listes de références
+3. **JavascriptApiClientGenerator** (`JSApiClientGen`) : Génère les clients API en mode vanilla
+4. **AngularApiClientGenerator** (`JSNGApiClientGen`) : Génère les services Angular pour les clients API
+5. **NuxtApiClientGenerator** (`JSApiClientGen`) : Génère les fonctions API pour Nuxt
+6. **JavascriptResourceGenerator** (`JSResourceGen`) : Génère les fichiers de ressources (traductions)
+
+Vous pouvez désactiver certains générateurs avec la propriété `disable` :
+
+```yaml
+javascript:
+  disable:
+    - JSResourceGen
+```
