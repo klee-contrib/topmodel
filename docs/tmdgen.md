@@ -1,6 +1,6 @@
-# Migrer un modèle externe (`openApi`) <!-- {docsify-ignore-all} -->
+# Migrer un modèle externe <!-- {docsify-ignore-all} -->
 
-**TopModel.ModelGenerator** (`tmdgen`) est un outil de migration de modèle, depuis un source externe (`openApi` ou `database`) de fichiers `.tmd` dans un modèle `TopModel` existant
+**TopModel.ModelGenerator** (`tmdgen`) est un outil de migration de modèle, permettant de générer des fichiers `.tmd` à partir d'une source externe (`openApi` ou `database`) dans un modèle `TopModel` existant.
 
 ## Installation
 
@@ -14,7 +14,7 @@ dotnet tool install --global TopModel.ModelGenerator
 
 La configuration de l'outil se fait dans un fichier au format `tmdgen*.config`. La configuration globale nécessite une seule propriété `modelRoot`, qui doit contenir le chemin relatif vers la racine du modèle `TopModel` des fichiers générés (pour écrire correctement les imports).
 
-Puis, vous pouvez définir sous la propriété `database` une liste de sources base de données, et sous la propriété `openapi`, une liste de sources `openapi`.
+Puis, vous pouvez définir sous la propriété `database` une liste de sources de base de données, et sous la propriété `openapi`, une liste de sources `openapi`.
 
 ## Lancement de la génération
 

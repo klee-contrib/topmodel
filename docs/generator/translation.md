@@ -1,6 +1,6 @@
 # Générateur de traductions manquantes
 
-Le générateur de tranductions manquantes peut se configurer ainsi :
+Le générateur de traductions manquantes permet de générer automatiquement les fichiers de traductions pour les libellés et valeurs manquants du modèle. Il peut se configurer ainsi :
 
 ```yaml
 translation:

@@ -30,6 +30,7 @@ Toutes les configurations partagent le même socle commun de propriétés :
 - `tags` : Les tags des objets qui seront générés par cette configuration de générateurs. Ce champ est **obligatoire**.
 - `referencedTags` : Chaque configuration considère par défaut que les objets "disponibles" sont limités aux objets générés, donc aux objets qui ont les tags du générateur. Cela veut dire que si un objet en référence un autre (via une composition/association, un mapper...) qui n'a **pas de tag en commun** avec ceux de la configuration, alors la référence sera **omise** de la génération, puisqu'elle référence un objet qui ne sera pas généré ici. Cette propriété permet donc de **référencer des tags d'autres configurations**, afin de pouvoir résoudre ces références d'objet et les inclure au lieu de les omettre. Cela demandera nécessairement à ce que la référence puisse être effectivement résolue dans le code généré, mais ce n'est pas le problème du générateur de code 😉
   Exemple :
+
   ```yaml
   jpa:
     - name: back-common
@@ -41,13 +42,14 @@ Toutes les configurations partagent le même socle commun de propriétés :
         BackCommon: back-common # Les classes référencées avec le tag `BackCommon` (et pas de tag `BackService`) auront leurs imports résolus avec la config `back-common`.
       outputDirectory: ../sources/back/service
   ```
+
 - `disable`: Liste des générateurs à désactiver dans le module.
 - `outputDirectory` : Chemin vers la racine du répertoire de génération. Ce champ est **obligatoire**.
 - `variables` : Décrit plus bas
 - `tagVariables` : Décrit plus bas
-- `translateProperties` : Si les libellés des propriétés doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supporte pas la traduction).
-- `translateReferences` : Si les libellés des listes de références doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supporte pas la traduction).
-- `ignoreDefautValues` : Si renseigné, les valeurs par défaut des propriétés dans les classes et les endpoints ne seront pas générés dans cette configuration. La valeur par défaut de cette propriété dépend du module de générateurs.
+- `translateProperties` : Si les libellés des propriétés doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supportent pas la traduction).
+- `translateReferences` : Si les libellés des listes de références doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supportent pas la traduction).
+- `ignoreDefaultValues` : Si renseigné, les valeurs par défaut des propriétés dans les classes et les endpoints ne seront pas générées dans cette configuration. La valeur par défaut de cette propriété dépend du module de générateurs.
 
 Exemple de configuration de module :
 
@@ -132,7 +134,9 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
 - **`modelRoot`**
 
-  Permet de définir une autre racine pour le modèle que l'emplacement du fichier de configuration. A utiliser si vous voulez séparer l'emplacement du fichier de config du reste du modèle. (Attention : tous les chemins de fichiers dans les `uses` sont relatifs au `modelRoot`, et tous les fichiers `.tmd` doivent être dedans.)
+  Permet de définir une autre racine pour le modèle que l'emplacement du fichier de configuration. À utiliser si vous voulez séparer l'emplacement du fichier de config du reste du modèle.
+  
+  > **Attention** : Tous les chemins de fichiers dans les `uses` sont relatifs au `modelRoot`, et tous les fichiers `.tmd` doivent être dedans.
 
 - **`lockFileName`**
 
@@ -140,11 +144,11 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
 - **`ignoredFiles`**
 
-  Permet de lister des chemins de fichiers générés qu'il ne faudra pas regénérer lors de générations successives. A utiliser avec parcimonie, pour contourner un manquement du générateur utilisé, en attendant un correctif du générateur ou de trouver une meilleure solution. Un fichier ignoré enregistrera un warning lors de la génération, et il est obligatoire de spécifier un commentaire pour chaque exclusion pour la justifier.
+  Permet de lister des chemins de fichiers générés qu'il ne faudra pas regénérer lors de générations successives. À utiliser avec parcimonie, pour contourner un manquement du générateur utilisé, en attendant un correctif du générateur ou de trouver une meilleure solution. Un fichier ignoré enregistrera un warning lors de la génération, et il est obligatoire de spécifier un commentaire pour chaque exclusion pour la justifier.
 
 - **`noWarn`**
 
-  Permet de désactiver les warnings listés. A utiliser avec parcimonie également, en général ces warnings ne sont pas là pour rien 😉.
+  Permet de désactiver les warnings listés. À utiliser avec parcimonie également, en général ces warnings ne sont pas là pour rien 😉.
 
 - **`pluralizeTableNames`**
 

@@ -8,11 +8,11 @@ Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut*
 - **Le module de générateurs [JPA (`jpa`)](/generator/jpa.md)**
 - **Le module de générateurs [Javascript (`javascript`)](/generator/js.md)**
 - **Le module de générateurs [SQL (`sql`)](/generator/sql.md)**
-- **Le module de générateurs [traductions manquantes (`translation`)](/generator/tranlsation.md)**
+- **Le module de générateurs [traductions manquantes (`translation`)](/generator/translation.md)**
 
 Ces modules sont publiés sur NuGet (comme toute librairie .NET) sous le nom `TopModel.Generator.{module}`. En théorie, `modgen` n'est pas limité à ces 5 modules là, et si quelqu'un d'autre publiait un module `TopModel.Generator.Brainfuck` par exemple, il serait automatiquement installé si une config `brainfuck` était renseignée dans la configuration.
 
-Au premier lancement, `modgen` installera la dernière version de chaque module, dans le répertoire `.modgen` (à ajouter dans votre `.gitignore`). Les versions de modules installées seront ensuite renseignées dans le fichier `topmodel.lock`, à côté de la version de TopModel utilisée pour la dernière génération ainsi que la liste des fichiers générés. Pour les installations suivantes, les versions installées seront celles listées dans le ficher `topmodel.lock`. La commande `modgen --update csharp` ou `modgen --update all` permettra de forcer la mise à jour d'un ou tous les modules vers leurs dernières versions (vous pouvez aussi modifier le fichier manuellement si vous voulez une version précise).
+Au premier lancement, `modgen` installera la dernière version de chaque module, dans le répertoire `.modgen` (à ajouter dans votre `.gitignore`). Les versions de modules installées seront ensuite renseignées dans le fichier `topmodel.lock`, à côté de la version de TopModel utilisée pour la dernière génération ainsi que la liste des fichiers générés. Pour les installations suivantes, les versions installées seront celles listées dans le fichier `topmodel.lock`. La commande `modgen --update csharp` ou `modgen --update all` permettra de forcer la mise à jour d'un ou tous les modules vers leurs dernières versions (vous pouvez aussi modifier le fichier manuellement si vous voulez une version précise).
 
 ## Validation du fichier de configuration
 
@@ -50,11 +50,11 @@ Si vous incluez des dépendances autres que `TopModel.Generator.Core` dans votre
 
 Enfin, il est indispensable de **build votre projet au préalable** avant de lancer la commande `modgen`.
 
-## Propriétés customs
+## Propriétés personnalisées
 
 Votre module peut avoir besoin d'attributs sur les classes, propriétés ou endpoints qui n'existent pas dans la modélisation standard de TopModel. Pour obtenir des propriétés personnalisées dans le modèle, vous pouvez les ajouter dans l'attributs `customProperties`. Vos générateurs pourront ainsi y accéder dans les objets `Classe`, `Endpoint` ou `IProperty`. Le contenu de customProperties peut être utilisé dans les templates des décorateurs et des domains.
 
-Les attributs ajoutés à l'ntérieur de `customProperties` ne peuvent pas être des objets.
+Les attributs ajoutés à l'intérieur de `customProperties` ne peuvent pas être des objets.
 
 Les générateurs standards n'utiliseront **jamais** le contenu de `CustomProperties`. 
 

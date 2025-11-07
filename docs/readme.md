@@ -20,7 +20,7 @@ Par la suite, pour mettre à jour TopModel, utiliser la commande :
 dotnet tool update --global TopModel.Generator
 ```
 
-Il est vivement conseillé d'éditer les fichiers de modèles avec [VSCode](https://code.visualstudio.com/), muni de l'extension **"TopModel"** qui permet de fournir un environnement type "IDE" pour l'édition de fichier topmdel. TopModel fournit des schémas JSON (oui, ça marche aussi pour valider du YAML), ainsi que des fonctionnalités d'autocomplétion et de navigation.
+Il est vivement conseillé d'éditer les fichiers de modèles avec [VSCode](https://code.visualstudio.com/), muni de l'extension **"TopModel"** qui permet de fournir un environnement type "IDE" pour l'édition de fichier topmodel. TopModel fournit des schémas JSON (oui, ça marche aussi pour valider du YAML), ainsi que des fonctionnalités d'autocomplétion et de navigation.
 
 ### Configuration
 
@@ -35,14 +35,16 @@ Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM D
 
 #### Ignorer les warnings
 
-Il est possible de rendre silencieux certains Warnings depuis le fichier de configuration. Pour cela, ajouter la propriété `noWarn`. L'ensemble des warnings entrés dans cette propriété seront ignorés à la génération et dans l'extension.
+Il est possible de rendre silencieux certains warnings depuis le fichier de configuration. Pour cela, ajoutez la propriété `noWarn`. L'ensemble des warnings entrés dans cette propriété seront ignorés à la génération et dans l'extension.
+
+> **Note** : À utiliser avec parcimonie, en général ces warnings ne sont pas là pour rien 😉
 
 Exemple :
 
 ```yaml
 app: Exemple
 noWarn:
-  - TMD3004 # Ignore le warning sur la dupplication des trigram
+  - TMD3004 # Ignore le warning sur la duplication des trigrammes
 ```
 
 ## Edition du modèle
@@ -57,15 +59,17 @@ Dans ces fichiers, vous pouvez décrire trois types d'objets :
 
 Pour plus de détails, voir la [page dédiée](./model)
 
-### Génération
+## Génération
 
-Si vous avez bien suivi les prérequis, vous pouvez lancer la commande **`modgen`** pour lancer la génération.
+Une fois votre modèle créé, vous pouvez lancer la génération du code avec la commande **`modgen`**.
 
-Si vous avez l'extension, `modgen` se lance à l'aide d'une action rapide via la touche `F1` ou depuis la barre de statut.
+La commande **`modgen`** permet de lancer la génération du modèle. Elle récupère par défaut tous les fichiers de configuration qu'elle trouve dans le répertoire courant, et génère le modèle correspondant à chaque configuration.
 
-## Utilisation
-
-La commande **`modgen`** permet de lancer la génération du modèle. Elle récupère par défaut tous les fichiers de configuration qu'elle trouve dans le répertoire courant, et génère le modèle correspondant à chaque configuration. Les deux options suivantes sont disponibles :
+### Options principales
 
 - **`--file`**/**`-f`** : Chemin vers un fichier de config en particulier à générer (au lieu de la récupération automatique de tous les fichiers). Cette option peut être spécifiée plusieurs fois pour embarquer plusieurs configurations spécifiques.
 - **`--watch`**/**`-w`** : Permet de "surveiller" toute modification de fichier, et TopModel essaiera de "recompiler" le(s) modèle(s) à chaque fois. En cas d'erreur, cette dernière sera affichée dans la console avec sa localisation dans les fichiers sources. Si TopModel est ouvert dans la console intégrée de VSCode, alors les liens seront cliquables.
+
+> **Astuce** : Si vous avez l'extension VSCode, `modgen` se lance à l'aide d'une action rapide via la touche `F1` ou depuis la barre de statut.
+
+Pour plus de détails sur toutes les options disponibles, consultez la [page dédiée à la ligne de commandes](./cli.md).

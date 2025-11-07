@@ -24,8 +24,8 @@ La configuration du générateur `database` permet de définir :
   - `dbName`: nom de la base de données
   - `user`: nom de l'utilisateur de connexion à la base de données
   - `schema`: schéma dont on souhaite extraire la structure, `db owner` pour les bases Oracle
-  - `password`: (factultatif) mot de passe de connexion à la base de données
-- `domains` : Correspondance entre les types dans la spécification `openApi` et les domaines du modèle cible. Quelques spécificités
+  - `password`: (facultatif) mot de passe de connexion à la base de données
+- `domains` : Correspondance entre les types de la base de données et les domaines du modèle cible. Quelques spécificités
   - Définition d'un `name` ou d'un `type`, pour matcher soit sur le nom de la propriété soit sur son type
   - Les regexp sont acceptées
   - Possibilité de définir `scale` et `precision`, pour faire correspondre les types avec plus de finesse
