@@ -88,7 +88,12 @@ public class JpaResourceGenerator(
             }
         }
 
-        if (container.Key is Class classe && classe.DefaultProperty != null && Config.TranslateReferences == true)
+        if (
+            container.Key is Class classe
+            && classe.DefaultProperty != null
+            && Config.TranslateReferences == true
+            && classe.Reference
+        )
         {
             foreach (var val in classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal))
             {
