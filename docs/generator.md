@@ -2,27 +2,41 @@
 
 **TopModel.Generator** est le générateur de code basé sur `TopModel.Core` et l'application principale à travers laquelle vous pourrez valider et utiliser votre modélisation. Il s'utilise via la CLI **`modgen`**.
 
-Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut**. TopModel maintient et publie les 5 modules de générateurs suivants, qui seront automatiquement installés si vous les renseignez dans votre [fichier de configuration `topmodel.config`](/configuration.md) :
+## Modules de générateurs
 
-- **Le module de générateurs [C# (`csharp`)](/generator/csharp.md)**
-- **Le module de générateurs [JPA (`jpa`)](/generator/jpa.md)**
-- **Le module de générateurs [Javascript (`javascript`)](/generator/js.md)**
-- **Le module de générateurs [SQL (`sql`)](/generator/sql.md)**
-- **Le module de générateurs [traductions manquantes (`translation`)](/generator/translation.md)**
+Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut**. TopModel maintient et publie les 5 modules de générateurs suivants, qui seront automatiquement installés si vous les renseignez dans votre [fichier de configuration `topmodel.config`](./configuration.md) :
+
+- **Le module de générateurs [C# (`csharp`)](./generator/csharp.md)** : Génération de classes C#, Entity Framework Core, API controllers/clients, etc.
+- **Le module de générateurs [JPA (`jpa`)](./generator/jpa.md)** : Génération de classes Java/JPA, entités, repositories, etc.
+- **Le module de générateurs [Javascript (`javascript`)](./generator/js.md)** : Génération de classes TypeScript, clients API Angular/Nuxt, etc.
+- **Le module de générateurs [SQL (`sql`)](./generator/sql.md)** : Génération de scripts SQL (PostgreSQL, Oracle, SQL Server, SSDT, etc.)
+- **Le module de générateurs [traductions manquantes (`translation`)](./generator/translation.md)** : Génération de fichiers de traductions manquantes
 
 Ces modules sont publiés sur NuGet (comme toute librairie .NET) sous le nom `TopModel.Generator.{module}`. En théorie, `modgen` n'est pas limité à ces 5 modules là, et si quelqu'un d'autre publiait un module `TopModel.Generator.Brainfuck` par exemple, il serait automatiquement installé si une config `brainfuck` était renseignée dans la configuration.
 
-Au premier lancement, `modgen` installera la dernière version de chaque module, dans le répertoire `.modgen` (à ajouter dans votre `.gitignore`). Les versions de modules installées seront ensuite renseignées dans le fichier `topmodel.lock`, à côté de la version de TopModel utilisée pour la dernière génération ainsi que la liste des fichiers générés. Pour les installations suivantes, les versions installées seront celles listées dans le fichier `topmodel.lock`. La commande `modgen --update csharp` ou `modgen --update all` permettra de forcer la mise à jour d'un ou tous les modules vers leurs dernières versions (vous pouvez aussi modifier le fichier manuellement si vous voulez une version précise).
+### Installation automatique des modules
+
+Au premier lancement, `modgen` installera la dernière version de chaque module, dans le répertoire `.modgen` (à ajouter dans votre `.gitignore`). Les versions de modules installées seront ensuite renseignées dans le fichier `topmodel.lock`, à côté de la version de TopModel utilisée pour la dernière génération ainsi que la liste des fichiers générés.
+
+Pour les installations suivantes, les versions installées seront celles listées dans le fichier `topmodel.lock`. La commande `modgen --update csharp` ou `modgen --update all` permettra de forcer la mise à jour d'un ou tous les modules vers leurs dernières versions (vous pouvez aussi modifier le fichier manuellement si vous voulez une version précise).
+
+> **💡 Astuce** : Le fichier `topmodel.lock` permet de verrouiller les versions des modules utilisés, garantissant la reproductibilité des générations entre différents environnements.
 
 ## Validation du fichier de configuration
 
 Puisque `modgen` est un outil distinct de l'extension VS Code, cette dernière ne contient pas les définitions de configuration des générateurs. La validation par défaut qui sera faite par l'extension ne pourra donc pas vérifier (et auto-compléter) la configuration des différents générateurs (sections `csharp`, `jpa`, `javascript`...).
 
+### Génération du schéma JSON
+
 La commande **`modgen --schema`** (ou `modgen -s`) permet de générer le fichier de schéma JSON complet, à côté du fichier de configuration, et mettra à jour ce dernier pour y inclure une référence vers le schéma, pour que VS Code puisse proposer la complétion et la validation.
+
+```bash
+modgen --schema
+```
 
 Cette commande sera également automatiquement lancée après une installation de module.
 
-Vous pouvez choisir d'ajouter le fichier `topmodel.config.schema.json` à votre `.gitignore` ou non. Ce fichier pourrait être commité afin de pouvoir visualiser les évolutions de configuration de `modgen`, mais vous pouvez également choisir de l'ignorer.
+> **💡 Note** : Vous pouvez choisir d'ajouter le fichier `topmodel.config.schema.json` à votre `.gitignore` ou non. Ce fichier pourrait être commité afin de pouvoir visualiser les évolutions de configuration de `modgen`, mais vous pouvez également choisir de l'ignorer.
 
 ## Générateurs personnalisés
 
