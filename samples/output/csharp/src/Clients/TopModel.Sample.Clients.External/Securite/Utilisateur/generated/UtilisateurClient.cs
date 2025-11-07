@@ -3,6 +3,7 @@
 ////
 
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,6 +45,26 @@ public partial class UtilisateurClient(HttpClient client)
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/utilisateurs/{utiId}"), ct);
         await EnsureSuccess(res, ct);
+    }
+
+    /// <summary>
+    /// Download de la photo d'un utilisateur.
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <param name="ct">CancellationToken.</param>
+    /// <returns>Fichier de la photo.</returns>
+    public async Task<IFormFile> DownloadPicture(int utiId, CancellationToken ct = default)
+    {
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs/{utiId}/picture"), HttpCompletionOption.ResponseHeadersRead, ct);
+        await EnsureSuccess(res, ct);
+
+        if (res.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+
+        return await res.Content.ReadFromJsonAsync<IFormFile>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -108,6 +129,20 @@ public partial class UtilisateurClient(HttpClient client)
         await EnsureSuccess(res, ct);
 
         return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions, ct);
+    }
+
+    /// <summary>
+    /// Upload de la photo d'un utilisateur.
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <param name="file">Fichier de la photo.</param>
+    /// <param name="ct">CancellationToken.</param>
+    /// <returns>Task.</returns>
+    public async Task UploadPicture(int utiId, IFormFile @file, CancellationToken ct = default)
+    {
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/utilisateurs/{utiId}/picture"), ct);
+        await EnsureSuccess(res, ct);
     }
 
     /// <summary>

@@ -7,11 +7,14 @@ package topmodel.jpa.sample.demo.api.client.securite.utilisateur;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
@@ -52,6 +55,15 @@ public interface UtilisateurClient {
 	ResponseEntity<Void> deleteUtilisateur(@PathVariable("utiId") Integer utiId);
 
 	/**
+	 * Download de la photo d'un utilisateur.
+	 * @param utiId Id de l'utilisateur.
+	 *
+	 * @return Fichier de la photo.
+	 */
+	@GetExchange("/{utiId}/picture")
+	ResponseEntity<Resource> downloadPicture(@PathVariable("utiId") Integer utiId);
+
+	/**
 	 * Charge le détail d'un utilisateur.
 	 * @param utiId Id de l'utilisateur.
 	 *
@@ -88,4 +100,14 @@ public interface UtilisateurClient {
 	@PutExchange("/{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")
 	ResponseEntity<UtilisateurRead> updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
+
+	/**
+	 * Upload de la photo d'un utilisateur.
+	 * @param utiId Id de l'utilisateur.
+	 * @param file Fichier de la photo.
+	 *
+	 * @return Aucun retour.
+	 */
+	@PostExchange(value = "/{utiId}/picture", contentType = "multipart/form-data")
+	ResponseEntity<Void> uploadPicture(@PathVariable("utiId") Integer utiId, @RequestPart(value = "file", required = false) MultipartFile file);
 }

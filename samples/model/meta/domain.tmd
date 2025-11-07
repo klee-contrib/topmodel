@@ -188,3 +188,35 @@ domain:
   ts:
     genericType: "{T}[]"
   sql: {}
+
+---
+domain:
+  name: FILE_FORM
+  mediaType: "multipart/form-data"
+  label: Fichier
+  bodyParam: true
+  ts:
+    type: File
+  java:
+    type: MultipartFile
+    imports:
+      - "org.springframework.web.multipart.MultipartFile"
+  csharp:
+    type: IFormFile
+  sql:
+    type: bytea
+---
+domain:
+  name: RESOURCE
+  label: Resource
+  bodyParam: true
+  ts:
+    type: Blob
+  java:
+    type: Resource
+    imports:
+      - "org.springframework.core.io.Resource"
+  sql:
+    type: text[]
+  csharp:
+    type: IFormFile

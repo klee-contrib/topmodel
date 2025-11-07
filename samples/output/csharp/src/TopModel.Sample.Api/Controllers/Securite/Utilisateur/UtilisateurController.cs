@@ -33,6 +33,18 @@ public class UtilisateurController : Controller
     }
 
     /// <summary>
+    /// Download de la photo d'un utilisateur
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur</param>
+    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
+    /// <returns>Fichier de la photo</returns>
+    [HttpGet("api/utilisateurs/{utiId:int}/picture")]
+    public async Task<IFormFile> DownloadPicture(int utiId, CancellationToken ct = default)
+    {
+
+    }
+
+    /// <summary>
     /// Charge le détail d'un utilisateur
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur</param>
@@ -72,6 +84,19 @@ public class UtilisateurController : Controller
     /// <returns>Utilisateur sauvegardé</returns>
     [HttpPut("api/utilisateurs/{utiId:int}")]
     public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, [FromBody] UtilisateurWrite utilisateur, CancellationToken ct = default)
+    {
+
+    }
+
+    /// <summary>
+    /// Upload de la photo d'un utilisateur
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur</param>
+    /// <param name="file">Fichier de la photo</param>
+    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
+    /// <returns>Task.</returns>
+    [HttpPost("api/utilisateurs/{utiId:int}/picture")]
+    public async Task UploadPicture(int utiId, IFormFile @file = null, CancellationToken ct = default)
     {
 
     }

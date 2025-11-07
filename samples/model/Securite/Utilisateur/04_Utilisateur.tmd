@@ -104,3 +104,30 @@ endpoint:
     composition: UtilisateurRead
     name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
     comment: Utilisateur sauvegardé
+---
+endpoint:
+  name: UploadPicture
+  method: POST
+  route: /{utiId}/picture
+  description: Upload de la photo d'un utilisateur
+  params:
+    - alias:
+        class: Utilisateur
+        property: Id
+    - name: file
+      domain: FILE_FORM
+      comment: Fichier de la photo
+---
+endpoint:
+  name: DownloadPicture
+  method: GET
+  route: /{utiId}/picture
+  description: Download de la photo d'un utilisateur
+  params:
+    - alias:
+        class: Utilisateur
+        property: Id
+  returns:
+    name: file
+    domain: RESOURCE
+    comment: Fichier de la photo

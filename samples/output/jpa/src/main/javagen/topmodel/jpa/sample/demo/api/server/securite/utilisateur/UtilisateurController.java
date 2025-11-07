@@ -7,6 +7,7 @@ package topmodel.jpa.sample.demo.api.server.securite.utilisateur;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
@@ -49,6 +52,15 @@ public interface UtilisateurController {
 	@PreAuthorize("hasRole('DELETE')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void deleteUtilisateur(@PathVariable("utiId") Integer utiId);
+
+	/**
+	 * Download de la photo d'un utilisateur.
+	 * @param utiId Id de l'utilisateur.
+	 *
+	 * @return Fichier de la photo.
+	 */
+	@GetMapping(path = "{utiId}/picture")
+	Resource downloadPicture(@PathVariable("utiId") Integer utiId);
 
 	/**
 	 * Charge le détail d'un utilisateur.
@@ -87,4 +99,12 @@ public interface UtilisateurController {
 	@PutMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")
 	UtilisateurRead updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
+
+	/**
+	 * Upload de la photo d'un utilisateur.
+	 * @param utiId Id de l'utilisateur.
+	 */
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PostMapping(path = "{utiId}/picture", consumes = { "multipart/form-data" })
+	void uploadPicture(@PathVariable("utiId") Integer utiId, @RequestPart(value = "file", required = false) MultipartFile file);
 }

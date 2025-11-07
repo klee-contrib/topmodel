@@ -29,6 +29,16 @@ export function deleteUtilisateur(utiId: number, options: RequestInit = {}): Pro
 }
 
 /**
+ * Download de la photo d'un utilisateur
+ * @param utiId Id de l'utilisateur
+ * @param options Options pour 'fetch'.
+ * @returns Fichier de la photo
+ */
+export function downloadPicture(utiId: number, options: RequestInit = {}): Promise<Blob> {
+    return coreFetch("GET", `./api/utilisateurs/${utiId}/picture`, {}, options);
+}
+
+/**
  * Charge le détail d'un utilisateur
  * @param utiId Id de l'utilisateur
  * @param options Options pour 'fetch'.
@@ -64,4 +74,35 @@ export function searchUtilisateur(nom?: string, prenom?: string, email?: string,
  */
 export function updateUtilisateur(utiId: number, utilisateur: UtilisateurWrite, options: RequestInit = {}): Promise<UtilisateurRead> {
     return coreFetch("PUT", `./api/utilisateurs/${utiId}`, {body: utilisateur}, options);
+}
+
+/**
+ * Upload de la photo d'un utilisateur
+ * @param utiId Id de l'utilisateur
+ * @param file Fichier de la photo
+ * @param options Options pour 'fetch'.
+ */
+export function uploadPicture(utiId: number, file: File, options: RequestInit = {}): Promise<void> {
+    const body = new FormData();
+    fillFormData(
+        {
+            file
+        },
+        body
+    );
+    return coreFetch("POST", `./api/utilisateurs/${utiId}/picture`, {body}, options);
+}
+
+function fillFormData(data: any, formData: FormData, prefix = "") {
+    if (Array.isArray(data)) {
+        for (const [i, item] of data.entries()) {
+            fillFormData(item, formData, prefix + (typeof item === "object" && !(item instanceof File) ? `[${i}]` : ""));
+        }
+    } else if (typeof data === "object" && !(data instanceof File)) {
+        for (const key in data) {
+            fillFormData(data[key], formData, (prefix ? `${prefix}.` : "") + key);
+        }
+    } else {
+        formData.append(prefix, data);
+    }
 }
