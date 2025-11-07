@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <title>TopModel - Documentation</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="description" content="TopModel : Modélisez en toute simplicité. Documentation complète de l'outil de modélisation TopModel." />
+    <meta
+      name="description"
+      content="TopModel : Modélisez en toute simplicité. Documentation complète de l'outil de modélisation TopModel."
+    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
@@ -28,12 +31,12 @@
         --sidebar-nav-indent: 0;
         --sidebar-nav-link-before-content-l3: "";
       }
-      
+
       aside p strong a {
         font-weight: 600 !important;
         color: white !important;
       }
-      </style>
+    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -45,7 +48,7 @@
         name: "TopModel",
         search: {
           placeholder: "Tapez votre recherche",
-          noData: "Aucun résultat"
+          noData: "Aucun résultat",
         },
         coverpage: true,
         homepage: "readme.md",
@@ -53,30 +56,32 @@
         subMaxLevel: 2,
         pagination: {
           previousText: "Précédent",
-          nextText: "Suivant"
+          nextText: "Suivant",
         },
         auto2top: true,
         logo: "./media/logo-Dark.svg",
         markdown: {
           renderer: {
-            code: function(code, lang) {
+            code: function (code, lang) {
               if (lang === "mermaid") {
                 return (
-                  '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>"
+                  '<div class="mermaid">' +
+                  mermaid.render("mermaid-svg-" + num++, code) +
+                  "</div>"
                 );
               }
               return this.origin.code.apply(this, arguments);
-            }
-          }
+            },
+          },
         },
-      tabs: {
-        persist: true, // default
-        sync: true, // default
-        theme: 'classic', // default
-        tabComments: true, // default
-        tabHeadings: true // default
-      }
-    };
+        tabs: {
+          persist: true, // default
+          sync: true, // default
+          theme: "classic", // default
+          tabComments: true, // default
+          tabHeadings: true, // default
+        },
+      };
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
     <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
@@ -85,11 +90,11 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-csharp.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
     <script src="https://unpkg.com/docsify-copy-code@2"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
     <script src="//unpkg.com/docsify-gifcontrol/dist/docsify-gifcontrol.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
   </body>
-  </html>
-  
+</html>
