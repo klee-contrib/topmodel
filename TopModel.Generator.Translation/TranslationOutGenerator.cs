@@ -31,9 +31,10 @@ public class TranslationOutGenerator(
         var p = property.ResourceProperty;
         if (
             p.Label != null && !ExistsInStore(lang, p.ResourceKey)
-            || !(
-                p.Class?.DefaultProperty == null
-                || (p.Class?.Values.All(r => ExistsInStore(lang, r.ResourceKey)) ?? false)
+            || (
+                p.Class?.DefaultProperty != null
+                && p.Class.Reference
+                && !p.Class.Values.All(r => ExistsInStore(lang, r.ResourceKey))
             )
         )
         {
@@ -87,7 +88,7 @@ public class TranslationOutGenerator(
             }
         }
 
-        if (container.Key is Class classe && classe.DefaultProperty != null)
+        if (container.Key is Class classe && classe.DefaultProperty != null && classe.Reference)
         {
             foreach (var reference in classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal))
             {
