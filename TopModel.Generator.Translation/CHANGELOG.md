@@ -1,3 +1,7 @@
+## 3.2.2
+
+- [`cf3fda4`](https://github.com/klee-contrib/topmodel/commit/cf3fda48310f7b7197bce8fe143941c8b9f2e63c) - [Translation] Restreindre la génération des traductions des valeurs aux seules classes avec reference: true
+
 ## 3.2.1
 
 - [`621c637`](https://github.com/klee-contrib/topmodel/commit/621c637d89f37cea2473219dd3d6c122a2694729) - [All] Fix gestion langage par défaut
