@@ -1,3 +1,9 @@
+## 3.4.4
+
+- [`3fb4987`](https://github.com/klee-contrib/topmodel/commit/3fb4987f0ea24cb84959702d164dee55dad9d60c) - [C#] Prise en compte `usePrimaryConstructors` pour le DbContext
+
+  **impact génération** : C'est dans le message de commit 😉
+
 ## 3.4.3
 
 - [`e5a0344`](https://github.com/klee-contrib/topmodel/commit/e5a03441170d77848c45a548ffb2d89f7d11b51e) - [C#] DbContext : fix #495
