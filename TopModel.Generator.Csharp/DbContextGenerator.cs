@@ -158,19 +158,32 @@ public class DbContextGenerator(
         w.WriteNamespace(contextNs);
 
         w.WriteSummary("DbContext généré pour Entity Framework Core.");
-        w.WriteLine($"public partial class {dbContextName} : DbContext");
-        w.WriteLine("{");
+        if (Config.UsePrimaryConstructors)
+        {
+            w.WriteLine(
+                $"public partial class {dbContextName}(DbContextOptions<{dbContextName}> options) : DbContext(options)"
+            );
+            w.WriteLine("{");
+        }
+        else
+        {
+            w.WriteLine($"public partial class {dbContextName} : DbContext");
+            w.WriteLine("{");
 
-        w.WriteSummary(1, "Constructeur par défaut.");
-        w.WriteParam("options", "Options du DbContext.");
-        w.WriteLine(1, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");
-        w.WriteLine(2, ": base(options)");
-        w.WriteLine(1, "{");
-        w.WriteLine(1, "}");
+            w.WriteSummary(1, "Constructeur par défaut.");
+            w.WriteParam("options", "Options du DbContext.");
+            w.WriteLine(1, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");
+            w.WriteLine(2, ": base(options)");
+            w.WriteLine(1, "{");
+            w.WriteLine(1, "}");
+        }
 
         foreach (var classe in classes)
         {
-            w.WriteLine();
+            if (classes.IndexOf(classe) > 0 || !Config.UsePrimaryConstructors)
+            {
+                w.WriteLine();
+            }
             w.WriteSummary(1, "Accès à l'entité " + classe.NamePascal);
             w.WriteLine(1, "public DbSet<" + classe.NamePascal + "> " + classe.PluralNamePascal + " { get; set; }");
         }
@@ -413,7 +426,7 @@ public class DbContextGenerator(
             && Config.AvailableClasses.Any(c => c.Translation)
         )
         {
-            foreach (var lang in translationStore.Translations.Keys)
+            foreach (var lang in translationStore.Translations.Keys.Order(StringComparer.Ordinal))
             {
                 w.WriteLine();
                 w.WriteLine(1, $"partial void Add{lang.ToPascalCase()}Resources(ModelBuilder modelBuilder);");
