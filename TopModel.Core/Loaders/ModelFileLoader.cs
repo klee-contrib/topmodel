@@ -170,6 +170,17 @@ public class ModelFileLoader(
             );
         }
 
+        var lines = content.ReplaceLineEndings(Environment.NewLine).Split(Environment.NewLine);
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var commentIndex = lines[i].IndexOf('#');
+            if (commentIndex >= 0)
+            {
+                file.Comments.Add(i + 1, lines[i][commentIndex..].TrimStart('#').Trim());
+            }
+        }
+
         return file;
     }
 }

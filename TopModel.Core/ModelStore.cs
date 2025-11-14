@@ -287,12 +287,7 @@ public class ModelStore(
                         modelWatcher.OnErrors(
                             affectedFiles
                                 .Values.Select(file =>
-                                    (
-                                        file,
-                                        errors: referenceErrors.Where(e =>
-                                            e.File == file && !config.NoWarn.Contains(e.ErrorType)
-                                        )
-                                    )
+                                    (file, errors: referenceErrors.Where(e => e.File == file && !e.IsIgnored(config)))
                                 )
                                 .ToDictionary(i => i.file, i => i.errors)
                         );
@@ -304,7 +299,7 @@ public class ModelStore(
                     logger.LogError(error.ToString());
                 }
 
-                foreach (var error in referenceErrors.Where(e => !e.IsError && !config.NoWarn.Contains(e.ErrorType)))
+                foreach (var error in referenceErrors.Where(e => !e.IsError && !e.IsIgnored(config)))
                 {
                     logger.LogWarning(error.ToString());
                 }

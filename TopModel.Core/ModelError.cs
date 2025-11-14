@@ -67,6 +67,21 @@ public class ModelError
 
     public string Message => string.Format(_message, _reference?.ReferenceName);
 
+    public bool IsIgnored(ModelConfig config)
+    {
+        var isIgnoredComment =
+            File.Comments.TryGetValue((int)(Location?.Start.Line ?? 1), out var comment)
+            && (
+                comment.Split(" ").FirstOrDefault()?.Equals("ignore", StringComparison.InvariantCultureIgnoreCase)
+                ?? false
+            )
+            && comment
+                .Split(" ")
+                .Any(word => word.Equals(Enum.GetName(ErrorType)!, StringComparison.InvariantCultureIgnoreCase));
+
+        return !IsError && (config.NoWarn.Contains(ErrorType) || isIgnoredComment);
+    }
+
     public override string ToString()
     {
         var sb = new StringBuilder();

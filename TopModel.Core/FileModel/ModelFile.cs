@@ -22,6 +22,8 @@ public class ModelFile
 
     public ModelFileOptions Options { get; set; } = new();
 
+    public IDictionary<int, string> Comments { get; } = new Dictionary<int, string>();
+
     public IList<Class> Classes { get; } = [];
 
     public IList<Annotation> Annotations { get; } = [];
