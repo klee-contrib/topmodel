@@ -1,5 +1,12 @@
 # Changelog JPA
 
+## 3.4.1
+
+- [`543a7a`](https://github.com/klee-contrib/topmodel/commit/543a7a953f359c524142d45b0b351bb974cc69a7) - [JPA]
+  - Dans le cas d'une enum, correction du nom référencé dans le cas où celui-ci n'est pas en constant Case
+  - Correction du nom du getter dans le cas `preservePropertyCasing`
+  - Ajout d'une erreur dans le cas d'alias vers oneToMany d'association reverse de classe avec pk composite
+
 ## 3.4.0
 
 - [`509`](https://github.com/klee-contrib/topmodel/pull/509) - [JPA] Met en place la génération du métamodèle
@@ -12,8 +19,8 @@
 
   Documentation:
 
-  - Spec (Voir le chapitre 5): https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/
-  - Exemple d'utilisation: https://www.baeldung.com/hibernate-criteria-queries-metamodel
+  - Spec (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
+  - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
 
 - Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
 
