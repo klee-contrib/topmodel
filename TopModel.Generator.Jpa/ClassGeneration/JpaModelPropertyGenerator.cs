@@ -257,7 +257,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     public virtual JavaMethod GetSetter(string tag, IProperty property)
     {
         var field = GetField(property, tag);
-        return new("void", $"set{field.Name.ToPascalCase()}")
+        return new("void", GetSetterName(property))
         {
             Comment = $@"Set the value of {{@link #{field.Name} {field.Name}}}",
             Parameters = { new JavaMethodParameter(field.Type, field.Name) { Comment = $"value to set" } },

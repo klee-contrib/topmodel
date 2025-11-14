@@ -6,7 +6,7 @@ version: 3.6.1
 custom:
   ../../TopModel.Generator.Csharp: 525b0a3b60a5ff33d35964c206507230
   ../../TopModel.Generator.Javascript: de4c28a0bddf1920b0440fc31181a223
-  ../../TopModel.Generator.Jpa: 31a396b73d96b72e19eefac33617bf82
+  ../../TopModel.Generator.Jpa: 72cb0c1e488ad75811df946fcaf9a2dc
   ../../TopModel.Generator.Sql: 6fbeec8d155eca3840c9c79de95c81e2
   ../../TopModel.Generator.Translation: 42f228bfbbe42e2db8a3adf7f52a8d62
 generatedFiles:
