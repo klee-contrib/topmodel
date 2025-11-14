@@ -14,17 +14,8 @@ namespace TopModel.Sample.Clients.Db;
 /// <summary>
 /// DbContext généré pour Entity Framework Core.
 /// </summary>
-public partial class TopModelSampleDbContext : DbContext
+public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbContext> options) : DbContext(options)
 {
-    /// <summary>
-    /// Constructeur par défaut.
-    /// </summary>
-    /// <param name="options">Options du DbContext.</param>
-    public TopModelSampleDbContext(DbContextOptions<TopModelSampleDbContext> options)
-        : base(options)
-    {
-    }
-
     /// <summary>
     /// Accès à l'entité Droit.
     /// </summary>

@@ -33,7 +33,19 @@ var server = await LanguageServer.From(options =>
                     }
                     catch (ArgumentException)
                     {
-                        // On ignore l'erreur, tant pis pour la configuration manquante.
+                        // On ignore l'erreur, tant pis si le nom est déjà utilisé.
+                    }
+
+                    foreach (var referencedTag in genConfig.ReferencedTags)
+                    {
+                        if (config.Configs.TryGetValue(referencedTag.Value, out var referencedConfig))
+                        {
+                            genConfig.ReferencedTagConfigs.Add(referencedTag.Key, referencedConfig);
+                        }
+                        else
+                        {
+                            // On ignore l'erreur, tant pis pour la configuration manquante.
+                        }
                     }
                 }
             }
