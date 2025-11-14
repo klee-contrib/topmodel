@@ -42,6 +42,16 @@ export class Application {
                     modelRoot
             )?.config === config;
         this.start(shouldStartLanguageServer);
+
+        if (shouldStartLanguageServer) {
+            workspace.onDidSaveTextDocument(async (event) => {
+                if (event.uri.fsPath.toLowerCase() === this._configPath.toLowerCase()) {
+                    await this.client?.stop();
+                    this.status = "LOADING";
+                    this.startLanguageServer();
+                }
+            });
+        }
     }
 
     public get configPath() {
