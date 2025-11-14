@@ -567,7 +567,6 @@ internal class PropertyResolver(
                             );
                             break;
                         }
-
                         ap.ReverseProperty = new ReverseAssociationProperty
                         {
                             Class = association,

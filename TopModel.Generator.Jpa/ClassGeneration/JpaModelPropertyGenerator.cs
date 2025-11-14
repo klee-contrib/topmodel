@@ -193,7 +193,16 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     public virtual JavaMethod GetGetter(string tag, IProperty property)
     {
         var field = GetField(property, tag);
-        var method = field.DefaultGetter;
+        var method = new JavaMethod(field.Type, GetGetterName(property))
+        {
+            Comment = $"Getter for {field.Name}",
+            Body =
+            {
+                new WriterLine() { Line = $"return this.{field.Name};", Indent = 0 },
+            },
+            ReturnComment = $"value of {{@link #{field.Name} {field.Name}}}",
+            Visibility = "public",
+        };
         var genericType = field.Type.Split('<')[0];
         method.Imports.AddRange(property.GetTypeImports(Config, tag));
         if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
@@ -247,7 +256,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual JavaMethod GetSetter(string tag, IProperty property)
     {
-        return GetField(property, tag).DefaultSetter;
+        var field = GetField(property, tag);
+        return new("void", $"set{field.Name.ToPascalCase()}")
+        {
+            Comment = $@"Set the value of {{@link #{field.Name} {field.Name}}}",
+            Parameters = { new JavaMethodParameter(field.Type, field.Name) { Comment = $"value to set" } },
+            Body =
+            {
+                new WriterLine() { Line = $"this.{field.Name} = {field.Name};", Indent = 0 },
+            },
+            Visibility = "public",
+        };
     }
 
     public virtual string GetSetterName(IProperty property)

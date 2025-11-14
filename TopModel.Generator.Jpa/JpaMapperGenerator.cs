@@ -381,11 +381,18 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect({collector})";
                     }
-                    else
+                    else if (apSource.Association.PrimaryKey.Count() == 1)
                     {
                         getter =
                             $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::{JpaModelPropertyGenerator.GetGetterName(apSource.Property)}).collect({collector})";
                         imports.Add(apSource.Association.GetImport(Config, tag));
+                    }
+                    else if (apSource.Association.PrimaryKey.Count() > 1)
+                    {
+                        throw new ModelException(
+                            classe,
+                            $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car la classe cible de l'association possède une clé composite"
+                        );
                     }
                 }
             }

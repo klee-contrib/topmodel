@@ -103,7 +103,21 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         javaEnum.AddRange(enumValues);
         var classField = new JavaField("Class<?>", "type") { Final = true };
         javaEnum.Add(new JavaField("Class<?>", "type") { Final = true });
-        javaEnum.Add(classField.DefaultGetter);
+        javaEnum.Add(
+            new JavaMethod(
+                classField.Type,
+                classField.Name.ToPascalCase().WithPrefix(classField.Type == "boolean" ? "is" : "get")
+            )
+            {
+                Comment = $"Getter for {classField.Name}",
+                Body =
+                {
+                    new WriterLine() { Line = $"return this.{classField.Name};", Indent = 0 },
+                },
+                ReturnComment = $"value of {{@link #{classField.Name} {classField.Name}}}",
+                Visibility = "public",
+            }
+        );
         javaEnum.Constructors.Add(javaEnum.GetAllArgsConstructor());
         return javaEnum;
     }
