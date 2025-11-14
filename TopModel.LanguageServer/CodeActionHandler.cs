@@ -37,7 +37,10 @@ public class CodeActionHandler(
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
-            if (modelFile.Uses.Except(modelStore.GetUselessImports(modelFile)).Any())
+            if (
+                modelFile.Uses.Except(modelStore.GetUselessImports(modelFile)).Any()
+                || modelStore.GetUselessImports(modelFile).Any()
+            )
             {
                 codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
             }
@@ -278,8 +281,29 @@ domain:
 
     protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
+        var uses = modelFile.Uses.Except(modelStore.GetUselessImports(modelFile));
         var start = modelFile.Uses[0].ToRange()!.Start;
         var end = modelFile.Uses[^1].ToRange()!.End;
+        if (!uses.Any())
+        {
+            var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath()).ToList();
+            start = new Position(fileText.FindIndex(line => line.StartsWith("uses")), 0);
+            end.Line = end.Line + 1;
+            end.Character = 0;
+            return new CodeAction()
+            {
+                Title = "Trier les Uses",
+                Kind = CodeActionKind.SourceOrganizeImports,
+                IsPreferred = true,
+                Edit = new WorkspaceEdit
+                {
+                    Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [request.TextDocument.Uri] = [new() { NewText = string.Empty, Range = new Range(start, end) }],
+                    },
+                },
+            };
+        }
         return new CodeAction()
         {
             Title = "Trier les Uses",
@@ -295,9 +319,7 @@ domain:
                         {
                             NewText = string.Join(
                                 "\n  - ",
-                                modelFile
-                                    .Uses.Except(modelStore.GetUselessImports(modelFile))
-                                    .DistinctBy(u => u.ReferenceName)
+                                uses.DistinctBy(u => u.ReferenceName)
                                     .OrderBy(u => u.ReferenceName)
                                     .Select(u => u.ReferenceName)
                             ),
