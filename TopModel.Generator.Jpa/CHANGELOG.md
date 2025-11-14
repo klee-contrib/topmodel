@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.4.2
+
+- [`84b53b`](https://github.com/klee-contrib/topmodel/commit/84b53b00174de91b95c08e57395e6b44550a4fbe) - [JPA] Fix nom setter dans le cas preservePropertyCasing
+
 ## 3.4.1
 
 - [`543a7a`](https://github.com/klee-contrib/topmodel/commit/543a7a953f359c524142d45b0b351bb974cc69a7) - [JPA]
