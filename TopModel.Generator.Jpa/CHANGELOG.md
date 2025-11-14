@@ -2,6 +2,7 @@
 
 ## 3.4.2
 
+- [`c4f026`](https://github.com/klee-contrib/topmodel/commit/c4f0263546f2324457c53e004d2e87977adaaf01) - [JPA] Enums : les enums ne doivent pas avoir leur case modifiée (sinon dans le cas de code généré avec tmdgen on perd la case originale)
 - [`84b53b`](https://github.com/klee-contrib/topmodel/commit/84b53b00174de91b95c08e57395e6b44550a4fbe) - [JPA] Fix nom setter dans le cas preservePropertyCasing
 
 ## 3.4.1

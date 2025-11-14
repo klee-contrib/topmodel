@@ -1,5 +1,3 @@
-using TopModel.Utils;
-
 namespace TopModel.Generator.Jpa;
 
 public class JavaEnumValue(string name)
@@ -13,6 +11,6 @@ public class JavaEnumValue(string name)
 
     public override string ToString()
     {
-        return $"{Name.ToConstantCase()}{(Parameters.Count > 0 ? $"({string.Join(", ", Parameters)})" : string.Empty)}";
+        return $"{Name}{(Parameters.Count > 0 ? $"({string.Join(", ", Parameters)})" : string.Empty)}";
     }
 }

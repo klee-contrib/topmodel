@@ -39,7 +39,7 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
         var codeProperty = classe.EnumKey!;
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
-            var code = refValue.Value[codeProperty].ToConstantCase();
+            var code = refValue.Value[codeProperty];
             yield return new JavaField(classe.NamePascal, code)
             {
                 Static = true,
