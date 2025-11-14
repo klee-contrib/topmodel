@@ -7,6 +7,8 @@
   - Correction du nom du getter dans le cas `preservePropertyCasing`
   - Ajout d'une erreur dans le cas d'alias vers oneToMany d'association reverse de classe avec pk composite
 
+- [`b4b754`](https://github.com/klee-contrib/topmodel/commit/b4b754dbcb51da93e1719efba25ea44a02741624) - [JPA] Restreindre la génération des traductions des valeurs aux seules classes avec reference: true
+
 ## 3.4.0
 
 - [`509`](https://github.com/klee-contrib/topmodel/pull/509) - [JPA] Met en place la génération du métamodèle
