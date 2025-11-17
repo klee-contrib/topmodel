@@ -33,9 +33,10 @@ dotnet tool update --global TopModel.Generator
 
 ### Extension VSCode
 
-Il est **vivement conseillé** d'éditer les fichiers de modèles avec [VSCode](https://code.visualstudio.com/), muni de l'extension **"TopModel"** ([disponible sur le marketplace](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel)) qui permet de fournir un environnement type "IDE" pour l'édition de fichier topmodel. 
+Il est **vivement conseillé** d'éditer les fichiers de modèles avec [VSCode](https://code.visualstudio.com/), muni de l'extension **"TopModel"** ([disponible sur le marketplace](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel)) qui permet de fournir un environnement type "IDE" pour l'édition de fichier topmodel.
 
 L'extension TopModel fournit :
+
 - Des schémas JSON pour la validation (oui, ça marche aussi pour valider du YAML)
 - L'autocomplétion intelligente
 - La navigation entre fichiers et références
@@ -76,6 +77,16 @@ app: Exemple
 noWarn:
   - TMD3004 # Ignore le warning sur la duplication des trigrammes
 ```
+
+Vous pouvez aussi ignorer localement un warning via un commentaire `# ignore` :
+
+```yaml
+class:
+  name: Utilisateur
+  trigram: UTI # ignore TMD3004
+```
+
+Le commentaire doit être sur la même ligne que le warning, commencer par `# ignore`, et contenir son code. A l'inverse de la solution globale via le fichier de config, le warning ne sera ignoré que pour cette instance précise.
 
 ## Édition du modèle
 

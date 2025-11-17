@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.2
+
+- [`362fb93`](https://github.com/klee-contrib/topmodel/commit/362fb93714b570e44601601e916a465a0df52c9f) - Suppression de warning inline avec # ignore tmdXXXX
+
 ## 3.6.1
 
 - [`32e8c76`](https://github.com/klee-contrib/topmodel/commit/32e8c766ac6fedd154dc6b6570f49261566bad82) - Fix plantage si association sur classe avec une PK en alias
