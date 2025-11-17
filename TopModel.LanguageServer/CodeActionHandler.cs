@@ -47,6 +47,11 @@ public class CodeActionHandler(
 
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
+                if (diagnostic.Severity == DiagnosticSeverity.Warning)
+                {
+                    codeActions.Add(GetCodeActionIgnoreWarning(request, diagnostic, modelFile));
+                }
+
                 var modelErrorType = Enum.Parse<ErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
@@ -185,6 +190,63 @@ domain:
                     };
             })
             .ToList();
+    }
+
+    protected CommandOrCodeAction GetCodeActionIgnoreWarning(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
+    {
+        var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = fileText[diagnostic.Range.Start.Line];
+
+        var warningCode = diagnostic.Code!.Value.String!;
+
+        var ignoreComment = $"# ignore {warningCode}";
+
+        if (!line.Contains('#'))
+        {
+            line += $" {ignoreComment}";
+        }
+        else
+        {
+            var startIndex = line.IndexOf('#');
+            if (line[startIndex..].StartsWith("# ignore"))
+            {
+                line = $"{line[0..startIndex]}{ignoreComment}{line[(startIndex + 8)..]}";
+            }
+            else
+            {
+                line = $"{line[0..startIndex]}{ignoreComment}{line[(startIndex + 1)..]}";
+            }
+        }
+
+        return (CommandOrCodeAction)
+            new CodeAction
+            {
+                Title = $"TopModel : Ignorer cette instance du warning {warningCode}",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = false,
+                Diagnostics = new List<Diagnostic> { diagnostic },
+                Edit = new WorkspaceEdit
+                {
+                    Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [
+                            new()
+                            {
+                                Range = new Range(
+                                    new Position(diagnostic.Range.Start.Line, 0),
+                                    new Position(diagnostic.Range.Start.Line, line.Length)
+                                ),
+                                NewText = line,
+                            },
+                        ],
+                    },
+                },
+            };
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(
