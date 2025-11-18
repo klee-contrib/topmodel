@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.4.3
+
+- [`8fa96aa`](https://github.com/klee-contrib/topmodel/commit/8fa96aa786bf5d0fd6ff8b104c307a691df68be0) - [JPA] Fix mauvais tag pris en compte dans un import d'enum as enum
+
 ## 3.4.2
 
 - [`c4f026`](https://github.com/klee-contrib/topmodel/commit/c4f0263546f2324457c53e004d2e87977adaaf01) - [JPA] Enums : les enums ne doivent pas avoir leur case modifiée (sinon dans le cas de code généré avec tmdgen on perd la case originale)
@@ -8,6 +12,7 @@
 ## 3.4.1
 
 - [`543a7a`](https://github.com/klee-contrib/topmodel/commit/543a7a953f359c524142d45b0b351bb974cc69a7) - [JPA]
+
   - Dans le cas d'une enum, correction du nom référencé dans le cas où celui-ci n'est pas en constant Case
   - Correction du nom du getter dans le cas `preservePropertyCasing`
   - Ajout d'une erreur dans le cas d'alias vers oneToMany d'association reverse de classe avec pk composite
