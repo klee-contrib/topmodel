@@ -87,7 +87,15 @@ export class TmdTool {
         };
 
         const req = request(options, (res) => {
-            res.on("data", async (response) => {
+            new Promise((resolve) => {
+                let totalBuffer = "";
+
+                res.on("data", (buffer) => {
+                    totalBuffer += buffer.toString("utf8");
+                });
+
+                res.on("end", () => resolve(totalBuffer));
+            }).then(async (response: any) => {
                 const { versions }: { versions: string[] } = JSON.parse(response);
                 this.versions = versions;
             });
