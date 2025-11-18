@@ -23,7 +23,7 @@
     "version": "3.6.5",
     "license": "MIT",
     "engines": {
-        "vscode": "^1.106.1"
+        "vscode": "^1.97.0"
     },
     "categories": [
         "Programming Languages"
@@ -175,14 +175,16 @@
         "vscode-languageclient": "9.0.1"
     },
     "devDependencies": {
-        "@types/glob": "9.0.0",
-        "@types/node": "22",
-        "@types/vscode": "1.106.1",
-        "concurrently": "9.2.1",
-        "esbuild": "0.27.0",
-        "oxlint": "1.29.0",
-        "glob": "12.0.0",
-        "typescript": "5.9.3",
-        "@vscode/vsce": "3.7.0"
+        "@types/glob": "8.1.0",
+        "@types/node": "20.9.1",
+        "@types/vscode": "1.97.0",
+        "@typescript-eslint/eslint-plugin": "6.11.0",
+        "@typescript-eslint/parser": "6.11.0",
+        "concurrently": "9.1.2",
+        "esbuild": "0.25.0",
+        "eslint": "8.54.0",
+        "glob": "10.3.10",
+        "typescript": "5.8.2",
+        "@vscode/vsce": "3.2.2"
     }
 }
