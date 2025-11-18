@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.4
+
+- [`cc572eb`](https://github.com/klee-contrib/topmodel/commit/cc572ebd40cd92f1c47b702358cf9fb51e1b1ea4) - [Core] Fix recopie de ClassName dans les associations héritées de décorateurs
+
 ## 3.6.3
 
 - [`9229db6`](https://github.com/klee-contrib/topmodel/commit/9229db62c2dbc00f342f00705470d80314425825) - [Core] name de la configuration en variable globale
