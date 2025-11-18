@@ -66,7 +66,7 @@ public static class ImportsJpaExtensions
         {
             if (config.EnumsAsEnums)
             {
-                yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}";
+                yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, config.GetBestClassTag(ap.Association.EnumKey!.Class, tag))}.{ap.Association.NamePascal}";
             }
             else if (ap.Class?.IsPersistent != true)
             {
@@ -128,7 +128,7 @@ public static class ImportsJpaExtensions
             if (config.EnumsAsEnums)
             {
                 imports.Add(
-                    $"{config.GetEnumValuePackageName(ap.Property.Class.EnumKey!.Class, tag)}.{ap.Property.Class.NamePascal}"
+                    $"{config.GetEnumValuePackageName(ap.Property.Class.EnumKey!.Class, config.GetBestClassTag(ap.Property.Class.EnumKey!.Class, tag))}.{ap.Property.Class.NamePascal}"
                 );
             }
             else
