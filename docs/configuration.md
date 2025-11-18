@@ -128,7 +128,7 @@ Il existe **3 types de variables** :
 
 Les variables globales sont utilisables dans tous les paramètres (string) de toutes les générateurs, sans restriction. Elles seront remplacées à l'initialisation du générateur par la valeur qui a été définie dans la section `variables` de la configuration.
 
-La variable globale `{app}` est définie par défaut avec la valeur de la propriété `app` de la configuration est peut donc être utilisée partout. Elle peut bien sûr être surchargée si besoin.
+La variable globale `{app}` est définie par défaut avec la valeur de la propriété `app` de la configuration est peut donc être utilisée partout. Il en va de même pour le `name` de la configuration, si défini. Ces deux variables peuvent bien sûr être surchargées si besoin.
 
 ### Variables contextuelles
 
@@ -184,7 +184,7 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 - **`modelRoot`**
 
   Permet de définir une autre racine pour le modèle que l'emplacement du fichier de configuration. À utiliser si vous voulez séparer l'emplacement du fichier de config du reste du modèle.
-  
+
   > **Attention** : Tous les chemins de fichiers dans les `uses` sont relatifs au `modelRoot`, et tous les fichiers `.tmd` doivent être dedans.
 
 - **`lockFileName`**

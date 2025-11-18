@@ -222,6 +222,11 @@ public class WatcherConfigBase
             Variables["app"] = app;
         }
 
+        if (Name != null && !Variables.ContainsKey("name"))
+        {
+            Variables["name"] = Name;
+        }
+
         // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
         if (TagVariableNames.Any())
         {
