@@ -248,6 +248,7 @@ public class AssociationProperty : IProperty
             UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
             Annotations = Annotations,
+            ClassName = ClassName,
         };
     }
 
