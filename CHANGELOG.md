@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.3
+
+- [`9229db6`](https://github.com/klee-contrib/topmodel/commit/9229db62c2dbc00f342f00705470d80314425825) - [Core] name de la configuration en variable globale
+
 ## 3.6.2
 
 - [`362fb93`](https://github.com/klee-contrib/topmodel/commit/362fb93714b570e44601601e916a465a0df52c9f) - Suppression de warning inline avec # ignore tmdXXXX
