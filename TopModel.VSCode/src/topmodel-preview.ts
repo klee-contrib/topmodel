@@ -1,3 +1,4 @@
+// oxlint-disable no-unused-vars
 const ZOOM_SPEED = 0.4;
 function zoomClick(inOut: boolean) {
     const event = new CustomEvent("zoomClick", { detail: { inOut } });

@@ -35,7 +35,8 @@ async function checkDotnetInstall(): Promise<boolean> {
     try {
         await execute("dotnet -h");
         return true;
-    } catch (err: any) {
+        // oxlint-disable-next-line no-unused-vars
+    } catch (_err: any) {
         const selection = await window.showInformationMessage(
             "Dotnet n'est pas installé",
             "Ouvrir la page de téléchargement"

@@ -102,12 +102,10 @@ export class TopModelPreviewPanel {
         }
         if (message.type === "click:class") {
             const className = message.className;
-            const symbolInformations: SymbolInformation[] = await this.currentApplication?.client?.sendRequest(
-                "workspace/symbol",
-                {
+            const symbolInformations: SymbolInformation[] =
+                (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
                     query: className,
-                }
-            )!;
+                })) ?? [];
             const symbol = symbolInformations.filter((s) => s.name === className)[0];
             const position = new Position(symbol.location.range.start.line, 0);
             const uri = Uri.parse(symbol.location.uri as any);

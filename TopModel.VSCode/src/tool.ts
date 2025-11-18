@@ -4,7 +4,6 @@ import { commands, ExtensionContext, Terminal, window, workspace } from "vscode"
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { Status } from "./types";
 import { execute, isWindows } from "./utils";
-const open = require("open");
 
 export class TmdTool {
     currentVersion?: string;
@@ -147,7 +146,8 @@ export class TmdTool {
                 result = await execute(`dotnet tool list -g | grep -i ${this.name.toLowerCase()} | wc -l`);
                 this.installed = result.trim() === "1";
             }
-        } catch (error: any) {
+            // oxlint-disable-next-line no-unused-vars
+        } catch (_error: any) {
             result = "Not Installed";
             this.installed = false;
         }

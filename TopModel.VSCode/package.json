@@ -23,7 +23,7 @@
     "version": "3.6.5",
     "license": "MIT",
     "engines": {
-        "vscode": "^1.97.0"
+        "vscode": "^1.106.1"
     },
     "categories": [
         "Programming Languages"
@@ -160,7 +160,7 @@
         "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "build-preview-assets": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js && cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js",
         "build": "npm run build-extension && npm run build-preview-assets",
-        "lint": "oxlint src --ext ts",
+        "lint": "oxlint src",
         "package": "vsce package",
         "extension-watch": "npm run build-extension -- --sourcemap --watch",
         "preview-watch": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js --watch",
