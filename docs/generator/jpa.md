@@ -30,15 +30,15 @@ Le générateur JPA est compatible avec les options globales de TopModel :
 | JpaEntityGen          | `useJdbc: false`                                                   | Classes persistées qui ne sont pas des enums                                                                                     | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA                                                                                                                                                                 |
 | JpaEnumEntityGen      | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées qui sont des enums                                                                                            | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA. Contient également des membres statiques représentant les entitées décrites dans les values                                                                    |
 | JpaEnumGen            | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées ou non qui sont des enums                                                                                     | Enumération des valeurs possible de la clé primaire de la classe                                                                                                                                                                                                           |
-| JavaEnumDtoGen        | `useJdbc: false` && `enumsAsEnums: false`                          | Classes nons persistées qui sont des enums                                                                                       | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de validation. Contient également des membres statiques représentant les instances décrites dans les values                                                                           |
+| JavaEnumDtoGen        | `useJdbc: false` && `enumsAsEnums: false`                          | Classes non persistées qui sont des enums                                                                                        | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de validation. Contient également des membres statiques représentant les instances décrites dans les values                                                                           |
 | JpaEnumValuesGen      | `useJdbc: false` && `enumsAsEnums: true`                           | Enum contenant toutes les valeurs définies dans les values, dont la clé est la primaryKey ou la première propriété de la classe. |
-| JpaInterfaceGen       | Toujours                                                           | Classes qui ont `abstract: true`                                                                                                 | Interface ne contenant que des `getters` des propriétés définies dans le modèle. Peut également définir une méthode `hydrate`, s'apparentant à un contructeur                                                                                                              |
+| JpaInterfaceGen       | Toujours                                                           | Classes qui ont `abstract: true`                                                                                                 | Interface ne contenant que des `getters` des propriétés définies dans le modèle. Peut également définir une méthode `hydrate`, s'apparentant à un constructeur                                                                                                             |
 | SpringDataFlowGen     | `dataFlowsPath` défini                                             | Dataflows                                                                                                                        | Définition d'un job par module, et d'un step par dataFlow. Peut également générer une interface à implémenter pour les source en mode`partial` et les `hook` ajoutés                                                                                                       |
-| FeignClientApiGen     | `apiGeneration: client` && `clientApiGeneration: feignClient`      | Endpoints                                                                                                                        | Interface contenant les annotations nécessaires à la construction par feign d'une api cliente.                                                                                                                                                                             |
+| FeignClientApiGen     | `apiGeneration: client` && `clientApiGeneration: feignClient`      | Endpoints                                                                                                                        | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente.                                                                                                                                                                             |
 | SpringApiClientGen    | `apiGeneration: client` && `clientApiGeneration: restClient`       | Endpoints                                                                                                                        |
-| SpringRestTemplateGen | `apiGeneration: client` && `clientApiGeneration: restClientClient` | Endpoints                                                                                                                        | Classe abstraite définissant les méthodes permettant d'appeler une api externe à l'aide d'un RestTemplate spring.                                                                                                                                                          |
-| SpringApiServerGen    | `apiGeneration: server`                                            | Endpoints                                                                                                                        | Interface définissant les méthodes annotées permettant de définir une api server. L'implémentation est à la main du développeur                                                                                                                                            |
-| JpaMapperGenerator    | Toujours                                                           | Mappers                                                                                                                          | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèles                                                                                                                                                                        |
+| SpringRestTemplateGen | `apiGeneration: client` && `clientApiGeneration: restTemplate`     | Endpoints                                                                                                                        | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un RestTemplate Spring.                                                                                                                                                          |
+| SpringApiServerGen    | `apiGeneration: server`                                            | Endpoints                                                                                                                        | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                                                                                                                                         |
+| JpaMapperGenerator    | Toujours                                                           | Mappers                                                                                                                          | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèle                                                                                                                                                                         |
 | JpaResourceGen        | `resourcesPath` défini                                             | Classes qui contiennent des labels ou des values qui ont des defaultProperty                                                     | Fichiers de resource `.properties` dans les différentes langues de l'application. Les clés sont les clés de traduction des labels des propriétés du modèle, et dont les valeurs sont les labels définis dans le modèle dans la langue de développement, ou leur traduction |
 | JpaMetaModelGenerator | `metaModel: true`                                                  | Entités persistées                                                                                                               | Classes représentant le métamodèle des entités persistées. Une classe par entité.                                                                                                                                                                                          |
 
@@ -58,7 +58,6 @@ Le générateur détecte automatiquement la présence d'annotations Lombok sur l
 
 - Si une classe possède l'annotation `@Data`, `@Getter` ou `@Setter`, les getters et setters ne sont pas générés pour cette classe
 - Si une propriété possède l'annotation `@Getter` ou `@Setter`, le getter ou setter correspondant n'est pas généré pour cette propriété
-- Si une classe possède l'annotation `@Data`, les getters et setters ne sont pas générés.
 
 Cette fonctionnalité permet d'utiliser Lombok pour réduire le code boilerplate tout en conservant la génération des autres éléments (constructeurs, annotations JPA, etc.).
 
@@ -87,13 +86,13 @@ Sur chacune des propriété :
 | `@SequenceGenerator`           | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
 | `@GeneratedValue`              | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
 | `@Column`                      | Sur les propriétés qui ne sont ni des compositions, ni des associations.                                    |
-| `@OneToOne`                    | `type: OneToOne` sur une associations                                                                       |
-| `@ManyToOne`                   | `type: ManyToOne` sur une associations                                                                      |
-| `@OneToMany`                   | `type: OneToMany` sur une associations                                                                      |
-| `@ManyToMany`                  | `type: ManyToMany` sur une associations                                                                     |
+| `@OneToOne`                    | `type: OneToOne` sur une association                                                                        |
+| `@ManyToOne`                   | `type: ManyToOne` sur une association                                                                       |
+| `@OneToMany`                   | `type: OneToMany` sur une association                                                                       |
+| `@ManyToMany`                  | `type: ManyToMany` sur une association                                                                      |
 | `@JoinColumn`                  | Sur les associations `manyToOne` et `oneToOne`                                                              |
 | `@JoinTable`                   | Sur les associations `manyToMany`                                                                           |
-| `@OrderBy`                     | Sur les associations `manyToMany` et `oneToMany` pour lesquelles la classe cible défini une `orderProperty` |
+| `@OrderBy`                     | Sur les associations `manyToMany` et `oneToMany` pour lesquelles la classe cible définit une `orderProperty` |
 | `@Convert`                     | Sur les compositions. Le converter utilisé est paramétrable.                                                |
 
 Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
@@ -320,9 +319,9 @@ Egalement, si le domain a :
 - `length` est défini ou `scale` est défini
   Alors la propriété portera l'annotation `@Digits(integer = [length défini dans le domain], fraction = [scale défini dans le domain])`
 
-Précautions d'emploi :
+**Précautions d'emploi :**
 
-- Ne pas composer avec une entité persitée
+- Ne pas composer avec une entité persistée
 
 #### Classes abstraites
 
@@ -415,23 +414,36 @@ Par défaut, dans le mode JDBC, il s'agit de `org.springframework.data.repositor
 
 ## Génération des mappers
 
-Les mappers sont générés comme des méthodes statiques dans une classe statique. Cette classe rassemble tous les mappers d'un module racine. Elle est positionné dans le package des entités si l'une des deux classes est persistée, et dans le package des Dtos sinon.
+Les mappers sont générés comme des méthodes statiques dans une classe statique. Cette classe rassemble tous les mappers d'un module racine. Elle est positionnée dans le package des entités si l'une des deux classes est persistée, et dans le package des DTOs sinon.
 
-_Remarque : le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, où à défaut celui de la classe qui définit le mapper._
+**Remarque :** Le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, ou à défaut celui de la classe qui définit le mapper.
+
+### Mappers `from`
 
 Les mappers `from` sont générés sous deux formes :
 
-- `create[Nom de la classe à créer]` : Crée une nouvelle instance de la classe cible en mappant les champs sources. Cette méthode appelle en interne la méthode `mapXXX` avec une nouvelle instance.
+- **`create[Nom de la classe à créer]`** : Crée une nouvelle instance de la classe cible en mappant les champs sources. Cette méthode appelle en interne la méthode `mapXXX` avec une nouvelle instance.
 
-- `map[Nom de la classe à créer]` : Mappe les champs sources sur une instance de la classe cible passée en paramètre. Cette méthode est publique et peut être utilisée pour peupler une instance existante. Si l'instance cible est `null`, une exception `IllegalArgumentException` est lancée.
+- **`map[Nom de la classe à créer]`** : Mappe les champs sources sur une instance de la classe cible passée en paramètre. Cette méthode est publique et peut être utilisée pour peupler une instance existante. Si l'instance cible est `null`, une exception `IllegalArgumentException` est lancée.
 
 Les deux méthodes prennent en entrée la liste des paramètres d'entrée définis dans le mapper. La méthode `mapXXX` prend également une instance de la classe cible en dernier paramètre.
 
-Il en va de même pour les mappers `to`. A la différence qu'ils s'appellent `to[Nom de la classe cible]`, ou bien du nom défini dans le `mapper`. Dans le cas des mappers `to`, le paramètre source est unique et obligatoire.
+### Mappers `to`
+
+Les mappers `to` s'appellent `to[Nom de la classe cible]`, ou bien du nom défini dans le `mapper`. Dans le cas des mappers `to`, le paramètre source est unique et obligatoire.
+
+### Intégration dans les classes
+
+Par défaut (`mappersInClass: true`), dans les classes qui définissent le mapper :
+
+- Des constructeurs sont générés pour tous les mappers `from`
+- Une méthode `toXXX` est générée pour chacun des mappers `to`
+
+Cette option est désactivable avec la configuration `mappersInClass: false`.
+
+### Gestion des erreurs
 
 Si un paramètre d'entrée obligatoire n'est pas renseigné, l'exception `IllegalArgumentException` est lancée.
-
-Par défaut, dans les classes qui définissent le `mapper`, des constructeurs sont générés pour tous les mappers `from`. Une méthode `toXXX` est générée pour chacun des mappers `to`. Cette option est désactivable avec le configuration `mappersInClass: false`
 
 ## Génération des endpoints
 
@@ -485,55 +497,73 @@ Le chemin complet du fichier sera : `{outputDirectory}/{apiPath}/{nomClasse}.jav
 
 ### Génération de l'Api Server (Spring)
 
-Le générateur créé des `interface` contenant, pour chaque `endpoint` paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller. En effet, cette méthode aura déjà l'annotation `XXXMapping` correspondant au verbe `HTTP` défini dans le `endpoint`.
+Le générateur crée des interfaces contenant, pour chaque `endpoint` paramétré, la méthode abstraite correspondant au nom de l'endpoint, à implémenter dans votre controller. Cette méthode aura déjà l'annotation `XXXMapping` correspondant au verbe HTTP défini dans l'endpoint (par exemple `@GetMapping`, `@PostMapping`, etc.).
 
-Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente la classe générée. L'annotation `@RestController` reste nécessaire.
+Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente l'interface générée. L'annotation `@RestController` reste nécessaire.
 
-Si le domain du body du `endpoint` défini un `mediaType`, alors il sera valorisé dans l'annotation avec l'attribut `Consumes`. De la même manière pour le domain du paramètre de retour, avec l'attribut `Produces`.
+**Comportements automatiques :**
 
-Si la méthode retourne `void` ou `Void`, l'annotation `@ResponseStatus(HttpStatus.NO_CONTENT)` (code HTTP 204) est automatiquement ajoutée à la méthode.
+- Si le domain du body de l'endpoint définit un `mediaType`, alors il sera valorisé dans l'annotation avec l'attribut `consumes`
+- De la même manière pour le domain du paramètre de retour, avec l'attribut `produces`
+- Si la méthode retourne `void` ou `Void`, l'annotation `@ResponseStatus(HttpStatus.NO_CONTENT)` (code HTTP 204) est automatiquement ajoutée à la méthode
+
+**Exemple :**
+
+```java
+@RestController
+public class UtilisateurControllerImpl implements UtilisateurController {
+  
+  @Override
+  public UtilisateurDto getUtilisateur(Long id) {
+    // Implémentation
+  }
+}
+```
 
 ### Api Client (Spring)
 
-#### RestClient (spring-web 6+)
+#### RestClient (Spring Web 6+)
 
 Il s'agit du mode par défaut, soit lorsque la variable `clientApiGeneration` vaut `RestClient`.
 
-Le générateur créé alors des interfaces contenant des annotations `XXXExchange`, dont il faudra configurer un bean d'implémentation.
+Le générateur crée alors des interfaces contenant des annotations `XXXExchange`, dont il faudra configurer un bean d'implémentation.
 
 **Note importante :** Les méthodes générées retournent toujours un `ResponseEntity<T>` (où `T` est le type de retour défini dans l'endpoint), permettant de gérer les différents codes HTTP de réponse.
 
+**Exemple de configuration :**
+
 ```java
- @Bean
- protected UtilisateurApiClient utilisateurApiClient(UtilisateurApiClient restTemplate) {
-  var restClient = RestClient.builder().baseUrl("http://localhost:8080/my-app/api/") //
+@Bean
+protected UtilisateurApiClient utilisateurApiClient() {
+  var restClient = RestClient.builder()
+    .baseUrl("http://localhost:8080/my-app/api/")
     .build();
   var adapter = RestClientAdapter.create(restClient);
   var factory = HttpServiceProxyFactory.builderFor(adapter).build();
   return factory.createClient(UtilisateurApiClient.class);
- }
+}
 ```
 
 #### RestTemplate
 
 Pour activer ce mode de génération, positionner la variable `clientApiGeneration` à `RestTemplate`.
 
-Le générateur créé alors des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
+Le générateur crée alors des classes abstraites contenant toutes les méthodes permettant d'accéder aux endpoints paramétrés.
 
 **Note importante :** Les méthodes générées retournent toujours un `ResponseEntity<T>` (où `T` est le type de retour défini dans l'endpoint), permettant de gérer les différents codes HTTP de réponse.
 
-Pour créer votre client d'API, il suffit de créer une classe qui hérite de cette classe abstraite. Pour fonctionner, elle devra appeler le constructeur de la classe abrstaite, en renseignant :
+Pour créer votre client d'API, il suffit de créer une classe qui hérite de cette classe abstraite. Pour fonctionner, elle devra appeler le constructeur de la classe abstraite, en renseignant :
 
 - Le host de l'API
 - Une instance de `RestTemplate`
 
-Exemple :
+**Exemple d'implémentation :**
 
 ```java
 @Service
-public class UtilisateurApiClient extends AbstractUtilisateurApiCLient {
+public class UtilisateurApiClient extends AbstractUtilisateurApiClient {
 
-  private static final HOST = "http://localhost:8080/my-app/api/";
+  private static final String HOST = "http://localhost:8080/my-app/api/";
 
   @Autowired
   public UtilisateurApiClient(RestTemplate restTemplate) {
@@ -542,13 +572,11 @@ public class UtilisateurApiClient extends AbstractUtilisateurApiCLient {
 }
 ```
 
-Pour appeler l'API utilisateur, injecter le service UtilisateurApiClient. Puis appeler la méthode de votre choix en entrant les différents paramètres, en y ajoutant l'objet HttpHeaders désiré.
+**Exemple d'utilisation :**
 
 ```java
 @Service
 public class UtilisateurService {
-
-  private static final HOST = "http://localhost:8080/my-app/api/";
 
   private final UtilisateurApiClient utilisateurApiClient;
 
@@ -557,7 +585,7 @@ public class UtilisateurService {
     this.utilisateurApiClient = utilisateurApiClient;
   }
 
-  public UtilisateurDto getUtilisateur(Long id){
+  public UtilisateurDto getUtilisateur(Long id) {
     var headers = new HttpHeaders();
     headers.add("token-securise", "MON_TOKEN_SECURISE");
     return utilisateurApiClient.getUtilisateur(id, headers);
@@ -567,7 +595,11 @@ public class UtilisateurService {
 
 #### FeignClient
 
-Génère le même fichier que dans le mode `Server` de la génération d'API, à la différence près que le suffix est `Api` au lieu de `Controller`, et que l'annotation `@FeignClient` est ajoutée à l'interface.
+Pour activer ce mode de génération, positionner la variable `clientApiGeneration` à `FeignClient`.
+
+Le générateur crée des interfaces similaires au mode `Server`, à la différence près que le suffixe est `Api` au lieu de `Controller`, et que l'annotation `@FeignClient` est ajoutée à l'interface.
+
+**Note :** Ce mode nécessite la dépendance Spring Cloud OpenFeign.
 
 ## Dépendances
 
@@ -634,13 +666,13 @@ Si l'option `openApiAnnotations` est activée, les annotations de cette librairi
 
 ### Version Java
 
-Le cde Java généré est compatible avec toutes les versions de Java postérieures à `Java 11`.
+Le code Java généré est compatible avec toutes les versions de Java postérieures à `Java 11`.
 
 ## Utilisation combinée avec le générateur postgresql
 
-Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de jdbc ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
+Le mode de génération par défaut des générateurs ne crée pas de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de JDBC ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` du générateur PostgreSQL.
 
-Le mode `sequence` dans la configuration jpa et dans la configuration postgresql se déclare de la même manière :
+Le mode `sequence` dans la configuration JPA et dans la configuration PostgreSQL se déclare de la même manière :
 
 ```yaml
 ## Configuration jpa et proceduralSql
@@ -711,15 +743,15 @@ Le générateur de data flow s'appuie sur `spring-batch`. Il permet de générer
 
 #### Flow
 
-Le générateur créé un fichier par dataFlow, comprenant :
+Le générateur crée un fichier par dataFlow, comprenant :
 
-- Reader
-- Writer
-- TruncateTasklet éventuellement
-- Step
-- Flow
+- **Reader** : Lit les données depuis la source (base de données, API, etc.)
+- **Writer** : Écrit les données dans la base de données cible
+- **TruncateTasklet** (éventuellement) : Vide la table cible avant l'insertion si configuré
+- **Step** : Définit une étape du job Spring Batch
+- **Flow** : Définit le flux de traitement des données
 
-La génération s'appuie sur spring-batch, mais aussi la librairie `spring-batch-bulk`, qui permet des performances exceptionnelles grâce à l'utilisation du bulk insert postgres (avec la commande `COPY`).
+La génération s'appuie sur Spring Batch, mais aussi la librairie `spring-batch-bulk`, qui permet des performances exceptionnelles grâce à l'utilisation du bulk insert PostgreSQL (avec la commande `COPY`).
 
 ```xml
   <dependency>
@@ -739,7 +771,7 @@ Il est par exemple possible de créer un `Reader` appelant une API.
 
 ##### Replace
 
-Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Nous aurions pu utiliser un `deleteAll` mais il est nettement moins performant que le `truncate`.
+Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Cette approche est nettement plus performante qu'un `deleteAll` classique.
 
 #### Processor
 
@@ -751,7 +783,7 @@ Il existe deux modes de génération des writers : `jpa` ou `bulk`. Le mode est 
 
 ##### JPA
 
-Le writer utilise le `JpaItemWriter` de spring-batch. Ce mode est adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.).
+Le writer utilise le `JpaItemWriter` de Spring Batch. Ce mode est adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.).
 
 ##### Bulk
 
@@ -764,8 +796,8 @@ jpa:
   - tags:
       - entity
     dataFlowsPath: topmodel/exemple/flows
-    dataFlowsWriter: Bulk # ou Jpa
-    dataFlowsBulkSize: 100000 # Taille des chunks pour le bulk insert (par défaut: 100000)
+    dataFlowsWriter: bulk  # ou jpa
+    dataFlowsBulkSize: 100000  # Taille des chunks pour le bulk insert (par défaut: 100000)
 ```
 
 ##### Insert
@@ -793,20 +825,20 @@ jpa:
 
 #### Job
 
-Le générateur créé un fichier de configuration de job par module. Ce job ordonnance les lancement des flow selon ce qui a été paramétré dans avec les mots clés `dependsOn`. Il import les configurations nécessaires à son bon fonctionnement.
+Le générateur crée un fichier de configuration de job par module. Ce job ordonnance les lancements des flows selon ce qui a été paramétré avec les mots-clés `dependsOn`. Il importe les configurations nécessaires à son bon fonctionnement.
 
 ### Limitations et mises en garde
 
-- Ne fonctionne que de base à base. Pour créer un reader spécifique, utiliser le mode `partial`
-- La base cible ne peut être qu'une base de données `Postgresql`
-- Il est obligatoire de définir un dbSchema
-- Multi-source non supporté
-- Un mapper doit exister de la classe source vers la classe cible (sauf s'il s'agit de la même classe)
-- Deux jobs ne peuvent pas dépendre l'un de l'autre s'ils ne sont pas dans le même module
-- Prenons les flow A, B, C et D, avec
-  - C dépend de A et B
-  - D dépend de A
-    alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
+- **Source de données** : Ne fonctionne que de base à base par défaut. Pour créer un reader spécifique (par exemple appelant une API), utiliser le mode `partial`
+- **Base de données cible** : La base cible ne peut être qu'une base de données PostgreSQL
+- **Schéma** : Il est obligatoire de définir un `dbSchema`
+- **Multi-source** : Non supporté actuellement
+- **Mappers** : Un mapper doit exister de la classe source vers la classe cible (sauf s'il s'agit de la même classe)
+- **Dépendances entre jobs** : Deux jobs ne peuvent pas dépendre l'un de l'autre s'ils ne sont pas dans le même module
+- **Ordre d'exécution** : L'ordre d'exécution des flows suit une logique de dépendances qui peut être plus restrictive que nécessaire. Par exemple, si :
+  - Le flow C dépend de A et B
+  - Le flow D dépend de A
+  - Alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A)
 
 ## Configuration
 
@@ -814,7 +846,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `rootModule`
 
-  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).
+  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions, etc.).
 
   _Templating_: `{module}`
 
@@ -822,15 +854,15 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `entitiesPath`
 
-  Localisation des classses persistées du modèle, relatif au répertoire de génération.
+  Localisation des classes persistées du modèle, relative au répertoire de génération.
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Valeur par défaut_: `"javagen:{app}/entities/{module}"`
+  _Valeur par défaut_: `"javagen:{app:path}/entities/{module:path}"`
 
-  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 - `daosPath`
 
@@ -838,13 +870,13 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier a plusieurs tags)
 
 - `daosAbstract`
 
-  Génération des DAO sous forme 'Abtract' à hériter pour l'utiliser dans le projet dans le projet avec :
+  Génération des DAO sous forme 'Abstract' à hériter pour l'utiliser dans le projet avec :
 
   - le nom Abstract{classe.NamePascal}DAO
   - le fichier java sera mise à jour (écrasé) à chaque génération de code
@@ -862,14 +894,14 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `daosInterface`
 
-  Permet de surcharger les interfaces par default des DAOS:
+  Permet de surcharger les interfaces par défaut des DAOs :
 
   - si UseJdbc, l'interface est org.springframework.data.repository.CrudRepository
   - si Reference, l'interface est org.springframework.data.repository.CrudRepository
   - si aucun des deux, l'interface est org.springframework.data.jpa.repository.JpaRepository
   - si daosInterface est précisée, les autres cas ne sont pas utilisés.
 
-  Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que JpaRespository et CrudRepository soit :
+  Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que `JpaRepository` et `CrudRepository` soit :
 
   - La classe de l'entité en premier
   - La classe de l'identifiant en second
@@ -881,11 +913,11 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Valeur par défaut_: `"javagen:{app}/dtos/{module}"`
+  _Valeur par défaut_: `"javagen:{app:path}/dtos/{module:path}"`
 
-  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 - `enumsPath`
 
@@ -893,11 +925,11 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Valeur par défaut_: `"javagen:{app}/enums/{module}"`
+  _Valeur par défaut_: `"javagen:{app:path}/enums/{module:path}"`
 
-  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 - `enumsValuesPath`
 
@@ -905,11 +937,11 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Valeur par défaut_: `"javagen:{app}/enums/{module}"`
+  _Valeur par défaut_: `"javagen:{app:path}/enums/{module:path}"`
 
-  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 - `enumsAsEnums`
 
@@ -921,19 +953,19 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `apiPath`
 
-  Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
+  Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
-  _Valeur par défaut_: `"javagen:{app}/api/{module}"`
+  _Valeur par défaut_: `"javagen:{app:path}/api/{module:path}"`
 
   _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
 
 - `openApiAnnotations`
 
-  Si les annotation `swagger-annotation-jakarta` doivent être ajoutées aux interface. Nécessite à minima la dépendance :
+  Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces. Nécessite à minima la dépendance :
 
   ```xml
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations-jakarta -->
@@ -951,9 +983,9 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `apiGeneration`
 
-  Mode de génération de l'API (`"client"` ou `"server"`).
+  Mode de génération de l'API (`"Client"` ou `"Server"`).
 
-  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
+  _Variables par tag_: **oui** (la valeur de la variable doit être `"Client"` ou `"Server"`. Le client et le serveur pourraient être générés si un fichier a plusieurs tags)
 
 - `clientApiGeneration`
 
@@ -963,7 +995,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
   - `RestTemplate` : Génération d'un client en mode RestTemplate (classe abstraite à initialiser)
   - `FeignClient` : Génération d'un client en mode Feign (interface spring controller avec l'annotation Feign)
 
-  Cette propriété n'est utilisée que lorsque `apiGeneration` est défini à `"client"` ou contient une variable qui peut être résolue à `"client"`.
+  Cette propriété n'est utilisée que lorsque `apiGeneration` est défini à `"Client"` ou contient une variable qui peut être résolue à `"Client"`.
 
   _Valeur par défaut_: `RestClient`
 
@@ -1049,13 +1081,15 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `persistenceMode`
 
-  Mode de génération de la persistence (`"javax"` ou `"jakarta"`).
+  Mode de génération de la persistence (`"javax"` ou `"jakarta"`). Par défaut, `javax` est utilisé pour la compatibilité avec Spring Boot 2.x, et `jakarta` pour Spring Boot 3.x.
 
-  _Variables par tag_: **oui** (la valeur de la variable doit être `"javax"` ou `"jakarta"`)
+  _Valeur par défaut_: `javax`
+
+  _Variables par tag_: **non**
 
 - `mappersInClass`
 
-  Indique s'il faut ajouter les mappers en tant méthode (`to...`) ou constructeur dans les classes qui les déclarent
+  Indique s'il faut ajouter les mappers en tant que méthode (`to...`) ou constructeur dans les classes qui les déclarent. Si `true`, les mappers `from` sont générés comme constructeurs et les mappers `to` comme méthodes dans les classes concernées.
 
   _Valeur par défaut_: `true`
 
@@ -1118,7 +1152,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Valeur par défaut_: `false`
 
-  **Note :** En mode JDBC, les enums ne sont pas supportés de la même manière qu'en mode JPA. Les classes avec des valeurs ne peuvent pas utiliser le mode enum.
+  **Note :** En mode JDBC, les enums ne sont pas supportés de la même manière qu'en mode JPA. Les classes avec des valeurs ne peuvent pas utiliser le mode enum. Les DAOs héritent de `CrudRepository` au lieu de `JpaRepository`.
 
 - `dbSchema`
 
@@ -1152,7 +1186,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{module}`
+  _Templating_: `{app}`, `{module}`
 
   _Variables par tag_: **oui** (plusieurs flux de données pourraient être générés si un fichier a plusieurs tags)
 
@@ -1160,14 +1194,14 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   Writer à utiliser pour les flux de données. Les valeurs possibles sont :
 
-  - `Jpa` : Utilise le `JpaItemWriter` de spring-batch (par défaut)
-  - `Bulk` : Utilise le `PgBulkWriter` de la librairie `spring-batch-bulk` pour des performances optimales
+  - `jpa` : Utilise le `JpaItemWriter` de spring-batch (par défaut). Adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.)
+  - `bulk` : Utilise le `PgBulkWriter` de la librairie `spring-batch-bulk` pour des performances optimales. Recommandé pour traiter de très gros volumes de données grâce à l'utilisation du bulk insert PostgreSQL (avec la commande `COPY`)
 
-  _Valeur par défaut_: `Jpa`
+  _Valeur par défaut_: `jpa`
 
 - `dataFlowsBulkSize`
 
-  Taille des chunks à extraire et insérer lors de l'utilisation du mode `Bulk` pour les flux de données.
+  Taille des chunks à extraire et insérer lors de l'utilisation du mode `bulk` pour les flux de données. Cette valeur détermine le nombre d'enregistrements traités par batch lors des opérations d'insertion en masse.
 
   _Valeur par défaut_: `100000`
 
@@ -1216,15 +1250,20 @@ jpa:
   - tags:
       - dto
       - entity
-    outputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
-    entitiesPath: topmodel/exemple/name/entities # Dossier cible des objets non persistés
-    daosPath: topmodel/exemple/name/daos # Dossier cible des DAO
-    dtosPath: topmodel/exemple/name/dtos # Dossier cible des objets non persistés
-    enumsPath: topmodel/exemple/name/enums # Dossier cible des enums
-    apiPath: topmodel/exemple/name/api # Dossier cible des API
-    apiGeneration: Server # Mode de génération de l'API (serveur ou client)
-    fieldsEnum: ["persisted"] # Classes dans lesquelles le générateur doit ajouter une enum des champs
-    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
+    outputDirectory: ./jpa/src/main/javagen  # Dossier cible de la génération
+    entitiesPath: topmodel/exemple/name/entities  # Dossier cible des entités persistées
+    daosPath: topmodel/exemple/name/daos  # Dossier cible des DAO
+    dtosPath: topmodel/exemple/name/dtos  # Dossier cible des objets non persistés
+    enumsPath: topmodel/exemple/name/enums  # Dossier cible des enums
+    apiPath: topmodel/exemple/name/api  # Dossier cible des API
+    apiGeneration: Server  # Mode de génération de l'API (Client ou Server)
+    fieldsEnum: ["persisted"]  # Classes dans lesquelles le générateur doit ajouter une enum des champs
+    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>  # Interface dont doivent hériter ces enums
+    persistenceMode: jakarta  # Mode de persistence (javax ou jakarta)
+    identity:
+      mode: sequence
+      increment: 50
+      start: 1000
 ```
 
 ## Snippets

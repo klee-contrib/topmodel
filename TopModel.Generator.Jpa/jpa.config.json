@@ -182,7 +182,7 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Mode de génération de l'API Client ('Client' ou 'Server')",
+          "description": "Mode de génération de l'API Client",
           "default": "RestClient",
           "enum": ["RestTemplate", "RestClient", "FeignClient"]
         },
