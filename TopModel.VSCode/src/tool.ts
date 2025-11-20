@@ -44,9 +44,9 @@ export class TmdTool {
             case "ERROR":
                 icon = "diff-review-close";
                 if (this.installed) {
-                    text += "en erreur";
+                    text += " en erreur";
                 } else {
-                    text += "n'est pas installé";
+                    text += " n'est pas installé";
                 }
                 break;
             case "INSTALLING":
