@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.6.5
+
+- [`90ef777`](https://github.com/klee-contrib/topmodel/commit/90ef77780d8b14677125288b1982a856ee3c9080) - Support pour les ancres YAML au sein du même module dans la config
+
 ## 3.6.4
 
 - [`cc572eb`](https://github.com/klee-contrib/topmodel/commit/cc572ebd40cd92f1c47b702358cf9fb51e1b1ea4) - [Core] Fix recopie de ClassName dans les associations héritées de décorateurs
