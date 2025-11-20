@@ -23,14 +23,14 @@ public class SpringRestTemplateApiGenerator(
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
     }
 
-    protected string GetClassName(string fileName)
+    protected string GetClassName(string fileName, string tag)
     {
-        return Config.GetApiClassName(DefaultApiClassName, fileName);
+        return Config.GetApiClassName(DefaultApiClassName, fileName, tag);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)
     {
-        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
     protected virtual IList<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
@@ -86,7 +86,7 @@ public class SpringRestTemplateApiGenerator(
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = GetClassName(fileName);
+        var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
         using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 

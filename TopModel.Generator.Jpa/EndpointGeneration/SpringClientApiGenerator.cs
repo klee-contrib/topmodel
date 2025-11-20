@@ -21,14 +21,14 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
     }
 
-    protected string GetClassName(string fileName)
+    protected string GetClassName(string fileName, string tag)
     {
-        return Config.GetApiClassName(DefaultApiClassName, fileName);
+        return Config.GetApiClassName(DefaultApiClassName, fileName, tag);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)
     {
-        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
@@ -49,7 +49,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = GetClassName(fileName);
+        var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
         using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 

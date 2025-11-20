@@ -27,7 +27,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
-    protected virtual IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file)
+    protected virtual IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file, string tag)
     {
         if (Config.GeneratedHint)
         {
@@ -44,14 +44,14 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
     }
 
-    protected virtual string GetClassName(string fileName)
+    protected virtual string GetClassName(string fileName, string tag)
     {
-        return Config.GetApiClassName(DefaultApiClassName, fileName);
+        return Config.GetApiClassName(DefaultApiClassName, fileName, tag);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)
     {
-        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
     protected virtual JavaMethod GetMethod(Endpoint endpoint, string tag)
@@ -168,12 +168,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = GetClassName(fileName);
+        var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
         using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
-        var annotations = GetClassAnnotations(endpoints[0].ModelFile);
+        var annotations = GetClassAnnotations(endpoints[0].ModelFile, tag);
         javaInterface.AddRange(annotations);
         javaInterface.AddRange(GetMethods(endpoints, tag));
         fw.Write(0, javaInterface);

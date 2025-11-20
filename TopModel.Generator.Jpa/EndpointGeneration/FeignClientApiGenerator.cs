@@ -21,10 +21,10 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
             && Config.ResolveVariables(Config.ClientApiGeneration!, tag) == ClientApiMode.FeignClient;
     }
 
-    protected override IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file)
+    protected override IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file, string tag)
     {
         var fileName = file.Options.Endpoints.FileName;
-        foreach (var a in base.GetClassAnnotations(file).Where(a => a.Name != "RequestMapping"))
+        foreach (var a in base.GetClassAnnotations(file, tag).Where(a => a.Name != "RequestMapping"))
         {
             yield return a;
         }
@@ -34,13 +34,13 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
             imports: "org.springframework.cloud.openfeign.FeignClient"
         )
             .AddAttribute("name", $@"""{Config.GetRootModule(file.Namespace)}""")
-            .AddAttribute("contextId", $@"""{GetClassName(fileName)}""");
+            .AddAttribute("contextId", $@"""{GetClassName(fileName, tag)}""");
         yield return feignClientAnnotation;
     }
 
-    protected override string GetClassName(string fileName)
+    protected override string GetClassName(string fileName, string tag)
     {
-        return Config.GetApiClassName(DefaultApiClassName, fileName);
+        return Config.GetApiClassName(DefaultApiClassName, fileName, tag);
     }
 
     protected override string GetRoute(Endpoint endpoint)

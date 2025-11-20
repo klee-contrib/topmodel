@@ -199,6 +199,7 @@ public class JpaConfig : GeneratorConfigBase
             nameof(DataFlowsPath),
             nameof(ApiGeneration),
             nameof(DbSchema),
+            nameof(ApisName),
         ];
 
     public override string[] PropertiesWithModuleVariableSupport =>
@@ -212,6 +213,7 @@ public class JpaConfig : GeneratorConfigBase
             nameof(EnumsPath),
             nameof(EnumsValuesPath),
             nameof(DataFlowsPath),
+            nameof(ApisName),
         ];
 
     /// <summary>
@@ -228,9 +230,9 @@ public class JpaConfig : GeneratorConfigBase
                 .Any(a => a.Association != classe && !CanClassUseEnums(a.Association));
     }
 
-    public virtual string GetApiClassName(string defaultValue, string fileName)
+    public virtual string GetApiClassName(string defaultValue, string fileName, string tag)
     {
-        return (ApisName ?? defaultValue).Replace("{fileName}", fileName.ToPascalCase());
+        return ResolveVariables(ApisName ?? defaultValue, tag).Replace("{fileName}", fileName.ToPascalCase());
     }
 
     public virtual string GetApiPath(ModelFile file, string tag)
