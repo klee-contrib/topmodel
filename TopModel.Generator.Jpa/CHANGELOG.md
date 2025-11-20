@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.4.4
+
+- [`fe155bfe155b2e859c3610bf249ae873f1d3acd7cbe6a5`](https://github.com/klee-contrib/topmodel/commit/fe155b2e859c3610bf249ae873f1d3acd7cbe6a5) - [JPA] Donne la possibilité de personnaliser le nom des apis clientes et serveur
+
 ## 3.4.3
 
 - [`8fa96aa`](https://github.com/klee-contrib/topmodel/commit/8fa96aa786bf5d0fd6ff8b104c307a691df68be0) - [JPA] Fix mauvais tag pris en compte dans un import d'enum as enum
