@@ -1,6 +1,6 @@
 # Associer les classes
 
-Nous souhaitons maintenant ajouter à la classe `Utilisateur` un lien vers la classe `TypeUtilisateur`. Nous pouvons le faire dans la définition de la classe `Utilisateur` en ajoutant une propriété de type `association`, qui s'écrit comme suit : 
+Nous souhaitons maintenant ajouter à la classe `Utilisateur` un lien vers la classe `TypeUtilisateur`. Nous pouvons le faire dans la définition de la classe `Utilisateur` en ajoutant une propriété de type `association`, qui s'écrit comme suit :
 
 ```yaml
     - association: TypeUtilisateur # Classe destination de l'association
@@ -211,13 +211,14 @@ domain:
     type: varchar
 ```
 
-
 Aller plus loin dans la documentation complète des [associations](/model/properties?id=association)
 
 > **Attention** : Une refonte de la gestion des types d'association est prévue pour une prochaine version. Nous vous recommandons de ne pas utiliser les types d'association `oneToMany` et `manyToMany`. Les remplacer par des `manyToOne` dans l'autre sens, ou par des `manyToMany` explicites (classe contenant deux associations qui ont toutes les deux `primaryKey: true`)
 
 ## Répertoire Projet
+
 A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:
+
 - Projet
   - topmodel.config
   - Utilisateur.tmd
@@ -228,26 +229,26 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
 
 <!-- tabs:start -->
 
-#### **Java**
-```java
-	/**
-	 * Type de l'utilisateur.
-	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
-	@JoinColumn(name = "CODE", referencedColumnName = "CODE")
-	private TypeUtilisateur typeUtilisateur;
+### **Java**
 
-	/**
-	 * Profil de l'utilisateur.
-	 */
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
-	private List<Profil> profils;
+```java
+ /**
+  * Type de l'utilisateur.
+  */
+ @ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
+ @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+ private TypeUtilisateur typeUtilisateur;
+
+ /**
+  * Profil de l'utilisateur.
+  */
+ @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+ @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
+ private List<Profil> profils;
 
 ```
 
-#### **C#**
-
+### **C#**
 
 ```csharp
     /// <summary>
@@ -267,8 +268,7 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
     public  Profils { get; set; }
 ```
 
-
-#### **SQL**
+### **SQL**
 
 ```sql
 
@@ -276,47 +276,47 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
-	ID int not null,
-	EMAIL varchar(50) not null,
-	NOM varchar(100),
-	DATE_INSCRIPTION date,
-	CODE varchar(10) not null,
-	constraint PK_UTILISATEUR primary key (ID)
+ ID int not null,
+ EMAIL varchar(50) not null,
+ NOM varchar(100),
+ DATE_INSCRIPTION date,
+ CODE varchar(10) not null,
+ constraint PK_UTILISATEUR primary key (ID)
 );
 
 /**
   * Création de l'index de clef étrangère pour UTILISATEUR_PROFIL.ID
  **/
 create index IDX_UTILISATEUR_PROFIL_ID_FK on UTILISATEUR_PROFIL (
-	ID ASC
+ ID ASC
 );
 
 /**
   * Génération de la contrainte de clef étrangère pour UTILISATEUR_PROFIL.ID
  **/
 alter table UTILISATEUR_PROFIL
-	add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
-		references UTILISATEUR (ID);
+ add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
+  references UTILISATEUR (ID);
 
 /**
   * Création de l'index de clef étrangère pour UTILISATEUR_PROFIL.ID
  **/
 create index IDX_UTILISATEUR_PROFIL_ID_FK on UTILISATEUR_PROFIL (
-	ID ASC
+ ID ASC
 );
 
 /**
   * Génération de la contrainte de clef étrangère pour UTILISATEUR_PROFIL.ID
  **/
 alter table UTILISATEUR_PROFIL
-	add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
-		references PROFIL (ID);
+ add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
+  references PROFIL (ID);
 
 /**
   * Création de l'index de clef étrangère pour TYPE_UTILISATEUR.LIBELLE
  **/
 create index IDX_TYPE_UTILISATEUR_LIBELLE_FK on TYPE_UTILISATEUR (
-	LIBELLE ASC
+ LIBELLE ASC
 );
 ```
 <!-- tabs:end -->

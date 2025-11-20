@@ -479,10 +479,10 @@ public partial record UtilisateurSearchResultDto
 
 <!-- tabs:end -->
 
-### Mappers
+## Mappers
 <!-- tabs:start -->
 
-#### **Java**
+### **Java**
 
 ```java
 package tuto.entities.users;
@@ -525,7 +525,7 @@ public class UsersMappers {
 
 ```
 
-#### **C#**
+### **C#**
 
 ```csharp
 namespace Tuto.Clients.Db.Models.Users;

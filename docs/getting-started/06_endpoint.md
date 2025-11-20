@@ -195,7 +195,7 @@ Nous venons de couvrir beaucoup de notions essentielles. Au début du chapitre, 
 
 <!-- tabs:start -->
 
-#### **Java**
+### **Java**
 
 ```java
 package tuto.api.server.users;
@@ -213,7 +213,7 @@ public interface EndpointsController {
 
 ```
 
-#### **C#**
+### **C#**
 
 ```csharp
 public class EndpointsController : Controller

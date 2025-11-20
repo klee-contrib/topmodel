@@ -64,6 +64,7 @@ Nous allons enfin pouvoir générer le projet que nous avons bâti jusque là. L
 Afin d'être sûr que vous ayez les mêmes éléments que ce tutoriel et éviter tout oubli, on récapitule d'abord le contenu de l'ensemble des fichiers auquel on ajoute la liste des tags. Copiez les si jamais vous avez un doute.
 
 `"topmodel.config"` :
+
 ```yaml
 # topmodel.config
 ---
@@ -85,8 +86,8 @@ javascript:
 
 ```
 
-
 `"Utilisateur.tmd"` :
+
 ```yaml
 # Utilisateur.tmd
 ---
@@ -152,8 +153,8 @@ class:
 
 ```
 
-
 `"References.tmd"` :
+
 ```yaml
 # References.tmd
 ---
@@ -185,9 +186,8 @@ class:
 
 ```
 
-
-
 `"Dto.tmd"` :
+
 ```yaml
 # Dto.tmd
 ---
@@ -262,9 +262,8 @@ class:
 
 ```
 
-
-
 `"Domains.tmd"` :
+
 ```yaml
 # Domains.tmd
 ---
@@ -358,9 +357,8 @@ domain:
     type: varchar
 ```
 
-
-
 `"Endpoints.tmd"` :
+
 ```yaml
 # Endpoints.tmd
 ---
@@ -425,15 +423,16 @@ endpoint:
     comment: Le détail de l'utilisateur modifié
 
 ```
-  ### Résultat de la génération
+
+### Résultat de la génération
 
 Il ne nous reste plus qu'à lancer la commande `modgen` depuis le terminal.  
 Dans les logs, vous pouvez observer :
+
 - Le numéro de la version TopModel utilisé
 - La liste des Watchers enregistrés
 - L'ensemble des fichiers créés, modifiés ou supprimés
 Des logs d'informations s'affichent sur le terminal, notamment les fichier créés suite à la génération.  
-
 
 Dans votre répertoire projet, vous devriez voir la structure suivante apparaître :  
 
@@ -465,10 +464,6 @@ Dans votre répertoire projet, vous devriez voir la structure suivante apparaît
 │  │  │  │  ├─ Profil.java  
 │  │  │  │  ├─ UserMappers.java  
 │  │  │  │  ├─ Utilisateur.java  
-
-
-
-
 
 ## Générer du 'SQL' (postgresql)
 
@@ -546,8 +541,8 @@ Dans les logs, vous pouvez observer :
 
 Nous avons donc ajouté un générateur à notre modèle, puis généré le code correspondant.
 
+### Résultat de la génération
 
-  ### Résultat de la génération
 Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre répertoire final :  
 
 ``javascriptOutput``/  
@@ -584,8 +579,6 @@ Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre r
 │  ├─ 02_index.sql  
 │  ├─ 03_uniq.sql  
 │  ├─ 04_references.sql  
-
-
 
 ## Génération en continu
 

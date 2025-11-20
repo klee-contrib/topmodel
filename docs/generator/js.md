@@ -85,6 +85,7 @@ Pour modifier ce comportement, ajuster le paramètre `apiClientFilePath`.
 L'extension `.ts` est ajoutée automatiquement.
 
 **Variables disponibles dans les chemins :**
+
 - `{module}` : Le module de la classe/endpoint (ex: `securite`)
 - `{lang}` : La langue pour les fichiers de ressources (ex: `fr`, `en`)
 - `{fileName}` : Le nom du fichier pour les endpoints (défini dans la configuration des endpoints du modèle)
