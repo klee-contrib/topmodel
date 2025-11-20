@@ -1,8 +1,12 @@
 # Changelog JPA
 
+## 3.4.5
+
+- [`ae31dd`](https://github.com/klee-contrib/topmodel/commit/ae31ddf9114f897234cf8bfdbc55bb697bdf6859) - [JPA] Support des variables par tag dans apisName
+
 ## 3.4.4
 
-- [`fe155bfe155b2e859c3610bf249ae873f1d3acd7cbe6a5`](https://github.com/klee-contrib/topmodel/commit/fe155b2e859c3610bf249ae873f1d3acd7cbe6a5) - [JPA] Donne la possibilité de personnaliser le nom des apis clientes et serveur
+- [`fe155bf`](https://github.com/klee-contrib/topmodel/commit/fe155b2e859c3610bf249ae873f1d3acd7cbe6a5) - [JPA] Donne la possibilité de personnaliser le nom des apis clientes et serveur
 
 ## 3.4.3
 
