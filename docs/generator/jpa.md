@@ -14,6 +14,12 @@ Le générateur JPA peut générer les fichiers suivants :
 
 Sur toutes les classes, interfaces générées, est ajoutée l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")` pour permettre de retrouver la doc au cas où 😜. Cette annotation peut être masquée avec le paramètre `generatedHint`.
 
+### Compatibilité avec les options TopModel
+
+Le générateur JPA est compatible avec les options globales de TopModel :
+
+- **`preservePropertyCasing`** : Lorsque cette option est activée dans la configuration TopModel, les noms de propriétés conservent leur casse d'origine (camelCase, PascalCase, etc.) au lieu d'être normalisés. Le générateur JPA adapte automatiquement les noms des getters et setters en conséquence.
+
 ### Générateurs
 
 | Nom                   | Condition d'activation                                             | Objets ciblés                                                                                                                    | Fichiers générés                                                                                                                                                                                                                                                           |
@@ -42,13 +48,23 @@ Le générateur de classes distingue cinq cas :
 
 - Les classes persistées qui ne sont pas des enums
 - Les classes non persistées qui ne sont pas des enums
-- Les classes persistées qui sont pas des enums
-- Les classes non persistées qui sont pas des enums
+- Les classes persistées qui sont des enums
+- Les classes non persistées qui sont des enums
 - Les classes abstraites
+
+### Support des annotations Lombok
+
+Le générateur détecte automatiquement la présence d'annotations Lombok sur les classes ou les propriétés :
+
+- Si une classe possède l'annotation `@Data`, `@Getter` ou `@Setter`, les getters et setters ne sont pas générés pour cette classe
+- Si une propriété possède l'annotation `@Getter` ou `@Setter`, le getter ou setter correspondant n'est pas généré pour cette propriété
+- Si une classe possède l'annotation `@Data`, les getters et setters ne sont pas générés.
+
+Cette fonctionnalité permet d'utiliser Lombok pour réduire le code boilerplate tout en conservant la génération des autres éléments (constructeurs, annotations JPA, etc.).
 
 Les propriétés générées sont `private`, du type défini dans le `domain`. Le commentaire leur étant associé correspond au commentaire défini dans le modèle.
 
-Des `getter` et `setter` sont ajoutés automatiquement. Seul un constructeur vide est ajouté dans la classe générée.
+Des `getter` et `setter` sont ajoutés automatiquement, sauf si la classe ou la propriété possède une annotation Lombok (`@Data`, `@Getter`, ou `@Setter`). Dans ce cas, les getters et setters ne sont pas générés, car ils sont fournis par Lombok. Seul un constructeur vide est ajouté dans la classe générée.
 
 ### Classes persistées
 
@@ -83,7 +99,7 @@ Sur chacune des propriété :
 Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
 
 - `fetch = FetchType.LAZY` pour tous les types d'associations, pour optimisation des performances
-- `cascade = { CascadeType.PERSIST, CascadeType.MERGE }` pour les associations `ManyToMany` et `ManyToMany`
+- `cascade = { CascadeType.ALL }` pour les associations `OneToMany` et leur association réciproque `ManyToOne`
 - `cascade = { CascadeType.ALL }` pour les associations `OneToOne`
 
 Par ailleurs, dès lors qu'une association est faite entre deux classes, si :
@@ -403,7 +419,13 @@ Les mappers sont générés comme des méthodes statiques dans une classe statiq
 
 _Remarque : le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, où à défaut celui de la classe qui définit le mapper._
 
-Les mappers `from` sont nommés `create[Nom de la classe à créer]`. Ils prennent en entrée la liste des paramètres d'entrée définis dans le mapper, plus une instance de la classe cible. Si ce dernier paramètre n'est pas renseigné, alors une nouvelle instance de la classe cible sera créée. Sinon, l'instance cible sera peuplée à partir des paramètres d'entrée renseignés.
+Les mappers `from` sont générés sous deux formes :
+
+- `create[Nom de la classe à créer]` : Crée une nouvelle instance de la classe cible en mappant les champs sources. Cette méthode appelle en interne la méthode `mapXXX` avec une nouvelle instance.
+
+- `map[Nom de la classe à créer]` : Mappe les champs sources sur une instance de la classe cible passée en paramètre. Cette méthode est publique et peut être utilisée pour peupler une instance existante. Si l'instance cible est `null`, une exception `IllegalArgumentException` est lancée.
+
+Les deux méthodes prennent en entrée la liste des paramètres d'entrée définis dans le mapper. La méthode `mapXXX` prend également une instance de la classe cible en dernier paramètre.
 
 Il en va de même pour les mappers `to`. A la différence qu'ils s'appellent `to[Nom de la classe cible]`, ou bien du nom défini dans le `mapper`. Dans le cas des mappers `to`, le paramètre source est unique et obligatoire.
 
@@ -411,7 +433,57 @@ Si un paramètre d'entrée obligatoire n'est pas renseigné, l'exception `Illega
 
 Par défaut, dans les classes qui définissent le `mapper`, des constructeurs sont générés pour tous les mappers `from`. Une méthode `toXXX` est générée pour chacun des mappers `to`. Cette option est désactivable avec le configuration `mappersInClass: false`
 
-## Génération de l'Api Server (Spring)
+## Génération des endpoints
+
+Le générateur d'endpoints crée des interfaces ou classes permettant de définir des APIs serveur ou client. Le nom du fichier généré et son emplacement sont déterminés selon les règles suivantes :
+
+### Détermination du nom de fichier
+
+Le nom de la classe générée est déterminé par la configuration `apisName` (si définie) ou par la valeur par défaut du mode choisi. Dans tous les cas, le template `{fileName}` est remplacé par le nom du fichier d'endpoints défini dans le modèle, converti en PascalCase.
+
+**Valeurs par défaut selon le mode :**
+
+| Mode | Nom de classe par défaut | Type généré |
+|------|-------------------------|-------------|
+| **Server** | `{fileName}Controller` | Interface |
+| **RestClient** | `{fileName}Client` | Interface |
+| **RestTemplate** | `Abstract{fileName}Client` | Classe abstraite |
+| **FeignClient** | `{fileName}Api` | Interface |
+
+**Exemple :** Pour un fichier d'endpoints nommé `utilisateur`, les noms générés seront :
+
+- Mode Server : `UtilisateurController`
+- Mode RestClient : `UtilisateurClient`
+- Mode RestTemplate : `AbstractUtilisateurClient`
+- Mode FeignClient : `UtilisateurApi`
+
+### Personnalisation du nom
+
+Le nom peut être personnalisé via la configuration `apisName`, qui remplace la valeur par défaut du mode. Le template `{fileName}` sera toujours remplacé par le nom du fichier d'endpoints en PascalCase.
+
+**Exemple de personnalisation :**
+
+```yaml
+jpa:
+  - tags:
+      - api
+    apiGeneration: Server
+    apisName: "{fileName}Service"  # Génère UtilisateurService au lieu de UtilisateurController
+```
+
+### Emplacement des fichiers
+
+Le chemin du fichier est déterminé par la configuration `apiPath`, qui peut utiliser les variables suivantes :
+
+- `{app}` : Nom de l'application
+- `{module}` : Module du fichier d'endpoints
+- Variables personnalisées définies dans la configuration
+
+La valeur par défaut de `apiPath` est `"javagen:{app:path}/api/{module:path}"`.
+
+Le chemin complet du fichier sera : `{outputDirectory}/{apiPath}/{nomClasse}.java`
+
+### Génération de l'Api Server (Spring)
 
 Le générateur créé des `interface` contenant, pour chaque `endpoint` paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller. En effet, cette méthode aura déjà l'annotation `XXXMapping` correspondant au verbe `HTTP` défini dans le `endpoint`.
 
@@ -419,13 +491,17 @@ Pour créer votre API, il suffit donc de créer un nouveau controller qui implé
 
 Si le domain du body du `endpoint` défini un `mediaType`, alors il sera valorisé dans l'annotation avec l'attribut `Consumes`. De la même manière pour le domain du paramètre de retour, avec l'attribut `Produces`.
 
-## Api Client (Spring)
+Si la méthode retourne `void` ou `Void`, l'annotation `@ResponseStatus(HttpStatus.NO_CONTENT)` (code HTTP 204) est automatiquement ajoutée à la méthode.
 
-### RestClient (spring-web 6+)
+### Api Client (Spring)
+
+#### RestClient (spring-web 6+)
 
 Il s'agit du mode par défaut, soit lorsque la variable `clientApiGeneration` vaut `RestClient`.
 
 Le générateur créé alors des interfaces contenant des annotations `XXXExchange`, dont il faudra configurer un bean d'implémentation.
+
+**Note importante :** Les méthodes générées retournent toujours un `ResponseEntity<T>` (où `T` est le type de retour défini dans l'endpoint), permettant de gérer les différents codes HTTP de réponse.
 
 ```java
  @Bean
@@ -438,11 +514,13 @@ Le générateur créé alors des interfaces contenant des annotations `XXXExchan
  }
 ```
 
-### RestTemplate
+#### RestTemplate
 
 Pour activer ce mode de génération, positionner la variable `clientApiGeneration` à `RestTemplate`.
 
 Le générateur créé alors des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
+
+**Note importante :** Les méthodes générées retournent toujours un `ResponseEntity<T>` (où `T` est le type de retour défini dans l'endpoint), permettant de gérer les différents codes HTTP de réponse.
 
 Pour créer votre client d'API, il suffit de créer une classe qui hérite de cette classe abstraite. Pour fonctionner, elle devra appeler le constructeur de la classe abrstaite, en renseignant :
 
@@ -487,7 +565,7 @@ public class UtilisateurService {
 }
 ```
 
-### FeignClient
+#### FeignClient
 
 Génère le même fichier que dans le mode `Server` de la génération d'API, à la différence près que le suffix est `Api` au lieu de `Controller`, et que l'annotation `@FeignClient` est ajoutée à l'interface.
 
@@ -987,7 +1065,12 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   - `mode`
 
-    Mode de génération de la persistence (`"none"`, `"sequence"`, `"identity"` ou `"uuid"`).
+    Mode de génération de la séquence. Les valeurs possibles sont :
+
+    - `"none"` : Aucune génération automatique
+    - `"sequence"` : Utilise une séquence de base de données (nécessite `increment` et optionnellement `start`)
+    - `"identity"` : Utilise l'auto-incrémentation de la base de données (par défaut)
+    - `"uuid"` : Génère un UUID pour la clé primaire
 
     _Valeur par défaut_: `identity`
 
@@ -1001,18 +1084,33 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `metaModel`
 
-  Option pour générer le métamodèle.
+  Option pour générer le métamodèle JPA.
 
   _Valeur par défaut_: `false`
 
-  Le metamodèle est une représentation typée et statique des entités, leurs attributs et relations.
+  Le métamodèle est une représentation typée et statique des entités, leurs attributs et relations. Il permet notamment de faciliter l'utilisation des Criteria Builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités et leurs propriétés.
 
-  Il permet notamment de faciliter l'utilisation des criteria builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités.
+  Lorsque cette option est activée, une classe de métamodèle est générée pour chaque entité persistée. Ces classes suivent la convention de nommage JPA : `[NomEntité]_` (avec un underscore suffixe).
 
-  Documentation:
+  **Exemple d'utilisation :**
 
-  - Spec (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
+  ```java
+  // Au lieu d'utiliser des chaînes de caractères
+  CriteriaBuilder cb = em.getCriteriaBuilder();
+  CriteriaQuery<Utilisateur> query = cb.createQuery(Utilisateur.class);
+  Root<Utilisateur> root = query.from(Utilisateur.class);
+  query.where(cb.equal(root.get("nom"), "Dupont")); // ❌ Risque d'erreur de typo
+
+  // Avec le métamodèle (type-safe)
+  query.where(cb.equal(root.get(Utilisateur_.nom), "Dupont")); // ✅ Vérifié à la compilation
+  ```
+
+  **Documentation :**
+
+  - Spec JPA (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
   - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
+
+  > **Note :** Le métamodèle est généré uniquement pour les entités persistées (pas pour les DTOs).
 
 - `useJdbc`
 
@@ -1089,6 +1187,24 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
     dataFlowsListeners:
       - topmodel.exemple.listeners.CustomFlowListener
       - topmodel.exemple.listeners.AnotherListener
+  ```
+
+- `apisName`
+
+  Nom des classes d'API générées. Permet de personnaliser le nom des interfaces/classes d'API.
+
+  _Templating_: `{fileName}` (remplacé par le nom du fichier en PascalCase)
+
+  _Valeur par défaut_: Dépend du type d'API générée (par exemple, `{fileName}Api` pour les clients, `{fileName}Controller` pour les serveurs)
+
+  **Exemple :**
+
+  ```yaml
+  jpa:
+    - tags:
+        - api
+    apiGeneration: Server
+    apisName: "{fileName}Service"  # Génère UtilisateurService au lieu de UtilisateurController
   ```
 
 ### Exemple

@@ -90,7 +90,12 @@ public class JpaConfig : GeneratorConfigBase
         );
 
     public override Dictionary<string, List<string>> TemplateAttributes =>
-        new() { [nameof(CompositionConverterCanonicalName)] = ["package", "class"], [nameof(DaosName)] = ["class"] };
+        new()
+        {
+            [nameof(CompositionConverterCanonicalName)] = ["package", "class"],
+            [nameof(DaosName)] = ["class"],
+            [nameof(ApisName)] = ["fileName"],
+        };
 
     /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany
@@ -151,6 +156,11 @@ public class JpaConfig : GeneratorConfigBase
     /// Nom des Daos générés.
     /// </summary>
     public virtual string? DaosName { get; set; }
+
+    /// <summary>
+    /// Nom des classes d'apis générées. La valeur par défaut dépend du type d'api générée.
+    /// </summary>
+    public virtual string? ApisName { get; set; }
 
     /// <summary>
     /// Précise l'interface des Daos générés.
@@ -216,6 +226,11 @@ public class JpaConfig : GeneratorConfigBase
             && !classe
                 .Properties.OfType<AssociationProperty>()
                 .Any(a => a.Association != classe && !CanClassUseEnums(a.Association));
+    }
+
+    public virtual string GetApiClassName(string defaultValue, string fileName)
+    {
+        return (ApisName ?? defaultValue).Replace("{fileName}", fileName.ToPascalCase());
     }
 
     public virtual string GetApiPath(ModelFile file, string tag)

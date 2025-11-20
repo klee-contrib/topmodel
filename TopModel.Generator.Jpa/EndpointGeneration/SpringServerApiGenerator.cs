@@ -14,6 +14,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override string Name => "SpringApiServerGen";
+    private static string DefaultApiClassName => "{fileName}Controller";
 
     protected virtual void AddImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
@@ -45,7 +46,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     protected virtual string GetClassName(string fileName)
     {
-        return $"{fileName.ToPascalCase()}Controller";
+        return Config.GetApiClassName(DefaultApiClassName, fileName);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)

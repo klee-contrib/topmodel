@@ -14,15 +14,16 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
     : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override string Name => "SpringApiClientGen";
-
-    protected static string GetClassName(string fileName)
-    {
-        return $"{fileName.ToPascalCase()}Client";
-    }
+    private static string DefaultApiClassName => "{fileName}Client";
 
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
+    }
+
+    protected string GetClassName(string fileName)
+    {
+        return Config.GetApiClassName(DefaultApiClassName, fileName);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)

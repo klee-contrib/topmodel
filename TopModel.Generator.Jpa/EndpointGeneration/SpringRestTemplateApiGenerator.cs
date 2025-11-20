@@ -16,15 +16,16 @@ public class SpringRestTemplateApiGenerator(
 ) : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override string Name => "SpringRestTemplateGen";
-
-    protected static string GetClassName(string fileName)
-    {
-        return $"Abstract{fileName.ToPascalCase()}Client";
-    }
+    private static string DefaultApiClassName => "Abstract{fileName}Client";
 
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
+    }
+
+    protected string GetClassName(string fileName)
+    {
+        return Config.GetApiClassName(DefaultApiClassName, fileName);
     }
 
     protected override string GetFilePath(ModelFile file, string tag)

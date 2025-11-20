@@ -13,6 +13,7 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
     : SpringServerApiGenerator(logger, writerProvider)
 {
     public override string Name => "FeignClientApiGen";
+    private static string DefaultApiClassName => "{fileName}Api";
 
     protected override bool FilterTag(string tag)
     {
@@ -39,7 +40,7 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
 
     protected override string GetClassName(string fileName)
     {
-        return $"{fileName.ToPascalCase()}Api";
+        return Config.GetApiClassName(DefaultApiClassName, fileName);
     }
 
     protected override string GetRoute(Endpoint endpoint)
