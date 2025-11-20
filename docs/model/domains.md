@@ -116,7 +116,7 @@ properties:
         param2: Type2
 ```
 
-Tous les paramètres passés doivent être définis au prélable sur le domaine. Les paramètres obligatoires doivent être renseignés avec le domaine, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
+Tous les paramètres passés doivent être définis au préalable sur le domaine. Les paramètres obligatoires doivent être renseignés avec le domaine, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
 
 Les variables (en) et paramètres sont utilisables :
 

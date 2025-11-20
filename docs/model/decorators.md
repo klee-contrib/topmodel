@@ -153,7 +153,7 @@ class:
     - OtherDecorator
 ```
 
-Tous les paramètres passés doivent être définis au prélable sur le décorateur. Les paramètres obligatoires doivent être renseignés avec le décorateur, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
+Tous les paramètres passés doivent être définis au préalable sur le décorateur. Les paramètres obligatoires doivent être renseignés avec le décorateur, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
 
 Les variables et paramètres sont utilisables :
 

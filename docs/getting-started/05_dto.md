@@ -6,7 +6,6 @@ Pour communiquer entre les différentes couches d'une application, il est géné
 
 Dans TopModel, il est possible de définir un objet non persisté exactement de la même manière qu'un objet persisté. La seule différence étant l'absence de **clé primaire**, dans un objet de transfert.
 
-
 Exemple avec la classe `ProfilDto` (à ne pas reproduire. Dans ce chapitre, ne reproduisez les exemples sur votre environnement projet que lorsque vous y serez conviés) :
 
 ```yaml
@@ -150,7 +149,8 @@ Les deux exemples ci-dessus produisent exactement le même résultat que le prem
 
 > **Astuce** : il est tout à fait possible d'ajouter deux alias vers la même classe. Cette pratique permet notamment de surcharger différemment des ensembles de propriétés.
 
-Maintenant, créez  un fichier `"Dto.tmd"` et copîez-y le code suivant :
+Maintenant, créez  un fichier `"Dto.tmd"` et copiez-y le code suivant :
+
 ```yaml
 # Dto.tmd
 ---
@@ -220,7 +220,7 @@ domain:
       - "org.springframework.data.domain.Page" # Imports nécessaires au bon fonctionnement de la classe Java
 ```
 
-`DO_PAGE` défini, on peut l'utiliser dans notre objet UtilisateurDto. Ajoutez les lignes suivantes dans votre fichier `"Dto.tmd"` : 
+`DO_PAGE` défini, on peut l'utiliser dans notre objet UtilisateurDto. Ajoutez les lignes suivantes dans votre fichier `"Dto.tmd"` :
 
 ```yaml
 # Dto.tmd
@@ -347,7 +347,9 @@ Nous avons donc défini un mapper `from`, prenant deux paramètres, `Utilisateur
 Pour plus de détails sur les cas d'usage avancés (exclusion de propriétés, cas de mappings ambigus, héritage, nommage des paramètres et des mappers...), se rapporter à la section [Mappers](/model/mappers).
 
 ## Répertoire projet
-Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, notre répertoire projet était constitué des éléments suivants:
+
+Nous venons de couvrir beaucoup de notions essentielles. Au début du chapitre, notre répertoire projet était constitué des éléments suivants:
+
 - Projet
   - topmodel.config
   - Utilisateur.tmd
@@ -355,13 +357,13 @@ Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, n
   - References.tmd
   - Dto.tmd
 
-
 ## Exemple de code généré
 
 ### Classes non persistées
 <!-- tabs:start -->
 
 #### **Java**
+
 ```java
 
 package tuto.dtos.users;
@@ -371,58 +373,56 @@ package tuto.dtos.users;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurSearchResultDto implements Serializable {
-	/** Serial ID */
-	private static final long serialVersionUID = 1L;
+ /** Serial ID */
+ private static final long serialVersionUID = 1L;
 
-	/**
-	 * Adresse mail de l'utilisateur.
-	 * Alias of {@link tuto.entities.users.Utilisateur#getEmail() Utilisateur#getEmail()} 
-	 */
-	@Email
-	@Size(max = 50)
-	@NotNull
-	private String email;
+ /**
+  * Adresse mail de l'utilisateur.
+  * Alias of {@link tuto.entities.users.Utilisateur#getEmail() Utilisateur#getEmail()} 
+  */
+ @Email
+ @Size(max = 50)
+ @NotNull
+ private String email;
 
-	/**
-	 * Nom de l'utilisateur.
-	 * Alias of {@link tuto.entities.users.Utilisateur#getNom() Utilisateur#getNom()} 
-	 */
-	@Size(max = 100)
-	private String nom;
+ /**
+  * Nom de l'utilisateur.
+  * Alias of {@link tuto.entities.users.Utilisateur#getNom() Utilisateur#getNom()} 
+  */
+ @Size(max = 100)
+ private String nom;
 
-	/**
-	 * Date d'inscription.
-	 * Alias of {@link tuto.entities.users.Utilisateur#getDateInscription() Utilisateur#getDateInscription()} 
-	 */
-	private LocalDate dateInscription;
+ /**
+  * Date d'inscription.
+  * Alias of {@link tuto.entities.users.Utilisateur#getDateInscription() Utilisateur#getDateInscription()} 
+  */
+ private LocalDate dateInscription;
 
-	/**
-	 * Type de l'utilisateur.
-	 * Alias of {@link tuto.entities.users.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
-	 */
-	@NotNull
-	private TypeUtilisateurCode typeUtilisateurCode;
+ /**
+  * Type de l'utilisateur.
+  * Alias of {@link tuto.entities.users.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
+  */
+ @NotNull
+ private TypeUtilisateurCode typeUtilisateurCode;
 
-	/**
-	 * Profil de l'utilisateur.
-	 * Alias of {@link tuto.entities.users.Utilisateur#getProfils() Utilisateur#getProfils()} 
-	 */
-	private  profils;
+ /**
+  * Profil de l'utilisateur.
+  * Alias of {@link tuto.entities.users.Utilisateur#getProfils() Utilisateur#getProfils()} 
+  */
+ private  profils;
 
-	/**
-	 * Nom du profil.
-	 * Alias of {@link tuto.entities.users.Profil#getNom() Profil#getNom()} 
-	 */
-	@Size(max = 100)
-	private String nomProfil;
+ /**
+  * Nom du profil.
+  * Alias of {@link tuto.entities.users.Profil#getNom() Profil#getNom()} 
+  */
+ @Size(max = 100)
+ private String nomProfil;
   // ...
 }
 
 ```
 
-
 #### **C#**
-
 
 ```csharp
 namespace Tuto.Users.Models;
@@ -477,9 +477,7 @@ public partial record UtilisateurSearchResultDto
 
 ```
 
-
 <!-- tabs:end -->
-
 
 ### Mappers
 <!-- tabs:start -->
@@ -492,41 +490,40 @@ package tuto.entities.users;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UsersMappers {
 
-	/**
-	 * Map les champs des classes passées en paramètre dans l'objet target'.
-	 * @param target Instance de 'UtilisateurSearchResultDto' (ou null pour créer une nouvelle instance).
-	 * @param utilisateur Instance de 'Utilisateur'.
-	 * @param profil Instance de 'Profil'.
-	 *
-	 * @return Une nouvelle instance de 'UtilisateurSearchResultDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
-	 */
-	public static UtilisateurSearchResultDto createUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil, UtilisateurSearchResultDto target) {
-		if (target == null) {
-			target = new UtilisateurSearchResultDto();
-		}
+ /**
+  * Map les champs des classes passées en paramètre dans l'objet target'.
+  * @param target Instance de 'UtilisateurSearchResultDto' (ou null pour créer une nouvelle instance).
+  * @param utilisateur Instance de 'Utilisateur'.
+  * @param profil Instance de 'Profil'.
+  *
+  * @return Une nouvelle instance de 'UtilisateurSearchResultDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+  */
+ public static UtilisateurSearchResultDto createUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil, UtilisateurSearchResultDto target) {
+  if (target == null) {
+   target = new UtilisateurSearchResultDto();
+  }
 
-		if (utilisateur == null) {
-			throw new IllegalArgumentException("utilisateur cannot be null");
-		}
+  if (utilisateur == null) {
+   throw new IllegalArgumentException("utilisateur cannot be null");
+  }
 
-		if (profil == null) {
-			throw new IllegalArgumentException("profil cannot be null");
-		}
+  if (profil == null) {
+   throw new IllegalArgumentException("profil cannot be null");
+  }
 
-		target.setEmail(utilisateur.getEmail());
-		target.setNom(utilisateur.getNom());
-		target.setDateInscription(utilisateur.getDateInscription());
-		if (utilisateur.getTypeUtilisateur() != null) {
-			target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
-		}
+  target.setEmail(utilisateur.getEmail());
+  target.setNom(utilisateur.getNom());
+  target.setDateInscription(utilisateur.getDateInscription());
+  if (utilisateur.getTypeUtilisateur() != null) {
+   target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+  }
 
-		target.setNomProfil(profil.getNom());
-		return target;
-	}
+  target.setNomProfil(profil.getNom());
+  return target;
+ }
 }
 
 ```
-
 
 #### **C#**
 

@@ -21,13 +21,9 @@ class:
     |........
 ```
 
-
-
-
 ## CRUD : Suppression
 
 Commençons par créer un fichier `"Endpoints.tmd"` qui sera, comme son nom l'indique, `l'endpoint` permettant la suppression d'un utilisateur.
-
 
 ```yaml
 # Endpoints.tmd
@@ -47,8 +43,6 @@ endpoint: # Description du EndPoint
         class: Utilisateur
         property: Id 
 ```
-
-
 
  TopModel comprendra tout seul que la propriété de la route correspond au params `Id` défini ensuite.
 
@@ -100,6 +94,7 @@ endpoint: # Description du EndPoint
     name: detail
     comment: Le détail d'un Utilisateur
 ```
+
 > **N.B.** : Etant donné que l'on fait appel à un Objet Dto défini dans notre fichier `"Dto.tmd"`, pensez bien à rajouter l'import de ce dernier dans le fichier `"Endpoint.tmd"` :
 
 ```yaml
@@ -111,7 +106,6 @@ uses:
   - Dto
 tags: []
 ```
-
 
 ## CRUD : Création
 
@@ -159,6 +153,7 @@ class:
 ```
 
 Il ne nous reste plus qu'à ajouter le endpoint dans notre fichier `"Endpoints.tmd"` :
+
 ```yaml
 # Endpoints.tmd
 ---
@@ -185,7 +180,9 @@ On voit ici l'utilité de créer un dto par usage. La définition pertinente du 
 Aller plus loin dans la documentation complète des [endpoints](/model/endpoints)
 
 ## Répertoire projet
-Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, notre répertoire projet était constitué des éléments suivants:
+
+Nous venons de couvrir beaucoup de notions essentielles. Au début du chapitre, notre répertoire projet était constitué des éléments suivants:
+
 - Projet
   - topmodel.config
   - Utilisateur.tmd
@@ -194,31 +191,29 @@ Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, n
   - Dto.tmd
   - Endpoints.tmd
 
-
 ## Exemple de code généré
 
 <!-- tabs:start -->
 
 #### **Java**
+
 ```java
 package tuto.api.server.users;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface EndpointsController {
 
-	/**
-	 * Charge le détail d'un Utilisateur.
-	 * @param utilisateurId Identifiant unique de l'utilisateur
-	 * @return Le détail d'un Utilisateur
-	 */
-	@GetMapping(path = "Utilisateur/{utilisateurId}")
-	UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") Integer utilisateurId);
+ /**
+  * Charge le détail d'un Utilisateur.
+  * @param utilisateurId Identifiant unique de l'utilisateur
+  * @return Le détail d'un Utilisateur
+  */
+ @GetMapping(path = "Utilisateur/{utilisateurId}")
+ UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") Integer utilisateurId);
 }
 
 ```
 
-
 #### **C#**
-
 
 ```csharp
 public class EndpointsController : Controller
@@ -239,7 +234,6 @@ public class EndpointsController : Controller
 ```
 
 #### **Angular**
-
 
 ```javascript
 @Injectable({

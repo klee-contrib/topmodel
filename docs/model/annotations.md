@@ -125,6 +125,7 @@ Remarques :
 
 - Ces annotations ne seront disponibles sur chaque propriété **que dans le contexte de la classe ou du endpoint qui les défini**. Elles ne feront dont **pas** partie de la liste des annotations de la propriété, et ne seront donc pas incluses dans les annotations d'un alias de cette propriété par exemple.
 - Les annotations de propriétés définies dans un décorateur ne s'appliqueront que sur les propriétés définies dans le décorateur. En revanche, ces propriétés récupèreront aussi les annotations de propriété de la classe ou du endpoint qui utilise ce décorateur. Par exemple, pour :
+
   ```yaml
   ---
   decorator:
@@ -149,6 +150,7 @@ Remarques :
         domain: DO_DOMAIN
         comment: Ma propriété de classe.
   ```
+
   `MyProperty` dans `MyClass` aura bien `MyAnnotation1` et `MyAnnotation2`, tandis que `MyClassProperty` n'aura que `MyAnnotation2`.
 
 ### Priorité des annotations
@@ -275,7 +277,7 @@ class:
     - OtherAnnotation
 ```
 
-Tous les paramètres passés doivent être définis au prélable sur l'annotation. Les paramètres obligatoires doivent être renseignés avec l'annotation, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
+Tous les paramètres passés doivent être définis au préalable sur l'annotation. Les paramètres obligatoires doivent être renseignés avec l'annotation, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
 
 Les variables et paramètres sont utilisables dans les propriétés d'implémentations suivantes :
 

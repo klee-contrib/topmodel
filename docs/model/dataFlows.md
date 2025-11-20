@@ -104,7 +104,7 @@ Ce hook permet de déclencher une **action** avant le démarrage du flux de donn
 
 Ce hook permet de **transformer** les données récupérées de la source avant l'appel du `mapper`. Il peut y en avoir plusieurs. Il prend en entrée les données chargées, et renvoie des données du même type.
 
-### Transormation : `map`
+### Transformation : `map`
 
 Ce hook permet de **transformer** les données récupérées de la source à la place du `mapper`. Il remplace l'étape de mapping par défaut. Il prend en entrée les données chargées, et renvoie des données du type de la destination. Il ne peut être ajouté qu'une seule fois.
 
