@@ -75,7 +75,7 @@ public class FileChecker
 
     public ModelConfig DeserializeConfig(string yaml)
     {
-        var parser = new Parser(new StringReader(yaml));
+        var parser = new MergingParser(new Parser(new StringReader(yaml)));
         var config = new ModelConfig();
         parser.Consume<StreamStart>();
         parser.Consume<DocumentStart>();
