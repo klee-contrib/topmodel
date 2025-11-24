@@ -271,7 +271,7 @@ internal class PropertyResolver(
                     yield return new ModelError(
                         ErrorType.TMD9004,
                         alp,
-                        $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'",
+                        $"Le domaine '{prop.DomainOverride ?? prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'",
                         prop.PropertyReference ?? prop.Reference?.ContainerReference
                     );
                 }
