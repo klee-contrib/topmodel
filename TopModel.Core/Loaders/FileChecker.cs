@@ -2,10 +2,11 @@
 using System.Text;
 using NJsonSchema;
 using NJsonSchema.Validation;
+using Spectre.Console;
 using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Utils;
 using YamlDotNet.Core;
-using YamlDotNet.Core.Events;
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -75,62 +76,59 @@ public class FileChecker
 
     public ModelConfig DeserializeConfig(string yaml)
     {
-        var parser = new MergingParser(new Parser(new StringReader(yaml)));
+        var stream = new YamlStream();
+        stream.Load(new StringReader(yaml));
         var config = new ModelConfig();
-        parser.Consume<StreamStart>();
-        parser.Consume<DocumentStart>();
-        parser.ConsumeMapping(prop =>
+
+        var serializer = new SerializerBuilder().Build();
+
+        foreach (var kv in (stream.Documents[0].RootNode as YamlMappingNode)!.Children)
         {
-            parser.TryConsume<Scalar>(out var value);
-            switch (prop.Value)
+            switch (kv)
             {
-                case "app":
-                    config.App = value!.Value;
+                case (YamlScalarNode { Value: "app" }, YamlScalarNode { Value: var value }):
+                    config.App = value;
                     break;
-                case "modelRoot":
-                    config.ModelRoot = value!.Value;
+                case (YamlScalarNode { Value: "modelRoot" }, YamlScalarNode { Value: var value }):
+                    config.ModelRoot = value;
                     break;
-                case "lockFileName":
-                    config.LockFileName = value!.Value;
+                case (YamlScalarNode { Value: "lockFileName" }, YamlScalarNode { Value: var value }):
+                    config.LockFileName = value;
                     break;
-                case "noWarn":
-                    parser.ConsumeSequence(() =>
-                    {
-                        config.NoWarn.Add(Enum.Parse<ErrorType>(parser.Consume<Scalar>().Value));
-                    });
+                case (YamlScalarNode { Value: "noWarn" }, YamlSequenceNode seq):
+                    config.NoWarn.AddRange(seq.OfType<YamlScalarNode>().Select(n => Enum.Parse<ErrorType>(n.Value!)));
                     break;
-                case "pluralizeTableNames":
-                    config.PluralizeTableNames = value!.Value == "true";
+                case (YamlScalarNode { Value: "pluralizeTableNames" }, YamlScalarNode { Value: var value }):
+                    config.PluralizeTableNames = value == "true";
                     break;
-                case "useLegacyRoleNames":
-                    config.UseLegacyRoleNames = value!.Value == "true";
+                case (YamlScalarNode { Value: "useLegacyRoleNames" }, YamlScalarNode { Value: var value }):
+                    config.UseLegacyRoleNames = value == "true";
                     break;
-                case "useLegacyAssociationCompositionMappers":
-                    config.UseLegacyAssociationCompositionMappers = value!.Value == "true";
+                case (
+                    YamlScalarNode { Value: "useLegacyAssociationCompositionMappers" },
+                    YamlScalarNode { Value: var value }
+                ):
+                    config.UseLegacyAssociationCompositionMappers = value == "true";
                     break;
-                case "i18n":
-                    config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
+                case (YamlScalarNode { Value: "i18n" }, YamlMappingNode map):
+                    config.I18n = _deserializer.Deserialize<I18nConfig>(serializer.Serialize(map));
                     break;
-                case "generators":
-                    parser.ConsumeSequence(() =>
-                    {
-                        config.CustomGenerators.Add(parser.Consume<Scalar>().Value);
-                    });
+                case (YamlScalarNode { Value: "generators" }, YamlSequenceNode seq):
+                    config.CustomGenerators.AddRange(seq.OfType<YamlScalarNode>().Select(n => n.Value!));
                     break;
-                case "ignoredFiles":
-                    config.IgnoredFiles = _deserializer.Deserialize<IList<IgnoredFile>>(parser);
+                case (YamlScalarNode { Value: "ignoredFiles" }, YamlSequenceNode seq):
+                    config.IgnoredFiles = _deserializer.Deserialize<IList<IgnoredFile>>(serializer.Serialize(seq));
                     break;
-                default:
+                case (YamlScalarNode { Value: var value }, YamlSequenceNode seq):
                     config.Generators.Add(
-                        prop.Value,
-                        _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser)
+                        value,
+                        _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(serializer.Serialize(seq))
                     );
                     break;
+                default:
+                    break;
             }
-        });
-
-        parser.Consume<DocumentEnd>();
-        parser.Consume<StreamEnd>();
+        }
 
         return config;
     }
@@ -193,10 +191,10 @@ public class FileChecker
         content ??= File.ReadAllText(fileName);
 
         var parser = new Parser(new StringReader(content));
-        parser.Consume<StreamStart>();
+        parser.Consume<YamlDotNet.Core.Events.StreamStart>();
 
         var firstObject = true;
-        while (parser.Current is DocumentStart)
+        while (parser.Current is YamlDotNet.Core.Events.DocumentStart)
         {
             var yaml =
                 _deserializer.Deserialize(parser)
