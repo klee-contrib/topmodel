@@ -151,6 +151,7 @@ public class AliasProperty : IProperty
     }
 
 #nullable enable
+    public Domain? DomainOverride => _domain;
 
     public IDictionary<string, string> DomainParameters
     {
