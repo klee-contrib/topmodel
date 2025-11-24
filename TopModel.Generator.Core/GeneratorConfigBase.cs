@@ -357,86 +357,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="property">Domaine.</param>
     /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
     /// <returns>Le type.</returns>
-    public virtual string GetType(
-        IProperty property,
-        bool useClassForAssociation = false,
-        Domain? domainOverride = null
-    )
+    public virtual string GetType(IProperty property, bool useClassForAssociation = false)
     {
-        string GetEnum(string className, string propName, bool isPrimaryKeyDef = false)
-        {
-            var op = property switch
-            {
-                AssociationProperty ap => ap.Property,
-                _ => property,
-            };
-            return (GetImplementation(op.Domain)?.GenericType ?? "{T}")
-                .Replace("{T}", GetEnumType(className, propName, isPrimaryKeyDef))
-                .ParseTemplate(op, this);
-        }
-
-        string GetTransformed(string type)
-        {
-            var domain = GetImplementation(domainOverride ?? property.Domain);
-            return (domain?.GenericType?.Replace("{T}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(
-                property,
-                this
-            );
-        }
-
-        string HandleAUC(AssociationProperty ap)
-        {
-            return ap.Property.Domain != ap.Domain
-                ? GetTransformed(ap.Association.NamePascal)
-                : ap.Association.NamePascal;
-        }
-
-        string HandleEnum(IProperty op)
-        {
-            var type =
-                op is AssociationProperty ap ? GetEnum(ap.Association.Name, ap.Property.Name)
-                : op is RegularProperty rp ? GetEnum(rp.Class.Name, rp.Name, rp == property)
-                : throw new InvalidOperationException();
-
-            if (
-                (domainOverride ?? property.Domain) != (op is AssociationProperty ap2 ? ap2.Property.Domain : op.Domain)
-            )
-            {
-                return GetTransformed(type);
-            }
-            else
-            {
-                return type;
-            }
-        }
-
-        return property switch
-        {
-            AssociationProperty ap when useClassForAssociation => HandleAUC(ap),
-            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => HandleEnum(ap),
-            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
-            CompositionProperty when (domainOverride ?? property.Domain) is not null => (
-                GetImplementation(domainOverride ?? property.Domain)?.GenericType ?? "{T}"
-            )
-                .Replace("{T}", "{composition.name}")
-                .ParseTemplate(property, this),
-            CompositionProperty cp => cp.Composition.NamePascal,
-            AliasProperty { As: not null } alp
-                when domainOverride is null && GetImplementation(alp.Domain)?.GenericType != null => GetImplementation(
-                alp.Domain
-            )!
-                .GenericType!.Replace("{T}", GetType(alp.OriginalProperty!, useClassForAssociation)),
-            AliasProperty alp => GetType(
-                alp.OriginalProperty!,
-                useClassForAssociation,
-                domainOverride ?? alp.DomainOverride
-            ),
-            IProperty => (GetImplementation(domainOverride ?? property.Domain)?.Type ?? string.Empty).ParseTemplate(
-                property,
-                this
-            ),
-            _ => string.Empty,
-        };
+        return GetTypeCore(property, useClassForAssociation, isAlias: false, domainOverride: null);
     }
 
     /// <summary>
@@ -538,6 +461,88 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     }
 
     protected abstract string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false);
+
+    protected virtual string GetTypeCore(
+        IProperty property,
+        bool useClassForAssociation,
+        bool isAlias,
+        Domain? domainOverride
+    )
+    {
+        string GetTransformed(string type)
+        {
+            var domain = GetImplementation(domainOverride ?? property.Domain);
+            return (domain?.GenericType?.Replace("{T}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(
+                property,
+                this
+            );
+        }
+
+        string HandleEnum(IProperty op)
+        {
+            string GetEnum(string className, string propName, bool isPrimaryKeyDef = false)
+            {
+                var op = property switch
+                {
+                    AssociationProperty ap => ap.Property,
+                    _ => property,
+                };
+                return (GetImplementation(op.Domain)?.GenericType ?? "{T}")
+                    .Replace("{T}", GetEnumType(className, propName, isPrimaryKeyDef))
+                    .ParseTemplate(op, this);
+            }
+
+            var type =
+                op is AssociationProperty ap ? GetEnum(ap.Association.Name, ap.Property.Name)
+                : op is RegularProperty rp ? GetEnum(rp.Class.Name, rp.Name, !isAlias)
+                : throw new InvalidOperationException();
+
+            if (
+                (domainOverride ?? property.Domain) != (op is AssociationProperty ap2 ? ap2.Property.Domain : op.Domain)
+            )
+            {
+                return GetTransformed(type);
+            }
+            else
+            {
+                return type;
+            }
+        }
+
+        return property switch
+        {
+            AssociationProperty ap when useClassForAssociation => ap.Property.Domain != ap.Domain
+                ? GetTransformed(ap.Association.NamePascal)
+                : ap.Association.NamePascal,
+            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => HandleEnum(ap),
+            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
+            CompositionProperty when (domainOverride ?? property.Domain) is not null => (
+                GetImplementation(domainOverride ?? property.Domain)?.GenericType ?? "{T}"
+            )
+                .Replace("{T}", "{composition.name}")
+                .ParseTemplate(property, this),
+            CompositionProperty cp => cp.Composition.NamePascal,
+            AliasProperty { As: not null } alp
+                when domainOverride is null && GetImplementation(alp.Domain)?.GenericType != null => GetImplementation(
+                alp.Domain
+            )!
+                .GenericType!.Replace(
+                    "{T}",
+                    GetTypeCore(alp.OriginalProperty!, useClassForAssociation, isAlias: true, domainOverride: null)
+                ),
+            AliasProperty { As: null } alp => GetTypeCore(
+                alp.OriginalProperty!,
+                useClassForAssociation,
+                isAlias: true,
+                domainOverride ?? alp.DomainOverride
+            ),
+            IProperty => (GetImplementation(domainOverride ?? property.Domain)?.Type ?? string.Empty).ParseTemplate(
+                property,
+                this
+            ),
+            _ => string.Empty,
+        };
+    }
 
     protected virtual bool IsEnumNameValid(string name)
     {
