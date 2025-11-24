@@ -8,6 +8,40 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.7.0
+
+- [`1947227`](https://github.com/klee-contrib/topmodel/commit/194722744e3ac36c1c7c482082fda57fb7527e0b) - Gestion des ancres YAML dans tout le fichier de config
+
+  On supporte désormais les [ancres YAML](https://smcleod.net/2022/11/yaml-anchors-and-aliases/) (comme vos outils de CI préférés 😝) dans le fichier de configuration, ce qui permet de faire des trucs comme :
+
+  ```yaml
+  ---
+  app: Sample1
+  jpa:
+    - tags: &tags
+        - back-service-1
+        - back-service-2
+        - back-service-3
+      # Le reste de la configuration
+  sql:
+    - tags: *tags # Pour que les tags SQL soient les mêmes que les tags JPA
+
+  ---
+  app: Sample2
+  jpa:
+    - &jpa
+      tags: #...
+      outputDirectory: app1/....
+      # Le reste de la configuration...
+
+    - <<: *jpa # La deuxième config JPA est construite à partir de la première
+      outputDirectory: app2/... # Et surcharge certaines propriétés
+  ```
+
+- [`6cdb08d`](https://github.com/klee-contrib/topmodel/commit/6cdb08d6076406676b079c8c222123c202bcc8ae) - [Core] Corrige la résolution du type dans les cas de surchage du domain en cascade avec plusieurs alias et as au milieu
+
+  On a réécrit la logique qui récupère le nom du type à écrire dans les divers générateurs (pour corriger un cas qui n'était pas géré auparavant). On a essayé de tester de notre mieux pour éviter toute régression, n'hésitez pas à crier si vous en trouvez de votre côté...
+
 ## 3.6.5
 
 - [`90ef777`](https://github.com/klee-contrib/topmodel/commit/90ef77780d8b14677125288b1982a856ee3c9080) - Support pour les ancres YAML au sein du même module dans la config

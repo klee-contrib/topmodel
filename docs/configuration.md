@@ -9,7 +9,7 @@ Pour démarrer votre projet TopModel, vous devez d'abord écrire un fichier de c
 
 ## Fichier de configuration
 
-Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM DE L'APPLICATION].config`.
+Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM DE L'APPLICATION].config`. Il s'agit d'un fichier YAML comme le reste du modèle (et qui supporte les [ancres YAML](#gestion-des-ancres-yaml)).
 
 ### Exemple minimal
 
@@ -206,3 +206,33 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 - **`generators`**
 
   Liste de chemins vers des projets C# contenant des générateurs personnalisés. Ces projets doivent implémenter un module de générateurs personnalisé (voir la [page dédiée aux générateurs personnalisés](./generator.md#générateurs-personnalisés) pour plus de détails).
+
+## Gestion des ancres YAML
+
+Les fichiers de configuration TopModel supportent les [ancres YAML](https://smcleod.net/2022/11/yaml-anchors-and-aliases/), afin de pouvoir limiter les répétitions et de factoriser des déclarations.
+
+Quelques exemples :
+
+```yaml
+---
+app: Sample1
+jpa:
+  - tags: &tags
+      - back-service-1
+      - back-service-2
+      - back-service-3
+    # Le reste de la configuration
+sql:
+  - tags: *tags # Pour que les tags SQL soient les mêmes que les tags JPA
+
+---
+app: Sample2
+jpa:
+  - &jpa
+    tags: #...
+    outputDirectory: app1/....
+    # Le reste de la configuration...
+
+  - <<: *jpa # La deuxième config JPA est construite à partir de la première
+    outputDirectory: app2/... # Et surcharge certaines propriétés
+```
