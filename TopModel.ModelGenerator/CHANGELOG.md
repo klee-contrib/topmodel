@@ -1,5 +1,9 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.12.9
+
+- [`0bcebea`](https://github.com/klee-contrib/topmodel/commit/0bcebeaae8f1aa50fc9f1af2ea96ebfa4984bc75) - [tmdgen] Gestion récursion dans les références de schéma
+
 ## 1.12.8
 
 - Revert du commit mentionné en dessous (😁)
