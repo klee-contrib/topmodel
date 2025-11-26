@@ -54,6 +54,10 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         );
         var hasJson = hasReturn || hasBody;
 
+        var hasAsyncEnumerable = endpoints.Any(e =>
+            e.Returns != null && (Config.GetType(e.Returns)?.StartsWith("IAsyncEnumerable") ?? false)
+        );
+
         var usings = new List<string>();
 
         if (endpoints.Any(e => e.Returns != null && !e.Returns.Required))
@@ -66,6 +70,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             usings.Add("System.Net.Http.Json");
             usings.Add("System.Text.Json");
             usings.Add("System.Text.Json.Serialization");
+        }
+
+        if (hasAsyncEnumerable && Config.UseCancellationTokens)
+        {
+            usings.Add("System.Runtime.CompilerServices");
         }
 
         if (
@@ -193,20 +202,27 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             fw.WriteReturns(1, endpoint.Returns?.Comment ?? "Task.");
 
-            fw.Write("    public async Task");
+            fw.Write("    public async ");
 
             var returnType =
                 endpoint.Returns != null
                     ? Config.GetType(endpoint.Returns, nonNullable: endpoint.Returns.Required)
                     : null;
-            if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
-            {
-                returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
-            }
 
-            if (returnType != null)
+            var isAsyncEnumerable = returnType?.StartsWith("IAsyncEnumerable") ?? false;
+
+            if (isAsyncEnumerable)
             {
-                fw.Write($"<{returnType}>");
+                fw.Write(returnType!);
+            }
+            else
+            {
+                fw.Write("Task");
+
+                if (returnType != null)
+                {
+                    fw.Write($"<{returnType}>");
+                }
             }
 
             fw.Write($" {endpoint.NamePascal}(");
@@ -230,7 +246,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             if (Config.UseCancellationTokens)
             {
-                fw.Write($"CancellationToken {ct} = default");
+                fw.Write(
+                    $"{(isAsyncEnumerable ? "[EnumeratorCancellation] " : string.Empty)}CancellationToken {ct} = default"
+                );
             }
 
             fw.WriteLine(")");
@@ -326,6 +344,17 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         $"(await {res}.Content.ReadAsStreamAsync({(Config.UseCancellationTokens ? ct : string.Empty)})).CopyTo(ms);"
                     );
                     fw.WriteLine(2, "return ms.ToArray();");
+                }
+                else if (isAsyncEnumerable)
+                {
+                    fw.WriteLine();
+                    fw.WriteLine(
+                        2,
+                        $"await foreach (var {GetSafeVariableName("item")} in res.Content.ReadFromJsonAsAsyncEnumerable<{returnType[17..^1]}>(_jsOptions{(Config.UseCancellationTokens ? $", ct" : string.Empty)}){(Config.UseCancellationTokens ? $".WithCancellation(ct)" : string.Empty)})"
+                    );
+                    fw.WriteLine(2, "{");
+                    fw.WriteLine(3, $"yield return {GetSafeVariableName("item")};");
+                    fw.WriteLine(2, "}");
                 }
                 else
                 {
