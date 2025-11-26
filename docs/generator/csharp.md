@@ -354,6 +354,12 @@ _(en preview, documentation à venir)_
 
   _Valeur par défaut_: `false`
 
+- `useAsyncReferenceAccessors`
+
+  Génère des accesseurs de référence asynchrones (pour Kinetix 10+).
+
+  _Valeur par défaut_: `false`
+
 - `useEFComments`
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).

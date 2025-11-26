@@ -88,6 +88,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             {
                 usings.Add(contextNs);
             }
+
+            if (Config.UseAsyncReferenceAccessors)
+            {
+                usings.Add("Microsoft.EntityFrameworkCore");
+            }
         }
 
         w.AddUsings(usings);
@@ -167,7 +172,14 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             var serviceName =
                 "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(1, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
-            w.WriteLine(1, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
+            w.WriteLine(
+                1,
+                $"public {(Config.UseAsyncReferenceAccessors ? "async Task<" : string.Empty)}ICollection<"
+                    + classe.NamePascal
+                    + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} "
+                    + serviceName
+                    + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)})\r\n{{"
+            );
             WriteReferenceAccessorBody(w, classe);
             w.WriteLine(1, "}");
 
@@ -229,15 +241,19 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             count++;
             w.WriteSummary(1, $"Accesseur de référence pour le type {classe.NamePascal}");
+            if (Config.UseAsyncReferenceAccessors)
+            {
+                w.WriteParam("ct", "CancellationToken");
+            }
             w.WriteReturns(1, $"Liste de {classe.NamePascal}");
             w.WriteLine(1, "[ReferenceAccessor]");
             w.WriteLine(
                 1,
-                "ICollection<"
+                $"{(Config.UseAsyncReferenceAccessors ? "Task<" : string.Empty)}ICollection<"
                     + classe.NamePascal
-                    + "> Load"
+                    + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} Load"
                     + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal)
-                    + "();"
+                    + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)});"
             );
 
             if (count != classList.Count())
@@ -315,7 +331,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 var translationClass = Config.AvailableClasses.FirstOrDefault(c => c.Translation);
                 if (translationClass != null && classe.DefaultProperty != null)
                 {
-                    w.WriteLine(2, "return (");
+                    w.WriteLine(2, $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}(");
                     w.WriteLine(3, $"from row in {dbContext}.{classe.PluralNamePascal}");
                     w.Write(3, $"join tra in {dbContext}.{translationClass.PluralNamePascal} on ");
 
@@ -349,7 +365,14 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     }
 
                     w.WriteLine(3, "}");
-                    w.WriteLine(2, ").ToList();");
+                    if (Config.UseAsyncReferenceAccessors)
+                    {
+                        w.WriteLine(2, ").ToListAsync(ct);");
+                    }
+                    else
+                    {
+                        w.WriteLine(2, ").ToList();");
+                    }
                     return;
                 }
             }
@@ -359,7 +382,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 queryParameter = $".OrderBy(row => row.{defaultProperty.NamePascal})";
             }
 
-            w.WriteLine(2, $"return {dbContext}.{classe.PluralNamePascal}{queryParameter}.ToList();");
+            w.WriteLine(
+                2,
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{dbContext}.{classe.PluralNamePascal}{queryParameter}.ToList{(Config.UseAsyncReferenceAccessors ? "Async(ct)" : "()")};"
+            );
         }
         else
         {
@@ -371,7 +397,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
             w.WriteLine(
                 2,
-                $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter});"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
             );
         }
     }

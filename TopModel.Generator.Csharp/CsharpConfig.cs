@@ -201,6 +201,11 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseCancellationTokens { get; set; }
 
     /// <summary>
+    /// Génère des accesseurs de référence asynchrones (pour Kinetix 10+).
+    /// </summary>
+    public virtual bool UseAsyncReferenceAccessors { get; set; }
+
+    /// <summary>
     /// Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références.
     /// </summary>
     public string? ResourcesResxPath { get; set; }
