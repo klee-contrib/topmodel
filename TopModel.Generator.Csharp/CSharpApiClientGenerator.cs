@@ -353,7 +353,10 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         $"await foreach (var {GetSafeVariableName("item")} in res.Content.ReadFromJsonAsAsyncEnumerable<{returnType[17..^1]}>(_jsOptions{(Config.UseCancellationTokens ? $", ct" : string.Empty)}){(Config.UseCancellationTokens ? $".WithCancellation(ct)" : string.Empty)})"
                     );
                     fw.WriteLine(2, "{");
-                    fw.WriteLine(3, $"yield return {GetSafeVariableName("item")};");
+                    fw.WriteLine(
+                        3,
+                        $"yield return {GetSafeVariableName("item")}{(Config.NullableEnable ? "!" : string.Empty)};"
+                    );
                     fw.WriteLine(2, "}");
                 }
                 else
