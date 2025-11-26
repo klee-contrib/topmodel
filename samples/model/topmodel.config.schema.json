@@ -390,6 +390,10 @@
             "type": "boolean",
             "description": "Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur)."
           },
+          "useAsyncReferenceAccessors": {
+            "type": "boolean",
+            "description": "Génère des accesseurs de référence asynchrones (pour Kinetix 10+)."
+          },
           "resourcesResxPath": {
             "type": "string",
             "description": "Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références."

@@ -1,3 +1,10 @@
+## 3.5.0
+
+- [`865bc42`](https://github.com/klee-contrib/topmodel/commit/865bc4243af20d80b189c1ff0e2356f41f6e9c42) - [C#] `useAsyncReferenceAccessors` (pour Kinetix 10+)
+- [`2d17ce6`](https://github.com/klee-contrib/topmodel/commit/2d17ce6600918de2b49d3b7d6ae419b369ee41c3) - [C#] Gestion de IAsyncEnumerable dans les clients d'API
+
+  Ce dernier point est théoriquement un breaking change parce qu'auparavant le client C# remplaçait en douce IAsyncEnumerable en IEnumerable pour continuer à ne pas le gérer...
+
 ## 3.4.4
 
 - [`3fb4987`](https://github.com/klee-contrib/topmodel/commit/3fb4987f0ea24cb84959702d164dee55dad9d60c) - [C#] Prise en compte `usePrimaryConstructors` pour le DbContext
