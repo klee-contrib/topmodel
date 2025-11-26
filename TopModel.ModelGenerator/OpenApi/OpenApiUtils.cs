@@ -161,7 +161,7 @@ public static class OpenApiUtils
         return default;
     }
 
-    public static IDictionary<string, IOpenApiSchema> GetSchemas(this OpenApiDocument model)
+    public static IDictionary<string, OpenApiSchema> GetSchemas(this OpenApiDocument model)
     {
         var schemas = model.Components?.Schemas ?? new Dictionary<string, IOpenApiSchema>();
         foreach (
@@ -223,13 +223,16 @@ public static class OpenApiUtils
 
         return schemas
             .Where(s =>
-                s.Value.Type == JsonSchemaType.Object
-                || s.Value.Type == JsonSchemaType.String && (s.Value.Enum?.Any() ?? false)
-                || (s.Value.AllOf?.Any() ?? false) && s.Value.AllOf.All(a => a.Type == JsonSchemaType.Object)
-                || (s.Value.AnyOf?.Any() ?? false)
-                || (s.Value.OneOf?.Any() ?? false)
+                (
+                    s.Value.Type == JsonSchemaType.Object
+                    || s.Value.Type == JsonSchemaType.String && (s.Value.Enum?.Any() ?? false)
+                    || (s.Value.AllOf?.Any() ?? false) && s.Value.AllOf.All(a => a.Type == JsonSchemaType.Object)
+                    || (s.Value.AnyOf?.Any() ?? false)
+                    || (s.Value.OneOf?.Any() ?? false)
+                )
+                && s.Value is OpenApiSchema
             )
-            .ToDictionary(a => a.Key, a => a.Value);
+            .ToDictionary(a => a.Key, a => (OpenApiSchema)a.Value);
     }
 
     public static string Unplurialize(this string name)

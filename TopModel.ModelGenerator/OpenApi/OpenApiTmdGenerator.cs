@@ -9,7 +9,7 @@ namespace TopModel.ModelGenerator.OpenApi;
 
 public class OpenApiTmdGenerator : TmdGenerator
 {
-    private readonly Dictionary<IOpenApiSchema, TmdClass> _classesStore = [];
+    private readonly Dictionary<OpenApiSchema, TmdClass> _classesStore = [];
     private readonly OpenApiConfig _config;
     private readonly ILogger<OpenApiTmdGenerator> _logger;
     private readonly IFileWriterProvider _writerProvider;
@@ -577,16 +577,28 @@ public class OpenApiTmdGenerator : TmdGenerator
             return aliasProperty;
         }
 
+        static OpenApiSchema? GetTarget(OpenApiSchemaReference schema)
+        {
+            var target = schema.Target;
+            while (target is OpenApiSchemaReference oasRef)
+            {
+                target = oasRef.Target;
+            }
+            return target as OpenApiSchema;
+        }
+
         if (
             sc != null
             && property.Value.Type != JsonSchemaType.String
             && (
-                _classesStore.ContainsKey(sc)
-                || sc is OpenApiSchemaReference schemaRef && _classesStore.ContainsKey(schemaRef.Target!)
+                sc is OpenApiSchema oas && _classesStore.ContainsKey(oas)
+                || sc is OpenApiSchemaReference oasRef
+                    && GetTarget(oasRef) != null
+                    && _classesStore.ContainsKey(GetTarget(oasRef)!)
             )
         )
         {
-            var sch = sc is OpenApiSchemaReference scr ? scr.Target : sc;
+            var sch = sc is OpenApiSchemaReference scr ? GetTarget(scr) : sc;
             var compositionProperty = new TmdCompositionProperty()
             {
                 Name = $"{property.Key}",
