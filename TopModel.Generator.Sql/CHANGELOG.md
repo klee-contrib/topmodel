@@ -1,3 +1,7 @@
+## 3.5.1
+
+- [`e3c13f5`](https://github.com/klee-contrib/topmodel/commit/e3c13f5d5d803f6dab819cd1cbe54c29fe8b9f19) - [SQL] Fix gos manquants sur les instructions de commentaires en SQL Server
+
 ## 3.5.0
 
 - [`f48fb72`](https://github.com/klee-contrib/topmodel/commit/f48fb72c9004e1b6aa033b87ce199bc4c24a34a5) - [SQL] `generateComments` en mode SSDT et gestion des commentaires pour SQL Server (fix #511)
