@@ -15,6 +15,9 @@ go
 /**
   * Commentaires pour la table TYPE_UTILISATEUR
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Code du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_CODE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_LIBELLE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Code du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_CODE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_LIBELLE'
+go

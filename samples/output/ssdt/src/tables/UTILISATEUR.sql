@@ -37,15 +37,27 @@ go
 /**
   * Commentaires pour la table UTILISATEUR
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Utilisateur de l''application', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Id de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ID';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_NOM';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_PRENOM';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Email de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_EMAIL';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Age de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_NAISSANCE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Adresse de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ADRESSE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Si l''utilisateur est actif', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ACTIF';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Profil de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'PRO_ID';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'TUT_CODE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''utilisateur.', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_CREATION';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de modification de l''utilisateur.', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_MODIFICATION';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Utilisateur de l''application', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Id de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_NOM'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_PRENOM'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Email de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_EMAIL'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Age de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_NAISSANCE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Adresse de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ADRESSE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Si l''utilisateur est actif', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_ACTIF'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Profil de l''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'PRO_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'TUT_CODE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''utilisateur.', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_CREATION'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de modification de l''utilisateur.', 'SCHEMA', 'dbo', 'TABLE', 'UTILISATEUR', 'COLUMN', 'UTI_DATE_MODIFICATION'
+go

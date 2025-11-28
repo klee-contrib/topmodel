@@ -15,6 +15,9 @@ go
 /**
   * Commentaires pour la table TRADUCTION
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Classe pour contenir les traductions en base de données.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_RESOURCE_KEY';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Valeur.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_LABEL';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Classe pour contenir les traductions en base de données.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_RESOURCE_KEY'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Valeur.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_LABEL'
+go

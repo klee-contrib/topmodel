@@ -27,6 +27,9 @@ go
 /**
   * Commentaires pour la table PROFIL_DROIT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association N-N Profils <> Droits', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Profil.', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT', 'COLUMN', 'PRO_ID';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Droit.', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT', 'COLUMN', 'DRO_CODE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Association N-N Profils <> Droits', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Profil.', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT', 'COLUMN', 'PRO_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Droit.', 'SCHEMA', 'dbo', 'TABLE', 'PROFIL_DROIT', 'COLUMN', 'DRO_CODE'
+go

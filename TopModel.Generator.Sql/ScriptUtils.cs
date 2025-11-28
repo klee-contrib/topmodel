@@ -60,14 +60,16 @@ public static class ScriptUtils
         if (config.TargetDBMS == TargetDBMS.Sqlserver)
         {
             writer.WriteLine(
-                $"EXECUTE sp_addextendedproperty 'MS_Description', '{classe.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}';"
+                $"EXECUTE sp_addextendedproperty 'MS_Description', '{classe.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}'"
             );
+            writer.WriteLine("go");
 
             foreach (var p in classe.GetAllProperties(config.AvailableClasses))
             {
                 writer.WriteLine(
-                    $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}';"
+                    $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}'"
                 );
+                writer.WriteLine("go");
             }
         }
         else

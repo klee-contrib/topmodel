@@ -22,7 +22,11 @@ go
 /**
   * Commentaires pour la table DROIT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Droits de l''application', 'SCHEMA', 'dbo', 'TABLE', 'DROIT';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Code du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_CODE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_LIBELLE';
-EXECUTE sp_addextendedproperty 'MS_Description', 'Type de profil pouvant faire l''action', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'TDR_CODE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Droits de l''application', 'SCHEMA', 'dbo', 'TABLE', 'DROIT'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Code du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_CODE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_LIBELLE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Type de profil pouvant faire l''action', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'TDR_CODE'
+go
