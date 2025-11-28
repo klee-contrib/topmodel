@@ -1,3 +1,9 @@
+## 3.5.0
+
+- [`f48fb72`](https://github.com/klee-contrib/topmodel/commit/f48fb72c9004e1b6aa033b87ce199bc4c24a34a5) - [SQL] `generateComments` en mode SSDT et gestion des commentaires pour SQL Server (fix #511)
+
+  petit breaking change : pour SSDT SQL Server, on générait avant toujours une propriété "Description" sur chaque table avec le `label` de la table. Désormais, on ne génère plus rien par défaut, et on génère les commentaires si l'option est activée, peu importe le SGBD. Pour SQL Server, on génère donc maintenant la propriété "MS_Description" (qui est la bonne propriété à utiliser...) et avec le commentaire et non le libellé, puis celles des colonnes.
+
 ## 3.4.0
 
 Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6

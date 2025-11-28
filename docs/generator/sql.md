@@ -51,6 +51,7 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
   - `initListScriptFolder` : Dossier du projet pour les scripts d'initialisation des listes de références.
   - `initListMainScriptName` : Fichier du projet référençant les scripts d'initialisation des listes de références
   - `disableIdentity` : Désactive les colonnes d'identité.
+  - `generateComments` : Génère les commentaires pour les tables et les colonnes dans les fichiers de table.
 
 - `identity`
 
