@@ -180,6 +180,10 @@
         "disableIdentity": {
           "type": "boolean",
           "description": "Désactive les colonnes d'identité."
+        },
+        "generateComments": {
+          "type": "boolean",
+          "description": "Génère les commentaires SQL sur les tables et les colonnes."
         }
       }
     }

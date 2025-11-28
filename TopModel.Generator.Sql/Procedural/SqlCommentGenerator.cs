@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -10,25 +9,6 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlCommentGen";
-
-    /// <summary>
-    /// Indique la limite de longueur d'un identifiant.
-    /// </summary>
-    private static int IdentifierLengthLimit => 128;
-
-    /// <summary>
-    /// Lève une ArgumentException si l'identifiant est trop long.
-    /// </summary>
-    /// <param name="identifier">Identifiant à vérifier.</param>
-    /// <returns>Identifiant passé en paramètre.</returns>
-    protected static string CheckIdentifierLength(string identifier)
-    {
-        return identifier.Length > IdentifierLengthLimit
-            ? throw new ModelException(
-                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
-            )
-            : identifier;
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -52,24 +32,6 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
         }
     }
 
-    protected void WriteComments(IFileWriter writer, Class classe, string tableName, IEnumerable<IProperty> properties)
-    {
-        writer.WriteLine();
-        writer.WriteLine("/**");
-        writer.WriteLine("  * Commentaires pour la table " + tableName);
-        writer.WriteLine(" **/");
-        writer.WriteLine(
-            $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{Config.BatchSeparator}"
-        );
-
-        foreach (var p in properties)
-        {
-            writer.WriteLine(
-                $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{Config.BatchSeparator}"
-            );
-        }
-    }
-
     /// <summary>
     /// Déclaration de la table.
     /// </summary>
@@ -77,8 +39,7 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
     /// <param name="writerComment">Flux d'écritures des commentaires.</param>
     private void WriteTableDeclaration(Class classe, IFileWriter writerComment)
     {
-        var tableName = CheckIdentifierLength(classe.SqlName);
-        var properties = classe.GetAllProperties(Config.Classes);
-        WriteComments(writerComment, classe, tableName, properties);
+        writerComment.WriteLine();
+        writerComment.WriteComments(classe, Config);
     }
 }

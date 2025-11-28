@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -20,25 +19,6 @@ public abstract class AbstractCrebasGenerator(
     /// Indique si le moteur de BDD visé supporte "primary key clustered ()".
     /// </summary>
     protected abstract bool SupportsClusteredKey { get; }
-
-    /// <summary>
-    /// Indique la limite de longueur d'un identifiant.
-    /// </summary>
-    private static int IdentifierLengthLimit => 128;
-
-    /// <summary>
-    /// Lève une ArgumentException si l'identifiant est trop long.
-    /// </summary>
-    /// <param name="identifier">Identifiant à vérifier.</param>
-    /// <returns>Identifiant passé en paramètre.</returns>
-    protected static string CheckIdentifierLength(string identifier)
-    {
-        return identifier.Length > IdentifierLengthLimit
-            ? throw new ModelException(
-                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
-            )
-            : identifier;
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -156,7 +136,7 @@ public abstract class AbstractCrebasGenerator(
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
-        var tableName = CheckIdentifierLength(classe.SqlName);
+        var tableName = Config.CheckIdentifierLength(classe.SqlName);
 
         writer.WriteLine();
         writer.WriteLine("/**");
@@ -184,7 +164,7 @@ public abstract class AbstractCrebasGenerator(
                     $"{persistentType}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
             }
 
-            writer.Write("\t" + CheckIdentifierLength(property.SqlName) + " " + persistentType);
+            writer.Write("\t" + Config.CheckIdentifierLength(property.SqlName) + " " + persistentType);
             if (
                 property is not AssociationProperty
                 && property.PrimaryKey

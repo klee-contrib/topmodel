@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using TopModel.Core;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
@@ -75,6 +76,11 @@ public class SqlConfig : GeneratorConfigBase
             _ => ";",
         };
 
+    /// <summary>
+    /// Indique la limite de longueur d'un identifiant.
+    /// </summary>
+    public virtual int IdentifierLengthLimit => 128;
+
     protected override bool PersistentOnly => true;
 
     protected override bool UseNamedEnums => false;
@@ -93,6 +99,20 @@ public class SqlConfig : GeneratorConfigBase
     public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
     {
         return false;
+    }
+
+    /// <summary>
+    /// Lève une ArgumentException si l'identifiant est trop long.
+    /// </summary>
+    /// <param name="identifier">Identifiant à vérifier.</param>
+    /// <returns>Identifiant passé en paramètre.</returns>
+    public string CheckIdentifierLength(string identifier)
+    {
+        return identifier.Length > IdentifierLengthLimit
+            ? throw new ModelException(
+                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
+            )
+            : identifier;
     }
 
     public override IEnumerable<Class> GetExtraClasses(ModelFile file)

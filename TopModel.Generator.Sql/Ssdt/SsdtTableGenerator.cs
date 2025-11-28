@@ -51,9 +51,9 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         GenerateIndexForeignKey(writer, classe.SqlName, properties);
 
         // Définition
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
+        if (Config.Ssdt!.GenerateComments)
         {
-            WriteTableDescriptionProperty(writer, classe);
+            WriteComments(writer, classe);
         }
     }
 
@@ -66,23 +66,6 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     {
         writer.WriteSqlFileHeader(description: $"Création de la table {tableName}.");
         writer.WriteLine();
-    }
-
-    /// <summary>
-    /// Ecrit la création de la propriété de description de la table.
-    /// </summary>
-    /// <param name="writer">Writer.</param>
-    /// <param name="classe">Classe de la table.</param>
-    private static void WriteTableDescriptionProperty(IFileWriter writer, Class classe)
-    {
-        writer.WriteLine("/* Description property. */");
-        writer.WriteLine(
-            "EXECUTE sp_addextendedproperty 'Description', '"
-                + classe.Label?.Replace("'", "''")
-                + "', 'SCHEMA', 'dbo', 'TABLE', '"
-                + classe.SqlName
-                + "';"
-        );
     }
 
     /// <summary>
@@ -179,6 +162,16 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         {
             sb.Append($" default {defaultValue}");
         }
+    }
+
+    /// <summary>
+    /// Ecrit la création de la propriété de description de la table.
+    /// </summary>
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe de la table.</param>
+    private void WriteComments(IFileWriter writer, Class classe)
+    {
+        writer.WriteComments(classe, Config);
     }
 
     /// <summary>

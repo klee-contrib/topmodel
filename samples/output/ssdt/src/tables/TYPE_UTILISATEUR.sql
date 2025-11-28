@@ -12,5 +12,9 @@ create table [dbo].[TYPE_UTILISATEUR] (
 	constraint [PK_TYPE_UTILISATEUR] primary key clustered ([TUT_CODE] ASC))
 go
 
-/* Description property. */
-EXECUTE sp_addextendedproperty 'Description', 'TypeUtilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR';
+/**
+  * Commentaires pour la table TYPE_UTILISATEUR
+ **/
+EXECUTE sp_addextendedproperty 'MS_Description', 'Type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Code du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_CODE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du type d''utilisateur', 'SCHEMA', 'dbo', 'TABLE', 'TYPE_UTILISATEUR', 'COLUMN', 'TUT_LIBELLE';

@@ -29,4 +29,9 @@ public class SsdtConfig
     /// Désactive les colonnes d'identité.
     /// </summary>
     public bool DisableIdentity { get; set; }
+
+    /// <summary>
+    /// Génère les commentaires SQL sur les tables et les colonnes.
+    /// </summary>
+    public bool GenerateComments { get; set; }
 }

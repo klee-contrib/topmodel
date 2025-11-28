@@ -19,5 +19,10 @@ create nonclustered index [IDX_DROIT_TDR_CODE_FK]
 	on [dbo].[DROIT] ([TDR_CODE] ASC)
 go
 
-/* Description property. */
-EXECUTE sp_addextendedproperty 'Description', 'Droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT';
+/**
+  * Commentaires pour la table DROIT
+ **/
+EXECUTE sp_addextendedproperty 'MS_Description', 'Droits de l''application', 'SCHEMA', 'dbo', 'TABLE', 'DROIT';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Code du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_CODE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du droit', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'DRO_LIBELLE';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Type de profil pouvant faire l''action', 'SCHEMA', 'dbo', 'TABLE', 'DROIT', 'COLUMN', 'TDR_CODE';

@@ -12,5 +12,9 @@ create table [dbo].[TRADUCTION] (
 	constraint [PK_TRADUCTION] primary key clustered ([TRD_RESOURCE_KEY] ASC))
 go
 
-/* Description property. */
-EXECUTE sp_addextendedproperty 'Description', 'Traduction', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION';
+/**
+  * Commentaires pour la table TRADUCTION
+ **/
+EXECUTE sp_addextendedproperty 'MS_Description', 'Classe pour contenir les traductions en base de données.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_RESOURCE_KEY';
+EXECUTE sp_addextendedproperty 'MS_Description', 'Valeur.', 'SCHEMA', 'dbo', 'TABLE', 'TRADUCTION', 'COLUMN', 'TRD_LABEL';

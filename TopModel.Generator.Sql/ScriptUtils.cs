@@ -49,6 +49,42 @@ public static class ScriptUtils
         return fw;
     }
 
+    public static void WriteComments(this IFileWriter writer, Class classe, SqlConfig config)
+    {
+        var tableName = config.CheckIdentifierLength(classe.SqlName);
+
+        writer.WriteLine("/**");
+        writer.WriteLine("  * Commentaires pour la table " + tableName);
+        writer.WriteLine(" **/");
+
+        if (config.TargetDBMS == TargetDBMS.Sqlserver)
+        {
+            writer.WriteLine(
+                $"EXECUTE sp_addextendedproperty 'MS_Description', '{classe.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}';"
+            );
+
+            foreach (var p in classe.GetAllProperties(config.AvailableClasses))
+            {
+                writer.WriteLine(
+                    $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}';"
+                );
+            }
+        }
+        else
+        {
+            writer.WriteLine(
+                $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
+            );
+
+            foreach (var p in classe.GetAllProperties(config.AvailableClasses))
+            {
+                writer.WriteLine(
+                    $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"
+                );
+            }
+        }
+    }
+
     public static void WriteSqlFileHeader(
         this IFileWriter writer,
         string? appName = null,

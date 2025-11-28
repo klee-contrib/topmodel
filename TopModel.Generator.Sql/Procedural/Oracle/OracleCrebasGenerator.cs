@@ -26,7 +26,7 @@ public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, IFileW
             {
                 writer.WriteLine(
                     "\tconstraint "
-                        + CheckIdentifierLength($"CHK_{property.SqlName}")
+                        + Config.CheckIdentifierLength($"CHK_{property.SqlName}")
                         + " check ("
                         + property.SqlName
                         + " in (0,1)),"
