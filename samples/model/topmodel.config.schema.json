@@ -541,10 +541,11 @@
             "description": "Framework cible pour la génération.",
             "default": "focus",
             "enum": [
+              "fetch",
               "angular",
               "angular_promise",
-              "vanilla",
-              "nuxt"
+              "nuxt",
+              "legacy"
             ]
           },
           "entityMode": {

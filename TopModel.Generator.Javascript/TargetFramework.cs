@@ -3,6 +3,11 @@
 public enum TargetFramework
 {
     /// <summary>
+    /// Fetch.
+    /// </summary>
+    FETCH,
+
+    /// <summary>
     /// Angular.
     /// </summary>
     ANGULAR,
@@ -18,7 +23,7 @@ public enum TargetFramework
     NUXT,
 
     /// <summary>
-    /// Vanilla.
+    /// Legacy.
     /// </summary>
-    VANILLA,
+    LEGACY,
 }

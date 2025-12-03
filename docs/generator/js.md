@@ -6,7 +6,15 @@ _Remarque : tous les imports spécifiés pour le générateur JS dans les domain
 
 ### Modes de génération de l'API client
 
-Il est possible de générer l'API cliente selon quatre modes (`apiMode`) : `vanilla`, `nuxt`, `angular` ou `angular_promise`.
+Il est possible de générer l'API cliente selon 5 modes (`apiMode`) : `fetch` (par défaut), `nuxt`, `angular`, `angular_promise` ou `legacy`.
+
+### Fetch
+
+Par défaut, TopModel génère des appels d'API en utilisant le fetch natif du navigateur. Pour générer l'authentification et la gestion des erreurs, il est fortement conseillé d'utiliser une librairie comme [`ky`](https://github.com/sindresorhus/ky) qui surcharge le fetch natif avec des hooks pour y inclure des traitements à effectuer avant l'envoi des requêtes (pour l'authentification) ou à la réception d'une réponse en erreur.
+
+Vous pouvez surcharger le `fetch` natif en spécifiant `fetchPath` dans la configuration.
+
+_(Remarque : Il s'agit du mode à utiliser pour focus4 12.7+)_
 
 #### Angular
 
@@ -37,24 +45,28 @@ export function getProfil(
   id: number,
   options: AsyncDataOptions<ProfilDto> = {}
 ): AsyncData<ProfilDto | null, Error | null> {
-  return useAsyncData(`/api/profil/${id}`, () =>
-    $fetch<ProfilDto>(`/api/profil/${id}`, {
-      method: 'GET',
-    }),
+  return useAsyncData(
+    `/api/profil/${id}`,
+    () =>
+      $fetch<ProfilDto>(`/api/profil/${id}`, {
+        method: "GET",
+      }),
     options
   );
 }
 ```
 
-#### Vanilla
+#### Legacy
 
-Le mode `vanilla` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définition d'une méthode `fetch`. Par défaut, cette méthode est importée de `@focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
+Le mode `legacy` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définition d'une méthode `fetch`. Par défaut, cette méthode est importée de `@focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
 
 Exemple :
 
 ```yaml
 fetchPath: "@api-services"
 ```
+
+Les APIs générées correspondant au format de Focus pré-12.7.
 
 ### Chemins de configuration
 
@@ -239,12 +251,12 @@ export const securite = {
   profil: {
     id: "Identifiant",
     typeProfilCode: "Type de profil",
-    droits: "Droits"
+    droits: "Droits",
   },
   profilDto: {
     utilisateurs: "Utilisateurs",
-    secteurs: "Secteurs"
-  }
+    secteurs: "Secteurs",
+  },
 };
 ```
 
@@ -304,8 +316,8 @@ export const securiteComments = {
   profil: {
     id: "Identifiant unique du profil",
     typeProfilCode: "Code du type de profil",
-    droits: "Liste des droits associés au profil"
-  }
+    droits: "Liste des droits associés au profil",
+  },
 };
 ```
 
@@ -395,10 +407,11 @@ Le module JavaScript génère plusieurs types de fichiers :
 
 1. **TypescriptDefinitionGenerator** (`JSDefinitionGen`) : Génère les définitions TypeScript des classes (DTOs et entités)
 2. **TypescriptReferenceGenerator** (`JSReferenceGen`) : Génère les définitions des listes de références
-3. **JavascriptApiClientGenerator** (`JSApiClientGen`) : Génère les clients API en mode vanilla
+3. **JavascriptApiClientGenerator** (`JSApiClientGen`) : Génère les clients API en mode fetch
 4. **AngularApiClientGenerator** (`JSNGApiClientGen`) : Génère les services Angular pour les clients API
 5. **NuxtApiClientGenerator** (`JSApiClientGen`) : Génère les fonctions API pour Nuxt
-6. **JavascriptResourceGenerator** (`JSResourceGen`) : Génère les fichiers de ressources (traductions)
+6. **LegacyApiClientGenerator** (`JSLApiClientGen`) : Génère les clients API en mode legacy (ancienne API Focus)
+7. **JavascriptResourceGenerator** (`JSResourceGen`) : Génère les fichiers de ressources (traductions)
 
 Vous pouvez désactiver certains générateurs avec la propriété `disable` :
 
