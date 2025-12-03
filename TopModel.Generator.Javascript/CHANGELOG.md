@@ -1,3 +1,9 @@
+## 3.5.0
+
+- [`#518`](https://github.com/klee-contrib/topmodel/pull/518) - Mode `fetch`, par défaut, pour la génération des endpoints
+
+  **breaking changes** : La valeur par défaut de `apiMode` est désormais `fetch` (le nouveau mode de génération introduit dans la PR), au lieu de `vanilla`, maintenant renommé `legacy`.
+
 ## 3.4.0
 
 Compatibilité avec `preservePrimaryKey: true` de TopModel 3.6
