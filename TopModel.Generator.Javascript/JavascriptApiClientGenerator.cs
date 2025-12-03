@@ -106,6 +106,10 @@ public class JavascriptApiClientGenerator(
             else
             {
                 fw.Write(Config.GetType(endpoint.Returns));
+                if (!endpoint.Returns.Required)
+                {
+                    fw.Write(" | undefined");
+                }
             }
 
             fw.WriteLine("> {");
@@ -201,6 +205,13 @@ public class JavascriptApiClientGenerator(
             fw.WriteLine(1, "});");
             if (endpoint.Returns != null)
             {
+                if (!endpoint.Returns.Required)
+                {
+                    fw.WriteLine(1, $"if ({response}.status === 204) {{");
+                    fw.WriteLine(2, $"return undefined;");
+                    fw.WriteLine(1, "}");
+                }
+
                 var type =
                     Config.GetType(endpoint.Returns) == "Blob" ? "blob"
                     : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true } ? "json"

@@ -41,11 +41,14 @@ export async function deleteUtilisateur(utiId: number, options: RequestInit = {}
  * @param options Options pour 'fetch'.
  * @returns Fichier de la photo
  */
-export async function downloadPicture(utiId: number, options: RequestInit = {}): Promise<Blob> {
+export async function downloadPicture(utiId: number, options: RequestInit = {}): Promise<Blob | undefined> {
     const response = await fetch(`./api/utilisateurs/${utiId}/picture`, {
         ...options,
         method: "GET"
     });
+    if (response.status === 204) {
+        return undefined;
+    }
     return await response.blob();
 }
 
