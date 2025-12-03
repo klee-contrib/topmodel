@@ -212,16 +212,23 @@ public class JavascriptApiClientGenerator(
                     fw.WriteLine(1, "}");
                 }
 
-                var type =
-                    Config.GetType(endpoint.Returns) == "Blob" ? "blob"
-                    : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true } ? "json"
-                    : "text";
+                if (Config.GetType(endpoint.Returns) == "Response")
+                {
+                    fw.WriteLine(1, $"return {response};");
+                }
+                else
+                {
+                    var type =
+                        Config.GetType(endpoint.Returns) == "Blob" ? "blob"
+                        : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true } ? "json"
+                        : "text";
 
-                var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
-                fw.WriteLine(
-                    1,
-                    $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : string.Empty)};"
-                );
+                    var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
+                    fw.WriteLine(
+                        1,
+                        $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : string.Empty)};"
+                    );
+                }
             }
             fw.WriteLine("}");
         }
