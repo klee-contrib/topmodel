@@ -2,8 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {coreFetch} from "@focus4/core";
-
 import {ProfilItem} from "../../../model/securite/profil/profil-item";
 import {ProfilRead} from "../../../model/securite/profil/profil-read";
 import {ProfilWrite} from "../../../model/securite/profil/profil-write";
@@ -14,8 +12,14 @@ import {ProfilWrite} from "../../../model/securite/profil/profil-write";
  * @param options Options pour 'fetch'.
  * @returns Profil sauvegardé
  */
-export function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("POST", `./api/profils`, {body: profil}, options);
+export async function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
+    const response = await fetch(`./api/profils`, {
+        ...options,
+        method: "POST",
+        body: JSON.stringify(profil),
+        headers: {...options.headers, "Content-Type": "application/json"}
+    });
+    return await response.json();
 }
 
 /**
@@ -24,8 +28,12 @@ export function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promi
  * @param options Options pour 'fetch'.
  * @returns Le détail du profil
  */
-export function getProfil(proId: number, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("GET", `./api/profils/${proId}`, {}, options);
+export async function getProfil(proId: number, options: RequestInit = {}): Promise<ProfilRead> {
+    const response = await fetch(`./api/profils/${proId}`, {
+        ...options,
+        method: "GET"
+    });
+    return await response.json();
 }
 
 /**
@@ -33,8 +41,12 @@ export function getProfil(proId: number, options: RequestInit = {}): Promise<Pro
  * @param options Options pour 'fetch'.
  * @returns Profils matchant les critères
  */
-export function getProfils(options: RequestInit = {}): Promise<ProfilItem[]> {
-    return coreFetch("GET", `./api/profils`, {}, options);
+export async function getProfils(options: RequestInit = {}): Promise<ProfilItem[]> {
+    const response = await fetch(`./api/profils`, {
+        ...options,
+        method: "GET"
+    });
+    return await response.json();
 }
 
 /**
@@ -44,6 +56,12 @@ export function getProfils(options: RequestInit = {}): Promise<ProfilItem[]> {
  * @param options Options pour 'fetch'.
  * @returns Profil sauvegardé
  */
-export function updateProfil(proId: number, profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("PUT", `./api/profils/${proId}`, {body: profil}, options);
+export async function updateProfil(proId: number, profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
+    const response = await fetch(`./api/profils/${proId}`, {
+        ...options,
+        method: "PUT",
+        body: JSON.stringify(profil),
+        headers: {...options.headers, "Content-Type": "application/json"}
+    });
+    return await response.json();
 }

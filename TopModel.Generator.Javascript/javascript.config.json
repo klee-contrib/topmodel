@@ -123,7 +123,7 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": [ "angular", "angular_promise", "vanilla", "nuxt" ]
+      "enum": [ "fetch", "angular", "angular_promise", "nuxt", "legacy" ]
     },
     "entityMode": {
       "type": "string",

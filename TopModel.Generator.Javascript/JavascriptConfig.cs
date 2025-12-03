@@ -34,7 +34,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération.
     /// </summary>
-    public virtual string FetchPath { get; set; } = "@focus4/core";
+    public virtual string? FetchPath { get; set; }
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
@@ -44,7 +44,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Framework cible pour la génération.
     /// </summary>
-    public virtual TargetFramework ApiMode { get; set; } = TargetFramework.VANILLA;
+    public virtual TargetFramework ApiMode { get; set; }
 
     /// <summary>
     /// Typage des entités générées

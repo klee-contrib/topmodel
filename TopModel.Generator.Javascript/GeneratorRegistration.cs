@@ -52,6 +52,10 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
                 {
                     services.AddGenerator<NuxtApiClientGenerator, JavascriptConfig>(config, number);
                 }
+                else if (config.ApiMode == TargetFramework.LEGACY)
+                {
+                    services.AddGenerator<LegacyApiClientGenerator, JavascriptConfig>(config, number);
+                }
                 else
                 {
                     services.AddGenerator<JavascriptApiClientGenerator, JavascriptConfig>(config, number);

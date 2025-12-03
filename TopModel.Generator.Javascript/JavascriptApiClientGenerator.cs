@@ -24,24 +24,29 @@ public class JavascriptApiClientGenerator(
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var fetch = Config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
-        var fetchImport =
-            Config.FetchPath.StartsWith('@') || !Config.FetchPath.StartsWith('.')
-                ? Config.ResolveVariables(Config.FetchPath, tag)
-                : Path.GetRelativePath(
-                        string.Join('/', filePath.Split('/').SkipLast(1)),
-                        Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))
-                    )
-                    .Replace('\\', '/');
-
         using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
 
-        fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
+        if (Config.FetchPath != null)
+        {
+            var fetchImport =
+                Config.FetchPath.StartsWith('@') || !Config.FetchPath.StartsWith('.')
+                    ? Config.ResolveVariables(Config.FetchPath, tag)
+                    : Path.GetRelativePath(
+                            string.Join('/', filePath.Split('/').SkipLast(1)),
+                            Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))
+                        )
+                        .Replace('\\', '/');
+
+            fw.WriteLine($@"import fetch from ""{fetchImport}"";");
+        }
 
         var imports = Config.GetEndpointImports(filePath, endpoints, tag);
         if (imports.Any())
         {
-            fw.WriteLine();
+            if (Config.FetchPath != null)
+            {
+                fw.WriteLine();
+            }
 
             foreach (var (import, path) in imports)
             {
@@ -51,6 +56,21 @@ public class JavascriptApiClientGenerator(
 
         foreach (var endpoint in endpoints)
         {
+            string GetSafeVariableName(string varName)
+            {
+                while (endpoint.Params.Any(p => p.NameCamel == varName))
+                {
+                    varName = $"_{varName}";
+                }
+
+                return varName;
+            }
+
+            var options = GetSafeVariableName("options");
+            var query = GetSafeVariableName("query");
+            var body = GetSafeVariableName("body");
+            var response = GetSafeVariableName("response");
+
             fw.WriteLine();
             fw.WriteLine("/**");
             fw.WriteLine($" * {endpoint.Description}");
@@ -60,7 +80,7 @@ public class JavascriptApiClientGenerator(
                 fw.WriteLine($" * @param {param.GetParamName()} {param.Comment}");
             }
 
-            fw.WriteLine(" * @param options Options pour 'fetch'.");
+            fw.WriteLine($" * @param {options} Options pour 'fetch'.");
 
             if (endpoint.Returns != null)
             {
@@ -68,7 +88,7 @@ public class JavascriptApiClientGenerator(
             }
 
             fw.WriteLine(" */");
-            fw.Write($"export function {endpoint.NameCamel}(");
+            fw.Write($"export async function {endpoint.NameCamel}(");
 
             foreach (var param in endpoint.Params)
             {
@@ -78,7 +98,7 @@ public class JavascriptApiClientGenerator(
                 );
             }
 
-            fw.Write("options: RequestInit = {}): Promise<");
+            fw.Write($"{options}: RequestInit = {{}}): Promise<");
             if (endpoint.Returns == null)
             {
                 fw.Write("void");
@@ -90,9 +110,42 @@ public class JavascriptApiClientGenerator(
 
             fw.WriteLine("> {");
 
+            if (endpoint.GetQueryParams().Any())
+            {
+                fw.WriteLine(1, $"const {query} = new URLSearchParams();");
+
+                foreach (var qParam in endpoint.GetQueryParams())
+                {
+                    var name = qParam.GetParamName();
+                    fw.WriteLine(1, $"if ({name} !== undefined) {{");
+                    var isArray = Config.GetType(qParam).EndsWith("[]");
+                    var isString =
+                        Config.GetImplementation(qParam.Domain)?.Type?.Value.TrimEnd(']').TrimEnd('[') == "string";
+
+                    void Append(int indent, string value)
+                    {
+                        fw.WriteLine(indent, $"{query}.append(\"{name}\", {(isString ? value : $"`${{{value}}}`")})");
+                    }
+
+                    if (isArray)
+                    {
+                        var item = GetSafeVariableName("item");
+                        fw.WriteLine(2, $"for (const {item} of {name}) {{");
+                        Append(3, item);
+                        fw.WriteLine(2, "}");
+                    }
+                    else
+                    {
+                        Append(2, name);
+                    }
+
+                    fw.WriteLine(1, "}");
+                }
+            }
+
             if (endpoint.IsMultipart)
             {
-                fw.WriteLine(1, "const body = new FormData();");
+                fw.WriteLine(1, $"const {body} = new FormData();");
                 fw.WriteLine(1, "fillFormData(");
                 fw.WriteLine(2, "{");
 
@@ -118,44 +171,47 @@ public class JavascriptApiClientGenerator(
                 }
 
                 fw.WriteLine(2, "},");
-                fw.WriteLine(2, "body");
+                fw.WriteLine(2, body);
                 fw.WriteLine(1, ");");
             }
 
-            fw.Write(1, $@"return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
+            fw.WriteLine(
+                1,
+                $@"{(endpoint.Returns != null ? $"const {response} = " : string.Empty)}await fetch(`./{endpoint.FullRoute.Replace("{", "${")}{(endpoint.GetQueryParams().Any() ? $"?${{{query}}}" : string.Empty)}`, {{"
+            );
+            fw.WriteLine(2, $"...{options},");
+            fw.Write(2, $"method: \"{endpoint.Method}\"");
 
             if (endpoint.GetJsonBodyParam() != null)
             {
-                fw.Write($"body: {endpoint.GetJsonBodyParam()!.GetParamName()}");
+                fw.WriteLine(",");
+                fw.WriteLine(2, $"body: JSON.stringify({endpoint.GetJsonBodyParam()!.GetParamName()}),");
+                fw.WriteLine(2, $"headers: {{...{options}.headers, \"Content-Type\": \"application/json\"}}");
             }
             else if (endpoint.IsMultipart)
             {
-                fw.Write("body");
+                fw.WriteLine(",");
+                fw.WriteLine(2, body == "body" ? body : $"body: {body}");
             }
-
-            if ((endpoint.GetJsonBodyParam() != null || endpoint.IsMultipart) && endpoint.GetQueryParams().Any())
+            else
             {
-                fw.Write(", ");
+                fw.WriteLine();
             }
 
-            if (endpoint.GetQueryParams().Any())
+            fw.WriteLine(1, "});");
+            if (endpoint.Returns != null)
             {
-                fw.Write("query: {");
+                var type =
+                    Config.GetType(endpoint.Returns) == "Blob" ? "blob"
+                    : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true } ? "json"
+                    : "text";
 
-                foreach (var qParam in endpoint.GetQueryParams())
-                {
-                    fw.Write(qParam.GetParamName());
-
-                    if (qParam != endpoint.GetQueryParams().Last())
-                    {
-                        fw.Write(", ");
-                    }
-                }
-
-                fw.Write("}");
+                var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
+                fw.WriteLine(
+                    1,
+                    $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : string.Empty)};"
+                );
             }
-
-            fw.WriteLine("}, options);");
             fw.WriteLine("}");
         }
 
