@@ -25,7 +25,7 @@ jobs:
         run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
 
       - name: tmdgen
-        run: dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f samples/tmdgen/open-api/tmdgen.config -c
+        run: dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/open-api/tmdgen.config -c
 
       - name: Set up JDK 25
         uses: actions/setup-java@v4
@@ -35,13 +35,16 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn test
-        working-directory: ./samples/output/jpa
-
+        working-directory: ./tests/output/jpa
       - name: Set up node 22
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm ci
-        working-directory: ./samples/output/angular
-      - run: npm test
-        working-directory: ./samples/output/angular
+        working-directory: ./tests/output/angular
+      - run: npm run build
+        working-directory: ./tests/output/angular
+      - run: npm ci
+        working-directory: ./tests/output/focus
+      - run: npm run build
+        working-directory: ./tests/output/focus

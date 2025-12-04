@@ -1,0 +1,56 @@
+﻿----
+---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+----
+
+-- ===========================================================================================
+--   Description		:	Création de la table COMMANDE.
+-- ===========================================================================================
+
+create table [dbo].[COMMANDE] (
+	[COM_ID] int identity,
+	[COM_DATE_COMMANDE] timestamp not null,
+	[COM_DATE_LIVRAISON] timestamp,
+	[COM_MONTANT_TOTAL] decimal not null,
+	[CLI_ID] int not null,
+	[TAB_ID] int,
+	[STC_CODE] varchar not null default N'EN_ATT',
+	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),
+	constraint [FK_COMMANDE_CLIENT_CLI_ID] foreign key ([CLI_ID]) references [dbo].[CLIENT] ([CLI_ID]),
+	constraint [FK_COMMANDE_TABLE_CLIENT_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_CLIENT] ([TAB_ID]),
+	constraint [FK_COMMANDE_STATUT_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]))
+go
+
+/* Index on foreign key column for COMMANDE.CLI_ID */
+create nonclustered index [IDX_COMMANDE_CLI_ID_FK]
+	on [dbo].[COMMANDE] ([CLI_ID] ASC)
+go
+
+/* Index on foreign key column for COMMANDE.TAB_ID */
+create nonclustered index [IDX_COMMANDE_TAB_ID_FK]
+	on [dbo].[COMMANDE] ([TAB_ID] ASC)
+go
+
+/* Index on foreign key column for COMMANDE.STC_CODE */
+create nonclustered index [IDX_COMMANDE_STC_CODE_FK]
+	on [dbo].[COMMANDE] ([STC_CODE] ASC)
+go
+
+/**
+  * Commentaires pour la table COMMANDE
+ **/
+EXECUTE sp_addextendedproperty 'MS_Description', 'Commande d''un client', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'COM_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date et heure de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'COM_DATE_COMMANDE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date et heure de livraison', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'COM_DATE_LIVRAISON'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Montant total de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'COM_MONTANT_TOTAL'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant passé la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'CLI_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Table associée à la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'TAB_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Statut de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'STC_CODE'
+go

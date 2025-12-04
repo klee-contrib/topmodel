@@ -1,0 +1,260 @@
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+package restaurant.jpa_sequence_metamodel.entities.restaurant;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.annotation.Generated;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+import restaurant.jpa_sequence_metamodel.enums.restaurant.StatutCommandeCode;
+
+/**
+ * Commande pour export avec préservation des clés primaires.
+ */
+@Entity
+@Table(name = "COMMANDE_EXPORT")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public class CommandeExport {
+
+	/**
+	 * Identifiant de la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getId() Commande#getId()}
+	 */
+	@Id
+	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	private Integer id;
+
+	/**
+	 * Date et heure de la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 */
+	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCommande;
+
+	/**
+	 * Date et heure de livraison.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 */
+	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
+	private LocalDateTime dateLivraison;
+
+	/**
+	 * Montant total de la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+	 */
+	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	private BigDecimal montantTotal;
+
+	/**
+	 * Client ayant passé la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getClient() Commande#getClient()}
+	 */
+	@JoinColumn(name = "CLI_ID", referencedColumnName = "CLI_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
+	private Client client;
+
+	/**
+	 * Table associée à la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getTableClient() Commande#getTableClient()}
+	 */
+	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableClient.class)
+	private TableClient tableClient;
+
+	/**
+	 * Statut de la commande.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
+	 */
+	@JoinColumn(name = "STC_CODE", referencedColumnName = "STC_CODE")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = StatutCommande.class)
+	private StatutCommande statutCommande = new StatutCommande(StatutCommandeCode.EN_ATT);
+
+	/**
+	 * Association réciproque de LigneCommande.CommandeId.
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
+	private List<LigneCommande> ligneCommandes;
+
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link #id id}.
+	 */
+	public Integer getId() {
+		return this.id;
+	}
+
+	/**
+	 * Getter for dateCommande.
+	 *
+	 * @return value of {@link #dateCommande dateCommande}.
+	 */
+	public LocalDateTime getDateCommande() {
+		return this.dateCommande;
+	}
+
+	/**
+	 * Getter for dateLivraison.
+	 *
+	 * @return value of {@link #dateLivraison dateLivraison}.
+	 */
+	public LocalDateTime getDateLivraison() {
+		return this.dateLivraison;
+	}
+
+	/**
+	 * Getter for montantTotal.
+	 *
+	 * @return value of {@link #montantTotal montantTotal}.
+	 */
+	public BigDecimal getMontantTotal() {
+		return this.montantTotal;
+	}
+
+	/**
+	 * Getter for client.
+	 *
+	 * @return value of {@link #client client}.
+	 */
+	public Client getClient() {
+		return this.client;
+	}
+
+	/**
+	 * Getter for tableClient.
+	 *
+	 * @return value of {@link #tableClient tableClient}.
+	 */
+	public TableClient getTableClient() {
+		return this.tableClient;
+	}
+
+	/**
+	 * Getter for statutCommande.
+	 *
+	 * @return value of {@link #statutCommande statutCommande}.
+	 */
+	public StatutCommande getStatutCommande() {
+		return this.statutCommande;
+	}
+
+	/**
+	 * Getter for ligneCommandes.
+	 *
+	 * @return value of {@link #ligneCommandes ligneCommandes}.
+	 */
+	public List<LigneCommande> getLigneCommandes() {
+		if (this.ligneCommandes == null) {
+			this.ligneCommandes = new ArrayList<>();
+		}
+		return this.ligneCommandes;
+	}
+
+	/**
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link #dateCommande dateCommande}.
+	 * @param dateCommande value to set.
+	 */
+	public void setDateCommande(LocalDateTime dateCommande) {
+		this.dateCommande = dateCommande;
+	}
+
+	/**
+	 * Set the value of {@link #dateLivraison dateLivraison}.
+	 * @param dateLivraison value to set.
+	 */
+	public void setDateLivraison(LocalDateTime dateLivraison) {
+		this.dateLivraison = dateLivraison;
+	}
+
+	/**
+	 * Set the value of {@link #montantTotal montantTotal}.
+	 * @param montantTotal value to set.
+	 */
+	public void setMontantTotal(BigDecimal montantTotal) {
+		this.montantTotal = montantTotal;
+	}
+
+	/**
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
+	 */
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	/**
+	 * Set the value of {@link #tableClient tableClient}.
+	 * @param tableClient value to set.
+	 */
+	public void setTableClient(TableClient tableClient) {
+		this.tableClient = tableClient;
+	}
+
+	/**
+	 * Set the value of {@link #statutCommande statutCommande}.
+	 * @param statutCommande value to set.
+	 */
+	public void setStatutCommande(StatutCommande statutCommande) {
+		this.statutCommande = statutCommande;
+	}
+
+	/**
+	 * Set the value of {@link #ligneCommandes ligneCommandes}.
+	 * @param ligneCommandes value to set.
+	 */
+	public void setLigneCommandes(List<LigneCommande> ligneCommandes) {
+		this.ligneCommandes = ligneCommandes;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.CommandeExport CommandeExport}.
+	 */
+	public enum Fields {
+		ID(Integer.class),
+		DATE_COMMANDE(LocalDateTime.class),
+		DATE_LIVRAISON(LocalDateTime.class),
+		MONTANT_TOTAL(BigDecimal.class),
+		CLIENT(Client.class),
+		TABLE_CLIENT(TableClient.class),
+		STATUT_COMMANDE(StatutCommande.class),
+		LIGNE_COMMANDES(List.class);
+
+		private final Class<?> type;
+
+		Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
+}

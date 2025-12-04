@@ -148,6 +148,7 @@ public static class ImportsJpaExtensions
         {
             imports.AddRange(config.GetDomainImports(ap.OriginalProperty!, tag));
         }
+
         return imports;
     }
 

@@ -1,0 +1,45 @@
+﻿----
+---- ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+----
+
+-- ===========================================================================================
+--   Description		:	Création de la table EMPLOYE.
+-- ===========================================================================================
+
+create table [dbo].[EMPLOYE] (
+	[EMP_MATRICULE] varchar not null,
+	[EMP_DATE_EMBAUCHE] timestamp not null,
+	[EMP_SALAIRE] decimal,
+	[RES_ID_RESTAURANT] int not null,
+	[PER_ID] int,
+	constraint [PK_EMPLOYE] primary key clustered ([PER_ID] ASC),
+	constraint [FK_EMPLOYE_RESTAURANT_RES_ID_RESTAURANT] foreign key ([RES_ID_RESTAURANT]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_EMPLOYE_PERSONNE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]),
+	constraint [UK_EMPLOYE_EMP_MATRICULE] unique nonclustered ([EMP_MATRICULE] ASC))
+go
+
+/* Index on foreign key column for EMPLOYE.RES_ID_RESTAURANT */
+create nonclustered index [IDX_EMPLOYE_RES_ID_RESTAURANT_FK]
+	on [dbo].[EMPLOYE] ([RES_ID_RESTAURANT] ASC)
+go
+
+/* Index on foreign key column for EMPLOYE.PER_ID */
+create nonclustered index [IDX_EMPLOYE_PER_ID_FK]
+	on [dbo].[EMPLOYE] ([PER_ID] ASC)
+go
+
+/**
+  * Commentaires pour la table EMPLOYE
+ **/
+EXECUTE sp_addextendedproperty 'MS_Description', 'Employé du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Matricule de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_MATRICULE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date d''embauche', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_DATE_EMBAUCHE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Salaire de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_SALAIRE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant où travaille l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'RES_ID_RESTAURANT'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'PER_ID'
+go
