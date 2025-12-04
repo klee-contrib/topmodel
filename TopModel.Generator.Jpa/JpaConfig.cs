@@ -424,6 +424,11 @@ public class JpaConfig : GeneratorConfigBase
 
     protected override string GetConstEnumName(string className, string refName)
     {
+        if (UseJdbc)
+        {
+            return @$"""{refName}""";
+        }
+
         return $"{className.ToPascalCase()}.{refName}";
     }
 
