@@ -1,3 +1,6 @@
+import Ajv from "ajv";
+import { readFile } from "fs/promises";
+import { load } from "js-yaml";
 import { makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Terminal, Uri, window, workspace } from "vscode";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
@@ -46,9 +49,11 @@ export class Application {
         if (shouldStartLanguageServer) {
             workspace.onDidSaveTextDocument(async (event) => {
                 if (event.uri.fsPath.toLowerCase() === this._configPath.toLowerCase()) {
-                    await this.client?.stop();
-                    this.status = "LOADING";
-                    this.startLanguageServer();
+                    if (await this.validateConfigFile()) {
+                        await this.client?.stop();
+                        this.status = "LOADING";
+                        this.startLanguageServer();
+                    }
                 }
             });
         }
@@ -58,8 +63,48 @@ export class Application {
         return this._configPath;
     }
 
+    public get configFolder() {
+        let configRelativePath = workspace.asRelativePath(this._configPath);
+        let configFolderA = configRelativePath.split("/");
+        configFolderA.pop();
+        return configFolderA.join("/");
+    }
+
+    public get workspaceFolder() {
+        return workspace.workspaceFolders?.find((w) => {
+            return this._configPath.toLowerCase().includes(w.uri.fsPath.toLowerCase());
+        });
+    }
+
+    public async validateConfigFile() {
+        const configFile = await readFile(this._configPath, "utf8");
+        const schemaLinePrefix = "# yaml-language-server: $schema=";
+
+        const schemaLine = configFile.split("\n").find((line) => line.startsWith(schemaLinePrefix));
+
+        if (schemaLine) {
+            const schemaUrl = path.join(
+                this.workspaceFolder?.uri.fsPath ?? "",
+                this.configFolder,
+                schemaLine.substring(schemaLinePrefix.length).trim().replace("\r", "")
+            );
+
+            try {
+                const schemaFile = await readFile(schemaUrl, "utf8");
+                const ajv = new Ajv({ allErrors: true, strict: true });
+                const validate = ajv.compile(JSON.parse(schemaFile));
+                const config = load(configFile);
+                return validate(config);
+            } catch {
+                return true;
+            }
+        }
+
+        return true;
+    }
+
     public async start(shouldStartLanguageServer: boolean) {
-        if (shouldStartLanguageServer) {
+        if (shouldStartLanguageServer && (await this.validateConfigFile())) {
             this.startLanguageServer();
         } else {
             this.status = "STARTED";
@@ -76,25 +121,17 @@ export class Application {
 
     private async startLanguageServer() {
         const args = [this.extensionContext.asAbsolutePath(`./language-server/TopModel.LanguageServer.dll`)];
-        let configRelativePath = workspace.asRelativePath(this._configPath);
         args.push(this._configPath);
         let serverOptions: ServerOptions = {
             run: { command: SERVER_EXE, args },
             debug: { command: SERVER_EXE, args },
         };
-        let configFolderA = configRelativePath.split("/");
-        configFolderA.pop();
-        const configFolder = configFolderA.join("/");
-        this.modelRoot = this.config.modelRoot ?? configFolder;
+        this.modelRoot = this.config.modelRoot ?? this.configFolder;
         this.client = new LanguageClient(
             `TopModel - ${this.config.app}`,
             `TopModel - ${this.config.app}`,
             serverOptions,
-            {
-                workspaceFolder: workspace.workspaceFolders?.find((w) => {
-                    return this._configPath.toLowerCase().includes(w.uri.fsPath.toLowerCase());
-                }),
-            }
+            { workspaceFolder: this.workspaceFolder }
         );
         await this.client.start();
         this.status = "STARTED";

@@ -168,6 +168,7 @@
         "vscode:prepublish": "npm run build -- --minify"
     },
     "dependencies": {
+        "ajv": "8.17.1",
         "mermaid": "8.14.0",
         "mobx": "6.13.1",
         "open": "8.4.0",
@@ -176,15 +177,16 @@
     },
     "devDependencies": {
         "@types/glob": "8.1.0",
+        "@types/js-yaml": "4.0.9",
         "@types/node": "20.9.1",
         "@types/vscode": "1.97.0",
         "@typescript-eslint/eslint-plugin": "6.11.0",
         "@typescript-eslint/parser": "6.11.0",
+        "@vscode/vsce": "3.2.2",
         "concurrently": "9.1.2",
         "esbuild": "0.25.0",
         "eslint": "8.54.0",
         "glob": "10.3.10",
-        "typescript": "5.8.2",
-        "@vscode/vsce": "3.2.2"
+        "typescript": "5.8.2"
     }
 }
