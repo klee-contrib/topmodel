@@ -1,3 +1,7 @@
+## 3.5.1
+
+- [`963d963`](https://github.com/klee-contrib/topmodel/commit/963d96319f4727a67ad40b7dbdabda483837ef62) - [JS / Fetch] Fix type de retour pour arrays
+
 ## 3.5.0
 
 - [`#518`](https://github.com/klee-contrib/topmodel/pull/518) - Mode `fetch`, par défaut, pour la génération des endpoints
