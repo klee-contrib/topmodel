@@ -79,4 +79,11 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
             yield return NotNullAnnotation;
         }
     }
+
+    protected override string GetDefaultValue(IProperty property)
+    {
+        var defaultValue = Config.GetValue(property);
+        var suffix = defaultValue != "null" ? $"{defaultValue}" : string.Empty;
+        return suffix;
+    }
 }
