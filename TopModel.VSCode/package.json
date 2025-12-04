@@ -1,7 +1,7 @@
 {
     "name": "topmodel",
-    "displayName": "topmodel",
-    "description": "Extension pour TopModel",
+    "displayName": "TopModel",
+    "description": "Extension for TopModel",
     "publisher": "JabX",
     "icon": "icon.png",
     "contributors": [
@@ -51,27 +51,27 @@
         "commands": [
             {
                 "command": "topmodel.modgen.update",
-                "title": "Mettre à jour TopModel.Generator",
+                "title": "Update TopModel.Generator",
                 "category": "TopModel.Generator"
             },
             {
                 "command": "topmodel.modgen",
-                "title": "Lancer la génération du modèle",
+                "title": "Run Model Generation",
                 "category": "TopModel.Generator"
             },
             {
                 "command": "topmodel.modgen.watch",
-                "title": "Lancer la génération du modèle en continu",
+                "title": "Run Model Generation (Watch Mode)",
                 "category": "TopModel.Generator"
             },
             {
                 "command": "topmodel.releaseNote",
-                "title": "Ouvrir le changelog",
+                "title": "Open Release Notes",
                 "category": "TopModel"
             },
             {
                 "command": "topmodel.preview",
-                "title": "Ouvrir la prévisualisation UML du modèle",
+                "title": "Open UML Preview of the Model",
                 "category": "TopModel.Generator",
                 "icon": {
                     "light": "Preview.svg",
@@ -108,20 +108,20 @@
         "walkthroughs": [
             {
                 "id": "topmodel.configuration",
-                "title": "Topmodel configuration",
-                "description": "Configuration de topmodel pas à pas",
+                "title": "TopModel Configuration",
+                "description": "Step-by-step TopModel Configuration Guide",
                 "steps": [
                     {
                         "id": "install.dotnet",
-                        "title": "Installer Dotnet",
+                        "title": "Install .NET",
                         "media": {
                             "markdown": "dotnet.md"
                         }
                     },
                     {
                         "id": "install.modgen",
-                        "title": "Installation de TopModel.Generator",
-                        "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
+                        "title": "Install TopModel.Generator",
+                        "description": "Click here to run the TopModel installation command.\n[Install TopModel](command:topmodel.modgen.install)",
                         "media": {
                             "markdown": "modgen.md"
                         },
@@ -135,7 +135,7 @@
         "customEditors": [
             {
                 "viewType": "topmodel.preview",
-                "displayName": "Topmodel : Preview",
+                "displayName": "TopModel: Preview",
                 "selector": [
                     {
                         "filenamePattern": "*.tmd"
@@ -145,12 +145,12 @@
             }
         ],
         "configuration": {
-            "title": "Topmdodel",
+            "title": "TopModel",
             "properties": {
                 "topmodel.autoUpdate": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Met à jour automatiquement topmodel"
+                    "description": "Automatically updates TopModel"
                 }
             }
         }

@@ -2,10 +2,10 @@ import Ajv from "ajv";
 import { readFile } from "fs/promises";
 import { load } from "js-yaml";
 import { makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Terminal, Uri, window, workspace } from "vscode";
+import { ExtensionContext, Terminal, Uri, window, workspace } from "vscode";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
-import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
+import { SERVER_EXE } from "./const";
 import { TopModelConfig } from "./types";
 import path = require("path");
 export class Application {
@@ -31,6 +31,7 @@ export class Application {
         configs: { config: TopModelConfig; file: Uri }[]
     ) {
         makeAutoObservable(this);
+        this.status = "LOADING";
         window.onDidCloseTerminal((terminal) => {
             if (terminal.name === this._terminal?.name) {
                 this._terminal = undefined;
@@ -109,8 +110,6 @@ export class Application {
         } else {
             this.status = "STARTED";
         }
-
-        this.registerCommands();
     }
 
     public startModgen(watch: boolean) {
@@ -135,21 +134,5 @@ export class Application {
         );
         await this.client.start();
         this.status = "STARTED";
-    }
-
-    private registerCommands() {
-        this.registerModgen(false);
-        this.registerModgen(true);
-    }
-
-    private registerModgen(watch: boolean) {
-        const modgenCommand = (watch ? COMMANDS.modgenWatch : COMMANDS.modgen) + " - " + this.config.app;
-        const modgen = commands.registerCommand(modgenCommand, () => this.startModgen(watch));
-        COMMANDS_OPTIONS[modgenCommand] = {
-            title: `${this.config.app} - modgen - Lancer la génération ${watch ? "en continu" : ""}`,
-            description: `Lancer la génération${watch ? " continue" : ""} de ${this.config.app}`,
-            command: modgenCommand,
-        };
-        this.extensionContext.subscriptions.push(modgen);
     }
 }
