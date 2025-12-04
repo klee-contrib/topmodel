@@ -220,7 +220,9 @@ public class JavascriptApiClientGenerator(
                 {
                     var type =
                         Config.GetType(endpoint.Returns) == "Blob" ? "blob"
-                        : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true } ? "json"
+                        : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true }
+                        || Config.GetType(endpoint.Returns).EndsWith("[]")
+                            ? "json"
                         : "text";
 
                     var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
