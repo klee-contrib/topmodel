@@ -515,6 +515,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 ? GetTransformed(ap.Association.NamePascal)
                 : ap.Association.NamePascal,
             AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => HandleEnum(ap),
+            AssociationProperty ap when ap.Property.Domain != ap.Domain => GetTransformed(
+                GetImplementation(domainOverride ?? ap.Property.Domain)?.Type ?? string.Empty
+            ),
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
             CompositionProperty when (domainOverride ?? property.Domain) is not null => (
                 GetImplementation(domainOverride ?? property.Domain)?.GenericType ?? "{T}"
