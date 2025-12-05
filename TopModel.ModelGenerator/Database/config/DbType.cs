@@ -16,4 +16,9 @@ public enum DbType
     ///  Base de données MySql
     /// </summary>
     MYSQL,
+
+    /// <summary>
+    ///  Base de données MS SQL Server
+    /// </summary>
+    MSSQL,
 }

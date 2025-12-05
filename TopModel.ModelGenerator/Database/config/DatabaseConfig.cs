@@ -24,6 +24,7 @@ public class DatabaseConfig
             DbType.POSTGRESQL => PgConnectionString,
             DbType.ORACLE => OracleConnectionString,
             DbType.MYSQL => MySqlConnectionString,
+            DbType.MSSQL => MsSqlConnectionString,
             _ => string.Empty,
         };
 
@@ -34,5 +35,8 @@ public class DatabaseConfig
         @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
 
     private string MySqlConnectionString =>
+        $@"Server={Source.Host};Port={Source.Port};User ID={Source.User};Password={Source.Password};Database={Source.DbName}";
+
+    private string MsSqlConnectionString =>
         $@"Server={Source.Host};Port={Source.Port};User ID={Source.User};Password={Source.Password};Database={Source.DbName}";
 }
