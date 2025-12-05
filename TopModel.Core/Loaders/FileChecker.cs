@@ -17,6 +17,7 @@ public class FileChecker
     private readonly JsonSchema? _configSchema;
     private readonly IDeserializer _deserializer;
     private readonly JsonSchema _modelSchema;
+    private readonly ISerializer _parsingSerializer;
     private readonly ISerializer _serializer;
 
     public FileChecker(string? configSchemaPath = null)
@@ -39,6 +40,7 @@ public class FileChecker
             .IgnoreUnmatchedProperties()
             .Build();
         _serializer = new SerializerBuilder().JsonCompatible().Build();
+        _parsingSerializer = new SerializerBuilder().Build();
     }
 
     public static string GetFilePath(Assembly assembly, string fileName)
@@ -80,8 +82,6 @@ public class FileChecker
         stream.Load(new StringReader(yaml));
         var config = new ModelConfig();
 
-        var serializer = new SerializerBuilder().Build();
-
         foreach (var kv in (stream.Documents[0].RootNode as YamlMappingNode)!.Children)
         {
             switch (kv)
@@ -111,19 +111,16 @@ public class FileChecker
                     config.UseLegacyAssociationCompositionMappers = value == "true";
                     break;
                 case (YamlScalarNode { Value: "i18n" }, YamlMappingNode map):
-                    config.I18n = _deserializer.Deserialize<I18nConfig>(serializer.Serialize(map));
+                    config.I18n = ParseNode<I18nConfig>(map);
                     break;
                 case (YamlScalarNode { Value: "generators" }, YamlSequenceNode seq):
                     config.CustomGenerators.AddRange(seq.OfType<YamlScalarNode>().Select(n => n.Value!));
                     break;
                 case (YamlScalarNode { Value: "ignoredFiles" }, YamlSequenceNode seq):
-                    config.IgnoredFiles = _deserializer.Deserialize<IList<IgnoredFile>>(serializer.Serialize(seq));
+                    config.IgnoredFiles = ParseNode<IList<IgnoredFile>>(seq);
                     break;
                 case (YamlScalarNode { Value: var value }, YamlSequenceNode seq):
-                    config.Generators.Add(
-                        value,
-                        _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(serializer.Serialize(seq))
-                    );
+                    config.Generators.Add(value, ParseNode<IEnumerable<IDictionary<string, object>>>(seq));
                     break;
                 default:
                     break;
@@ -207,5 +204,12 @@ public class FileChecker
 
             firstObject = false;
         }
+    }
+
+    private T ParseNode<T>(YamlNode node)
+    {
+        return _deserializer.Deserialize<T>(
+            new MergingParser(new Parser(new StringReader(_parsingSerializer.Serialize(node))))
+        );
     }
 }
