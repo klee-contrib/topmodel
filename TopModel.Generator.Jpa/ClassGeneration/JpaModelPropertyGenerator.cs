@@ -660,7 +660,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var pk = property.Class.PrimaryKey.Single().SqlName + role;
         var association = new JavaAnnotation(
             $"{property.Type}",
-            imports: "jakarta.persistence.{property.Type}"
+            imports: $"jakarta.persistence.{property.Type}"
         );
         if (property.Type == AssociationType.ManyToOne || property.Type == AssociationType.OneToOne)
         {
@@ -708,7 +708,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         var association = new JavaAnnotation(
             @$"{property.Type}",
-            imports: "jakarta.persistence.{property.Type}"
+            imports: $"jakarta.persistence.{property.Type}"
         )
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType")
             .AddAttribute("optional", property.Required ? "false" : "true")
@@ -731,7 +731,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         var association = new JavaAnnotation(
             @$"{property.Type}",
-            imports: "jakarta.persistence.{property.Type}"
+            imports: $"jakarta.persistence.{property.Type}"
         );
         association
             .AddAttribute("cascade", "CascadeType.ALL", "jakarta.persistence.CascadeType")
@@ -767,7 +767,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var apk = property.Property.SqlName;
         var association = new JavaAnnotation(
             @$"{property.Type}",
-            imports: "jakarta.persistence.{property.Type}"
+            imports: $"jakarta.persistence.{property.Type}"
         )
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType")
             .AddAttribute("cascade", @"CascadeType.ALL", "jakarta.persistence.CascadeType")
