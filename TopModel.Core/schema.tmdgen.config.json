@@ -230,11 +230,12 @@
               },
               "dbType": {
                 "type": "string",
-                "description": "Type de la base de données : postgresql ou oracle",
+                "description": "Type de la base de données : postgresql, oracle, mySql, msSql",
                 "enum": [
                   "oracle",
                   "postgresql",
-                  "mySql"
+                  "mySql",
+                  "msSql"
                 ]
               }
             }
