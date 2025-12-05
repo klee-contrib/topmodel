@@ -334,9 +334,10 @@ for (var i = 0; i < configs.Count; i++)
         var modules = Directory
             .GetFileSystemEntries(generatorsPath)
             .Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
-        config.CustomGenerators.AddRange(
-            modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace('\\', '/'))
+        var customGeneratorsToAdd = modules.Select(m =>
+            Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace('\\', '/')
         );
+        config.CustomGenerators.AddRange(customGeneratorsToAdd.Where(cg => !config.CustomGenerators.Contains(cg)));
     }
 
     foreach (var cg in config.CustomGenerators)

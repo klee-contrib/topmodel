@@ -516,7 +516,8 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
 
                 parser.Consume<MappingEnd>();
                 return alp;
-
+            case Scalar sc:
+                throw new ModelException($"Type de propriété ${sc.Value} non reconnu.");
             default:
                 throw new ModelException($"Type de propriété inconnu.");
         }
