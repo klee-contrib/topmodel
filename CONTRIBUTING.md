@@ -1,8 +1,42 @@
 # Contribuer à TopModel
 
+## TopModel
+
+### [TopModel] Prérequis
+
+- Installer .NET SDK
+
+### Architecture du projet
+
+TopModel est décomposé en différents modules :
+
+#### Modules Core
+
+- **TopModel.Core** : Contient les classes de base de TopModel, le parsing des modèles et la gestion du modèle de données
+- **TopModel.Generator.Core** : Contient les classes de base pour les générateurs (générateurs de classes, endpoints, mappers, etc.)
+
+#### Modgen
+
+- **TopModel.Generator** : Générateur de code principal (`modgen`) qui orchestre l'exécution des différents générateurs spécialisés
+
+#### Modules de génération
+
+- **TopModel.Generator.Csharp** : Générateur pour le langage C# (classes, API client/serveur, DbContext, mappers, ressources)
+- **TopModel.Generator.Javascript** : Générateur pour JavaScript/TypeScript (API clients Angular/Nuxt, ressources, définitions TypeScript)
+- **TopModel.Generator.Jpa** : Générateur pour Java/JPA (classes, endpoints, mappers, ressources)
+- **TopModel.Generator.Sql** : Générateur pour SQL (scripts procéduraux, SSDT)
+- **TopModel.Generator.Translation** : Générateur pour les fichiers de traduction
+
+#### Outils et extensions
+
+- **TopModel.ModelGenerator** : Générateur de fichiers `.tmd` à partir de sources externes (OpenAPI, PostgreSQL, Oracle, etc.) - outil `tmdgen`
+- **TopModel.Utils** : Utilitaires partagés entre les différents modules
+- **TopModel.LanguageServer** : Language Server Protocol (LSP) utilisé par l'extension VSCode pour fournir l'auto-complétion, la validation et l'auto-import
+- **TopModel.VSCode** : Extension VSCode qui intègre TopModel dans l'éditeur
+
 ## Debbugger l'extension VSCode et le Language Server
 
-### Prérequis
+### [VSCode] Prérequis
 
 - Installer VSCode
 - Installer NodeJS
