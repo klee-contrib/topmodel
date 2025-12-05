@@ -26,16 +26,16 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             yield return a;
         }
 
-        yield return new JavaAnnotation("Entity", imports: $"{JavaxOrJakarta}.persistence.Entity");
+        yield return new JavaAnnotation("Entity", imports: "jakarta.persistence.Entity");
         if (Config.AvailableClasses.Any(c => c.Extends == classe))
         {
             yield return new JavaAnnotation(
                 "Inheritance",
-                imports: $"{JavaxOrJakarta}.persistence.Inheritance"
-            ).AddAttribute("strategy", "InheritanceType.JOINED", $"{JavaxOrJakarta}.persistence.InheritanceType");
+                imports: "jakarta.persistence.Inheritance"
+            ).AddAttribute("strategy", "InheritanceType.JOINED", "jakarta.persistence.InheritanceType");
         }
 
-        var tableAnnotation = new JavaAnnotation("Table", imports: $"{JavaxOrJakarta}.persistence.Table").AddAttribute(
+        var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
             "name",
             $@"""{classe.SqlName}"""
         );
@@ -44,7 +44,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             var uks = classe.UniqueKeys.Select(uk =>
                 new JavaAnnotation(
                     "UniqueConstraint",
-                    imports: $"{JavaxOrJakarta}.persistence.UniqueConstraint"
+                    imports: "jakarta.persistence.UniqueConstraint"
                 ).AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
             );
 
@@ -54,7 +54,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         yield return tableAnnotation;
         if (classe.PrimaryKey.Count() > 1)
         {
-            yield return new JavaAnnotation("IdClass", imports: $"{JavaxOrJakarta}.persistence.IdClass").AddAttribute(
+            yield return new JavaAnnotation("IdClass", imports: "jakarta.persistence.IdClass").AddAttribute(
                 "value",
                 $"{classe.NamePascal}.{classe.NamePascal}Id.class"
             );

@@ -200,7 +200,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                         imports: "org.springframework.web.bind.annotation.ModelAttribute"
                     )
                 );
-                parameter.Add(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
+                parameter.Add(new JavaAnnotation("Valid", imports: "jakarta.validation.Valid"));
             }
             else
             {
@@ -221,7 +221,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 "RequestBody",
                 imports: "org.springframework.web.bind.annotation.RequestBody"
             );
-            parameter.Add(new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid"));
+            parameter.Add(new JavaAnnotation("Valid", imports: "jakarta.validation.Valid"));
             parameter.Add(annotation);
             parameter.Comment = bodyParam.Comment;
             parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));

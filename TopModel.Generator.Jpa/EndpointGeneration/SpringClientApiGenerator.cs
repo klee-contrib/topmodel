@@ -216,7 +216,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             var bodyParam = endpoint.GetJsonBodyParam();
             if (bodyParam != null)
             {
-                var validAnnotation = new JavaAnnotation("Valid", imports: $"{Config.JavaxOrJakarta}.validation.Valid");
+                var validAnnotation = new JavaAnnotation("Valid", imports: "jakarta.validation.Valid");
                 var requestBodyAnnotation = new JavaAnnotation(
                     "RequestBody",
                     imports: "org.springframework.web.bind.annotation.RequestBody"

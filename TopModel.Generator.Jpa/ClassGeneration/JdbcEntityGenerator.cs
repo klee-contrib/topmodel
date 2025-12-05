@@ -54,7 +54,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                     Static = true,
                     Final = true,
                     DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
-                }.Add(new JavaAnnotation("Transient", imports: $"{JavaxOrJakarta}.persistence.Transient"));
+                }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
             }
         }
         foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))

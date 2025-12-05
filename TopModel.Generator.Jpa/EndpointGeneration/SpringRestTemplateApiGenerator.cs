@@ -197,7 +197,7 @@ public class SpringRestTemplateApiGenerator(
     {
         var imports = new List<string>();
         imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
-        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
+        imports.Add("jakarta.annotation.Generated");
         imports.Add("org.springframework.web.util.UriComponentsBuilder");
         imports.Add("org.springframework.web.client.RestTemplate");
         imports.Add("java.net.URI");

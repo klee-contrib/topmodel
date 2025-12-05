@@ -81,10 +81,8 @@ public class JpaConfig : GeneratorConfigBase
 
     public virtual string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.')[^1];
 
-    public virtual string JavaxOrJakarta => PersistenceMode.ToString().ToLower();
-
     public virtual JavaAnnotation GeneratedAnnotation =>
-        new JavaAnnotation("Generated", imports: $"{JavaxOrJakarta}.annotation.Generated").AddAttribute(
+        new JavaAnnotation("Generated", imports: "jakarta.annotation.Generated").AddAttribute(
             "value",
             "\"TopModel : https://github.com/klee-contrib/topmodel\""
         );
@@ -121,11 +119,6 @@ public class JpaConfig : GeneratorConfigBase
     /// Précise l'interface des fields enum générés.
     /// </summary>
     public virtual string? FieldsEnumInterface { get; set; }
-
-    /// <summary>
-    /// Précise le nom du package dans lequel générer les controllers.
-    /// </summary>
-    public virtual PersistenceMode PersistenceMode { get; set; } = PersistenceMode.Javax;
 
     /// <summary>
     /// Mode de génération des séquences.
