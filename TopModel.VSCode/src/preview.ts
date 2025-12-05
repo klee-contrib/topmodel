@@ -15,6 +15,7 @@ import {
 } from "vscode";
 import { Application } from "./application";
 import { Mermaid } from "./types";
+import { t } from "./i18n";
 
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
@@ -232,7 +233,7 @@ export class TopModelPreviewPanel {
             ${this.mermaidContent}
             </div>
             </div>
-            <button onclick="displayCodeClick()">Afficher/masquer le code</button>
+            <button onclick="displayCodeClick()">${t("displayHideCode")}</button>
             <code id="sourceCode" style="display: none; overflow: auto;">
             <button class="copy-button" onclick="copyCode(currentDiagram)">Copier</button>
             ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
@@ -266,7 +267,7 @@ export class TopModelPreviewPanel {
                 ${this.diagramMap[this.currentFsPath].diagram}
             </pre>`;
         } else {
-            return `<h1> Pas de classe persistée dans ce fichier</h1>`;
+            return `<h1>${t("noPersistenceClassInThisFile")}</h1>`;
         }
     }
 }

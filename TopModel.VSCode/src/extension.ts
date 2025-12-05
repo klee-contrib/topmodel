@@ -1,11 +1,12 @@
 import * as fs from "fs";
 import { configure } from "mobx";
-import { ExtensionContext, Uri, window, workspace } from "vscode";
+import { commands, ExtensionContext, Uri, window, workspace } from "vscode";
 
 import { Application } from "./application";
 import { State } from "./state";
 import { TopModelConfig, TopModelException } from "./types";
 import { execute } from "./utils";
+import { t } from "./i18n";
 
 const open = require("open");
 const yaml = require("js-yaml");
@@ -37,11 +38,8 @@ async function checkDotnetInstall(): Promise<boolean> {
         return true;
         // oxlint-disable-next-line no-unused-vars
     } catch (_err: any) {
-        const selection = await window.showInformationMessage(
-            "Dotnet n'est pas installé",
-            "Ouvrir la page de téléchargement"
-        );
-        if (selection === "Ouvrir la page de téléchargement") {
+        const selection = await window.showInformationMessage(t("dotnetIsNotInstalled"), t("openDotnetDownloadPage"));
+        if (selection === t("openDotnetDownloadPage")) {
             open("https://dotnet.microsoft.com/download/dotnet");
         }
 

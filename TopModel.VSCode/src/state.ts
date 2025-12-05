@@ -5,6 +5,7 @@ import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { t } from "./i18n";
 
 const open = require("open");
 
@@ -48,26 +49,26 @@ export class State {
     get statusTooltip(): string {
         switch (this.status) {
             case "ERROR":
-                return "L'extension TopModel n'a pas démarré correctement";
+                return t("extensionStartFailed");
             case "INSTALLING":
-                return "Installation en cours...";
+                return t("installing");
             case "LOADING":
-                return "Chargement en cours...";
+                return t("loading");
             case "WARNING":
             case "READY":
-                let tooltip = `L'extension TopModel est démarrée (${this.applications
-                    .map((app) => app.config.app)
-                    .join(", ")})`;
+                let tooltip = t("started", [this.applications.map((app) => app.config.app).join(", ")]);
 
                 if (this.tools.modgen.updateAvailable) {
-                    tooltip += ` | L'outil ${this.tools.modgen.name} pourrait être mis à jour`;
+                    tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.modgen.name])}`;
                 }
 
                 if (this.tools.tmdgen.updateAvailable) {
-                    tooltip += ` | L'outil ${this.tools.tmdgen.name} pourrait être mis à jour`;
+                    tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.tmdgen.name])}`;
                 }
 
                 return tooltip;
+            default:
+                return "";
         }
     }
 

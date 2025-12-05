@@ -4,6 +4,7 @@ import { commands, ExtensionContext, Terminal, window, workspace } from "vscode"
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { Status } from "./types";
 import { execute, isWindows } from "./utils";
+import { t } from "./i18n";
 
 export class TmdTool {
     currentVersion?: string;
@@ -208,8 +209,8 @@ export class TmdTool {
     public registerCommands(context: ExtensionContext) {
         if (this.installed) {
             this.registerUpdateCommand(context);
-            this.registerStartCommand(true, context);
             this.registerStartCommand(false, context);
+            this.registerStartCommand(true, context);
         }
     }
 
@@ -217,6 +218,11 @@ export class TmdTool {
         const updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () =>
             this.update()
         );
+        COMMANDS_OPTIONS[`topmodel.${this.command}.update`] = {
+            title: `${this.command} - ${t("updateTool", [this.command])}`,
+            description: `${t("updateTool", [this.command])}`,
+            command: `topmodel.${this.command}.update`,
+        };
         context.subscriptions.push(updateCommandDisposable);
     }
 
@@ -224,8 +230,8 @@ export class TmdTool {
         const startCommand = `topmodel.${this.command}${watch ? ".watch" : ""}`;
         const modgen = commands.registerCommand(startCommand, () => this.start(watch));
         COMMANDS_OPTIONS[startCommand] = {
-            title: `${this.command} - Lancer la génération ${watch ? "en continu" : ""}`,
-            description: `Lancer la génération ${watch ? "continue " : ""}`,
+            title: `${this.command} - ${t(watch ? "startGenerationWatch" : "startGeneration")}`,
+            description: `${t(watch ? "startGenerationWatch" : "startGeneration")}`,
             command: startCommand,
         };
         context.subscriptions.push(modgen);
