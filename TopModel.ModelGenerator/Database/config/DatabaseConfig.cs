@@ -38,5 +38,5 @@ public class DatabaseConfig
         $@"Server={Source.Host};Port={Source.Port};User ID={Source.User};Password={Source.Password};Database={Source.DbName}";
 
     private string MsSqlConnectionString =>
-        $@"Server={Source.Host};Port={Source.Port};User ID={Source.User};Password={Source.Password};Database={Source.DbName}";
+        $@"Server={Source.Host},{Source.Port}{(Source.User != null ? $";User ID={Source.User}" : ";Trusted_Connection=True")}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)};Database={Source.DbName};TrustServerCertificate=True";
 }

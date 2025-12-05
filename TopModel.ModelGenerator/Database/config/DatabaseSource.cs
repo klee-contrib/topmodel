@@ -10,7 +10,7 @@ public class DatabaseSource
 
     public string DbName { get; set; } = "postgres";
 
-    public string User { get; set; } = "postgres";
+    public string? User { get; set; }
 
     public string? Password { get; set; }
 
