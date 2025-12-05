@@ -3,6 +3,7 @@ using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
@@ -75,9 +76,9 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                     + '\n';
             }
 
-            foreach (var property in classe.Properties.OfType<CompositionProperty>())
+            foreach (var property in classe.Properties.Where(c => c.Composition != null))
             {
-                diagram += $"{property.Class.Name} --* {property.Composition.Name}\n";
+                diagram += $"{property.Class.Name} --* {property.Composition!.Name}\n";
             }
         }
 

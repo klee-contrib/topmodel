@@ -33,18 +33,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
-        var properties = endpoints
-            .SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties
-            .SelectMany(property => property!.GetTypeImports(Config, tag))
-            .Concat(
-                endpoints
-                    .Where(endpoint => endpoint.Returns is not null)
-                    .Select(e => e.Returns)
-                    .OfType<CompositionProperty>()
-                    .SelectMany(c => c.GetKindImports(Config, tag))
-            );
+        return endpoints.SelectMany(p => p.Properties).SelectMany(c => c.GetTypeImports(Config, tag));
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -165,13 +154,13 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         {
             foreach (
                 var param in endpoint.Params.Where(param =>
-                    param is CompositionProperty
+                    param is IProperty { Composition: not null }
                     || (param.Domain?.BodyParam ?? false)
                     || (param.Domain?.IsMultipart ?? false)
                 )
             )
             {
-                if (param is CompositionProperty)
+                if (param is IProperty { Composition: not null })
                 {
                     var requestPartAnnotation = new JavaAnnotation(
                         "RequestPart",

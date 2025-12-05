@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Core.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -14,154 +15,58 @@ public static class ImportsJpaExtensions
         return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
     }
 
-    public static IList<string> GetKindImports(this CompositionProperty cp, JpaConfig config, string tag)
-    {
-        return config.GetDomainImports(cp, config.GetBestClassTag(cp.Composition, tag)).ToList();
-    }
-
     public static IEnumerable<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
     {
-        return p switch
+        foreach (var di in config.GetDomainImports(p, tag))
         {
-            CompositionProperty cp => cp.GetTypeImports(config, tag),
-            AssociationProperty ap => ap.GetTypeImports(config, tag),
-            AliasProperty ap => ap.GetTypeImports(config, tag),
-            _ => p.GetRegularTypeImports(config, tag),
-        };
-    }
-
-    private static List<string> GetRegularTypeImports(this IProperty rp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        imports.AddRange(config.GetDomainImports(rp, tag));
-
-        if (rp is AliasProperty apo)
-        {
-            imports.AddRange(apo.GetTypeImports(config, tag));
-        }
-        else if (rp is RegularProperty rpr)
-        {
-            imports.AddRange(rpr.GetTypeImports(config, tag));
+            yield return di;
         }
 
-        if (rp.Class != null && config.CanClassUseEnums(rp.Class, prop: rp))
+        if (p is IProperty { Composition: Class cpc })
         {
-            imports.Add(
-                $"{config.GetEnumPackageName(rp.Class, config.GetBestClassTag(rp.Class, tag))}.{config.GetEnumName(rp, rp.Class)}"
-            );
+            yield return cpc.GetImport(config, config.GetBestClassTag(cpc, tag));
         }
 
-        return imports;
-    }
-
-    private static IEnumerable<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
-    {
-        foreach (var import in config.GetDomainImports(ap, config.GetBestClassTag(ap.Association, tag)))
+        if (p.Class != null && config.CanClassUseEnums(p.Class, p))
         {
-            yield return import;
+            yield return $"{config.GetEnumPackageName(p.Class, config.GetBestClassTag(p.Class, tag))}.{config.GetEnumName(p, p.Class)}";
         }
 
-        if (config.CanClassUseEnums(ap.Association, prop: ap.Property))
+        if (p.Class != null && p is AliasProperty { Property: IProperty tp } && config.CanClassUseEnums(tp.Class, tp))
         {
             if (config.EnumsAsEnums)
             {
-                yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, config.GetBestClassTag(ap.Association.EnumKey!.Class, tag))}.{ap.Association.NamePascal}";
-            }
-            else if (ap.Class?.IsPersistent != true)
-            {
-                yield return $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}";
-            }
-            else if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent && ap.Class.IsPersistent)
-            {
-                yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
-            }
-        }
-        else
-        {
-            if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent && ap.Class.IsPersistent)
-            {
-                yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
-            }
-        }
-    }
-
-    private static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>()
-        {
-            cp.Composition.GetImport(config, config.GetBestClassTag(cp.Composition, tag)),
-        };
-        imports.AddRange(config.GetDomainImports(cp, config.GetBestClassTag(cp.Composition, tag)));
-
-        return imports;
-    }
-
-    private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-        if (
-            ap.Property is AssociationProperty apr
-            && apr.Association.PrimaryKey.Count() <= 1
-            && config.CanClassUseEnums(apr.Association)
-        )
-        {
-            if (config.EnumsAsEnums)
-            {
-                imports.Add(
-                    $"{config.GetEnumValuePackageName(apr.Association, config.GetBestClassTag(apr.Association, tag))}.{apr.Association.NamePascal}"
-                );
-            }
-            else if (ap.Class?.IsPersistent == false || ap.Endpoint != null)
-            {
-                imports.Add(
-                    $"{config.GetEnumPackageName(apr.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(apr.Property, apr.Property.Class)}"
-                );
-            }
-            else if (!config.UseJdbc && ap.Class != null && apr.Association.IsPersistent && ap.Class.IsPersistent)
-            {
-                imports.Add(apr.Association.GetImport(config, config.GetBestClassTag(apr.Association, tag)));
-            }
-        }
-        else if (config.CanClassUseEnums(ap.Property.Class, prop: ap.Property))
-        {
-            if (config.EnumsAsEnums)
-            {
-                imports.Add(
-                    $"{config.GetEnumValuePackageName(ap.Property.Class.EnumKey!.Class, config.GetBestClassTag(ap.Property.Class.EnumKey!.Class, tag))}.{ap.Property.Class.NamePascal}"
-                );
+                yield return $"{config.GetEnumValuePackageName(tp.Class.EnumKey!.Class, config.GetBestClassTag(tp.Class.EnumKey!.Class, tag))}.{tp.Class.NamePascal}";
             }
             else
             {
-                imports.Add(
-                    $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}"
-                );
+                yield return $"{config.GetEnumPackageName(tp.Class, config.GetBestClassTag(tp.Class, tag))}.{config.GetEnumName(tp, tp.Class)}";
             }
         }
-        else if (ap.Property is CompositionProperty cp)
+
+        var ap = (p as AssociationProperty) ?? (p as AliasProperty)?.Property as AssociationProperty;
+
+        if (ap != null)
         {
-            imports.AddRange(GetTypeImports(cp, config, tag));
+            if (config.CanClassUseEnums(ap.Association, prop: ap.Property))
+            {
+                if (config.EnumsAsEnums)
+                {
+                    yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, config.GetBestClassTag(ap.Association.EnumKey!.Class, tag))}.{ap.Association.NamePascal}";
+                }
+                else if (p.Class?.IsPersistent != true)
+                {
+                    yield return $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}";
+                }
+                else if (!config.UseJdbc && p.Class != null && ap.Association.IsPersistent && p.Class.IsPersistent)
+                {
+                    yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
+                }
+            }
+            else if (!config.UseJdbc && p.Class != null && ap.Association.IsPersistent && p.Class.IsPersistent)
+            {
+                yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
+            }
         }
-
-        imports.AddRange(config.GetDomainImports(ap, tag));
-        if (ap.OriginalProperty != null && ap.Domain != ap.OriginalProperty?.Domain)
-        {
-            imports.AddRange(config.GetDomainImports(ap.OriginalProperty!, tag));
-        }
-
-        return imports;
-    }
-
-    private static List<string> GetTypeImports(this RegularProperty rp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-        if (rp.Class != null && config.CanClassUseEnums(rp.Class))
-        {
-            imports.Add($"{rp.Class.GetImport(config, tag)}");
-        }
-
-        imports.AddRange(config.GetDomainImports(rp, tag));
-
-        return imports;
     }
 }

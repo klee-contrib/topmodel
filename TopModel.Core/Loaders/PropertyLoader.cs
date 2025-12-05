@@ -436,6 +436,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                         case "domain":
                             alp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
+                        case "composition":
+                            alp.CompositionReference = new ClassReference(value!);
+                            break;
                         case "required":
                             alp.Required = value!.Value == "true";
                             break;

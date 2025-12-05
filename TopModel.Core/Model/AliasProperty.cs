@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -8,6 +9,7 @@ using static Utils.CoreUtils;
 public class AliasProperty : IProperty
 {
     private string? _comment;
+    private Class? _composition;
     private IDictionary<string, string> _customProperties = new Dictionary<string, string>();
     private string? _defaultValue;
     private Domain? _domain;
@@ -153,6 +155,14 @@ public class AliasProperty : IProperty
 #nullable enable
     public Domain? DomainOverride => _domain;
 
+    public Class? Composition
+    {
+        get => _composition ?? _property.Composition;
+        set { _composition = value; }
+    }
+
+    public ClassReference? CompositionReference { get; set; }
+
     public IDictionary<string, string> DomainParameters
     {
         get => _domainParameters ?? _property?.DomainParameters ?? new Dictionary<string, string>();
@@ -280,6 +290,11 @@ public class AliasProperty : IProperty
             alp.Domain = _domain;
         }
 
+        if (_composition != null)
+        {
+            alp.Composition = _composition;
+        }
+
         if (_primaryKey != null)
         {
             alp.PrimaryKey = _primaryKey.Value;
@@ -315,6 +330,7 @@ public class AliasProperty : IProperty
             Decorator = Decorator,
             SourceDecorator = SourceDecorator,
             DomainReference = DomainReference,
+            CompositionReference = CompositionReference,
             Endpoint = Endpoint,
             Prefix = Prefix,
             Suffix = Suffix,
@@ -339,6 +355,11 @@ public class AliasProperty : IProperty
         if (_domain != null)
         {
             alp.Domain = _domain;
+        }
+
+        if (_composition != null)
+        {
+            alp.Composition = _composition;
         }
 
         if (_primaryKey != null)

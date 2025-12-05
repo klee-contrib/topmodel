@@ -4,16 +4,49 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Utils;
 
+#pragma warning disable KTA1200, S2325 // Jusqu'à ce qu'on supporte les blocs d'extension...
+
 public static class CoreUtils
 {
-    public static bool IsAssociationToMany(this IProperty property)
+    extension(IProperty prop)
     {
-        return property
-            is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-                or AliasProperty
+        public Class? Composition =>
+            prop switch
             {
-                Property: AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                CompositionProperty { Composition: Class c } => c,
+                AliasProperty { Composition: Class c } => c,
+                _ => null,
             };
+
+        public IProperty? CompositionPrimaryKey
+        {
+            get
+            {
+                if (prop.Composition == null)
+                {
+                    return null;
+                }
+
+                var cpPks = prop.Composition!.ExtendedProperties.Where(p => p.PrimaryKey);
+                if (!cpPks.Any())
+                {
+                    cpPks = prop.Composition!.ExtendedProperties.OfType<AliasProperty>()
+                        .Where(p => p.AliasedPrimaryKey);
+                }
+
+                return cpPks.Count() == 1 ? cpPks.Single() : null;
+            }
+        }
+
+        public bool IsAssociationToMany()
+        {
+            return prop
+                is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                    or AliasProperty
+                    {
+                        Property: AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                    };
+        }
     }
 
     public static bool IsToMany(this AssociationType associationType)

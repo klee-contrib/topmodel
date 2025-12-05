@@ -604,7 +604,7 @@ public class CsharpConfig : GeneratorConfigBase
             AliasProperty { Property: RegularProperty { Class: not null } rp } alp
                 when CanClassUseEnums(rp.Class, rp)
                     && string.IsNullOrEmpty(GetImplementation(alp.Domain)?.GenericType) => true,
-            CompositionProperty => false,
+            IProperty { Composition: not null } => false,
             _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
         };
     }

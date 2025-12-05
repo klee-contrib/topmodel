@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -148,7 +149,7 @@ public abstract class AbstractCrebasGenerator(
 
         foreach (var property in properties)
         {
-            var persistentType = property is not CompositionProperty ? Config.GetType(property) : JsonType;
+            var persistentType = property is IProperty { Composition: null } ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {

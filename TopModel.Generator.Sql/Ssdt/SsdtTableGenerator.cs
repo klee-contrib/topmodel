@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -116,7 +117,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     private void WriteColumn(StringBuilder sb, IProperty property)
     {
         var persistentType =
-            property is not CompositionProperty ? Config.GetType(property)
+            property is IProperty { Composition: null } ? Config.GetType(property)
             : Config.TargetDBMS == TargetDBMS.Postgre ? "jsonb"
             : "json";
 

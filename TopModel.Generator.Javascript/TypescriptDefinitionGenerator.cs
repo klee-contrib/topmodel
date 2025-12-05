@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -53,10 +54,8 @@ public class TypescriptDefinitionGenerator(
             commonImports.AddRange(
                 classe
                     .Properties.Select(p =>
-                        p is not CompositionProperty and not AliasProperty { Property: CompositionProperty } ? p.Domain
-                        : p is CompositionProperty or AliasProperty { Property: CompositionProperty }
-                        && !Config.IsListComposition(p)
-                            ? p.Domain
+                        p is not IProperty { Composition: not null } ? p.Domain
+                        : p is IProperty { Composition: not null } && !Config.IsListComposition(p) ? p.Domain
                         : null!
                     )
                     .Where(d => d != null)
@@ -74,20 +73,11 @@ public class TypescriptDefinitionGenerator(
             .ClassDependencies.Select(dep =>
                 (
                     Import: (
-                        dep is { Source: CompositionProperty { Domain: not null } cp } && !Config.IsListComposition(cp)
-                    )
-                    || (
-                        dep is { Source: AliasProperty { Property: CompositionProperty { Domain: not null } cp2 } }
-                        && !Config.IsListComposition(cp2)
+                        dep is { Source: IProperty { Composition: not null, Domain: not null } cp }
+                        && !Config.IsListComposition(cp)
                     )
                         ? dep.Classe.NamePascal
-                    : dep
-                        is
-                    {
-                        Source: IProperty fp
-                                and not CompositionProperty
-                                and not AliasProperty { Property: CompositionProperty }
-                    }
+                    : dep is { Source: IProperty fp and not IProperty { Composition: not null } }
                         ? Config.GetEnumType(fp)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : Config.EntityMode == EntityMode.FOCUS ? "Entity" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
@@ -154,36 +144,22 @@ public class TypescriptDefinitionGenerator(
                 {
                     switch (property)
                     {
-                        case CompositionProperty { Domain: null } cp:
-                            fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
+                        case IProperty { Composition: Class cpc, Domain: null }:
+                            fw.Write($"ObjectEntry<{cpc.NamePascal}EntityType>;");
                             break;
-                        case AliasProperty { Property: CompositionProperty { Domain: null } cp }:
-                            fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
-                            break;
-                        case CompositionProperty cp when Config.IsListComposition(cp):
-                            if (cp.Composition.Name == classe.Name)
+                        case IProperty { Composition: Class cpc } cp when Config.IsListComposition(cp):
+                            if (cpc.Name == classe.Name)
                             {
                                 fw.Write($"RecursiveListEntry");
                             }
                             else
                             {
-                                fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
-                            }
-
-                            break;
-                        case AliasProperty { Property: CompositionProperty cp } when Config.IsListComposition(cp):
-                            if (cp.Composition.Name == classe.Name)
-                            {
-                                fw.Write($"RecursiveListEntry;");
-                            }
-                            else
-                            {
-                                fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
+                                fw.Write($"ListEntry<{cpc.NamePascal}EntityType>;");
                             }
 
                             break;
                         default:
-                            fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property)}>;");
+                            fw.Write($"FieldEntry2<typeof {property.Domain!.Name}, {Config.GetType(property)}>;");
                             break;
                     }
                 }
@@ -225,14 +201,11 @@ public class TypescriptDefinitionGenerator(
 
                 switch (property)
                 {
-                    case CompositionProperty { Domain: null }:
-                    case AliasProperty { Property: CompositionProperty { Domain: null } }:
+                    case IProperty { Composition: not null, Domain: null }:
                         fw.Write("\"object\",");
                         break;
-                    case CompositionProperty cp1
-                        when Config.IsListComposition(cp1) && cp1.Composition.Name == classe.Name:
-                    case AliasProperty { Property: CompositionProperty cp2 }
-                        when Config.IsListComposition(cp2) && cp2.Composition.Name == classe.Name:
+                    case IProperty { Composition: Class cpc }
+                        when Config.IsListComposition(property) && cpc.Name == classe.Name:
                         fw.Write("\"recursive-list\"");
                         if (Config.ExtendedCompositions)
                         {
@@ -240,8 +213,7 @@ public class TypescriptDefinitionGenerator(
                         }
 
                         break;
-                    case CompositionProperty when Config.IsListComposition(property):
-                    case AliasProperty { Property: CompositionProperty } when Config.IsListComposition(property):
+                    case IProperty { Composition: not null } when Config.IsListComposition(property):
                         fw.Write("\"list\",");
                         break;
                     default:
@@ -251,17 +223,10 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write("\r\n");
 
-                var cp = property switch
-                {
-                    CompositionProperty c => c,
-                    AliasProperty { Property: CompositionProperty c } => c,
-                    _ => null,
-                };
-
-                if (cp == null || cp.Domain != null && !Config.IsListComposition(cp))
+                if (property.Composition == null || property.Domain != null && !Config.IsListComposition(property))
                 {
                     fw.WriteLine(2, $"name: \"{property.NameCamel}\",");
-                    fw.WriteLine(2, $"domain: {property.Domain.Name},");
+                    fw.WriteLine(2, $"domain: {property.Domain!.Name},");
 
                     var defaultValue = Config.GetValue(property);
                     if (defaultValue != "undefined")
@@ -269,9 +234,9 @@ public class TypescriptDefinitionGenerator(
                         fw.WriteLine(2, $"defaultValue: {defaultValue},");
                     }
                 }
-                else if (cp.Composition.Name != classe.Name)
+                else if (property.Composition!.Name != classe.Name)
                 {
-                    fw.Write(2, $"entity: {cp.Composition.NamePascal}Entity");
+                    fw.Write(2, $"entity: {property.Composition!.NamePascal}Entity");
 
                     if (Config.ExtendedCompositions)
                     {
@@ -281,7 +246,11 @@ public class TypescriptDefinitionGenerator(
                     fw.WriteLine();
                 }
 
-                if (cp == null || cp.Domain != null && !Config.IsListComposition(cp) || Config.ExtendedCompositions)
+                if (
+                    property.Composition == null
+                    || property.Domain != null && !Config.IsListComposition(property)
+                    || Config.ExtendedCompositions
+                )
                 {
                     fw.WriteLine(
                         2,
@@ -342,50 +311,45 @@ public class TypescriptDefinitionGenerator(
             {
                 fw.Write(1, $"{property.NameCamel}: e.");
 
-                var cp = property switch
-                {
-                    CompositionProperty c => c,
-                    AliasProperty { Property: CompositionProperty c } => c,
-                    _ => null,
-                };
-
                 switch (property)
                 {
-                    case CompositionProperty { Domain: null }:
-                    case AliasProperty { Property: CompositionProperty { Domain: null } }:
+                    case IProperty { Composition: not null, Domain: null }:
                         fw.Write("object");
                         break;
-                    case CompositionProperty cp1
-                        when Config.IsListComposition(cp1) && cp1.Composition.Name == classe.Name:
-                    case AliasProperty { Property: CompositionProperty cp2 }
-                        when Config.IsListComposition(cp2) && cp2.Composition.Name == classe.Name:
+                    case IProperty { Composition: Class cpc }
+                        when Config.IsListComposition(property) && cpc.Name == classe.Name:
                         fw.Write("recursiveList");
+                        if (Config.ExtendedCompositions)
+                        {
+                            fw.Write(",");
+                        }
+
                         break;
-                    case CompositionProperty when Config.IsListComposition(property):
-                    case AliasProperty { Property: CompositionProperty } when Config.IsListComposition(property):
+                    case IProperty { Composition: not null } when Config.IsListComposition(property):
                         fw.Write("list");
                         break;
                     default:
                         fw.Write("field");
                         break;
                 }
+
                 fw.Write("(");
 
-                if (cp != null && (Config.IsListComposition(cp) || cp.Domain == null))
+                if (property.Composition != null && (Config.IsListComposition(property) || property.Domain == null))
                 {
-                    fw.Write($"{cp.Composition.NamePascal}Entity");
+                    fw.Write($"{property.Composition!.NamePascal}Entity");
                 }
                 else
                 {
-                    fw.Write(property.Domain.Name);
+                    fw.Write(property.Domain!.Name);
                 }
 
                 fw.Write(", f => f");
 
                 var type = Config.GetType(property);
                 if (
-                    cp == null && type != Config.GetImplementation(property.Domain)?.Type
-                    || cp?.Domain != null && !Config.IsListComposition(cp)
+                    property.Composition == null && type != Config.GetImplementation(property.Domain)?.Type
+                    || property.Composition != null && property.Domain != null && !Config.IsListComposition(property)
                 )
                 {
                     fw.Write($".type<{type}>()");
@@ -456,41 +420,21 @@ public class TypescriptDefinitionGenerator(
             yield return "FieldEntry2";
         }
 
-        if (
-            classe.Properties.Any(p =>
-                p
-                    is CompositionProperty { Domain: null }
-                        or AliasProperty { Property: CompositionProperty { Domain: null } }
-            )
-        )
+        if (classe.Properties.Any(p => p is IProperty { Composition: not null, Domain: null }))
         {
             yield return "ObjectEntry";
         }
 
         if (
             classe.Properties.Any(p =>
-                (p is CompositionProperty && p.Class == classe && Config.IsListComposition(p))
-                || (
-                    p is AliasProperty { Property: CompositionProperty }
-                    && p.Class == classe
-                    && Config.IsListComposition(p)
-                )
+                (p is IProperty { Composition: not null } && p.Class == classe && Config.IsListComposition(p))
             )
         )
         {
             yield return "ListEntry";
         }
 
-        if (
-            classe.Properties.Any(p =>
-                (p is CompositionProperty cp && cp.Composition == classe && Config.IsListComposition(p))
-                || (
-                    p is AliasProperty { Property: CompositionProperty cp2 }
-                    && cp2.Composition == classe
-                    && Config.IsListComposition(p)
-                )
-            )
-        )
+        if (classe.Properties.Any(p => p.Composition == classe && Config.IsListComposition(p)))
         {
             yield return "RecursiveListEntry";
         }

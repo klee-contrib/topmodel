@@ -145,12 +145,7 @@ public class JavascriptConfig : GeneratorConfigBase
             .SelectMany(e => e.ClassDependencies)
             .Select(dep =>
                 (
-                    Import: dep
-                        is {
-                            Source: IProperty fp
-                                and not CompositionProperty
-                                and not AliasProperty { Property: CompositionProperty }
-                        }
+                    Import: dep is { Source: IProperty fp and not IProperty { Composition: not null } }
                         ? GetEnumType(fp)
                         : dep.Classe.NamePascal,
                     Path: GetImportPathForClass(
@@ -185,10 +180,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag)
     {
         string target;
-        if (
-            dep is
-            { Source: IProperty and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
-        )
+        if (dep is { Source: IProperty and not IProperty { Composition: not null } })
         {
             if (dep.Classe.EnumKey != null && AvailableClasses.Contains(dep.Classe))
             {
@@ -277,12 +269,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public virtual bool IsListComposition(IProperty property)
     {
-        var cp = property switch
-        {
-            CompositionProperty p => p,
-            AliasProperty { Property: CompositionProperty p } => p,
-            _ => null,
-        };
+        var cp = property.Composition != null ? property : null;
 
         return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
     }

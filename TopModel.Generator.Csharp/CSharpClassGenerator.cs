@@ -344,7 +344,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         foreach (
             var property in item.Properties.Where(p =>
-                p is not CompositionProperty cp || Config.AvailableClasses.Contains(cp.Composition)
+                p is not IProperty { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
             )
         )
         {
@@ -373,12 +373,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteExample(1, example);
         }
 
-        var cp = property switch
-        {
-            CompositionProperty c => c,
-            AliasProperty { Property: CompositionProperty c } => c,
-            _ => null,
-        };
+        var cp = property.Composition != null ? property : null;
 
         var type = Config.GetType(
             property,
@@ -441,10 +436,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            if (
-                Config.Kinetix
-                && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-            )
+            if (Config.Kinetix && property is not IProperty { Composition: not null })
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -557,11 +549,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (
-                item.Properties.Any(p =>
-                    p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-                ) && Config.Kinetix
-            )
+            if (item.Properties.Any(p => p is not IProperty { Composition: not null }) && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -608,12 +596,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                         ):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
-                case CompositionProperty cp when Config.AvailableClasses.Contains(cp.Composition):
-                    usings.Add(GetNamespace(cp.Composition, tag));
-                    break;
-                case AliasProperty { Property: CompositionProperty cp }
-                    when Config.AvailableClasses.Contains(cp.Composition):
-                    usings.Add(GetNamespace(cp.Composition, tag));
+                case IProperty { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
+                    usings.Add(GetNamespace(cpc, tag));
                     break;
             }
         }
@@ -631,7 +615,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         return Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag));
     }
 
-    protected virtual string? GetNewableType(CompositionProperty property)
+    protected virtual string? GetNewableType(IProperty property)
     {
         var type = Config.GetType(property, nonNullable: true);
         var genericType = type.Split('<')[0];

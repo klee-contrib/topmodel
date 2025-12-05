@@ -153,4 +153,7 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
+  <data name="TMD9009" xml:space="preserve">
+    <value>Cannot override 'composition' on a non-composition alias property.</value>
+  </data>
 </root>

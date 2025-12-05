@@ -12,7 +12,9 @@ public static class EndpointExtensions
             return null;
         }
 
-        var bodyParams = endpoint.Params.Where(param => param is CompositionProperty or { Domain.BodyParam: true });
+        var bodyParams = endpoint.Params.Where(param =>
+            param is IProperty { Composition: not null } or { Domain.BodyParam: true }
+        );
         return bodyParams.Count() > 1
             ? throw new ModelException(
                 endpoint,
@@ -36,7 +38,9 @@ public static class EndpointExtensions
     public static IEnumerable<IProperty> GetQueryAndMultipartParams(this Endpoint endpoint)
     {
         return endpoint
-            .Params.Where(param => !(param is CompositionProperty || (param.Domain?.BodyParam ?? false)))
+            .Params.Where(param =>
+                !(param is IProperty { Composition: not null } || (param.Domain?.BodyParam ?? false))
+            )
             .Except(endpoint.GetRouteParams());
     }
 
@@ -45,7 +49,7 @@ public static class EndpointExtensions
         return endpoint
             .Params.Where(param =>
                 !(
-                    param is CompositionProperty
+                    param is IProperty { Composition: not null }
                     || (param.Domain?.BodyParam ?? false)
                     || (param.Domain?.IsMultipart ?? false)
                 )

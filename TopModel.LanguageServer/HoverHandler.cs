@@ -32,10 +32,7 @@ public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, M
                             {
                                 Class c => c.Comment,
                                 Endpoint e => e.Description,
-                                RegularProperty p => p.Comment,
-                                AssociationProperty p => p.Comment,
-                                CompositionProperty p => p.Comment,
-                                AliasProperty p => p.Comment,
+                                IProperty p => p.Comment,
                                 Domain d => d.Label,
                                 Decorator d => d.Description,
                                 DecoratorInstance { Decorator: Decorator d } => d.Description,

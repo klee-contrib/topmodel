@@ -435,6 +435,18 @@ internal class PropertyResolver(
                 ap.Property = referencedProperty;
             }
         }
+
+        foreach (
+            var alp in modelFiles
+                .SelectMany(mf => mf.Properties.OfType<AliasProperty>())
+                .Where(ap => ap.Composition != null)
+        )
+        {
+            if (alp.Property is not CompositionProperty)
+            {
+                yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
+            }
+        }
     }
 
     /// <summary>
@@ -620,29 +632,55 @@ internal class PropertyResolver(
 
                     break;
 
-                case AliasProperty alp when alp.DomainReference != null:
-                    if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                case AliasProperty alp:
+                    if (alp.DomainReference != null)
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0003,
-                            [alp.DomainReference.ReferenceName],
-                            alp,
-                            alp.DomainReference
+                        if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD0003,
+                                [alp.DomainReference.ReferenceName],
+                                alp,
+                                alp.DomainReference
+                            );
+                            break;
+                        }
+
+                        foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
+                        {
+                            yield return error;
+                        }
+
+                        alp.Domain = aliasDomain;
+                        alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
+                            pr => pr.Key.ReferenceName,
+                            pr => pr.Value.Value
                         );
-                        break;
                     }
 
-                    foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
+                    if (alp.CompositionReference != null)
                     {
-                        yield return error;
+                        if (
+                            !referencedClasses.TryGetValue(
+                                alp.CompositionReference.ReferenceName,
+                                out var aliasComposition
+                            )
+                        )
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD0002,
+                                [alp.CompositionReference.ReferenceName],
+                                alp,
+                                alp.CompositionReference
+                            );
+                            break;
+                        }
+
+                        alp.Composition = aliasComposition;
                     }
 
-                    alp.Domain = aliasDomain;
-                    alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
-                        pr => pr.Key.ReferenceName,
-                        pr => pr.Value.Value
-                    );
                     break;
             }
         }

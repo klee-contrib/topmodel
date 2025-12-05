@@ -312,11 +312,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 ? ap
                 : (AssociationProperty)((AliasProperty)propertySource).Property;
             checkSourceNull = true;
-            if (propertyTarget is CompositionProperty cp)
+            if (propertyTarget is IProperty { Composition: Class cpc })
             {
-                if (propertySource.Class.ToMappers.Any(t => t.Class == cp.Composition))
+                if (propertySource.Class.ToMappers.Any(t => t.Class == cpc))
                 {
-                    var cpMapper = propertySource.Class.ToMappers.Single(t => t.Class == cp.Composition)!;
+                    var cpMapper = propertySource.Class.ToMappers.Single(t => t.Class == cpc)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     getter =
@@ -324,27 +324,25 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
                 else if (
-                    cp.Composition.FromMappers.Any(f =>
-                        f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association
-                    )
+                    cpc.FromMappers.Any(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association)
                 )
                 {
-                    var cpMapper = cp.Composition.FromMappers.Single(f =>
+                    var cpMapper = cpc.FromMappers.Single(f =>
                         f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association
                     )!;
-                    var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cp.Composition, cpMapper));
+                    var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpc, cpMapper));
 
                     getter = $"{sourceName}.{getterName}()";
                     if (apSource.Type.IsToMany())
                     {
                         getter =
-                            $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cp.Composition}).collect({collector})";
+                            $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cpc}).collect({collector})";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
                     {
                         getter =
-                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}())";
+                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cpc}({getter}, target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}())";
                     }
 
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
@@ -353,7 +351,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     throw new ModelException(
                         classe,
-                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apSource.Association.Name}"
+                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cpc.Name} -> {apSource.Association.Name}"
                     );
                 }
             }
@@ -455,11 +453,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 getter = $"{sourceName}.{getterName}()";
             }
-            else if (propertySource is CompositionProperty cp)
+            else if (propertySource is IProperty { Composition: Class cpc })
             {
-                if (cp.Composition.ToMappers.Any(t => t.Class == apTarget.Association))
+                if (cpc.ToMappers.Any(t => t.Class == apTarget.Association))
                 {
-                    var cpMapper = cp.Composition.ToMappers.Single(t => t.Class == apTarget.Association)!;
+                    var cpMapper = cpc.ToMappers.Single(t => t.Class == apTarget.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     var isMultiple =
@@ -484,7 +482,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     throw new ModelException(
                         classe,
-                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apTarget.Association.Name}"
+                        $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cpc.Name} -> {apTarget.Association.Name}"
                     );
                 }
             }

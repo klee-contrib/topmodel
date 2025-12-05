@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -67,7 +68,7 @@ public class JavascriptResourceGenerator(
             properties.Where(p =>
                 Config.ExtendedCompositions
                 || Config.EntityMode == EntityMode.FOCUS
-                || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+                || p is not IProperty { Composition: not null }
             ),
             isComment: true,
             1
@@ -142,7 +143,7 @@ public class JavascriptResourceGenerator(
             properties.Where(p =>
                 Config.ExtendedCompositions
                 || Config.EntityMode == EntityMode.FOCUS
-                || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+                || p is not IProperty { Composition: not null }
             ),
             isComment: false,
             1

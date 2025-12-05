@@ -251,20 +251,10 @@ public static class TemplateExtensions
             }
         }
 
-        if (input.StartsWith("composition."))
+        if (input.StartsWith("composition.") && p.Composition != null)
         {
-            var composition = p switch
-            {
-                CompositionProperty cp => cp.Composition,
-                AliasProperty { Property: CompositionProperty cp } => cp.Composition,
-                _ => null, // impossible
-            };
-
-            if (composition != null)
-            {
-                return input["composition.".Length..]
-                    .ResolveVariable(composition, templateParameters, parameterValues, config, tag);
-            }
+            return input["composition.".Length..]
+                .ResolveVariable(p.Composition!, templateParameters, parameterValues, config, tag);
         }
 
         var result = (

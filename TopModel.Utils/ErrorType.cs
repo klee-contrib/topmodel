@@ -405,5 +405,10 @@ public enum ErrorType
     /// </summary>
     TMD9008,
 
+    /// <summary>
+    /// Composition sur un alias d'autre chose qu'une composition.
+    /// </summary>
+    TMD9009,
+
     #endregion
 }

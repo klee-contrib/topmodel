@@ -155,7 +155,7 @@ public class JavascriptApiClientGenerator(
 
                 foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
-                    if (param is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
+                    if (param is not IProperty { Composition: not null })
                     {
                         fw.Write(3, $@"{param.GetParamName()}");
                     }
@@ -220,7 +220,7 @@ public class JavascriptApiClientGenerator(
                 {
                     var type =
                         Config.GetType(endpoint.Returns) == "Blob" ? "blob"
-                        : endpoint.Returns is CompositionProperty or { Domain.BodyParam: true }
+                        : endpoint.Returns is IProperty { Composition: not null } or { Domain.BodyParam: true }
                         || Config.GetType(endpoint.Returns).EndsWith("[]")
                             ? "json"
                         : "text";
@@ -238,8 +238,7 @@ public class JavascriptApiClientGenerator(
         if (
             endpoints.Any(endpoint =>
                 endpoint.Params.Any(p =>
-                    p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-                    && Config.GetType(p).Contains("File")
+                    p is not IProperty { Composition: not null } && Config.GetType(p).Contains("File")
                 )
             )
         )

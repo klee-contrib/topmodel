@@ -113,11 +113,8 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     when Config.CanClassUseEnums(rp.Class):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
-                case CompositionProperty cp:
-                    usings.Add(GetNamespace(cp.Composition, tag));
-                    break;
-                case AliasProperty { Property: CompositionProperty cp }:
-                    usings.Add(GetNamespace(cp.Composition, tag));
+                case IProperty { Composition: Class cpc }:
+                    usings.Add(GetNamespace(cpc, tag));
                     break;
             }
         }

@@ -323,6 +323,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             {
                 yield return import;
             }
+
+            // TODO : Si c'est un alias avec As domain générique, il faut aller chercher les imports du domaine original aussi
         }
     }
 
@@ -370,10 +372,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>La valeur.</returns>
     public virtual string GetValue(IProperty property, string? value = null)
     {
-        if (
-            !IgnoreDefaultValues
-            && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-        )
+        if (!IgnoreDefaultValues && property is not IProperty { Composition: not null })
         {
             value ??= property?.DefaultValue;
         }
@@ -421,10 +420,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual IEnumerable<string> GetValueImports(IProperty property, string? value = null)
     {
-        if (
-            !IgnoreDefaultValues
-            && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
-        )
+        if (!IgnoreDefaultValues && property is not IProperty { Composition: not null })
         {
             value ??= property.DefaultValue;
         }
@@ -520,12 +516,12 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 GetImplementation(domainOverride ?? ap.Property.Domain)?.Type ?? string.Empty
             ),
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
-            CompositionProperty when (domainOverride ?? property.Domain) is not null => (
+            IProperty { Composition: not null } when (domainOverride ?? property.Domain) is not null => (
                 GetImplementation(domainOverride ?? property.Domain)?.GenericType ?? "{T}"
             )
                 .Replace("{T}", "{composition.name}")
                 .ParseTemplate(property, this),
-            CompositionProperty cp => cp.Composition.NamePascal,
+            IProperty { Composition: Class c } => c.NamePascal,
             AliasProperty { As: not null } alp
                 when domainOverride is null && GetImplementation(alp.Domain)?.GenericType != null => GetImplementation(
                 alp.Domain
@@ -576,9 +572,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                         Target.AssociationProperty => container
                             is AssociationProperty
                                 or AliasProperty { Property: AssociationProperty },
-                        Target.CompositionProperty => container
-                            is CompositionProperty
-                                or AliasProperty { Property: CompositionProperty },
+                        Target.CompositionProperty => container is IProperty { Composition: not null },
                         Target.RegularProperty => container
                             is RegularProperty
                                 or AliasProperty { Property: RegularProperty },

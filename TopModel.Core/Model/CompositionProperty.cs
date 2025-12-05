@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -65,19 +66,7 @@ public class CompositionProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
-    public IProperty? CompositionPrimaryKey
-    {
-        get
-        {
-            var cpPks = Composition.ExtendedProperties.Where(p => p.PrimaryKey);
-            if (!cpPks.Any())
-            {
-                cpPks = Composition.ExtendedProperties.OfType<AliasProperty>().Where(p => p.AliasedPrimaryKey);
-            }
-
-            return cpPks.Count() == 1 ? cpPks.Single() : null;
-        }
-    }
+    public IProperty? CompositionPrimaryKey => get_CompositionPrimaryKey(this);
 
     public bool UseLegacyRoleName { get; init; }
 

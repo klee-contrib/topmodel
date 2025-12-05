@@ -34,19 +34,8 @@ internal static class DependenciesExtensions
             )
             .Concat(
                 properties
-                    .OfType<CompositionProperty>()
-                    .Where(p => p.Composition != currentClass)
-                    .Select(p => new ClassDependency(p.Composition, p))
-            )
-            .Concat(
-                properties
-                    .OfType<AliasProperty>()
-                    .Where(p => p.Property is CompositionProperty cp && cp.Composition != currentClass)
-                    .Select(p =>
-                        p is AliasProperty { Property: CompositionProperty cp }
-                            ? new ClassDependency(cp.Composition, p)
-                            : null
-                    )
+                    .Where(p => p.Composition != null && p.Composition != currentClass)
+                    .Select(p => new ClassDependency(p.Composition!, p))
             )
             .Where(d => d != null)!;
     }

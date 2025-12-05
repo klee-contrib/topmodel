@@ -77,12 +77,7 @@ internal class MapperResolver(
 
                     if (currentProperty != null && mappedProperty != null)
                     {
-                        var sourceCp = currentProperty switch
-                        {
-                            CompositionProperty cp => cp,
-                            AliasProperty { Property: CompositionProperty cp } => cp,
-                            _ => null,
-                        };
+                        var sourceCp = currentProperty.Composition != null ? currentProperty : null;
 
                         var mappedAp = mappedProperty switch
                         {
@@ -164,7 +159,7 @@ internal class MapperResolver(
                                 yield return new ModelError(
                                     ErrorType.TMD8006,
                                     classe,
-                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').",
+                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition!.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').",
                                     mapping.Value
                                 );
                             }
@@ -216,18 +211,8 @@ internal class MapperResolver(
 
                     if (mapping.TargetProperty != null)
                     {
-                        var sourceCp = mapping.Property switch
-                        {
-                            CompositionProperty cp => cp,
-                            AliasProperty { Property: CompositionProperty cp } => cp,
-                            _ => null,
-                        };
-                        var targetCp = mapping.TargetProperty switch
-                        {
-                            CompositionProperty cp => cp,
-                            AliasProperty { Property: CompositionProperty cp } => cp,
-                            _ => null,
-                        };
+                        var sourceCp = mapping.Property.Composition != null ? mapping.Property : null;
+                        var targetCp = mapping.TargetProperty.Composition != null ? mapping.TargetProperty : null;
 
                         if (targetCp == null && sourceCp != null)
                         {

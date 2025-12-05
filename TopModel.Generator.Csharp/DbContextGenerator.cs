@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -243,7 +244,11 @@ public class DbContextGenerator(
         }
 
         var hasJson = false;
-        foreach (var cp in classes.Distinct().SelectMany(c => c.Properties.Where(p => p is CompositionProperty)))
+        foreach (
+            var cp in classes
+                .Distinct()
+                .SelectMany(c => c.Properties.Where(p => p is IProperty { Composition: not null }))
+        )
         {
             hasJson = true;
             var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;
