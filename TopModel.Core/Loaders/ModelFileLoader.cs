@@ -82,83 +82,26 @@ public class ModelFileLoader(
         {
             parser.Consume<MappingStart>();
             var scalar = parser.Consume<Scalar>();
+            var location = new Reference(scalar);
+            ILoader loader = scalar.Value switch
+            {
+                "annotation" => annotationLoader,
+                "class" => classLoader,
+                "converter" => converterLoader,
+                "dataFlow" => dataFlowLoader,
+                "decorator" => decoratorLoader,
+                "domain" => domainLoader,
+                "endpoint" => endpointLoader,
+                _ => throw new ModelException(
+                    file,
+                    $"Type de document inconnu ('{scalar.Value}').",
+                    new Reference(scalar)
+                ),
+            };
 
-            if (scalar.Value == "annotation")
-            {
-                var annotation = annotationLoader.Load(parser);
-                annotation.Location = new Reference(scalar);
-                file.Annotations.Add(annotation);
-            }
-            else if (scalar.Value == "domain")
-            {
-                var domain = domainLoader.Load(parser);
-                domain.ModelFile = file;
-                domain.Location = new Reference(scalar);
-                file.Domains.Add(domain);
-            }
-            else if (scalar.Value == "decorator")
-            {
-                var decorator = decoratorLoader.Load(parser);
-                decorator.Location = new Reference(scalar);
-                file.Decorators.Add(decorator);
-            }
-            else if (scalar.Value == "converter")
-            {
-                var converter = converterLoader.Load(parser);
-                converter.ModelFile = file;
-                converter.Location = new Reference(scalar);
-                file.Converters.Add(converter);
-            }
-            else if (scalar.Value == "class")
-            {
-                var classe = classLoader.Load(parser);
-                classe.Location = new Reference(scalar);
-                file.Classes.Add(classe);
-            }
-            else if (scalar.Value == "endpoint")
-            {
-                var endpoint = endpointLoader.Load(parser);
-                endpoint.Location = new Reference(scalar);
-                file.Endpoints.Add(endpoint);
-            }
-            else if (scalar.Value == "dataFlow")
-            {
-                var dataFlow = dataFlowLoader.Load(parser);
-                dataFlow.ModelFile = file;
-                dataFlow.Location = new Reference(scalar);
-                file.DataFlows.Add(dataFlow);
-            }
-            else
-            {
-                throw new ModelException(file, $"Type de document inconnu ('{scalar.Value}').", new Reference(scalar));
-            }
-
+            loader.Load(parser, file, location);
             parser.Consume<MappingEnd>();
             parser.Consume<DocumentEnd>();
-        }
-
-        foreach (var annotation in file.Annotations)
-        {
-            annotation.ModelFile = file;
-            annotation.Namespace = file.Namespace;
-        }
-
-        foreach (var classe in file.Classes)
-        {
-            classe.ModelFile = file;
-            classe.Namespace = file.Namespace;
-        }
-
-        foreach (var endpoint in file.Endpoints)
-        {
-            endpoint.ModelFile = file;
-            endpoint.Namespace = file.Namespace;
-        }
-
-        foreach (var decorator in file.Decorators)
-        {
-            decorator.ModelFile = file;
-            decorator.Namespace = file.Namespace;
         }
 
         if (file.Options.Endpoints.FileName == null)

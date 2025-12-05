@@ -6,13 +6,13 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DataFlowLoader : ILoader<DataFlow>
+public class DataFlowLoader : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public DataFlow Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var dataFlow = new DataFlow();
-
+        var dataFlow = new DataFlow() { ModelFile = modelFile, Location = location };
+        modelFile.DataFlows.Add(dataFlow);
         parser.ConsumeMapping(prop =>
         {
             _ = parser.TryConsume<Scalar>(out var value);
@@ -112,7 +112,5 @@ public class DataFlowLoader : ILoader<DataFlow>
                     throw new ModelException(dataFlow, $"Propriété ${prop} inconnue pour un flux de données");
             }
         });
-
-        return dataFlow;
     }
 }

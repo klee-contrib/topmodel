@@ -5,13 +5,19 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Endpoint>
+public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Endpoint Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var endpoint = new Endpoint();
+        var endpoint = new Endpoint()
+        {
+            ModelFile = modelFile,
+            Location = location,
+            Namespace = modelFile.Namespace,
+        };
 
+        modelFile.Endpoints.Add(endpoint);
         parser.ConsumeMapping(prop =>
         {
             parser.TryConsume<Scalar>(out var value);
@@ -39,13 +45,13 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        var property = propertyLoader.Load(parser);
+                        var property = propertyLoader.Load(parser, modelFile);
                         property.Endpoint = endpoint;
                         endpoint.Params.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = propertyLoader.Load(parser);
+                    endpoint.Returns = propertyLoader.Load(parser, modelFile);
                     endpoint.Returns.Endpoint = endpoint;
                     break;
                 case "decorators":
@@ -134,7 +140,5 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                     throw new ModelException(endpoint, $"Propriété ${prop} inconnue pour un endpoint");
             }
         });
-
-        return endpoint;
     }
 }

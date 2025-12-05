@@ -6,13 +6,18 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Decorator>
+public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Decorator Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var decorator = new Decorator();
-
+        var decorator = new Decorator()
+        {
+            ModelFile = modelFile,
+            Location = location,
+            Namespace = modelFile.Namespace,
+        };
+        modelFile.Decorators.Add(decorator);
         parser.ConsumeMapping(prop =>
         {
             _ = parser.TryConsume<Scalar>(out var value);
@@ -111,7 +116,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        decorator.Properties.Add(propertyLoader.Load(parser));
+                        decorator.Properties.Add(propertyLoader.Load(parser, modelFile));
                     });
                     break;
                 case "parameters":
@@ -132,7 +137,5 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
         {
             prop.Decorator = decorator;
         }
-
-        return decorator;
     }
 }

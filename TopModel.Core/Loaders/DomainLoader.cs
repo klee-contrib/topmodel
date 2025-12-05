@@ -7,13 +7,13 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
+public class DomainLoader(FileChecker fileChecker) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Domain Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var domain = new Domain();
-
+        var domain = new Domain() { ModelFile = modelFile, Location = location };
+        modelFile.Domains.Add(domain);
         parser.ConsumeMapping(prop =>
         {
             parser.TryConsume<Scalar>(out var value);
@@ -155,7 +155,5 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                     break;
             }
         });
-
-        return domain;
     }
 }

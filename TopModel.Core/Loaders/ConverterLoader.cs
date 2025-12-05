@@ -6,13 +6,13 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ConverterLoader(FileChecker fileChecker) : ILoader<Converter>
+public class ConverterLoader(FileChecker fileChecker) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Converter Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var converter = new Converter();
-
+        var converter = new Converter() { ModelFile = modelFile, Location = location };
+        modelFile.Converters.Add(converter);
         parser.ConsumeMapping(prop =>
         {
             _ = parser.TryConsume<Scalar>(out var _);
@@ -38,7 +38,5 @@ public class ConverterLoader(FileChecker fileChecker) : ILoader<Converter>
                     break;
             }
         });
-
-        return converter;
     }
 }

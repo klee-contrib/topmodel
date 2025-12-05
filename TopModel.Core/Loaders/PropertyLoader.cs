@@ -5,10 +5,10 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : ILoader<IProperty>
+public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public IProperty Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public IProperty Load(Parser parser, ModelFile modelFile)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
@@ -517,7 +517,11 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : 
                 parser.Consume<MappingEnd>();
                 return alp;
             case Scalar sc:
-                throw new ModelException($"Type de propriété ${sc.Value} non reconnu.");
+                throw new ModelException(
+                    modelFile,
+                    $"Le premier attribut de la propriété doit être `name`, `alias`, `association` ou `composition` (ici ${sc.Value})",
+                    new Reference(sc)
+                );
             default:
                 throw new ModelException($"Type de propriété inconnu.");
         }

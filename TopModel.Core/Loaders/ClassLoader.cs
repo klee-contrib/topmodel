@@ -6,13 +6,18 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader)
-    : ILoader<Class>
+public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Class Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var classe = new Class();
+        var classe = new Class()
+        {
+            ModelFile = modelFile,
+            Location = location,
+            Namespace = modelFile.Namespace,
+        };
+        modelFile.Classes.Add(classe);
 
         parser.ConsumeMapping(prop =>
         {
@@ -149,7 +154,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.Properties.Add(propertyLoader.Load(parser));
+                        classe.Properties.Add(propertyLoader.Load(parser, modelFile));
                     });
                     break;
                 case "unique":
@@ -264,7 +269,10 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                                             switch (prop.Value)
                                                             {
                                                                 case "property":
-                                                                    param.Property = propertyLoader.Load(parser);
+                                                                    param.Property = propertyLoader.Load(
+                                                                        parser,
+                                                                        modelFile
+                                                                    );
                                                                     param.Property.PropertyMapping = param;
                                                                     break;
                                                                 case "target":
@@ -346,7 +354,5 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
         {
             prop.Class = classe;
         }
-
-        return classe;
     }
 }

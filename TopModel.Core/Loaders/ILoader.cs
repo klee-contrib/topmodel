@@ -1,8 +1,9 @@
-﻿using YamlDotNet.Core;
+﻿using TopModel.Core.FileModel;
+using YamlDotNet.Core;
 
 namespace TopModel.Core.Loaders;
 
-internal interface ILoader<T>
+internal interface ILoader
 {
-    T Load(Parser parser);
+    void Load(Parser parser, ModelFile modelFile, Reference location);
 }

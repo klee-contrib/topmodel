@@ -6,12 +6,18 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class AnnotationLoader(FileChecker fileChecker) : ILoader<Annotation>
+public class AnnotationLoader(FileChecker fileChecker) : ILoader
 {
-    /// <inheritdoc cref="ILoader{T}.Load" />
-    public Annotation Load(Parser parser)
+    /// <inheritdoc cref="ILoader.Load" />
+    public void Load(Parser parser, ModelFile modelFile, Reference location)
     {
-        var annotation = new Annotation();
+        var annotation = new Annotation()
+        {
+            ModelFile = modelFile,
+            Location = location,
+            Namespace = modelFile.Namespace,
+        };
+        modelFile.Annotations.Add(annotation);
 
         parser.ConsumeMapping(prop =>
         {
@@ -46,7 +52,5 @@ public class AnnotationLoader(FileChecker fileChecker) : ILoader<Annotation>
                     break;
             }
         });
-
-        return annotation;
     }
 }
