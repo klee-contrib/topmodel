@@ -208,6 +208,20 @@ async Task StartGeneration(string filePath, string directoryName, int i)
                 Passwords = passwords,
             });
         }
+        else if (conf.Source.DbType == DbType.MSSQL)
+        {
+            services.AddSingleton<TmdGenerator>(p => new DatabaseMsSqlTmdGenerator(
+                p.GetRequiredService<ILogger<DatabaseMsSqlTmdGenerator>>(),
+                conf,
+                p.GetRequiredService<IFileWriterProvider>()
+            )
+            {
+                DirectoryName = directoryName,
+                ModelRoot = config.ModelRoot,
+                Number = config.Database.IndexOf(conf) + 1,
+                Passwords = passwords,
+            });
+        }
     }
 
     using var provider = services.BuildServiceProvider();
