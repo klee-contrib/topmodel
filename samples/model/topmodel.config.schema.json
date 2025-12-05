@@ -909,14 +909,6 @@
             "type": "string",
             "description": "Précise l'interface des fields enum générés."
           },
-          "persistenceMode": {
-            "type": "string",
-            "description": "Mode de génération de la persistence ('Javax' ou 'Jakarta')",
-            "enum": [
-              "javax",
-              "jakarta"
-            ]
-          },
           "identity": {
             "type": "object",
             "description": "Options de génération de la séquence",
