@@ -38,7 +38,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         javaClass.Add(
             new JavaAnnotation(
                 "StaticMetamodel",
-                imports: $"{Config.JavaxOrJakarta}.persistence.metamodel.StaticMetamodel"
+                imports: "jakarta.persistence.metamodel.StaticMetamodel"
             ).AddAttribute($"{classe.NamePascal}.class")
         );
         if (Config.GeneratedHint)

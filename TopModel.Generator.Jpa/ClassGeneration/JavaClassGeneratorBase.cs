@@ -17,8 +17,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     protected static IDictionary<string, string> NewableTypes =>
         new Dictionary<string, string>() { ["List"] = "ArrayList", ["Set"] = "HashSet" };
 
-    protected string JavaxOrJakarta => Config.JavaxOrJakarta;
-
     protected virtual JavaConstructorGenerator ConstructorGenerator
     {
         get

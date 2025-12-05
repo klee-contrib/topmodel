@@ -364,7 +364,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
             .AddParameter(
                 new JavaMethodParameter(
-                    $"{Config.JavaxOrJakarta}.persistence.EntityManagerFactory",
+                    "jakarta.persistence.EntityManagerFactory",
                     "EntityManagerFactory",
                     "entityManagerFactory"
                 )
