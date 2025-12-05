@@ -18,7 +18,7 @@ La configuration du générateur `database` permet de définir :
 
 - `outputDirectory` : répertoire de génération des fichiers, relatif au `modelRoot`
 - `source` :
-  - `dbType`: type de base de base de données source (`postgresql` ou `oracle`)
+  - `dbType`: type de base de base de données source (`postgresql`, `oracle`, `mysql`, `mssql`)
   - `host`: hôte de la base de données
   - `port`: port d'écoute de la base de données
   - `dbName`: nom de la base de données
@@ -105,7 +105,13 @@ database:
 
 ## Connexion à la base de données
 
-Actuellement, seules les bases de données `postgresql` et `oracle` sont supportées par le générateur `database`. Pour s'y connecter, remplir les informations de la propriété `source` de la configuration. Vous pouvez remarquer que le `password` n'est pas obligatoire. En effet, vous pouvez utiliser la variable d'environnement `PGPASSWORD` pour `postgresql` par exemple.
+Le générateur `database` supporte les bases des données : 
+  -  `postgresql`
+  -  `oracle`
+  -  `mysql`
+  -  `mssql` (SQL Server)
+
+Pour s'y connecter, remplir les informations de la propriété `source` de la configuration. Vous pouvez remarquer que le `password` n'est pas obligatoire. En effet, vous pouvez utiliser la variable d'environnement `PGPASSWORD` pour `postgresql` par exemple.
 
 Si la connexion à la base de données échoue, le mot de passe vous sera demandé dans la console.
 
