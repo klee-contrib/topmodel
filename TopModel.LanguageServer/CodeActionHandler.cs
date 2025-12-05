@@ -70,6 +70,7 @@ public class CodeActionHandler(
                         break;
                     case ErrorType.TMD2001:
                         codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionAddAnnotation(request, diagnostic, modelFile));
                         break;
                     case ErrorType.TMD4002:
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
@@ -101,6 +102,49 @@ public class CodeActionHandler(
                 CodeActionKind.QuickFix,
             },
         };
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddAnnotation(
+        CodeActionParams request,
+        Diagnostic diagnostic,
+        ModelFile modelFile
+    )
+    {
+        var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text[diagnostic.Range.Start.Line];
+        var annotationName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
+        return
+        [
+            new CodeAction
+            {
+                Title = $"TopModel : Créer l'annotation {annotationName} dans ce fichier",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic> { diagnostic },
+                Edit = new WorkspaceEdit
+                {
+                    Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [
+                            new()
+                            {
+                                NewText =
+                                    @$"
+---
+annotation: 
+  name: {annotationName}
+  description: 
+  target:
+    - 
+",
+                                Range = new Range(text.Length, 0, text.Length, 0),
+                            },
+                        ],
+                    },
+                },
+            },
+        ];
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(
