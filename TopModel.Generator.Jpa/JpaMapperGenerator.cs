@@ -137,10 +137,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 indent++;
             }
 
-            foreach (var mapping in mappings)
+            foreach (var mapping in mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value)))
             {
                 var propertyTarget = mapping.Key;
-                var propertySource = mapping.Value!;
+                var propertySource = mapping.Value;
                 var (getter, checkSourceNull, imports) = GetSourceGetter(
                     propertySource,
                     propertyTarget,
@@ -553,7 +553,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         }
 
         var isFirst = true;
-        foreach (var mapping in mapper.Mappings.OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key)))
+        foreach (
+            var mapping in mapper
+                .Mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value))
+                .OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key))
+        )
         {
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
@@ -709,6 +713,17 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         fw.Write(1, GetToMapperMethodNoTarget(classe, mapper, tag));
         fw.Write(1, GetToMapperMethodWithTarget(classe, mapper, tag));
+    }
+
+    private bool FilterMapping(IProperty propertySource, IProperty propertyTarget)
+    {
+        return !(
+            Config.UseJdbc
+            && (
+                propertyTarget.Class.IsPersistent && propertyTarget.IsAssociationToMany()
+                || propertySource.Class.IsPersistent && propertySource.IsAssociationToMany()
+            )
+        );
     }
 
     private IEnumerable<JavaMethodParameter> GetFromMappersParameters(Class classe, FromMapper mapper, string tag)

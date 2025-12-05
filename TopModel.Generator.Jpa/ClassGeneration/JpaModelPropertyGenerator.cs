@@ -552,9 +552,37 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 {
                     return $"{defaultValue}";
                 }
-                else
+                else if (property.Class.IsPersistent)
                 {
                     return $"new {ap.Association.NamePascal}({defaultValue})";
+                }
+                else
+                {
+                    return defaultValue;
+                }
+            }
+
+            return string.Empty;
+        }
+        else if (property is AliasProperty { Property: AssociationProperty ap2 })
+        {
+            if (
+                ap2.Association.PrimaryKey.Count() == 1
+                && Config.CanClassUseEnums(ap2.Association, prop: ap2.Association.PrimaryKey.Single())
+                && defaultValue != "null"
+            )
+            {
+                if (Config.EnumsAsEnums)
+                {
+                    return $"{defaultValue}";
+                }
+                else if (property.Class.IsPersistent)
+                {
+                    return $"new {ap2.Association.NamePascal}({defaultValue})";
+                }
+                else
+                {
+                    return defaultValue;
                 }
             }
 
@@ -580,7 +608,23 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             {
                 return
                 [
-                    $"{Config.GetEnumPackageName(property.Class, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(ap.Association.PrimaryKey.Single())}",
+                    $"{Config.GetEnumPackageName(ap.Association, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(ap.Association.PrimaryKey.Single())}",
+                ];
+            }
+
+            return [];
+        }
+        else if (property is AliasProperty asp && asp.Property is AssociationProperty ap2)
+        {
+            if (
+                ap2.Association.PrimaryKey.Count() == 1
+                && Config.CanClassUseEnums(ap2.Association, prop: ap2.Association.PrimaryKey.Single())
+                && defaultValue != "null"
+            )
+            {
+                return
+                [
+                    $"{Config.GetEnumPackageName(ap2.Association, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(ap2.Association.PrimaryKey.Single())}",
                 ];
             }
 
