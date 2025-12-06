@@ -603,6 +603,13 @@ Le générateur crée des interfaces similaires au mode `Server`, à la différe
 
 ## Dépendances
 
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
 ### Modèle
 
 Le modèle généré par TopModel dépend d'une api de persistence. Par défaut, c'est l'API de persistence `javax` qui est utilisée, mais le mode `jakarta` est aussi disponible.

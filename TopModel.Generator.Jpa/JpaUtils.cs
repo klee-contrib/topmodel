@@ -26,12 +26,14 @@ public static class JpaUtils
 
     public static string ToFilePath(this string path)
     {
-        return path.ToLower().Replace(':', Path.DirectorySeparatorChar);
+        var beforePackage = path.Split(':')[0];
+        var package = path.Split(':')[1].ToPackageName();
+        return Path.Combine(beforePackage, package.Replace('.', Path.DirectorySeparatorChar));
     }
 
     public static string ToPackageName(this string path)
     {
-        return path.Split(':')[^1].ToLower().Replace('/', '.').Replace('\\', '.');
+        return path.Split(':')[^1].ToLower().Replace('/', '.').Replace('\\', '.').Replace('-', '_').ToLower();
     }
 
     public static string WithPrefix(this string name, string prefix)

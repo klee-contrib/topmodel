@@ -230,10 +230,8 @@ public class JpaConfig : GeneratorConfigBase
 
     public virtual string GetApiPath(ModelFile file, string tag)
     {
-        return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ApiPath!, tag, module: file.Namespace.Module).ToFilePath()
-        );
+        var path = ResolveVariables(ApiPath, tag, module: file.Namespace.Module);
+        return Path.Combine(OutputDirectory, path.ToFilePath());
     }
 
     public virtual string GetClassFileName(Class classe, string tag)
@@ -286,7 +284,7 @@ public class JpaConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            ResolveVariables(EnumsPath, tag, module: property.Class.Namespace.Module).ToFilePath(),
             $"{GetEnumName(property, classe)}.java"
         );
     }
