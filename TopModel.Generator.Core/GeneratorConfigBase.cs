@@ -314,33 +314,24 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual IEnumerable<string> GetDomainImports(IProperty property, string tag)
     {
-        if (property.Domain != null)
+        foreach (var (domain, _) in property.DomainChain)
         {
             foreach (
-                var import in GetImplementation(property.Domain)!
-                    .Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
+                var import in GetImplementation(domain)!.Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
             )
             {
                 yield return import;
             }
-
-            // TODO : Si c'est un alias avec As domain générique, il faut aller chercher les imports du domaine original aussi
         }
     }
 
     public virtual string GetEnumType(IProperty fp, bool isPrimaryKeyDef = false)
     {
-        var op = fp switch
-        {
-            AssociationProperty a => a.Property,
-            AliasProperty { Property: AssociationProperty a } => a.Property,
-            AliasProperty alp => alp.Property,
-            _ => fp,
-        };
-
-        return op is AssociationProperty ap ? GetEnumType(ap.Association.Name, ap.Property.Name, isPrimaryKeyDef)
-            : op is RegularProperty rp ? GetEnumType(rp.Class?.Name ?? string.Empty, rp.Name, isPrimaryKeyDef)
-            : string.Empty;
+        return GetEnumType(
+            fp.EnumProperty?.Class?.Name ?? string.Empty,
+            fp.EnumProperty?.Name ?? string.Empty,
+            isPrimaryKeyDef
+        );
     }
 
     /// <summary>
@@ -361,7 +352,48 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>Le type.</returns>
     public virtual string GetType(IProperty property, bool useClassForAssociation = false)
     {
-        return GetTypeCore(property, useClassForAssociation, isAlias: false, domainOverride: null);
+        string GetType(IEnumerable<(Domain Domain, bool Generic)> domainChain)
+        {
+            var queue = new Queue<(Domain Domain, bool As)>(domainChain);
+
+            var (domain, generic) = queue.Dequeue();
+
+            if (queue.Count == 0)
+            {
+                if (property is { Association: Class ac } && useClassForAssociation)
+                {
+                    return ac.NamePascal;
+                }
+                else if (
+                    property is { EnumProperty: IProperty ep }
+                    && property.EnumProperty != null
+                    && CanClassUseEnums(ep.Class, ep)
+                )
+                {
+                    return (GetImplementation(ep.Domain)?.GenericType ?? "{T}")
+                        .Replace("{T}", GetEnumType(ep, ep.Class == property.Class))
+                        .ParseTemplate(property, this);
+                }
+            }
+
+            var impl = GetImplementation(domain);
+
+            if (generic && queue.Count > 0 && impl?.GenericType != null)
+            {
+                return impl.GenericType.Replace("{T}", GetType(queue)).ParseTemplate(property, this);
+            }
+
+            return (GetImplementation(domain)?.Type ?? string.Empty).ParseTemplate(property, this);
+        }
+
+        return property switch
+        {
+            { Composition: not null, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
+                .Replace("{T}", "{composition.name}")
+                .ParseTemplate(property, this),
+            { Composition: Class c } => c.NamePascal,
+            _ => GetType(property.DomainChain),
+        };
     }
 
     /// <summary>
@@ -372,7 +404,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>La valeur.</returns>
     public virtual string GetValue(IProperty property, string? value = null)
     {
-        if (!IgnoreDefaultValues && property is not IProperty { Composition: not null })
+        if (!IgnoreDefaultValues && property is not { Composition: not null })
         {
             value ??= property?.DefaultValue;
         }
@@ -388,24 +420,21 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             return template.Value.Replace("{value}", value).ParseTemplate(property, this);
         }
 
-        var prop = property is AliasProperty alp ? alp.Property : property;
-        var ap = prop as AssociationProperty;
+        var enumProp = property.EnumProperty;
+        var enumClass = enumProp?.Class;
 
-        var classe = ap != null ? ap.Association : prop.Class;
-        var targetProp = ap != null ? ap.Property : prop;
-
-        if (UseNamedEnums && classe != null && classe.Enum && AvailableClasses.Contains(classe))
+        if (UseNamedEnums && enumClass != null && enumClass.Enum && AvailableClasses.Contains(enumClass))
         {
-            if (CanClassUseEnums(classe, targetProp))
+            if (CanClassUseEnums(enumClass, enumProp))
             {
-                return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{value}";
+                return $"{GetEnumType(enumProp!).TrimEnd('?')}.{value}";
             }
-            else if (classe.EnumKey == targetProp)
+            else if (enumClass.EnumKey == enumProp)
             {
-                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == value)?.Name;
+                var refName = enumClass.Values.SingleOrDefault(rv => rv.Value[enumProp] == value)?.Name;
                 if (refName != null)
                 {
-                    return GetConstEnumName(classe.Name, refName);
+                    return GetConstEnumName(enumClass.Name, refName);
                 }
             }
         }
@@ -420,7 +449,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual IEnumerable<string> GetValueImports(IProperty property, string? value = null)
     {
-        if (!IgnoreDefaultValues && property is not IProperty { Composition: not null })
+        if (!IgnoreDefaultValues && property is not { Composition: not null })
         {
             value ??= property.DefaultValue;
         }
@@ -458,92 +487,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     protected abstract string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false);
 
-    protected virtual string GetTypeCore(
-        IProperty property,
-        bool useClassForAssociation,
-        bool isAlias,
-        Domain? domainOverride
-    )
-    {
-        string GetTransformed(string type)
-        {
-            var domain = GetImplementation(domainOverride ?? property.Domain);
-            return (domain?.GenericType?.Replace("{T}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(
-                property,
-                this
-            );
-        }
-
-        string HandleEnum(IProperty op)
-        {
-            string GetEnum(string className, string propName, bool isPrimaryKeyDef = false)
-            {
-                var op = property switch
-                {
-                    AssociationProperty ap => ap.Property,
-                    _ => property,
-                };
-                return (GetImplementation(op.Domain)?.GenericType ?? "{T}")
-                    .Replace("{T}", GetEnumType(className, propName, isPrimaryKeyDef))
-                    .ParseTemplate(op, this);
-            }
-
-            var type =
-                op is AssociationProperty ap ? GetEnum(ap.Association.Name, ap.Property.Name)
-                : op is RegularProperty rp ? GetEnum(rp.Class.Name, rp.Name, !isAlias)
-                : throw new InvalidOperationException();
-
-            if (
-                (domainOverride ?? property.Domain) != (op is AssociationProperty ap2 ? ap2.Property.Domain : op.Domain)
-            )
-            {
-                return GetTransformed(type);
-            }
-            else
-            {
-                return type;
-            }
-        }
-
-        return property switch
-        {
-            AssociationProperty ap when useClassForAssociation => ap.Property.Domain != ap.Domain
-                ? GetTransformed(ap.Association.NamePascal)
-                : ap.Association.NamePascal,
-
-            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => HandleEnum(ap),
-            AssociationProperty ap when ap.Property.Domain != ap.Domain => GetTransformed(
-                GetImplementation(domainOverride ?? ap.Property.Domain)?.Type ?? string.Empty
-            ),
-            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => HandleEnum(rp),
-            IProperty { Composition: not null } when (domainOverride ?? property.Domain) is not null => (
-                GetImplementation(domainOverride ?? property.Domain)?.GenericType ?? "{T}"
-            )
-                .Replace("{T}", "{composition.name}")
-                .ParseTemplate(property, this),
-            IProperty { Composition: Class c } => c.NamePascal,
-            AliasProperty { As: not null } alp
-                when domainOverride is null && GetImplementation(alp.Domain)?.GenericType != null => GetImplementation(
-                alp.Domain
-            )!
-                .GenericType!.Replace(
-                    "{T}",
-                    GetTypeCore(alp.OriginalProperty!, useClassForAssociation, isAlias: true, domainOverride: null)
-                ),
-            AliasProperty { As: null } alp => GetTypeCore(
-                alp.OriginalProperty!,
-                useClassForAssociation,
-                isAlias: true,
-                domainOverride ?? alp.DomainOverride
-            ),
-            IProperty => (GetImplementation(domainOverride ?? property.Domain)?.Type ?? string.Empty).ParseTemplate(
-                property,
-                this
-            ),
-            _ => string.Empty,
-        };
-    }
-
     protected virtual bool IsEnumNameValid(string name)
     {
         return !Regex.IsMatch(name ?? string.Empty, "^\\d");
@@ -569,13 +512,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                         Target.Class => container is Class,
                         Target.Endpoint => container is Endpoint,
                         Target.Property => container is IProperty,
-                        Target.AssociationProperty => container
-                            is AssociationProperty
-                                or AliasProperty { Property: AssociationProperty },
+                        Target.AssociationProperty => container is IProperty { Association: not null },
                         Target.CompositionProperty => container is IProperty { Composition: not null },
-                        Target.RegularProperty => container
-                            is RegularProperty
-                                or AliasProperty { Property: RegularProperty },
+                        Target.RegularProperty => container is IProperty { Association: null, Composition: null },
                         _ => true,
                     }
                 )

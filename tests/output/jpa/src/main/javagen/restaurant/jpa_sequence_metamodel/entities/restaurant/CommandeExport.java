@@ -87,7 +87,8 @@ public class CommandeExport {
 	 * Association réciproque de LigneCommande.CommandeId.
 	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
+	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<LigneCommande> ligneCommandes;
 
 	/**

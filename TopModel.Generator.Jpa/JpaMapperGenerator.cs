@@ -312,7 +312,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 ? ap
                 : (AssociationProperty)((AliasProperty)propertySource).Property;
             checkSourceNull = true;
-            if (propertyTarget is IProperty { Composition: Class cpc })
+            if (propertyTarget is { Composition: Class cpc })
             {
                 if (propertySource.Class.ToMappers.Any(t => t.Class == cpc))
                 {
@@ -453,7 +453,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 getter = $"{sourceName}.{getterName}()";
             }
-            else if (propertySource is IProperty { Composition: Class cpc })
+            else if (propertySource is { Composition: Class cpc })
             {
                 if (cpc.ToMappers.Any(t => t.Class == apTarget.Association))
                 {

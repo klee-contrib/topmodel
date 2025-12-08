@@ -149,7 +149,7 @@ public abstract class AbstractCrebasGenerator(
 
         foreach (var property in properties)
         {
-            var persistentType = property is IProperty { Composition: null } ? Config.GetType(property) : JsonType;
+            var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {

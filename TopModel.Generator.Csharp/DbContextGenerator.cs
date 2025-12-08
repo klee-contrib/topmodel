@@ -244,11 +244,7 @@ public class DbContextGenerator(
         }
 
         var hasJson = false;
-        foreach (
-            var cp in classes
-                .Distinct()
-                .SelectMany(c => c.Properties.Where(p => p is IProperty { Composition: not null }))
-        )
+        foreach (var cp in classes.Distinct().SelectMany(c => c.Properties.Where(p => p is { Composition: not null })))
         {
             hasJson = true;
             var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;

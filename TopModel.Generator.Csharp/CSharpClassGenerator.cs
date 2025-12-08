@@ -344,7 +344,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         foreach (
             var property in item.Properties.Where(p =>
-                p is not IProperty { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
+                p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
             )
         )
         {
@@ -436,7 +436,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            if (Config.Kinetix && property is not IProperty { Composition: not null })
+            if (Config.Kinetix && property is not { Composition: not null })
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -549,7 +549,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (item.Properties.Any(p => p is not IProperty { Composition: not null }) && Config.Kinetix)
+            if (item.Properties.Any(p => p is not { Composition: not null }) && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -572,31 +572,24 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             switch (property)
             {
-                case AssociationProperty ap
-                    when Config.AvailableClasses.Contains(ap.Association)
-                        && (
-                            Config.CanClassUseEnums(ap.Association, ap.Property)
-                            || Config.Kinetix && ap.Association.IsPersistent && ap.Association.Reference
-                        ):
-                    usings.Add(GetNamespace(ap.Association, tag));
+                case { Association: Class a, AssociationProperty: IProperty ap }
+                    when Config.AvailableClasses.Contains(a)
+                        && (Config.CanClassUseEnums(a, ap) || Config.Kinetix && a.IsPersistent && a.Reference):
+                    usings.Add(GetNamespace(a, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }
-                    when Config.AvailableClasses.Contains(ap2.Association)
+                case { EnumProperty: IProperty ep }
+                    when Config.AvailableClasses.Contains(ep.Class)
                         && (
-                            Config.CanClassUseEnums(ap2.Association, ap2.Property)
-                            || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference
+                            Config.CanClassUseEnums(ep.Class, ep)
+                            || Config.Kinetix
+                                && !((property as AliasProperty)?.AliasedPrimaryKey ?? false)
+                                && ep.PrimaryKey
+                                && ep.Class.Reference
                         ):
-                    usings.Add(GetNamespace(ap2.Association, tag));
+
+                    usings.Add(GetNamespace(ep.Class, tag));
                     break;
-                case AliasProperty { Property: RegularProperty rp } alp
-                    when Config.AvailableClasses.Contains(rp.Class)
-                        && (
-                            Config.CanClassUseEnums(rp.Class, rp)
-                            || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference
-                        ):
-                    usings.Add(GetNamespace(rp.Class, tag));
-                    break;
-                case IProperty { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
+                case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
                     usings.Add(GetNamespace(cpc, tag));
                     break;
             }

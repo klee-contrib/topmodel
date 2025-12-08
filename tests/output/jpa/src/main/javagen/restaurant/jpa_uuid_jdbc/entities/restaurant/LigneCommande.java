@@ -51,12 +51,14 @@ public class LigneCommande {
 	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
+	@NotNull
 	@Column("com_id")
 	private Integer commandeId;
 
 	/**
 	 * Plat commandé.
 	 */
+	@NotNull
 	@Column("pla_id")
 	private Integer platId;
 

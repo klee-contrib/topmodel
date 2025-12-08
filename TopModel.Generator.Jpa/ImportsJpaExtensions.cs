@@ -22,7 +22,7 @@ public static class ImportsJpaExtensions
             yield return di;
         }
 
-        if (p is IProperty { Composition: Class cpc })
+        if (p is { Composition: Class cpc })
         {
             yield return cpc.GetImport(config, config.GetBestClassTag(cpc, tag));
         }

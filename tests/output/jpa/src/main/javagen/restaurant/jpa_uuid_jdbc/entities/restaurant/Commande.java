@@ -51,6 +51,7 @@ public class Commande {
 	/**
 	 * Client ayant passé la commande.
 	 */
+	@NotNull
 	@Column("cli_id")
 	private Integer clientId;
 
@@ -63,6 +64,7 @@ public class Commande {
 	/**
 	 * Statut de la commande.
 	 */
+	@NotNull
 	@Column("stc_code")
 	private String statutCommandeCode = "EnAttente";
 

@@ -117,7 +117,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     private void WriteColumn(StringBuilder sb, IProperty property)
     {
         var persistentType =
-            property is IProperty { Composition: null } ? Config.GetType(property)
+            property is { Composition: null } ? Config.GetType(property)
             : Config.TargetDBMS == TargetDBMS.Postgre ? "jsonb"
             : "json";
 

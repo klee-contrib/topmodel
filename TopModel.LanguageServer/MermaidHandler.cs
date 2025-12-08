@@ -17,7 +17,7 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
         var externalClasses = new List<Class>();
         foreach (var classe in classes)
         {
-            if (classe.Properties.OfType<RegularProperty>().Any())
+            if (classe.Properties.Any(p => p.Association == null && p.Composition == null))
             {
                 diagram += @$"%% {classe.Comment.Replace("\n", "\n%% ")}" + '\n';
 
@@ -34,7 +34,7 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                     continue;
                 }
 
-                foreach (var property in classe.Properties.OfType<RegularProperty>())
+                foreach (var property in classe.Properties.Where(p => p.Association == null && p.Composition == null))
                 {
                     diagram += $" {property.Domain.Name} {property.Name}\n";
                 }
@@ -42,16 +42,16 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                 diagram += "}\n";
             }
 
-            foreach (var property in classe.Properties.OfType<AssociationProperty>())
+            foreach (var property in classe.Properties.Where(p => p.Association != null))
             {
                 if (!classes.Contains(property.Association))
                 {
-                    externalClasses.Add(property.Association);
+                    externalClasses.Add(property.Association!);
                 }
 
                 string cardLeft;
                 string cardRight;
-                switch (property.Type)
+                switch (property.AssociationType)
                 {
                     case AssociationType.OneToOne:
                         cardLeft = property.Required ? "1" : "0..1";
@@ -72,7 +72,7 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                 }
 
                 diagram +=
-                    @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : string.Empty)}"
+                    @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association!.Name}{(property.AssociationRole != null ? " : " + property.AssociationRole : string.Empty)}"
                     + '\n';
             }
 

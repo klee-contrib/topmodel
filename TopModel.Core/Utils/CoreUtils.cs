@@ -10,6 +10,38 @@ public static class CoreUtils
 {
     extension(IProperty prop)
     {
+        public Class? Association =>
+            prop switch
+            {
+                AssociationProperty { Association: Class a } => a,
+                AliasProperty { Property: AssociationProperty { Association: Class a } } => a,
+                _ => null,
+            };
+
+        public IProperty? AssociationProperty =>
+            prop switch
+            {
+                AssociationProperty ap => ap.Property,
+                AliasProperty { Property: AssociationProperty ap } => ap.Property,
+                _ => null,
+            };
+
+        public string? AssociationRole =>
+            prop switch
+            {
+                AssociationProperty ap => ap.Role,
+                AliasProperty { Property: AssociationProperty ap } => ap.Role,
+                _ => null,
+            };
+
+        public AssociationType? AssociationType =>
+            prop switch
+            {
+                AssociationProperty ap => ap.Type,
+                AliasProperty { Property: AssociationProperty ap } => ap.Type,
+                _ => null,
+            };
+
         public Class? Composition =>
             prop switch
             {
@@ -38,14 +70,57 @@ public static class CoreUtils
             }
         }
 
+        public IEnumerable<(Domain Domain, bool Generic)> DomainChain
+        {
+            get
+            {
+                var op = (prop as AliasProperty)?.OriginalProperty;
+
+                if (
+                    prop.Domain != null
+                    && (op == null || op.Domain != prop.Domain || prop is AliasProperty { As: not null })
+                )
+                {
+                    yield return (
+                        prop.Domain,
+                        prop
+                            is AliasProperty { As: not null }
+                                or { AssociationType: AssociationType.OneToMany or AssociationType.ManyToMany }
+                    );
+                }
+
+                if (op != null)
+                {
+                    foreach (var d in op.DomainChain)
+                    {
+                        yield return d;
+                    }
+                }
+                else if (
+                    prop is AssociationProperty ap
+                    && ap.IsAssociationToMany()
+                    && ap.Property.Domain != prop.Domain
+                )
+                {
+                    yield return (ap.Property.Domain, false);
+                }
+            }
+        }
+
+        public IProperty? EnumProperty =>
+            prop switch
+            {
+                AssociationProperty a => a.Property,
+                AliasProperty { Property: AssociationProperty a } => a.Property,
+                AliasProperty alp => alp.Property,
+                { Composition: not null } => null,
+                _ => prop,
+            };
+
         public bool IsAssociationToMany()
         {
-            return prop
-                is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-                    or AliasProperty
-                    {
-                        Property: AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-                    };
+            return prop.AssociationType == AssociationType.OneToMany
+                || prop.AssociationType == AssociationType.ManyToMany;
         }
     }
 
@@ -161,8 +236,7 @@ public static class CoreUtils
     {
         return property switch
         {
-            IProperty { Class.Extends: not null, PrimaryKey: true }
-                when property.Name.StartsWith(property.Class.Name) => property
+            { Class.Extends: not null, PrimaryKey: true } when property.Name.StartsWith(property.Class.Name) => property
                 .Name[property.Class.Name.Length..]
                 .ToConstantCase(),
             AssociationProperty ap => ap.RawSqlName,

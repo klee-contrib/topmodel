@@ -64,12 +64,14 @@ public class AvisClient {
 	/**
 	 * Client ayant donné l'avis.
 	 */
+	@NotNull
 	@Column("cli_id_client")
 	private Integer clientIdClient;
 
 	/**
 	 * Restaurant concerné par l'avis.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

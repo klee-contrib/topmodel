@@ -49,6 +49,7 @@ public class TableClient {
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

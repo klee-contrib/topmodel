@@ -154,13 +154,13 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         {
             foreach (
                 var param in endpoint.Params.Where(param =>
-                    param is IProperty { Composition: not null }
+                    param is { Composition: not null }
                     || (param.Domain?.BodyParam ?? false)
                     || (param.Domain?.IsMultipart ?? false)
                 )
             )
             {
-                if (param is IProperty { Composition: not null })
+                if (param is { Composition: not null })
                 {
                     var requestPartAnnotation = new JavaAnnotation(
                         "RequestPart",

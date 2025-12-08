@@ -98,7 +98,7 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
 
                 foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
-                    if (param is not IProperty { Composition: not null })
+                    if (param is not { Composition: not null })
                     {
                         fw.Write(3, $@"{param.GetParamName()}");
                     }
@@ -161,9 +161,7 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
 
         if (
             endpoints.Any(endpoint =>
-                endpoint.Params.Any(p =>
-                    p is not IProperty { Composition: not null } && Config.GetType(p).Contains("File")
-                )
+                endpoint.Params.Any(p => p is not { Composition: not null } && Config.GetType(p).Contains("File"))
             )
         )
         {

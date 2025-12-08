@@ -15,7 +15,7 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
     {
         return classe.Properties.Where(p =>
             !(p is AssociationProperty ap && ap.Type.IsToMany())
-            && !(p is IProperty { Composition: Class cpc } && !Config.AvailableClasses.Contains(cpc))
+            && !(p is { Composition: Class cpc } && !Config.AvailableClasses.Contains(cpc))
         );
     }
 

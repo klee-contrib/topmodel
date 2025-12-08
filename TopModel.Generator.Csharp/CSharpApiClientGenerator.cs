@@ -103,17 +103,13 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             switch (property)
             {
-                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association):
-                    usings.Add(GetNamespace(ap.Association, tag));
+                case { Association: Class a } when Config.CanClassUseEnums(a):
+                    usings.Add(GetNamespace(a, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 } when Config.CanClassUseEnums(ap2.Association):
-                    usings.Add(GetNamespace(ap2.Association, tag));
+                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                    usings.Add(GetNamespace(ep.Class, tag));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }
-                    when Config.CanClassUseEnums(rp.Class):
-                    usings.Add(GetNamespace(rp.Class, tag));
-                    break;
-                case IProperty { Composition: Class cpc }:
+                case { Composition: Class cpc }:
                     usings.Add(GetNamespace(cpc, tag));
                     break;
             }

@@ -43,6 +43,7 @@ public class Employe extends Personne {
 	/**
 	 * Restaurant où travaille l'employé.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

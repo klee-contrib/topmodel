@@ -79,7 +79,7 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
 
                 foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
-                    if (param is not IProperty { Composition: not null })
+                    if (param is not { Composition: not null })
                     {
                         fw.Write($@"            {param.GetParamName()}");
                     }

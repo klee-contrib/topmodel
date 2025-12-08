@@ -180,7 +180,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag)
     {
         string target;
-        if (dep is { Source: IProperty and not IProperty { Composition: not null } })
+        if (dep is { Source: IProperty and not { Composition: not null } })
         {
             if (dep.Classe.EnumKey != null && AvailableClasses.Contains(dep.Classe))
             {

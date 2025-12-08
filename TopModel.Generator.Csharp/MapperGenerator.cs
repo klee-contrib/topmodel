@@ -23,7 +23,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
     protected virtual string GetSourceMapping(IProperty property)
     {
-        if (property is IProperty { CompositionPrimaryKey: IProperty cpk })
+        if (property is { CompositionPrimaryKey: IProperty cpk })
         {
             return $"{property.NamePascal}?.{cpk.NamePascal}";
         }
@@ -70,21 +70,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             switch (property)
             {
-                case AssociationProperty ap
-                    when Config.AvailableClasses.Contains(ap.Association)
-                        && Config.CanClassUseEnums(ap.Association, ap.Property):
-                    usings.Add(Config.GetNamespace(ap.Association, Config.GetBestClassTag(ap.Association, tag)));
+                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                    usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }
-                    when Config.AvailableClasses.Contains(ap2.Association)
-                        && Config.CanClassUseEnums(ap2.Association, ap2.Property):
-                    usings.Add(Config.GetNamespace(ap2.Association, Config.GetBestClassTag(ap2.Association, tag)));
-                    break;
-                case AliasProperty { Property: RegularProperty rp }
-                    when Config.AvailableClasses.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, rp):
-                    usings.Add(Config.GetNamespace(rp.Class, Config.GetBestClassTag(rp.Class, tag)));
-                    break;
-                case IProperty { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
+                case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
                     usings.Add(Config.GetNamespace(cpc, Config.GetBestClassTag(cpc, tag)));
                     break;
             }
@@ -226,11 +215,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             }
 
                             var value =
-                                $"{param.Name}{(!param.Required && mapping.Key is not IProperty { Composition: not null } ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+                                $"{param.Name}{(!param.Required && mapping.Key is not { Composition: not null } ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
                             if (
-                                mapping.Key is IProperty { CompositionPrimaryKey: IProperty cpk }
-                                && mapping.Value is IProperty { Composition: null }
+                                mapping.Key is { CompositionPrimaryKey: IProperty cpk }
+                                && mapping.Value is { Composition: null }
                             )
                             {
                                 w.Write(
@@ -317,10 +306,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                             w.Write(value);
 
-                            if (
-                                mapping.Key is IProperty { Composition: not null }
-                                && mapping.Value is IProperty { Composition: null }
-                            )
+                            if (mapping.Key is { Composition: not null } && mapping.Value is { Composition: null })
                             {
                                 w.Write(" }");
                             }
@@ -406,7 +392,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             var missingRequiredProperties = mapper
                 .MissingRequiredProperties.Where(mrp =>
-                    mrp is not IProperty { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
+                    mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
                 )
                 .ToList();
 

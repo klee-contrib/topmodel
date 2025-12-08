@@ -77,15 +77,6 @@ internal class MapperResolver(
 
                     if (currentProperty != null && mappedProperty != null)
                     {
-                        var sourceCp = currentProperty.Composition != null ? currentProperty : null;
-
-                        var mappedAp = mappedProperty switch
-                        {
-                            AssociationProperty ap => ap,
-                            AliasProperty { Property: AssociationProperty ap } => ap,
-                            _ => null,
-                        };
-
                         mappings.Mappings.Add(currentProperty, mappedProperty);
 
                         if (mappings.To && mappedProperty.Readonly)
@@ -108,7 +99,7 @@ internal class MapperResolver(
                         }
 
                         if (
-                            (sourceCp == null || mappedAp == null)
+                            (currentProperty.Composition == null || mappedProperty.Association == null)
                             && currentProperty.Domain != mappedProperty.Domain
                             && !converters.Any(c =>
                                 c.From.Any(cf => cf == (mappings.To ? currentProperty.Domain : mappedProperty.Domain))
@@ -124,9 +115,9 @@ internal class MapperResolver(
                             );
                         }
 
-                        if (sourceCp != null)
+                        if (currentProperty.Composition != null)
                         {
-                            if (mappedAp == null)
+                            if (mappedProperty.Association == null)
                             {
                                 yield return new ModelError(
                                     ErrorType.TMD8004,
@@ -137,7 +128,7 @@ internal class MapperResolver(
                             }
                             else if (
                                 !useLegacyAssociationCompositionMappers
-                                && (mappedAp.Type.IsToMany() || sourceCp.Domain != null)
+                                && (mappedProperty.IsAssociationToMany() || currentProperty.Domain != null)
                             )
                             {
                                 yield return new ModelError(
@@ -149,17 +140,17 @@ internal class MapperResolver(
                             }
                             else if (
                                 !useLegacyAssociationCompositionMappers
-                                && sourceCp.CompositionPrimaryKey?.Domain != mappedAp.Domain
+                                && currentProperty.CompositionPrimaryKey?.Domain != mappedProperty.Domain
                                 && !converters.Any(c =>
-                                    c.From.Any(cf => cf == sourceCp.CompositionPrimaryKey?.Domain)
-                                    && c.To.Any(ct => ct == mappedAp.Domain)
+                                    c.From.Any(cf => cf == currentProperty.CompositionPrimaryKey?.Domain)
+                                    && c.To.Any(ct => ct == mappedProperty.Domain)
                                 )
                             )
                             {
                                 yield return new ModelError(
                                     ErrorType.TMD8006,
                                     classe,
-                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition!.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').",
+                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{currentProperty.Composition!.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').",
                                     mapping.Value
                                 );
                             }

@@ -35,12 +35,14 @@ public class MenuPlat {
 	/**
 	 * Menu contenant ce plat.
 	 */
+	@NotNull
 	@Column("men_id_menu")
 	private Integer menuIdMenu;
 
 	/**
 	 * Plat du menu.
 	 */
+	@NotNull
 	@Column("pla_id_plat")
 	private Integer platIdPlat;
 

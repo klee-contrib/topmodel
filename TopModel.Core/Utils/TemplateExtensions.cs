@@ -235,20 +235,10 @@ public static class TemplateExtensions
             return ResolveCustomProperty(input["customProperties.".Length..], p.CustomProperties);
         }
 
-        if (input.StartsWith("association."))
+        if (input.StartsWith("association.") && p.Association != null)
         {
-            var association = p switch
-            {
-                AssociationProperty ap => ap.Association,
-                AliasProperty { Property: AssociationProperty ap } => ap.Association,
-                _ => null, // impossible
-            };
-
-            if (association != null)
-            {
-                return input["association.".Length..]
-                    .ResolveVariable(association, templateParameters, parameterValues, config, tag);
-            }
+            return input["association.".Length..]
+                .ResolveVariable(p.Association!, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("composition.") && p.Composition != null)

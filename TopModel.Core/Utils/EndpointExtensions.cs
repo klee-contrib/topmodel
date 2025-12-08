@@ -49,7 +49,7 @@ public static class EndpointExtensions
         return endpoint
             .Params.Where(param =>
                 !(
-                    param is IProperty { Composition: not null }
+                    param is { Composition: not null }
                     || (param.Domain?.BodyParam ?? false)
                     || (param.Domain?.IsMultipart ?? false)
                 )
