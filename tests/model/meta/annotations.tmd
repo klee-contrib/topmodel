@@ -1,0 +1,80 @@
+---
+module: Common
+tags:
+  - back
+  - front
+
+---
+# Annotation pour les propriétés sensibles
+annotation:
+  name: Sensible
+  description: Marque une propriété comme contenant des données sensibles
+  target:
+    - property
+    - regular-property
+
+  java:
+    - text: "@Sensitive"
+      imports:
+        - com.example.annotations.Sensitive
+
+  csharp:
+    - text: "[Sensitive]"
+      imports:
+        - System.ComponentModel.DataAnnotations
+---
+# Annotation pour les propriétés calculées
+annotation:
+  name: Calcule
+  description: Marque une propriété comme étant calculée
+  target:
+    - property
+    - regular-property
+
+  java:
+    - text: "@Calculated"
+      imports:
+        - com.example.annotations.Calculated
+
+  csharp:
+    - text: "[Calculated]"
+      imports:
+        - System.ComponentModel.DataAnnotations
+---
+# Annotation pour les endpoints nécessitant une authentification
+annotation:
+  name: Authenticated
+  description: Marque un endpoint comme nécessitant une authentification
+  target:
+    - endpoint
+
+  java:
+    - text: '@PreAuthorize("isAuthenticated()")'
+      imports:
+        - org.springframework.security.access.prepost.PreAuthorize
+
+  csharp:
+    - text: "Authorize"
+      imports:
+        - Microsoft.AspNetCore.Authorization
+---
+# Annotation pour les endpoints nécessitant un rôle spécifique
+annotation:
+  name: RoleRequired
+  description: Marque un endpoint comme nécessitant un rôle spécifique
+  target:
+    - endpoint
+  parameters:
+    - name: role
+      comment: Nom du rôle requis
+      required: true
+
+  java:
+    - text: 'PreAuthorize("hasRole(''{role}'')")'
+      imports:
+        - org.springframework.security.access.prepost.PreAuthorize
+
+  csharp:
+    - text: 'Authorize(Roles = "{role}")'
+      imports:
+        - Microsoft.AspNetCore.Authorization

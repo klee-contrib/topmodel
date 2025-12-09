@@ -1,0 +1,151 @@
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+export const restaurant = {
+    avisClient: {
+        approuve: "Approuve",
+        clientIdClient: "ClientIdClient",
+        commentaire: "Commentaire",
+        dateAvis: "DateAvis",
+        id: "Id",
+        nombreVues: "NombreVues",
+        note: "Note",
+        restaurantIdRestaurant: "RestaurantIdRestaurant"
+    },
+    categoriePlat: {
+        code: "Code",
+        libelle: "Libelle"
+    },
+    client: {
+        avisClientsClient: "AvisClientsClient",
+        commandes: "Commandes",
+        email: "Email",
+        id: "Id",
+        nom: "Nom",
+        prenom: "Prenom",
+        reservationsClient: "ReservationsClient",
+        telephone: "Telephone"
+    },
+    clientMinimal: {
+        id: "Informations client",
+        nom: "Informations client",
+        nomComplet: "NomComplet",
+        prenom: "Informations client"
+    },
+    commande: {
+        clientId: "ClientId",
+        dateCommande: "DateCommande",
+        dateLivraison: "DateLivraison",
+        id: "Id",
+        ligneCommandes: "LigneCommandes",
+        montantTotal: "MontantTotal",
+        statutCommandeCode: "StatutCommandeCode",
+        tableClientId: "TableClientId"
+    },
+    commandeDetailRead: {
+        lignes: "Lignes"
+    },
+    employe: {
+        dateEmbauche: "DateEmbauche",
+        matricule: "Matricule",
+        restaurantIdRestaurant: "RestaurantIdRestaurant",
+        salaire: "Salaire"
+    },
+    employeItem: {
+        id: "Id",
+        nom: "Nom",
+        prenom: "Prenom"
+    },
+    ligneCommande: {
+        commandeId: "CommandeId",
+        id: "Id",
+        platId: "PlatId",
+        prixTotal: "PrixTotal",
+        prixUnitaire: "PrixUnitaire",
+        quantite: "Quantite"
+    },
+    menu: {
+        dateDebut: "DateDebut",
+        dateFin: "DateFin",
+        description: "Description",
+        disponible: "Disponible",
+        id: "Id",
+        menuPlatsMenu: "MenuPlatsMenu",
+        nom: "Nom",
+        prix: "Prix",
+        restaurantIdRestaurant: "RestaurantIdRestaurant"
+    },
+    menuComplet: {
+        plats: "Plats"
+    },
+    plat: {
+        categoriePlatCodeCategoriePlat: "CategoriePlatCodeCategoriePlat",
+        description: "Description",
+        disponible: "Disponible",
+        id: "Id",
+        ligneCommandes: "LigneCommandes",
+        menuPlatsPlat: "MenuPlatsPlat",
+        nom: "Nom",
+        prix: "Prix",
+        promotionPlatsPlat: "PromotionPlatsPlat",
+        restaurantIdRestaurant: "RestaurantIdRestaurant"
+    },
+    promotion: {
+        active: "Active",
+        dateDebut: "DateDebut",
+        dateFin: "DateFin",
+        id: "Id",
+        libelle: "Libelle",
+        pourcentageReduction: "PourcentageReduction",
+        promotionPlatsPromotion: "PromotionPlatsPromotion",
+        restaurantIdRestaurant: "RestaurantIdRestaurant"
+    },
+    reservation: {
+        clientIdClient: "ClientIdClient",
+        commentaire: "Commentaire",
+        confirmee: "Confirmee",
+        dateReservation: "DateReservation",
+        id: "Id",
+        nombrePersonnes: "NombrePersonnes",
+        restaurantIdRestaurant: "RestaurantIdRestaurant",
+        tableClientIdTable: "TableClientIdTable"
+    },
+    restaurant: {
+        adresse: "Adresse",
+        avisClientsRestaurant: "AvisClientsRestaurant",
+        id: "Id",
+        menusRestaurant: "MenusRestaurant",
+        nom: "Nom",
+        platsRestaurant: "PlatsRestaurant",
+        promotionsRestaurant: "PromotionsRestaurant",
+        reservationsRestaurant: "ReservationsRestaurant",
+        tableClientsRestaurant: "TableClientsRestaurant",
+        telephone: "Telephone"
+    },
+    restaurantAvecStatistiques: {
+        nombrePlats: "NombrePlats",
+        nombreTables: "NombreTables",
+        noteMoyenne: "NoteMoyenne"
+    },
+    statistiquesRestaurant: {
+        chiffreAffaires: "ChiffreAffaires",
+        nombreClients: "NombreClients",
+        nombreCommandes: "NombreCommandes",
+        noteMoyenne: "NoteMoyenne",
+        restaurantId: "RestaurantId"
+    },
+    statutCommande: {
+        code: "Code",
+        libelle: "Libelle"
+    },
+    tableClient: {
+        capacite: "Capacite",
+        commandes: "Commandes",
+        disponible: "Disponible",
+        id: "Id",
+        numero: "Numero",
+        reservationsTable: "ReservationsTable",
+        restaurantIdRestaurant: "RestaurantIdRestaurant"
+    }
+};

@@ -1,0 +1,218 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - meta/domain
+  - Restaurant/01_References
+  - Restaurant/05_AdvancedEntities
+
+---
+class:
+  name: Restaurant
+  trigram: RES
+  comment: Restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du restaurant
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du restaurant
+
+    - name: Adresse
+      domain: DO_LIBELLE
+      comment: Adresse du restaurant
+
+    - name: Telephone
+      domain: DO_TELEPHONE
+      comment: Numéro de téléphone
+---
+class:
+  name: TableClient
+  trigram: TAB
+  comment: Table du restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la table
+
+    - name: Numero
+      domain: DO_CODE
+      required: true
+      comment: Numéro de la table
+
+    - name: Capacite
+      domain: DO_QUANTITE
+      required: true
+      comment: Capacité de la table (nombre de places)
+
+    - name: Disponible
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si la table est disponible
+
+    - association: Restaurant
+      role: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant auquel appartient la table
+
+  unique:
+    - [RestaurantIdRestaurant, Numero]
+---
+class:
+  name: Client
+  trigram: CLI
+  comment: Client du restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du client
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du client
+
+    - name: Prenom
+      domain: DO_LIBELLE
+      required: true
+      comment: Prénom du client
+
+    - name: Telephone
+      domain: DO_TELEPHONE
+      comment: Numéro de téléphone du client
+
+    - name: Email
+      domain: DO_LIBELLE
+      comment: Adresse email du client
+---
+class:
+  name: Plat
+  trigram: PLA
+  comment: Plat du menu
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du plat
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du plat
+
+    - name: Description
+      domain: DO_LIBELLE
+      comment: Description du plat
+
+    - name: Prix
+      domain: DO_PRIX
+      required: true
+      comment: Prix du plat
+
+    - name: Disponible
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si le plat est disponible
+
+    - association: CategoriePlat
+      role: CategoriePlat
+      required: true
+      comment: Catégorie du plat
+
+    - association: Restaurant
+      role: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant proposant ce plat
+---
+class:
+  name: Commande
+  trigram: COM
+  comment: Commande d'un client
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la commande
+
+    - name: DateCommande
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date et heure de la commande
+
+    - name: DateLivraison
+      domain: DO_DATE_HEURE
+      comment: Date et heure de livraison
+
+    - name: MontantTotal
+      domain: DO_PRIX
+      required: true
+      comment: Montant total de la commande
+
+    - association: Client
+      required: true
+      withReverse: true
+      comment: Client ayant passé la commande
+
+    - association: TableClient
+      withReverse: true
+      comment: Table associée à la commande
+
+    - association: StatutCommande
+      required: true
+      defaultValue: EN_ATT
+      comment: Statut de la commande
+---
+class:
+  name: LigneCommande
+  trigram: LIG
+  comment: Ligne d'une commande
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la ligne
+
+    - name: Quantite
+      domain: DO_QUANTITE
+      required: true
+      comment: Quantité commandée
+
+    - name: PrixUnitaire
+      domain: DO_PRIX
+      required: true
+      comment: Prix unitaire au moment de la commande
+
+    - name: PrixTotal
+      domain: DO_PRIX
+      required: true
+      comment: Prix total de la ligne
+
+    - association: Commande
+      required: true
+      withReverse: true
+      comment: Commande à laquelle appartient la ligne
+
+    - association: Plat
+      required: true
+      withReverse: true
+      comment: Plat commandé
+
+  unique:
+    - [CommandeId, PlatId]

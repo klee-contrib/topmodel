@@ -1,0 +1,30 @@
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+import {DO_ID, DO_PRIX, DO_QUANTITE} from "@/domains";
+import {e, entity, EntityToType} from "@focus4/entities";
+
+export type LigneCommandeRead = EntityToType<LigneCommandeReadEntityType>;
+export type LigneCommandeReadEntityType = typeof LigneCommandeReadEntity;
+
+export const LigneCommandeReadEntity = entity({
+    id: e.field(DO_ID, f => f.optional()
+        .label("restaurant.ligneCommande.id")
+    ),
+    quantite: e.field(DO_QUANTITE, f => f
+        .label("restaurant.ligneCommande.quantite")
+    ),
+    prixUnitaire: e.field(DO_PRIX, f => f
+        .label("restaurant.ligneCommande.prixUnitaire")
+    ),
+    prixTotal: e.field(DO_PRIX, f => f
+        .label("restaurant.ligneCommande.prixTotal")
+    ),
+    commandeId: e.field(DO_ID, f => f
+        .label("restaurant.ligneCommande.commandeId")
+    ),
+    platId: e.field(DO_ID, f => f
+        .label("restaurant.ligneCommande.platId")
+    )
+});

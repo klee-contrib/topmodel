@@ -1,0 +1,243 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+uses:
+  - Restaurant/02_Entities
+  - Restaurant/03_Dtos
+  - Restaurant/04_Endpoints
+  - Restaurant/05_AdvancedEntities
+
+---
+# DTO avec composition et alias avec prefix
+class:
+  name: CommandeDetailRead
+  comment: Détail complet d'une commande avec ses lignes
+
+  properties:
+    - alias:
+        class: Commande
+    - composition: LigneCommandeItem
+      name: Lignes
+      domain: DO_LISTE
+      required: true
+      comment: Liste des lignes de commande
+
+---
+# DTO avec alias utilisant prefix et suffix
+class:
+  name: RestaurantAvecStatistiques
+  comment: Restaurant avec ses statistiques
+
+  properties:
+    - alias:
+        class: Restaurant
+    - name: NombrePlats
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de plats du restaurant
+
+    - name: NombreTables
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de tables du restaurant
+
+    - name: NoteMoyenne
+      domain: DO_PRIX
+      comment: Note moyenne des avis clients
+
+  mappers:
+    from:
+      - params:
+          - class: Restaurant
+          - property:
+              name: NombrePlats
+              domain: DO_QUANTITE
+              comment: Nombre de plats
+          - property:
+              name: NombreTables
+              domain: DO_QUANTITE
+              comment: Nombre de tables
+          - property:
+              name: NoteMoyenne
+              domain: DO_PRIX
+              comment: Note moyenne
+
+---
+# DTO avec alias utilisant des transformations de domaine (as)
+class:
+  name: ClientAvecCommandes
+  comment: Client avec la liste de ses commandes
+
+  properties:
+    - alias:
+        class: Client
+    - alias:
+        class: Commande
+      prefix: true
+      as: list
+      comment: Liste des commandes du client
+
+---
+# DTO avec composition et alias avec mappings personnalisés
+class:
+  name: PlatAvecDetails
+  comment: Plat avec ses détails et sa catégorie
+
+  properties:
+    - alias:
+        class: Plat
+
+  mappers:
+    from:
+      - params:
+          - class: Plat
+---
+# DTO avec alias depuis un endpoint
+class:
+  name: CommandeResume
+  abstract: true
+  comment: Résumé d'une commande pour liste
+
+  properties:
+    - alias:
+        endpoint: GetCommande
+        include:
+          - Id
+
+---
+# DTO avec alias utilisant preservePrimaryKey et preserveTrigram
+class:
+  name: CommandeExport
+  comment: Commande pour export avec préservation des clés primaires
+
+  properties:
+    - alias:
+        class: Commande
+      preservePrimaryKey: true
+      preserveTrigram: true
+
+---
+# DTO avec alias et surcharge de propriétés
+class:
+  name: ClientMinimal
+  comment: Version minimale d'un client
+
+  properties:
+    - alias:
+        class: Client
+        include:
+          - Id
+          - Nom
+          - Prenom
+      label: Informations client
+    - name: NomComplet
+      domain: DO_LIBELLE
+      readonly: true
+      comment: Nom complet du client (calculé)
+
+  mappers:
+    from:
+      - params:
+          - class: Client
+
+---
+# DTO avec composition et alias avec exclude
+class:
+  name: MenuComplet
+  comment: Menu avec tous ses plats
+
+  properties:
+    - alias:
+        class: Menu
+    - composition: PlatItem
+      name: Plats
+      domain: DO_LISTE
+      required: true
+      comment: Liste des plats du menu
+
+---
+# DTO avec alias utilisant className pour personnaliser le nom
+class:
+  name: ReservationAvecDetails
+  comment: Réservation avec détails du client et de la table
+
+  properties:
+    - alias:
+        class: Reservation
+    - alias:
+        class: Client
+        include:
+          - Nom
+          - Prenom
+          - Telephone
+      prefix: true
+      comment: Informations du client ayant fait la réservation
+
+    - alias:
+        class: TableClient
+        include:
+          - Numero
+          - Capacite
+      prefix: true
+      comment: Table réservée
+
+---
+# DTO avec mappers complexes avec plusieurs paramètres
+class:
+  name: StatistiquesRestaurant
+  comment: Statistiques d'un restaurant
+
+  properties:
+    - name: RestaurantId
+      domain: DO_ID
+      required: true
+      comment: Identifiant du restaurant
+
+    - name: NombreCommandes
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre total de commandes
+
+    - name: ChiffreAffaires
+      domain: DO_PRIX
+      required: true
+      defaultValue: 0
+      comment: Chiffre d'affaires total
+
+    - name: NombreClients
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de clients uniques
+
+    - name: NoteMoyenne
+      domain: DO_PRIX
+      comment: Note moyenne des avis
+
+  mappers:
+    from:
+      - params:
+          - class: Restaurant
+            name: restaurant
+            required: true
+          - property:
+              name: NombreCommandes
+              domain: DO_QUANTITE
+              comment: Nombre de commandes
+          - property:
+              name: ChiffreAffaires
+              domain: DO_PRIX
+              comment: Chiffre d'affaires
+          - property:
+              name: NombreClients
+              domain: DO_QUANTITE
+              comment: Nombre de clients
+          - property:
+              name: NoteMoyenne
+              domain: DO_PRIX
+              comment: Note moyenne

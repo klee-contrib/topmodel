@@ -601,6 +601,13 @@ Le générateur crée des interfaces similaires au mode `Server`, à la différe
 
 **Note :** Ce mode nécessite la dépendance Spring Cloud OpenFeign.
 
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
 ## Dépendances
 
 ```xml
@@ -1086,14 +1093,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
   _Valeur par défaut_: `true`
 
-- `persistenceMode`
-
-  Mode de génération de la persistence (`"javax"` ou `"jakarta"`). Par défaut, `javax` est utilisé pour la compatibilité avec Spring Boot 2.x, et `jakarta` pour Spring Boot 3.x.
-
-  _Valeur par défaut_: `javax`
-
-  _Variables par tag_: **non**
-
 - `mappersInClass`
 
   Indique s'il faut ajouter les mappers en tant que méthode (`to...`) ou constructeur dans les classes qui les déclarent. Si `true`, les mappers `from` sont générés comme constructeurs et les mappers `to` comme méthodes dans les classes concernées.
@@ -1266,7 +1265,6 @@ jpa:
     apiGeneration: Server  # Mode de génération de l'API (Client ou Server)
     fieldsEnum: ["persisted"]  # Classes dans lesquelles le générateur doit ajouter une enum des champs
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>  # Interface dont doivent hériter ces enums
-    persistenceMode: jakarta  # Mode de persistence (javax ou jakarta)
     identity:
       mode: sequence
       increment: 50
