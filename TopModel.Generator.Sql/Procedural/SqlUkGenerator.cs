@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -42,8 +43,7 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
         foreach (
             var uk in classe.UniqueKeys.Concat(
                 classe
-                    .Properties.OfType<AssociationProperty>()
-                    .Where(ap => ap.Type == AssociationType.OneToOne && !ap.PrimaryKey)
+                    .Properties.Where(ap => ap.AssociationType == AssociationType.OneToOne && !ap.PrimaryKey)
                     .Select(ap => new List<IProperty> { ap })
             )
         )

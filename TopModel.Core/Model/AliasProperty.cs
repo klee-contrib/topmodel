@@ -229,15 +229,7 @@ public class AliasProperty : IProperty
         : OriginalProperty?.Class?.IsPersistent ?? false ? OriginalProperty
         : null;
 
-    public bool AliasedPrimaryKey =>
-        !PreservePrimaryKey
-        && (
-            OriginalProperty is AliasProperty op
-                ? op.PrimaryKey || op.AliasedPrimaryKey
-                : OriginalProperty?.PrimaryKey ?? false
-        )
-        && Prefix == null
-        && Suffix == null;
+    public bool AliasedPrimaryKey => get_PrimaryKeyish(this);
 
     public AliasReference? Reference { get; set; }
 

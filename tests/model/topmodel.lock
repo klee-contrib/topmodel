@@ -18,9 +18,9 @@ modules:
     hash: b6fb8a53fe077a206c1b321096e0675c
 custom:
   ../../TopModel.Generator.Jpa: 381aceb17823233efa3716b653afa7f1
-  ../../TopModel.Generator.Csharp: fb88ac7c37b66d761b5f4d01820c9c13
-  ../../TopModel.Generator.Javascript: 83713af28bee973b9bdb2e5e59c48267
-  ../../TopModel.Generator.Sql: 294b7adc70be5e54c565bbeda830b936
+  ../../TopModel.Generator.Csharp: b0cceb57a0a21710e6c15a1499f61dcf
+  ../../TopModel.Generator.Javascript: 22ebb14cb96edf36bfe30f048ead5b81
+  ../../TopModel.Generator.Sql: f91ee2f71df3785733de7e163a47ccf8
   ../../TopModel.Generator.Translation: 42f228bfbbe42e2db8a3adf7f52a8d62
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/advanced-endpoints.service.ts

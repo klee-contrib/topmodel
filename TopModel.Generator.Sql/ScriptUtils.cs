@@ -19,16 +19,9 @@ public static class ScriptUtils
             yield return prop;
         }
 
-        if (classe.Extends != null)
+        if (classe.ParentAssociationProperty != null)
         {
-            yield return new AssociationProperty
-            {
-                Association = classe.Extends,
-                Class = classe,
-                Comment = "Association vers la clé primaire de la classe parente",
-                Required = true,
-                PrimaryKey = !classe.PrimaryKey.Any(),
-            };
+            yield return classe.ParentAssociationProperty!;
         }
     }
 

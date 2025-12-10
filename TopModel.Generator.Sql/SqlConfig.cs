@@ -1,10 +1,10 @@
 ﻿using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
 using TopModel.Generator.Sql.Ssdt;
-using TopModel.Utils;
 
 namespace TopModel.Generator.Sql;
 
@@ -117,57 +117,11 @@ public class SqlConfig : GeneratorConfigBase
 
     public override IEnumerable<Class> GetExtraClasses(ModelFile file)
     {
-        var manyToManyProperties = file
+        return file
             .Classes.Where(c => c.IsPersistent && !c.Abstract)
             .SelectMany(cl => cl.Properties)
-            .OfType<AssociationProperty>()
-            .Where(ap => ap.Type == AssociationType.ManyToMany);
-
-        foreach (var ap in manyToManyProperties)
-        {
-            var traClass = new Class
-            {
-                Comment = ap.Comment,
-                Label = ap.Label,
-                SqlName =
-                    $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}",
-                ModelFile = file,
-            };
-
-            traClass.Properties.Add(
-                new AssociationProperty
-                {
-                    Association = ap.Class,
-                    Class = traClass,
-                    Comment = ap.Comment,
-                    Type = AssociationType.ManyToOne,
-                    PrimaryKey = true,
-                    Required = true,
-                    Role = ap.Role,
-                    DefaultValue = ap.DefaultValue,
-                    Label = ap.Label,
-                    Trigram = ap.Class.PrimaryKey.Single().Trigram,
-                }
-            );
-
-            traClass.Properties.Add(
-                new AssociationProperty
-                {
-                    Association = ap.Association,
-                    Class = traClass,
-                    Comment = ap.Comment,
-                    Type = AssociationType.ManyToOne,
-                    PrimaryKey = true,
-                    Required = true,
-                    Role = ap.Role,
-                    DefaultValue = ap.DefaultValue,
-                    Label = ap.Label,
-                    Trigram = ap.Trigram ?? ap.Property.Trigram ?? ap.Association.Trigram,
-                }
-            );
-
-            yield return traClass;
-        }
+            .Select(p => p.ManyToManyClass!)
+            .Where(c => c != null);
     }
 
     public virtual string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)

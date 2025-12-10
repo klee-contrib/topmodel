@@ -15,31 +15,17 @@ public class DbContextGenerator(
 {
     public override string Name => "CSharpDbContextGen";
 
-    protected virtual IEnumerable<(
-        IProperty Property,
-        AssociationProperty AssociationProperty
-    )> GetAssociationProperties(IEnumerable<Class> classes, string tag)
+    protected virtual IEnumerable<IProperty> GetAssociationProperties(IEnumerable<Class> classes, string tag)
     {
         return classes
             .Distinct()
             .OrderBy(c => c.NamePascal)
             .SelectMany(c => c.Properties)
             .Where(p =>
-                p is AssociationProperty { Association.IsPersistent: true }
-                || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }
-            )
-            .Select(p =>
-                p switch
-                {
-                    AssociationProperty ap => (p, ap),
-                    AliasProperty { Property: AssociationProperty ap } => (p, ap),
-                    _ => (null!, null!),
-                }
-            )
-            .Where(p =>
-                (p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
-                && Config.AvailableClasses.Contains(p.ap.Association)
-                && Config.IsPersistent(p.ap.Association, Config.GetBestClassTag(p.ap.Association, tag))
+                p is { Association.IsPersistent: true }
+                && (p.AssociationType == AssociationType.ManyToOne || p.AssociationType == AssociationType.OneToOne)
+                && Config.AvailableClasses.Contains(p.Association)
+                && Config.IsPersistent(p.Association!, Config.GetBestClassTag(p.Association!, tag))
             );
     }
 
@@ -87,7 +73,7 @@ public class DbContextGenerator(
 
             foreach (
                 var property in classe.Properties.Where(p =>
-                    p is not AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
+                    p is not { AssociationType: AssociationType.OneToMany or AssociationType.ManyToMany }
                 )
             )
             {
@@ -115,7 +101,7 @@ public class DbContextGenerator(
 
         foreach (
             var ns in classes
-                .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
+                .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.Association!))
                 .Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag)))
                 .Distinct()
         )
@@ -198,13 +184,7 @@ public class DbContextGenerator(
         var hasPropConfig = false;
         foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties))
         {
-            var prop = fp is AliasProperty alp ? alp.Property : fp;
-            var ap = prop as AssociationProperty;
-
-            var classe = ap != null ? ap.Association : prop.Class;
-            var targetProp = ap != null ? ap.Property : prop;
-
-            if (Config.CanClassUseEnums(classe, targetProp))
+            if (fp.EnumProperty != null && Config.CanClassUseEnums(fp.EnumProperty!.Class, fp.EnumProperty))
             {
                 hasPropConfig = true;
                 w.WriteLine(
@@ -266,17 +246,17 @@ public class DbContextGenerator(
                 var g in GetAssociationProperties(classes, tag)
                     .GroupBy(c => new
                     {
-                        c.Property.Class,
-                        c.AssociationProperty.Association,
-                        c.AssociationProperty.Type,
-                        c.AssociationProperty.Role,
+                        c.Class,
+                        c.Association,
+                        c.AssociationType,
+                        c.AssociationRole,
                     })
             )
             {
                 hasFk = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{g.Key.Association}>().With{(g.Key.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(g.Key.Type == AssociationType.ManyToOne ? string.Empty : $"<{g.Key.Class}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().Property.NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.Property.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
+                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{g.Key.Association}>().With{(g.Key.AssociationType == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(g.Key.AssociationType == AssociationType.ManyToOne ? string.Empty : $"<{g.Key.Class}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
                 );
             }
 
@@ -348,8 +328,7 @@ public class DbContextGenerator(
 
                     foreach (var refProp in refValue.Value.ToList())
                     {
-                        var prop = refProp.Key is AliasProperty alp ? alp.Property : refProp.Key;
-                        var targetClass = prop is AssociationProperty ap ? ap.Association : prop.Class;
+                        var targetClass = refProp.Key.Association ?? refProp.Key.Class;
 
                         var value = Config.GetValue(refProp.Key, refProp.Value);
                         if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))

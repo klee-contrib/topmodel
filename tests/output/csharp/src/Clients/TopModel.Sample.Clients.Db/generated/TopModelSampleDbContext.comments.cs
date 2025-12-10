@@ -58,7 +58,6 @@ public partial class TopModelSampleDbContext : DbContext
         commandeExport.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
         commandeExport.Property(p => p.TableClientId).HasComment("Table associée à la commande");
         commandeExport.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
-        commandeExport.Property(p => p.LigneCommandes).HasComment("Association réciproque de LigneCommande.CommandeId");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));

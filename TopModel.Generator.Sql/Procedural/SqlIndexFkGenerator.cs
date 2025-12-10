@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -57,14 +58,14 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     /// <param name="association">Association destination de la clef étrangère.</param>
     /// <param name="writer">Flux d'écriture.</param>
     private void GenerateConstraintForeignKey(
-        AssociationProperty propertySource,
+        IProperty propertySource,
         IProperty propertyTarget,
         Class association,
         IFileWriter writer
     )
     {
         var tableName = propertySource.Class.SqlName;
-        var propertyName = ((IProperty)propertySource).SqlName;
+        var propertyName = propertySource.SqlName;
         writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
@@ -85,9 +86,9 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     /// </summary>
     /// <param name="property">Propriété portant la clef étrangère.</param>
     /// <param name="writer">Flux d'écriture.</param>
-    private void GenerateConstraintForeignKey(AssociationProperty property, IFileWriter writer)
+    private void GenerateConstraintForeignKey(IProperty property, IFileWriter writer)
     {
-        GenerateConstraintForeignKey(property, property.Property, property.Association, writer);
+        GenerateConstraintForeignKey(property, property.AssociationProperty!, property.Association!, writer);
     }
 
     /// <summary>
@@ -118,13 +119,13 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
         writer.WriteLine($"){GetIndexTablespaceDeclaration()}{Config.BatchSeparator}");
     }
 
-    private IEnumerable<AssociationProperty> GetForeignKeys(Class classe)
+    private IEnumerable<IProperty> GetForeignKeys(Class classe)
     {
         var properties = classe.GetAllProperties(Config.Classes);
 
         foreach (var property in properties)
         {
-            if (property is AssociationProperty { Association.IsPersistent: true } ap)
+            if (property is { Association.IsPersistent: true } ap)
             {
                 yield return ap;
             }
