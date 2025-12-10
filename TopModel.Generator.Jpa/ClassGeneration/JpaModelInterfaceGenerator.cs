@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -29,15 +30,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        foreach (
-            var property in classe.Properties.Where(p =>
-                !(
-                    p is AssociationProperty apo
-                    && apo.Association.Reference
-                    && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)
-                )
-            )
-        )
+        foreach (var property in classe.Properties)
         {
             var getter = JpaModelPropertyGenerator.GetGetter(tag, property);
             getter.Body.Clear();
@@ -50,14 +43,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected virtual JavaMethod? GetHydrate(Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p =>
-            !p.Readonly
-            && !(
-                p is AssociationProperty apo
-                && apo.Association.Reference
-                && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)
-            )
-        );
+        var properties = classe.Properties.Where(p => !p.Readonly);
 
         if (!properties.Any())
         {

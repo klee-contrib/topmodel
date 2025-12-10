@@ -6,8 +6,6 @@ package restaurant.jpa_uuid_jdbc.entities.restaurant;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -78,14 +76,6 @@ public class CommandeExport {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
-	 */
-	@NotNull
-	@Column("lig_id")
-	private List<Integer> ligneCommandes;
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -149,18 +139,6 @@ public class CommandeExport {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
-	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
-	 */
-	public List<Integer> getLigneCommandes() {
-		if (this.ligneCommandes == null) {
-			this.ligneCommandes = new ArrayList<>();
-		}
-		return this.ligneCommandes;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -214,13 +192,5 @@ public class CommandeExport {
 	 */
 	public void setStatutCommandeCode(String statutCommandeCode) {
 		this.statutCommandeCode = statutCommandeCode;
-	}
-
-	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
-	 */
-	public void setLigneCommandes(List<Integer> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
 	}
 }

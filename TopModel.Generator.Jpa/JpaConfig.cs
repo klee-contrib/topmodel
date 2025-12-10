@@ -2,6 +2,7 @@
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -218,9 +219,9 @@ public class JpaConfig : GeneratorConfigBase
     {
         return !UseJdbc
             && base.CanClassUseEnums(classe, prop)
-            && !classe
-                .Properties.OfType<AssociationProperty>()
-                .Any(a => a.Association != classe && !CanClassUseEnums(a.Association));
+            && !classe.Properties.Any(a =>
+                a.Association != null && a.Association != classe && !CanClassUseEnums(a.Association!)
+            );
     }
 
     public virtual string GetApiClassName(string defaultValue, string fileName, string tag)

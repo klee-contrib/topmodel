@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Core.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -44,28 +45,27 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
                         isString = false;
                     }
                     else if (
-                        prop is AssociationProperty ap
-                        && Config.CanClassUseEnums(ap.Association, prop: ap.Property)
-                        && ap.Association.Values.Any(r =>
-                            r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value
-                        )
+                        prop is { Association: Class association, AssociationProperty: IProperty ap }
+                        && Config.CanClassUseEnums(association, prop: ap)
+                        && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
                     )
                     {
-                        value = ap.Association.NamePascal + "." + value;
+                        value = association.NamePascal + "." + value;
                         isString = false;
-                        constructor.Imports.Add(ap.Association.GetImport(Config, tag));
+                        constructor.Imports.Add(association.GetImport(Config, tag));
                     }
                     else if (
-                        prop is AliasProperty alp
-                        && Config.CanClassUseEnums(alp.Property.Class, prop: alp.Property)
+                        prop is { EnumProperty: IProperty ep }
+                        && Config.CanClassUseEnums(ep.Class, ep)
+                        && ep.Class != prop.Class
                     )
                     {
-                        value = Config.GetType(alp.Property) + "." + value;
+                        value = Config.GetType(ep) + "." + value;
                     }
                     else if (
                         Config.TranslateReferences == true
                         && classe.DefaultProperty == prop
-                        && !Config.CanClassUseEnums(classe, prop: prop)
+                        && !Config.CanClassUseEnums(classe, prop)
                     )
                     {
                         value = refValue.ResourceKey;

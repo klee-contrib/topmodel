@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -74,8 +75,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                     prop,
                     useClassForAssociation: classe.IsPersistent
                         && !Config.UseJdbc
-                        && prop is AssociationProperty asp
-                        && asp.Association.IsPersistent
+                        && prop is { Association.IsPersistent: true }
                 );
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)

@@ -195,6 +195,11 @@ public static class CoreUtils
         }
 
         /// <summary>
+        /// Pour un alias, la propriété à partir de laquelle l'alias a été construit.
+        /// </summary>
+        public IProperty? OriginalProperty => (prop as AliasProperty)?.OriginalProperty;
+
+        /// <summary>
         /// Classe persistante de laquelle est issue la propriété.
         /// </summary>
         /// <remarks>(Pour un alias de propriété persistée sur une classe non persistée, il s'agira de la classe de la propriété originale.)</remarks>
@@ -232,6 +237,12 @@ public static class CoreUtils
                 AliasProperty { Property: { PrimaryKey: true, Class: { Reference: true } c } } => c,
                 _ => null,
             };
+
+        /// <summary>
+        /// Si la propriété est une association, retourne son association réciproque.
+        /// </summary>
+        /// <remarks>(Un alias d'association n'hérite pas de son association réciproque.)</remarks>
+        public IProperty? ReverseProperty => (prop as AssociationProperty)?.ReverseProperty;
 
         /// <summary>
         /// Vérifie si la propriété est une association de type 'toMany'.

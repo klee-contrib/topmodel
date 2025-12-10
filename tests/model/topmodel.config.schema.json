@@ -685,7 +685,7 @@
               "type": "string",
               "enum": [
                 "JavaDtoGen",
-                "JpaEnumDtoGen",
+                "JavaEnumDtoGen",
                 "JdbcEntityGen",
                 "JpaDaoGen",
                 "JpaEntityGen",

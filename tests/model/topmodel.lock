@@ -17,7 +17,7 @@ modules:
     version: 3.2.2
     hash: b6fb8a53fe077a206c1b321096e0675c
 custom:
-  ../../TopModel.Generator.Jpa: 381aceb17823233efa3716b653afa7f1
+  ../../TopModel.Generator.Jpa: 7de13a0f083d6692b1c3de675205a76f
   ../../TopModel.Generator.Csharp: b0cceb57a0a21710e6c15a1499f61dcf
   ../../TopModel.Generator.Javascript: 22ebb14cb96edf36bfe30f048ead5b81
   ../../TopModel.Generator.Sql: f91ee2f71df3785733de7e163a47ccf8

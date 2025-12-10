@@ -33,12 +33,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
         return classe.Properties.Where(p =>
-            !(p is { Composition: Class cpc } && !Config.AvailableClasses.Contains(cpc))
-            && !(
-                p is AliasProperty ap
-                && ap.Property is { Composition: Class cpc2 }
-                && !Config.AvailableClasses.Contains(cpc2)
-            )
+            p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
         );
     }
 
@@ -93,11 +88,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             yield return new JavaAnnotation(name: annotation, imports: imports.ToArray());
         }
 
-        if (
-            !property.Class.IsPersistent
-            && !(property is AssociationProperty ap && ap.Type.IsToMany())
-            && property.Domain != null
-        )
+        if (!property.Class.IsPersistent && !property.IsAssociationToMany() && property.Domain != null)
         {
             var propertyType = GetPropertyType(property);
             List<string> sizePropertyValidateTypes = ["String", "CharSequence", "Set", "Map", "List", "Collection"];
@@ -155,17 +146,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         };
 
         if (
-            property is AliasProperty ap
-            && Config.AvailableClasses.Contains(ap.Property.Class)
-            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class))
+            property is { OriginalProperty: IProperty op }
+            && Config.AvailableClasses.Contains(op.Class)
+            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(op.Class, op))
         )
         {
-            var getter = $"#{GetGetterName(ap.Property)}()";
+            var getter = $"#{GetGetterName(op)}()";
             javaField.Comment.Add(
-                $"Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}"
+                $"Alias of {{@link {op.Class.GetImport(Config, tag)}{getter} {op.Class.NamePascal}{getter}}}"
             );
         }
-        IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
+        var annotations = GetAnnotations(property, tag);
 
         if (!property.PrimaryKey || property.Class.PrimaryKey.Count() <= 1)
         {
@@ -287,17 +278,9 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual bool UseClassForAssociation(IProperty property)
     {
-        var isAssociationToNotAvailableClass =
-            property is AssociationProperty asp && !Config.AvailableClasses.Contains(asp.Association);
-        var isAliasToAssociationToNotAvailableClass =
-            property is AliasProperty alp
-            && alp.Property is AssociationProperty asop
-            && !Config.AvailableClasses.Contains(asop.Association);
-        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
         return property.Class.IsPersistent
-            && !isAssociationNotPersistent
-            && !isAssociationToNotAvailableClass
-            && !isAliasToAssociationToNotAvailableClass;
+            && property is { Association: Class { IsPersistent: true } association }
+            && Config.AvailableClasses.Contains(association);
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(IProperty property, string tag)
@@ -437,11 +420,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual string GetDefaultValue(IProperty property)
     {
         var defaultValue = Config.GetValue(property);
-        if (property is AssociationProperty ap)
+        if (property is { Association: Class association })
         {
             if (
-                ap.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap.Association, prop: ap.Association.PrimaryKey.Single())
+                association.PrimaryKey.Count() == 1
+                && Config.CanClassUseEnums(association, prop: association.PrimaryKey.Single())
                 && defaultValue != "null"
             )
             {
@@ -451,31 +434,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 }
                 else if (property.Class.IsPersistent)
                 {
-                    return $"new {ap.Association.NamePascal}({defaultValue})";
-                }
-                else
-                {
-                    return defaultValue;
-                }
-            }
-
-            return string.Empty;
-        }
-        else if (property is AliasProperty { Property: AssociationProperty ap2 })
-        {
-            if (
-                ap2.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap2.Association, prop: ap2.Association.PrimaryKey.Single())
-                && defaultValue != "null"
-            )
-            {
-                if (Config.EnumsAsEnums)
-                {
-                    return $"{defaultValue}";
-                }
-                else if (property.Class.IsPersistent)
-                {
-                    return $"new {ap2.Association.NamePascal}({defaultValue})";
+                    return $"new {association.NamePascal}({defaultValue})";
                 }
                 else
                 {
@@ -495,33 +454,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)
     {
         var defaultValue = Config.GetValue(property);
-        if (property is AssociationProperty ap)
+        if (property is { Association: Class association })
         {
             if (
-                ap.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap.Association, prop: ap.Association.PrimaryKey.Single())
+                association.PrimaryKey.Count() == 1
+                && Config.CanClassUseEnums(association, association.PrimaryKey.Single())
                 && defaultValue != "null"
             )
             {
                 return
                 [
-                    $"{Config.GetEnumPackageName(ap.Association, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(ap.Association.PrimaryKey.Single())}",
-                ];
-            }
-
-            return [];
-        }
-        else if (property is AliasProperty asp && asp.Property is AssociationProperty ap2)
-        {
-            if (
-                ap2.Association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(ap2.Association, prop: ap2.Association.PrimaryKey.Single())
-                && defaultValue != "null"
-            )
-            {
-                return
-                [
-                    $"{Config.GetEnumPackageName(ap2.Association, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(ap2.Association.PrimaryKey.Single())}",
+                    $"{Config.GetEnumPackageName(association, Config.GetBestClassTag(property.Class, tag))}.{GetPropertyType(association.PrimaryKey.Single())}",
                 ];
             }
 
@@ -535,7 +478,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property)
     {
-        if (property is AssociationProperty && property.Class?.PrimaryKey.Count() == 1)
+        if (property.Association != null && property.Class?.PrimaryKey.Count() == 1)
         {
             yield return MapsIdAnnotation;
         }
@@ -578,14 +521,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             );
         }
 
-        if (property is ReverseAssociationProperty rap)
+        if (property.ReverseProperty != null)
         {
-            association.AddAttribute("mappedBy", $@"""{rap.ReverseProperty.NameByClassCamel}""");
+            association.AddAttribute("mappedBy", $@"""{property.ReverseProperty!.NameByClassCamel}""");
         }
-
-        yield return association;
-
-        if (property is not ReverseAssociationProperty)
+        else
         {
             var joinColumns = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn").AddAttribute(
                 "name",
@@ -604,6 +544,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 .AddAttribute("inverseJoinColumns", inverseJoinColumns);
             yield return joinTable;
         }
+
+        yield return association;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetManyToOneAnnotations(IProperty property, string tag)
@@ -639,28 +581,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             .AddAttribute("cascade", "CascadeType.ALL", "jakarta.persistence.CascadeType")
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType");
 
-        if (property is ReverseAssociationProperty rap)
+        if (property.ReverseProperty != null)
         {
-            association.AddAttribute("mappedBy", $@"""{rap.ReverseProperty.NameByClassCamel}""");
+            association.AddAttribute("mappedBy", @$"""{property.ReverseProperty!.NameByClassCamel}""");
         }
         else
         {
             var pk = property.Class.PrimaryKey.Single().SqlName;
-
-            if (property is AssociationProperty { ReverseProperty: not null })
-            {
-                association.AddAttribute(
-                    "mappedBy",
-                    @$"""{property.Class.NameCamel}{property.AssociationRole ?? string.Empty}"""
-                );
-            }
-            else
-            {
-                var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
-                    .AddAttribute("name", $@"""{pk}""")
-                    .AddAttribute("referencedColumnName", $@"""{pk}""");
-                yield return joinColumn;
-            }
+            var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
+                .AddAttribute("name", $@"""{pk}""")
+                .AddAttribute("referencedColumnName", $@"""{pk}""");
+            yield return joinColumn;
         }
 
         yield return association;
