@@ -20,7 +20,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - run: dotnet publish
         name: Build LS
@@ -36,6 +36,6 @@ jobs:
           registryUrl: https://marketplace.visualstudio.com
           packagePath: TopModel.VSCode
 
-      - run: npx ovsx publish -p ${{secrets.OPEN_VSX_API_KEY}} 
+      - run: npx ovsx publish -p ${{secrets.OPEN_VSX_API_KEY}}
         working-directory: TopModel.VSCode
         name: Publish to open-vsx Marketplace
