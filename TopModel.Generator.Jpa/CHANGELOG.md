@@ -1,5 +1,21 @@
 # Changelog JPA
 
+## 3.5.0
+
+Compatibilité avec TopModel 3.8
+
+- [`06bfc01`](https://github.com/klee-contrib/topmodel/commit/06bfc01e6589e5e6090f46443a35ab72024c52f4) - Remove persistence mode, hardcode Jakarta.
+- [`61b7dc6`](https://github.com/klee-contrib/topmodel/commit/61b7dc6526d3aaaaf7284ccdb6997412d31fdd4f) - [JPA] Fix calcul nom package
+
+**breaking changes**
+
+- La config `persistenceMode` a été retirée, elle vaut toujours `jakarta` maintenant.
+- La casse des modules est respectée dans les chemins de fichiers (attention à bien mettre des `:lower` si besoin dans vos variables `module` dans vos configs du coup)
+- Les alias d'association persistés en EnumsAsEnums sur des enums sont bien des enums
+- Les alias de composition ont bien l'annotation @Valid comme les compositions classiques
+- Le commentaire qui référence la propriété originale d'un alias référence désormais la propriété parente directe dans le cas d'un alias d'alias.
+- En mode JDBC, les associations obligatoires ont bien une annotation @NotNull comme les autres propriétés
+
 ## 3.4.5
 
 - [`ae31dd`](https://github.com/klee-contrib/topmodel/commit/ae31ddf9114f897234cf8bfdbc55bb697bdf6859) - [JPA] Support des variables par tag dans apisName

@@ -1,3 +1,7 @@
+## 3.6.0
+
+Compatibilité avec Topmodel 3.8
+
 ## 3.5.1
 
 - [`f303a99`](https://github.com/klee-contrib/topmodel/commit/f303a99c2957a9aae7efe08e4980c4a196f9cc33) - [C#] Fix '!' manquant en nullable enable avec client sur IAsyncEnumerable

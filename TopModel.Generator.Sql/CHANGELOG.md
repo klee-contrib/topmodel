@@ -1,3 +1,13 @@
+## 3.6.0
+
+Compatibilité avec Topmodel 3.8
+
+- [`4b2078e`](https://github.com/klee-contrib/topmodel/commit/4b2078e5beaecfa23a9b8983637d4daf083bcb5e) - [SQL] Fix : dans la génération des insertions, toutes les valeurs ajoutées par l'utilisateur doivent être écrites
+
+**Breaking changes**
+
+Les FKs et indexes associés aux alias d'association sont désormais bien générés.
+
 ## 3.5.1
 
 - [`e3c13f5`](https://github.com/klee-contrib/topmodel/commit/e3c13f5d5d803f6dab819cd1cbe54c29fe8b9f19) - [SQL] Fix gos manquants sur les instructions de commentaires en SQL Server
