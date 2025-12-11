@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -336,7 +335,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
         var sameColumnSet = new HashSet<string>(
-            item.Properties.Where(p => !p.IsAssociationToMany())
+            item.Properties.Where(p => !p.AssociationToMany)
                 .GroupBy(g => g.SqlName)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
@@ -391,7 +390,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && Config.AvailableClasses.Contains(property.PersistentClass)
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
-                && !property.IsAssociationToMany()
+                && !property.AssociationToMany
             )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
@@ -405,7 +404,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 property.Required
                     && !Config.RequiredNonNullable(tag)
                     && !property.PrimaryKey
-                    && !property.IsAssociationToMany()
+                    && !property.AssociationToMany
                 || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
             )
             {
@@ -448,7 +447,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, annotation);
             }
 
-            if (Config.IsPersistent(property.Class, tag) && property.IsAssociationToMany())
+            if (Config.IsPersistent(property.Class, tag) && property.AssociationToMany)
             {
                 w.WriteAttribute(1, "NotMapped");
             }

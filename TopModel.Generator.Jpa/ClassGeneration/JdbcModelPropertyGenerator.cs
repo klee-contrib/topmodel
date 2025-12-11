@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Core.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -14,7 +13,7 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
     public override IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
         return classe.Properties.Where(p =>
-            (!p.IsAssociationToMany() || !classe.IsPersistent)
+            (!p.AssociationToMany || !classe.IsPersistent)
             && (p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
         );
     }

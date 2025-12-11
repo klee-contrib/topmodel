@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -315,7 +314,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.IsAssociationToMany()))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationToMany))
         {
             if (ap.ReverseProperty != null)
             {
@@ -331,7 +330,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.add({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.IsAssociationToMany())
+                if (ap.ReverseProperty!.AssociationToMany)
                 {
                     adder.AddBodyLine(
                         @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().add(this);"
@@ -372,7 +371,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(t => t.IsAssociationToMany()))
+        foreach (var ap in classe.Properties.Where(t => t.AssociationToMany))
         {
             if (ap.ReverseProperty != null)
             {
@@ -389,7 +388,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.remove({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.IsAssociationToMany())
+                if (ap.ReverseProperty!.AssociationToMany)
                 {
                     remover.AddBodyLine(
                         @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().remove(this);"

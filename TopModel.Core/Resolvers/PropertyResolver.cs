@@ -390,7 +390,7 @@ internal class PropertyResolver(
                 break;
             }
 
-            if (ap.Type.IsToMany() && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
+            if (ap.Type.ToMany && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
                 yield return new ModelError(
                     ErrorType.TMD9003,
@@ -403,7 +403,7 @@ internal class PropertyResolver(
 
             if (
                 ap.WithReverse != null
-                && !ap.Type.IsToMany()
+                && !ap.Type.ToMany
                 && !(ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
             )
             {
@@ -530,7 +530,7 @@ internal class PropertyResolver(
                         (
                             ap.Class == null
                             || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1
-                        ) && ap.Type.IsToMany()
+                        ) && ap.Type.ToMany
                     )
                     {
                         yield return new ModelError(

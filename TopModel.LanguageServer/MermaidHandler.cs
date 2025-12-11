@@ -3,7 +3,6 @@ using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 

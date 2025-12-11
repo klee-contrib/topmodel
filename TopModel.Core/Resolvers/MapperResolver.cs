@@ -128,7 +128,7 @@ internal class MapperResolver(
                             }
                             else if (
                                 !useLegacyAssociationCompositionMappers
-                                && (mappedProperty.IsAssociationToMany() || currentProperty.Domain != null)
+                                && (mappedProperty.AssociationToMany || currentProperty.Domain != null)
                             )
                             {
                                 yield return new ModelError(

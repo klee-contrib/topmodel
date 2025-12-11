@@ -1,10 +1,10 @@
-﻿using TopModel.Core.FileModel;
+﻿#pragma warning disable S1133
+
+using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
-
-using static Utils.CoreUtils;
 
 public class AliasProperty : IProperty
 {
@@ -107,7 +107,7 @@ public class AliasProperty : IProperty
                 + (Suffix ?? string.Empty)
             : NameCamel;
 
-    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(PersistentProperty ?? this);
+    public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(PersistentProperty ?? this);
 
     public string? Label
     {
@@ -229,7 +229,8 @@ public class AliasProperty : IProperty
         : OriginalProperty?.Class?.IsPersistent ?? false ? OriginalProperty
         : null;
 
-    public bool AliasedPrimaryKey => get_PrimaryKeyish(this);
+    [Obsolete("Utiliser IProperty.PrimaryKeyish à la place.")]
+    public bool AliasedPrimaryKey => ModelExtensions.get_PrimaryKeyish(this);
 
     public AliasReference? Reference { get; set; }
 

@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -88,7 +87,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             yield return new JavaAnnotation(name: annotation, imports: imports.ToArray());
         }
 
-        if (!property.Class.IsPersistent && !property.IsAssociationToMany() && property.Domain != null)
+        if (!property.Class.IsPersistent && !property.AssociationToMany && property.Domain != null)
         {
             var propertyType = GetPropertyType(property);
             List<string> sizePropertyValidateTypes = ["String", "CharSequence", "Set", "Map", "List", "Collection"];

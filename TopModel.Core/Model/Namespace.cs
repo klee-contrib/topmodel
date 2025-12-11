@@ -1,6 +1,4 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Utils;
+﻿using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 

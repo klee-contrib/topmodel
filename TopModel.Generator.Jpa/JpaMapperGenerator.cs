@@ -313,7 +313,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpc, cpMapper));
 
                     getter = $"{sourceName}.{getterName}()";
-                    if (propertySource.IsAssociationToMany())
+                    if (propertySource.AssociationToMany)
                     {
                         getter =
                             $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cpc}).collect({collector})";
@@ -392,7 +392,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     if (Config.EnumsAsEnums)
                     {
-                        if (propertyTarget.IsAssociationToMany())
+                        if (propertyTarget.AssociationToMany)
                         {
                             checkSourceNull = true;
                             getter = $@"{sourceName}.{getterName}().stream().collect({collector})";
@@ -408,7 +408,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     else
                     {
                         checkSourceNull = true;
-                        if (propertyTarget.IsAssociationToMany())
+                        if (propertyTarget.AssociationToMany)
                         {
                             getter =
                                 $@"{sourceName}.{getterName}().stream().map({aTarget.NamePascal}::new).collect({collector})";
@@ -437,7 +437,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var cpMapper = cpc.ToMappers.Single(t => t.Class == aTarget);
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
-                    var isMultiple = propertyTarget.IsAssociationToMany();
+                    var isMultiple = propertyTarget.AssociationToMany;
 
                     if (isMultiple)
                     {
@@ -694,8 +694,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         return !(
             Config.UseJdbc
             && (
-                propertyTarget.Class.IsPersistent && propertyTarget.IsAssociationToMany()
-                || propertySource.Class.IsPersistent && propertySource.IsAssociationToMany()
+                propertyTarget.Class.IsPersistent && propertyTarget.AssociationToMany
+                || propertySource.Class.IsPersistent && propertySource.AssociationToMany
             )
         );
     }

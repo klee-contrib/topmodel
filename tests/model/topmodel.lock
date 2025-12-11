@@ -17,10 +17,10 @@ modules:
     version: 3.2.2
     hash: b6fb8a53fe077a206c1b321096e0675c
 custom:
-  ../../TopModel.Generator.Jpa: 7de13a0f083d6692b1c3de675205a76f
-  ../../TopModel.Generator.Csharp: b0cceb57a0a21710e6c15a1499f61dcf
-  ../../TopModel.Generator.Javascript: 22ebb14cb96edf36bfe30f048ead5b81
-  ../../TopModel.Generator.Sql: f91ee2f71df3785733de7e163a47ccf8
+  ../../TopModel.Generator.Jpa: 91c76c6637ed2aa9881bfe2122955ccd
+  ../../TopModel.Generator.Csharp: dd42b765aef43d008c3d2ae05367bfb1
+  ../../TopModel.Generator.Javascript: a6d099bcfa6f3abf8cdf17e1d0abd199
+  ../../TopModel.Generator.Sql: 854668f25a6118ba91b347854ff387bc
   ../../TopModel.Generator.Translation: 42f228bfbbe42e2db8a3adf7f52a8d62
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/advanced-endpoints.service.ts

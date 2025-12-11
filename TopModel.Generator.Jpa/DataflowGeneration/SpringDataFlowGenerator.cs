@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -612,7 +611,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         foreach (
             var property in dataFlow.Class.ExtendedProperties.Where(p =>
-                !p.IsAssociationToMany()
+                !p.AssociationToMany
                 && (
                     mapper == null
                     || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)

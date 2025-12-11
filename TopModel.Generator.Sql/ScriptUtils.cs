@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -14,7 +13,7 @@ public static class ScriptUtils
 
     public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
-        foreach (var prop in classe.Properties.Where(p => !p.IsAssociationToMany()))
+        foreach (var prop in classe.Properties.Where(p => !p.AssociationToMany))
         {
             yield return prop;
         }
