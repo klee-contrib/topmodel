@@ -8,6 +8,21 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.0
+
+- [#529](https://github.com/klee-contrib/topmodel/pull/529) - Surcharge de la classe composée dans un alias de composition
+- [#523](https://github.com/klee-contrib/topmodel/pull/523) - Fix divers suite aux monkey tests
+- [`4e8e2cc`](https://github.com/klee-contrib/topmodel/commit/4e8e2cc457fedc9257c24fb8604f2f41e0311b22) - Fix import manquant dans le cas d'alias avec un asDomain sur des propriétés nécessitant des imports
+- [`2f4eb4c`](https://github.com/klee-contrib/topmodel/commit/2f4eb4c90c2c5851242caf86090fda43a8cb15c3) - Fix gestion merge d'ancres (avec <<) dans la config
+- [`8ca3733`](https://github.com/klee-contrib/topmodel/commit/8ca373348f883c924c8e519d051e99df4c243e95) - [Core] Amélioration messages d'erreur dans le cas où il est impossible de déterminer le type de propriété
+- [`5147ae8`](https://github.com/klee-contrib/topmodel/commit/5147ae8d36e0248ecd00f0d3dfb8d12a993e9ecb) - [Core] Correction du calcul du type des associations oneToMany dans les cas où le domain n'est pas celui d'origine (withReverse + as)
+- [`2031b50`](https://github.com/klee-contrib/topmodel/commit/2031b5032e42b41abfd99eb8ec1d13ddfdea7fb5) - [Core] Suppression de la valeur par défaut de la propriété cible dans le cas de l'utilisation de As
+- [`298343d`](https://github.com/klee-contrib/topmodel/commit/298343d463735da0bd3d299401dfabfaa726567c) - [Core] Suppression des méthodes OPTION et HEAD pour les endpoints
+
+Cette release contient énormément de bug fixes, essentiellement pour des cas aux limites qu'on a découvert pendant qu'on travaillait sur l'amélioration du niveau de couverture de code de TopModel.
+
+Le seul _vrai_ **breaking change** qu'on a identifié est au niveau des alias qui modifient le domaine d'une enum : ils n'utilisent plus le type générique et écrasent bien le type de la propriété comme attendu. Il faut utiliser une transformation "as" pour le faire (as: list par exemple), comme expliqué dans la doc.
+
 ## 3.7.0
 
 - [`1947227`](https://github.com/klee-contrib/topmodel/commit/194722744e3ac36c1c7c482082fda57fb7527e0b) - Gestion des ancres YAML dans tout le fichier de config
