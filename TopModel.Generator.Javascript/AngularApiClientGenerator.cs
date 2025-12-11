@@ -192,7 +192,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 
             foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
             {
-                if (param is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
+                if (param is not { Composition: not null })
                 {
                     fw.Write($@"                {param.GetParamName()}");
                 }

@@ -82,19 +82,17 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
 
                     if (
-                        prop is AssociationProperty ap
-                        && ap.Association.Values.Any(r =>
-                            r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value
-                        )
+                        prop is { Association: Class association, AssociationProperty: IProperty ap }
+                        && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
                     )
                     {
                         fw.AddImport(
-                            $"{Config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}"
+                            $"{Config.GetEnumValuePackageName(association.EnumKey!.Class, tag)}.{association.NamePascal}"
                         );
-                        value = ap.Association.NamePascal + "." + value;
+                        value = association.NamePascal + "." + value;
                         isString = false;
                     }
-                    else if (Config.CanClassUseEnums(classe, prop: prop))
+                    else if (Config.CanClassUseEnums(classe, prop))
                     {
                         value = Config.GetType(prop) + "." + value;
                     }
@@ -102,7 +100,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                     if (
                         Config.TranslateReferences == true
                         && classe.DefaultProperty == prop
-                        && !Config.CanClassUseEnums(classe, prop: prop)
+                        && !Config.CanClassUseEnums(classe, prop)
                     )
                     {
                         value = refValue.ResourceKey;
@@ -130,10 +128,10 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             fw.WriteDocStart(1, $@"{prop.NameByClassPascal}");
             fw.WriteDocEnd(1);
             var fieldName = prop.NameByClassCamel;
-            if (prop is AssociationProperty ap)
+            if (prop is { Association: Class association })
             {
-                fieldName = $"{ap.NameByClassCamel}";
-                fw.WriteLine(1, $@"private final {ap.Association.NamePascal} {fieldName};");
+                fieldName = $"{prop.NameByClassCamel}";
+                fw.WriteLine(1, $@"private final {association.NamePascal} {fieldName};");
             }
             else
             {
@@ -150,10 +148,10 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         {
             var fieldName = prop.NameByClassCamel;
             var fieldType = Config.GetType(prop);
-            if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Association))
+            if (prop is { Association: Class association } && Config.CanClassUseEnums(association))
             {
-                fieldName = $"{ap.NameByClassCamel}";
-                fieldType = $"{ap.Association.NamePascal}";
+                fieldName = $"{prop.NameByClassCamel}";
+                fieldType = $"{association.NamePascal}";
             }
 
             var method = new JavaMethod(fieldType, $"get{fieldName.ToFirstUpper()}")
@@ -207,10 +205,10 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             {
                 var fieldName = prop.NameByClassCamel;
                 var fieldType = Config.GetType(prop);
-                if (prop is AssociationProperty ap)
+                if (prop is { Association: Class association })
                 {
-                    fieldName = $"{ap.NameByClassCamel}";
-                    fieldType = $"{ap.Association.NamePascal}";
+                    fieldName = $"{prop.NameByClassCamel}";
+                    fieldType = $"{association.NamePascal}";
                 }
 
                 return new JavaMethodParameter(fieldType, fieldName) { Final = true };

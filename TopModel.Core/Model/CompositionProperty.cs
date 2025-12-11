@@ -1,9 +1,10 @@
-﻿using TopModel.Core.FileModel;
+﻿#pragma warning disable S1133
+
+using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
-
-using static Utils.CoreUtils;
 
 public class CompositionProperty : IProperty
 {
@@ -22,7 +23,7 @@ public class CompositionProperty : IProperty
 
     public string NameByClassCamel => NameCamel;
 
-    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(this);
+    public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
     public Domain Domain { get; set; }
 
@@ -65,19 +66,8 @@ public class CompositionProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
-    public IProperty? CompositionPrimaryKey
-    {
-        get
-        {
-            var cpPks = Composition.ExtendedProperties.Where(p => p.PrimaryKey);
-            if (!cpPks.Any())
-            {
-                cpPks = Composition.ExtendedProperties.OfType<AliasProperty>().Where(p => p.AliasedPrimaryKey);
-            }
-
-            return cpPks.Count() == 1 ? cpPks.Single() : null;
-        }
-    }
+    [Obsolete("Utiliser IProperty.CompositionPrimaryKey à la place.")]
+    public IProperty? CompositionPrimaryKey => ModelExtensions.get_CompositionPrimaryKey(this);
 
     public bool UseLegacyRoleName { get; init; }
 

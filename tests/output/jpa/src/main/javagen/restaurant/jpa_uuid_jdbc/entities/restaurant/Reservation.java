@@ -57,6 +57,7 @@ public class Reservation {
 	/**
 	 * Client ayant fait la réservation.
 	 */
+	@NotNull
 	@Column("cli_id_client")
 	private Integer clientIdClient;
 
@@ -69,6 +70,7 @@ public class Reservation {
 	/**
 	 * Restaurant concerné par la réservation.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

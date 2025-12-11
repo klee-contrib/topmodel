@@ -70,6 +70,7 @@ public class Menu {
 	/**
 	 * Restaurant proposant ce menu.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

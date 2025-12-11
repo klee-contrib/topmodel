@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿#pragma warning disable S1133
+
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
@@ -6,19 +8,16 @@ namespace TopModel.Core.Utils;
 
 public static class CoreUtils
 {
+    [Obsolete("Utiliser IProperty.AssociationToMany à la place.")]
     public static bool IsAssociationToMany(this IProperty property)
     {
-        return property
-            is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-                or AliasProperty
-            {
-                Property: AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }
-            };
+        return Model.ModelExtensions.get_AssociationToMany(property);
     }
 
+    [Obsolete("Utiliser AssociationType.ToMany  à la place.")]
     public static bool IsToMany(this AssociationType associationType)
     {
-        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
+        return Model.ModelExtensions.get_ToMany(associationType);
     }
 
     public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
@@ -128,8 +127,7 @@ public static class CoreUtils
     {
         return property switch
         {
-            IProperty { Class.Extends: not null, PrimaryKey: true }
-                when property.Name.StartsWith(property.Class.Name) => property
+            { Class.Extends: not null, PrimaryKey: true } when property.Name.StartsWith(property.Class.Name) => property
                 .Name[property.Class.Name.Length..]
                 .ToConstantCase(),
             AssociationProperty ap => ap.RawSqlName,

@@ -75,6 +75,15 @@ public static class ModelExtensions
             })
             .Concat(
                 modelStore
+                    .Properties.OfType<AliasProperty>()
+                    .Where(alp => alp.CompositionReference != null && alp.Composition == classe)
+                    .Select(p =>
+                    {
+                        return (Reference: p.CompositionReference!, File: p.GetFile());
+                    })
+            )
+            .Concat(
+                modelStore
                     .Classes.Where(c => c.Extends == classe)
                     .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile()))
             )

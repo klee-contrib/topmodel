@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -14,21 +13,14 @@ public static class ScriptUtils
 
     public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
-        foreach (var prop in classe.Properties.Where(p => !p.IsAssociationToMany()))
+        foreach (var prop in classe.Properties.Where(p => !p.AssociationToMany))
         {
             yield return prop;
         }
 
-        if (classe.Extends != null)
+        if (classe.ParentAssociationProperty != null)
         {
-            yield return new AssociationProperty
-            {
-                Association = classe.Extends,
-                Class = classe,
-                Comment = "Association vers la clé primaire de la classe parente",
-                Required = true,
-                PrimaryKey = !classe.PrimaryKey.Any(),
-            };
+            yield return classe.ParentAssociationProperty!;
         }
     }
 

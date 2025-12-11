@@ -38,10 +38,7 @@ public class SsdtMainReferenceListGenerator(
         // Construit la liste des Reference Class ordonnée.
         var orderList = CoreUtils.Sort(
             classes.OrderBy(c => c.SqlName),
-            c =>
-                c.Properties.OfType<AssociationProperty>()
-                    .Select(a => a.Association)
-                    .Where(a => a != c && a.Values.Count > 0)
+            c => c.Properties.Select(a => a.Association!).Where(a => a != null && a != c && a.Values.Count > 0)
         );
 
         // Appel des scripts d'insertion.

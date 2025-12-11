@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Core.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -14,8 +13,8 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
     public override IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
         return classe.Properties.Where(p =>
-            !(p is AssociationProperty ap && ap.Type.IsToMany())
-            && !(p is CompositionProperty cp && !Config.AvailableClasses.Contains(cp.Composition))
+            (!p.AssociationToMany || !classe.IsPersistent)
+            && (p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
         );
     }
 
@@ -37,53 +36,15 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         return Config.GetType(property, useClassForAssociation: false);
     }
 
-    protected override IEnumerable<JavaAnnotation> GetAnnotations(AliasProperty property, string tag)
-    {
-        if (property.PrimaryKey && property.Class.IsPersistent)
-        {
-            yield return IdAnnotation;
-        }
-
-        yield return GetColumnAnnotation(property);
-
-        if (property.Required && !property.PrimaryKey && (!property.Class.IsPersistent || Config.UseJdbc))
-        {
-            yield return NotNullAnnotation;
-        }
-    }
-
-    protected override IEnumerable<JavaAnnotation> GetAnnotations(AssociationProperty property, string tag)
-    {
-        if (property.Class.IsPersistent)
-        {
-            if (property.PrimaryKey && property.Class.PrimaryKey.Count() <= 1)
-            {
-                yield return IdAnnotation;
-            }
-
-            yield return GetColumnAnnotation(property);
-        }
-    }
-
-    protected override IEnumerable<JavaAnnotation> GetAnnotations(IProperty property)
-    {
-        if (property.PrimaryKey && property.Class.IsPersistent)
-        {
-            yield return IdAnnotation;
-        }
-
-        yield return GetColumnAnnotation(property);
-
-        if (property.Required && !property.PrimaryKey)
-        {
-            yield return NotNullAnnotation;
-        }
-    }
-
     protected override string GetDefaultValue(IProperty property)
     {
         var defaultValue = Config.GetValue(property);
         var suffix = defaultValue != "null" ? $"{defaultValue}" : string.Empty;
         return suffix;
+    }
+
+    protected override IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property)
+    {
+        yield return IdAnnotation;
     }
 }

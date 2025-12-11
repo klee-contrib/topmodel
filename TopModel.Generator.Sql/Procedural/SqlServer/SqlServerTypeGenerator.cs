@@ -70,52 +70,12 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
             WriteType(classe, writer);
         }
 
-        var properties = classe
-            .Properties.Where(p =>
-                p is not AssociationProperty ap
-                || ap.Type == AssociationType.ManyToOne
-                || ap.Type == AssociationType.OneToOne
-            )
-            .ToList();
+        var properties = classe.GetAllProperties(Config.AvailableClasses);
         var t = 0;
-
-        if (classe.Extends != null)
-        {
-            properties.Add(
-                new AssociationProperty
-                {
-                    Association = classe.Extends,
-                    Class = classe,
-                    Comment = "Association vers la clé primaire de la classe parente",
-                    Required = true,
-                    PrimaryKey = !classe.PrimaryKey.Any(),
-                }
-            );
-        }
-
-        var oneToManyProperties = Config
-            .Classes.SelectMany(cl => cl.Properties)
-            .Where(p => p is AssociationProperty ap && ap.Type == AssociationType.OneToMany && ap.Association == classe)
-            .Cast<AssociationProperty>();
-        foreach (var ap in oneToManyProperties)
-        {
-            var asp = new AssociationProperty()
-            {
-                Association = ap.Class,
-                Class = ap.Association,
-                Comment = ap.Comment,
-                Type = AssociationType.ManyToOne,
-                Required = ap.Required,
-                Role = ap.Role,
-                DefaultValue = ap.DefaultValue,
-                Label = ap.Label,
-            };
-            properties.Add(asp);
-        }
 
         foreach (var property in properties)
         {
-            var persistentType = property is not CompositionProperty ? Config.GetType(property) : JsonType;
+            var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {

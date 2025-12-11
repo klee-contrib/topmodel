@@ -24,8 +24,7 @@ public static class OmnisharpExtensions
             Annotation annotation => annotation.Name,
             DataFlow dataFlow => dataFlow.Name,
             Endpoint endpoint => endpoint.Name,
-            AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
-            IProperty property => property.Name,
+            IProperty property => property.OriginalProperty?.Name ?? property.Name,
             TemplateParameter templateParameter => templateParameter.Name,
             _ => null,
         };

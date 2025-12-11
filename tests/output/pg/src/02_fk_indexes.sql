@@ -79,6 +79,48 @@ alter table COMMANDE
 		references STATUT_COMMANDE (STC_CODE);
 
 /**
+  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.CLI_ID
+ **/
+create index IDX_COMMANDE_EXPORT_CLI_ID_FK on COMMANDE_EXPORT (
+	CLI_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.CLI_ID
+ **/
+alter table COMMANDE_EXPORT
+	add constraint FK_COMMANDE_EXPORT_CLI_ID foreign key (CLI_ID)
+		references CLIENT (CLI_ID);
+
+/**
+  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.TAB_ID
+ **/
+create index IDX_COMMANDE_EXPORT_TAB_ID_FK on COMMANDE_EXPORT (
+	TAB_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.TAB_ID
+ **/
+alter table COMMANDE_EXPORT
+	add constraint FK_COMMANDE_EXPORT_TAB_ID foreign key (TAB_ID)
+		references TABLE_CLIENT (TAB_ID);
+
+/**
+  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.STC_CODE
+ **/
+create index IDX_COMMANDE_EXPORT_STC_CODE_FK on COMMANDE_EXPORT (
+	STC_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.STC_CODE
+ **/
+alter table COMMANDE_EXPORT
+	add constraint FK_COMMANDE_EXPORT_STC_CODE foreign key (STC_CODE)
+		references STATUT_COMMANDE (STC_CODE);
+
+/**
   * Création de l'index de clef étrangère pour EMPLOYE.RES_ID_RESTAURANT
  **/
 create index IDX_EMP_RES_ID_RESTAURANT_FK on EMPLOYE (

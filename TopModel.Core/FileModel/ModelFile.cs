@@ -239,6 +239,7 @@ public class ModelFile
                             (p.Reference?.DecoratorReference, p.OriginalProperty?.Decorator),
                             (p.PropertyReference, p.OriginalProperty),
                             (p.DomainReference, p.Domain),
+                            (p.CompositionReference, p.Composition),
                         }
                     )
             )

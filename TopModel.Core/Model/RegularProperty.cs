@@ -1,9 +1,8 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
-
-using static Utils.CoreUtils;
 
 public class RegularProperty : IProperty
 {
@@ -22,7 +21,7 @@ public class RegularProperty : IProperty
 
 #nullable enable
 
-    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(this);
+    public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
     public string? Label { get; set; }
 

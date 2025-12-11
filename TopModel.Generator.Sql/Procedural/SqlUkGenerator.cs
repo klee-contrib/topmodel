@@ -42,8 +42,7 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
         foreach (
             var uk in classe.UniqueKeys.Concat(
                 classe
-                    .Properties.OfType<AssociationProperty>()
-                    .Where(ap => ap.Type == AssociationType.OneToOne && !ap.PrimaryKey)
+                    .Properties.Where(ap => ap.AssociationType == AssociationType.OneToOne && !ap.PrimaryKey)
                     .Select(ap => new List<IProperty> { ap })
             )
         )

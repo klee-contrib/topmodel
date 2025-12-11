@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>14</LangVersion>
     <RollForward>Major</RollForward>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>

@@ -13,6 +13,8 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -79,15 +81,16 @@ public class CommandeExport {
 	 * Statut de la commande.
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
-	@JoinColumn(name = "STC_CODE", referencedColumnName = "STC_CODE")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = StatutCommande.class)
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Association réciproque de LigneCommande.CommandeId.
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
+	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<LigneCommande> ligneCommandes;
 
 	/**

@@ -74,8 +74,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                     prop,
                     useClassForAssociation: classe.IsPersistent
                         && !Config.UseJdbc
-                        && prop is AssociationProperty asp
-                        && asp.Association.IsPersistent
+                        && prop is { Association.IsPersistent: true }
                 );
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)

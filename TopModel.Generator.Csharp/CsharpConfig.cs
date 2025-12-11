@@ -352,17 +352,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetEnumTypeNamespace(IProperty fp, string tag)
     {
-        var op = fp switch
-        {
-            AssociationProperty a => a.Property,
-            AliasProperty { Property: AssociationProperty a } => a.Property,
-            AliasProperty alp => alp.Property,
-            _ => fp,
-        };
-
-        return op is AssociationProperty ap ? GetNamespace(ap.Association, tag)
-            : op is RegularProperty rp ? GetNamespace(rp.Class, tag)
-            : string.Empty;
+        return fp is { EnumProperty: IProperty ep } ? GetNamespace(ep.Class, tag) : string.Empty;
     }
 
     public virtual string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
@@ -578,7 +568,11 @@ public class CsharpConfig : GeneratorConfigBase
 
         if (
             !nonNullable
-            && (NullableEnable || AllValueTypes.Contains(type) || GetEnumType(prop, prop is RegularProperty) == type)
+            && (
+                NullableEnable
+                || AllValueTypes.Contains(type)
+                || GetEnumType(prop, prop.EnumProperty?.Class == prop.Class) == type
+            )
         )
         {
             type += "?";
@@ -596,16 +590,11 @@ public class CsharpConfig : GeneratorConfigBase
     {
         return prop switch
         {
-            AssociationProperty ap when CanClassUseEnums(ap.Association, ap.Property) => true,
-            AliasProperty { Property: AssociationProperty ap } alp
-                when CanClassUseEnums(ap.Association)
-                    && string.IsNullOrEmpty(GetImplementation(alp.Domain)?.GenericType) => true,
-            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, rp) => true,
-            AliasProperty { Property: RegularProperty { Class: not null } rp } alp
-                when CanClassUseEnums(rp.Class, rp)
-                    && string.IsNullOrEmpty(GetImplementation(alp.Domain)?.GenericType) => true,
-            CompositionProperty => false,
-            _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
+            { EnumProperty: IProperty ep }
+                when CanClassUseEnums(ep.Class, ep)
+                    && string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
+            { Composition: not null } => false,
+            _ => AllValueTypes.Contains(GetType(prop!, nonNullable: true)),
         };
     }
 

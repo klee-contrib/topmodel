@@ -1,13 +1,15 @@
-﻿using TopModel.Core.FileModel;
+﻿#pragma warning disable S1133
+
+using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-using static Utils.CoreUtils;
-
 public class AliasProperty : IProperty
 {
     private string? _comment;
+    private Class? _composition;
     private IDictionary<string, string> _customProperties = new Dictionary<string, string>();
     private string? _defaultValue;
     private Domain? _domain;
@@ -105,7 +107,7 @@ public class AliasProperty : IProperty
                 + (Suffix ?? string.Empty)
             : NameCamel;
 
-    public string SqlName => GetSqlTrigram(FinalTrigram) + GetSqlName(PersistentProperty ?? this);
+    public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(PersistentProperty ?? this);
 
     public string? Label
     {
@@ -152,6 +154,14 @@ public class AliasProperty : IProperty
 
 #nullable enable
     public Domain? DomainOverride => _domain;
+
+    public Class? Composition
+    {
+        get => _composition ?? _property.Composition;
+        set { _composition = value; }
+    }
+
+    public ClassReference? CompositionReference { get; set; }
 
     public IDictionary<string, string> DomainParameters
     {
@@ -219,15 +229,8 @@ public class AliasProperty : IProperty
         : OriginalProperty?.Class?.IsPersistent ?? false ? OriginalProperty
         : null;
 
-    public bool AliasedPrimaryKey =>
-        !PreservePrimaryKey
-        && (
-            OriginalProperty is AliasProperty op
-                ? op.PrimaryKey || op.AliasedPrimaryKey
-                : OriginalProperty?.PrimaryKey ?? false
-        )
-        && Prefix == null
-        && Suffix == null;
+    [Obsolete("Utiliser IProperty.PrimaryKeyish à la place.")]
+    public bool AliasedPrimaryKey => ModelExtensions.get_PrimaryKeyish(this);
 
     public AliasReference? Reference { get; set; }
 
@@ -280,6 +283,11 @@ public class AliasProperty : IProperty
             alp.Domain = _domain;
         }
 
+        if (_composition != null)
+        {
+            alp.Composition = _composition;
+        }
+
         if (_primaryKey != null)
         {
             alp.PrimaryKey = _primaryKey.Value;
@@ -315,6 +323,7 @@ public class AliasProperty : IProperty
             Decorator = Decorator,
             SourceDecorator = SourceDecorator,
             DomainReference = DomainReference,
+            CompositionReference = CompositionReference,
             Endpoint = Endpoint,
             Prefix = Prefix,
             Suffix = Suffix,
@@ -339,6 +348,11 @@ public class AliasProperty : IProperty
         if (_domain != null)
         {
             alp.Domain = _domain;
+        }
+
+        if (_composition != null)
+        {
+            alp.Composition = _composition;
         }
 
         if (_primaryKey != null)

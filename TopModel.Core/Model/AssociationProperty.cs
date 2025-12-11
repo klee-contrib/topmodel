@@ -1,10 +1,9 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
-
-using static Utils.CoreUtils;
 
 public class AssociationProperty : IProperty
 {
@@ -178,19 +177,19 @@ public class AssociationProperty : IProperty
     public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
 
     public string NameByClassPascal =>
-        Type.IsToMany()
+        Type.ToMany
             ? $"{NamePascal}"
             : $"{ClassName?.ToPascalCase(strictIfUppercase: true) ?? Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
 
     public string NameByClassCamel =>
-        Type.IsToMany()
+        Type.ToMany
             ? $"{NameCamel}"
             : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
-    public string SqlName => GetSqlTrigram(FinalTrigram) + RawSqlName;
+    public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
     public Domain Domain =>
-        Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
+        Type.ToMany && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
     public IDictionary<string, string> DomainParameters =>
         Property?.DomainParameters ?? new Dictionary<string, string>();
@@ -215,7 +214,7 @@ public class AssociationProperty : IProperty
     {
         get
         {
-            var sqlName = GetSqlName(Property);
+            var sqlName = CoreUtils.GetSqlName(Property);
             if (!string.IsNullOrWhiteSpace(Role))
             {
                 sqlName += UseLegacyRoleName ? $"_{Role.Replace(' ', '_').ToUpper()}" : $"_{Role.ToConstantCase()}";

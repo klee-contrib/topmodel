@@ -9,6 +9,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Association entre une promotion et un plat.
@@ -27,12 +28,14 @@ public class PromotionPlat {
 	/**
 	 * Promotion concernée.
 	 */
+	@NotNull
 	@Column("pro_id_promotion")
 	private Integer promotionIdPromotion;
 
 	/**
 	 * Plat concerné par la promotion.
 	 */
+	@NotNull
 	@Column("pla_id_plat")
 	private Integer platIdPlat;
 

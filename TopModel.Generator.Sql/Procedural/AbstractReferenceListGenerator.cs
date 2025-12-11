@@ -80,9 +80,8 @@ public abstract class AbstractReferenceListGenerator(
         var orderList = CoreUtils.Sort(
             classes.OrderBy(c => c.SqlName),
             c =>
-                c.Properties.OfType<AssociationProperty>()
-                    .Select(a => a.Association)
-                    .Where(a => a != c && a.Values.Count > 0 && a.IsPersistent)
+                c.Properties.Select(a => a.Association!)
+                    .Where(a => a != null && a != c && a.Values.Count > 0 && a.IsPersistent)
         );
 
         foreach (var classe in orderList)

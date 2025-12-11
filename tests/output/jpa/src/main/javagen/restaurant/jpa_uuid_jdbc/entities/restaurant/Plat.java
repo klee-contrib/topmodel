@@ -57,12 +57,14 @@ public class Plat {
 	/**
 	 * Catégorie du plat.
 	 */
+	@NotNull
 	@Column("cat_code_categorie_plat")
 	private String categoriePlatCodeCategoriePlat;
 
 	/**
 	 * Restaurant proposant ce plat.
 	 */
+	@NotNull
 	@Column("res_id_restaurant")
 	private Integer restaurantIdRestaurant;
 

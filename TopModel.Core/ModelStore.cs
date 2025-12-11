@@ -520,15 +520,12 @@ public class ModelStore(
             }
         }
 
-        foreach (var endpoint in Endpoints.Where(e => e.Properties.OfType<CompositionProperty>().Any()))
+        foreach (var endpoint in Endpoints.Where(e => e.Properties.Any(p => p.Composition != null)))
         {
             foreach (var genConfig in config.Configs.Values.Where(c => c.Endpoints.Contains(endpoint)))
             {
                 foreach (
-                    var composition in endpoint
-                        .Properties.OfType<CompositionProperty>()
-                        .Select(c => c.Composition)
-                        .Distinct()
+                    var composition in endpoint.Properties.Select(c => c.Composition).Where(c => c != null).Distinct()
                 )
                 {
                     if (!genConfig.AvailableClasses.Contains(composition))

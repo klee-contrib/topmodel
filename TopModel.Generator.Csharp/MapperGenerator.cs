@@ -23,9 +23,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
     protected virtual string GetSourceMapping(IProperty property)
     {
-        if (property is CompositionProperty cp)
+        if (property is { CompositionPrimaryKey: IProperty cpk })
         {
-            return $"{cp.NamePascal}?.{cp.CompositionPrimaryKey?.NamePascal}";
+            return $"{property.NamePascal}?.{cpk.NamePascal}";
         }
         else
         {
@@ -70,26 +70,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             switch (property)
             {
-                case AssociationProperty ap
-                    when Config.AvailableClasses.Contains(ap.Association)
-                        && Config.CanClassUseEnums(ap.Association, ap.Property):
-                    usings.Add(Config.GetNamespace(ap.Association, Config.GetBestClassTag(ap.Association, tag)));
+                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                    usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }
-                    when Config.AvailableClasses.Contains(ap2.Association)
-                        && Config.CanClassUseEnums(ap2.Association, ap2.Property):
-                    usings.Add(Config.GetNamespace(ap2.Association, Config.GetBestClassTag(ap2.Association, tag)));
-                    break;
-                case AliasProperty { Property: RegularProperty rp }
-                    when Config.AvailableClasses.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, rp):
-                    usings.Add(Config.GetNamespace(rp.Class, Config.GetBestClassTag(rp.Class, tag)));
-                    break;
-                case CompositionProperty cp when Config.AvailableClasses.Contains(cp.Composition):
-                    usings.Add(Config.GetNamespace(cp.Composition, Config.GetBestClassTag(cp.Composition, tag)));
-                    break;
-                case AliasProperty { Property: CompositionProperty cp }
-                    when Config.AvailableClasses.Contains(cp.Composition):
-                    usings.Add(Config.GetNamespace(cp.Composition, Config.GetBestClassTag(cp.Composition, tag)));
+                case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
+                    usings.Add(Config.GetNamespace(cpc, Config.GetBestClassTag(cpc, tag)));
                     break;
             }
         }
@@ -230,12 +215,15 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             }
 
                             var value =
-                                $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+                                $"{param.Name}{(!param.Required && mapping.Key is not { Composition: not null } ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
-                            if (mapping.Key is CompositionProperty cp && mapping.Value is not CompositionProperty)
+                            if (
+                                mapping.Key is { CompositionPrimaryKey: IProperty cpk }
+                                && mapping.Value is { Composition: null }
+                            )
                             {
                                 w.Write(
-                                    $"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.CompositionPrimaryKey?.NamePascal} = "
+                                    $"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cpk.NamePascal} = "
                                 );
                             }
                             else
@@ -318,7 +306,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                             w.Write(value);
 
-                            if (mapping.Key is CompositionProperty && mapping.Value is not CompositionProperty)
+                            if (mapping.Key is { Composition: not null } && mapping.Value is { Composition: null })
                             {
                                 w.Write(" }");
                             }
@@ -404,7 +392,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             var missingRequiredProperties = mapper
                 .MissingRequiredProperties.Where(mrp =>
-                    mrp is not CompositionProperty cp || Config.AvailableClasses.Contains(cp.Composition)
+                    mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
                 )
                 .ToList();
 
