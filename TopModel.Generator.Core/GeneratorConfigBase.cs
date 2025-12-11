@@ -314,13 +314,18 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual IEnumerable<string> GetDomainImports(IProperty property, string tag)
     {
-        foreach (var (domain, _) in property.DomainChain)
+        foreach (var (domain, generic) in property.DomainChain)
         {
             foreach (
                 var import in GetImplementation(domain)!.Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
             )
             {
                 yield return import;
+            }
+
+            if (!generic)
+            {
+                break;
             }
         }
     }
