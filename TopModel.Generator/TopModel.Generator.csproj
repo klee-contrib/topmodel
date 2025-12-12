@@ -12,7 +12,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
-    <Version>3.8.0</Version>
+    <Version>3.8.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel.</Description>

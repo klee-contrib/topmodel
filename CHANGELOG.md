@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.1
+
+- [`d7f286`](https://github.com/klee-contrib/topmodel/commit/d7f286e834e7e811cea07d13f702dcc4d88526a6) - [Core] Fix perfs validation schémas, propriétés spéciales et imports non utilisés
+
 ## 3.8.0
 
 - [#529](https://github.com/klee-contrib/topmodel/pull/529) - Surcharge de la classe composée dans un alias de composition

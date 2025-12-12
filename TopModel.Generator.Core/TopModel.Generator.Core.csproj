@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>3.8.0</Version>
+    <Version>3.8.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Librarie de base pour écrire un générateur TopModel.</Description>
