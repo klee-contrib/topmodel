@@ -360,9 +360,10 @@ public static class ModelExtensions
 
     public static IEnumerable<Reference> GetUselessImports(this ModelStore modelStore, ModelFile modelFile)
     {
+        var referencedFiles = modelFile.References.Values.Select(r => r.GetFile().Name).ToHashSet();
         return modelFile.Uses.Where(use =>
             use.ReferenceName == modelFile.Name
-            || (!modelFile.References.Values.Select(r => r.GetFile().Name).Contains(use.ReferenceName))
+            || (!referencedFiles.Contains(use.ReferenceName))
                 && modelStore.Files.Any(d => d.Name == use.ReferenceName)
                 && !modelStore.Files.Any(mf =>
                     mf.Name == use.ReferenceName

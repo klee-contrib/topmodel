@@ -236,11 +236,19 @@ internal class ClassResolver(
     {
         foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
+            var properties = classe.ExtendedProperties.GroupBy(p => p.Name).ToDictionary(p => p.Key, p => p.First());
+
+            IProperty? TryGetProperty(params IEnumerable<string> names)
+            {
+                return names
+                    .Select(name => properties.TryGetValue(name, out var p) ? p : null)
+                    .FirstOrDefault(n => n != null);
+            }
+
             if (classe.DefaultPropertyReference != null)
             {
-                classe.DefaultProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.Name == classe.DefaultPropertyReference.ReferenceName
-                );
+                classe.DefaultProperty = TryGetProperty(classe.DefaultPropertyReference.ReferenceName);
+
                 if (classe.DefaultProperty == null)
                 {
                     yield return new ModelError(
@@ -255,16 +263,13 @@ internal class ClassResolver(
             else
             {
                 // Si la classe a une propriété "Label" ou "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
-                classe.DefaultProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.NamePascal == "Label" || fp.NamePascal == "Libelle"
-                );
+                classe.DefaultProperty = TryGetProperty("Label", "Libelle");
             }
 
             if (classe.OrderPropertyReference != null)
             {
-                classe.OrderProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.Name == classe.OrderPropertyReference.ReferenceName
-                );
+                classe.OrderProperty = TryGetProperty(classe.OrderPropertyReference.ReferenceName);
+
                 if (classe.OrderProperty == null)
                 {
                     yield return new ModelError(
@@ -279,16 +284,13 @@ internal class ClassResolver(
             else
             {
                 // Si la classe a une propriété "Order" ou "Ordre", alors on la considère par défaut comme propriété d'ordre.
-                classe.OrderProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.NamePascal == "Order" || fp.NamePascal == "Ordre"
-                );
+                classe.OrderProperty = TryGetProperty("Order", "Ordre");
             }
 
             if (classe.FlagPropertyReference != null)
             {
-                classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.Name == classe.FlagPropertyReference.ReferenceName
-                );
+                classe.FlagProperty = TryGetProperty(classe.FlagPropertyReference.ReferenceName);
+
                 if (classe.FlagProperty == null)
                 {
                     yield return new ModelError(
@@ -303,14 +305,13 @@ internal class ClassResolver(
             else
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
-                classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Flag");
+                classe.FlagProperty = TryGetProperty("Flag");
             }
 
             if (classe.LocalePropertyReference != null)
             {
-                classe.LocaleProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.Name == classe.LocalePropertyReference.ReferenceName
-                );
+                classe.LocaleProperty = TryGetProperty(classe.LocalePropertyReference.ReferenceName);
+
                 if (classe.LocaleProperty == null)
                 {
                     yield return new ModelError(
@@ -325,7 +326,7 @@ internal class ClassResolver(
             else
             {
                 // Si la classe a une propriété "Locale", alors on la considère par défaut comme propriété de locale.
-                classe.LocaleProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Locale");
+                classe.LocaleProperty = TryGetProperty("Locale");
             }
 
             if (classe.Translation)

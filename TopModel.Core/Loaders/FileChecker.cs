@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using NJsonSchema.Validation;
 using Spectre.Console;
@@ -138,7 +139,7 @@ public class FileChecker
     )
     {
         var schema = await JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json"), ct);
-        Validate(configName, schema, _serializer.Serialize(genConfigMap));
+        Validate(configName, schema, JToken.FromObject(genConfigMap));
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
@@ -147,7 +148,7 @@ public class FileChecker
         return _deserializer.Deserialize<WatcherConfigBase>(_serializer.Serialize(genConfigMap))!;
     }
 
-    private static void Validate(string fileName, JsonSchema schema, string json)
+    private static void Validate(string fileName, JsonSchema schema, JToken json)
     {
         var errors = schema.Validate(json);
 
@@ -196,7 +197,7 @@ public class FileChecker
             var yaml =
                 _deserializer.Deserialize(parser)
                 ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
-            var json = _serializer.Serialize(yaml);
+            var json = JToken.FromObject(yaml);
 
             var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
 
