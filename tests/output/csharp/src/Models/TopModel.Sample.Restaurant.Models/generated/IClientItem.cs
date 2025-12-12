@@ -10,17 +10,17 @@ namespace TopModel.Sample.Restaurant.Models;
 public interface IClientItem
 {
     /// <summary>
-    /// Identifiant du client.
+    /// Identifiant de la personne.
     /// </summary>
     int? Id { get; }
 
     /// <summary>
-    /// Nom du client.
+    /// Nom de la personne.
     /// </summary>
     string Nom { get; }
 
     /// <summary>
-    /// Prénom du client.
+    /// Prénom de la personne.
     /// </summary>
     string Prenom { get; }
 
@@ -32,9 +32,9 @@ public interface IClientItem
     /// <summary>
     /// Factory pour instancier la classe.
     /// </summary>
-    /// <param name="id">Identifiant du client.</param>
-    /// <param name="nom">Nom du client.</param>
-    /// <param name="prenom">Prénom du client.</param>
+    /// <param name="id">Identifiant de la personne.</param>
+    /// <param name="nom">Nom de la personne.</param>
+    /// <param name="prenom">Prénom de la personne.</param>
     /// <param name="email">Adresse email du client.</param>
     /// <returns>Instance de la classe.</returns>
     static abstract IClientItem Create(int? id = null, string nom = null, string prenom = null, string email = null);

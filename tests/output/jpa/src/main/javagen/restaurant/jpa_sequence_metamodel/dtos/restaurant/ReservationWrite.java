@@ -57,23 +57,23 @@ public class ReservationWrite implements Serializable {
 
 	/**
 	 * Client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getClientClient() Reservation#getClientClient()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getClient() Reservation#getClient()}
 	 */
 	@NotNull
-	private Integer clientIdClient;
+	private Integer clientId;
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getTableClientTable() Reservation#getTableClientTable()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getTable() Reservation#getTable()}
 	 */
-	private Integer tableClientIdTable;
+	private Integer tableId;
 
 	/**
 	 * Restaurant concerné par la réservation.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getRestaurantRestaurant() Reservation#getRestaurantRestaurant()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Reservation#getRestaurant() Reservation#getRestaurant()}
 	 */
 	@NotNull
-	private Integer restaurantIdRestaurant;
+	private Integer restaurantId;
 
 	/**
 	 * Getter for dateReservation.
@@ -112,30 +112,30 @@ public class ReservationWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for clientIdClient.
+	 * Getter for clientId.
 	 *
-	 * @return value of {@link #clientIdClient clientIdClient}.
+	 * @return value of {@link #clientId clientId}.
 	 */
-	public Integer getClientIdClient() {
-		return this.clientIdClient;
+	public Integer getClientId() {
+		return this.clientId;
 	}
 
 	/**
-	 * Getter for tableClientIdTable.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #tableClientIdTable tableClientIdTable}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public Integer getTableClientIdTable() {
-		return this.tableClientIdTable;
+	public Integer getTableId() {
+		return this.tableId;
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -171,27 +171,27 @@ public class ReservationWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientIdClient clientIdClient}.
-	 * @param clientIdClient value to set.
+	 * Set the value of {@link #clientId clientId}.
+	 * @param clientId value to set.
 	 */
-	public void setClientIdClient(Integer clientIdClient) {
-		this.clientIdClient = clientIdClient;
+	public void setClientId(Integer clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #tableClientIdTable tableClientIdTable}.
-	 * @param tableClientIdTable value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTableClientIdTable(Integer tableClientIdTable) {
-		this.tableClientIdTable = tableClientIdTable;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -212,9 +212,9 @@ public class ReservationWrite implements Serializable {
 		NOMBRE_PERSONNES(Integer.class),
 		COMMENTAIRE(String.class),
 		CONFIRMEE(Boolean.class),
-		CLIENT_ID_CLIENT(Integer.class),
-		TABLE_CLIENT_ID_TABLE(Integer.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class);
+		CLIENT_ID(Integer.class),
+		TABLE_ID(Integer.class),
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

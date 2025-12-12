@@ -1,0 +1,126 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - Restaurant/Entities/Restaurant
+---
+class:
+  name: Personne
+  trigram: PER
+  comment: Classe de base représentant une personne
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la personne
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom de la personne
+
+    - name: Prenom
+      domain: DO_LIBELLE
+      required: true
+      comment: Prénom de la personne
+---
+class:
+  name: Employe
+  extends: Personne
+  trigram: EMP
+  comment: Employé du restaurant
+
+  properties:
+    - name: Telephone
+      domain: DO_TELEPHONE
+      comment: Numéro de téléphone de l'employé.
+
+    - name: DateNaissance
+      domain: DO_DATE_HEURE
+      comment: Date de naissance
+
+    - name: Matricule
+      domain: DO_CODE
+      required: true
+      comment: Matricule de l'employé
+
+    - name: DateEmbauche
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date d'embauche
+
+    - name: Salaire
+      domain: DO_PRIX
+      comment: Salaire de l'employé
+
+    - association: Restaurant
+      required: true
+      withReverse: false
+      comment: Restaurant où travaille l'employé
+
+  unique:
+    - [Matricule]
+---
+class:
+  name: Client
+  trigram: CLI
+  extends: Personne
+  comment: Client du restaurant
+
+  properties:
+    - name: Email
+      domain: DO_LIBELLE
+      comment: Adresse email du client
+---
+class:
+  name: AvisClient
+  trigram: AVI
+  comment: Avis d'un client sur un restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de l'avis
+
+    - name: Note
+      domain: DO_QUANTITE
+      required: true
+      comment: Note sur 5
+
+    - name: Commentaire
+      domain: DO_LIBELLE
+      comment: Commentaire de l'avis
+
+    - name: DateAvis
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date de l'avis
+
+    - name: Approuve
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: false
+      comment: Indique si l'avis est approuvé par le restaurant
+
+    - name: NombreVues
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      readonly: true
+      comment: Nombre de vues de l'avis (calculé)
+
+    - association: Client
+      required: true
+      withReverse: true
+      comment: Client ayant donné l'avis
+
+    - association: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant concerné par l'avis
+
+  unique:
+    - [ClientId, RestaurantId, DateAvis]

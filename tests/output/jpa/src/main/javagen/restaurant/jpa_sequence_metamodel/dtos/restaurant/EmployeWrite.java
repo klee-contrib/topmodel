@@ -51,10 +51,10 @@ public class EmployeWrite implements Serializable {
 
 	/**
 	 * Restaurant où travaille l'employé.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Employe#getRestaurantRestaurant() Employe#getRestaurantRestaurant()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Employe#getRestaurant() Employe#getRestaurant()}
 	 */
 	@NotNull
-	private Integer restaurantIdRestaurant;
+	private Integer restaurantId;
 
 	/**
 	 * Getter for matricule.
@@ -84,12 +84,12 @@ public class EmployeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -117,11 +117,11 @@ public class EmployeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class EmployeWrite implements Serializable {
 		MATRICULE(String.class),
 		DATE_EMBAUCHE(LocalDateTime.class),
 		SALAIRE(BigDecimal.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

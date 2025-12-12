@@ -16,26 +16,18 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record PromotionPlat
 {
     /// <summary>
-    /// Identifiant de l'association.
-    /// </summary>
-    [Column("ppl_id")]
-    [Domain(Domains.Id)]
-    [Key]
-    public int? Id { get; set; }
-
-    /// <summary>
     /// Promotion concernée.
     /// </summary>
-    [Column("pro_id_promotion")]
+    [Column("pro_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? PromotionIdPromotion { get; set; }
+    public int? PromotionId { get; set; }
 
     /// <summary>
     /// Plat concerné par la promotion.
     /// </summary>
-    [Column("pla_id_plat")]
+    [Column("pla_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? PlatIdPlat { get; set; }
+    public int? PlatId { get; set; }
 }

@@ -43,38 +43,38 @@ public partial record RestaurantRead
     public string Telephone { get; set; }
 
     /// <summary>
-    /// Association réciproque de TableClient.RestaurantIdRestaurant.
+    /// Association réciproque de Reservation.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> TableClientsRestaurant { get; set; }
+    public ICollection<int> Reservations { get; set; }
 
     /// <summary>
-    /// Association réciproque de Plat.RestaurantIdRestaurant.
+    /// Association réciproque de Menu.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> PlatsRestaurant { get; set; }
+    public ICollection<int> Menus { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.RestaurantIdRestaurant.
+    /// Association réciproque de Plat.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> AvisClientsRestaurant { get; set; }
+    public ICollection<int> Plats { get; set; }
 
     /// <summary>
-    /// Association réciproque de Menu.RestaurantIdRestaurant.
+    /// Association réciproque de Promotion.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> MenusRestaurant { get; set; }
+    public ICollection<int> Promotions { get; set; }
 
     /// <summary>
-    /// Association réciproque de Reservation.RestaurantIdRestaurant.
+    /// Association réciproque de AvisClient.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> ReservationsRestaurant { get; set; }
+    public ICollection<int> AvisClients { get; set; }
 
     /// <summary>
-    /// Association réciproque de Promotion.RestaurantIdRestaurant.
+    /// Association réciproque de Table.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> PromotionsRestaurant { get; set; }
+    public ICollection<int> Tables { get; set; }
 }

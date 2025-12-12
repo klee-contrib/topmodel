@@ -27,8 +27,8 @@ public static class Mappers
             Commentaire = avisClient.Commentaire,
             DateAvis = avisClient.DateAvis,
             Approuve = avisClient.Approuve,
-            ClientIdClient = avisClient.ClientIdClient,
-            RestaurantIdRestaurant = avisClient.RestaurantIdRestaurant
+            ClientId = avisClient.ClientId,
+            RestaurantId = avisClient.RestaurantId
         };
     }
 
@@ -63,11 +63,10 @@ public static class Mappers
             Id = client.Id,
             Nom = client.Nom,
             Prenom = client.Prenom,
-            Telephone = client.Telephone,
             Email = client.Email,
             Commandes = client.Commandes,
-            AvisClientsClient = client.AvisClientsClient,
-            ReservationsClient = client.ReservationsClient
+            Reservations = client.Reservations,
+            AvisClients = client.AvisClients
         };
     }
 
@@ -87,7 +86,8 @@ public static class Mappers
             DateLivraison = commande.DateLivraison,
             MontantTotal = commande.MontantTotal,
             ClientId = commande.ClientId,
-            TableClientId = commande.TableClientId,
+            TableId = commande.TableId,
+            ReservationId = commande.ReservationId,
             StatutCommandeCode = commande.StatutCommandeCode,
             LigneCommandes = commande.LigneCommandes
         };
@@ -107,7 +107,7 @@ public static class Mappers
             Matricule = employe.Matricule,
             DateEmbauche = employe.DateEmbauche,
             Salaire = employe.Salaire,
-            RestaurantIdRestaurant = employe.RestaurantIdRestaurant
+            RestaurantId = employe.RestaurantId
         };
     }
 
@@ -149,8 +149,7 @@ public static class Mappers
             Disponible = menu.Disponible,
             DateDebut = menu.DateDebut,
             DateFin = menu.DateFin,
-            RestaurantIdRestaurant = menu.RestaurantIdRestaurant,
-            MenuPlatsMenu = menu.MenuPlatsMenu
+            RestaurantId = menu.RestaurantId
         };
     }
 
@@ -170,11 +169,9 @@ public static class Mappers
             Description = plat.Description,
             Prix = plat.Prix,
             Disponible = plat.Disponible,
-            CategoriePlatCodeCategoriePlat = plat.CategoriePlatCodeCategoriePlat,
-            RestaurantIdRestaurant = plat.RestaurantIdRestaurant,
-            LigneCommandes = plat.LigneCommandes,
-            MenuPlatsPlat = plat.MenuPlatsPlat,
-            PromotionPlatsPlat = plat.PromotionPlatsPlat
+            CategoriePlatCode = plat.CategoriePlatCode,
+            RestaurantId = plat.RestaurantId,
+            LigneCommandes = plat.LigneCommandes
         };
     }
 
@@ -194,11 +191,9 @@ public static class Mappers
             Description = plat.Description,
             Prix = plat.Prix,
             Disponible = plat.Disponible,
-            CategoriePlatCodeCategoriePlat = plat.CategoriePlatCodeCategoriePlat,
-            RestaurantIdRestaurant = plat.RestaurantIdRestaurant,
-            LigneCommandes = plat.LigneCommandes,
-            MenuPlatsPlat = plat.MenuPlatsPlat,
-            PromotionPlatsPlat = plat.PromotionPlatsPlat
+            CategoriePlatCode = plat.CategoriePlatCode,
+            RestaurantId = plat.RestaurantId,
+            LigneCommandes = plat.LigneCommandes
         };
     }
 
@@ -219,8 +214,7 @@ public static class Mappers
             DateDebut = promotion.DateDebut,
             DateFin = promotion.DateFin,
             Active = promotion.Active,
-            RestaurantIdRestaurant = promotion.RestaurantIdRestaurant,
-            PromotionPlatsPromotion = promotion.PromotionPlatsPromotion
+            RestaurantId = promotion.RestaurantId
         };
     }
 
@@ -240,9 +234,9 @@ public static class Mappers
             NombrePersonnes = reservation.NombrePersonnes,
             Commentaire = reservation.Commentaire,
             Confirmee = reservation.Confirmee,
-            ClientIdClient = reservation.ClientIdClient,
-            TableClientIdTable = reservation.TableClientIdTable,
-            RestaurantIdRestaurant = reservation.RestaurantIdRestaurant
+            ClientId = reservation.ClientId,
+            TableId = reservation.TableId,
+            RestaurantId = reservation.RestaurantId
         };
     }
 
@@ -264,12 +258,12 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            TableClientsRestaurant = restaurant.TableClientsRestaurant,
-            PlatsRestaurant = restaurant.PlatsRestaurant,
-            AvisClientsRestaurant = restaurant.AvisClientsRestaurant,
-            MenusRestaurant = restaurant.MenusRestaurant,
-            ReservationsRestaurant = restaurant.ReservationsRestaurant,
-            PromotionsRestaurant = restaurant.PromotionsRestaurant,
+            Reservations = restaurant.Reservations,
+            Menus = restaurant.Menus,
+            Plats = restaurant.Plats,
+            Promotions = restaurant.Promotions,
+            AvisClients = restaurant.AvisClients,
+            Tables = restaurant.Tables,
             NombrePlats = nombrePlats,
             NombreTables = nombreTables,
             NoteMoyenne = noteMoyenne
@@ -291,12 +285,12 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            TableClientsRestaurant = restaurant.TableClientsRestaurant,
-            PlatsRestaurant = restaurant.PlatsRestaurant,
-            AvisClientsRestaurant = restaurant.AvisClientsRestaurant,
-            MenusRestaurant = restaurant.MenusRestaurant,
-            ReservationsRestaurant = restaurant.ReservationsRestaurant,
-            PromotionsRestaurant = restaurant.PromotionsRestaurant
+            Reservations = restaurant.Reservations,
+            Menus = restaurant.Menus,
+            Plats = restaurant.Plats,
+            Promotions = restaurant.Promotions,
+            AvisClients = restaurant.AvisClients,
+            Tables = restaurant.Tables
         };
     }
 
@@ -323,23 +317,23 @@ public static class Mappers
     }
 
     /// <summary>
-    /// Crée une nouvelle instance de 'TableClientRead'.
+    /// Crée une nouvelle instance de 'TableRead'.
     /// </summary>
-    /// <param name="tableClient">Instance de 'TableClient'.</param>
-    /// <returns>Une nouvelle instance de 'TableClientRead'.</returns>
-    public static TableClientRead CreateTableClientRead(TableClient tableClient)
+    /// <param name="table">Instance de 'Table'.</param>
+    /// <returns>Une nouvelle instance de 'TableRead'.</returns>
+    public static TableRead CreateTableRead(Table table)
     {
-        ArgumentNullException.ThrowIfNull(tableClient);
+        ArgumentNullException.ThrowIfNull(table);
 
-        return new TableClientRead
+        return new TableRead
         {
-            Id = tableClient.Id,
-            Numero = tableClient.Numero,
-            Capacite = tableClient.Capacite,
-            Disponible = tableClient.Disponible,
-            RestaurantIdRestaurant = tableClient.RestaurantIdRestaurant,
-            Commandes = tableClient.Commandes,
-            ReservationsTable = tableClient.ReservationsTable
+            Id = table.Id,
+            Numero = table.Numero,
+            Capacite = table.Capacite,
+            Disponible = table.Disponible,
+            RestaurantId = table.RestaurantId,
+            Commandes = table.Commandes,
+            Reservations = table.Reservations
         };
     }
 
@@ -356,8 +350,8 @@ public static class Mappers
             Note = source.Note,
             Commentaire = source.Commentaire,
             Approuve = source.Approuve,
-            ClientIdClient = source.ClientIdClient,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant,
+            ClientId = source.ClientId,
+            RestaurantId = source.RestaurantId,
             DateAvis = dateAvis
         };
     }
@@ -373,8 +367,8 @@ public static class Mappers
         dest.Note = source.Note;
         dest.Commentaire = source.Commentaire;
         dest.Approuve = source.Approuve;
-        dest.ClientIdClient = source.ClientIdClient;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
+        dest.ClientId = source.ClientId;
+        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -389,11 +383,10 @@ public static class Mappers
         {
             Nom = source.Nom,
             Prenom = source.Prenom,
-            Telephone = source.Telephone,
             Email = source.Email,
             Commandes = source.Commandes,
-            AvisClientsClient = source.AvisClientsClient,
-            ReservationsClient = source.ReservationsClient
+            Reservations = source.Reservations,
+            AvisClients = source.AvisClients
         };
     }
 
@@ -407,11 +400,10 @@ public static class Mappers
     {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
-        dest.Telephone = source.Telephone;
         dest.Email = source.Email;
         dest.Commandes = source.Commandes;
-        dest.AvisClientsClient = source.AvisClientsClient;
-        dest.ReservationsClient = source.ReservationsClient;
+        dest.Reservations = source.Reservations;
+        dest.AvisClients = source.AvisClients;
         return dest;
     }
 
@@ -428,7 +420,8 @@ public static class Mappers
         {
             DateLivraison = source.DateLivraison,
             ClientId = source.ClientId,
-            TableClientId = source.TableClientId,
+            TableId = source.TableId,
+            ReservationId = source.ReservationId,
             StatutCommandeCode = source.StatutCommandeCode,
             LigneCommandes = source.LigneCommandes,
             DateCommande = dateCommande,
@@ -446,7 +439,8 @@ public static class Mappers
     {
         dest.DateLivraison = source.DateLivraison;
         dest.ClientId = source.ClientId;
-        dest.TableClientId = source.TableClientId;
+        dest.TableId = source.TableId;
+        dest.ReservationId = source.ReservationId;
         dest.StatutCommandeCode = source.StatutCommandeCode;
         dest.LigneCommandes = source.LigneCommandes;
         return dest;
@@ -464,7 +458,7 @@ public static class Mappers
             Matricule = source.Matricule,
             DateEmbauche = source.DateEmbauche,
             Salaire = source.Salaire,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -479,7 +473,7 @@ public static class Mappers
         dest.Matricule = source.Matricule;
         dest.DateEmbauche = source.DateEmbauche;
         dest.Salaire = source.Salaire;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
+        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -531,8 +525,7 @@ public static class Mappers
             Disponible = source.Disponible,
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant,
-            MenuPlatsMenu = source.MenuPlatsMenu
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -550,8 +543,7 @@ public static class Mappers
         dest.Disponible = source.Disponible;
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
-        dest.MenuPlatsMenu = source.MenuPlatsMenu;
+        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -568,11 +560,9 @@ public static class Mappers
             Description = source.Description,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlatCodeCategoriePlat = source.CategoriePlatCodeCategoriePlat,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant,
-            LigneCommandes = source.LigneCommandes,
-            MenuPlatsPlat = source.MenuPlatsPlat,
-            PromotionPlatsPlat = source.PromotionPlatsPlat
+            CategoriePlatCode = source.CategoriePlatCode,
+            RestaurantId = source.RestaurantId,
+            LigneCommandes = source.LigneCommandes
         };
     }
 
@@ -588,11 +578,9 @@ public static class Mappers
         dest.Description = source.Description;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
-        dest.CategoriePlatCodeCategoriePlat = source.CategoriePlatCodeCategoriePlat;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
+        dest.CategoriePlatCode = source.CategoriePlatCode;
+        dest.RestaurantId = source.RestaurantId;
         dest.LigneCommandes = source.LigneCommandes;
-        dest.MenuPlatsPlat = source.MenuPlatsPlat;
-        dest.PromotionPlatsPlat = source.PromotionPlatsPlat;
         return dest;
     }
 
@@ -610,8 +598,7 @@ public static class Mappers
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
             Active = source.Active,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant,
-            PromotionPlatsPromotion = source.PromotionPlatsPromotion
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -628,8 +615,7 @@ public static class Mappers
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
         dest.Active = source.Active;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
-        dest.PromotionPlatsPromotion = source.PromotionPlatsPromotion;
+        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -646,9 +632,9 @@ public static class Mappers
             NombrePersonnes = source.NombrePersonnes,
             Commentaire = source.Commentaire,
             Confirmee = source.Confirmee,
-            ClientIdClient = source.ClientIdClient,
-            TableClientIdTable = source.TableClientIdTable,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant
+            ClientId = source.ClientId,
+            TableId = source.TableId,
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -664,9 +650,9 @@ public static class Mappers
         dest.NombrePersonnes = source.NombrePersonnes;
         dest.Commentaire = source.Commentaire;
         dest.Confirmee = source.Confirmee;
-        dest.ClientIdClient = source.ClientIdClient;
-        dest.TableClientIdTable = source.TableClientIdTable;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
+        dest.ClientId = source.ClientId;
+        dest.TableId = source.TableId;
+        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -682,12 +668,12 @@ public static class Mappers
             Nom = source.Nom,
             Adresse = source.Adresse,
             Telephone = source.Telephone,
-            TableClientsRestaurant = source.TableClientsRestaurant,
-            PlatsRestaurant = source.PlatsRestaurant,
-            AvisClientsRestaurant = source.AvisClientsRestaurant,
-            MenusRestaurant = source.MenusRestaurant,
-            ReservationsRestaurant = source.ReservationsRestaurant,
-            PromotionsRestaurant = source.PromotionsRestaurant
+            Reservations = source.Reservations,
+            Menus = source.Menus,
+            Plats = source.Plats,
+            Promotions = source.Promotions,
+            AvisClients = source.AvisClients,
+            Tables = source.Tables
         };
     }
 
@@ -702,47 +688,47 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Adresse = source.Adresse;
         dest.Telephone = source.Telephone;
-        dest.TableClientsRestaurant = source.TableClientsRestaurant;
-        dest.PlatsRestaurant = source.PlatsRestaurant;
-        dest.AvisClientsRestaurant = source.AvisClientsRestaurant;
-        dest.MenusRestaurant = source.MenusRestaurant;
-        dest.ReservationsRestaurant = source.ReservationsRestaurant;
-        dest.PromotionsRestaurant = source.PromotionsRestaurant;
+        dest.Reservations = source.Reservations;
+        dest.Menus = source.Menus;
+        dest.Plats = source.Plats;
+        dest.Promotions = source.Promotions;
+        dest.AvisClients = source.AvisClients;
+        dest.Tables = source.Tables;
         return dest;
     }
 
     /// <summary>
-    /// Mappe 'TableClientWrite' vers 'TableClient'.
+    /// Mappe 'TableWrite' vers 'Table'.
     /// </summary>
-    /// <param name="source">Instance de 'TableClientWrite'.</param>
-    /// <returns>Une nouvelle instance de 'TableClient'.</returns>
-    public static TableClient ToTableClient(this TableClientWrite source)
+    /// <param name="source">Instance de 'TableWrite'.</param>
+    /// <returns>Une nouvelle instance de 'Table'.</returns>
+    public static Table ToTable(this TableWrite source)
     {
-        return new TableClient
+        return new Table
         {
             Numero = source.Numero,
             Capacite = source.Capacite,
             Disponible = source.Disponible,
-            RestaurantIdRestaurant = source.RestaurantIdRestaurant,
+            RestaurantId = source.RestaurantId,
             Commandes = source.Commandes,
-            ReservationsTable = source.ReservationsTable
+            Reservations = source.Reservations
         };
     }
 
     /// <summary>
-    /// Mappe 'TableClientWrite' vers 'TableClient'.
+    /// Mappe 'TableWrite' vers 'Table'.
     /// </summary>
-    /// <param name="source">Instance de 'TableClientWrite'.</param>
-    /// <param name="dest">Instance pré-existante de 'TableClient'.</param>
-    /// <returns>L'instance pré-existante de 'TableClient'.</returns>
-    public static TableClient ToTableClient(this TableClientWrite source, TableClient dest)
+    /// <param name="source">Instance de 'TableWrite'.</param>
+    /// <param name="dest">Instance pré-existante de 'Table'.</param>
+    /// <returns>L'instance pré-existante de 'Table'.</returns>
+    public static Table ToTable(this TableWrite source, Table dest)
     {
         dest.Numero = source.Numero;
         dest.Capacite = source.Capacite;
         dest.Disponible = source.Disponible;
-        dest.RestaurantIdRestaurant = source.RestaurantIdRestaurant;
+        dest.RestaurantId = source.RestaurantId;
         dest.Commandes = source.Commandes;
-        dest.ReservationsTable = source.ReservationsTable;
+        dest.Reservations = source.Reservations;
         return dest;
     }
 }

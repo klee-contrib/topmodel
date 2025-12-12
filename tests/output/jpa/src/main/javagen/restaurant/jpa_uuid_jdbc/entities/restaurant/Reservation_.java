@@ -24,11 +24,11 @@ public class Reservation_ {
 
 	public static volatile SingularAttribute<Reservation, Boolean> confirmee;
 
-	public static volatile SingularAttribute<Reservation, Client> clientClient;
+	public static volatile SingularAttribute<Reservation, Client> client;
 
-	public static volatile SingularAttribute<Reservation, TableClient> tableClientTable;
+	public static volatile SingularAttribute<Reservation, Table> table;
 
-	public static volatile SingularAttribute<Reservation, Restaurant> restaurantRestaurant;
+	public static volatile SingularAttribute<Reservation, Restaurant> restaurant;
 
 	public static final String ID = "id";
 
@@ -40,9 +40,9 @@ public class Reservation_ {
 
 	public static final String CONFIRMEE = "confirmee";
 
-	public static final String CLIENT_CLIENT = "clientClient";
+	public static final String CLIENT = "client";
 
-	public static final String TABLE_CLIENT_TABLE = "tableClientTable";
+	public static final String TABLE = "table";
 
-	public static final String RESTAURANT_RESTAURANT = "restaurantRestaurant";
+	public static final String RESTAURANT = "restaurant";
 }

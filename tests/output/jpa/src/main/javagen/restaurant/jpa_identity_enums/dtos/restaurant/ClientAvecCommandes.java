@@ -29,34 +29,27 @@ public class ClientAvecCommandes implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Identifiant du client.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getId() Client#getId()}
+	 * Identifiant de la personne.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Personne#getId() Personne#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
-	 * Nom du client.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getNom() Client#getNom()}
+	 * Nom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Personne#getNom() Personne#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
 	private String nom;
 
 	/**
-	 * Prénom du client.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getPrenom() Client#getPrenom()}
+	 * Prénom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
 	 */
 	@NotNull
 	@Size(max = 100)
 	private String prenom;
-
-	/**
-	 * Numéro de téléphone du client.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getTelephone() Client#getTelephone()}
-	 */
-	@Size(max = 20)
-	private String telephone;
 
 	/**
 	 * Adresse email du client.
@@ -73,18 +66,18 @@ public class ClientAvecCommandes implements Serializable {
 	private List<Integer> commandes;
 
 	/**
-	 * Association réciproque de AvisClient.ClientIdClient.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getAvisClientsClient() Client#getAvisClientsClient()}
+	 * Association réciproque de Reservation.ClientId.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getReservations() Client#getReservations()}
 	 */
 	@NotNull
-	private List<Integer> avisClientsClient;
+	private List<Integer> reservations;
 
 	/**
-	 * Association réciproque de Reservation.ClientIdClient.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getReservationsClient() Client#getReservationsClient()}
+	 * Association réciproque de AvisClient.ClientId.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
-	private List<Integer> reservationsClient;
+	private List<Integer> avisClients;
 
 	/**
 	 * Liste des commandes du client.
@@ -122,9 +115,15 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTableClient() Commande#getTableClient()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
-	private List<Integer> commandeTableClientId;
+	private List<Integer> commandeTableId;
+
+	/**
+	 * Liste des commandes du client.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 */
+	private List<Integer> commandeReservationId;
 
 	/**
 	 * Liste des commandes du client.
@@ -168,15 +167,6 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for telephone.
-	 *
-	 * @return value of {@link #telephone telephone}.
-	 */
-	public String getTelephone() {
-		return this.telephone;
-	}
-
-	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -195,21 +185,21 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for avisClientsClient.
+	 * Getter for reservations.
 	 *
-	 * @return value of {@link #avisClientsClient avisClientsClient}.
+	 * @return value of {@link #reservations reservations}.
 	 */
-	public List<Integer> getAvisClientsClient() {
-		return this.avisClientsClient;
+	public List<Integer> getReservations() {
+		return this.reservations;
 	}
 
 	/**
-	 * Getter for reservationsClient.
+	 * Getter for avisClients.
 	 *
-	 * @return value of {@link #reservationsClient reservationsClient}.
+	 * @return value of {@link #avisClients avisClients}.
 	 */
-	public List<Integer> getReservationsClient() {
-		return this.reservationsClient;
+	public List<Integer> getAvisClients() {
+		return this.avisClients;
 	}
 
 	/**
@@ -258,12 +248,21 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeTableClientId.
+	 * Getter for commandeTableId.
 	 *
-	 * @return value of {@link #commandeTableClientId commandeTableClientId}.
+	 * @return value of {@link #commandeTableId commandeTableId}.
 	 */
-	public List<Integer> getCommandeTableClientId() {
-		return this.commandeTableClientId;
+	public List<Integer> getCommandeTableId() {
+		return this.commandeTableId;
+	}
+
+	/**
+	 * Getter for commandeReservationId.
+	 *
+	 * @return value of {@link #commandeReservationId commandeReservationId}.
+	 */
+	public List<Integer> getCommandeReservationId() {
+		return this.commandeReservationId;
 	}
 
 	/**
@@ -309,14 +308,6 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
-	 */
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	/**
 	 * Set the value of {@link #email email}.
 	 * @param email value to set.
 	 */
@@ -333,19 +324,19 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #avisClientsClient avisClientsClient}.
-	 * @param avisClientsClient value to set.
+	 * Set the value of {@link #reservations reservations}.
+	 * @param reservations value to set.
 	 */
-	public void setAvisClientsClient(List<Integer> avisClientsClient) {
-		this.avisClientsClient = avisClientsClient;
+	public void setReservations(List<Integer> reservations) {
+		this.reservations = reservations;
 	}
 
 	/**
-	 * Set the value of {@link #reservationsClient reservationsClient}.
-	 * @param reservationsClient value to set.
+	 * Set the value of {@link #avisClients avisClients}.
+	 * @param avisClients value to set.
 	 */
-	public void setReservationsClient(List<Integer> reservationsClient) {
-		this.reservationsClient = reservationsClient;
+	public void setAvisClients(List<Integer> avisClients) {
+		this.avisClients = avisClients;
 	}
 
 	/**
@@ -389,11 +380,19 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeTableClientId commandeTableClientId}.
-	 * @param commandeTableClientId value to set.
+	 * Set the value of {@link #commandeTableId commandeTableId}.
+	 * @param commandeTableId value to set.
 	 */
-	public void setCommandeTableClientId(List<Integer> commandeTableClientId) {
-		this.commandeTableClientId = commandeTableClientId;
+	public void setCommandeTableId(List<Integer> commandeTableId) {
+		this.commandeTableId = commandeTableId;
+	}
+
+	/**
+	 * Set the value of {@link #commandeReservationId commandeReservationId}.
+	 * @param commandeReservationId value to set.
+	 */
+	public void setCommandeReservationId(List<Integer> commandeReservationId) {
+		this.commandeReservationId = commandeReservationId;
 	}
 
 	/**
@@ -419,17 +418,17 @@ public class ClientAvecCommandes implements Serializable {
 		ID(Integer.class),
 		NOM(String.class),
 		PRENOM(String.class),
-		TELEPHONE(String.class),
 		EMAIL(String.class),
 		COMMANDES(List.class),
-		AVIS_CLIENTS_CLIENT(List.class),
-		RESERVATIONS_CLIENT(List.class),
+		RESERVATIONS(List.class),
+		AVIS_CLIENTS(List.class),
 		COMMANDE_ID(List.class),
 		COMMANDE_DATE_COMMANDE(List.class),
 		COMMANDE_DATE_LIVRAISON(List.class),
 		COMMANDE_MONTANT_TOTAL(List.class),
 		COMMANDE_CLIENT_ID(List.class),
-		COMMANDE_TABLE_CLIENT_ID(List.class),
+		COMMANDE_TABLE_ID(List.class),
+		COMMANDE_RESERVATION_ID(List.class),
 		COMMANDE_STATUT_COMMANDE_CODE(List.class),
 		COMMANDE_LIGNE_COMMANDES(List.class);
 

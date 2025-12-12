@@ -16,12 +16,20 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record MenuPlat
 {
     /// <summary>
-    /// Identifiant de la relation.
+    /// Menu contenant ce plat.
     /// </summary>
-    [Column("mpl_id")]
+    [Column("men_id")]
+    [Required]
     [Domain(Domains.Id)]
-    [Key]
-    public int? Id { get; set; }
+    public int? MenuId { get; set; }
+
+    /// <summary>
+    /// Plat du menu.
+    /// </summary>
+    [Column("pla_id")]
+    [Required]
+    [Domain(Domains.Id)]
+    public int? PlatId { get; set; }
 
     /// <summary>
     /// Ordre d'affichage du plat dans le menu.
@@ -30,20 +38,4 @@ public partial record MenuPlat
     [Required]
     [Domain(Domains.Quantite)]
     public int? Ordre { get; set; }
-
-    /// <summary>
-    /// Menu contenant ce plat.
-    /// </summary>
-    [Column("men_id_menu")]
-    [Required]
-    [Domain(Domains.Id)]
-    public int? MenuIdMenu { get; set; }
-
-    /// <summary>
-    /// Plat du menu.
-    /// </summary>
-    [Column("pla_id_plat")]
-    [Required]
-    [Domain(Domains.Id)]
-    public int? PlatIdPlat { get; set; }
 }

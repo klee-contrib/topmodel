@@ -29,7 +29,9 @@ public class CommandeExport_ {
 
 	public static volatile SingularAttribute<CommandeExport, Client> client;
 
-	public static volatile SingularAttribute<CommandeExport, TableClient> tableClient;
+	public static volatile SingularAttribute<CommandeExport, Table> table;
+
+	public static volatile SingularAttribute<CommandeExport, Reservation> reservation;
 
 	public static volatile SingularAttribute<CommandeExport, StatutCommande> statutCommande;
 
@@ -45,7 +47,9 @@ public class CommandeExport_ {
 
 	public static final String CLIENT = "client";
 
-	public static final String TABLE_CLIENT = "tableClient";
+	public static final String TABLE = "table";
+
+	public static final String RESERVATION = "reservation";
 
 	public static final String STATUT_COMMANDE = "statutCommande";
 

@@ -1,0 +1,175 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - Restaurant/Entities/Commande
+  - Restaurant/Entities/Restaurant
+  - Restaurant/References
+---
+class:
+  name: Menu
+  trigram: MEN
+  comment: Menu du restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du menu
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du menu
+
+    - name: Description
+      domain: DO_LIBELLE
+      comment: Description du menu
+
+    - name: Prix
+      domain: DO_PRIX
+      required: true
+      comment: Prix du menu
+
+    - name: Disponible
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si le menu est disponible
+
+    - name: DateDebut
+      domain: DO_DATE_HEURE
+      comment: Date de début de validité du menu
+
+    - name: DateFin
+      domain: DO_DATE_HEURE
+      comment: Date de fin de validité du menu
+
+    - association: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant proposant ce menu
+---
+class:
+  name: Plat
+  trigram: PLA
+  comment: Plat du menu
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du plat
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du plat
+
+    - name: Description
+      domain: DO_LIBELLE
+      comment: Description du plat
+
+    - name: Prix
+      domain: DO_PRIX
+      required: true
+      comment: Prix du plat
+
+    - name: Disponible
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si le plat est disponible
+
+    - association: CategoriePlat
+      required: true
+      comment: Catégorie du plat
+
+    - association: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant proposant ce plat
+---
+class:
+  name: MenuPlat
+  trigram: MPL
+  comment: Plat dans un menu
+
+  properties:
+    - association: Menu
+      primaryKey: true
+      withReverse:
+        className: Plats
+      comment: Menu contenant ce plat
+
+    - association: Plat
+      primaryKey: true
+      comment: Plat du menu
+
+    - name: Ordre
+      domain: DO_QUANTITE
+      required: true
+      comment: Ordre d'affichage du plat dans le menu
+
+  unique:
+    - [MenuId, Ordre]
+---
+class:
+  name: Promotion
+  trigram: PRO
+  comment: Promotion sur les plats
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la promotion
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé de la promotion
+
+    - name: PourcentageReduction
+      domain: DO_QUANTITE
+      required: true
+      comment: Pourcentage de réduction (0-100)
+
+    - name: DateDebut
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date de début de la promotion
+
+    - name: DateFin
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date de fin de la promotion
+
+    - name: Active
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si la promotion est active
+
+    - association: Restaurant
+      withReverse: true
+      comment: Restaurant concerné par la promotion (null si globale)
+---
+class:
+  name: PromotionPlat
+  trigram: PPL
+  comment: Association entre une promotion et un plat
+
+  properties:
+    - association: Promotion
+      primaryKey: true
+      withReverse:
+        className: Plats
+      comment: Promotion concernée
+
+    - association: Plat
+      primaryKey: true
+      withReverse:
+        className: Promotions
+      comment: Plat concerné par la promotion

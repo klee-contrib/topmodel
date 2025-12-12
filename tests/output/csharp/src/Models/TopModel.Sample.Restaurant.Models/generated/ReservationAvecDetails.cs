@@ -53,20 +53,20 @@ public partial record ReservationAvecDetails
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? ClientIdClient { get; set; }
+    public int? ClientId { get; set; }
 
     /// <summary>
     /// Table réservée.
     /// </summary>
     [Domain(Domains.Id)]
-    public int? TableClientIdTable { get; set; }
+    public int? TableId { get; set; }
 
     /// <summary>
     /// Restaurant concerné par la réservation.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 
     /// <summary>
     /// Informations du client ayant fait la réservation.
@@ -87,9 +87,9 @@ public partial record ReservationAvecDetails
     /// <summary>
     /// Informations du client ayant fait la réservation.
     /// </summary>
-    [Domain(Domains.Telephone)]
-    [StringLength(20)]
-    public string ClientTelephone { get; set; }
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string ClientEmail { get; set; }
 
     /// <summary>
     /// Table réservée.
@@ -97,12 +97,12 @@ public partial record ReservationAvecDetails
     [Required]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string TableClientNumero { get; set; }
+    public string TableNumero { get; set; }
 
     /// <summary>
     /// Table réservée.
     /// </summary>
     [Required]
     [Domain(Domains.Quantite)]
-    public int? TableClientCapacite { get; set; }
+    public int? TableCapacite { get; set; }
 }

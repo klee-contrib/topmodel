@@ -37,7 +37,7 @@ public interface MenuItem {
 	/**
 	 * Restaurant proposant ce menu.
 	 */
-	Integer getRestaurantIdRestaurant();
+	Integer getRestaurantId();
 
 	/**
 	 * Hydrate values of instance.
@@ -45,7 +45,7 @@ public interface MenuItem {
 	 * @param nom value to set.
 	 * @param prix value to set.
 	 * @param disponible value to set.
-	 * @param restaurantIdRestaurant value to set.
+	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, Integer restaurantIdRestaurant);
+	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, Integer restaurantId);
 }

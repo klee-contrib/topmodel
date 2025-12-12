@@ -32,12 +32,12 @@ public interface IAvisClientItem
     /// <summary>
     /// Client ayant donné l'avis.
     /// </summary>
-    int? ClientIdClient { get; }
+    int? ClientId { get; }
 
     /// <summary>
     /// Restaurant concerné par l'avis.
     /// </summary>
-    int? RestaurantIdRestaurant { get; }
+    int? RestaurantId { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -46,8 +46,8 @@ public interface IAvisClientItem
     /// <param name="note">Note sur 5.</param>
     /// <param name="dateAvis">Date de l'avis.</param>
     /// <param name="approuve">Indique si l'avis est approuvé par le restaurant.</param>
-    /// <param name="clientIdClient">Client ayant donné l'avis.</param>
-    /// <param name="restaurantIdRestaurant">Restaurant concerné par l'avis.</param>
+    /// <param name="clientId">Client ayant donné l'avis.</param>
+    /// <param name="restaurantId">Restaurant concerné par l'avis.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IAvisClientItem Create(int? id = null, int? note = null, DateTime? dateAvis = null, bool? approuve = null, int? clientIdClient = null, int? restaurantIdRestaurant = null);
+    static abstract IAvisClientItem Create(int? id = null, int? note = null, DateTime? dateAvis = null, bool? approuve = null, int? clientId = null, int? restaurantId = null);
 }

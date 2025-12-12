@@ -13,17 +13,17 @@ import jakarta.annotation.Generated;
 public interface ClientItem {
 
 	/**
-	 * Identifiant du client.
+	 * Identifiant de la personne.
 	 */
 	Integer getId();
 
 	/**
-	 * Nom du client.
+	 * Nom de la personne.
 	 */
 	String getNom();
 
 	/**
-	 * Prénom du client.
+	 * Prénom de la personne.
 	 */
 	String getPrenom();
 

@@ -18,8 +18,8 @@ create table AVIS_CLIENT (
 	AVI_DATE_AVIS timestamp not null,
 	AVI_APPROUVE boolean not null,
 	AVI_NOMBRE_VUES int not null,
-	CLI_ID_CLIENT int not null,
-	RES_ID_RESTAURANT int not null,
+	PER_ID int not null,
+	RES_ID int not null,
 	constraint PK_AVIS_CLIENT primary key (AVI_ID)
 );
 
@@ -41,18 +41,10 @@ create table CATEGORIE_PLAT (
   * Création de la table CLIENT
  **/
 create table CLIENT (
-	CLI_ID int not null,
-	CLI_NOM varchar(100) not null,
-	CLI_PRENOM varchar(100) not null,
-	CLI_TELEPHONE varchar(20),
 	CLI_EMAIL varchar(100),
-	constraint PK_CLIENT primary key (CLI_ID)
+	PER_ID int not null,
+	constraint PK_CLIENT primary key (PER_ID)
 );
-
-/**
-  * Création de la séquence pour la clé primaire de la table CLIENT
- **/
-create sequence SEQ_CLIENT as INT start 1000 increment 50 owned by CLIENT.CLI_ID;
 
 /**
   * Création de la table COMMANDE
@@ -62,8 +54,9 @@ create table COMMANDE (
 	COM_DATE_COMMANDE timestamp not null,
 	COM_DATE_LIVRAISON timestamp,
 	COM_MONTANT_TOTAL decimal not null,
-	CLI_ID int not null,
+	PER_ID int not null,
 	TAB_ID int,
+	REV_ID int,
 	STC_CODE varchar(10) not null,
 	constraint PK_COMMANDE primary key (COM_ID)
 );
@@ -81,8 +74,9 @@ create table COMMANDE_EXPORT (
 	COM_DATE_COMMANDE timestamp not null,
 	COM_DATE_LIVRAISON timestamp,
 	COM_MONTANT_TOTAL decimal not null,
-	CLI_ID int not null,
+	PER_ID int not null,
 	TAB_ID int,
+	REV_ID int,
 	STC_CODE varchar(10) not null,
 	constraint PK_COMMANDE_EXPORT primary key (COM_ID)
 );
@@ -91,10 +85,12 @@ create table COMMANDE_EXPORT (
   * Création de la table EMPLOYE
  **/
 create table EMPLOYE (
+	EMP_TELEPHONE varchar(20),
+	EMP_DATE_NAISSANCE timestamp,
 	EMP_MATRICULE varchar(10) not null,
 	EMP_DATE_EMBAUCHE timestamp not null,
 	EMP_SALAIRE decimal,
-	RES_ID_RESTAURANT int not null,
+	RES_ID int not null,
 	PER_ID int not null,
 	constraint PK_EMPLOYE primary key (PER_ID)
 );
@@ -128,7 +124,7 @@ create table MENU (
 	MEN_DISPONIBLE boolean not null,
 	MEN_DATE_DEBUT timestamp,
 	MEN_DATE_FIN timestamp,
-	RES_ID_RESTAURANT int not null,
+	RES_ID int not null,
 	constraint PK_MENU primary key (MEN_ID)
 );
 
@@ -141,17 +137,11 @@ create sequence SEQ_MENU as INT start 1000 increment 50 owned by MENU.MEN_ID;
   * Création de la table MENU_PLAT
  **/
 create table MENU_PLAT (
-	MPL_ID int not null,
+	MEN_ID int not null,
+	PLA_ID int not null,
 	MPL_ORDRE int not null,
-	MEN_ID_MENU int not null,
-	PLA_ID_PLAT int not null,
-	constraint PK_MENU_PLAT primary key (MPL_ID)
+	constraint PK_MENU_PLAT primary key (MEN_ID,PLA_ID)
 );
-
-/**
-  * Création de la séquence pour la clé primaire de la table MENU_PLAT
- **/
-create sequence SEQ_MENU_PLAT as INT start 1000 increment 50 owned by MENU_PLAT.MPL_ID;
 
 /**
   * Création de la table PERSONNE
@@ -160,9 +150,6 @@ create table PERSONNE (
 	PER_ID int not null,
 	PER_NOM varchar(100) not null,
 	PER_PRENOM varchar(100) not null,
-	PER_EMAIL varchar(100),
-	PER_TELEPHONE varchar(20),
-	PER_DATE_NAISSANCE timestamp,
 	constraint PK_PERSONNE primary key (PER_ID)
 );
 
@@ -180,8 +167,8 @@ create table PLAT (
 	PLA_DESCRIPTION varchar(100),
 	PLA_PRIX decimal not null,
 	PLA_DISPONIBLE boolean not null,
-	CAT_CODE_CATEGORIE_PLAT varchar(10) not null,
-	RES_ID_RESTAURANT int not null,
+	CAT_CODE varchar(10) not null,
+	RES_ID int not null,
 	constraint PK_PLAT primary key (PLA_ID)
 );
 
@@ -200,7 +187,7 @@ create table PROMOTION (
 	PRO_DATE_DEBUT timestamp not null,
 	PRO_DATE_FIN timestamp not null,
 	PRO_ACTIVE boolean not null,
-	RES_ID_RESTAURANT int,
+	RES_ID int,
 	constraint PK_PROMOTION primary key (PRO_ID)
 );
 
@@ -213,16 +200,10 @@ create sequence SEQ_PROMOTION as INT start 1000 increment 50 owned by PROMOTION.
   * Création de la table PROMOTION_PLAT
  **/
 create table PROMOTION_PLAT (
-	PPL_ID int not null,
-	PRO_ID_PROMOTION int not null,
-	PLA_ID_PLAT int not null,
-	constraint PK_PROMOTION_PLAT primary key (PPL_ID)
+	PRO_ID int not null,
+	PLA_ID int not null,
+	constraint PK_PROMOTION_PLAT primary key (PRO_ID,PLA_ID)
 );
-
-/**
-  * Création de la séquence pour la clé primaire de la table PROMOTION_PLAT
- **/
-create sequence SEQ_PROMOTION_PLAT as INT start 1000 increment 50 owned by PROMOTION_PLAT.PPL_ID;
 
 /**
   * Création de la table RESERVATION
@@ -233,9 +214,9 @@ create table RESERVATION (
 	REV_NOMBRE_PERSONNES int not null,
 	REV_COMMENTAIRE varchar(100),
 	REV_CONFIRMEE boolean not null,
-	CLI_ID_CLIENT int not null,
-	TAB_ID_TABLE int,
-	RES_ID_RESTAURANT int not null,
+	PER_ID int not null,
+	TAB_ID int,
+	RES_ID int not null,
 	constraint PK_RESERVATION primary key (REV_ID)
 );
 
@@ -270,18 +251,18 @@ create table STATUT_COMMANDE (
 );
 
 /**
-  * Création de la table TABLE_CLIENT
+  * Création de la table TABLE
  **/
-create table TABLE_CLIENT (
+create table TABLE (
 	TAB_ID int not null,
 	TAB_NUMERO varchar(10) not null,
 	TAB_CAPACITE int not null,
 	TAB_DISPONIBLE boolean not null,
-	RES_ID_RESTAURANT int not null,
-	constraint PK_TABLE_CLIENT primary key (TAB_ID)
+	RES_ID int not null,
+	constraint PK_TABLE primary key (TAB_ID)
 );
 
 /**
-  * Création de la séquence pour la clé primaire de la table TABLE_CLIENT
+  * Création de la séquence pour la clé primaire de la table TABLE
  **/
-create sequence SEQ_TABLE_CLIENT as INT start 1000 increment 50 owned by TABLE_CLIENT.TAB_ID;
+create sequence SEQ_TABLE as INT start 1000 increment 50 owned by TABLE.TAB_ID;

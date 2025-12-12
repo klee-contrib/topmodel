@@ -12,8 +12,8 @@ export const EmployeItemEntity = entity({
     matricule: e.field(DO_CODE, f => f
         .label("restaurant.employe.matricule")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.employe.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.employe.restaurantId")
     ),
     id: e.field(DO_ID, f => f.optional()
         .label("restaurant.employeItem.id")

@@ -32,7 +32,7 @@ public interface IMenuItem
     /// <summary>
     /// Restaurant proposant ce menu.
     /// </summary>
-    int? RestaurantIdRestaurant { get; }
+    int? RestaurantId { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -41,7 +41,7 @@ public interface IMenuItem
     /// <param name="nom">Nom du menu.</param>
     /// <param name="prix">Prix du menu.</param>
     /// <param name="disponible">Indique si le menu est disponible.</param>
-    /// <param name="restaurantIdRestaurant">Restaurant proposant ce menu.</param>
+    /// <param name="restaurantId">Restaurant proposant ce menu.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IMenuItem Create(int? id = null, string nom = null, decimal? prix = null, bool? disponible = null, int? restaurantIdRestaurant = null);
+    static abstract IMenuItem Create(int? id = null, string nom = null, decimal? prix = null, bool? disponible = null, int? restaurantId = null);
 }

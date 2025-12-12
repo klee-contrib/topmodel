@@ -51,7 +51,7 @@ public partial record CommandeExport
     /// <summary>
     /// Client ayant passé la commande.
     /// </summary>
-    [Column("cli_id")]
+    [Column("per_id")]
     [Required]
     [Domain(Domains.Id)]
     public int? ClientId { get; set; }
@@ -61,7 +61,14 @@ public partial record CommandeExport
     /// </summary>
     [Column("tab_id")]
     [Domain(Domains.Id)]
-    public int? TableClientId { get; set; }
+    public int? TableId { get; set; }
+
+    /// <summary>
+    /// Réservation associée à la commande.
+    /// </summary>
+    [Column("rev_id")]
+    [Domain(Domains.Id)]
+    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.

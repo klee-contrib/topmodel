@@ -21,6 +21,18 @@ import jakarta.validation.constraints.NotNull;
 public class Employe extends Personne {
 
 	/**
+	 * Numéro de téléphone de l'employé.
+	 */
+	@Column("emp_telephone")
+	private String telephone;
+
+	/**
+	 * Date de naissance.
+	 */
+	@Column("emp_date_naissance")
+	private LocalDateTime dateNaissance;
+
+	/**
 	 * Matricule de l'employé.
 	 */
 	@NotNull
@@ -44,8 +56,26 @@ public class Employe extends Personne {
 	 * Restaurant où travaille l'employé.
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
+	@Column("res_id")
+	private Integer restaurantId;
+
+	/**
+	 * Getter for telephone.
+	 *
+	 * @return value of {@link #telephone telephone}.
+	 */
+	public String getTelephone() {
+		return this.telephone;
+	}
+
+	/**
+	 * Getter for dateNaissance.
+	 *
+	 * @return value of {@link #dateNaissance dateNaissance}.
+	 */
+	public LocalDateTime getDateNaissance() {
+		return this.dateNaissance;
+	}
 
 	/**
 	 * Getter for matricule.
@@ -75,12 +105,28 @@ public class Employe extends Personne {
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #telephone telephone}.
+	 * @param telephone value to set.
+	 */
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	/**
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
+	 */
+	public void setDateNaissance(LocalDateTime dateNaissance) {
+		this.dateNaissance = dateNaissance;
 	}
 
 	/**
@@ -108,10 +154,10 @@ public class Employe extends Personne {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 }

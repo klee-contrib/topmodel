@@ -23,17 +23,17 @@ public class Restaurant_ {
 
 	public static volatile SingularAttribute<Restaurant, String> telephone;
 
-	public static volatile ListAttribute<Restaurant, TableClient> tableClientsRestaurant;
+	public static volatile ListAttribute<Restaurant, Reservation> reservations;
 
-	public static volatile ListAttribute<Restaurant, Plat> platsRestaurant;
+	public static volatile ListAttribute<Restaurant, Menu> menus;
 
-	public static volatile ListAttribute<Restaurant, AvisClient> avisClientsRestaurant;
+	public static volatile ListAttribute<Restaurant, Plat> plats;
 
-	public static volatile ListAttribute<Restaurant, Menu> menusRestaurant;
+	public static volatile ListAttribute<Restaurant, Promotion> promotions;
 
-	public static volatile ListAttribute<Restaurant, Reservation> reservationsRestaurant;
+	public static volatile ListAttribute<Restaurant, AvisClient> avisClients;
 
-	public static volatile ListAttribute<Restaurant, Promotion> promotionsRestaurant;
+	public static volatile ListAttribute<Restaurant, Table> tables;
 
 	public static final String ID = "id";
 
@@ -43,15 +43,15 @@ public class Restaurant_ {
 
 	public static final String TELEPHONE = "telephone";
 
-	public static final String TABLE_CLIENTS_RESTAURANT = "tableClientsRestaurant";
+	public static final String RESERVATIONS = "reservations";
 
-	public static final String PLATS_RESTAURANT = "platsRestaurant";
+	public static final String MENUS = "menus";
 
-	public static final String AVIS_CLIENTS_RESTAURANT = "avisClientsRestaurant";
+	public static final String PLATS = "plats";
 
-	public static final String MENUS_RESTAURANT = "menusRestaurant";
+	public static final String PROMOTIONS = "promotions";
 
-	public static final String RESERVATIONS_RESTAURANT = "reservationsRestaurant";
+	public static final String AVIS_CLIENTS = "avisClients";
 
-	public static final String PROMOTIONS_RESTAURANT = "promotionsRestaurant";
+	public static final String TABLES = "tables";
 }

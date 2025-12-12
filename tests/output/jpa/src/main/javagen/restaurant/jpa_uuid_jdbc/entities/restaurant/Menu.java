@@ -71,8 +71,8 @@ public class Menu {
 	 * Restaurant proposant ce menu.
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Getter for id.
@@ -138,12 +138,12 @@ public class Menu {
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -203,10 +203,10 @@ public class Menu {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 }

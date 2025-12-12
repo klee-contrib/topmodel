@@ -18,22 +18,22 @@ export const RestaurantWriteEntity = entity({
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.restaurant.telephone")
     ),
-    tableClientsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.tableClientsRestaurant")
+    reservations: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.reservations")
     ),
-    platsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.platsRestaurant")
+    menus: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.menus")
     ),
-    avisClientsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.avisClientsRestaurant")
+    plats: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.plats")
     ),
-    menusRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.menusRestaurant")
+    promotions: e.field(DO_LISTE, f => f.type<number[]>().optional()
+        .label("restaurant.restaurant.promotions")
     ),
-    reservationsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.reservationsRestaurant")
+    avisClients: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.avisClients")
     ),
-    promotionsRestaurant: e.field(DO_LISTE, f => f.type<number[]>().optional()
-        .label("restaurant.restaurant.promotionsRestaurant")
+    tables: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.tables")
     )
 });

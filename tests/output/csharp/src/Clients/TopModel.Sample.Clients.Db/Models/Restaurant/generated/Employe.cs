@@ -16,6 +16,21 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record Employe : Personne
 {
     /// <summary>
+    /// Numéro de téléphone de l'employé.
+    /// </summary>
+    [Column("emp_telephone")]
+    [Domain(Domains.Telephone)]
+    [StringLength(20)]
+    public string Telephone { get; set; }
+
+    /// <summary>
+    /// Date de naissance.
+    /// </summary>
+    [Column("emp_date_naissance")]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateNaissance { get; set; }
+
+    /// <summary>
     /// Matricule de l'employé.
     /// </summary>
     [Column("emp_matricule")]
@@ -42,8 +57,8 @@ public partial record Employe : Personne
     /// <summary>
     /// Restaurant où travaille l'employé.
     /// </summary>
-    [Column("res_id_restaurant")]
+    [Column("res_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 }

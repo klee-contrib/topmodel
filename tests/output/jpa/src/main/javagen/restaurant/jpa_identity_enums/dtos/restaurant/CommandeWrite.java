@@ -43,9 +43,15 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTableClient() Commande#getTableClient()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
-	private Integer tableClientId;
+	private Integer tableId;
+
+	/**
+	 * Réservation associée à la commande.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 */
+	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
@@ -80,12 +86,21 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for tableClientId.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #tableClientId tableClientId}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public Integer getTableClientId() {
-		return this.tableClientId;
+	public Integer getTableId() {
+		return this.tableId;
+	}
+
+	/**
+	 * Getter for reservationId.
+	 *
+	 * @return value of {@link #reservationId reservationId}.
+	 */
+	public Integer getReservationId() {
+		return this.reservationId;
 	}
 
 	/**
@@ -123,11 +138,19 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tableClientId tableClientId}.
-	 * @param tableClientId value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTableClientId(Integer tableClientId) {
-		this.tableClientId = tableClientId;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
+	}
+
+	/**
+	 * Set the value of {@link #reservationId reservationId}.
+	 * @param reservationId value to set.
+	 */
+	public void setReservationId(Integer reservationId) {
+		this.reservationId = reservationId;
 	}
 
 	/**
@@ -162,7 +185,8 @@ public class CommandeWrite implements Serializable {
 	public enum Fields {
 		DATE_LIVRAISON(LocalDateTime.class),
 		CLIENT_ID(Integer.class),
-		TABLE_CLIENT_ID(Integer.class),
+		TABLE_ID(Integer.class),
+		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE_CODE(StatutCommande.class),
 		LIGNE_COMMANDES(List.class);
 

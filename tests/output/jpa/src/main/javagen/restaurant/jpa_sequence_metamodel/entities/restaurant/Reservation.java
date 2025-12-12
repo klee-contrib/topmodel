@@ -24,7 +24,7 @@ import jakarta.persistence.UniqueConstraint;
  */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "RESERVATION", uniqueConstraints = {@UniqueConstraint(columnNames = {"TAB_ID_TABLE", "REV_DATE_RESERVATION"})})
+@Table(name = "RESERVATION", uniqueConstraints = {@UniqueConstraint(columnNames = {"TAB_ID", "REV_DATE_RESERVATION"})})
 public class Reservation {
 
 	/**
@@ -63,23 +63,23 @@ public class Reservation {
 	/**
 	 * Client ayant fait la réservation.
 	 */
-	@JoinColumn(name = "CLI_ID_CLIENT", referencedColumnName = "CLI_ID")
+	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
-	private Client clientClient;
+	private Client client;
 
 	/**
 	 * Table réservée.
 	 */
-	@JoinColumn(name = "TAB_ID_TABLE", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableClient.class)
-	private TableClient tableClientTable;
+	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Table.class)
+	private Table table;
 
 	/**
 	 * Restaurant concerné par la réservation.
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
 
 	/**
 	 * Getter for id.
@@ -127,30 +127,30 @@ public class Reservation {
 	}
 
 	/**
-	 * Getter for clientClient.
+	 * Getter for client.
 	 *
-	 * @return value of {@link #clientClient clientClient}.
+	 * @return value of {@link #client client}.
 	 */
-	public Client getClientClient() {
-		return this.clientClient;
+	public Client getClient() {
+		return this.client;
 	}
 
 	/**
-	 * Getter for tableClientTable.
+	 * Getter for table.
 	 *
-	 * @return value of {@link #tableClientTable tableClientTable}.
+	 * @return value of {@link #table table}.
 	 */
-	public TableClient getTableClientTable() {
-		return this.tableClientTable;
+	public Table getTable() {
+		return this.table;
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -194,27 +194,27 @@ public class Reservation {
 	}
 
 	/**
-	 * Set the value of {@link #clientClient clientClient}.
-	 * @param clientClient value to set.
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
 	 */
-	public void setClientClient(Client clientClient) {
-		this.clientClient = clientClient;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 	/**
-	 * Set the value of {@link #tableClientTable tableClientTable}.
-	 * @param tableClientTable value to set.
+	 * Set the value of {@link #table table}.
+	 * @param table value to set.
 	 */
-	public void setTableClientTable(TableClient tableClientTable) {
-		this.tableClientTable = tableClientTable;
+	public void setTable(Table table) {
+		this.table = table;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
@@ -226,9 +226,9 @@ public class Reservation {
 		NOMBRE_PERSONNES(Integer.class),
 		COMMENTAIRE(String.class),
 		CONFIRMEE(Boolean.class),
-		CLIENT_CLIENT(Client.class),
-		TABLE_CLIENT_TABLE(TableClient.class),
-		RESTAURANT_RESTAURANT(Restaurant.class);
+		CLIENT(Client.class),
+		TABLE(Table.class),
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

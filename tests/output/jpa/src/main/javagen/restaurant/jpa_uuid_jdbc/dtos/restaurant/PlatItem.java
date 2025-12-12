@@ -37,7 +37,7 @@ public interface PlatItem {
 	/**
 	 * Catégorie du plat.
 	 */
-	String getCategoriePlatCodeCategoriePlat();
+	String getCategoriePlatCode();
 
 	/**
 	 * Hydrate values of instance.
@@ -45,7 +45,7 @@ public interface PlatItem {
 	 * @param nom value to set.
 	 * @param prix value to set.
 	 * @param disponible value to set.
-	 * @param categoriePlatCodeCategoriePlat value to set.
+	 * @param categoriePlatCode value to set.
 	 */
-	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, String categoriePlatCodeCategoriePlat);
+	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, String categoriePlatCode);
 }

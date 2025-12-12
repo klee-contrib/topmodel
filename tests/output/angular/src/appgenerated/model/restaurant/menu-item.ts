@@ -21,7 +21,7 @@ export const MenuItemEntity = entity({
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.menu.disponible")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.menu.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.menu.restaurantId")
     )
 });

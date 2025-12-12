@@ -60,12 +60,12 @@ public partial record AvisClientRead
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? ClientIdClient { get; set; }
+    public int? ClientId { get; set; }
 
     /// <summary>
     /// Restaurant concerné par l'avis.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 }

@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "@/domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type MenuWrite = EntityToType<MenuWriteEntityType>;
@@ -27,10 +27,7 @@ export const MenuWriteEntity = entity({
     dateFin: e.field(DO_DATE_HEURE, f => f.optional()
         .label("restaurant.menu.dateFin")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.menu.restaurantIdRestaurant")
-    ),
-    menuPlatsMenu: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.menu.menuPlatsMenu")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.menu.restaurantId")
     )
 });

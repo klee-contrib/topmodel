@@ -14,14 +14,14 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record ClientMinimal
 {
     /// <summary>
-    /// Identifiant du client.
+    /// Identifiant de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
     public int? Id { get; set; }
 
     /// <summary>
-    /// Nom du client.
+    /// Nom de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Libelle)]
@@ -29,7 +29,7 @@ public partial record ClientMinimal
     public string Nom { get; set; }
 
     /// <summary>
-    /// Prénom du client.
+    /// Prénom de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Libelle)]

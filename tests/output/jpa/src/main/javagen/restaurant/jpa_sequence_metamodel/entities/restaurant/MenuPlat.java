@@ -4,16 +4,16 @@
 
 package restaurant.jpa_sequence_metamodel.entities.restaurant;
 
+import java.util.Objects;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -21,18 +21,22 @@ import jakarta.persistence.UniqueConstraint;
  * Plat dans un menu.
  */
 @Entity
+@IdClass(MenuPlat.MenuPlatId.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "MENU_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"MEN_ID_MENU", "MPL_ORDRE"}), @UniqueConstraint(columnNames = {"MEN_ID_MENU", "PLA_ID_PLAT"})})
+@Table(name = "MENU_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"MEN_ID", "MPL_ORDRE"})})
 public class MenuPlat {
 
 	/**
-	 * Identifiant de la relation.
+	 * Menu contenant ce plat.
 	 */
 	@Id
-	@Column(name = "MPL_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MENU_PLAT")
-	@SequenceGenerator(sequenceName = "SEQ_MENU_PLAT", name = "SEQ_MENU_PLAT", initialValue = 1000, allocationSize = 50)
-	private Integer id;
+	private Menu menu;
+
+	/**
+	 * Plat du menu.
+	 */
+	@Id
+	private Plat plat;
 
 	/**
 	 * Ordre d'affichage du plat dans le menu.
@@ -41,26 +45,21 @@ public class MenuPlat {
 	private Integer ordre;
 
 	/**
-	 * Menu contenant ce plat.
-	 */
-	@JoinColumn(name = "MEN_ID_MENU", referencedColumnName = "MEN_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Menu.class)
-	private Menu menuMenu;
-
-	/**
-	 * Plat du menu.
-	 */
-	@JoinColumn(name = "PLA_ID_PLAT", referencedColumnName = "PLA_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
-	private Plat platPlat;
-
-	/**
-	 * Getter for id.
+	 * Getter for menu.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #menu menu}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Menu getMenu() {
+		return this.menu;
+	}
+
+	/**
+	 * Getter for plat.
+	 *
+	 * @return value of {@link #plat plat}.
+	 */
+	public Plat getPlat() {
+		return this.plat;
 	}
 
 	/**
@@ -73,29 +72,19 @@ public class MenuPlat {
 	}
 
 	/**
-	 * Getter for menuMenu.
-	 *
-	 * @return value of {@link #menuMenu menuMenu}.
+	 * Set the value of {@link #menu menu}.
+	 * @param menu value to set.
 	 */
-	public Menu getMenuMenu() {
-		return this.menuMenu;
+	public void setMenu(Menu menu) {
+		this.menu = menu;
 	}
 
 	/**
-	 * Getter for platPlat.
-	 *
-	 * @return value of {@link #platPlat platPlat}.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public Plat getPlatPlat() {
-		return this.platPlat;
-	}
-
-	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setPlat(Plat plat) {
+		this.plat = plat;
 	}
 
 	/**
@@ -107,29 +96,12 @@ public class MenuPlat {
 	}
 
 	/**
-	 * Set the value of {@link #menuMenu menuMenu}.
-	 * @param menuMenu value to set.
-	 */
-	public void setMenuMenu(Menu menuMenu) {
-		this.menuMenu = menuMenu;
-	}
-
-	/**
-	 * Set the value of {@link #platPlat platPlat}.
-	 * @param platPlat value to set.
-	 */
-	public void setPlatPlat(Plat platPlat) {
-		this.platPlat = platPlat;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.MenuPlat MenuPlat}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
-		ORDRE(Integer.class),
-		MENU_MENU(Menu.class),
-		PLAT_PLAT(Plat.class);
+		MENU(Menu.class),
+		PLAT(Plat.class),
+		ORDRE(Integer.class);
 
 		private final Class<?> type;
 
@@ -144,6 +116,79 @@ public class MenuPlat {
 		 */
 		public Class<?> getType() {
 			return this.type;
+		}
+	}
+
+	public static class MenuPlatId {
+
+		@JoinColumn(name = "MEN_ID", referencedColumnName = "MEN_ID")
+		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Menu.class)
+		private Menu menu;
+
+		@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
+		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
+		private Plat plat;
+
+		/**
+		 * Getter for menu.
+		 *
+		 * @return value of {@link #menu menu}.
+		 */
+		public Menu getMenu() {
+			return this.menu;
+		}
+
+		/**
+		 * Set the value of {@link #menu menu}.
+		 * @param menu value to set.
+		 */
+		public void setMenu(Menu menu) {
+			this.menu = menu;
+		}
+
+		/**
+		 * Getter for plat.
+		 *
+		 * @return value of {@link #plat plat}.
+		 */
+		public Plat getPlat() {
+			return this.plat;
+		}
+
+		/**
+		 * Set the value of {@link #plat plat}.
+		 * @param plat value to set.
+		 */
+		public void setPlat(Plat plat) {
+			this.plat = plat;
+		}
+
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+
+			if (o == null) {
+				return false;
+			}
+
+			if (this.getClass() != o.getClass()) {
+				return false;
+			}
+
+			MenuPlatId oId = (MenuPlatId) o;
+
+			if (this.menu == null || oId.menu == null || this.plat == null || oId.plat == null) {
+				return false;
+			}
+
+			return Objects.equals(this.menu.getId(), oId.menu.getId())
+			 && Objects.equals(this.plat.getId(), oId.plat.getId());
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(menu == null ? null : menu.getId(), plat == null ? null : plat.getId());
 		}
 	}
 }

@@ -59,11 +59,5 @@ public partial record MenuWrite
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
-
-    /// <summary>
-    /// Association réciproque de MenuPlat.MenuIdMenu.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> MenuPlatsMenu { get; set; }
+    public int? RestaurantId { get; set; }
 }

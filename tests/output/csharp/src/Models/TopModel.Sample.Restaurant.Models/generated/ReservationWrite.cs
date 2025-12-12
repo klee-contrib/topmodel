@@ -46,18 +46,18 @@ public partial record ReservationWrite
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? ClientIdClient { get; set; }
+    public int? ClientId { get; set; }
 
     /// <summary>
     /// Table réservée.
     /// </summary>
     [Domain(Domains.Id)]
-    public int? TableClientIdTable { get; set; }
+    public int? TableId { get; set; }
 
     /// <summary>
     /// Restaurant concerné par la réservation.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 }

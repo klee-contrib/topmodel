@@ -60,19 +60,19 @@ public partial record Plat
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    [Column("cat_code_categorie_plat")]
+    [Column("cat_code")]
     [Required]
     [ReferencedType(typeof(CategoriePlat))]
     [Domain(Domains.Code)]
-    public CategoriePlat.Codes? CategoriePlatCodeCategoriePlat { get; set; }
+    public CategoriePlat.Codes? CategoriePlatCode { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce plat.
     /// </summary>
-    [Column("res_id_restaurant")]
+    [Column("res_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 
     /// <summary>
     /// Association réciproque de LigneCommande.PlatId.
@@ -82,16 +82,9 @@ public partial record Plat
     public ICollection<int> LigneCommandes { get; set; }
 
     /// <summary>
-    /// Association réciproque de MenuPlat.PlatIdPlat.
+    /// Association réciproque de PromotionPlat.PlatId.
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> MenuPlatsPlat { get; set; }
-
-    /// <summary>
-    /// Association réciproque de PromotionPlat.PlatIdPlat.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int> PromotionPlatsPlat { get; set; }
+    public ICollection<int> Promotions { get; set; }
 }

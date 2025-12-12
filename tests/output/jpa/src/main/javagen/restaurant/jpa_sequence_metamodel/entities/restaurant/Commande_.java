@@ -27,7 +27,9 @@ public class Commande_ {
 
 	public static volatile SingularAttribute<Commande, Client> client;
 
-	public static volatile SingularAttribute<Commande, TableClient> tableClient;
+	public static volatile SingularAttribute<Commande, Table> table;
+
+	public static volatile SingularAttribute<Commande, Reservation> reservation;
 
 	public static volatile SingularAttribute<Commande, StatutCommande> statutCommande;
 
@@ -43,7 +45,9 @@ public class Commande_ {
 
 	public static final String CLIENT = "client";
 
-	public static final String TABLE_CLIENT = "tableClient";
+	public static final String TABLE = "table";
+
+	public static final String RESERVATION = "reservation";
 
 	public static final String STATUT_COMMANDE = "statutCommande";
 

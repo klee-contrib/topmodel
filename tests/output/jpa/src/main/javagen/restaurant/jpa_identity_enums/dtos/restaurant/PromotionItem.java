@@ -47,7 +47,7 @@ public interface PromotionItem {
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
 	 */
-	Integer getRestaurantIdRestaurant();
+	Integer getRestaurantId();
 
 	/**
 	 * Hydrate values of instance.
@@ -57,7 +57,7 @@ public interface PromotionItem {
 	 * @param dateDebut value to set.
 	 * @param dateFin value to set.
 	 * @param active value to set.
-	 * @param restaurantIdRestaurant value to set.
+	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, String libelle, Integer pourcentageReduction, LocalDateTime dateDebut, LocalDateTime dateFin, Boolean active, Integer restaurantIdRestaurant);
+	void hydrate(Integer id, String libelle, Integer pourcentageReduction, LocalDateTime dateDebut, LocalDateTime dateFin, Boolean active, Integer restaurantId);
 }

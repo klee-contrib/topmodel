@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE, DO_TELEPHONE} from "@/domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type ReservationAvecDetails = EntityToType<ReservationAvecDetailsEntityType>;
@@ -24,28 +24,28 @@ export const ReservationAvecDetailsEntity = entity({
     confirmee: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.reservation.confirmee")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.reservation.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.clientId")
     ),
-    tableClientIdTable: e.field(DO_ID, f => f.optional()
-        .label("restaurant.reservation.tableClientIdTable")
+    tableId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.reservation.tableId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.reservation.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.restaurantId")
     ),
     clientNom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.client.nom")
+        .label("restaurant.personne.nom")
     ),
     clientPrenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.client.prenom")
+        .label("restaurant.personne.prenom")
     ),
-    clientTelephone: e.field(DO_TELEPHONE, f => f.optional()
-        .label("restaurant.client.telephone")
+    clientEmail: e.field(DO_LIBELLE, f => f.optional()
+        .label("restaurant.client.email")
     ),
-    tableClientNumero: e.field(DO_CODE, f => f
-        .label("restaurant.tableClient.numero")
+    tableNumero: e.field(DO_CODE, f => f
+        .label("restaurant.table.numero")
     ),
-    tableClientCapacite: e.field(DO_QUANTITE, f => f
-        .label("restaurant.tableClient.capacite")
+    tableCapacite: e.field(DO_QUANTITE, f => f
+        .label("restaurant.table.capacite")
     )
 });

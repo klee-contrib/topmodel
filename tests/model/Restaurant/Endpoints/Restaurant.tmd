@@ -1,0 +1,293 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+  - api-client
+uses:
+  - meta/annotations
+  - Restaurant/Dtos/Menu
+  - Restaurant/Dtos/Restaurant
+  - Restaurant/Entities/Commande
+  - Restaurant/Entities/Menu
+  - Restaurant/Entities/Personne
+  - Restaurant/Entities/Restaurant
+options:
+  endpoints:
+    prefix: api/restaurants
+---
+endpoint:
+  name: GetRestaurants
+  method: GET
+  route: /
+  description: Liste tous les restaurants
+
+  returns:
+    composition: RestaurantItem
+    name: restaurants
+    domain: DO_LISTE
+    comment: Liste des restaurants
+---
+endpoint:
+  name: GetRestaurant
+  method: GET
+  route: /{resId}
+  description: Charge le détail d'un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+
+  returns:
+    composition: RestaurantRead
+    name: restaurant
+    comment: Détail du restaurant
+---
+endpoint:
+  name: AddRestaurant
+  method: POST
+  route: /
+  description: Ajoute un restaurant
+
+  params:
+    - composition: RestaurantWrite
+      comment: Restaurant à créer
+      name: restaurant
+
+  returns:
+    composition: RestaurantRead
+    name: restaurant
+    comment: Restaurant créé
+---
+endpoint:
+  name: UpdateRestaurant
+  method: PUT
+  route: /{resId}
+  description: Met à jour un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+    - composition: RestaurantWrite
+      comment: Restaurant à mettre à jour
+      name: restaurant
+
+  returns:
+    composition: RestaurantRead
+    name: restaurant
+    comment: Restaurant mis à jour
+---
+endpoint:
+  name: DeleteRestaurant
+  method: DELETE
+  route: /{resId}
+  description: Supprime un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+---
+endpoint:
+  name: GetRestaurantPlats
+  method: GET
+  route: /{resId}/plats
+  description: Liste les plats d'un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+    - alias:
+        class: Plat
+        property: Disponible
+    - alias:
+        class: Plat
+        property: CategoriePlatCode
+
+  returns:
+    composition: PlatItem
+    name: plats
+    domain: DO_LISTE
+    comment: Liste des plats du restaurant
+---
+endpoint:
+  name: GetTables
+  method: GET
+  route: /tables
+  description: Liste toutes les tables
+
+  params:
+    - alias:
+        class: Table
+        property: RestaurantId
+    - alias:
+        class: Table
+        property: Disponible
+
+  returns:
+    composition: TableItem
+    name: tables
+    domain: DO_LISTE
+    comment: Liste des tables
+---
+endpoint:
+  name: GetTable
+  method: GET
+  route: /tables/{tabId}
+  description: Charge le détail d'une table
+
+  params:
+    - alias:
+        class: Table
+        property: Id
+
+  returns:
+    composition: TableRead
+    name: table
+    comment: Détail de la table
+---
+endpoint:
+  name: AddTable
+  method: POST
+  route: /tables
+  description: Ajoute une table
+
+  params:
+    - composition: TableWrite
+      comment: Table à créer
+      name: table
+
+  returns:
+    composition: TableRead
+    name: table
+    comment: Table créée
+---
+endpoint:
+  name: UpdateTable
+  method: PUT
+  route: /tables/{tabId}
+  description: Met à jour une table
+
+  params:
+    - alias:
+        class: Table
+        property: Id
+    - composition: TableWrite
+      comment: Table à mettre à jour
+      name: table
+
+  returns:
+    composition: TableRead
+    name: table
+    comment: Table mise à jour
+---
+endpoint:
+  name: DeleteTable
+  method: DELETE
+  route: /tables/{tabId}
+  description: Supprime une table
+
+  params:
+    - alias:
+        class: Table
+        property: Id
+---
+endpoint:
+  name: GetRestaurantTables
+  method: GET
+  route: /{resId}/tables
+  description: Liste les tables d'un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+    - alias:
+        class: Table
+        property: Disponible
+
+  returns:
+    composition: TableItem
+    name: tables
+    domain: DO_LISTE
+    comment: Liste des tables du restaurant
+---
+endpoint:
+  name: GetRestaurantMenu
+  method: GET
+  route: /{resId}/menus/{menId}
+  description: Récupère un menu spécifique d'un restaurant
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+    - alias:
+        class: Menu
+        property: Id
+
+  returns:
+    composition: MenuComplet
+    name: menu
+    comment: Menu du restaurant
+---
+endpoint:
+  name: SearchRestaurants
+  method: GET
+  route: /search
+  description: Recherche avancée de restaurants
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Nom
+      name: nom
+      comment: Nom du restaurant (recherche partielle)
+    - alias:
+        class: Restaurant
+        property: Adresse
+      name: adresse
+      comment: Adresse du restaurant (recherche partielle)
+    - alias:
+        class: AvisClient
+        property: Note
+      name: noteMin
+      comment: Note minimum requise
+
+  returns:
+    composition: RestaurantAvecStatistiques
+    name: restaurants
+    domain: DO_LISTE
+    comment: Liste des restaurants correspondant aux critères
+---
+endpoint:
+  name: GetRestaurantStatistiques
+  method: GET
+  route: /{resId}/statistiques
+  description: Récupère les statistiques d'un restaurant
+
+  annotations:
+    - Authenticated
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+    - alias:
+        class: Commande
+        property: DateCommande
+      name: dateDebut
+      comment: Date de début pour le calcul des statistiques
+    - alias:
+        class: Commande
+        property: DateCommande
+      name: dateFin
+      comment: Date de fin pour le calcul des statistiques
+
+  returns:
+    composition: StatistiquesRestaurant
+    name: statistiques
+    comment: Statistiques du restaurant

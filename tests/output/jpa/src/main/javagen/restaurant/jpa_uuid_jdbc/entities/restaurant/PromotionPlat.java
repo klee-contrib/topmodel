@@ -5,11 +5,9 @@
 package restaurant.jpa_uuid_jdbc.entities.restaurant;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * Association entre une promotion et un plat.
@@ -19,74 +17,48 @@ import jakarta.validation.constraints.NotNull;
 public class PromotionPlat {
 
 	/**
-	 * Identifiant de l'association.
-	 */
-	@Id
-	@Column("ppl_id")
-	private Integer id;
-
-	/**
 	 * Promotion concernée.
 	 */
-	@NotNull
-	@Column("pro_id_promotion")
-	private Integer promotionIdPromotion;
+	@Id
+	private Integer promotionId;
 
 	/**
 	 * Plat concerné par la promotion.
 	 */
-	@NotNull
-	@Column("pla_id_plat")
-	private Integer platIdPlat;
+	@Id
+	private Integer platId;
 
 	/**
-	 * Getter for id.
+	 * Getter for promotionId.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #promotionId promotionId}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Integer getPromotionId() {
+		return this.promotionId;
 	}
 
 	/**
-	 * Getter for promotionIdPromotion.
+	 * Getter for platId.
 	 *
-	 * @return value of {@link #promotionIdPromotion promotionIdPromotion}.
+	 * @return value of {@link #platId platId}.
 	 */
-	public Integer getPromotionIdPromotion() {
-		return this.promotionIdPromotion;
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
-	 * Getter for platIdPlat.
-	 *
-	 * @return value of {@link #platIdPlat platIdPlat}.
+	 * Set the value of {@link #promotionId promotionId}.
+	 * @param promotionId value to set.
 	 */
-	public Integer getPlatIdPlat() {
-		return this.platIdPlat;
+	public void setPromotionId(Integer promotionId) {
+		this.promotionId = promotionId;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #promotionIdPromotion promotionIdPromotion}.
-	 * @param promotionIdPromotion value to set.
-	 */
-	public void setPromotionIdPromotion(Integer promotionIdPromotion) {
-		this.promotionIdPromotion = promotionIdPromotion;
-	}
-
-	/**
-	 * Set the value of {@link #platIdPlat platIdPlat}.
-	 * @param platIdPlat value to set.
-	 */
-	public void setPlatIdPlat(Integer platIdPlat) {
-		this.platIdPlat = platIdPlat;
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 }

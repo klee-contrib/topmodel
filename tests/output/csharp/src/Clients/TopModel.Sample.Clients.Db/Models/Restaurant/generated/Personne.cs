@@ -40,27 +40,4 @@ public partial record Personne
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string Prenom { get; set; }
-
-    /// <summary>
-    /// Adresse email.
-    /// </summary>
-    [Column("per_email")]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string Email { get; set; }
-
-    /// <summary>
-    /// Numéro de téléphone.
-    /// </summary>
-    [Column("per_telephone")]
-    [Domain(Domains.Telephone)]
-    [StringLength(20)]
-    public string Telephone { get; set; }
-
-    /// <summary>
-    /// Date de naissance.
-    /// </summary>
-    [Column("per_date_naissance")]
-    [Domain(Domains.DateHeure)]
-    public DateTime? DateNaissance { get; set; }
 }

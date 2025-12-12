@@ -70,20 +70,20 @@ public class PlatAvecDetails implements Serializable {
 
 	/**
 	 * Catégorie du plat.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getCategoriePlatCodeCategoriePlat() Plat#getCategoriePlatCodeCategoriePlat()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getCategoriePlatCode() Plat#getCategoriePlatCode()}
 	 */
 	@NotNull
 	@Size(max = 10)
-	@Column("cat_code_categorie_plat")
-	private String categoriePlatCodeCategoriePlat;
+	@Column("cat_code")
+	private String categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getRestaurantIdRestaurant() Plat#getRestaurantIdRestaurant()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getRestaurantId() Plat#getRestaurantId()}
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Association réciproque de LigneCommande.PlatId.
@@ -92,22 +92,6 @@ public class PlatAvecDetails implements Serializable {
 	@NotNull
 	@Column("lig_id")
 	private List<Integer> ligneCommandes;
-
-	/**
-	 * Association réciproque de MenuPlat.PlatIdPlat.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getMenuPlatsPlat() Plat#getMenuPlatsPlat()}
-	 */
-	@NotNull
-	@Column("mpl_id_plat")
-	private List<Integer> menuPlatsPlat;
-
-	/**
-	 * Association réciproque de PromotionPlat.PlatIdPlat.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getPromotionPlatsPlat() Plat#getPromotionPlatsPlat()}
-	 */
-	@NotNull
-	@Column("ppl_id_plat")
-	private List<Integer> promotionPlatsPlat;
 
 	/**
 	 * Getter for id.
@@ -155,21 +139,21 @@ public class PlatAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Getter for categoriePlatCodeCategoriePlat.
+	 * Getter for categoriePlatCode.
 	 *
-	 * @return value of {@link #categoriePlatCodeCategoriePlat categoriePlatCodeCategoriePlat}.
+	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public String getCategoriePlatCodeCategoriePlat() {
-		return this.categoriePlatCodeCategoriePlat;
+	public String getCategoriePlatCode() {
+		return this.categoriePlatCode;
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -179,24 +163,6 @@ public class PlatAvecDetails implements Serializable {
 	 */
 	public List<Integer> getLigneCommandes() {
 		return this.ligneCommandes;
-	}
-
-	/**
-	 * Getter for menuPlatsPlat.
-	 *
-	 * @return value of {@link #menuPlatsPlat menuPlatsPlat}.
-	 */
-	public List<Integer> getMenuPlatsPlat() {
-		return this.menuPlatsPlat;
-	}
-
-	/**
-	 * Getter for promotionPlatsPlat.
-	 *
-	 * @return value of {@link #promotionPlatsPlat promotionPlatsPlat}.
-	 */
-	public List<Integer> getPromotionPlatsPlat() {
-		return this.promotionPlatsPlat;
 	}
 
 	/**
@@ -240,19 +206,19 @@ public class PlatAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #categoriePlatCodeCategoriePlat categoriePlatCodeCategoriePlat}.
-	 * @param categoriePlatCodeCategoriePlat value to set.
+	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
+	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCodeCategoriePlat(String categoriePlatCodeCategoriePlat) {
-		this.categoriePlatCodeCategoriePlat = categoriePlatCodeCategoriePlat;
+	public void setCategoriePlatCode(String categoriePlatCode) {
+		this.categoriePlatCode = categoriePlatCode;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -264,22 +230,6 @@ public class PlatAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #menuPlatsPlat menuPlatsPlat}.
-	 * @param menuPlatsPlat value to set.
-	 */
-	public void setMenuPlatsPlat(List<Integer> menuPlatsPlat) {
-		this.menuPlatsPlat = menuPlatsPlat;
-	}
-
-	/**
-	 * Set the value of {@link #promotionPlatsPlat promotionPlatsPlat}.
-	 * @param promotionPlatsPlat value to set.
-	 */
-	public void setPromotionPlatsPlat(List<Integer> promotionPlatsPlat) {
-		this.promotionPlatsPlat = promotionPlatsPlat;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatAvecDetails PlatAvecDetails}.
 	 */
 	public enum Fields {
@@ -288,11 +238,9 @@ public class PlatAvecDetails implements Serializable {
 		DESCRIPTION(String.class),
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
-		CATEGORIE_PLAT_CODE_CATEGORIE_PLAT(String.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class),
-		LIGNE_COMMANDES(List.class),
-		MENU_PLATS_PLAT(List.class),
-		PROMOTION_PLATS_PLAT(List.class);
+		CATEGORIE_PLAT_CODE(String.class),
+		RESTAURANT_ID(Integer.class),
+		LIGNE_COMMANDES(List.class);
 
 		private final Class<?> type;
 

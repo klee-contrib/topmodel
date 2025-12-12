@@ -37,12 +37,12 @@ public interface ReservationItem {
 	/**
 	 * Client ayant fait la réservation.
 	 */
-	Integer getClientIdClient();
+	Integer getClientId();
 
 	/**
 	 * Restaurant concerné par la réservation.
 	 */
-	Integer getRestaurantIdRestaurant();
+	Integer getRestaurantId();
 
 	/**
 	 * Hydrate values of instance.
@@ -50,8 +50,8 @@ public interface ReservationItem {
 	 * @param dateReservation value to set.
 	 * @param nombrePersonnes value to set.
 	 * @param confirmee value to set.
-	 * @param clientIdClient value to set.
-	 * @param restaurantIdRestaurant value to set.
+	 * @param clientId value to set.
+	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, LocalDateTime dateReservation, Integer nombrePersonnes, Boolean confirmee, Integer clientIdClient, Integer restaurantIdRestaurant);
+	void hydrate(Integer id, LocalDateTime dateReservation, Integer nombrePersonnes, Boolean confirmee, Integer clientId, Integer restaurantId);
 }

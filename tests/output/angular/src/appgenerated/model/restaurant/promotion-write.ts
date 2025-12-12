@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_QUANTITE} from "@/domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type PromotionWrite = EntityToType<PromotionWriteEntityType>;
@@ -24,10 +24,7 @@ export const PromotionWriteEntity = entity({
     active: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.promotion.active")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f.optional()
-        .label("restaurant.promotion.restaurantIdRestaurant")
-    ),
-    promotionPlatsPromotion: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.promotion.promotionPlatsPromotion")
+    restaurantId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.promotion.restaurantId")
     )
 });

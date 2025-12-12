@@ -25,6 +25,18 @@ import jakarta.persistence.UniqueConstraint;
 public class Employe extends Personne {
 
 	/**
+	 * Numéro de téléphone de l'employé.
+	 */
+	@Column(name = "EMP_TELEPHONE", length = 20, columnDefinition = "varchar")
+	private String telephone;
+
+	/**
+	 * Date de naissance.
+	 */
+	@Column(name = "EMP_DATE_NAISSANCE", columnDefinition = "timestamp")
+	private LocalDateTime dateNaissance;
+
+	/**
 	 * Matricule de l'employé.
 	 */
 	@Column(name = "EMP_MATRICULE", nullable = false, length = 10, columnDefinition = "varchar")
@@ -45,9 +57,27 @@ public class Employe extends Personne {
 	/**
 	 * Restaurant où travaille l'employé.
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
+
+	/**
+	 * Getter for telephone.
+	 *
+	 * @return value of {@link #telephone telephone}.
+	 */
+	public String getTelephone() {
+		return this.telephone;
+	}
+
+	/**
+	 * Getter for dateNaissance.
+	 *
+	 * @return value of {@link #dateNaissance dateNaissance}.
+	 */
+	public LocalDateTime getDateNaissance() {
+		return this.dateNaissance;
+	}
 
 	/**
 	 * Getter for matricule.
@@ -77,12 +107,28 @@ public class Employe extends Personne {
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
+	}
+
+	/**
+	 * Set the value of {@link #telephone telephone}.
+	 * @param telephone value to set.
+	 */
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	/**
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
+	 */
+	public void setDateNaissance(LocalDateTime dateNaissance) {
+		this.dateNaissance = dateNaissance;
 	}
 
 	/**
@@ -110,21 +156,23 @@ public class Employe extends Personne {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Employe Employe}.
 	 */
 	public enum Fields {
+		TELEPHONE(String.class),
+		DATE_NAISSANCE(LocalDateTime.class),
 		MATRICULE(String.class),
 		DATE_EMBAUCHE(LocalDateTime.class),
 		SALAIRE(BigDecimal.class),
-		RESTAURANT_RESTAURANT(Restaurant.class);
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

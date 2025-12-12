@@ -13,14 +13,14 @@ create table [dbo].[PROMOTION] (
 	[PRO_DATE_DEBUT] timestamp not null,
 	[PRO_DATE_FIN] timestamp not null,
 	[PRO_ACTIVE] boolean not null default true,
-	[RES_ID_RESTAURANT] int,
+	[RES_ID] int,
 	constraint [PK_PROMOTION] primary key clustered ([PRO_ID] ASC),
-	constraint [FK_PROMOTION_RESTAURANT_RES_ID_RESTAURANT] foreign key ([RES_ID_RESTAURANT]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_PROMOTION_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
-/* Index on foreign key column for PROMOTION.RES_ID_RESTAURANT */
-create nonclustered index [IDX_PROMOTION_RES_ID_RESTAURANT_FK]
-	on [dbo].[PROMOTION] ([RES_ID_RESTAURANT] ASC)
+/* Index on foreign key column for PROMOTION.RES_ID */
+create nonclustered index [IDX_PROMOTION_RES_ID_FK]
+	on [dbo].[PROMOTION] ([RES_ID] ASC)
 go
 
 /**
@@ -40,5 +40,5 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Date de fin de la promotion', 
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si la promotion est active', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'PRO_ACTIVE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la promotion (null si globale)', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'RES_ID_RESTAURANT'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la promotion (null si globale)', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'RES_ID'
 go

@@ -8,7 +8,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -77,19 +76,11 @@ public class MenuWrite implements Serializable {
 
 	/**
 	 * Restaurant proposant ce menu.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Menu#getRestaurantIdRestaurant() Menu#getRestaurantIdRestaurant()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Menu#getRestaurantId() Menu#getRestaurantId()}
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
-
-	/**
-	 * Association réciproque de MenuPlat.MenuIdMenu.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Menu#getMenuPlatsMenu() Menu#getMenuPlatsMenu()}
-	 */
-	@NotNull
-	@Column("mpl_id_menu")
-	private List<Integer> menuPlatsMenu;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Getter for nom.
@@ -146,21 +137,12 @@ public class MenuWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
-	}
-
-	/**
-	 * Getter for menuPlatsMenu.
-	 *
-	 * @return value of {@link #menuPlatsMenu menuPlatsMenu}.
-	 */
-	public List<Integer> getMenuPlatsMenu() {
-		return this.menuPlatsMenu;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -212,19 +194,11 @@ public class MenuWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
-	}
-
-	/**
-	 * Set the value of {@link #menuPlatsMenu menuPlatsMenu}.
-	 * @param menuPlatsMenu value to set.
-	 */
-	public void setMenuPlatsMenu(List<Integer> menuPlatsMenu) {
-		this.menuPlatsMenu = menuPlatsMenu;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -237,8 +211,7 @@ public class MenuWrite implements Serializable {
 		DISPONIBLE(Boolean.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class),
-		MENU_PLATS_MENU(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

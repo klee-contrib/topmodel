@@ -11,23 +11,30 @@ create table [dbo].[COMMANDE_EXPORT] (
 	[COM_DATE_COMMANDE] timestamp not null,
 	[COM_DATE_LIVRAISON] timestamp,
 	[COM_MONTANT_TOTAL] decimal not null,
-	[CLI_ID] int not null,
+	[PER_ID] int not null,
 	[TAB_ID] int,
+	[REV_ID] int,
 	[STC_CODE] varchar not null default N'EN_ATT',
 	constraint [PK_COMMANDE_EXPORT] primary key clustered ([COM_ID] ASC),
-	constraint [FK_COMMANDE_EXPORT_CLIENT_CLI_ID] foreign key ([CLI_ID]) references [dbo].[CLIENT] ([CLI_ID]),
-	constraint [FK_COMMANDE_EXPORT_TABLE_CLIENT_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_CLIENT] ([TAB_ID]),
+	constraint [FK_COMMANDE_EXPORT_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_COMMANDE_EXPORT_TABLE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_COMMANDE_EXPORT_RESERVATION_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
 	constraint [FK_COMMANDE_EXPORT_STATUT_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]))
 go
 
-/* Index on foreign key column for COMMANDE_EXPORT.CLI_ID */
-create nonclustered index [IDX_COMMANDE_EXPORT_CLI_ID_FK]
-	on [dbo].[COMMANDE_EXPORT] ([CLI_ID] ASC)
+/* Index on foreign key column for COMMANDE_EXPORT.PER_ID */
+create nonclustered index [IDX_COMMANDE_EXPORT_PER_ID_FK]
+	on [dbo].[COMMANDE_EXPORT] ([PER_ID] ASC)
 go
 
 /* Index on foreign key column for COMMANDE_EXPORT.TAB_ID */
 create nonclustered index [IDX_COMMANDE_EXPORT_TAB_ID_FK]
 	on [dbo].[COMMANDE_EXPORT] ([TAB_ID] ASC)
+go
+
+/* Index on foreign key column for COMMANDE_EXPORT.REV_ID */
+create nonclustered index [IDX_COMMANDE_EXPORT_REV_ID_FK]
+	on [dbo].[COMMANDE_EXPORT] ([REV_ID] ASC)
 go
 
 /* Index on foreign key column for COMMANDE_EXPORT.STC_CODE */
@@ -48,9 +55,11 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Date et heure de livraison', '
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Montant total de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'COM_MONTANT_TOTAL'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant passé la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'CLI_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant passé la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'PER_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Table associée à la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'TAB_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Réservation associée à la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'REV_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Statut de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE_EXPORT', 'COLUMN', 'STC_CODE'
 go

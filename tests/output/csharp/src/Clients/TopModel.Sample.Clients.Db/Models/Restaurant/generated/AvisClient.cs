@@ -66,16 +66,16 @@ public partial record AvisClient
     /// <summary>
     /// Client ayant donné l'avis.
     /// </summary>
-    [Column("cli_id_client")]
+    [Column("per_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? ClientIdClient { get; set; }
+    public int? ClientId { get; set; }
 
     /// <summary>
     /// Restaurant concerné par l'avis.
     /// </summary>
-    [Column("res_id_restaurant")]
+    [Column("res_id")]
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 }

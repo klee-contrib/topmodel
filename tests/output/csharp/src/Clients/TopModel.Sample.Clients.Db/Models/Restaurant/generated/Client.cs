@@ -13,42 +13,8 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// Client du restaurant.
 /// </summary>
 [Table("client")]
-public partial record Client
+public partial record Client : Personne
 {
-    /// <summary>
-    /// Identifiant du client.
-    /// </summary>
-    [Column("cli_id")]
-    [Domain(Domains.Id)]
-    [Key]
-    public int? Id { get; set; }
-
-    /// <summary>
-    /// Nom du client.
-    /// </summary>
-    [Column("cli_nom")]
-    [Required]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string Nom { get; set; }
-
-    /// <summary>
-    /// Prénom du client.
-    /// </summary>
-    [Column("cli_prenom")]
-    [Required]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string Prenom { get; set; }
-
-    /// <summary>
-    /// Numéro de téléphone du client.
-    /// </summary>
-    [Column("cli_telephone")]
-    [Domain(Domains.Telephone)]
-    [StringLength(20)]
-    public string Telephone { get; set; }
-
     /// <summary>
     /// Adresse email du client.
     /// </summary>
@@ -65,16 +31,16 @@ public partial record Client
     public ICollection<int> Commandes { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.ClientIdClient.
+    /// Association réciproque de Reservation.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> AvisClientsClient { get; set; }
+    public ICollection<int> Reservations { get; set; }
 
     /// <summary>
-    /// Association réciproque de Reservation.ClientIdClient.
+    /// Association réciproque de AvisClient.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> ReservationsClient { get; set; }
+    public ICollection<int> AvisClients { get; set; }
 }

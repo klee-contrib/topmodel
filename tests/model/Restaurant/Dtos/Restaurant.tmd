@@ -1,0 +1,185 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+uses:
+  - Restaurant/Entities/Restaurant
+---
+class:
+  name: RestaurantItem
+  abstract: true
+  comment: Détail d'un restaurant en liste
+
+  properties:
+    - alias:
+        class: Restaurant
+        include:
+          - Id
+          - Nom
+          - Adresse
+          - Telephone
+---
+class:
+  name: RestaurantRead
+  comment: Détail d'un restaurant en lecture
+
+  properties:
+    - alias:
+        class: Restaurant
+
+  mappers:
+    from:
+      - params:
+          - class: Restaurant
+---
+class:
+  name: RestaurantWrite
+  comment: Détail d'un restaurant en écriture
+
+  properties:
+    - alias:
+        class: Restaurant
+        exclude:
+          - Id
+
+  mappers:
+    to:
+      - class: Restaurant
+---
+class:
+  name: RestaurantAvecStatistiques
+  comment: Restaurant avec ses statistiques
+
+  properties:
+    - alias:
+        class: Restaurant
+    - name: NombrePlats
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de plats du restaurant
+
+    - name: NombreTables
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de tables du restaurant
+
+    - name: NoteMoyenne
+      domain: DO_PRIX
+      comment: Note moyenne des avis clients
+
+  mappers:
+    from:
+      - params:
+          - class: Restaurant
+          - property:
+              name: NombrePlats
+              domain: DO_QUANTITE
+              comment: Nombre de plats
+          - property:
+              name: NombreTables
+              domain: DO_QUANTITE
+              comment: Nombre de tables
+          - property:
+              name: NoteMoyenne
+              domain: DO_PRIX
+              comment: Note moyenne
+---
+class:
+  name: TableItem
+  abstract: true
+  comment: Détail d'une table en liste
+
+  properties:
+    - alias:
+        class: Table
+        include:
+          - Id
+          - Numero
+          - Capacite
+          - Disponible
+          - RestaurantId
+---
+class:
+  name: TableRead
+  comment: Détail d'une table en lecture
+
+  properties:
+    - alias:
+        class: Table
+
+  mappers:
+    from:
+      - params:
+          - class: Table
+---
+class:
+  name: TableWrite
+  comment: Détail d'une table en écriture
+
+  properties:
+    - alias:
+        class: Table
+        exclude:
+          - Id
+
+  mappers:
+    to:
+      - class: Table
+---
+class:
+  name: StatistiquesRestaurant
+  comment: Statistiques d'un restaurant
+
+  properties:
+    - name: RestaurantId
+      domain: DO_ID
+      required: true
+      comment: Identifiant du restaurant
+
+    - name: NombreCommandes
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre total de commandes
+
+    - name: ChiffreAffaires
+      domain: DO_PRIX
+      required: true
+      defaultValue: 0
+      comment: Chiffre d'affaires total
+
+    - name: NombreClients
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      comment: Nombre de clients uniques
+
+    - name: NoteMoyenne
+      domain: DO_PRIX
+      comment: Note moyenne des avis
+
+  mappers:
+    from:
+      - params:
+          - class: Restaurant
+            name: restaurant
+            required: true
+          - property:
+              name: NombreCommandes
+              domain: DO_QUANTITE
+              comment: Nombre de commandes
+          - property:
+              name: ChiffreAffaires
+              domain: DO_PRIX
+              comment: Chiffre d'affaires
+          - property:
+              name: NombreClients
+              domain: DO_QUANTITE
+              comment: Nombre de clients
+          - property:
+              name: NoteMoyenne
+              domain: DO_PRIX
+              comment: Note moyenne

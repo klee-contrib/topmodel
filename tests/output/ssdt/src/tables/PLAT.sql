@@ -12,21 +12,21 @@ create table [dbo].[PLAT] (
 	[PLA_DESCRIPTION] varchar,
 	[PLA_PRIX] decimal not null,
 	[PLA_DISPONIBLE] boolean not null default true,
-	[CAT_CODE_CATEGORIE_PLAT] varchar not null,
-	[RES_ID_RESTAURANT] int not null,
+	[CAT_CODE] varchar not null,
+	[RES_ID] int not null,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
-	constraint [FK_PLAT_CATEGORIE_PLAT_CAT_CODE_CATEGORIE_PLAT] foreign key ([CAT_CODE_CATEGORIE_PLAT]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_RESTAURANT_RES_ID_RESTAURANT] foreign key ([RES_ID_RESTAURANT]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_PLAT_CATEGORIE_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
+	constraint [FK_PLAT_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
-/* Index on foreign key column for PLAT.CAT_CODE_CATEGORIE_PLAT */
-create nonclustered index [IDX_PLAT_CAT_CODE_CATEGORIE_PLAT_FK]
-	on [dbo].[PLAT] ([CAT_CODE_CATEGORIE_PLAT] ASC)
+/* Index on foreign key column for PLAT.CAT_CODE */
+create nonclustered index [IDX_PLAT_CAT_CODE_FK]
+	on [dbo].[PLAT] ([CAT_CODE] ASC)
 go
 
-/* Index on foreign key column for PLAT.RES_ID_RESTAURANT */
-create nonclustered index [IDX_PLAT_RES_ID_RESTAURANT_FK]
-	on [dbo].[PLAT] ([RES_ID_RESTAURANT] ASC)
+/* Index on foreign key column for PLAT.RES_ID */
+create nonclustered index [IDX_PLAT_RES_ID_FK]
+	on [dbo].[PLAT] ([RES_ID] ASC)
 go
 
 /**
@@ -44,7 +44,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Prix du plat', 'SCHEMA', 'dbo'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si le plat est disponible', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DISPONIBLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE_CATEGORIE_PLAT'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'RES_ID_RESTAURANT'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'RES_ID'
 go

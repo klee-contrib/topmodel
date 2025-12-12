@@ -20,7 +20,7 @@ public interface EmployeItem {
 	/**
 	 * Restaurant où travaille l'employé.
 	 */
-	Integer getRestaurantIdRestaurant();
+	Integer getRestaurantId();
 
 	/**
 	 * Identifiant de l'employé.
@@ -40,10 +40,10 @@ public interface EmployeItem {
 	/**
 	 * Hydrate values of instance.
 	 * @param matricule value to set.
-	 * @param restaurantIdRestaurant value to set.
+	 * @param restaurantId value to set.
 	 * @param id value to set.
 	 * @param nom value to set.
 	 * @param prenom value to set.
 	 */
-	void hydrate(String matricule, Integer restaurantIdRestaurant, Integer id, String nom, String prenom);
+	void hydrate(String matricule, Integer restaurantId, Integer id, String nom, String prenom);
 }

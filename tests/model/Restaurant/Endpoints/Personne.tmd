@@ -1,0 +1,204 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+  - api-client
+uses:
+  - meta/annotations
+  - Restaurant/Dtos/Commande
+  - Restaurant/Dtos/Personne
+  - Restaurant/Entities/Personne
+  - Restaurant/Entities/Restaurant
+options:
+  endpoints:
+    prefix: api/restaurants
+---
+endpoint:
+  name: GetClients
+  method: GET
+  route: /clients
+  description: Liste tous les clients
+
+  params:
+    - alias:
+        class: Personne
+        property: Nom
+    - alias:
+        class: Client
+        property: Email
+
+  returns:
+    composition: ClientItem
+    name: clients
+    domain: DO_LISTE
+    comment: Liste des clients
+---
+endpoint:
+  name: GetClient
+  method: GET
+  route: /clients/{perId}
+  description: Charge le détail d'un client
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+
+  returns:
+    composition: ClientRead
+    name: client
+    comment: Détail du client
+---
+endpoint:
+  name: AddClient
+  method: POST
+  route: /clients
+  description: Ajoute un client
+
+  params:
+    - composition: ClientWrite
+      comment: Client à créer
+      name: client
+
+  returns:
+    composition: ClientRead
+    name: client
+    comment: Client créé
+---
+endpoint:
+  name: UpdateClient
+  method: PUT
+  route: /clients/{perId}
+  description: Met à jour un client
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+    - composition: ClientWrite
+      comment: Client à mettre à jour
+      name: client
+
+  returns:
+    composition: ClientRead
+    name: client
+    comment: Client mis à jour
+---
+endpoint:
+  name: PatchClient
+  method: PATCH
+  route: /clients/{perId}
+  description: Met à jour partiellement un client
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+    - composition: ClientWrite
+      comment: Données partielles du client
+      name: client
+
+  returns:
+    composition: ClientRead
+    name: client
+    comment: Client mis à jour
+---
+endpoint:
+  name: DeleteClient
+  method: DELETE
+  route: /clients/{perId}
+  description: Supprime un client
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+---
+endpoint:
+  name: GetClientCommandes
+  method: GET
+  route: /clients/{perId}/commandes
+  description: Liste les commandes d'un client
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+
+  returns:
+    composition: CommandeItem
+    name: commandes
+    domain: DO_LISTE
+    comment: Liste des commandes du client
+---
+endpoint:
+  name: GetAvisClients
+  method: GET
+  route: /avis
+  description: Liste les avis clients avec filtres
+
+  params:
+    - alias:
+        class: Restaurant
+        property: Id
+      name: restaurantId
+    - alias:
+        class: AvisClient
+        property: Note
+      name: noteMin
+    - alias:
+        class: AvisClient
+        property: Approuve
+      name: approuve
+    - alias:
+        class: AvisClient
+        property: DateAvis
+      name: dateDebut
+    - alias:
+        class: AvisClient
+        property: DateAvis
+      name: dateFin
+
+  returns:
+    composition: AvisClientRead
+    name: avis
+    domain: DO_LISTE
+    comment: Liste des avis correspondant aux critères
+---
+endpoint:
+  name: GetClientAvecCommandes
+  method: GET
+  route: /clients/{perId}/avec-commandes
+  description: Récupère un client avec toutes ses commandes
+
+  params:
+    - alias:
+        class: Personne
+        property: Id
+
+  returns:
+    composition: ClientAvecCommandes
+    name: client
+    comment: Client avec ses commandes
+---
+endpoint:
+  name: AddEmploye
+  method: POST
+  route: /employes
+  description: Ajoute un employé (nécessite le rôle ADMIN)
+
+  annotations:
+    - Authenticated
+    - RoleRequired:
+        role: ADMIN
+
+  params:
+    - composition: EmployeWrite
+      comment: Employé à créer
+      name: employe
+
+  returns:
+    composition: EmployeRead
+    name: employe
+    comment: Employé créé

@@ -1,0 +1,189 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+uses:
+  - Restaurant/Entities/Commande
+  - Restaurant/Entities/Personne
+
+---
+class:
+  name: EmployeItem
+  abstract: true
+  comment: Détail d'un employé en liste
+
+  properties:
+    - alias:
+        class: Employe
+        include:
+          - Matricule
+          - RestaurantId
+    - name: Id
+      domain: DO_ID
+      comment: Identifiant de l'employé
+    - name: Nom
+      domain: DO_LIBELLE
+      comment: Nom de l'employé
+    - name: Prenom
+      domain: DO_LIBELLE
+      comment: Prénom de l'employé
+---
+class:
+  name: EmployeRead
+  comment: Détail d'un employé en lecture
+
+  properties:
+    - alias:
+        class: Employe
+        exclude:
+          - Telephone
+          - DateNaissance
+
+  mappers:
+    from:
+      - params:
+          - class: Employe
+---
+class:
+  name: EmployeWrite
+  comment: Détail d'un employé en écriture
+
+  properties:
+    - alias:
+        class: Employe
+        exclude:
+          - Telephone
+          - DateNaissance
+
+  mappers:
+    to:
+      - class: Employe
+---
+class:
+  name: ClientItem
+  abstract: true
+  comment: Détail d'un client en liste
+
+  properties:
+    - alias:
+        class: Personne
+        include:
+          - Id
+          - Nom
+          - Prenom
+    - alias:
+        class: Client
+        include: Email
+---
+class:
+  name: ClientRead
+  comment: Détail d'un client en lecture
+
+  properties:
+    - alias:
+        class: Personne
+    - alias:
+        class: Client
+
+  mappers:
+    from:
+      - params:
+          - class: Client
+---
+class:
+  name: ClientWrite
+  comment: Détail d'un client en écriture
+
+  properties:
+    - alias:
+        class: Personne
+        exclude: Id
+    - alias:
+        class: Client
+
+  mappers:
+    to:
+      - class: Client
+---
+class:
+  name: ClientAvecCommandes
+  comment: Client avec la liste de ses commandes
+
+  properties:
+    - alias:
+        class: Personne
+    - alias:
+        class: Client
+    - alias:
+        class: Commande
+      prefix: true
+      as: list
+      comment: Liste des commandes du client
+---
+class:
+  name: ClientMinimal
+  comment: Version minimale d'un client
+
+  properties:
+    - alias:
+        class: Personne
+        include:
+          - Id
+          - Nom
+          - Prenom
+      label: Informations client
+    - name: NomComplet
+      domain: DO_LIBELLE
+      readonly: true
+      comment: Nom complet du client (calculé)
+
+  mappers:
+    from:
+      - params:
+          - class: Client
+---
+class:
+  name: AvisClientItem
+  abstract: true
+  comment: Détail d'un avis en liste
+
+  properties:
+    - alias:
+        class: AvisClient
+        include:
+          - Id
+          - Note
+          - DateAvis
+          - Approuve
+          - ClientId
+          - RestaurantId
+---
+class:
+  name: AvisClientRead
+  comment: Détail d'un avis en lecture
+
+  properties:
+    - alias:
+        class: AvisClient
+
+  mappers:
+    from:
+      - params:
+          - class: AvisClient
+---
+class:
+  name: AvisClientWrite
+  comment: Détail d'un avis en écriture
+
+  properties:
+    - alias:
+        class: AvisClient
+        exclude:
+          - Id
+          - DateAvis
+          - NombreVues
+
+  mappers:
+    to:
+      - class: AvisClient

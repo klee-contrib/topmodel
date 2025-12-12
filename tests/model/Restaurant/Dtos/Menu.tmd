@@ -1,0 +1,170 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+uses:
+  - Restaurant/Entities/Menu
+
+---
+class:
+  name: MenuItem
+  abstract: true
+  comment: Détail d'un menu en liste
+
+  properties:
+    - alias:
+        class: Menu
+        include:
+          - Id
+          - Nom
+          - Prix
+          - Disponible
+          - RestaurantId
+---
+class:
+  name: MenuRead
+  comment: Détail d'un menu en lecture
+
+  properties:
+    - alias:
+        class: Menu
+        exclude: Plats
+
+  mappers:
+    from:
+      - params:
+          - class: Menu
+---
+class:
+  name: MenuWrite
+  comment: Détail d'un menu en écriture
+
+  properties:
+    - alias:
+        class: Menu
+        exclude:
+          - Id
+          - Plats
+
+  mappers:
+    to:
+      - class: Menu
+---
+class:
+  name: MenuComplet
+  comment: Menu avec tous ses plats
+
+  properties:
+    - alias:
+        class: Menu
+        exclude: Plats
+    - composition: PlatItem
+      name: Plats
+      domain: DO_LISTE
+      required: true
+      comment: Liste des plats du menu
+---
+class:
+  name: PlatItem
+  abstract: true
+  comment: Détail d'un plat en liste
+
+  properties:
+    - alias:
+        class: Plat
+        include:
+          - Id
+          - Nom
+          - Prix
+          - Disponible
+          - CategoriePlatCode
+---
+class:
+  name: PlatRead
+  comment: Détail d'un plat en lecture
+
+  properties:
+    - alias:
+        class: Plat
+        exclude: Promotions
+
+  mappers:
+    from:
+      - params:
+          - class: Plat
+---
+class:
+  name: PlatWrite
+  comment: Détail d'un plat en écriture
+
+  properties:
+    - alias:
+        class: Plat
+        exclude:
+          - Id
+          - Promotions
+
+  mappers:
+    to:
+      - class: Plat
+---
+class:
+  name: PlatAvecDetails
+  comment: Plat avec ses détails et sa catégorie
+
+  properties:
+    - alias:
+        class: Plat
+        exclude: Promotions
+
+  mappers:
+    from:
+      - params:
+          - class: Plat
+---
+class:
+  name: PromotionItem
+  abstract: true
+  comment: Détail d'une promotion en liste
+
+  properties:
+    - alias:
+        class: Promotion
+        include:
+          - Id
+          - Libelle
+          - PourcentageReduction
+          - DateDebut
+          - DateFin
+          - Active
+          - RestaurantId
+---
+class:
+  name: PromotionRead
+  comment: Détail d'une promotion en lecture
+
+  properties:
+    - alias:
+        class: Promotion
+        exclude: Plats
+
+  mappers:
+    from:
+      - params:
+          - class: Promotion
+---
+class:
+  name: PromotionWrite
+  comment: Détail d'une promotion en écriture
+
+  properties:
+    - alias:
+        class: Promotion
+        exclude:
+          - Id
+          - Plats
+
+  mappers:
+    to:
+      - class: Promotion

@@ -51,7 +51,13 @@ public partial record CommandeDetailRead
     /// Table associée à la commande.
     /// </summary>
     [Domain(Domains.Id)]
-    public int? TableClientId { get; set; }
+    public int? TableId { get; set; }
+
+    /// <summary>
+    /// Réservation associée à la commande.
+    /// </summary>
+    [Domain(Domains.Id)]
+    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.

@@ -7,7 +7,6 @@ package restaurant.jpa_uuid_jdbc.dtos.restaurant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -78,18 +77,10 @@ public class PromotionRead implements Serializable {
 
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Promotion#getRestaurantIdRestaurant() Promotion#getRestaurantIdRestaurant()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Promotion#getRestaurantId() Promotion#getRestaurantId()}
 	 */
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
-
-	/**
-	 * Association réciproque de PromotionPlat.PromotionIdPromotion.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Promotion#getPromotionPlatsPromotion() Promotion#getPromotionPlatsPromotion()}
-	 */
-	@NotNull
-	@Column("ppl_id_promotion")
-	private List<Integer> promotionPlatsPromotion;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Getter for id.
@@ -146,21 +137,12 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
-	}
-
-	/**
-	 * Getter for promotionPlatsPromotion.
-	 *
-	 * @return value of {@link #promotionPlatsPromotion promotionPlatsPromotion}.
-	 */
-	public List<Integer> getPromotionPlatsPromotion() {
-		return this.promotionPlatsPromotion;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -212,19 +194,11 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
-	}
-
-	/**
-	 * Set the value of {@link #promotionPlatsPromotion promotionPlatsPromotion}.
-	 * @param promotionPlatsPromotion value to set.
-	 */
-	public void setPromotionPlatsPromotion(List<Integer> promotionPlatsPromotion) {
-		this.promotionPlatsPromotion = promotionPlatsPromotion;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -237,8 +211,7 @@ public class PromotionRead implements Serializable {
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		ACTIVE(Boolean.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class),
-		PROMOTION_PLATS_PROMOTION(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

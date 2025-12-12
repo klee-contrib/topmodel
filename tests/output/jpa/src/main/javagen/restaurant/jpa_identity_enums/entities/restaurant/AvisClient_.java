@@ -26,9 +26,9 @@ public class AvisClient_ {
 
 	public static volatile SingularAttribute<AvisClient, Integer> nombreVues;
 
-	public static volatile SingularAttribute<AvisClient, Client> clientClient;
+	public static volatile SingularAttribute<AvisClient, Client> client;
 
-	public static volatile SingularAttribute<AvisClient, Restaurant> restaurantRestaurant;
+	public static volatile SingularAttribute<AvisClient, Restaurant> restaurant;
 
 	public static final String ID = "id";
 
@@ -42,7 +42,7 @@ public class AvisClient_ {
 
 	public static final String NOMBRE_VUES = "nombreVues";
 
-	public static final String CLIENT_CLIENT = "clientClient";
+	public static final String CLIENT = "client";
 
-	public static final String RESTAURANT_RESTAURANT = "restaurantRestaurant";
+	public static final String RESTAURANT = "restaurant";
 }

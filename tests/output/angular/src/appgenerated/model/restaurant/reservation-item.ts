@@ -21,10 +21,10 @@ export const ReservationItemEntity = entity({
     confirmee: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.reservation.confirmee")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.reservation.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.clientId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.reservation.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.restaurantId")
     )
 });

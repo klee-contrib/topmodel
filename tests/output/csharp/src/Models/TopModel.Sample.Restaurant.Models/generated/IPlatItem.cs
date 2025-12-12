@@ -32,7 +32,7 @@ public interface IPlatItem
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    CategoriePlat.Codes? CategoriePlatCodeCategoriePlat { get; }
+    CategoriePlat.Codes? CategoriePlatCode { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -41,7 +41,7 @@ public interface IPlatItem
     /// <param name="nom">Nom du plat.</param>
     /// <param name="prix">Prix du plat.</param>
     /// <param name="disponible">Indique si le plat est disponible.</param>
-    /// <param name="categoriePlatCodeCategoriePlat">Catégorie du plat.</param>
+    /// <param name="categoriePlatCode">Catégorie du plat.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IPlatItem Create(int? id = null, string nom = null, decimal? prix = null, bool? disponible = null, CategoriePlat.Codes? categoriePlatCodeCategoriePlat = null);
+    static abstract IPlatItem Create(int? id = null, string nom = null, decimal? prix = null, bool? disponible = null, CategoriePlat.Codes? categoriePlatCode = null);
 }

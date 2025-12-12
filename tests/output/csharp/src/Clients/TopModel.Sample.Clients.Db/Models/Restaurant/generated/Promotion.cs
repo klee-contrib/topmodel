@@ -67,14 +67,14 @@ public partial record Promotion
     /// <summary>
     /// Restaurant concerné par la promotion (null si globale).
     /// </summary>
-    [Column("res_id_restaurant")]
+    [Column("res_id")]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 
     /// <summary>
-    /// Association réciproque de PromotionPlat.PromotionIdPromotion.
+    /// Association réciproque de PromotionPlat.PromotionId.
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> PromotionPlatsPromotion { get; set; }
+    public ICollection<int> Plats { get; set; }
 }

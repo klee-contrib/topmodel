@@ -21,10 +21,10 @@ export const AvisClientItemEntity = entity({
     approuve: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.avisClient.approuve")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.avisClient.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.avisClient.clientId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.avisClient.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.avisClient.restaurantId")
     )
 });

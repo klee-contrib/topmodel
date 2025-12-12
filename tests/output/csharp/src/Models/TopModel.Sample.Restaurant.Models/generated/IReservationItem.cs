@@ -32,12 +32,12 @@ public interface IReservationItem
     /// <summary>
     /// Client ayant fait la réservation.
     /// </summary>
-    int? ClientIdClient { get; }
+    int? ClientId { get; }
 
     /// <summary>
     /// Restaurant concerné par la réservation.
     /// </summary>
-    int? RestaurantIdRestaurant { get; }
+    int? RestaurantId { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -46,8 +46,8 @@ public interface IReservationItem
     /// <param name="dateReservation">Date et heure de la réservation.</param>
     /// <param name="nombrePersonnes">Nombre de personnes.</param>
     /// <param name="confirmee">Indique si la réservation est confirmée.</param>
-    /// <param name="clientIdClient">Client ayant fait la réservation.</param>
-    /// <param name="restaurantIdRestaurant">Restaurant concerné par la réservation.</param>
+    /// <param name="clientId">Client ayant fait la réservation.</param>
+    /// <param name="restaurantId">Restaurant concerné par la réservation.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IReservationItem Create(int? id = null, DateTime? dateReservation = null, int? nombrePersonnes = null, bool? confirmee = null, int? clientIdClient = null, int? restaurantIdRestaurant = null);
+    static abstract IReservationItem Create(int? id = null, DateTime? dateReservation = null, int? nombrePersonnes = null, bool? confirmee = null, int? clientId = null, int? restaurantId = null);
 }

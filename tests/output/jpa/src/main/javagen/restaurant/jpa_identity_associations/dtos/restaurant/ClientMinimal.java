@@ -27,23 +27,23 @@ public class ClientMinimal implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Identifiant du client.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Client#getId() Client#getId()}
+	 * Identifiant de la personne.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Personne#getId() Personne#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
-	 * Nom du client.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Client#getNom() Client#getNom()}
+	 * Nom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Personne#getNom() Personne#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
 	private String nom;
 
 	/**
-	 * Prénom du client.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Client#getPrenom() Client#getPrenom()}
+	 * Prénom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
 	 */
 	@NotNull
 	@Size(max = 100)

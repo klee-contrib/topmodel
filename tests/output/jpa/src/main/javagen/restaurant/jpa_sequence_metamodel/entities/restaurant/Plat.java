@@ -19,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -67,16 +66,16 @@ public class Plat {
 	/**
 	 * Catégorie du plat.
 	 */
-	@JoinColumn(name = "CAT_CODE_CATEGORIE_PLAT", referencedColumnName = "CAT_CODE")
+	@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CategoriePlat.class)
-	private CategoriePlat categoriePlatCategoriePlat;
+	private CategoriePlat categoriePlat;
 
 	/**
 	 * Restaurant proposant ce plat.
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
 
 	/**
 	 * Association réciproque de LigneCommande.PlatId.
@@ -85,17 +84,10 @@ public class Plat {
 	private List<LigneCommande> ligneCommandes;
 
 	/**
-	 * Association réciproque de MenuPlat.PlatIdPlat.
+	 * Association réciproque de PromotionPlat.PlatId.
 	 */
-	@OrderBy("ordre ASC")
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "platPlat")
-	private List<MenuPlat> menuPlatsPlat;
-
-	/**
-	 * Association réciproque de PromotionPlat.PlatIdPlat.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "platPlat")
-	private List<PromotionPlat> promotionPlatsPlat;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat")
+	private List<PromotionPlat> promotions;
 
 	/**
 	 * Getter for id.
@@ -143,21 +135,21 @@ public class Plat {
 	}
 
 	/**
-	 * Getter for categoriePlatCategoriePlat.
+	 * Getter for categoriePlat.
 	 *
-	 * @return value of {@link #categoriePlatCategoriePlat categoriePlatCategoriePlat}.
+	 * @return value of {@link #categoriePlat categoriePlat}.
 	 */
-	public CategoriePlat getCategoriePlatCategoriePlat() {
-		return this.categoriePlatCategoriePlat;
+	public CategoriePlat getCategoriePlat() {
+		return this.categoriePlat;
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -173,27 +165,15 @@ public class Plat {
 	}
 
 	/**
-	 * Getter for menuPlatsPlat.
+	 * Getter for promotions.
 	 *
-	 * @return value of {@link #menuPlatsPlat menuPlatsPlat}.
+	 * @return value of {@link #promotions promotions}.
 	 */
-	public List<MenuPlat> getMenuPlatsPlat() {
-		if (this.menuPlatsPlat == null) {
-			this.menuPlatsPlat = new ArrayList<>();
+	public List<PromotionPlat> getPromotions() {
+		if (this.promotions == null) {
+			this.promotions = new ArrayList<>();
 		}
-		return this.menuPlatsPlat;
-	}
-
-	/**
-	 * Getter for promotionPlatsPlat.
-	 *
-	 * @return value of {@link #promotionPlatsPlat promotionPlatsPlat}.
-	 */
-	public List<PromotionPlat> getPromotionPlatsPlat() {
-		if (this.promotionPlatsPlat == null) {
-			this.promotionPlatsPlat = new ArrayList<>();
-		}
-		return this.promotionPlatsPlat;
+		return this.promotions;
 	}
 
 	/**
@@ -237,19 +217,19 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #categoriePlatCategoriePlat categoriePlatCategoriePlat}.
-	 * @param categoriePlatCategoriePlat value to set.
+	 * Set the value of {@link #categoriePlat categoriePlat}.
+	 * @param categoriePlat value to set.
 	 */
-	public void setCategoriePlatCategoriePlat(CategoriePlat categoriePlatCategoriePlat) {
-		this.categoriePlatCategoriePlat = categoriePlatCategoriePlat;
+	public void setCategoriePlat(CategoriePlat categoriePlat) {
+		this.categoriePlat = categoriePlat;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
@@ -261,19 +241,11 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #menuPlatsPlat menuPlatsPlat}.
-	 * @param menuPlatsPlat value to set.
+	 * Set the value of {@link #promotions promotions}.
+	 * @param promotions value to set.
 	 */
-	public void setMenuPlatsPlat(List<MenuPlat> menuPlatsPlat) {
-		this.menuPlatsPlat = menuPlatsPlat;
-	}
-
-	/**
-	 * Set the value of {@link #promotionPlatsPlat promotionPlatsPlat}.
-	 * @param promotionPlatsPlat value to set.
-	 */
-	public void setPromotionPlatsPlat(List<PromotionPlat> promotionPlatsPlat) {
-		this.promotionPlatsPlat = promotionPlatsPlat;
+	public void setPromotions(List<PromotionPlat> promotions) {
+		this.promotions = promotions;
 	}
 
 	/**
@@ -286,21 +258,12 @@ public class Plat {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#menuPlatsPlat menuPlatsPlat}.
-	 * @param menuPlat value to add to platPlat.
+	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotions promotions}.
+	 * @param promotionPlat value to add to plat.
 	 */
-	void addMenuPlatPlat(MenuPlat menuPlat) {
-		this.menuPlatsPlat.add(menuPlat);
-		menuPlat.setPlatPlat(this);
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotionPlatsPlat promotionPlatsPlat}.
-	 * @param promotionPlat value to add to platPlat.
-	 */
-	void addPromotionPlatPlat(PromotionPlat promotionPlat) {
-		this.promotionPlatsPlat.add(promotionPlat);
-		promotionPlat.setPlatPlat(this);
+	void addPromotionPlat(PromotionPlat promotionPlat) {
+		this.promotions.add(promotionPlat);
+		promotionPlat.setPlat(this);
 	}
 
 	/**
@@ -313,21 +276,12 @@ public class Plat {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#menuPlatsPlat menuPlatsPlat}.
-	 * @param menuPlat menuPlat value to remove.
-	 */
-	void removeMenuPlatPlat(MenuPlat menuPlat) {
-		this.menuPlatsPlat.remove(menuPlat);
-		menuPlat.setPlatPlat(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotionPlatsPlat promotionPlatsPlat}.
+	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotions promotions}.
 	 * @param promotionPlat promotionPlat value to remove.
 	 */
-	void removePromotionPlatPlat(PromotionPlat promotionPlat) {
-		this.promotionPlatsPlat.remove(promotionPlat);
-		promotionPlat.setPlatPlat(null);
+	void removePromotionPlat(PromotionPlat promotionPlat) {
+		this.promotions.remove(promotionPlat);
+		promotionPlat.setPlat(null);
 	}
 
 	/**
@@ -339,11 +293,10 @@ public class Plat {
 		DESCRIPTION(String.class),
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
-		CATEGORIE_PLAT_CATEGORIE_PLAT(CategoriePlat.class),
-		RESTAURANT_RESTAURANT(Restaurant.class),
+		CATEGORIE_PLAT(CategoriePlat.class),
+		RESTAURANT(Restaurant.class),
 		LIGNE_COMMANDES(List.class),
-		MENU_PLATS_PLAT(List.class),
-		PROMOTION_PLATS_PLAT(List.class);
+		PROMOTIONS(List.class);
 
 		private final Class<?> type;
 

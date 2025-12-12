@@ -4,106 +4,78 @@
 
 package restaurant.jpa_identity_associations.entities.restaurant;
 
+import java.util.Objects;
+
 import jakarta.annotation.Generated;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 /**
  * Association entre une promotion et un plat.
  */
 @Entity
+@Table(name = "PROMOTION_PLAT")
+@IdClass(PromotionPlat.PromotionPlatId.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "PROMOTION_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"PRO_ID_PROMOTION", "PLA_ID_PLAT"})})
 public class PromotionPlat {
-
-	/**
-	 * Identifiant de l'association.
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PPL_ID", nullable = false, columnDefinition = "int")
-	private Integer id;
 
 	/**
 	 * Promotion concernée.
 	 */
-	@JoinColumn(name = "PRO_ID_PROMOTION", referencedColumnName = "PRO_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Promotion.class)
-	private Promotion promotionPromotion;
+	@Id
+	private Promotion promotion;
 
 	/**
 	 * Plat concerné par la promotion.
 	 */
-	@JoinColumn(name = "PLA_ID_PLAT", referencedColumnName = "PLA_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
-	private Plat platPlat;
+	@Id
+	private Plat plat;
 
 	/**
-	 * Getter for id.
+	 * Getter for promotion.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #promotion promotion}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Promotion getPromotion() {
+		return this.promotion;
 	}
 
 	/**
-	 * Getter for promotionPromotion.
+	 * Getter for plat.
 	 *
-	 * @return value of {@link #promotionPromotion promotionPromotion}.
+	 * @return value of {@link #plat plat}.
 	 */
-	public Promotion getPromotionPromotion() {
-		return this.promotionPromotion;
+	public Plat getPlat() {
+		return this.plat;
 	}
 
 	/**
-	 * Getter for platPlat.
-	 *
-	 * @return value of {@link #platPlat platPlat}.
+	 * Set the value of {@link #promotion promotion}.
+	 * @param promotion value to set.
 	 */
-	public Plat getPlatPlat() {
-		return this.platPlat;
+	public void setPromotion(Promotion promotion) {
+		this.promotion = promotion;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #promotionPromotion promotionPromotion}.
-	 * @param promotionPromotion value to set.
-	 */
-	public void setPromotionPromotion(Promotion promotionPromotion) {
-		this.promotionPromotion = promotionPromotion;
-	}
-
-	/**
-	 * Set the value of {@link #platPlat platPlat}.
-	 * @param platPlat value to set.
-	 */
-	public void setPlatPlat(Plat platPlat) {
-		this.platPlat = platPlat;
+	public void setPlat(Plat plat) {
+		this.plat = plat;
 	}
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_associations.entities.restaurant.PromotionPlat PromotionPlat}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
-		PROMOTION_PROMOTION(Promotion.class),
-		PLAT_PLAT(Plat.class);
+		PROMOTION(Promotion.class),
+		PLAT(Plat.class);
 
 		private final Class<?> type;
 
@@ -118,6 +90,79 @@ public class PromotionPlat {
 		 */
 		public Class<?> getType() {
 			return this.type;
+		}
+	}
+
+	public static class PromotionPlatId {
+
+		@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
+		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Promotion.class)
+		private Promotion promotion;
+
+		@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
+		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
+		private Plat plat;
+
+		/**
+		 * Getter for promotion.
+		 *
+		 * @return value of {@link #promotion promotion}.
+		 */
+		public Promotion getPromotion() {
+			return this.promotion;
+		}
+
+		/**
+		 * Set the value of {@link #promotion promotion}.
+		 * @param promotion value to set.
+		 */
+		public void setPromotion(Promotion promotion) {
+			this.promotion = promotion;
+		}
+
+		/**
+		 * Getter for plat.
+		 *
+		 * @return value of {@link #plat plat}.
+		 */
+		public Plat getPlat() {
+			return this.plat;
+		}
+
+		/**
+		 * Set the value of {@link #plat plat}.
+		 * @param plat value to set.
+		 */
+		public void setPlat(Plat plat) {
+			this.plat = plat;
+		}
+
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+
+			if (o == null) {
+				return false;
+			}
+
+			if (this.getClass() != o.getClass()) {
+				return false;
+			}
+
+			PromotionPlatId oId = (PromotionPlatId) o;
+
+			if (this.promotion == null || oId.promotion == null || this.plat == null || oId.plat == null) {
+				return false;
+			}
+
+			return Objects.equals(this.promotion.getId(), oId.promotion.getId())
+			 && Objects.equals(this.plat.getId(), oId.plat.getId());
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(promotion == null ? null : promotion.getId(), plat == null ? null : plat.getId());
 		}
 	}
 }

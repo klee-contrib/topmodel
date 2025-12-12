@@ -1,13 +1,13 @@
 {
     "avisClient": {
         "approuve": "Approuve",
-        "clientIdClient": "ClientIdClient",
+        "clientId": "ClientId",
         "commentaire": "Commentaire",
         "dateAvis": "DateAvis",
         "id": "Id",
         "nombreVues": "NombreVues",
         "note": "Note",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant"
+        "restaurantId": "RestaurantId"
     },
     "categoriePlat": {
         "code": "Code",
@@ -20,14 +20,10 @@
         }
     },
     "client": {
-        "avisClientsClient": "AvisClientsClient",
+        "avisClients": "AvisClients",
         "commandes": "Commandes",
         "email": "Email",
-        "id": "Id",
-        "nom": "Nom",
-        "prenom": "Prenom",
-        "reservationsClient": "ReservationsClient",
-        "telephone": "Telephone"
+        "reservations": "Reservations"
     },
     "clientMinimal": {
         "id": "Informations client",
@@ -42,8 +38,9 @@
         "id": "Id",
         "ligneCommandes": "LigneCommandes",
         "montantTotal": "MontantTotal",
+        "reservationId": "ReservationId",
         "statutCommandeCode": "StatutCommandeCode",
-        "tableClientId": "TableClientId"
+        "tableId": "TableId"
     },
     "commandeDetailRead": {
         "lignes": "Lignes"
@@ -51,7 +48,7 @@
     "employe": {
         "dateEmbauche": "DateEmbauche",
         "matricule": "Matricule",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant",
+        "restaurantId": "RestaurantId",
         "salaire": "Salaire"
     },
     "employeItem": {
@@ -73,25 +70,27 @@
         "description": "Description",
         "disponible": "Disponible",
         "id": "Id",
-        "menuPlatsMenu": "MenuPlatsMenu",
         "nom": "Nom",
         "prix": "Prix",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant"
+        "restaurantId": "RestaurantId"
     },
     "menuComplet": {
         "plats": "Plats"
     },
+    "personne": {
+        "id": "Id",
+        "nom": "Nom",
+        "prenom": "Prenom"
+    },
     "plat": {
-        "categoriePlatCodeCategoriePlat": "CategoriePlatCodeCategoriePlat",
+        "categoriePlatCode": "CategoriePlatCode",
         "description": "Description",
         "disponible": "Disponible",
         "id": "Id",
         "ligneCommandes": "LigneCommandes",
-        "menuPlatsPlat": "MenuPlatsPlat",
         "nom": "Nom",
         "prix": "Prix",
-        "promotionPlatsPlat": "PromotionPlatsPlat",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant"
+        "restaurantId": "RestaurantId"
     },
     "promotion": {
         "active": "Active",
@@ -100,29 +99,28 @@
         "id": "Id",
         "libelle": "Libelle",
         "pourcentageReduction": "PourcentageReduction",
-        "promotionPlatsPromotion": "PromotionPlatsPromotion",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant"
+        "restaurantId": "RestaurantId"
     },
     "reservation": {
-        "clientIdClient": "ClientIdClient",
+        "clientId": "ClientId",
         "commentaire": "Commentaire",
         "confirmee": "Confirmee",
         "dateReservation": "DateReservation",
         "id": "Id",
         "nombrePersonnes": "NombrePersonnes",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant",
-        "tableClientIdTable": "TableClientIdTable"
+        "restaurantId": "RestaurantId",
+        "tableId": "TableId"
     },
     "restaurant": {
         "adresse": "Adresse",
-        "avisClientsRestaurant": "AvisClientsRestaurant",
+        "avisClients": "AvisClients",
         "id": "Id",
-        "menusRestaurant": "MenusRestaurant",
+        "menus": "Menus",
         "nom": "Nom",
-        "platsRestaurant": "PlatsRestaurant",
-        "promotionsRestaurant": "PromotionsRestaurant",
-        "reservationsRestaurant": "ReservationsRestaurant",
-        "tableClientsRestaurant": "TableClientsRestaurant",
+        "plats": "Plats",
+        "promotions": "Promotions",
+        "reservations": "Reservations",
+        "tables": "Tables",
         "telephone": "Telephone"
     },
     "restaurantAvecStatistiques": {
@@ -148,13 +146,13 @@
             "Annulee": "Annulée"
         }
     },
-    "tableClient": {
+    "table": {
         "capacite": "Capacite",
         "commandes": "Commandes",
         "disponible": "Disponible",
         "id": "Id",
         "numero": "Numero",
-        "reservationsTable": "ReservationsTable",
-        "restaurantIdRestaurant": "RestaurantIdRestaurant"
+        "reservations": "Reservations",
+        "restaurantId": "RestaurantId"
     }
 }

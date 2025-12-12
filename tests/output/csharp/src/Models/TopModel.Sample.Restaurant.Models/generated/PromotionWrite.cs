@@ -53,11 +53,5 @@ public partial record PromotionWrite
     /// Restaurant concerné par la promotion (null si globale).
     /// </summary>
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
-
-    /// <summary>
-    /// Association réciproque de PromotionPlat.PromotionIdPromotion.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> PromotionPlatsPromotion { get; set; }
+    public int? RestaurantId { get; set; }
 }

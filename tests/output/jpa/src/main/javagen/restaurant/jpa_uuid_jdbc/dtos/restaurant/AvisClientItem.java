@@ -37,12 +37,12 @@ public interface AvisClientItem {
 	/**
 	 * Client ayant donné l'avis.
 	 */
-	Integer getClientIdClient();
+	Integer getClientId();
 
 	/**
 	 * Restaurant concerné par l'avis.
 	 */
-	Integer getRestaurantIdRestaurant();
+	Integer getRestaurantId();
 
 	/**
 	 * Hydrate values of instance.
@@ -50,8 +50,8 @@ public interface AvisClientItem {
 	 * @param note value to set.
 	 * @param dateAvis value to set.
 	 * @param approuve value to set.
-	 * @param clientIdClient value to set.
-	 * @param restaurantIdRestaurant value to set.
+	 * @param clientId value to set.
+	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, Integer note, LocalDateTime dateAvis, Boolean approuve, Integer clientIdClient, Integer restaurantIdRestaurant);
+	void hydrate(Integer id, Integer note, LocalDateTime dateAvis, Boolean approuve, Integer clientId, Integer restaurantId);
 }

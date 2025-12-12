@@ -18,7 +18,7 @@ export const EmployeWriteEntity = entity({
     salaire: e.field(DO_PRIX, f => f.optional()
         .label("restaurant.employe.salaire")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.employe.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.employe.restaurantId")
     )
 });

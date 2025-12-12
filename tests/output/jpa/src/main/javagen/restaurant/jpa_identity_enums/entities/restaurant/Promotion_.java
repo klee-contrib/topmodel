@@ -28,9 +28,9 @@ public class Promotion_ {
 
 	public static volatile SingularAttribute<Promotion, Boolean> active;
 
-	public static volatile SingularAttribute<Promotion, Restaurant> restaurantRestaurant;
+	public static volatile SingularAttribute<Promotion, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Promotion, PromotionPlat> promotionPlatsPromotion;
+	public static volatile ListAttribute<Promotion, PromotionPlat> plats;
 
 	public static final String ID = "id";
 
@@ -44,7 +44,7 @@ public class Promotion_ {
 
 	public static final String ACTIVE = "active";
 
-	public static final String RESTAURANT_RESTAURANT = "restaurantRestaurant";
+	public static final String RESTAURANT = "restaurant";
 
-	public static final String PROMOTION_PLATS_PROMOTION = "promotionPlatsPromotion";
+	public static final String PLATS = "plats";
 }

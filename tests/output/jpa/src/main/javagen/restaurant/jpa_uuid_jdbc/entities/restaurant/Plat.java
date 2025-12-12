@@ -58,15 +58,15 @@ public class Plat {
 	 * Catégorie du plat.
 	 */
 	@NotNull
-	@Column("cat_code_categorie_plat")
-	private String categoriePlatCodeCategoriePlat;
+	@Column("cat_code")
+	private String categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Getter for id.
@@ -114,21 +114,21 @@ public class Plat {
 	}
 
 	/**
-	 * Getter for categoriePlatCodeCategoriePlat.
+	 * Getter for categoriePlatCode.
 	 *
-	 * @return value of {@link #categoriePlatCodeCategoriePlat categoriePlatCodeCategoriePlat}.
+	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public String getCategoriePlatCodeCategoriePlat() {
-		return this.categoriePlatCodeCategoriePlat;
+	public String getCategoriePlatCode() {
+		return this.categoriePlatCode;
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -172,18 +172,18 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #categoriePlatCodeCategoriePlat categoriePlatCodeCategoriePlat}.
-	 * @param categoriePlatCodeCategoriePlat value to set.
+	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
+	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCodeCategoriePlat(String categoriePlatCodeCategoriePlat) {
-		this.categoriePlatCodeCategoriePlat = categoriePlatCodeCategoriePlat;
+	public void setCategoriePlatCode(String categoriePlatCode) {
+		this.categoriePlatCode = categoriePlatCode;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 }

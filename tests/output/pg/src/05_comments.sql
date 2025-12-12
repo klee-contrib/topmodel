@@ -18,8 +18,8 @@ COMMENT ON COLUMN AVIS_CLIENT.AVI_COMMENTAIRE IS 'Commentaire de l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_DATE_AVIS IS 'Date de l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_APPROUVE IS 'Indique si l''avis est approuvé par le restaurant';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_NOMBRE_VUES IS 'Nombre de vues de l''avis (calculé)';
-COMMENT ON COLUMN AVIS_CLIENT.CLI_ID_CLIENT IS 'Client ayant donné l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.RES_ID_RESTAURANT IS 'Restaurant concerné par l''avis';
+COMMENT ON COLUMN AVIS_CLIENT.PER_ID IS 'Client ayant donné l''avis';
+COMMENT ON COLUMN AVIS_CLIENT.RES_ID IS 'Restaurant concerné par l''avis';
 
 /**
   * Commentaires pour la table CATEGORIE_PLAT
@@ -32,11 +32,8 @@ COMMENT ON COLUMN CATEGORIE_PLAT.CAT_LIBELLE IS 'Libellé de la catégorie';
   * Commentaires pour la table CLIENT
  **/
 COMMENT ON TABLE CLIENT IS 'Client du restaurant';
-COMMENT ON COLUMN CLIENT.CLI_ID IS 'Identifiant du client';
-COMMENT ON COLUMN CLIENT.CLI_NOM IS 'Nom du client';
-COMMENT ON COLUMN CLIENT.CLI_PRENOM IS 'Prénom du client';
-COMMENT ON COLUMN CLIENT.CLI_TELEPHONE IS 'Numéro de téléphone du client';
 COMMENT ON COLUMN CLIENT.CLI_EMAIL IS 'Adresse email du client';
+COMMENT ON COLUMN CLIENT.PER_ID IS 'Association vers la clé primaire de la classe parente';
 
 /**
   * Commentaires pour la table COMMANDE
@@ -46,8 +43,9 @@ COMMENT ON COLUMN COMMANDE.COM_ID IS 'Identifiant de la commande';
 COMMENT ON COLUMN COMMANDE.COM_DATE_COMMANDE IS 'Date et heure de la commande';
 COMMENT ON COLUMN COMMANDE.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
 COMMENT ON COLUMN COMMANDE.COM_MONTANT_TOTAL IS 'Montant total de la commande';
-COMMENT ON COLUMN COMMANDE.CLI_ID IS 'Client ayant passé la commande';
+COMMENT ON COLUMN COMMANDE.PER_ID IS 'Client ayant passé la commande';
 COMMENT ON COLUMN COMMANDE.TAB_ID IS 'Table associée à la commande';
+COMMENT ON COLUMN COMMANDE.REV_ID IS 'Réservation associée à la commande';
 COMMENT ON COLUMN COMMANDE.STC_CODE IS 'Statut de la commande';
 
 /**
@@ -58,18 +56,21 @@ COMMENT ON COLUMN COMMANDE_EXPORT.COM_ID IS 'Identifiant de la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.COM_DATE_COMMANDE IS 'Date et heure de la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
 COMMENT ON COLUMN COMMANDE_EXPORT.COM_MONTANT_TOTAL IS 'Montant total de la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.CLI_ID IS 'Client ayant passé la commande';
+COMMENT ON COLUMN COMMANDE_EXPORT.PER_ID IS 'Client ayant passé la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.TAB_ID IS 'Table associée à la commande';
+COMMENT ON COLUMN COMMANDE_EXPORT.REV_ID IS 'Réservation associée à la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.STC_CODE IS 'Statut de la commande';
 
 /**
   * Commentaires pour la table EMPLOYE
  **/
 COMMENT ON TABLE EMPLOYE IS 'Employé du restaurant';
+COMMENT ON COLUMN EMPLOYE.EMP_TELEPHONE IS 'Numéro de téléphone de l''employé.';
+COMMENT ON COLUMN EMPLOYE.EMP_DATE_NAISSANCE IS 'Date de naissance';
 COMMENT ON COLUMN EMPLOYE.EMP_MATRICULE IS 'Matricule de l''employé';
 COMMENT ON COLUMN EMPLOYE.EMP_DATE_EMBAUCHE IS 'Date d''embauche';
 COMMENT ON COLUMN EMPLOYE.EMP_SALAIRE IS 'Salaire de l''employé';
-COMMENT ON COLUMN EMPLOYE.RES_ID_RESTAURANT IS 'Restaurant où travaille l''employé';
+COMMENT ON COLUMN EMPLOYE.RES_ID IS 'Restaurant où travaille l''employé';
 COMMENT ON COLUMN EMPLOYE.PER_ID IS 'Association vers la clé primaire de la classe parente';
 
 /**
@@ -94,16 +95,15 @@ COMMENT ON COLUMN MENU.MEN_PRIX IS 'Prix du menu';
 COMMENT ON COLUMN MENU.MEN_DISPONIBLE IS 'Indique si le menu est disponible';
 COMMENT ON COLUMN MENU.MEN_DATE_DEBUT IS 'Date de début de validité du menu';
 COMMENT ON COLUMN MENU.MEN_DATE_FIN IS 'Date de fin de validité du menu';
-COMMENT ON COLUMN MENU.RES_ID_RESTAURANT IS 'Restaurant proposant ce menu';
+COMMENT ON COLUMN MENU.RES_ID IS 'Restaurant proposant ce menu';
 
 /**
   * Commentaires pour la table MENU_PLAT
  **/
 COMMENT ON TABLE MENU_PLAT IS 'Plat dans un menu';
-COMMENT ON COLUMN MENU_PLAT.MPL_ID IS 'Identifiant de la relation';
+COMMENT ON COLUMN MENU_PLAT.MEN_ID IS 'Menu contenant ce plat';
+COMMENT ON COLUMN MENU_PLAT.PLA_ID IS 'Plat du menu';
 COMMENT ON COLUMN MENU_PLAT.MPL_ORDRE IS 'Ordre d''affichage du plat dans le menu';
-COMMENT ON COLUMN MENU_PLAT.MEN_ID_MENU IS 'Menu contenant ce plat';
-COMMENT ON COLUMN MENU_PLAT.PLA_ID_PLAT IS 'Plat du menu';
 
 /**
   * Commentaires pour la table PERSONNE
@@ -112,9 +112,6 @@ COMMENT ON TABLE PERSONNE IS 'Classe de base représentant une personne';
 COMMENT ON COLUMN PERSONNE.PER_ID IS 'Identifiant de la personne';
 COMMENT ON COLUMN PERSONNE.PER_NOM IS 'Nom de la personne';
 COMMENT ON COLUMN PERSONNE.PER_PRENOM IS 'Prénom de la personne';
-COMMENT ON COLUMN PERSONNE.PER_EMAIL IS 'Adresse email';
-COMMENT ON COLUMN PERSONNE.PER_TELEPHONE IS 'Numéro de téléphone';
-COMMENT ON COLUMN PERSONNE.PER_DATE_NAISSANCE IS 'Date de naissance';
 
 /**
   * Commentaires pour la table PLAT
@@ -125,8 +122,8 @@ COMMENT ON COLUMN PLAT.PLA_NOM IS 'Nom du plat';
 COMMENT ON COLUMN PLAT.PLA_DESCRIPTION IS 'Description du plat';
 COMMENT ON COLUMN PLAT.PLA_PRIX IS 'Prix du plat';
 COMMENT ON COLUMN PLAT.PLA_DISPONIBLE IS 'Indique si le plat est disponible';
-COMMENT ON COLUMN PLAT.CAT_CODE_CATEGORIE_PLAT IS 'Catégorie du plat';
-COMMENT ON COLUMN PLAT.RES_ID_RESTAURANT IS 'Restaurant proposant ce plat';
+COMMENT ON COLUMN PLAT.CAT_CODE IS 'Catégorie du plat';
+COMMENT ON COLUMN PLAT.RES_ID IS 'Restaurant proposant ce plat';
 
 /**
   * Commentaires pour la table PROMOTION
@@ -138,15 +135,14 @@ COMMENT ON COLUMN PROMOTION.PRO_POURCENTAGE_REDUCTION IS 'Pourcentage de réduct
 COMMENT ON COLUMN PROMOTION.PRO_DATE_DEBUT IS 'Date de début de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_DATE_FIN IS 'Date de fin de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_ACTIVE IS 'Indique si la promotion est active';
-COMMENT ON COLUMN PROMOTION.RES_ID_RESTAURANT IS 'Restaurant concerné par la promotion (null si globale)';
+COMMENT ON COLUMN PROMOTION.RES_ID IS 'Restaurant concerné par la promotion (null si globale)';
 
 /**
   * Commentaires pour la table PROMOTION_PLAT
  **/
 COMMENT ON TABLE PROMOTION_PLAT IS 'Association entre une promotion et un plat';
-COMMENT ON COLUMN PROMOTION_PLAT.PPL_ID IS 'Identifiant de l''association';
-COMMENT ON COLUMN PROMOTION_PLAT.PRO_ID_PROMOTION IS 'Promotion concernée';
-COMMENT ON COLUMN PROMOTION_PLAT.PLA_ID_PLAT IS 'Plat concerné par la promotion';
+COMMENT ON COLUMN PROMOTION_PLAT.PRO_ID IS 'Promotion concernée';
+COMMENT ON COLUMN PROMOTION_PLAT.PLA_ID IS 'Plat concerné par la promotion';
 
 /**
   * Commentaires pour la table RESERVATION
@@ -157,9 +153,9 @@ COMMENT ON COLUMN RESERVATION.REV_DATE_RESERVATION IS 'Date et heure de la rése
 COMMENT ON COLUMN RESERVATION.REV_NOMBRE_PERSONNES IS 'Nombre de personnes';
 COMMENT ON COLUMN RESERVATION.REV_COMMENTAIRE IS 'Commentaire sur la réservation';
 COMMENT ON COLUMN RESERVATION.REV_CONFIRMEE IS 'Indique si la réservation est confirmée';
-COMMENT ON COLUMN RESERVATION.CLI_ID_CLIENT IS 'Client ayant fait la réservation';
-COMMENT ON COLUMN RESERVATION.TAB_ID_TABLE IS 'Table réservée';
-COMMENT ON COLUMN RESERVATION.RES_ID_RESTAURANT IS 'Restaurant concerné par la réservation';
+COMMENT ON COLUMN RESERVATION.PER_ID IS 'Client ayant fait la réservation';
+COMMENT ON COLUMN RESERVATION.TAB_ID IS 'Table réservée';
+COMMENT ON COLUMN RESERVATION.RES_ID IS 'Restaurant concerné par la réservation';
 
 /**
   * Commentaires pour la table RESTAURANT
@@ -178,11 +174,11 @@ COMMENT ON COLUMN STATUT_COMMANDE.STC_CODE IS 'Code du statut';
 COMMENT ON COLUMN STATUT_COMMANDE.STC_LIBELLE IS 'Libellé du statut';
 
 /**
-  * Commentaires pour la table TABLE_CLIENT
+  * Commentaires pour la table TABLE
  **/
-COMMENT ON TABLE TABLE_CLIENT IS 'Table du restaurant';
-COMMENT ON COLUMN TABLE_CLIENT.TAB_ID IS 'Identifiant de la table';
-COMMENT ON COLUMN TABLE_CLIENT.TAB_NUMERO IS 'Numéro de la table';
-COMMENT ON COLUMN TABLE_CLIENT.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
-COMMENT ON COLUMN TABLE_CLIENT.TAB_DISPONIBLE IS 'Indique si la table est disponible';
-COMMENT ON COLUMN TABLE_CLIENT.RES_ID_RESTAURANT IS 'Restaurant auquel appartient la table';
+COMMENT ON TABLE TABLE IS 'Table du restaurant';
+COMMENT ON COLUMN TABLE.TAB_ID IS 'Identifiant de la table';
+COMMENT ON COLUMN TABLE.TAB_NUMERO IS 'Numéro de la table';
+COMMENT ON COLUMN TABLE.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
+COMMENT ON COLUMN TABLE.TAB_DISPONIBLE IS 'Indique si la table est disponible';
+COMMENT ON COLUMN TABLE.RES_ID IS 'Restaurant auquel appartient la table';

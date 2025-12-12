@@ -31,9 +31,9 @@ public class Menu_ {
 
 	public static volatile SingularAttribute<Menu, LocalDateTime> dateFin;
 
-	public static volatile SingularAttribute<Menu, Restaurant> restaurantRestaurant;
+	public static volatile SingularAttribute<Menu, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Menu, MenuPlat> menuPlatsMenu;
+	public static volatile ListAttribute<Menu, MenuPlat> plats;
 
 	public static final String ID = "id";
 
@@ -49,7 +49,7 @@ public class Menu_ {
 
 	public static final String DATE_FIN = "dateFin";
 
-	public static final String RESTAURANT_RESTAURANT = "restaurantRestaurant";
+	public static final String RESTAURANT = "restaurant";
 
-	public static final String MENU_PLATS_MENU = "menuPlatsMenu";
+	public static final String PLATS = "plats";
 }

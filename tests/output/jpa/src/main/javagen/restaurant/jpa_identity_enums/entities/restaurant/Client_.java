@@ -13,37 +13,21 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(Client.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Client_ {
-
-	public static volatile SingularAttribute<Client, Integer> id;
-
-	public static volatile SingularAttribute<Client, String> nom;
-
-	public static volatile SingularAttribute<Client, String> prenom;
-
-	public static volatile SingularAttribute<Client, String> telephone;
+public class Client_ extends Personne_ {
 
 	public static volatile SingularAttribute<Client, String> email;
 
 	public static volatile ListAttribute<Client, Commande> commandes;
 
-	public static volatile ListAttribute<Client, AvisClient> avisClientsClient;
+	public static volatile ListAttribute<Client, Reservation> reservations;
 
-	public static volatile ListAttribute<Client, Reservation> reservationsClient;
-
-	public static final String ID = "id";
-
-	public static final String NOM = "nom";
-
-	public static final String PRENOM = "prenom";
-
-	public static final String TELEPHONE = "telephone";
+	public static volatile ListAttribute<Client, AvisClient> avisClients;
 
 	public static final String EMAIL = "email";
 
 	public static final String COMMANDES = "commandes";
 
-	public static final String AVIS_CLIENTS_CLIENT = "avisClientsClient";
+	public static final String RESERVATIONS = "reservations";
 
-	public static final String RESERVATIONS_CLIENT = "reservationsClient";
+	public static final String AVIS_CLIENTS = "avisClients";
 }

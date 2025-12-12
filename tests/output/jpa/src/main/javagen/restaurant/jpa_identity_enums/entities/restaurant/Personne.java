@@ -4,8 +4,6 @@
 
 package restaurant.jpa_identity_enums.entities.restaurant;
 
-import java.time.LocalDateTime;
-
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,24 +44,6 @@ public class Personne {
 	private String prenom;
 
 	/**
-	 * Adresse email.
-	 */
-	@Column(name = "PER_EMAIL", length = 100, columnDefinition = "varchar")
-	private String email;
-
-	/**
-	 * Numéro de téléphone.
-	 */
-	@Column(name = "PER_TELEPHONE", length = 20, columnDefinition = "varchar")
-	private String telephone;
-
-	/**
-	 * Date de naissance.
-	 */
-	@Column(name = "PER_DATE_NAISSANCE", columnDefinition = "timestamp")
-	private LocalDateTime dateNaissance;
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -91,33 +71,6 @@ public class Personne {
 	}
 
 	/**
-	 * Getter for email.
-	 *
-	 * @return value of {@link #email email}.
-	 */
-	public String getEmail() {
-		return this.email;
-	}
-
-	/**
-	 * Getter for telephone.
-	 *
-	 * @return value of {@link #telephone telephone}.
-	 */
-	public String getTelephone() {
-		return this.telephone;
-	}
-
-	/**
-	 * Getter for dateNaissance.
-	 *
-	 * @return value of {@link #dateNaissance dateNaissance}.
-	 */
-	public LocalDateTime getDateNaissance() {
-		return this.dateNaissance;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -142,39 +95,12 @@ public class Personne {
 	}
 
 	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
-	 */
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	/**
-	 * Set the value of {@link #dateNaissance dateNaissance}.
-	 * @param dateNaissance value to set.
-	 */
-	public void setDateNaissance(LocalDateTime dateNaissance) {
-		this.dateNaissance = dateNaissance;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.entities.restaurant.Personne Personne}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),
-		PRENOM(String.class),
-		EMAIL(String.class),
-		TELEPHONE(String.class),
-		DATE_NAISSANCE(LocalDateTime.class);
+		PRENOM(String.class);
 
 		private final Class<?> type;
 

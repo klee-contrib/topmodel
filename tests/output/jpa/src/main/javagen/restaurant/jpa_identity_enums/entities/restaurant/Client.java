@@ -12,9 +12,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -24,33 +21,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "CLIENT")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Client {
-
-	/**
-	 * Identifiant du client.
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CLI_ID", nullable = false, columnDefinition = "int")
-	private Integer id;
-
-	/**
-	 * Nom du client.
-	 */
-	@Column(name = "CLI_NOM", nullable = false, length = 100, columnDefinition = "varchar")
-	private String nom;
-
-	/**
-	 * Prénom du client.
-	 */
-	@Column(name = "CLI_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
-	private String prenom;
-
-	/**
-	 * Numéro de téléphone du client.
-	 */
-	@Column(name = "CLI_TELEPHONE", length = 20, columnDefinition = "varchar")
-	private String telephone;
+public class Client extends Personne {
 
 	/**
 	 * Adresse email du client.
@@ -65,52 +36,16 @@ public class Client {
 	private List<Commande> commandes;
 
 	/**
-	 * Association réciproque de AvisClient.ClientIdClient.
+	 * Association réciproque de Reservation.ClientId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "clientClient")
-	private List<AvisClient> avisClientsClient;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
+	private List<Reservation> reservations;
 
 	/**
-	 * Association réciproque de Reservation.ClientIdClient.
+	 * Association réciproque de AvisClient.ClientId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "clientClient")
-	private List<Reservation> reservationsClient;
-
-	/**
-	 * Getter for id.
-	 *
-	 * @return value of {@link #id id}.
-	 */
-	public Integer getId() {
-		return this.id;
-	}
-
-	/**
-	 * Getter for nom.
-	 *
-	 * @return value of {@link #nom nom}.
-	 */
-	public String getNom() {
-		return this.nom;
-	}
-
-	/**
-	 * Getter for prenom.
-	 *
-	 * @return value of {@link #prenom prenom}.
-	 */
-	public String getPrenom() {
-		return this.prenom;
-	}
-
-	/**
-	 * Getter for telephone.
-	 *
-	 * @return value of {@link #telephone telephone}.
-	 */
-	public String getTelephone() {
-		return this.telephone;
-	}
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
+	private List<AvisClient> avisClients;
 
 	/**
 	 * Getter for email.
@@ -134,59 +69,27 @@ public class Client {
 	}
 
 	/**
-	 * Getter for avisClientsClient.
+	 * Getter for reservations.
 	 *
-	 * @return value of {@link #avisClientsClient avisClientsClient}.
+	 * @return value of {@link #reservations reservations}.
 	 */
-	public List<AvisClient> getAvisClientsClient() {
-		if (this.avisClientsClient == null) {
-			this.avisClientsClient = new ArrayList<>();
+	public List<Reservation> getReservations() {
+		if (this.reservations == null) {
+			this.reservations = new ArrayList<>();
 		}
-		return this.avisClientsClient;
+		return this.reservations;
 	}
 
 	/**
-	 * Getter for reservationsClient.
+	 * Getter for avisClients.
 	 *
-	 * @return value of {@link #reservationsClient reservationsClient}.
+	 * @return value of {@link #avisClients avisClients}.
 	 */
-	public List<Reservation> getReservationsClient() {
-		if (this.reservationsClient == null) {
-			this.reservationsClient = new ArrayList<>();
+	public List<AvisClient> getAvisClients() {
+		if (this.avisClients == null) {
+			this.avisClients = new ArrayList<>();
 		}
-		return this.reservationsClient;
-	}
-
-	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
-	 */
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
-	 */
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
-	}
-
-	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
-	 */
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+		return this.avisClients;
 	}
 
 	/**
@@ -206,19 +109,19 @@ public class Client {
 	}
 
 	/**
-	 * Set the value of {@link #avisClientsClient avisClientsClient}.
-	 * @param avisClientsClient value to set.
+	 * Set the value of {@link #reservations reservations}.
+	 * @param reservations value to set.
 	 */
-	public void setAvisClientsClient(List<AvisClient> avisClientsClient) {
-		this.avisClientsClient = avisClientsClient;
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 
 	/**
-	 * Set the value of {@link #reservationsClient reservationsClient}.
-	 * @param reservationsClient value to set.
+	 * Set the value of {@link #avisClients avisClients}.
+	 * @param avisClients value to set.
 	 */
-	public void setReservationsClient(List<Reservation> reservationsClient) {
-		this.reservationsClient = reservationsClient;
+	public void setAvisClients(List<AvisClient> avisClients) {
+		this.avisClients = avisClients;
 	}
 
 	/**
@@ -231,21 +134,21 @@ public class Client {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Client#avisClientsClient avisClientsClient}.
-	 * @param avisClient value to add to clientClient.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Client#reservations reservations}.
+	 * @param reservation value to add to client.
 	 */
-	void addAvisClientClient(AvisClient avisClient) {
-		this.avisClientsClient.add(avisClient);
-		avisClient.setClientClient(this);
+	void addReservation(Reservation reservation) {
+		this.reservations.add(reservation);
+		reservation.setClient(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Client#reservationsClient reservationsClient}.
-	 * @param reservation value to add to clientClient.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Client#avisClients avisClients}.
+	 * @param avisClient value to add to client.
 	 */
-	void addReservationClient(Reservation reservation) {
-		this.reservationsClient.add(reservation);
-		reservation.setClientClient(this);
+	void addAvisClient(AvisClient avisClient) {
+		this.avisClients.add(avisClient);
+		avisClient.setClient(this);
 	}
 
 	/**
@@ -258,35 +161,31 @@ public class Client {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Client#avisClientsClient avisClientsClient}.
-	 * @param avisClient avisClient value to remove.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Client#reservations reservations}.
+	 * @param reservation reservation value to remove.
 	 */
-	void removeAvisClientClient(AvisClient avisClient) {
-		this.avisClientsClient.remove(avisClient);
-		avisClient.setClientClient(null);
+	void removeReservation(Reservation reservation) {
+		this.reservations.remove(reservation);
+		reservation.setClient(null);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Client#reservationsClient reservationsClient}.
-	 * @param reservation reservation value to remove.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Client#avisClients avisClients}.
+	 * @param avisClient avisClient value to remove.
 	 */
-	void removeReservationClient(Reservation reservation) {
-		this.reservationsClient.remove(reservation);
-		reservation.setClientClient(null);
+	void removeAvisClient(AvisClient avisClient) {
+		this.avisClients.remove(avisClient);
+		avisClient.setClient(null);
 	}
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.entities.restaurant.Client Client}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
-		NOM(String.class),
-		PRENOM(String.class),
-		TELEPHONE(String.class),
 		EMAIL(String.class),
 		COMMANDES(List.class),
-		AVIS_CLIENTS_CLIENT(List.class),
-		RESERVATIONS_CLIENT(List.class);
+		RESERVATIONS(List.class),
+		AVIS_CLIENTS(List.class);
 
 		private final Class<?> type;
 

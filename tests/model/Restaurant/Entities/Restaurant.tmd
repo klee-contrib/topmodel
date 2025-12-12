@@ -1,0 +1,65 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - Restaurant/Entities/Menu
+---
+class:
+  name: Restaurant
+  trigram: RES
+  comment: Restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du restaurant
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du restaurant
+
+    - name: Adresse
+      domain: DO_LIBELLE
+      comment: Adresse du restaurant
+
+    - name: Telephone
+      domain: DO_TELEPHONE
+      comment: Numéro de téléphone
+---
+class:
+  name: Table
+  trigram: TAB
+  comment: Table du restaurant
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la table
+
+    - name: Numero
+      domain: DO_CODE
+      required: true
+      comment: Numéro de la table
+
+    - name: Capacite
+      domain: DO_QUANTITE
+      required: true
+      comment: Capacité de la table (nombre de places)
+
+    - name: Disponible
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
+      comment: Indique si la table est disponible
+
+    - association: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant auquel appartient la table
+
+  unique:
+    - [RestaurantId, Numero]

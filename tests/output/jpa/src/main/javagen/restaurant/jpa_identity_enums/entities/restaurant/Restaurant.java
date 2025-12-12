@@ -53,40 +53,40 @@ public class Restaurant {
 	private String telephone;
 
 	/**
-	 * Association réciproque de TableClient.RestaurantIdRestaurant.
+	 * Association réciproque de Reservation.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<TableClient> tableClientsRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<Reservation> reservations;
 
 	/**
-	 * Association réciproque de Plat.RestaurantIdRestaurant.
+	 * Association réciproque de Menu.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<Plat> platsRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<Menu> menus;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantIdRestaurant.
+	 * Association réciproque de Plat.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<AvisClient> avisClientsRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<Plat> plats;
 
 	/**
-	 * Association réciproque de Menu.RestaurantIdRestaurant.
+	 * Association réciproque de Promotion.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<Menu> menusRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<Promotion> promotions;
 
 	/**
-	 * Association réciproque de Reservation.RestaurantIdRestaurant.
+	 * Association réciproque de AvisClient.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<Reservation> reservationsRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<AvisClient> avisClients;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantIdRestaurant.
+	 * Association réciproque de Table.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantRestaurant")
-	private List<Promotion> promotionsRestaurant;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
+	private List<Table> tables;
 
 	/**
 	 * Getter for id.
@@ -125,75 +125,75 @@ public class Restaurant {
 	}
 
 	/**
-	 * Getter for tableClientsRestaurant.
+	 * Getter for reservations.
 	 *
-	 * @return value of {@link #tableClientsRestaurant tableClientsRestaurant}.
+	 * @return value of {@link #reservations reservations}.
 	 */
-	public List<TableClient> getTableClientsRestaurant() {
-		if (this.tableClientsRestaurant == null) {
-			this.tableClientsRestaurant = new ArrayList<>();
+	public List<Reservation> getReservations() {
+		if (this.reservations == null) {
+			this.reservations = new ArrayList<>();
 		}
-		return this.tableClientsRestaurant;
+		return this.reservations;
 	}
 
 	/**
-	 * Getter for platsRestaurant.
+	 * Getter for menus.
 	 *
-	 * @return value of {@link #platsRestaurant platsRestaurant}.
+	 * @return value of {@link #menus menus}.
 	 */
-	public List<Plat> getPlatsRestaurant() {
-		if (this.platsRestaurant == null) {
-			this.platsRestaurant = new ArrayList<>();
+	public List<Menu> getMenus() {
+		if (this.menus == null) {
+			this.menus = new ArrayList<>();
 		}
-		return this.platsRestaurant;
+		return this.menus;
 	}
 
 	/**
-	 * Getter for avisClientsRestaurant.
+	 * Getter for plats.
 	 *
-	 * @return value of {@link #avisClientsRestaurant avisClientsRestaurant}.
+	 * @return value of {@link #plats plats}.
 	 */
-	public List<AvisClient> getAvisClientsRestaurant() {
-		if (this.avisClientsRestaurant == null) {
-			this.avisClientsRestaurant = new ArrayList<>();
+	public List<Plat> getPlats() {
+		if (this.plats == null) {
+			this.plats = new ArrayList<>();
 		}
-		return this.avisClientsRestaurant;
+		return this.plats;
 	}
 
 	/**
-	 * Getter for menusRestaurant.
+	 * Getter for promotions.
 	 *
-	 * @return value of {@link #menusRestaurant menusRestaurant}.
+	 * @return value of {@link #promotions promotions}.
 	 */
-	public List<Menu> getMenusRestaurant() {
-		if (this.menusRestaurant == null) {
-			this.menusRestaurant = new ArrayList<>();
+	public List<Promotion> getPromotions() {
+		if (this.promotions == null) {
+			this.promotions = new ArrayList<>();
 		}
-		return this.menusRestaurant;
+		return this.promotions;
 	}
 
 	/**
-	 * Getter for reservationsRestaurant.
+	 * Getter for avisClients.
 	 *
-	 * @return value of {@link #reservationsRestaurant reservationsRestaurant}.
+	 * @return value of {@link #avisClients avisClients}.
 	 */
-	public List<Reservation> getReservationsRestaurant() {
-		if (this.reservationsRestaurant == null) {
-			this.reservationsRestaurant = new ArrayList<>();
+	public List<AvisClient> getAvisClients() {
+		if (this.avisClients == null) {
+			this.avisClients = new ArrayList<>();
 		}
-		return this.reservationsRestaurant;
+		return this.avisClients;
 	}
 
 	/**
-	 * Getter for promotionsRestaurant.
+	 * Getter for tables.
 	 *
-	 * @return value of {@link #promotionsRestaurant promotionsRestaurant}.
+	 * @return value of {@link #tables tables}.
 	 */
-	public List<Promotion> getPromotionsRestaurant() {
-		if (this.promotionsRestaurant == null) {
-			this.promotionsRestaurant = new ArrayList<>();
+	public List<Table> getTables() {
+		if (this.tables == null) {
+			this.tables = new ArrayList<>();
 		}
-		return this.promotionsRestaurant;
+		return this.tables;
 	}
 
 	/**
@@ -229,159 +229,159 @@ public class Restaurant {
 	}
 
 	/**
-	 * Set the value of {@link #tableClientsRestaurant tableClientsRestaurant}.
-	 * @param tableClientsRestaurant value to set.
+	 * Set the value of {@link #reservations reservations}.
+	 * @param reservations value to set.
 	 */
-	public void setTableClientsRestaurant(List<TableClient> tableClientsRestaurant) {
-		this.tableClientsRestaurant = tableClientsRestaurant;
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 
 	/**
-	 * Set the value of {@link #platsRestaurant platsRestaurant}.
-	 * @param platsRestaurant value to set.
+	 * Set the value of {@link #menus menus}.
+	 * @param menus value to set.
 	 */
-	public void setPlatsRestaurant(List<Plat> platsRestaurant) {
-		this.platsRestaurant = platsRestaurant;
+	public void setMenus(List<Menu> menus) {
+		this.menus = menus;
 	}
 
 	/**
-	 * Set the value of {@link #avisClientsRestaurant avisClientsRestaurant}.
-	 * @param avisClientsRestaurant value to set.
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
 	 */
-	public void setAvisClientsRestaurant(List<AvisClient> avisClientsRestaurant) {
-		this.avisClientsRestaurant = avisClientsRestaurant;
+	public void setPlats(List<Plat> plats) {
+		this.plats = plats;
 	}
 
 	/**
-	 * Set the value of {@link #menusRestaurant menusRestaurant}.
-	 * @param menusRestaurant value to set.
+	 * Set the value of {@link #promotions promotions}.
+	 * @param promotions value to set.
 	 */
-	public void setMenusRestaurant(List<Menu> menusRestaurant) {
-		this.menusRestaurant = menusRestaurant;
+	public void setPromotions(List<Promotion> promotions) {
+		this.promotions = promotions;
 	}
 
 	/**
-	 * Set the value of {@link #reservationsRestaurant reservationsRestaurant}.
-	 * @param reservationsRestaurant value to set.
+	 * Set the value of {@link #avisClients avisClients}.
+	 * @param avisClients value to set.
 	 */
-	public void setReservationsRestaurant(List<Reservation> reservationsRestaurant) {
-		this.reservationsRestaurant = reservationsRestaurant;
+	public void setAvisClients(List<AvisClient> avisClients) {
+		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #promotionsRestaurant promotionsRestaurant}.
-	 * @param promotionsRestaurant value to set.
+	 * Set the value of {@link #tables tables}.
+	 * @param tables value to set.
 	 */
-	public void setPromotionsRestaurant(List<Promotion> promotionsRestaurant) {
-		this.promotionsRestaurant = promotionsRestaurant;
+	public void setTables(List<Table> tables) {
+		this.tables = tables;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#tableClientsRestaurant tableClientsRestaurant}.
-	 * @param tableClient value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservations reservations}.
+	 * @param reservation value to add to restaurant.
 	 */
-	void addTableClientRestaurant(TableClient tableClient) {
-		this.tableClientsRestaurant.add(tableClient);
-		tableClient.setRestaurantRestaurant(this);
+	void addReservation(Reservation reservation) {
+		this.reservations.add(reservation);
+		reservation.setRestaurant(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#platsRestaurant platsRestaurant}.
-	 * @param plat value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#menus menus}.
+	 * @param menu value to add to restaurant.
 	 */
-	void addPlatRestaurant(Plat plat) {
-		this.platsRestaurant.add(plat);
-		plat.setRestaurantRestaurant(this);
+	void addMenu(Menu menu) {
+		this.menus.add(menu);
+		menu.setRestaurant(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#avisClientsRestaurant avisClientsRestaurant}.
-	 * @param avisClient value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#plats plats}.
+	 * @param plat value to add to restaurant.
 	 */
-	void addAvisClientRestaurant(AvisClient avisClient) {
-		this.avisClientsRestaurant.add(avisClient);
-		avisClient.setRestaurantRestaurant(this);
+	void addPlat(Plat plat) {
+		this.plats.add(plat);
+		plat.setRestaurant(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#menusRestaurant menusRestaurant}.
-	 * @param menu value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#promotions promotions}.
+	 * @param promotion value to add to restaurant.
 	 */
-	void addMenuRestaurant(Menu menu) {
-		this.menusRestaurant.add(menu);
-		menu.setRestaurantRestaurant(this);
+	void addPromotion(Promotion promotion) {
+		this.promotions.add(promotion);
+		promotion.setRestaurant(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservationsRestaurant reservationsRestaurant}.
-	 * @param reservation value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#avisClients avisClients}.
+	 * @param avisClient value to add to restaurant.
 	 */
-	void addReservationRestaurant(Reservation reservation) {
-		this.reservationsRestaurant.add(reservation);
-		reservation.setRestaurantRestaurant(this);
+	void addAvisClient(AvisClient avisClient) {
+		this.avisClients.add(avisClient);
+		avisClient.setRestaurant(this);
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#promotionsRestaurant promotionsRestaurant}.
-	 * @param promotion value to add to restaurantRestaurant.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#tables tables}.
+	 * @param table value to add to restaurant.
 	 */
-	void addPromotionRestaurant(Promotion promotion) {
-		this.promotionsRestaurant.add(promotion);
-		promotion.setRestaurantRestaurant(this);
+	void addTable(Table table) {
+		this.tables.add(table);
+		table.setRestaurant(this);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#tableClientsRestaurant tableClientsRestaurant}.
-	 * @param tableClient tableClient value to remove.
-	 */
-	void removeTableClientRestaurant(TableClient tableClient) {
-		this.tableClientsRestaurant.remove(tableClient);
-		tableClient.setRestaurantRestaurant(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#platsRestaurant platsRestaurant}.
-	 * @param plat plat value to remove.
-	 */
-	void removePlatRestaurant(Plat plat) {
-		this.platsRestaurant.remove(plat);
-		plat.setRestaurantRestaurant(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#avisClientsRestaurant avisClientsRestaurant}.
-	 * @param avisClient avisClient value to remove.
-	 */
-	void removeAvisClientRestaurant(AvisClient avisClient) {
-		this.avisClientsRestaurant.remove(avisClient);
-		avisClient.setRestaurantRestaurant(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#menusRestaurant menusRestaurant}.
-	 * @param menu menu value to remove.
-	 */
-	void removeMenuRestaurant(Menu menu) {
-		this.menusRestaurant.remove(menu);
-		menu.setRestaurantRestaurant(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservationsRestaurant reservationsRestaurant}.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservations reservations}.
 	 * @param reservation reservation value to remove.
 	 */
-	void removeReservationRestaurant(Reservation reservation) {
-		this.reservationsRestaurant.remove(reservation);
-		reservation.setRestaurantRestaurant(null);
+	void removeReservation(Reservation reservation) {
+		this.reservations.remove(reservation);
+		reservation.setRestaurant(null);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#promotionsRestaurant promotionsRestaurant}.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#menus menus}.
+	 * @param menu menu value to remove.
+	 */
+	void removeMenu(Menu menu) {
+		this.menus.remove(menu);
+		menu.setRestaurant(null);
+	}
+
+	/**
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#plats plats}.
+	 * @param plat plat value to remove.
+	 */
+	void removePlat(Plat plat) {
+		this.plats.remove(plat);
+		plat.setRestaurant(null);
+	}
+
+	/**
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#promotions promotions}.
 	 * @param promotion promotion value to remove.
 	 */
-	void removePromotionRestaurant(Promotion promotion) {
-		this.promotionsRestaurant.remove(promotion);
-		promotion.setRestaurantRestaurant(null);
+	void removePromotion(Promotion promotion) {
+		this.promotions.remove(promotion);
+		promotion.setRestaurant(null);
+	}
+
+	/**
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#avisClients avisClients}.
+	 * @param avisClient avisClient value to remove.
+	 */
+	void removeAvisClient(AvisClient avisClient) {
+		this.avisClients.remove(avisClient);
+		avisClient.setRestaurant(null);
+	}
+
+	/**
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#tables tables}.
+	 * @param table table value to remove.
+	 */
+	void removeTable(Table table) {
+		this.tables.remove(table);
+		table.setRestaurant(null);
 	}
 
 	/**
@@ -392,12 +392,12 @@ public class Restaurant {
 		NOM(String.class),
 		ADRESSE(String.class),
 		TELEPHONE(String.class),
-		TABLE_CLIENTS_RESTAURANT(List.class),
-		PLATS_RESTAURANT(List.class),
-		AVIS_CLIENTS_RESTAURANT(List.class),
-		MENUS_RESTAURANT(List.class),
-		RESERVATIONS_RESTAURANT(List.class),
-		PROMOTIONS_RESTAURANT(List.class);
+		RESERVATIONS(List.class),
+		MENUS(List.class),
+		PLATS(List.class),
+		PROMOTIONS(List.class),
+		AVIS_CLIENTS(List.class),
+		TABLES(List.class);
 
 		private final Class<?> type;
 

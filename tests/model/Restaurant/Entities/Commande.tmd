@@ -1,0 +1,147 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - Restaurant/Entities/Menu
+  - Restaurant/Entities/Personne
+  - Restaurant/Entities/Restaurant
+---
+class:
+  name: Commande
+  trigram: COM
+  comment: Commande d'un client
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la commande
+
+    - name: DateCommande
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date et heure de la commande
+
+    - name: DateLivraison
+      domain: DO_DATE_HEURE
+      comment: Date et heure de livraison
+
+    - name: MontantTotal
+      domain: DO_PRIX
+      required: true
+      comment: Montant total de la commande
+
+    - association: Client
+      required: true
+      withReverse: true
+      comment: Client ayant passé la commande
+
+    - association: Table
+      withReverse: true
+      comment: Table associée à la commande
+
+    - association: Reservation
+      comment: Réservation associée à la commande
+
+    - association: StatutCommande
+      required: true
+      defaultValue: EN_ATT
+      comment: Statut de la commande
+---
+class:
+  name: LigneCommande
+  trigram: LIG
+  comment: Ligne d'une commande
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la ligne
+
+    - name: Quantite
+      domain: DO_QUANTITE
+      required: true
+      comment: Quantité commandée
+
+    - name: PrixUnitaire
+      domain: DO_PRIX
+      required: true
+      comment: Prix unitaire au moment de la commande
+
+    - name: PrixTotal
+      domain: DO_PRIX
+      required: true
+      comment: Prix total de la ligne
+
+    - association: Commande
+      required: true
+      withReverse: true
+      comment: Commande à laquelle appartient la ligne
+
+    - association: Plat
+      required: true
+      withReverse: true
+      comment: Plat commandé
+
+  unique:
+    - [CommandeId, PlatId]
+---
+class:
+  name: Reservation
+  trigram: REV
+  comment: Réservation d'une table
+
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la réservation
+
+    - name: DateReservation
+      domain: DO_DATE_HEURE
+      required: true
+      comment: Date et heure de la réservation
+
+    - name: NombrePersonnes
+      domain: DO_QUANTITE
+      required: true
+      comment: Nombre de personnes
+
+    - name: Commentaire
+      domain: DO_LIBELLE
+      comment: Commentaire sur la réservation
+
+    - name: Confirmee
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: false
+      comment: Indique si la réservation est confirmée
+
+    - association: Client
+      required: true
+      withReverse: true
+      comment: Client ayant fait la réservation
+
+    - association: Table
+      withReverse: true
+      comment: Table réservée
+
+    - association: Restaurant
+      required: true
+      withReverse: true
+      comment: Restaurant concerné par la réservation
+
+  unique:
+    - [TableId, DateReservation]
+---
+class:
+  name: CommandeExport
+  comment: Commande pour export avec préservation des clés primaires
+
+  properties:
+    - alias:
+        class: Commande
+      preservePrimaryKey: true
+      preserveTrigram: true

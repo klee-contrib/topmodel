@@ -65,17 +65,25 @@ public class CommandeExport {
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
-	@JoinColumn(name = "CLI_ID", referencedColumnName = "CLI_ID")
+	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
 	private Client client;
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTableClient() Commande#getTableClient()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
 	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableClient.class)
-	private TableClient tableClient;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Table.class)
+	private Table table;
+
+	/**
+	 * Réservation associée à la commande.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 */
+	@JoinColumn(name = "REV_ID", referencedColumnName = "REV_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Reservation.class)
+	private Reservation reservation;
 
 	/**
 	 * Statut de la commande.
@@ -139,12 +147,21 @@ public class CommandeExport {
 	}
 
 	/**
-	 * Getter for tableClient.
+	 * Getter for table.
 	 *
-	 * @return value of {@link #tableClient tableClient}.
+	 * @return value of {@link #table table}.
 	 */
-	public TableClient getTableClient() {
-		return this.tableClient;
+	public Table getTable() {
+		return this.table;
+	}
+
+	/**
+	 * Getter for reservation.
+	 *
+	 * @return value of {@link #reservation reservation}.
+	 */
+	public Reservation getReservation() {
+		return this.reservation;
 	}
 
 	/**
@@ -209,11 +226,19 @@ public class CommandeExport {
 	}
 
 	/**
-	 * Set the value of {@link #tableClient tableClient}.
-	 * @param tableClient value to set.
+	 * Set the value of {@link #table table}.
+	 * @param table value to set.
 	 */
-	public void setTableClient(TableClient tableClient) {
-		this.tableClient = tableClient;
+	public void setTable(Table table) {
+		this.table = table;
+	}
+
+	/**
+	 * Set the value of {@link #reservation reservation}.
+	 * @param reservation value to set.
+	 */
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
 	}
 
 	/**
@@ -241,7 +266,8 @@ public class CommandeExport {
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT(Client.class),
-		TABLE_CLIENT(TableClient.class),
+		TABLE(Table.class),
+		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		LIGNE_COMMANDES(List.class);
 

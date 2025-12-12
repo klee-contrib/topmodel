@@ -68,69 +68,69 @@ public class ReservationAvecDetails implements Serializable {
 
 	/**
 	 * Client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getClientIdClient() Reservation#getClientIdClient()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getClientId() Reservation#getClientId()}
 	 */
 	@NotNull
-	@Column("cli_id_client")
-	private Integer clientIdClient;
+	@Column("per_id")
+	private Integer clientId;
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getTableClientIdTable() Reservation#getTableClientIdTable()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getTableId() Reservation#getTableId()}
 	 */
-	@Column("tab_id_table")
-	private Integer tableClientIdTable;
+	@Column("tab_id")
+	private Integer tableId;
 
 	/**
 	 * Restaurant concerné par la réservation.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getRestaurantIdRestaurant() Reservation#getRestaurantIdRestaurant()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Reservation#getRestaurantId() Reservation#getRestaurantId()}
 	 */
 	@NotNull
-	@Column("res_id_restaurant")
-	private Integer restaurantIdRestaurant;
+	@Column("res_id")
+	private Integer restaurantId;
 
 	/**
 	 * Informations du client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Client#getNom() Client#getNom()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Personne#getNom() Personne#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
-	@Column("cli_nom")
+	@Column("per_nom")
 	private String clientNom;
 
 	/**
 	 * Informations du client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Client#getPrenom() Client#getPrenom()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
 	 */
 	@NotNull
 	@Size(max = 100)
-	@Column("cli_prenom")
+	@Column("per_prenom")
 	private String clientPrenom;
 
 	/**
 	 * Informations du client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Client#getTelephone() Client#getTelephone()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
-	@Size(max = 20)
-	@Column("cli_telephone")
-	private String clientTelephone;
+	@Size(max = 100)
+	@Column("cli_email")
+	private String clientEmail;
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableClient#getNumero() TableClient#getNumero()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
 	@Column("tab_numero")
-	private String tableClientNumero;
+	private String tableNumero;
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableClient#getCapacite() TableClient#getCapacite()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	@Column("tab_capacite")
-	private Integer tableClientCapacite;
+	private Integer tableCapacite;
 
 	/**
 	 * Getter for id.
@@ -178,30 +178,30 @@ public class ReservationAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Getter for clientIdClient.
+	 * Getter for clientId.
 	 *
-	 * @return value of {@link #clientIdClient clientIdClient}.
+	 * @return value of {@link #clientId clientId}.
 	 */
-	public Integer getClientIdClient() {
-		return this.clientIdClient;
+	public Integer getClientId() {
+		return this.clientId;
 	}
 
 	/**
-	 * Getter for tableClientIdTable.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #tableClientIdTable tableClientIdTable}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public Integer getTableClientIdTable() {
-		return this.tableClientIdTable;
+	public Integer getTableId() {
+		return this.tableId;
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -223,30 +223,30 @@ public class ReservationAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Getter for clientTelephone.
+	 * Getter for clientEmail.
 	 *
-	 * @return value of {@link #clientTelephone clientTelephone}.
+	 * @return value of {@link #clientEmail clientEmail}.
 	 */
-	public String getClientTelephone() {
-		return this.clientTelephone;
+	public String getClientEmail() {
+		return this.clientEmail;
 	}
 
 	/**
-	 * Getter for tableClientNumero.
+	 * Getter for tableNumero.
 	 *
-	 * @return value of {@link #tableClientNumero tableClientNumero}.
+	 * @return value of {@link #tableNumero tableNumero}.
 	 */
-	public String getTableClientNumero() {
-		return this.tableClientNumero;
+	public String getTableNumero() {
+		return this.tableNumero;
 	}
 
 	/**
-	 * Getter for tableClientCapacite.
+	 * Getter for tableCapacite.
 	 *
-	 * @return value of {@link #tableClientCapacite tableClientCapacite}.
+	 * @return value of {@link #tableCapacite tableCapacite}.
 	 */
-	public Integer getTableClientCapacite() {
-		return this.tableClientCapacite;
+	public Integer getTableCapacite() {
+		return this.tableCapacite;
 	}
 
 	/**
@@ -290,27 +290,27 @@ public class ReservationAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientIdClient clientIdClient}.
-	 * @param clientIdClient value to set.
+	 * Set the value of {@link #clientId clientId}.
+	 * @param clientId value to set.
 	 */
-	public void setClientIdClient(Integer clientIdClient) {
-		this.clientIdClient = clientIdClient;
+	public void setClientId(Integer clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #tableClientIdTable tableClientIdTable}.
-	 * @param tableClientIdTable value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTableClientIdTable(Integer tableClientIdTable) {
-		this.tableClientIdTable = tableClientIdTable;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -330,27 +330,27 @@ public class ReservationAvecDetails implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientTelephone clientTelephone}.
-	 * @param clientTelephone value to set.
+	 * Set the value of {@link #clientEmail clientEmail}.
+	 * @param clientEmail value to set.
 	 */
-	public void setClientTelephone(String clientTelephone) {
-		this.clientTelephone = clientTelephone;
+	public void setClientEmail(String clientEmail) {
+		this.clientEmail = clientEmail;
 	}
 
 	/**
-	 * Set the value of {@link #tableClientNumero tableClientNumero}.
-	 * @param tableClientNumero value to set.
+	 * Set the value of {@link #tableNumero tableNumero}.
+	 * @param tableNumero value to set.
 	 */
-	public void setTableClientNumero(String tableClientNumero) {
-		this.tableClientNumero = tableClientNumero;
+	public void setTableNumero(String tableNumero) {
+		this.tableNumero = tableNumero;
 	}
 
 	/**
-	 * Set the value of {@link #tableClientCapacite tableClientCapacite}.
-	 * @param tableClientCapacite value to set.
+	 * Set the value of {@link #tableCapacite tableCapacite}.
+	 * @param tableCapacite value to set.
 	 */
-	public void setTableClientCapacite(Integer tableClientCapacite) {
-		this.tableClientCapacite = tableClientCapacite;
+	public void setTableCapacite(Integer tableCapacite) {
+		this.tableCapacite = tableCapacite;
 	}
 
 	/**
@@ -362,14 +362,14 @@ public class ReservationAvecDetails implements Serializable {
 		NOMBRE_PERSONNES(Integer.class),
 		COMMENTAIRE(String.class),
 		CONFIRMEE(Boolean.class),
-		CLIENT_ID_CLIENT(Integer.class),
-		TABLE_CLIENT_ID_TABLE(Integer.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class),
+		CLIENT_ID(Integer.class),
+		TABLE_ID(Integer.class),
+		RESTAURANT_ID(Integer.class),
 		CLIENT_NOM(String.class),
 		CLIENT_PRENOM(String.class),
-		CLIENT_TELEPHONE(String.class),
-		TABLE_CLIENT_NUMERO(String.class),
-		TABLE_CLIENT_CAPACITE(Integer.class);
+		CLIENT_EMAIL(String.class),
+		TABLE_NUMERO(String.class),
+		TABLE_CAPACITE(Integer.class);
 
 		private final Class<?> type;
 

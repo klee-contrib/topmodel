@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_LIBELLE, DO_LISTE, DO_TELEPHONE} from "@/domains";
+import {DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type ClientRead = EntityToType<ClientReadEntityType>;
@@ -10,16 +10,13 @@ export type ClientReadEntityType = typeof ClientReadEntity;
 
 export const ClientReadEntity = entity({
     id: e.field(DO_ID, f => f.optional()
-        .label("restaurant.client.id")
+        .label("restaurant.personne.id")
     ),
     nom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.client.nom")
+        .label("restaurant.personne.nom")
     ),
     prenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.client.prenom")
-    ),
-    telephone: e.field(DO_TELEPHONE, f => f.optional()
-        .label("restaurant.client.telephone")
+        .label("restaurant.personne.prenom")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
@@ -27,10 +24,10 @@ export const ClientReadEntity = entity({
     commandes: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.client.commandes")
     ),
-    avisClientsClient: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.client.avisClientsClient")
+    reservations: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.client.reservations")
     ),
-    reservationsClient: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.client.reservationsClient")
+    avisClients: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.client.avisClients")
     )
 });

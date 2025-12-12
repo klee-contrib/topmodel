@@ -71,17 +71,17 @@ public class AvisClientRead implements Serializable {
 
 	/**
 	 * Client ayant donné l'avis.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.AvisClient#getClientClient() AvisClient#getClientClient()}
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
 	@NotNull
-	private Integer clientIdClient;
+	private Integer clientId;
 
 	/**
 	 * Restaurant concerné par l'avis.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.AvisClient#getRestaurantRestaurant() AvisClient#getRestaurantRestaurant()}
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
 	 */
 	@NotNull
-	private Integer restaurantIdRestaurant;
+	private Integer restaurantId;
 
 	/**
 	 * No arg constructor.
@@ -155,21 +155,21 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Getter for clientIdClient.
+	 * Getter for clientId.
 	 *
-	 * @return value of {@link #clientIdClient clientIdClient}.
+	 * @return value of {@link #clientId clientId}.
 	 */
-	public Integer getClientIdClient() {
-		return this.clientIdClient;
+	public Integer getClientId() {
+		return this.clientId;
 	}
 
 	/**
-	 * Getter for restaurantIdRestaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Integer getRestaurantIdRestaurant() {
-		return this.restaurantIdRestaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -221,19 +221,19 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientIdClient clientIdClient}.
-	 * @param clientIdClient value to set.
+	 * Set the value of {@link #clientId clientId}.
+	 * @param clientId value to set.
 	 */
-	public void setClientIdClient(Integer clientIdClient) {
-		this.clientIdClient = clientIdClient;
+	public void setClientId(Integer clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantIdRestaurant restaurantIdRestaurant}.
-	 * @param restaurantIdRestaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurantIdRestaurant(Integer restaurantIdRestaurant) {
-		this.restaurantIdRestaurant = restaurantIdRestaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -246,8 +246,8 @@ public class AvisClientRead implements Serializable {
 		DATE_AVIS(LocalDateTime.class),
 		APPROUVE(Boolean.class),
 		NOMBRE_VUES(Integer.class),
-		CLIENT_ID_CLIENT(Integer.class),
-		RESTAURANT_ID_RESTAURANT(Integer.class);
+		CLIENT_ID(Integer.class),
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

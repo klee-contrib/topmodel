@@ -17,7 +17,7 @@ public interface IEmployeItem
     /// <summary>
     /// Restaurant où travaille l'employé.
     /// </summary>
-    int? RestaurantIdRestaurant { get; }
+    int? RestaurantId { get; }
 
     /// <summary>
     /// Identifiant de l'employé.
@@ -38,10 +38,10 @@ public interface IEmployeItem
     /// Factory pour instancier la classe.
     /// </summary>
     /// <param name="matricule">Matricule de l'employé.</param>
-    /// <param name="restaurantIdRestaurant">Restaurant où travaille l'employé.</param>
+    /// <param name="restaurantId">Restaurant où travaille l'employé.</param>
     /// <param name="id">Identifiant de l'employé.</param>
     /// <param name="nom">Nom de l'employé.</param>
     /// <param name="prenom">Prénom de l'employé.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IEmployeItem Create(string matricule = null, int? restaurantIdRestaurant = null, int? id = null, string nom = null, string prenom = null);
+    static abstract IEmployeItem Create(string matricule = null, int? restaurantId = null, int? id = null, string nom = null, string prenom = null);
 }

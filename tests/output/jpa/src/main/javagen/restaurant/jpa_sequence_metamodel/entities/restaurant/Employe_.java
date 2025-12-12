@@ -15,13 +15,21 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Employe_ extends Personne_ {
 
+	public static volatile SingularAttribute<Employe, String> telephone;
+
+	public static volatile SingularAttribute<Employe, LocalDateTime> dateNaissance;
+
 	public static volatile SingularAttribute<Employe, String> matricule;
 
 	public static volatile SingularAttribute<Employe, LocalDateTime> dateEmbauche;
 
 	public static volatile SingularAttribute<Employe, BigDecimal> salaire;
 
-	public static volatile SingularAttribute<Employe, Restaurant> restaurantRestaurant;
+	public static volatile SingularAttribute<Employe, Restaurant> restaurant;
+
+	public static final String TELEPHONE = "telephone";
+
+	public static final String DATE_NAISSANCE = "dateNaissance";
 
 	public static final String MATRICULE = "matricule";
 
@@ -29,5 +37,5 @@ public class Employe_ extends Personne_ {
 
 	public static final String SALAIRE = "salaire";
 
-	public static final String RESTAURANT_RESTAURANT = "restaurantRestaurant";
+	public static final String RESTAURANT = "restaurant";
 }

@@ -70,15 +70,15 @@ public class Promotion {
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de PromotionPlat.PromotionIdPromotion.
+	 * Association réciproque de PromotionPlat.PromotionId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "promotionPromotion")
-	private List<PromotionPlat> promotionPlatsPromotion;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "promotion")
+	private List<PromotionPlat> plats;
 
 	/**
 	 * Getter for id.
@@ -135,24 +135,24 @@ public class Promotion {
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
-	 * Getter for promotionPlatsPromotion.
+	 * Getter for plats.
 	 *
-	 * @return value of {@link #promotionPlatsPromotion promotionPlatsPromotion}.
+	 * @return value of {@link #plats plats}.
 	 */
-	public List<PromotionPlat> getPromotionPlatsPromotion() {
-		if (this.promotionPlatsPromotion == null) {
-			this.promotionPlatsPromotion = new ArrayList<>();
+	public List<PromotionPlat> getPlats() {
+		if (this.plats == null) {
+			this.plats = new ArrayList<>();
 		}
-		return this.promotionPlatsPromotion;
+		return this.plats;
 	}
 
 	/**
@@ -204,37 +204,37 @@ public class Promotion {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #promotionPlatsPromotion promotionPlatsPromotion}.
-	 * @param promotionPlatsPromotion value to set.
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
 	 */
-	public void setPromotionPlatsPromotion(List<PromotionPlat> promotionPlatsPromotion) {
-		this.promotionPlatsPromotion = promotionPlatsPromotion;
+	public void setPlats(List<PromotionPlat> plats) {
+		this.plats = plats;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Promotion#promotionPlatsPromotion promotionPlatsPromotion}.
-	 * @param promotionPlat value to add to promotionPromotion.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Promotion#plats plats}.
+	 * @param promotionPlat value to add to promotion.
 	 */
-	void addPromotionPlatPromotion(PromotionPlat promotionPlat) {
-		this.promotionPlatsPromotion.add(promotionPlat);
-		promotionPlat.setPromotionPromotion(this);
+	void addPromotionPlat(PromotionPlat promotionPlat) {
+		this.plats.add(promotionPlat);
+		promotionPlat.setPromotion(this);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Promotion#promotionPlatsPromotion promotionPlatsPromotion}.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Promotion#plats plats}.
 	 * @param promotionPlat promotionPlat value to remove.
 	 */
-	void removePromotionPlatPromotion(PromotionPlat promotionPlat) {
-		this.promotionPlatsPromotion.remove(promotionPlat);
-		promotionPlat.setPromotionPromotion(null);
+	void removePromotionPlat(PromotionPlat promotionPlat) {
+		this.plats.remove(promotionPlat);
+		promotionPlat.setPromotion(null);
 	}
 
 	/**
@@ -247,8 +247,8 @@ public class Promotion {
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		ACTIVE(Boolean.class),
-		RESTAURANT_RESTAURANT(Restaurant.class),
-		PROMOTION_PLATS_PROMOTION(List.class);
+		RESTAURANT(Restaurant.class),
+		PLATS(List.class);
 
 		private final Class<?> type;
 

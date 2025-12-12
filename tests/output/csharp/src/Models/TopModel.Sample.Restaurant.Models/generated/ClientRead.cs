@@ -14,14 +14,14 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record ClientRead
 {
     /// <summary>
-    /// Identifiant du client.
+    /// Identifiant de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
     public int? Id { get; set; }
 
     /// <summary>
-    /// Nom du client.
+    /// Nom de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Libelle)]
@@ -29,19 +29,12 @@ public partial record ClientRead
     public string Nom { get; set; }
 
     /// <summary>
-    /// Prénom du client.
+    /// Prénom de la personne.
     /// </summary>
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string Prenom { get; set; }
-
-    /// <summary>
-    /// Numéro de téléphone du client.
-    /// </summary>
-    [Domain(Domains.Telephone)]
-    [StringLength(20)]
-    public string Telephone { get; set; }
 
     /// <summary>
     /// Adresse email du client.
@@ -57,14 +50,14 @@ public partial record ClientRead
     public ICollection<int> Commandes { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.ClientIdClient.
+    /// Association réciproque de Reservation.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> AvisClientsClient { get; set; }
+    public ICollection<int> Reservations { get; set; }
 
     /// <summary>
-    /// Association réciproque de Reservation.ClientIdClient.
+    /// Association réciproque de AvisClient.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> ReservationsClient { get; set; }
+    public ICollection<int> AvisClients { get; set; }
 }

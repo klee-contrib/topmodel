@@ -23,7 +23,7 @@ import jakarta.persistence.UniqueConstraint;
  */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "AVIS_CLIENT", uniqueConstraints = {@UniqueConstraint(columnNames = {"CLI_ID_CLIENT", "RES_ID_RESTAURANT", "AVI_DATE_AVIS"})})
+@Table(name = "AVIS_CLIENT", uniqueConstraints = {@UniqueConstraint(columnNames = {"PER_ID", "RES_ID", "AVI_DATE_AVIS"})})
 public class AvisClient {
 
 	/**
@@ -67,16 +67,16 @@ public class AvisClient {
 	/**
 	 * Client ayant donné l'avis.
 	 */
-	@JoinColumn(name = "CLI_ID_CLIENT", referencedColumnName = "CLI_ID")
+	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
-	private Client clientClient;
+	private Client client;
 
 	/**
 	 * Restaurant concerné par l'avis.
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
 
 	/**
 	 * Getter for id.
@@ -133,21 +133,21 @@ public class AvisClient {
 	}
 
 	/**
-	 * Getter for clientClient.
+	 * Getter for client.
 	 *
-	 * @return value of {@link #clientClient clientClient}.
+	 * @return value of {@link #client client}.
 	 */
-	public Client getClientClient() {
-		return this.clientClient;
+	public Client getClient() {
+		return this.client;
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -199,19 +199,19 @@ public class AvisClient {
 	}
 
 	/**
-	 * Set the value of {@link #clientClient clientClient}.
-	 * @param clientClient value to set.
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
 	 */
-	public void setClientClient(Client clientClient) {
-		this.clientClient = clientClient;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
@@ -224,8 +224,8 @@ public class AvisClient {
 		DATE_AVIS(LocalDateTime.class),
 		APPROUVE(Boolean.class),
 		NOMBRE_VUES(Integer.class),
-		CLIENT_CLIENT(Client.class),
-		RESTAURANT_RESTAURANT(Restaurant.class);
+		CLIENT(Client.class),
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

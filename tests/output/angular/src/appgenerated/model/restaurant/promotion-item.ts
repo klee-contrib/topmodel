@@ -27,7 +27,7 @@ export const PromotionItemEntity = entity({
     active: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.promotion.active")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f.optional()
-        .label("restaurant.promotion.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.promotion.restaurantId")
     )
 });

@@ -78,16 +78,16 @@ public class Menu {
 	/**
 	 * Restaurant proposant ce menu.
 	 */
-	@JoinColumn(name = "RES_ID_RESTAURANT", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurantRestaurant;
+	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de MenuPlat.MenuIdMenu.
+	 * Association réciproque de MenuPlat.MenuId.
 	 */
 	@OrderBy("ordre ASC")
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menuMenu")
-	private List<MenuPlat> menuPlatsMenu;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menu")
+	private List<MenuPlat> plats;
 
 	/**
 	 * Getter for id.
@@ -153,24 +153,24 @@ public class Menu {
 	}
 
 	/**
-	 * Getter for restaurantRestaurant.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantRestaurant restaurantRestaurant}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Restaurant getRestaurantRestaurant() {
-		return this.restaurantRestaurant;
+	public Restaurant getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
-	 * Getter for menuPlatsMenu.
+	 * Getter for plats.
 	 *
-	 * @return value of {@link #menuPlatsMenu menuPlatsMenu}.
+	 * @return value of {@link #plats plats}.
 	 */
-	public List<MenuPlat> getMenuPlatsMenu() {
-		if (this.menuPlatsMenu == null) {
-			this.menuPlatsMenu = new ArrayList<>();
+	public List<MenuPlat> getPlats() {
+		if (this.plats == null) {
+			this.plats = new ArrayList<>();
 		}
-		return this.menuPlatsMenu;
+		return this.plats;
 	}
 
 	/**
@@ -230,37 +230,37 @@ public class Menu {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantRestaurant restaurantRestaurant}.
-	 * @param restaurantRestaurant value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantRestaurant(Restaurant restaurantRestaurant) {
-		this.restaurantRestaurant = restaurantRestaurant;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #menuPlatsMenu menuPlatsMenu}.
-	 * @param menuPlatsMenu value to set.
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
 	 */
-	public void setMenuPlatsMenu(List<MenuPlat> menuPlatsMenu) {
-		this.menuPlatsMenu = menuPlatsMenu;
+	public void setPlats(List<MenuPlat> plats) {
+		this.plats = plats;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Menu#menuPlatsMenu menuPlatsMenu}.
-	 * @param menuPlat value to add to menuMenu.
+	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Menu#plats plats}.
+	 * @param menuPlat value to add to menu.
 	 */
-	void addMenuPlatMenu(MenuPlat menuPlat) {
-		this.menuPlatsMenu.add(menuPlat);
-		menuPlat.setMenuMenu(this);
+	void addMenuPlat(MenuPlat menuPlat) {
+		this.plats.add(menuPlat);
+		menuPlat.setMenu(this);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Menu#menuPlatsMenu menuPlatsMenu}.
+	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Menu#plats plats}.
 	 * @param menuPlat menuPlat value to remove.
 	 */
-	void removeMenuPlatMenu(MenuPlat menuPlat) {
-		this.menuPlatsMenu.remove(menuPlat);
-		menuPlat.setMenuMenu(null);
+	void removeMenuPlat(MenuPlat menuPlat) {
+		this.plats.remove(menuPlat);
+		menuPlat.setMenu(null);
 	}
 
 	/**
@@ -274,8 +274,8 @@ public class Menu {
 		DISPONIBLE(Boolean.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
-		RESTAURANT_RESTAURANT(Restaurant.class),
-		MENU_PLATS_MENU(List.class);
+		RESTAURANT(Restaurant.class),
+		PLATS(List.class);
 
 		private final Class<?> type;
 

@@ -39,5 +39,5 @@ public partial record EmployeWrite
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 }

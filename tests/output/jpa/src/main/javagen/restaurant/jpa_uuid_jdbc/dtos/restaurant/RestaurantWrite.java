@@ -52,51 +52,51 @@ public class RestaurantWrite implements Serializable {
 	private String telephone;
 
 	/**
-	 * Association réciproque de TableClient.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getTableClientsRestaurant() Restaurant#getTableClientsRestaurant()}
+	 * Association réciproque de Reservation.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getReservations() Restaurant#getReservations()}
 	 */
 	@NotNull
-	@Column("tab_id_restaurant")
-	private List<Integer> tableClientsRestaurant;
+	@Column("rev_id")
+	private List<Integer> reservations;
 
 	/**
-	 * Association réciproque de Plat.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getPlatsRestaurant() Restaurant#getPlatsRestaurant()}
+	 * Association réciproque de Menu.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
 	 */
 	@NotNull
-	@Column("pla_id_restaurant")
-	private List<Integer> platsRestaurant;
+	@Column("men_id")
+	private List<Integer> menus;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getAvisClientsRestaurant() Restaurant#getAvisClientsRestaurant()}
+	 * Association réciproque de Plat.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
 	 */
 	@NotNull
-	@Column("avi_id_restaurant")
-	private List<Integer> avisClientsRestaurant;
+	@Column("pla_id")
+	private List<Integer> plats;
 
 	/**
-	 * Association réciproque de Menu.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getMenusRestaurant() Restaurant#getMenusRestaurant()}
+	 * Association réciproque de Promotion.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
+	 */
+	@Column("pro_id")
+	private List<Integer> promotions;
+
+	/**
+	 * Association réciproque de AvisClient.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
 	 */
 	@NotNull
-	@Column("men_id_restaurant")
-	private List<Integer> menusRestaurant;
+	@Column("avi_id")
+	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de Reservation.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getReservationsRestaurant() Restaurant#getReservationsRestaurant()}
+	 * Association réciproque de Table.RestaurantId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
 	 */
 	@NotNull
-	@Column("rev_id_restaurant")
-	private List<Integer> reservationsRestaurant;
-
-	/**
-	 * Association réciproque de Promotion.RestaurantIdRestaurant.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getPromotionsRestaurant() Restaurant#getPromotionsRestaurant()}
-	 */
-	@Column("pro_id_restaurant")
-	private List<Integer> promotionsRestaurant;
+	@Column("tab_id")
+	private List<Integer> tables;
 
 	/**
 	 * Getter for nom.
@@ -126,57 +126,57 @@ public class RestaurantWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for tableClientsRestaurant.
+	 * Getter for reservations.
 	 *
-	 * @return value of {@link #tableClientsRestaurant tableClientsRestaurant}.
+	 * @return value of {@link #reservations reservations}.
 	 */
-	public List<Integer> getTableClientsRestaurant() {
-		return this.tableClientsRestaurant;
+	public List<Integer> getReservations() {
+		return this.reservations;
 	}
 
 	/**
-	 * Getter for platsRestaurant.
+	 * Getter for menus.
 	 *
-	 * @return value of {@link #platsRestaurant platsRestaurant}.
+	 * @return value of {@link #menus menus}.
 	 */
-	public List<Integer> getPlatsRestaurant() {
-		return this.platsRestaurant;
+	public List<Integer> getMenus() {
+		return this.menus;
 	}
 
 	/**
-	 * Getter for avisClientsRestaurant.
+	 * Getter for plats.
 	 *
-	 * @return value of {@link #avisClientsRestaurant avisClientsRestaurant}.
+	 * @return value of {@link #plats plats}.
 	 */
-	public List<Integer> getAvisClientsRestaurant() {
-		return this.avisClientsRestaurant;
+	public List<Integer> getPlats() {
+		return this.plats;
 	}
 
 	/**
-	 * Getter for menusRestaurant.
+	 * Getter for promotions.
 	 *
-	 * @return value of {@link #menusRestaurant menusRestaurant}.
+	 * @return value of {@link #promotions promotions}.
 	 */
-	public List<Integer> getMenusRestaurant() {
-		return this.menusRestaurant;
+	public List<Integer> getPromotions() {
+		return this.promotions;
 	}
 
 	/**
-	 * Getter for reservationsRestaurant.
+	 * Getter for avisClients.
 	 *
-	 * @return value of {@link #reservationsRestaurant reservationsRestaurant}.
+	 * @return value of {@link #avisClients avisClients}.
 	 */
-	public List<Integer> getReservationsRestaurant() {
-		return this.reservationsRestaurant;
+	public List<Integer> getAvisClients() {
+		return this.avisClients;
 	}
 
 	/**
-	 * Getter for promotionsRestaurant.
+	 * Getter for tables.
 	 *
-	 * @return value of {@link #promotionsRestaurant promotionsRestaurant}.
+	 * @return value of {@link #tables tables}.
 	 */
-	public List<Integer> getPromotionsRestaurant() {
-		return this.promotionsRestaurant;
+	public List<Integer> getTables() {
+		return this.tables;
 	}
 
 	/**
@@ -204,51 +204,51 @@ public class RestaurantWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tableClientsRestaurant tableClientsRestaurant}.
-	 * @param tableClientsRestaurant value to set.
+	 * Set the value of {@link #reservations reservations}.
+	 * @param reservations value to set.
 	 */
-	public void setTableClientsRestaurant(List<Integer> tableClientsRestaurant) {
-		this.tableClientsRestaurant = tableClientsRestaurant;
+	public void setReservations(List<Integer> reservations) {
+		this.reservations = reservations;
 	}
 
 	/**
-	 * Set the value of {@link #platsRestaurant platsRestaurant}.
-	 * @param platsRestaurant value to set.
+	 * Set the value of {@link #menus menus}.
+	 * @param menus value to set.
 	 */
-	public void setPlatsRestaurant(List<Integer> platsRestaurant) {
-		this.platsRestaurant = platsRestaurant;
+	public void setMenus(List<Integer> menus) {
+		this.menus = menus;
 	}
 
 	/**
-	 * Set the value of {@link #avisClientsRestaurant avisClientsRestaurant}.
-	 * @param avisClientsRestaurant value to set.
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
 	 */
-	public void setAvisClientsRestaurant(List<Integer> avisClientsRestaurant) {
-		this.avisClientsRestaurant = avisClientsRestaurant;
+	public void setPlats(List<Integer> plats) {
+		this.plats = plats;
 	}
 
 	/**
-	 * Set the value of {@link #menusRestaurant menusRestaurant}.
-	 * @param menusRestaurant value to set.
+	 * Set the value of {@link #promotions promotions}.
+	 * @param promotions value to set.
 	 */
-	public void setMenusRestaurant(List<Integer> menusRestaurant) {
-		this.menusRestaurant = menusRestaurant;
+	public void setPromotions(List<Integer> promotions) {
+		this.promotions = promotions;
 	}
 
 	/**
-	 * Set the value of {@link #reservationsRestaurant reservationsRestaurant}.
-	 * @param reservationsRestaurant value to set.
+	 * Set the value of {@link #avisClients avisClients}.
+	 * @param avisClients value to set.
 	 */
-	public void setReservationsRestaurant(List<Integer> reservationsRestaurant) {
-		this.reservationsRestaurant = reservationsRestaurant;
+	public void setAvisClients(List<Integer> avisClients) {
+		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #promotionsRestaurant promotionsRestaurant}.
-	 * @param promotionsRestaurant value to set.
+	 * Set the value of {@link #tables tables}.
+	 * @param tables value to set.
 	 */
-	public void setPromotionsRestaurant(List<Integer> promotionsRestaurant) {
-		this.promotionsRestaurant = promotionsRestaurant;
+	public void setTables(List<Integer> tables) {
+		this.tables = tables;
 	}
 
 	/**
@@ -258,12 +258,12 @@ public class RestaurantWrite implements Serializable {
 		NOM(String.class),
 		ADRESSE(String.class),
 		TELEPHONE(String.class),
-		TABLE_CLIENTS_RESTAURANT(List.class),
-		PLATS_RESTAURANT(List.class),
-		AVIS_CLIENTS_RESTAURANT(List.class),
-		MENUS_RESTAURANT(List.class),
-		RESERVATIONS_RESTAURANT(List.class),
-		PROMOTIONS_RESTAURANT(List.class);
+		RESERVATIONS(List.class),
+		MENUS(List.class),
+		PLATS(List.class),
+		PROMOTIONS(List.class),
+		AVIS_CLIENTS(List.class),
+		TABLES(List.class);
 
 		private final Class<?> type;
 

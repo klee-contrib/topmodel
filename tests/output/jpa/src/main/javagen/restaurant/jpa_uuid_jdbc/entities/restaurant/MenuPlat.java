@@ -19,11 +19,16 @@ import jakarta.validation.constraints.NotNull;
 public class MenuPlat {
 
 	/**
-	 * Identifiant de la relation.
+	 * Menu contenant ce plat.
 	 */
 	@Id
-	@Column("mpl_id")
-	private Integer id;
+	private Integer menuId;
+
+	/**
+	 * Plat du menu.
+	 */
+	@Id
+	private Integer platId;
 
 	/**
 	 * Ordre d'affichage du plat dans le menu.
@@ -33,26 +38,21 @@ public class MenuPlat {
 	private Integer ordre;
 
 	/**
-	 * Menu contenant ce plat.
-	 */
-	@NotNull
-	@Column("men_id_menu")
-	private Integer menuIdMenu;
-
-	/**
-	 * Plat du menu.
-	 */
-	@NotNull
-	@Column("pla_id_plat")
-	private Integer platIdPlat;
-
-	/**
-	 * Getter for id.
+	 * Getter for menuId.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #menuId menuId}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Integer getMenuId() {
+		return this.menuId;
+	}
+
+	/**
+	 * Getter for platId.
+	 *
+	 * @return value of {@link #platId platId}.
+	 */
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
@@ -65,29 +65,19 @@ public class MenuPlat {
 	}
 
 	/**
-	 * Getter for menuIdMenu.
-	 *
-	 * @return value of {@link #menuIdMenu menuIdMenu}.
+	 * Set the value of {@link #menuId menuId}.
+	 * @param menuId value to set.
 	 */
-	public Integer getMenuIdMenu() {
-		return this.menuIdMenu;
+	public void setMenuId(Integer menuId) {
+		this.menuId = menuId;
 	}
 
 	/**
-	 * Getter for platIdPlat.
-	 *
-	 * @return value of {@link #platIdPlat platIdPlat}.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
-	public Integer getPlatIdPlat() {
-		return this.platIdPlat;
-	}
-
-	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 
 	/**
@@ -96,21 +86,5 @@ public class MenuPlat {
 	 */
 	public void setOrdre(Integer ordre) {
 		this.ordre = ordre;
-	}
-
-	/**
-	 * Set the value of {@link #menuIdMenu menuIdMenu}.
-	 * @param menuIdMenu value to set.
-	 */
-	public void setMenuIdMenu(Integer menuIdMenu) {
-		this.menuIdMenu = menuIdMenu;
-	}
-
-	/**
-	 * Set the value of {@link #platIdPlat platIdPlat}.
-	 * @param platIdPlat value to set.
-	 */
-	public void setPlatIdPlat(Integer platIdPlat) {
-		this.platIdPlat = platIdPlat;
 	}
 }

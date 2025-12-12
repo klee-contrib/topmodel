@@ -24,13 +24,13 @@ export const ReservationReadEntity = entity({
     confirmee: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.reservation.confirmee")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.reservation.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.clientId")
     ),
-    tableClientIdTable: e.field(DO_ID, f => f.optional()
-        .label("restaurant.reservation.tableClientIdTable")
+    tableId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.reservation.tableId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.reservation.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.restaurantId")
     )
 });

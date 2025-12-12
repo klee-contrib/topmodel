@@ -55,30 +55,18 @@ public partial record PlatRead
     [Required]
     [ReferencedType(typeof(CategoriePlat))]
     [Domain(Domains.Code)]
-    public CategoriePlat.Codes? CategoriePlatCodeCategoriePlat { get; set; }
+    public CategoriePlat.Codes? CategoriePlatCode { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce plat.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? RestaurantIdRestaurant { get; set; }
+    public int? RestaurantId { get; set; }
 
     /// <summary>
     /// Association réciproque de LigneCommande.PlatId.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int> LigneCommandes { get; set; }
-
-    /// <summary>
-    /// Association réciproque de MenuPlat.PlatIdPlat.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> MenuPlatsPlat { get; set; }
-
-    /// <summary>
-    /// Association réciproque de PromotionPlat.PlatIdPlat.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> PromotionPlatsPlat { get; set; }
 }

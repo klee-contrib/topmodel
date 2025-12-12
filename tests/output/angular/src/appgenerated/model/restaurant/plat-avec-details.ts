@@ -26,19 +26,13 @@ export const PlatAvecDetailsEntity = entity({
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.plat.disponible")
     ),
-    categoriePlatCodeCategoriePlat: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
-        .label("restaurant.plat.categoriePlatCodeCategoriePlat")
+    categoriePlatCode: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
+        .label("restaurant.plat.categoriePlatCode")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.plat.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.plat.restaurantId")
     ),
     ligneCommandes: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.plat.ligneCommandes")
-    ),
-    menuPlatsPlat: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.menuPlatsPlat")
-    ),
-    promotionPlatsPlat: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.promotionPlatsPlat")
     )
 });

@@ -4,8 +4,6 @@
 
 package restaurant.jpa_uuid_jdbc.entities.restaurant;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -42,24 +40,6 @@ public class Personne {
 	private String prenom;
 
 	/**
-	 * Adresse email.
-	 */
-	@Column("per_email")
-	private String email;
-
-	/**
-	 * Numéro de téléphone.
-	 */
-	@Column("per_telephone")
-	private String telephone;
-
-	/**
-	 * Date de naissance.
-	 */
-	@Column("per_date_naissance")
-	private LocalDateTime dateNaissance;
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -87,33 +67,6 @@ public class Personne {
 	}
 
 	/**
-	 * Getter for email.
-	 *
-	 * @return value of {@link #email email}.
-	 */
-	public String getEmail() {
-		return this.email;
-	}
-
-	/**
-	 * Getter for telephone.
-	 *
-	 * @return value of {@link #telephone telephone}.
-	 */
-	public String getTelephone() {
-		return this.telephone;
-	}
-
-	/**
-	 * Getter for dateNaissance.
-	 *
-	 * @return value of {@link #dateNaissance dateNaissance}.
-	 */
-	public LocalDateTime getDateNaissance() {
-		return this.dateNaissance;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -135,29 +88,5 @@ public class Personne {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
-	}
-
-	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
-	 */
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	/**
-	 * Set the value of {@link #dateNaissance dateNaissance}.
-	 * @param dateNaissance value to set.
-	 */
-	public void setDateNaissance(LocalDateTime dateNaissance) {
-		this.dateNaissance = dateNaissance;
 	}
 }

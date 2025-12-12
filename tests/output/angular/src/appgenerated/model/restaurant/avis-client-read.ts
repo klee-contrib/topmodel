@@ -27,10 +27,10 @@ export const AvisClientReadEntity = entity({
     nombreVues: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.avisClient.nombreVues")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.avisClient.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.avisClient.clientId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.avisClient.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.avisClient.restaurantId")
     )
 });

@@ -42,7 +42,7 @@ public interface IPromotionItem
     /// <summary>
     /// Restaurant concerné par la promotion (null si globale).
     /// </summary>
-    int? RestaurantIdRestaurant { get; }
+    int? RestaurantId { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -53,7 +53,7 @@ public interface IPromotionItem
     /// <param name="dateDebut">Date de début de la promotion.</param>
     /// <param name="dateFin">Date de fin de la promotion.</param>
     /// <param name="active">Indique si la promotion est active.</param>
-    /// <param name="restaurantIdRestaurant">Restaurant concerné par la promotion (null si globale).</param>
+    /// <param name="restaurantId">Restaurant concerné par la promotion (null si globale).</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IPromotionItem Create(int? id = null, string libelle = null, int? pourcentageReduction = null, DateTime? dateDebut = null, DateTime? dateFin = null, bool? active = null, int? restaurantIdRestaurant = null);
+    static abstract IPromotionItem Create(int? id = null, string libelle = null, int? pourcentageReduction = null, DateTime? dateDebut = null, DateTime? dateFin = null, bool? active = null, int? restaurantId = null);
 }

@@ -1,0 +1,201 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+  - api-client
+uses:
+  - meta/annotations
+  - Restaurant/Dtos/Menu
+  - Restaurant/Entities/Menu
+  - Restaurant/References
+options:
+  endpoints:
+    prefix: api/restaurants
+---
+endpoint:
+  name: CreateMenu
+  method: POST
+  route: /menus
+  description: Crée un menu avec ses plats
+
+  annotations:
+    - Authenticated
+    - RoleRequired:
+        role: MANAGER
+
+  params:
+    - composition: MenuWrite
+      comment: Menu à créer
+      name: menu
+
+  returns:
+    composition: MenuComplet
+    name: menu
+    comment: Menu créé avec ses plats
+---
+endpoint:
+  name: GetPlats
+  method: GET
+  route: /plats
+  description: Liste tous les plats
+
+  params:
+    - alias:
+        class: Plat
+        property: Disponible
+    - alias:
+        class: Plat
+        property: RestaurantId
+    - alias:
+        class: Plat
+        property: CategoriePlatCode
+
+  returns:
+    composition: PlatItem
+    name: plats
+    domain: DO_LISTE
+    comment: Liste des plats
+---
+endpoint:
+  name: GetPlat
+  method: GET
+  route: /plats/{plaId}
+  description: Charge le détail d'un plat
+
+  params:
+    - alias:
+        class: Plat
+        property: Id
+
+  returns:
+    composition: PlatRead
+    name: plat
+    comment: Détail du plat
+---
+endpoint:
+  name: AddPlat
+  method: POST
+  route: /plats
+  description: Ajoute un plat
+
+  params:
+    - composition: PlatWrite
+      comment: Plat à créer
+      name: plat
+
+  returns:
+    composition: PlatRead
+    name: plat
+    comment: Plat créé
+---
+endpoint:
+  name: UpdatePlat
+  method: PUT
+  route: /plats/{plaId}
+  description: Met à jour un plat
+
+  params:
+    - alias:
+        class: Plat
+        property: Id
+    - composition: PlatWrite
+      comment: Plat à mettre à jour
+      name: plat
+
+  returns:
+    composition: PlatRead
+    name: plat
+    comment: Plat mis à jour
+---
+endpoint:
+  name: PatchPlat
+  method: PATCH
+  route: /plats/{plaId}
+  description: Met à jour partiellement un plat
+
+  params:
+    - alias:
+        class: Plat
+        property: Id
+    - composition: PlatWrite
+      comment: Données partielles du plat
+      name: plat
+
+  returns:
+    composition: PlatRead
+    name: plat
+    comment: Plat mis à jour
+---
+endpoint:
+  name: DeletePlat
+  method: DELETE
+  route: /plats/{plaId}
+  description: Supprime un plat
+
+  params:
+    - alias:
+        class: Plat
+        property: Id
+---
+endpoint:
+  name: GetCategoriePlats
+  method: GET
+  route: /categorie-plats
+  description: Liste toutes les catégories de plats
+
+  returns:
+    composition: CategoriePlat
+    name: categories
+    domain: DO_LISTE
+    comment: Liste des catégories de plats
+---
+# Endpoints de recherche et statistiques
+
+endpoint:
+  name: SearchPlats
+  method: GET
+  route: /plats/search
+  description: Recherche de plats avec critères multiples
+
+  params:
+    - alias:
+        class: Plat
+        property: Nom
+    - alias:
+        class: Plat
+        include:
+          - RestaurantId
+          - CategoriePlatCode
+    - alias:
+        class: Plat
+        property: Disponible
+
+  returns:
+    composition: PlatItem
+    name: plats
+    domain: DO_LISTE
+    comment: Plats correspondant aux critères de recherche
+
+---
+endpoint:
+  name: PatchPromotion
+  method: PATCH
+  route: /promotions/{proId}
+  description: Met à jour partiellement une promotion
+
+  annotations:
+    - Authenticated
+
+  params:
+    - alias:
+        class: Promotion
+        property: Id
+    - composition: PromotionWrite
+      comment: Données partielles de la promotion
+      name: promotion
+
+  returns:
+    composition: PromotionRead
+    name: promotion
+    comment: Promotion mise à jour

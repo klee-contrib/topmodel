@@ -13,22 +13,22 @@ create table [dbo].[AVIS_CLIENT] (
 	[AVI_DATE_AVIS] timestamp not null,
 	[AVI_APPROUVE] boolean not null default false,
 	[AVI_NOMBRE_VUES] int not null default 0,
-	[CLI_ID_CLIENT] int not null,
-	[RES_ID_RESTAURANT] int not null,
+	[PER_ID] int not null,
+	[RES_ID] int not null,
 	constraint [PK_AVIS_CLIENT] primary key clustered ([AVI_ID] ASC),
-	constraint [FK_AVIS_CLIENT_CLIENT_CLI_ID_CLIENT] foreign key ([CLI_ID_CLIENT]) references [dbo].[CLIENT] ([CLI_ID]),
-	constraint [FK_AVIS_CLIENT_RESTAURANT_RES_ID_RESTAURANT] foreign key ([RES_ID_RESTAURANT]) references [dbo].[RESTAURANT] ([RES_ID]),
-	constraint [UK_AVIS_CLIENT_CLI_ID_CLIENT_RES_ID_RESTAURANT_AVI_DATE_AVIS] unique nonclustered ([CLI_ID_CLIENT] ASC, [RES_ID_RESTAURANT] ASC, [AVI_DATE_AVIS] ASC))
+	constraint [FK_AVIS_CLIENT_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_AVIS_CLIENT_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS] unique nonclustered ([PER_ID] ASC, [RES_ID] ASC, [AVI_DATE_AVIS] ASC))
 go
 
-/* Index on foreign key column for AVIS_CLIENT.CLI_ID_CLIENT */
-create nonclustered index [IDX_AVIS_CLIENT_CLI_ID_CLIENT_FK]
-	on [dbo].[AVIS_CLIENT] ([CLI_ID_CLIENT] ASC)
+/* Index on foreign key column for AVIS_CLIENT.PER_ID */
+create nonclustered index [IDX_AVIS_CLIENT_PER_ID_FK]
+	on [dbo].[AVIS_CLIENT] ([PER_ID] ASC)
 go
 
-/* Index on foreign key column for AVIS_CLIENT.RES_ID_RESTAURANT */
-create nonclustered index [IDX_AVIS_CLIENT_RES_ID_RESTAURANT_FK]
-	on [dbo].[AVIS_CLIENT] ([RES_ID_RESTAURANT] ASC)
+/* Index on foreign key column for AVIS_CLIENT.RES_ID */
+create nonclustered index [IDX_AVIS_CLIENT_RES_ID_FK]
+	on [dbo].[AVIS_CLIENT] ([RES_ID] ASC)
 go
 
 /**
@@ -48,7 +48,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si l''avis est approuv
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Nombre de vues de l''avis (calculé)', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_NOMBRE_VUES'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'CLI_ID_CLIENT'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'PER_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'RES_ID_RESTAURANT'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'RES_ID'
 go

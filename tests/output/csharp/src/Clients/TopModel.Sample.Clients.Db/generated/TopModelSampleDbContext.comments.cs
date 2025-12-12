@@ -23,8 +23,8 @@ public partial class TopModelSampleDbContext : DbContext
         avisClient.Property(p => p.DateAvis).HasComment("Date de l'avis");
         avisClient.Property(p => p.Approuve).HasComment("Indique si l'avis est approuvé par le restaurant");
         avisClient.Property(p => p.NombreVues).HasComment("Nombre de vues de l'avis (calculé)");
-        avisClient.Property(p => p.ClientIdClient).HasComment("Client ayant donné l'avis");
-        avisClient.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant concerné par l'avis");
+        avisClient.Property(p => p.ClientId).HasComment("Client ayant donné l'avis");
+        avisClient.Property(p => p.RestaurantId).HasComment("Restaurant concerné par l'avis");
 
         var categoriePlat = modelBuilder.Entity<CategoriePlat>();
         categoriePlat.ToTable(t => t.HasComment("Catégorie de plat"));
@@ -33,10 +33,6 @@ public partial class TopModelSampleDbContext : DbContext
 
         var client = modelBuilder.Entity<Client>();
         client.ToTable(t => t.HasComment("Client du restaurant"));
-        client.Property(p => p.Id).HasComment("Identifiant du client");
-        client.Property(p => p.Nom).HasComment("Nom du client");
-        client.Property(p => p.Prenom).HasComment("Prénom du client");
-        client.Property(p => p.Telephone).HasComment("Numéro de téléphone du client");
         client.Property(p => p.Email).HasComment("Adresse email du client");
 
         var commande = modelBuilder.Entity<Commande>();
@@ -46,7 +42,8 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
         commande.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
         commande.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
-        commande.Property(p => p.TableClientId).HasComment("Table associée à la commande");
+        commande.Property(p => p.TableId).HasComment("Table associée à la commande");
+        commande.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commande.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
 
         var commandeExport = modelBuilder.Entity<CommandeExport>();
@@ -56,15 +53,18 @@ public partial class TopModelSampleDbContext : DbContext
         commandeExport.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
         commandeExport.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
         commandeExport.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
-        commandeExport.Property(p => p.TableClientId).HasComment("Table associée à la commande");
+        commandeExport.Property(p => p.TableId).HasComment("Table associée à la commande");
+        commandeExport.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commandeExport.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
+        employe.Property(p => p.Telephone).HasComment("Numéro de téléphone de l'employé.");
+        employe.Property(p => p.DateNaissance).HasComment("Date de naissance");
         employe.Property(p => p.Matricule).HasComment("Matricule de l'employé");
         employe.Property(p => p.DateEmbauche).HasComment("Date d'embauche");
         employe.Property(p => p.Salaire).HasComment("Salaire de l'employé");
-        employe.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant où travaille l'employé");
+        employe.Property(p => p.RestaurantId).HasComment("Restaurant où travaille l'employé");
 
         var ligneCommande = modelBuilder.Entity<LigneCommande>();
         ligneCommande.ToTable(t => t.HasComment("Ligne d'une commande"));
@@ -84,23 +84,19 @@ public partial class TopModelSampleDbContext : DbContext
         menu.Property(p => p.Disponible).HasComment("Indique si le menu est disponible");
         menu.Property(p => p.DateDebut).HasComment("Date de début de validité du menu");
         menu.Property(p => p.DateFin).HasComment("Date de fin de validité du menu");
-        menu.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant proposant ce menu");
+        menu.Property(p => p.RestaurantId).HasComment("Restaurant proposant ce menu");
 
         var menuPlat = modelBuilder.Entity<MenuPlat>();
         menuPlat.ToTable(t => t.HasComment("Plat dans un menu"));
-        menuPlat.Property(p => p.Id).HasComment("Identifiant de la relation");
+        menuPlat.Property(p => p.MenuId).HasComment("Menu contenant ce plat");
+        menuPlat.Property(p => p.PlatId).HasComment("Plat du menu");
         menuPlat.Property(p => p.Ordre).HasComment("Ordre d'affichage du plat dans le menu");
-        menuPlat.Property(p => p.MenuIdMenu).HasComment("Menu contenant ce plat");
-        menuPlat.Property(p => p.PlatIdPlat).HasComment("Plat du menu");
 
         var personne = modelBuilder.Entity<Personne>();
         personne.ToTable(t => t.HasComment("Classe de base représentant une personne"));
         personne.Property(p => p.Id).HasComment("Identifiant de la personne");
         personne.Property(p => p.Nom).HasComment("Nom de la personne");
         personne.Property(p => p.Prenom).HasComment("Prénom de la personne");
-        personne.Property(p => p.Email).HasComment("Adresse email");
-        personne.Property(p => p.Telephone).HasComment("Numéro de téléphone");
-        personne.Property(p => p.DateNaissance).HasComment("Date de naissance");
 
         var plat = modelBuilder.Entity<Plat>();
         plat.ToTable(t => t.HasComment("Plat du menu"));
@@ -109,8 +105,8 @@ public partial class TopModelSampleDbContext : DbContext
         plat.Property(p => p.Description).HasComment("Description du plat");
         plat.Property(p => p.Prix).HasComment("Prix du plat");
         plat.Property(p => p.Disponible).HasComment("Indique si le plat est disponible");
-        plat.Property(p => p.CategoriePlatCodeCategoriePlat).HasComment("Catégorie du plat");
-        plat.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant proposant ce plat");
+        plat.Property(p => p.CategoriePlatCode).HasComment("Catégorie du plat");
+        plat.Property(p => p.RestaurantId).HasComment("Restaurant proposant ce plat");
 
         var promotion = modelBuilder.Entity<Promotion>();
         promotion.ToTable(t => t.HasComment("Promotion sur les plats"));
@@ -120,13 +116,12 @@ public partial class TopModelSampleDbContext : DbContext
         promotion.Property(p => p.DateDebut).HasComment("Date de début de la promotion");
         promotion.Property(p => p.DateFin).HasComment("Date de fin de la promotion");
         promotion.Property(p => p.Active).HasComment("Indique si la promotion est active");
-        promotion.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant concerné par la promotion (null si globale)");
+        promotion.Property(p => p.RestaurantId).HasComment("Restaurant concerné par la promotion (null si globale)");
 
         var promotionPlat = modelBuilder.Entity<PromotionPlat>();
         promotionPlat.ToTable(t => t.HasComment("Association entre une promotion et un plat"));
-        promotionPlat.Property(p => p.Id).HasComment("Identifiant de l'association");
-        promotionPlat.Property(p => p.PromotionIdPromotion).HasComment("Promotion concernée");
-        promotionPlat.Property(p => p.PlatIdPlat).HasComment("Plat concerné par la promotion");
+        promotionPlat.Property(p => p.PromotionId).HasComment("Promotion concernée");
+        promotionPlat.Property(p => p.PlatId).HasComment("Plat concerné par la promotion");
 
         var reservation = modelBuilder.Entity<Reservation>();
         reservation.ToTable(t => t.HasComment("Réservation d'une table"));
@@ -135,9 +130,9 @@ public partial class TopModelSampleDbContext : DbContext
         reservation.Property(p => p.NombrePersonnes).HasComment("Nombre de personnes");
         reservation.Property(p => p.Commentaire).HasComment("Commentaire sur la réservation");
         reservation.Property(p => p.Confirmee).HasComment("Indique si la réservation est confirmée");
-        reservation.Property(p => p.ClientIdClient).HasComment("Client ayant fait la réservation");
-        reservation.Property(p => p.TableClientIdTable).HasComment("Table réservée");
-        reservation.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant concerné par la réservation");
+        reservation.Property(p => p.ClientId).HasComment("Client ayant fait la réservation");
+        reservation.Property(p => p.TableId).HasComment("Table réservée");
+        reservation.Property(p => p.RestaurantId).HasComment("Restaurant concerné par la réservation");
 
         var restaurant = modelBuilder.Entity<Restaurant>();
         restaurant.ToTable(t => t.HasComment("Restaurant"));
@@ -151,12 +146,12 @@ public partial class TopModelSampleDbContext : DbContext
         statutCommande.Property(p => p.Code).HasComment("Code du statut");
         statutCommande.Property(p => p.Libelle).HasComment("Libellé du statut");
 
-        var tableClient = modelBuilder.Entity<TableClient>();
-        tableClient.ToTable(t => t.HasComment("Table du restaurant"));
-        tableClient.Property(p => p.Id).HasComment("Identifiant de la table");
-        tableClient.Property(p => p.Numero).HasComment("Numéro de la table");
-        tableClient.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
-        tableClient.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
-        tableClient.Property(p => p.RestaurantIdRestaurant).HasComment("Restaurant auquel appartient la table");
+        var table = modelBuilder.Entity<Table>();
+        table.ToTable(t => t.HasComment("Table du restaurant"));
+        table.Property(p => p.Id).HasComment("Identifiant de la table");
+        table.Property(p => p.Numero).HasComment("Numéro de la table");
+        table.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
+        table.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
+        table.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
     }
 }

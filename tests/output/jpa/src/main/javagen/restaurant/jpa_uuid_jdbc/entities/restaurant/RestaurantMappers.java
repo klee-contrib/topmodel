@@ -32,8 +32,8 @@ import restaurant.jpa_uuid_jdbc.dtos.restaurant.RestaurantAvecStatistiques;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.RestaurantRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.RestaurantWrite;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.StatistiquesRestaurant;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.TableClientRead;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.TableClientWrite;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.TableRead;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.TableWrite;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantMappers {
@@ -73,8 +73,8 @@ public class RestaurantMappers {
 		target.setCommentaire(avisClient.getCommentaire());
 		target.setDateAvis(avisClient.getDateAvis());
 		target.setApprouve(avisClient.getApprouve());
-		target.setClientIdClient(avisClient.getClientIdClient());
-		target.setRestaurantIdRestaurant(avisClient.getRestaurantIdRestaurant());
+		target.setClientId(avisClient.getClientId());
+		target.setRestaurantId(avisClient.getRestaurantId());
 		return target;
 	}
 
@@ -139,7 +139,6 @@ public class RestaurantMappers {
 		target.setId(client.getId());
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
-		target.setTelephone(client.getTelephone());
 		target.setEmail(client.getEmail());
 		return target;
 	}
@@ -175,7 +174,8 @@ public class RestaurantMappers {
 		target.setDateLivraison(commande.getDateLivraison());
 		target.setMontantTotal(commande.getMontantTotal());
 		target.setClientId(commande.getClientId());
-		target.setTableClientId(commande.getTableClientId());
+		target.setTableId(commande.getTableId());
+		target.setReservationId(commande.getReservationId());
 		target.setStatutCommandeCode(commande.getStatutCommandeCode());
 		return target;
 	}
@@ -209,7 +209,7 @@ public class RestaurantMappers {
 		target.setMatricule(employe.getMatricule());
 		target.setDateEmbauche(employe.getDateEmbauche());
 		target.setSalaire(employe.getSalaire());
-		target.setRestaurantIdRestaurant(employe.getRestaurantIdRestaurant());
+		target.setRestaurantId(employe.getRestaurantId());
 		return target;
 	}
 
@@ -281,7 +281,7 @@ public class RestaurantMappers {
 		target.setDisponible(menu.getDisponible());
 		target.setDateDebut(menu.getDateDebut());
 		target.setDateFin(menu.getDateFin());
-		target.setRestaurantIdRestaurant(menu.getRestaurantIdRestaurant());
+		target.setRestaurantId(menu.getRestaurantId());
 		return target;
 	}
 
@@ -316,8 +316,8 @@ public class RestaurantMappers {
 		target.setDescription(plat.getDescription());
 		target.setPrix(plat.getPrix());
 		target.setDisponible(plat.getDisponible());
-		target.setCategoriePlatCodeCategoriePlat(plat.getCategoriePlatCodeCategoriePlat());
-		target.setRestaurantIdRestaurant(plat.getRestaurantIdRestaurant());
+		target.setCategoriePlatCode(plat.getCategoriePlatCode());
+		target.setRestaurantId(plat.getRestaurantId());
 		return target;
 	}
 
@@ -352,8 +352,8 @@ public class RestaurantMappers {
 		target.setDescription(plat.getDescription());
 		target.setPrix(plat.getPrix());
 		target.setDisponible(plat.getDisponible());
-		target.setCategoriePlatCodeCategoriePlat(plat.getCategoriePlatCodeCategoriePlat());
-		target.setRestaurantIdRestaurant(plat.getRestaurantIdRestaurant());
+		target.setCategoriePlatCode(plat.getCategoriePlatCode());
+		target.setRestaurantId(plat.getRestaurantId());
 		return target;
 	}
 
@@ -389,7 +389,7 @@ public class RestaurantMappers {
 		target.setDateDebut(promotion.getDateDebut());
 		target.setDateFin(promotion.getDateFin());
 		target.setActive(promotion.getActive());
-		target.setRestaurantIdRestaurant(promotion.getRestaurantIdRestaurant());
+		target.setRestaurantId(promotion.getRestaurantId());
 		return target;
 	}
 
@@ -424,9 +424,9 @@ public class RestaurantMappers {
 		target.setNombrePersonnes(reservation.getNombrePersonnes());
 		target.setCommentaire(reservation.getCommentaire());
 		target.setConfirmee(reservation.getConfirmee());
-		target.setClientIdClient(reservation.getClientIdClient());
-		target.setTableClientIdTable(reservation.getTableClientIdTable());
-		target.setRestaurantIdRestaurant(reservation.getRestaurantIdRestaurant());
+		target.setClientId(reservation.getClientId());
+		target.setTableId(reservation.getTableId());
+		target.setRestaurantId(reservation.getRestaurantId());
 		return target;
 	}
 
@@ -543,36 +543,36 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'TableClientRead' en mappant les champs sources.
-	 * @param tableClient Instance de 'TableClient' source.
+	 * Crée une nouvelle instance de la classe 'TableRead' en mappant les champs sources.
+	 * @param table Instance de 'Table' source.
 	 *
-	 * @return Une nouvelle instance de 'TableClientRead' sur laquelle les champs sources ont été mappés.
+	 * @return Une nouvelle instance de 'TableRead' sur laquelle les champs sources ont été mappés.
 	 */
-	public static TableClientRead createTableClientRead(TableClient tableClient) {
-		return mapTableClientRead(tableClient, new TableClientRead());
+	public static TableRead createTableRead(Table table) {
+		return mapTableRead(table, new TableRead());
 	}
 
 	/**
-	 * Mappe les champs sources sur l'instance de la classe 'TableClientRead' passée en paramètre.
-	 * @param tableClient Instance de 'TableClient' source.
-	 * @param target Instance de 'TableClientRead' cible.
+	 * Mappe les champs sources sur l'instance de la classe 'TableRead' passée en paramètre.
+	 * @param table Instance de 'Table' source.
+	 * @param target Instance de 'TableRead' cible.
 	 *
-	 * @return L'instance de 'TableClientRead' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 * @return L'instance de 'TableRead' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static TableClientRead mapTableClientRead(TableClient tableClient, TableClientRead target) {
+	public static TableRead mapTableRead(Table table, TableRead target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
-		if (tableClient == null) {
-			throw new IllegalArgumentException("tableClient cannot be null");
+		if (table == null) {
+			throw new IllegalArgumentException("table cannot be null");
 		}
 
-		target.setId(tableClient.getId());
-		target.setNumero(tableClient.getNumero());
-		target.setCapacite(tableClient.getCapacite());
-		target.setDisponible(tableClient.getDisponible());
-		target.setRestaurantIdRestaurant(tableClient.getRestaurantIdRestaurant());
+		target.setId(table.getId());
+		target.setNumero(table.getNumero());
+		target.setCapacite(table.getCapacite());
+		target.setDisponible(table.getDisponible());
+		target.setRestaurantId(table.getRestaurantId());
 		return target;
 	}
 
@@ -605,8 +605,8 @@ public class RestaurantMappers {
 		target.setNote(source.getNote());
 		target.setCommentaire(source.getCommentaire());
 		target.setApprouve(source.getApprouve());
-		target.setClientIdClient(source.getClientIdClient());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setClientId(source.getClientId());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -638,7 +638,6 @@ public class RestaurantMappers {
 
 		target.setNom(source.getNom());
 		target.setPrenom(source.getPrenom());
-		target.setTelephone(source.getTelephone());
 		target.setEmail(source.getEmail());
 		return target;
 	}
@@ -671,7 +670,8 @@ public class RestaurantMappers {
 
 		target.setDateLivraison(source.getDateLivraison());
 		target.setClientId(source.getClientId());
-		target.setTableClientId(source.getTableClientId());
+		target.setTableId(source.getTableId());
+		target.setReservationId(source.getReservationId());
 		target.setStatutCommandeCode(source.getStatutCommandeCode());
 		return target;
 	}
@@ -705,7 +705,7 @@ public class RestaurantMappers {
 		target.setMatricule(source.getMatricule());
 		target.setDateEmbauche(source.getDateEmbauche());
 		target.setSalaire(source.getSalaire());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -775,7 +775,7 @@ public class RestaurantMappers {
 		target.setDisponible(source.getDisponible());
 		target.setDateDebut(source.getDateDebut());
 		target.setDateFin(source.getDateFin());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -809,8 +809,8 @@ public class RestaurantMappers {
 		target.setDescription(source.getDescription());
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
-		target.setCategoriePlatCodeCategoriePlat(source.getCategoriePlatCodeCategoriePlat());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setCategoriePlatCode(source.getCategoriePlatCode());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -845,7 +845,7 @@ public class RestaurantMappers {
 		target.setDateDebut(source.getDateDebut());
 		target.setDateFin(source.getDateFin());
 		target.setActive(source.getActive());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -879,9 +879,9 @@ public class RestaurantMappers {
 		target.setNombrePersonnes(source.getNombrePersonnes());
 		target.setCommentaire(source.getCommentaire());
 		target.setConfirmee(source.getConfirmee());
-		target.setClientIdClient(source.getClientIdClient());
-		target.setTableClientIdTable(source.getTableClientIdTable());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setClientId(source.getClientId());
+		target.setTableId(source.getTableId());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 
@@ -918,23 +918,23 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Mappe 'TableClient' vers une nouvelle instance de 'TableClientWrite'.
-	 * @param source Instance de 'TableClientWrite' à mapper.
+	 * Mappe 'Table' vers une nouvelle instance de 'TableWrite'.
+	 * @param source Instance de 'TableWrite' à mapper.
 	 *
-	 * @return Nouvelle instance de 'TableClientWrite' mappée depuis 'tableClient'.
+	 * @return Nouvelle instance de 'TableWrite' mappée depuis 'table'.
 	 */
-	public static TableClient toTableClient(TableClientWrite source) {
-			return toTableClient(source, new TableClient());
+	public static Table toTable(TableWrite source) {
+			return toTable(source, new Table());
 	}
 
 	/**
-	 * Mappe 'TableClient' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
-	 * @param source Instance de 'TableClientWrite' à mapper.
-	 * @param target Instance de 'TableClient' sur laquelle mapper.
+	 * Mappe 'Table' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'TableWrite' à mapper.
+	 * @param target Instance de 'Table' sur laquelle mapper.
 	 *
-	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'tableClient'.
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'table'.
 	 */
-	public static TableClient toTableClient(TableClientWrite source, TableClient target) {
+	public static Table toTable(TableWrite source, Table target) {
 		if (source == null) {
 			throw new IllegalArgumentException("source cannot be null");
 		}
@@ -946,7 +946,7 @@ public class RestaurantMappers {
 		target.setNumero(source.getNumero());
 		target.setCapacite(source.getCapacite());
 		target.setDisponible(source.getDisponible());
-		target.setRestaurantIdRestaurant(source.getRestaurantIdRestaurant());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 }

@@ -1,0 +1,192 @@
+---
+module: Restaurant
+tags:
+  - front
+  - back
+uses:
+  - Restaurant/Endpoints/Commande
+  - Restaurant/Entities/Commande
+  - Restaurant/Entities/Personne
+  - Restaurant/Entities/Restaurant
+---
+class:
+  name: CommandeItem
+  abstract: true
+  comment: Détail d'une commande en liste
+
+  properties:
+    - alias:
+        class: Commande
+        include:
+          - Id
+          - DateCommande
+          - MontantTotal
+          - StatutCommandeCode
+          - ClientId
+---
+class:
+  name: CommandeRead
+  comment: Détail d'une commande en lecture
+
+  properties:
+    - alias:
+        class: Commande
+
+  mappers:
+    from:
+      - params:
+          - class: Commande
+---
+class:
+  name: CommandeWrite
+  comment: Détail d'une commande en écriture
+
+  properties:
+    - alias:
+        class: Commande
+        exclude:
+          - Id
+          - DateCommande
+          - MontantTotal
+
+  mappers:
+    to:
+      - class: Commande
+---
+class:
+  name: CommandeDetailRead
+  comment: Détail complet d'une commande avec ses lignes
+
+  properties:
+    - alias:
+        class: Commande
+    - composition: LigneCommandeItem
+      name: Lignes
+      domain: DO_LISTE
+      required: true
+      comment: Liste des lignes de commande
+---
+class:
+  name: CommandeResume
+  abstract: true
+  comment: Résumé d'une commande pour liste
+
+  properties:
+    - alias:
+        endpoint: GetCommande
+        include:
+          - Id
+---
+class:
+  name: LigneCommandeItem
+  abstract: true
+  comment: Détail d'une ligne de commande en liste
+
+  properties:
+    - alias:
+        class: LigneCommande
+        include:
+          - Id
+          - Quantite
+          - PrixUnitaire
+          - PrixTotal
+          - CommandeId
+          - PlatId
+---
+class:
+  name: LigneCommandeRead
+  comment: Détail d'une ligne de commande en lecture
+
+  properties:
+    - alias:
+        class: LigneCommande
+
+  mappers:
+    from:
+      - params:
+          - class: LigneCommande
+---
+class:
+  name: LigneCommandeWrite
+  comment: Détail d'une ligne de commande en écriture
+
+  properties:
+    - alias:
+        class: LigneCommande
+        exclude:
+          - Id
+
+  mappers:
+    to:
+      - class: LigneCommande
+---
+class:
+  name: ReservationItem
+  abstract: true
+  comment: Détail d'une réservation en liste
+
+  properties:
+    - alias:
+        class: Reservation
+        include:
+          - Id
+          - DateReservation
+          - NombrePersonnes
+          - Confirmee
+          - ClientId
+          - RestaurantId
+---
+class:
+  name: ReservationRead
+  comment: Détail d'une réservation en lecture
+
+  properties:
+    - alias:
+        class: Reservation
+
+  mappers:
+    from:
+      - params:
+          - class: Reservation
+---
+class:
+  name: ReservationWrite
+  comment: Détail d'une réservation en écriture
+
+  properties:
+    - alias:
+        class: Reservation
+        exclude:
+          - Id
+
+  mappers:
+    to:
+      - class: Reservation
+---
+class:
+  name: ReservationAvecDetails
+  comment: Réservation avec détails du client et de la table
+
+  properties:
+    - alias:
+        class: Reservation
+    - alias:
+        class: Personne
+        include:
+          - Nom
+          - Prenom
+      prefix: Client
+      comment: Informations du client ayant fait la réservation
+    - alias:
+        class: Client
+        include: Email
+      prefix: true
+      comment: Informations du client ayant fait la réservation
+
+    - alias:
+        class: Table
+        include:
+          - Numero
+          - Capacite
+      prefix: true
+      comment: Table réservée
