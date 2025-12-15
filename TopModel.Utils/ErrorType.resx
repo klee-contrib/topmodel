@@ -153,7 +153,43 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
+  <data name="TMD9001" xml:space="preserve">
+    <value>Property '{0}' already referenced in alias definition.</value>
+  </data>
+  <data name="TMD9002" xml:space="preserve">
+    <value>Class '{0}' does not have a simple primary key, a target property is required for use in an association.</value>
+  </data>
+  <data name="TMD9003" xml:space="preserve">
+    <value>Association cannot have type '{0}' since domain '{1}' does not define a 'as' domain for '{2}'.</value>
+  </data>
+  <data name="TMD9004" xml:space="preserve">
+    <value>Cannot define reverse association since domain '{0}' does not have a 'as' domain for '{1}'.</value>
+  </data>
+  <data name="TMD9005" xml:space="preserve">
+    <value>Domain '{0}' must define a 'as' domain for '{1}' to defined a '{1}' alias for property '{2}' of class '{3}'.</value>
+  </data>
+  <data name="TMD9006" xml:space="preserve">
+    <value>Cannot define a 'oneToMany' or 'manyToMany' association for a class without a simple primary key.</value>
+  </data>
+  <data name="TMD9007" xml:space="preserve">
+    <value>Cannot define a reverse association in a class without a simple primary key.</value>
+  </data>
+  <data name="TMD9008" xml:space="preserve">
+    <value>Target class file must reference current file to defined a reverse association.</value>
+  </data>
   <data name="TMD9009" xml:space="preserve">
     <value>Cannot override 'composition' on a regular (non association, non composition) alias property.</value>
+  </data>
+  <data name="TMD9010" xml:space="preserve">
+    <value>Property 'type' is deprecated. 'manyToOne' is the default and can be removed.</value>
+  </data>
+  <data name="TMD9011" xml:space="preserve">
+    <value>Property 'type' is deprecated. A 'oneToOne' can be defined by removing 'type' and adding a unique constraint on that property.</value>
+  </data>
+  <data name="TMD9012" xml:space="preserve">
+    <value>Property 'type' is deprecated. Use a reverse association on the target class to define a 'oneToMany'.</value>
+  </data>
+  <data name="TMD9013" xml:space="preserve">
+    <value>Property 'type' is deprecated. Use an explicit association class to defined a 'manyToMany'.</value>
   </data>
 </root>

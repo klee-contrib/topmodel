@@ -217,12 +217,7 @@ internal class PropertyResolver(
                 )
             )
             {
-                yield return new ModelError(
-                    ErrorType.TMD9001,
-                    alp,
-                    $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.",
-                    include
-                );
+                yield return new ModelError(localizer, ErrorType.TMD9001, [include.ReferenceName], alp, include);
                 shouldBreak = true;
             }
 
@@ -235,12 +230,7 @@ internal class PropertyResolver(
                 )
             )
             {
-                yield return new ModelError(
-                    ErrorType.TMD9001,
-                    alp,
-                    $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.",
-                    exclude
-                );
+                yield return new ModelError(localizer, ErrorType.TMD9001, [exclude.ReferenceName], alp, exclude);
                 shouldBreak = true;
             }
 
@@ -269,9 +259,15 @@ internal class PropertyResolver(
                 if (prop.As != null && prop.Domain == null)
                 {
                     yield return new ModelError(
-                        ErrorType.TMD9004,
+                        localizer,
+                        ErrorType.TMD9005,
+                        [
+                            (prop.DomainOverride ?? prop.OriginalProperty?.Domain)?.Name ?? string.Empty,
+                            prop.As,
+                            prop.OriginalProperty?.Name ?? string.Empty,
+                            prop.OriginalProperty?.Class.Name ?? string.Empty,
+                        ],
                         alp,
-                        $"Le domaine '{prop.DomainOverride ?? prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'",
                         prop.PropertyReference ?? prop.Reference?.ContainerReference
                     );
                 }
@@ -367,9 +363,10 @@ internal class PropertyResolver(
             if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD9002,
+                    [ap.Reference.ReferenceName],
                     ap,
-                    "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.",
                     ap.Reference
                 );
                 break;
@@ -382,9 +379,10 @@ internal class PropertyResolver(
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD9002,
+                    [ap.Reference.ReferenceName],
                     ap,
-                    "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.",
                     ap.Reference
                 );
                 break;
@@ -393,9 +391,10 @@ internal class PropertyResolver(
             if (ap.Type.ToMany && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD9003,
+                    [ap.Type.ToString(), ap.Property?.Domain.Name ?? string.Empty, ap.As],
                     ap,
-                    $@"Cette association ne peut pas avoir le type {ap.Type} car le domaine {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
                     ap.Reference
                 );
                 continue;
@@ -408,9 +407,10 @@ internal class PropertyResolver(
             )
             {
                 yield return new ModelError(
-                    ErrorType.TMD9003,
+                    localizer,
+                    ErrorType.TMD9004,
+                    [ap.Class.PrimaryKey.FirstOrDefault()?.Domain.Name ?? string.Empty, ap.As],
                     ap,
-                    $@"Cette association ne peut pas définir d'association réciproque car le domaine {ap.Class.PrimaryKey.FirstOrDefault()?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.",
                     ap.Reference
                 );
                 continue;
@@ -502,28 +502,21 @@ internal class PropertyResolver(
                 case AssociationProperty ap:
                     if (ap.ExplicitType != null)
                     {
-                        var warning = "La propriété `type` est dépréciée et sera retirée en 4.0.";
-
-                        switch (ap.Type)
-                        {
-                            case AssociationType.ManyToOne:
-                                warning += " 'manyToOne' est la valeur par défaut, vous pouvez la retirer.";
-                                break;
-                            case AssociationType.OneToOne:
-                                warning +=
-                                    " Vous pouvez définir une 'oneToOne' en retirant la définition de 'type' et en ajoutant une contrainte d'unicité sur la propriété.";
-                                break;
-                            case AssociationType.OneToMany:
-                                warning +=
-                                    " Vous devez définir l'association réciproque sur la classe cible pour définir une 'oneToMany'.";
-                                break;
-                            case AssociationType.ManyToMany:
-                                warning +=
-                                    " Vous devez définir une classe d'association explicite pour votre `manyToMany`.";
-                                break;
-                        }
-
-                        yield return new ModelError(ErrorType.TMD9008, ap, warning, ap.ExplicitType, isError: false);
+                        yield return new ModelError(
+                            localizer,
+                            ap.Type switch
+                            {
+                                AssociationType.ManyToOne => ErrorType.TMD9010,
+                                AssociationType.OneToOne => ErrorType.TMD9011,
+                                AssociationType.OneToMany => ErrorType.TMD9012,
+                                AssociationType.ManyToMany => ErrorType.TMD9013,
+                                _ => ErrorType.TMD0000,
+                            },
+                            [],
+                            ap,
+                            ap.ExplicitType,
+                            isError: false
+                        );
                     }
 
                     if (
@@ -533,21 +526,11 @@ internal class PropertyResolver(
                         ) && ap.Type.ToMany
                     )
                     {
-                        yield return new ModelError(
-                            ErrorType.TMD9005,
-                            ap,
-                            $"Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.",
-                            ap.Reference
-                        );
+                        yield return new ModelError(localizer, ErrorType.TMD9006, [], ap, ap.Reference);
 
                         if (ap.WithReverse != null)
                         {
-                            yield return new ModelError(
-                                ErrorType.TMD9006,
-                                ap,
-                                $"Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.",
-                                ap.Reference
-                            );
+                            yield return new ModelError(localizer, ErrorType.TMD9007, [], ap, ap.Reference);
                         }
 
                         break;
@@ -571,12 +554,7 @@ internal class PropertyResolver(
                     {
                         if (!classes.Contains(association))
                         {
-                            yield return new ModelError(
-                                ErrorType.TMD9007,
-                                ap,
-                                "Le fichier de la classe cible doit référencer le fichier courant pour définir une association réciproque.",
-                                ap.Reference
-                            );
+                            yield return new ModelError(localizer, ErrorType.TMD9008, [], ap, ap.Reference);
                             break;
                         }
                         ap.ReverseProperty = new ReverseAssociationProperty

@@ -366,42 +366,42 @@ public enum ErrorType
     #region Erreurs de propriétés (9)
 
     /// <summary>
-    /// La propriété '{propertyReference.Name}' est déjà référencée.
+    /// Propriété référencée en double dans un alias.
     /// </summary>
     TMD9001,
 
     /// <summary>
-    /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
+    /// Propriété cible d'association manquante (pas de clé primaire simple).
     /// </summary>
     TMD9002,
 
     /// <summary>
-    /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de AsDomain
+    /// 'as' manquant sur la propriété cible de l'association pour une xxxToMany.
     /// </summary>
     TMD9003,
 
     /// <summary>
-    /// Le domaine '{prop.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'.
+    /// 'as' manquant sur la clé primaire de la classe pour calculer la réciproque.
     /// </summary>
     TMD9004,
 
     /// <summary>
-    /// Il est impossible de définir une association oneToMany ou manyToMany sur classe sans clé primaire simple.
+    /// 'as' manquant pour un alias 'as'.
     /// </summary>
     TMD9005,
 
     /// <summary>
-    /// Une association réciproque sur une oneToMany ou manyToMany ne peut être définie que dans une classe avec une clé primaire simple.
+    /// Associtation xxxToMany sur classe sans PK simple.
     /// </summary>
     TMD9006,
 
     /// <summary>
-    /// Le fichier de la classe cible doit référencer le fichier courant pour définir une association réciproque.
+    /// Association xxxToOne réciproque sur classe sans PK simple.
     /// </summary>
     TMD9007,
 
     /// <summary>
-    /// La propriété `type` est dépréciée.
+    /// Référence circulaire manquante pour association réciproque.
     /// </summary>
     TMD9008,
 
@@ -409,6 +409,26 @@ public enum ErrorType
     /// Composition sur un alias d'autre chose qu'une composition ou association.
     /// </summary>
     TMD9009,
+
+    /// <summary>
+    /// 'type' déprécié 'manyToOne'.
+    /// </summary>
+    TMD9010,
+
+    /// <summary>
+    /// 'type' déprécié 'oneToOne'.
+    /// </summary>
+    TMD9011,
+
+    /// <summary>
+    /// 'type' déprécié 'oneToMany'.
+    /// </summary>
+    TMD9012,
+
+    /// <summary>
+    /// 'type' déprécié 'manyToMany'.
+    /// </summary>
+    TMD9013,
 
     #endregion
 }

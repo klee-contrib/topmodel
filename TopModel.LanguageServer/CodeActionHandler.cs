@@ -75,7 +75,7 @@ public class CodeActionHandler(
                     case ErrorType.TMD4002:
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
                         break;
-                    case ErrorType.TMD9007:
+                    case ErrorType.TMD9008:
                         codeActions.AddRange(GetCodeActionMissingWithReverseImport(request, diagnostic, modelFile));
                         break;
                     default:
@@ -112,7 +112,9 @@ public class CodeActionHandler(
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text[diagnostic.Range.Start.Line];
-        var annotationName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
+        var annotationName = line[
+            diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)
+        ];
         return
         [
             new CodeAction
