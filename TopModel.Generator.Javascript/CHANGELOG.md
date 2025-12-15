@@ -2,6 +2,10 @@
 
 Compatibilité avec Topmodel 3.8
 
+## 3.6.1
+
+- [`4cf51`](https://github.com/klee-contrib/topmodel/commit/4cf5171f36027b3f9cac860799bf4591d4b9753f) - [Angular] Fix requête delete avec body
+
 ## 3.5.1
 
 - [`963d963`](https://github.com/klee-contrib/topmodel/commit/963d96319f4727a67ad40b7dbdabda483837ef62) - [JS / Fetch] Fix type de retour pour arrays
