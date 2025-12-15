@@ -31,7 +31,8 @@ public class ReverseAssociationProperty : AssociationProperty
         ReverseProperty.WithReverse?.Comment
         ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
 
-    public override ReverseAssociationDefinition WithReverse => new() { Property = this };
+    public override ReverseAssociationDefinition WithReverse =>
+        new() { Property = this, Location = ReverseProperty.Location };
 
     public override IList<AnnotationInstance> Annotations => ReverseProperty.WithReverse?.Annotations ?? [];
 

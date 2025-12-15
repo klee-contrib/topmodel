@@ -48,6 +48,9 @@ public class ModelFile
             .Where(p => p != null && p is not ReverseAssociationProperty)
             .ToList();
 
+    public IList<IProperty> ReverseProperties =>
+        Classes.SelectMany(c => c.Properties).Where(p => p is ReverseAssociationProperty).ToList();
+
     public IEnumerable<TemplateParameter> Parameters =>
         [
             .. Annotations.SelectMany(d => d.TemplateParameters),

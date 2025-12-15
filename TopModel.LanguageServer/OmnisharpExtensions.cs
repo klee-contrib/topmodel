@@ -95,7 +95,8 @@ public static class OmnisharpExtensions
                     .Cast<object>()
             )
             .Concat(file.Parameters.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
-            .Concat(file.Properties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line));
+            .Concat(file.Properties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line))
+            .Concat(file.ReverseProperties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line));
 
         var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
 

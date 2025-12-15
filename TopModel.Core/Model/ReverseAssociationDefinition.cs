@@ -20,6 +20,11 @@ public class ReverseAssociationDefinition : IAnnotationContainer
 
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
+#nullable disable
+    internal Reference Location { get; set; }
+
+#nullable enable
+
     public override string ToString()
     {
         return $"Reverse{Property?.Name}";

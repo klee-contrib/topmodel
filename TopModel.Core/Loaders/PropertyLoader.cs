@@ -107,10 +107,10 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
 
                 while (parser.Current is not MappingEnd)
                 {
-                    var prop = parser.Consume<Scalar>().Value;
+                    var prop = parser.Consume<Scalar>();
                     _ = parser.TryConsume<Scalar>(out var value);
 
-                    switch (prop)
+                    switch (prop.Value)
                     {
                         case "association":
                             ap.Reference = new ClassReference(value!);
@@ -149,7 +149,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                         case "withReverse":
                             if (value?.Value != "false")
                             {
-                                ap.WithReverse = new() { Property = ap };
+                                ap.WithReverse = new() { Property = ap, Location = new Reference(prop) };
 
 #pragma warning disable S3247
                                 if (parser.Current is MappingStart)
@@ -269,7 +269,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
 
                 if (ap.Type == AssociationType.OneToMany && ap.WithReverse == null)
                 {
-                    ap.WithReverse = new() { Property = ap };
+                    ap.WithReverse = new() { Property = ap, Location = ap.Location };
                 }
 
                 return ap;

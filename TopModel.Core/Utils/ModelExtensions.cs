@@ -242,6 +242,7 @@ public static class ModelExtensions
             Class c => c.Location,
             Endpoint e => e.Location,
             RegularProperty p => p.Location,
+            ReverseAssociationProperty p => p.ReverseProperty.WithReverse?.Location ?? p.Location,
             AssociationProperty p => p.Location,
             CompositionProperty p => p.Location,
             AliasProperty { PropertyReference: Reference pr } => pr,
