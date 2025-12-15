@@ -94,7 +94,7 @@ class:
 
   properties:
     - alias:
-        class: Table
+        class: TableRestaurant
         include:
           - Id
           - Numero
@@ -108,12 +108,13 @@ class:
 
   properties:
     - alias:
-        class: Table
+        class: TableRestaurant
 
   mappers:
     from:
       - params:
-          - class: Table
+          - class: TableRestaurant
+            name: table
 ---
 class:
   name: TableWrite
@@ -121,13 +122,13 @@ class:
 
   properties:
     - alias:
-        class: Table
+        class: TableRestaurant
         exclude:
           - Id
 
   mappers:
     to:
-      - class: Table
+      - class: TableRestaurant
 ---
 class:
   name: StatistiquesRestaurant

@@ -28,7 +28,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getNumero() Table#getNumero()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -37,7 +37,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getCapacite() Table#getCapacite()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
 	 */
 	@NotNull
 	@Column("tab_capacite")
@@ -45,7 +45,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getDisponible() Table#getDisponible()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getDisponible() TableRestaurant#getDisponible()}
 	 */
 	@NotNull
 	@Column("tab_disponible")
@@ -53,7 +53,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
 	 */
 	@NotNull
 	@Column("res_id")
@@ -61,14 +61,14 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Association réciproque de Commande.TableId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getCommandes() Table#getCommandes()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getCommandes() TableRestaurant#getCommandes()}
 	 */
 	@Column("com_id")
 	private List<Integer> commandes;
 
 	/**
 	 * Association réciproque de Reservation.TableId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getReservations() Table#getReservations()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getReservations() TableRestaurant#getReservations()}
 	 */
 	@Column("rev_id")
 	private List<Integer> reservations;

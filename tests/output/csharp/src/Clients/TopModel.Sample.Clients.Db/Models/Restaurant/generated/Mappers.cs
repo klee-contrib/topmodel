@@ -319,9 +319,9 @@ public static class Mappers
     /// <summary>
     /// Crée une nouvelle instance de 'TableRead'.
     /// </summary>
-    /// <param name="table">Instance de 'Table'.</param>
+    /// <param name="table">Instance de 'TableRestaurant'.</param>
     /// <returns>Une nouvelle instance de 'TableRead'.</returns>
-    public static TableRead CreateTableRead(Table table)
+    public static TableRead CreateTableRead(TableRestaurant table)
     {
         ArgumentNullException.ThrowIfNull(table);
 
@@ -698,13 +698,13 @@ public static class Mappers
     }
 
     /// <summary>
-    /// Mappe 'TableWrite' vers 'Table'.
+    /// Mappe 'TableWrite' vers 'TableRestaurant'.
     /// </summary>
     /// <param name="source">Instance de 'TableWrite'.</param>
-    /// <returns>Une nouvelle instance de 'Table'.</returns>
-    public static Table ToTable(this TableWrite source)
+    /// <returns>Une nouvelle instance de 'TableRestaurant'.</returns>
+    public static TableRestaurant ToTableRestaurant(this TableWrite source)
     {
-        return new Table
+        return new TableRestaurant
         {
             Numero = source.Numero,
             Capacite = source.Capacite,
@@ -716,12 +716,12 @@ public static class Mappers
     }
 
     /// <summary>
-    /// Mappe 'TableWrite' vers 'Table'.
+    /// Mappe 'TableWrite' vers 'TableRestaurant'.
     /// </summary>
     /// <param name="source">Instance de 'TableWrite'.</param>
-    /// <param name="dest">Instance pré-existante de 'Table'.</param>
-    /// <returns>L'instance pré-existante de 'Table'.</returns>
-    public static Table ToTable(this TableWrite source, Table dest)
+    /// <param name="dest">Instance pré-existante de 'TableRestaurant'.</param>
+    /// <returns>L'instance pré-existante de 'TableRestaurant'.</returns>
+    public static TableRestaurant ToTableRestaurant(this TableWrite source, TableRestaurant dest)
     {
         dest.Numero = source.Numero;
         dest.Capacite = source.Capacite;

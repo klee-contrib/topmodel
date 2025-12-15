@@ -26,7 +26,7 @@ public class Reservation_ {
 
 	public static volatile SingularAttribute<Reservation, Client> client;
 
-	public static volatile SingularAttribute<Reservation, Table> table;
+	public static volatile SingularAttribute<Reservation, TableRestaurant> table;
 
 	public static volatile SingularAttribute<Reservation, Restaurant> restaurant;
 

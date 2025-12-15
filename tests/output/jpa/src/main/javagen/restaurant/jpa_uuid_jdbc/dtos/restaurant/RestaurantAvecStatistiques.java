@@ -100,7 +100,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de Table.RestaurantId.
+	 * Association réciproque de TableRestaurant.RestaurantId.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
 	 */
 	@NotNull

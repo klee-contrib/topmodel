@@ -10,21 +10,21 @@ export type TableWriteEntityType = typeof TableWriteEntity;
 
 export const TableWriteEntity = entity({
     numero: e.field(DO_CODE, f => f
-        .label("restaurant.table.numero")
+        .label("restaurant.tableRestaurant.numero")
     ),
     capacite: e.field(DO_QUANTITE, f => f
-        .label("restaurant.table.capacite")
+        .label("restaurant.tableRestaurant.capacite")
     ),
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
-        .label("restaurant.table.disponible")
+        .label("restaurant.tableRestaurant.disponible")
     ),
     restaurantId: e.field(DO_ID, f => f
-        .label("restaurant.table.restaurantId")
+        .label("restaurant.tableRestaurant.restaurantId")
     ),
     commandes: e.field(DO_LISTE, f => f.type<number[]>().optional()
-        .label("restaurant.table.commandes")
+        .label("restaurant.tableRestaurant.commandes")
     ),
     reservations: e.field(DO_LISTE, f => f.type<number[]>().optional()
-        .label("restaurant.table.reservations")
+        .label("restaurant.tableRestaurant.reservations")
     )
 });

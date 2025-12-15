@@ -4,9 +4,9 @@
 
 package restaurant.jpa_identity_enums.daos.restaurant;
 
-import restaurant.jpa_identity_enums.entities.restaurant.Table;
+import restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface TableDAO extends CustomCrudRepository<Table, Integer> {
+public interface TableRestaurantDAO extends CustomCrudRepository<TableRestaurant, Integer> {
 }

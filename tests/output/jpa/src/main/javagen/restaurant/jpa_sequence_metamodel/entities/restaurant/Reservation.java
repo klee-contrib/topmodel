@@ -71,8 +71,8 @@ public class Reservation {
 	 * Table réservée.
 	 */
 	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Table.class)
-	private Table table;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
+	private TableRestaurant table;
 
 	/**
 	 * Restaurant concerné par la réservation.
@@ -140,7 +140,7 @@ public class Reservation {
 	 *
 	 * @return value of {@link #table table}.
 	 */
-	public Table getTable() {
+	public TableRestaurant getTable() {
 		return this.table;
 	}
 
@@ -205,7 +205,7 @@ public class Reservation {
 	 * Set the value of {@link #table table}.
 	 * @param table value to set.
 	 */
-	public void setTable(Table table) {
+	public void setTable(TableRestaurant table) {
 		this.table = table;
 	}
 
@@ -227,7 +227,7 @@ public class Reservation {
 		COMMENTAIRE(String.class),
 		CONFIRMEE(Boolean.class),
 		CLIENT(Client.class),
-		TABLE(Table.class),
+		TABLE(TableRestaurant.class),
 		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;

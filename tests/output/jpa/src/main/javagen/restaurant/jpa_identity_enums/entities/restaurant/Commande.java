@@ -71,8 +71,8 @@ public class Commande {
 	 * Table associée à la commande.
 	 */
 	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Table.class)
-	private Table table;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
+	private TableRestaurant table;
 
 	/**
 	 * Réservation associée à la commande.
@@ -144,7 +144,7 @@ public class Commande {
 	 *
 	 * @return value of {@link #table table}.
 	 */
-	public Table getTable() {
+	public TableRestaurant getTable() {
 		return this.table;
 	}
 
@@ -222,7 +222,7 @@ public class Commande {
 	 * Set the value of {@link #table table}.
 	 * @param table value to set.
 	 */
-	public void setTable(Table table) {
+	public void setTable(TableRestaurant table) {
 		this.table = table;
 	}
 
@@ -277,7 +277,7 @@ public class Commande {
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT(Client.class),
-		TABLE(Table.class),
+		TABLE(TableRestaurant.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		LIGNE_COMMANDES(List.class);

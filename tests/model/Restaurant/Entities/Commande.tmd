@@ -37,7 +37,8 @@ class:
       withReverse: true
       comment: Client ayant passé la commande
 
-    - association: Table
+    - association: TableRestaurant
+      className: Table
       withReverse: true
       comment: Table associée à la commande
 
@@ -124,7 +125,8 @@ class:
       withReverse: true
       comment: Client ayant fait la réservation
 
-    - association: Table
+    - association: TableRestaurant
+      className: Table
       withReverse: true
       comment: Table réservée
 

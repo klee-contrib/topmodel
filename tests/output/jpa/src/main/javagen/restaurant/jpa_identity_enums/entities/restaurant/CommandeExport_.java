@@ -29,7 +29,7 @@ public class CommandeExport_ {
 
 	public static volatile SingularAttribute<CommandeExport, Client> client;
 
-	public static volatile SingularAttribute<CommandeExport, Table> table;
+	public static volatile SingularAttribute<CommandeExport, TableRestaurant> table;
 
 	public static volatile SingularAttribute<CommandeExport, Reservation> reservation;
 

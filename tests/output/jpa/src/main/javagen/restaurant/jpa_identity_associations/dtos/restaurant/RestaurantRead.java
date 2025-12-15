@@ -91,7 +91,7 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de Table.RestaurantId.
+	 * Association réciproque de TableRestaurant.RestaurantId.
 	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
 	 */
 	@NotNull

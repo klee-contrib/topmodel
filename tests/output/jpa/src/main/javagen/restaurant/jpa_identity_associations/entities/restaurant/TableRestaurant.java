@@ -27,7 +27,7 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(name = "TABLE", uniqueConstraints = {@UniqueConstraint(columnNames = {"RES_ID", "TAB_NUMERO"})})
-public class Table {
+public class TableRestaurant {
 
 	/**
 	 * Identifiant de la table.
@@ -200,7 +200,7 @@ public class Table {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Table#commandes commandes}.
+	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.TableRestaurant#commandes commandes}.
 	 * @param commande value to add to table.
 	 */
 	void addCommande(Commande commande) {
@@ -209,7 +209,7 @@ public class Table {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Table#reservations reservations}.
+	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.TableRestaurant#reservations reservations}.
 	 * @param reservation value to add to table.
 	 */
 	void addReservation(Reservation reservation) {
@@ -218,7 +218,7 @@ public class Table {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Table#commandes commandes}.
+	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.TableRestaurant#commandes commandes}.
 	 * @param commande commande value to remove.
 	 */
 	void removeCommande(Commande commande) {
@@ -227,7 +227,7 @@ public class Table {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Table#reservations reservations}.
+	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.TableRestaurant#reservations reservations}.
 	 * @param reservation reservation value to remove.
 	 */
 	void removeReservation(Reservation reservation) {
@@ -236,7 +236,7 @@ public class Table {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_identity_associations.entities.restaurant.Table Table}.
+	 * Enumération des champs de la classe {@link restaurant.jpa_identity_associations.entities.restaurant.TableRestaurant TableRestaurant}.
 	 */
 	public enum Fields {
 		ID(Integer.class),

@@ -83,10 +83,10 @@ public class Restaurant {
 	private List<AvisClient> avisClients;
 
 	/**
-	 * Association réciproque de Table.RestaurantId.
+	 * Association réciproque de TableRestaurant.RestaurantId.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
-	private List<Table> tables;
+	private List<TableRestaurant> tables;
 
 	/**
 	 * Getter for id.
@@ -189,7 +189,7 @@ public class Restaurant {
 	 *
 	 * @return value of {@link #tables tables}.
 	 */
-	public List<Table> getTables() {
+	public List<TableRestaurant> getTables() {
 		if (this.tables == null) {
 			this.tables = new ArrayList<>();
 		}
@@ -272,7 +272,7 @@ public class Restaurant {
 	 * Set the value of {@link #tables tables}.
 	 * @param tables value to set.
 	 */
-	public void setTables(List<Table> tables) {
+	public void setTables(List<TableRestaurant> tables) {
 		this.tables = tables;
 	}
 
@@ -323,11 +323,11 @@ public class Restaurant {
 
 	/**
 	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Restaurant#tables tables}.
-	 * @param table value to add to restaurant.
+	 * @param tableRestaurant value to add to restaurant.
 	 */
-	void addTable(Table table) {
-		this.tables.add(table);
-		table.setRestaurant(this);
+	void addTableRestaurant(TableRestaurant tableRestaurant) {
+		this.tables.add(tableRestaurant);
+		tableRestaurant.setRestaurant(this);
 	}
 
 	/**
@@ -377,11 +377,11 @@ public class Restaurant {
 
 	/**
 	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Restaurant#tables tables}.
-	 * @param table table value to remove.
+	 * @param tableRestaurant tableRestaurant value to remove.
 	 */
-	void removeTable(Table table) {
-		this.tables.remove(table);
-		table.setRestaurant(null);
+	void removeTableRestaurant(TableRestaurant tableRestaurant) {
+		this.tables.remove(tableRestaurant);
+		tableRestaurant.setRestaurant(null);
 	}
 
 	/**

@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_enums.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_identity_enums.entities.restaurant.Table;
+import restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant;
 
 /**
  * Détail d'une table en écriture.
@@ -29,7 +29,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getNumero() Table#getNumero()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -37,34 +37,34 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getCapacite() Table#getCapacite()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
 	 */
 	@NotNull
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getDisponible() Table#getDisponible()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getDisponible() TableRestaurant#getDisponible()}
 	 */
 	@NotNull
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getRestaurant() Table#getRestaurant()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getRestaurant() TableRestaurant#getRestaurant()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
 	 * Association réciproque de Commande.TableId.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getCommandes() Table#getCommandes()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getCommandes() TableRestaurant#getCommandes()}
 	 */
 	private List<Integer> commandes;
 
 	/**
 	 * Association réciproque de Reservation.TableId.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Table#getReservations() Table#getReservations()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getReservations() TableRestaurant#getReservations()}
 	 */
 	private List<Integer> reservations;
 
@@ -171,13 +171,13 @@ public class TableWrite implements Serializable {
 	}
 
 	/**
-	 * Mappe 'TableWrite' vers 'Table'.
-	 * @param target Instance pré-existante de 'Table'. Une nouvelle instance sera créée si non spécifié.
+	 * Mappe 'TableWrite' vers 'TableRestaurant'.
+	 * @param target Instance pré-existante de 'TableRestaurant'. Une nouvelle instance sera créée si non spécifié.
 	 *
-	 * @return Une instance de 'Table'.
+	 * @return Une instance de 'TableRestaurant'.
 	 */
-	public Table toTable(Table target) {
-		return RestaurantMappers.toTable(this, target);
+	public TableRestaurant toTableRestaurant(TableRestaurant target) {
+		return RestaurantMappers.toTableRestaurant(this, target);
 	}
 
 	/**

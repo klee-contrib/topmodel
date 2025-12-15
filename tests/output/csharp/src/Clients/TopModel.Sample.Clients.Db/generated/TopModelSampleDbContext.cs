@@ -94,9 +94,9 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<StatutCommande> StatutCommandes { get; set; }
 
     /// <summary>
-    /// Accès à l'entité Table.
+    /// Accès à l'entité TableRestaurant.
     /// </summary>
-    public DbSet<Table> Tables { get; set; }
+    public DbSet<TableRestaurant> TableRestaurants { get; set; }
 
     /// <summary>
     /// Personalisation du modèle.
@@ -116,11 +116,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<AvisClient>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AvisClient>().HasOne<Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Commande>().HasOne<Table>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Commande>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeExport>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<Table>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeExport>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeExport>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeExport>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Employe>().HasOne<Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
@@ -135,16 +135,16 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<PromotionPlat>().HasOne<Promotion>().WithMany().HasForeignKey(p => p.PromotionId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<PromotionPlat>().HasOne<Plat>().WithMany().HasForeignKey(p => p.PlatId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Reservation>().HasOne<Table>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Reservation>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne<Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Table>().HasOne<Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TableRestaurant>().HasOne<Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<AvisClient>().HasIndex(p => new { p.ClientId, p.RestaurantId, p.DateAvis }).IsUnique();
         modelBuilder.Entity<Employe>().HasIndex(p => p.Matricule).IsUnique();
         modelBuilder.Entity<LigneCommande>().HasIndex(p => new { p.CommandeId, p.PlatId }).IsUnique();
         modelBuilder.Entity<MenuPlat>().HasIndex(p => new { p.MenuId, p.Ordre }).IsUnique();
         modelBuilder.Entity<Reservation>().HasIndex(p => new { p.TableId, p.DateReservation }).IsUnique();
-        modelBuilder.Entity<Table>().HasIndex(p => new { p.RestaurantId, p.Numero }).IsUnique();
+        modelBuilder.Entity<TableRestaurant>().HasIndex(p => new { p.RestaurantId, p.Numero }).IsUnique();
 
         modelBuilder.Entity<CategoriePlat>().HasData(
             new CategoriePlat { Code = CategoriePlat.Codes.ENTREE, Libelle = "restaurant.categoriePlat.values.Entree" },

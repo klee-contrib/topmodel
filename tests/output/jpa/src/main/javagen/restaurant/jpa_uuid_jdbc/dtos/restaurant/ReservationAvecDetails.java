@@ -117,7 +117,7 @@ public class ReservationAvecDetails implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getNumero() Table#getNumero()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -126,7 +126,7 @@ public class ReservationAvecDetails implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Table#getCapacite() Table#getCapacite()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
 	 */
 	@NotNull
 	@Column("tab_capacite")

@@ -146,7 +146,7 @@
             "Annulee": "Annulée"
         }
     },
-    "table": {
+    "tableRestaurant": {
         "capacite": "Capacite",
         "commandes": "Commandes",
         "disponible": "Disponible",

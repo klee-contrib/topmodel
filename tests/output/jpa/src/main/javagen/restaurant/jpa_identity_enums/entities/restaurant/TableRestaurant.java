@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_sequence_metamodel.entities.restaurant;
+package restaurant.jpa_identity_enums.entities.restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -28,15 +27,14 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(name = "TABLE", uniqueConstraints = {@UniqueConstraint(columnNames = {"RES_ID", "TAB_NUMERO"})})
-public class Table {
+public class TableRestaurant {
 
 	/**
 	 * Identifiant de la table.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TABLE")
-	@SequenceGenerator(sequenceName = "SEQ_TABLE", name = "SEQ_TABLE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
@@ -202,7 +200,7 @@ public class Table {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Table#commandes commandes}.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#commandes commandes}.
 	 * @param commande value to add to table.
 	 */
 	void addCommande(Commande commande) {
@@ -211,7 +209,7 @@ public class Table {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Table#reservations reservations}.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#reservations reservations}.
 	 * @param reservation value to add to table.
 	 */
 	void addReservation(Reservation reservation) {
@@ -220,7 +218,7 @@ public class Table {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Table#commandes commandes}.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#commandes commandes}.
 	 * @param commande commande value to remove.
 	 */
 	void removeCommande(Commande commande) {
@@ -229,7 +227,7 @@ public class Table {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Table#reservations reservations}.
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#reservations reservations}.
 	 * @param reservation reservation value to remove.
 	 */
 	void removeReservation(Reservation reservation) {
@@ -238,7 +236,7 @@ public class Table {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Table Table}.
+	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant TableRestaurant}.
 	 */
 	public enum Fields {
 		ID(Integer.class),

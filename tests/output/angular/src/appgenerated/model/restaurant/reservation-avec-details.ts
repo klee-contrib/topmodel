@@ -43,9 +43,9 @@ export const ReservationAvecDetailsEntity = entity({
         .label("restaurant.client.email")
     ),
     tableNumero: e.field(DO_CODE, f => f
-        .label("restaurant.table.numero")
+        .label("restaurant.tableRestaurant.numero")
     ),
     tableCapacite: e.field(DO_QUANTITE, f => f
-        .label("restaurant.table.capacite")
+        .label("restaurant.tableRestaurant.capacite")
     )
 });

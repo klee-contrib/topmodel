@@ -33,7 +33,7 @@ public class Restaurant_ {
 
 	public static volatile ListAttribute<Restaurant, AvisClient> avisClients;
 
-	public static volatile ListAttribute<Restaurant, Table> tables;
+	public static volatile ListAttribute<Restaurant, TableRestaurant> tables;
 
 	public static final String ID = "id";
 

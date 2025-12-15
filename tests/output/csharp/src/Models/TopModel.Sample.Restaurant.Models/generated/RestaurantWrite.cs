@@ -66,7 +66,7 @@ public partial record RestaurantWrite
     public ICollection<int> AvisClients { get; set; }
 
     /// <summary>
-    /// Association réciproque de Table.RestaurantId.
+    /// Association réciproque de TableRestaurant.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int> Tables { get; set; }

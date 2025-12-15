@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
  */
 @Table(name = "table")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Table {
+public class TableRestaurant {
 
 	/**
 	 * Identifiant de la table.

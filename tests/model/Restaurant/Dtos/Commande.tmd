@@ -184,9 +184,9 @@ class:
       comment: Informations du client ayant fait la réservation
 
     - alias:
-        class: Table
+        class: TableRestaurant
         include:
           - Numero
           - Capacite
-      prefix: true
+      prefix: Table
       comment: Table réservée

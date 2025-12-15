@@ -30,7 +30,8 @@ class:
       comment: Numéro de téléphone
 ---
 class:
-  name: Table
+  name: TableRestaurant
+  sqlName: TABLE
   trigram: TAB
   comment: Table du restaurant
 
@@ -58,7 +59,8 @@ class:
 
     - association: Restaurant
       required: true
-      withReverse: true
+      withReverse:
+        className: Tables
       comment: Restaurant auquel appartient la table
 
   unique:

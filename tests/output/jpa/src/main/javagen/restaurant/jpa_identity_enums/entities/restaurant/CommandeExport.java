@@ -74,8 +74,8 @@ public class CommandeExport {
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
 	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Table.class)
-	private Table table;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
+	private TableRestaurant table;
 
 	/**
 	 * Réservation associée à la commande.
@@ -151,7 +151,7 @@ public class CommandeExport {
 	 *
 	 * @return value of {@link #table table}.
 	 */
-	public Table getTable() {
+	public TableRestaurant getTable() {
 		return this.table;
 	}
 
@@ -229,7 +229,7 @@ public class CommandeExport {
 	 * Set the value of {@link #table table}.
 	 * @param table value to set.
 	 */
-	public void setTable(Table table) {
+	public void setTable(TableRestaurant table) {
 		this.table = table;
 	}
 
@@ -266,7 +266,7 @@ public class CommandeExport {
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT(Client.class),
-		TABLE(Table.class),
+		TABLE(TableRestaurant.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		LIGNE_COMMANDES(List.class);

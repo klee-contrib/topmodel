@@ -29,7 +29,7 @@ public class Commande_ {
 
 	public static volatile SingularAttribute<Commande, Client> client;
 
-	public static volatile SingularAttribute<Commande, Table> table;
+	public static volatile SingularAttribute<Commande, TableRestaurant> table;
 
 	public static volatile SingularAttribute<Commande, Reservation> reservation;
 

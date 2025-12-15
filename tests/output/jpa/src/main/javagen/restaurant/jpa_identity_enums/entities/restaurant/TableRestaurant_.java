@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_sequence_metamodel.entities.restaurant;
+package restaurant.jpa_identity_enums.entities.restaurant;
 
 import java.util.List;
 
@@ -11,23 +11,23 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetamodel(Table.class)
+@StaticMetamodel(TableRestaurant.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Table_ {
+public class TableRestaurant_ {
 
-	public static volatile SingularAttribute<Table, Integer> id;
+	public static volatile SingularAttribute<TableRestaurant, Integer> id;
 
-	public static volatile SingularAttribute<Table, String> numero;
+	public static volatile SingularAttribute<TableRestaurant, String> numero;
 
-	public static volatile SingularAttribute<Table, Integer> capacite;
+	public static volatile SingularAttribute<TableRestaurant, Integer> capacite;
 
-	public static volatile SingularAttribute<Table, Boolean> disponible;
+	public static volatile SingularAttribute<TableRestaurant, Boolean> disponible;
 
-	public static volatile SingularAttribute<Table, Restaurant> restaurant;
+	public static volatile SingularAttribute<TableRestaurant, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Table, Commande> commandes;
+	public static volatile ListAttribute<TableRestaurant, Commande> commandes;
 
-	public static volatile ListAttribute<Table, Reservation> reservations;
+	public static volatile ListAttribute<TableRestaurant, Reservation> reservations;
 
 	public static final String ID = "id";
 
