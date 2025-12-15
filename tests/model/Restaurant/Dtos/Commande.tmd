@@ -31,13 +31,12 @@ class:
   properties:
     - alias:
         class: Commande
-        exclude: LigneCommandes
+        exclude: Lignes
 
-    - composition: LigneCommandeRead
-      name: Lignes
-      domain: DO_LISTE
-      required: true
-      comment: Liste des lignes de commande
+    - alias:
+        class: Commande
+        include: Lignes
+      composition: LigneCommandeRead
 
   mappers:
     from:

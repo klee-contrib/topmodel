@@ -61,7 +61,7 @@ public partial record CommandeWrite
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
-    /// Liste des lignes de commande.
+    /// Association réciproque de LigneCommande.CommandeId.
     /// </summary>
     [Required]
     public ICollection<LigneCommandeWrite> Lignes { get; set; } = new List<LigneCommandeWrite>();

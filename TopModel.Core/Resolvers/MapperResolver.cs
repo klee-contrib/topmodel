@@ -331,6 +331,10 @@ internal class MapperResolver(
                                 if (
                                     p.Domain != null
                                     && (
+                                        p.Composition == null && property.Composition == null
+                                        || p.Composition != null && property.Composition != null
+                                    )
+                                    && (
                                         p.Domain == property.Domain
                                         || converters.Any(c =>
                                             c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
@@ -372,6 +376,10 @@ internal class MapperResolver(
                                     !param.Mappings.ContainsKey(property)
                                     && p.Name == property.Name
                                     && p.Domain != null
+                                    && (
+                                        p.Composition == null && property.Composition == null
+                                        || p.Composition != null && property.Composition != null
+                                    )
                                     && (
                                         p.Domain == property.Domain
                                         || converters.Any(c =>
@@ -469,6 +477,10 @@ internal class MapperResolver(
                             !p.Readonly
                             && p.Domain != null
                             && (
+                                p.Composition == null && property.Composition == null
+                                || p.Composition != null && property.Composition != null
+                            )
+                            && (
                                 p.Domain == property.Domain
                                 || converters.Any(c =>
                                     c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
@@ -497,6 +509,10 @@ internal class MapperResolver(
                         if (
                             p.Name == property.Name
                             && p.Domain != null
+                            && (
+                                p.Composition == null && property.Composition == null
+                                || p.Composition != null && property.Composition != null
+                            )
                             && (
                                 p.Domain == property.Domain
                                 || converters.Any(c =>

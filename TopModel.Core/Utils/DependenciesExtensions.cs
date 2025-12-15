@@ -10,12 +10,12 @@ internal static class DependenciesExtensions
     )
     {
         return properties
-            .OfType<AssociationProperty>()
-            .Select(p => new ClassDependency(p.Association, p))
+            .Where(p => p.Association != null && p.Association != currentClass)
+            .Select(p => new ClassDependency(p.Association!, p))
             .Concat(
                 properties
-                    .OfType<AliasProperty>()
-                    .Select(p => p.Property is AssociationProperty ap ? new ClassDependency(ap.Association, p) : null)
+                    .Where(p => p.Composition != null && p.Composition != currentClass)
+                    .Select(p => new ClassDependency(p.Composition!, p))
             )
             .Concat(
                 properties
@@ -31,11 +31,6 @@ internal static class DependenciesExtensions
                             ? new ClassDependency(p.Property.Class, p)
                             : null
                     )
-            )
-            .Concat(
-                properties
-                    .Where(p => p.Composition != null && p.Composition != currentClass)
-                    .Select(p => new ClassDependency(p.Composition!, p))
             )
             .Where(d => d != null)!;
     }

@@ -92,7 +92,8 @@ public class CommandeRead implements Serializable {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
-	 * Liste des lignes de commande.
+	 * Association réciproque de LigneCommande.CommandeId.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@Valid
 	@NotNull

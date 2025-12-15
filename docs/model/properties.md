@@ -200,6 +200,7 @@ De plus, il est possible de surcharger les propriétés suivantes de la proprié
 - `name` (Les préfixes et suffixes s'ajouteront à ce nom-là au lieu du nom initial)
 - `primaryKey` (Voir les règles en dessous)
 - `trigram` (Voir les règles en dessous)
+- `composition` (N'est possible que pour une composition ou une association, qui sera donc transformée en composition)
 - `defaultValue`
 - `required`
 - `readonly`

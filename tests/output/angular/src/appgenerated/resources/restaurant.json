@@ -34,14 +34,11 @@
         "dateCommande": "DateCommande",
         "dateLivraison": "DateLivraison",
         "id": "Id",
-        "ligneCommandes": "LigneCommandes",
+        "lignes": "Lignes",
         "montantTotal": "MontantTotal",
         "reservationId": "ReservationId",
         "statutCommandeCode": "StatutCommandeCode",
         "tableId": "TableId"
-    },
-    "commandeRead": {
-        "lignes": "Lignes"
     },
     "employe": {
         "dateEmbauche": "DateEmbauche",

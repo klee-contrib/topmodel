@@ -442,7 +442,7 @@
             },
             "composition": {
               "type": "string",
-              "description": "Surcharge la classe cible de la propriété de composition aliasée. Ne peut pas être utilisé pour autre chose qu'une composition."
+              "description": "Surcharge la classe cible de la propriété de composition aliasée. Ne peut pas être utilisé pour une propriété standard (ni une association, ni une composition)."
             },
             "label": {
               "type": "string",

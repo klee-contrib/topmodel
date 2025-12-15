@@ -37,6 +37,6 @@ export const CommandeReadEntity = entity({
         .label("restaurant.commande.statutCommandeCode")
     ),
     lignes: e.list(LigneCommandeReadEntity, f => f
-        .label("restaurant.commandeRead.lignes")
+        .label("restaurant.commande.lignes")
     )
 });

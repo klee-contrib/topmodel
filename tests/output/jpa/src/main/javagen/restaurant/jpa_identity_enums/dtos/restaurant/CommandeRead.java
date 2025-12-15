@@ -84,7 +84,8 @@ public class CommandeRead implements Serializable {
 	private StatutCommande statutCommandeCode = StatutCommande.EN_ATT;
 
 	/**
-	 * Liste des lignes de commande.
+	 * Association réciproque de LigneCommande.CommandeId.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@Valid
 	@NotNull

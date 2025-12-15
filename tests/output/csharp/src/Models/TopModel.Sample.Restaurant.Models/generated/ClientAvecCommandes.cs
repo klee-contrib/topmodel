@@ -107,5 +107,5 @@ public partial record ClientAvecCommandes
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<ICollection<int>> CommandeLigneCommandes { get; set; }
+    public ICollection<ICollection<int>> CommandeLignes { get; set; }
 }

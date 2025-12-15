@@ -84,5 +84,5 @@ public partial record CommandeExport
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> LigneCommandes { get; set; }
+    public ICollection<int> Lignes { get; set; }
 }

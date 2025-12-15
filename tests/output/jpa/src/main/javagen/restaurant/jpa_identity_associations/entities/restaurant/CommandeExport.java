@@ -93,11 +93,11 @@ public class CommandeExport {
 
 	/**
 	 * Association réciproque de LigneCommande.CommandeId.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<LigneCommande> ligneCommandes;
+	private List<LigneCommande> lignes;
 
 	/**
 	 * Getter for id.
@@ -172,15 +172,15 @@ public class CommandeExport {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
+	 * Getter for lignes.
 	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
+	 * @return value of {@link #lignes lignes}.
 	 */
-	public List<LigneCommande> getLigneCommandes() {
-		if (this.ligneCommandes == null) {
-			this.ligneCommandes = new ArrayList<>();
+	public List<LigneCommande> getLignes() {
+		if (this.lignes == null) {
+			this.lignes = new ArrayList<>();
 		}
-		return this.ligneCommandes;
+		return this.lignes;
 	}
 
 	/**
@@ -248,11 +248,11 @@ public class CommandeExport {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
+	 * Set the value of {@link #lignes lignes}.
+	 * @param lignes value to set.
 	 */
-	public void setLigneCommandes(List<LigneCommande> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
+	public void setLignes(List<LigneCommande> lignes) {
+		this.lignes = lignes;
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class CommandeExport {
 		TABLE(TableRestaurant.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
-		LIGNE_COMMANDES(List.class);
+		LIGNES(List.class);
 
 		private final Class<?> type;
 

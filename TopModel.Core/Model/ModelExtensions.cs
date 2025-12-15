@@ -16,6 +16,7 @@ public static class ModelExtensions
         public Class? Association =>
             prop switch
             {
+                { Composition: not null } => null,
                 AssociationProperty { Association: Class a } => a,
                 AliasProperty { Property: AssociationProperty { Association: Class a } } => a,
                 _ => null,
@@ -27,6 +28,7 @@ public static class ModelExtensions
         public IProperty? AssociationProperty =>
             prop switch
             {
+                { Composition: not null } => null,
                 AssociationProperty ap => ap.Property,
                 AliasProperty { Property: AssociationProperty ap } => ap.Property,
                 _ => null,
@@ -38,6 +40,7 @@ public static class ModelExtensions
         public string? AssociationRole =>
             prop switch
             {
+                { Composition: not null } => null,
                 AssociationProperty ap => ap.Role,
                 AliasProperty { Property: AssociationProperty ap } => ap.Role,
                 _ => null,
@@ -56,6 +59,7 @@ public static class ModelExtensions
         public AssociationType? AssociationType =>
             prop switch
             {
+                { Composition: not null } => null,
                 AssociationProperty ap => ap.Type,
                 AliasProperty { Property: AssociationProperty ap } => ap.Type,
                 _ => null,

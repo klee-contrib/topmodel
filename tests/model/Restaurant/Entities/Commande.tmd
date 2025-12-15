@@ -77,7 +77,8 @@ class:
 
     - association: Commande
       required: true
-      withReverse: true
+      withReverse: 
+        className: Lignes
       comment: Commande à laquelle appartient la ligne
 
     - association: Plat

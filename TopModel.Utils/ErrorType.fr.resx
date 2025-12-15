@@ -154,6 +154,6 @@
     <value>La variable '{0}' est introuvable.</value>
   </data>
   <data name="TMD9009" xml:space="preserve">
-    <value>Il est impossible de surcharger la composition sur un alias d'une propriété qui n'est pas une composition.</value>
+    <value>Il est impossible de surcharger la composition sur un alias d'une propriété standard (ni association, ni composition).</value>
   </data>
 </root>

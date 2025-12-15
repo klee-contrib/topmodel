@@ -77,7 +77,7 @@ public class CommandeWrite implements Serializable {
 	private StatutCommandeCode statutCommandeCode = StatutCommandeCode.EN_ATT;
 
 	/**
-	 * Liste des lignes de commande.
+	 * Association réciproque de LigneCommande.CommandeId.
 	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
 	@Valid

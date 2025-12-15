@@ -442,7 +442,7 @@ internal class PropertyResolver(
                 .Where(ap => ap.Composition != null)
         )
         {
-            if (alp.Property is not CompositionProperty)
+            if (alp.Property is not CompositionProperty and not AssociationProperty)
             {
                 yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
             }

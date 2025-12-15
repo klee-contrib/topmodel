@@ -34,6 +34,6 @@ export const CommandeWriteEntity = entity({
         .label("restaurant.commande.statutCommandeCode")
     ),
     lignes: e.list(LigneCommandeWriteEntity, f => f
-        .label("restaurant.commandeRead.lignes")
+        .label("restaurant.commande.lignes")
     )
 });

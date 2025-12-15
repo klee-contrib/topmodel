@@ -92,7 +92,7 @@ public class Commande {
 	 * Association réciproque de LigneCommande.CommandeId.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
-	private List<LigneCommande> ligneCommandes;
+	private List<LigneCommande> lignes;
 
 	/**
 	 * Getter for id.
@@ -167,15 +167,15 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
+	 * Getter for lignes.
 	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
+	 * @return value of {@link #lignes lignes}.
 	 */
-	public List<LigneCommande> getLigneCommandes() {
-		if (this.ligneCommandes == null) {
-			this.ligneCommandes = new ArrayList<>();
+	public List<LigneCommande> getLignes() {
+		if (this.lignes == null) {
+			this.lignes = new ArrayList<>();
 		}
-		return this.ligneCommandes;
+		return this.lignes;
 	}
 
 	/**
@@ -243,28 +243,28 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
+	 * Set the value of {@link #lignes lignes}.
+	 * @param lignes value to set.
 	 */
-	public void setLigneCommandes(List<LigneCommande> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
+	public void setLignes(List<LigneCommande> lignes) {
+		this.lignes = lignes;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#ligneCommandes ligneCommandes}.
+	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#lignes lignes}.
 	 * @param ligneCommande value to add to commande.
 	 */
 	void addLigneCommande(LigneCommande ligneCommande) {
-		this.ligneCommandes.add(ligneCommande);
+		this.lignes.add(ligneCommande);
 		ligneCommande.setCommande(this);
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#ligneCommandes ligneCommandes}.
+	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#lignes lignes}.
 	 * @param ligneCommande ligneCommande value to remove.
 	 */
 	void removeLigneCommande(LigneCommande ligneCommande) {
-		this.ligneCommandes.remove(ligneCommande);
+		this.lignes.remove(ligneCommande);
 		ligneCommande.setCommande(null);
 	}
 
@@ -280,7 +280,7 @@ public class Commande {
 		TABLE(TableRestaurant.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
-		LIGNE_COMMANDES(List.class);
+		LIGNES(List.class);
 
 		private final Class<?> type;
 

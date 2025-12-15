@@ -33,7 +33,7 @@ public class Commande_ {
 
 	public static volatile SingularAttribute<Commande, StatutCommande> statutCommande;
 
-	public static volatile ListAttribute<Commande, LigneCommande> ligneCommandes;
+	public static volatile ListAttribute<Commande, LigneCommande> lignes;
 
 	public static final String ID = "id";
 
@@ -51,5 +51,5 @@ public class Commande_ {
 
 	public static final String STATUT_COMMANDE = "statutCommande";
 
-	public static final String LIGNE_COMMANDES = "ligneCommandes";
+	public static final String LIGNES = "lignes";
 }

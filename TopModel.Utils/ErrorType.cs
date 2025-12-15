@@ -406,7 +406,7 @@ public enum ErrorType
     TMD9008,
 
     /// <summary>
-    /// Composition sur un alias d'autre chose qu'une composition.
+    /// Composition sur un alias d'autre chose qu'une composition ou association.
     /// </summary>
     TMD9009,
 
