@@ -8,6 +8,16 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.2
+
+- [`7bd2841`](https://github.com/klee-contrib/topmodel/commit/7bd2841ae667f2d72b11362108583ac07b30a31f) - Alias d'association en composition
+
+  Vous pouvez désormais renseigner `composition:` sur un alias d'association pour le transformer en composition.
+
+- [`4550db7`](https://github.com/klee-contrib/topmodel/commit/4550db7689d3bb4f7fbb16642322e8aad38ff9a9) - Traductions des codes d'erreur des propriétés
+
+  _Remarque : Le warning sur `type`, anciennement `TMD9008`, a été divisé en 4 en `TMD9010-TMD9013`, un pour chaque type, ce qui peut impacter vos `noWarn` ou `# ignore` locaux._
+
 ## 3.8.1
 
 - [`d7f286`](https://github.com/klee-contrib/topmodel/commit/d7f286e834e7e811cea07d13f702dcc4d88526a6) - [Core] Fix perfs validation schémas, propriétés spéciales et imports non utilisés

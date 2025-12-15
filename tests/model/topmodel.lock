@@ -2,20 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.8.1
-modules:
-  javascript:
-    version: 3.5.1
-    hash: e10af720d2b203b0b5529763d2f35f5b
-  sql:
-    version: 3.5.1
-    hash: bd046e8048462878c7ef117d952fb31a
-  csharp:
-    version: 3.5.1
-    hash: b7bca7a5fc0f767117f912a338006e37
-  translation:
-    version: 3.2.2
-    hash: b6fb8a53fe077a206c1b321096e0675c
+version: 3.8.2
 custom:
   ../../TopModel.Generator.Jpa: 91c76c6637ed2aa9881bfe2122955ccd
   ../../TopModel.Generator.Csharp: dd42b765aef43d008c3d2ae05367bfb1
