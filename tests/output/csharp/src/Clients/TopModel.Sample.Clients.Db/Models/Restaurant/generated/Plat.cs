@@ -75,13 +75,6 @@ public partial record Plat
     public int? RestaurantId { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.PlatId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int> LigneCommandes { get; set; }
-
-    /// <summary>
     /// Association réciproque de PromotionPlat.PlatId.
     /// </summary>
     [Domain(Domains.Liste)]

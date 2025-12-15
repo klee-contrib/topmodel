@@ -56,10 +56,4 @@ public partial record PlatWrite
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
-
-    /// <summary>
-    /// Association réciproque de LigneCommande.PlatId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> LigneCommandes { get; set; }
 }

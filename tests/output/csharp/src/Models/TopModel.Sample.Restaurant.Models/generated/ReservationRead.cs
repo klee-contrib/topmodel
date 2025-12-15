@@ -67,4 +67,42 @@ public partial record ReservationRead
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Informations du client ayant fait la réservation.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string ClientNom { get; set; }
+
+    /// <summary>
+    /// Informations du client ayant fait la réservation.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string ClientPrenom { get; set; }
+
+    /// <summary>
+    /// Informations du client ayant fait la réservation.
+    /// </summary>
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string ClientEmail { get; set; }
+
+    /// <summary>
+    /// Table réservée.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Code)]
+    [StringLength(10)]
+    public string TableNumero { get; set; }
+
+    /// <summary>
+    /// Table réservée.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Quantite)]
+    public int? TableCapacite { get; set; }
 }

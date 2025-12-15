@@ -18,14 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
-import restaurant.jpa_identity_associations.dtos.restaurant.CommandeDetailRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.CommandeItem;
 import restaurant.jpa_identity_associations.dtos.restaurant.CommandeRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.CommandeWrite;
-import restaurant.jpa_identity_associations.dtos.restaurant.LigneCommandeItem;
-import restaurant.jpa_identity_associations.dtos.restaurant.LigneCommandeRead;
-import restaurant.jpa_identity_associations.dtos.restaurant.LigneCommandeWrite;
-import restaurant.jpa_identity_associations.dtos.restaurant.ReservationAvecDetails;
+import restaurant.jpa_identity_associations.dtos.restaurant.ReservationRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_identity_associations.entities.restaurant.StatutCommande;
 import restaurant.jpa_identity_associations.enums.restaurant.StatutCommandeCode;
@@ -73,26 +69,6 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode addLigneCommande.
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder addLigneCommandeUriComponentsBuilder() {
-		String uri = host + "/api/restaurants/ligne-commandes";
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Ajoute une ligne de commande.
-	 * @param ligneCommande Ligne de commande à créer
-	 * @return Ligne de commande créée
-	 */
-	public ResponseEntity<LigneCommandeRead> addLigneCommande(LigneCommandeWrite ligneCommande){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.addLigneCommandeUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(ligneCommande, headers), LigneCommandeRead.class);
-	}
-
-	/**
 	 * UriComponentsBuilder pour la méthode createReservation.
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -106,10 +82,10 @@ public abstract class AbstractCommandeClient {
 	 * @param reservation Réservation à créer
 	 * @return Réservation créée
 	 */
-	public ResponseEntity<ReservationAvecDetails> createReservation(ReservationWrite reservation){
+	public ResponseEntity<ReservationRead> createReservation(ReservationWrite reservation){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.createReservationUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(reservation, headers), ReservationAvecDetails.class);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(reservation, headers), ReservationRead.class);
 	}
 
 	/**
@@ -128,25 +104,6 @@ public abstract class AbstractCommandeClient {
 	public ResponseEntity deleteCommande(Integer comId){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.deleteCommandeUriComponentsBuilder(comId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(headers), (Class<?>) null);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode deleteLigneCommande.
-	 * @param ligId Identifiant de la ligne
-	 */
-	protected UriComponentsBuilder deleteLigneCommandeUriComponentsBuilder(Integer ligId) {
-		String uri = host + "/api/restaurants/ligne-commandes/%s".formatted(ligId);
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Supprime une ligne de commande.
-	 * @param ligId Identifiant de la ligne
-	 */
-	public ResponseEntity deleteLigneCommande(Integer ligId){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.deleteLigneCommandeUriComponentsBuilder(ligId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(headers), (Class<?>) null);
 	}
 
@@ -195,48 +152,6 @@ public abstract class AbstractCommandeClient {
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.getCommandeUriComponentsBuilder(comId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), CommandeRead.class);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode getCommandeDetail.
-	 * @param comId Identifiant de la commande
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder getCommandeDetailUriComponentsBuilder(Integer comId) {
-		String uri = host + "/api/restaurants/commandes/%s/detail".formatted(comId);
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Récupère le détail complet d'une commande avec ses lignes.
-	 * @param comId Identifiant de la commande
-	 * @return Détail complet de la commande
-	 */
-	public ResponseEntity<CommandeDetailRead> getCommandeDetail(Integer comId){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getCommandeDetailUriComponentsBuilder(comId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), CommandeDetailRead.class);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode getCommandeLignes.
-	 * @param comId Identifiant de la commande
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder getCommandeLignesUriComponentsBuilder(Integer comId) {
-		String uri = host + "/api/restaurants/commandes/%s/lignes".formatted(comId);
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Liste les lignes d'une commande.
-	 * @param comId Identifiant de la commande
-	 * @return Liste des lignes de la commande
-	 */
-	public ResponseEntity<List<LigneCommandeItem>> getCommandeLignes(Integer comId){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getCommandeLignesUriComponentsBuilder(comId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<LigneCommandeItem>>() {});
 	}
 
 	/**
@@ -292,53 +207,6 @@ public abstract class AbstractCommandeClient {
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.getCommandesByDateUriComponentsBuilder(dateCommande);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<CommandeItem>>() {});
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode getLigneCommande.
-	 * @param ligId Identifiant de la ligne
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder getLigneCommandeUriComponentsBuilder(Integer ligId) {
-		String uri = host + "/api/restaurants/ligne-commandes/%s".formatted(ligId);
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Charge le détail d'une ligne de commande.
-	 * @param ligId Identifiant de la ligne
-	 * @return Détail de la ligne de commande
-	 */
-	public ResponseEntity<LigneCommandeRead> getLigneCommande(Integer ligId){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getLigneCommandeUriComponentsBuilder(ligId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), LigneCommandeRead.class);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode getLigneCommandes.
-	 * @param commandeId Commande à laquelle appartient la ligne
-	 * @param platId Plat commandé
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder getLigneCommandesUriComponentsBuilder(Integer commandeId, Integer platId) {
-		String uri = host + "/api/restaurants/ligne-commandes";
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("commandeId", commandeId);
-		uriBuilder.queryParam("platId", platId);
-		return uriBuilder;
-	}
-
-	/**
-	 * Liste toutes les lignes de commande.
-	 * @param commandeId Commande à laquelle appartient la ligne
-	 * @param platId Plat commandé
-	 * @return Liste des lignes de commande
-	 */
-	public ResponseEntity<List<LigneCommandeItem>> getLigneCommandes(Integer commandeId, Integer platId){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getLigneCommandesUriComponentsBuilder(commandeId, platId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<LigneCommandeItem>>() {});
 	}
 
 	/**
@@ -427,27 +295,5 @@ public abstract class AbstractCommandeClient {
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.updateCommandeStatutUriComponentsBuilder(comId, statutCommandeCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.PATCH, new HttpEntity<>(headers), CommandeRead.class);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode updateLigneCommande.
-	 * @param ligId Identifiant de la ligne
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder updateLigneCommandeUriComponentsBuilder(Integer ligId) {
-		String uri = host + "/api/restaurants/ligne-commandes/%s".formatted(ligId);
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Met à jour une ligne de commande.
-	 * @param ligId Identifiant de la ligne
-	 * @param ligneCommande Ligne de commande à mettre à jour
-	 * @return Ligne de commande mise à jour
-	 */
-	public ResponseEntity<LigneCommandeRead> updateLigneCommande(Integer ligId, LigneCommandeWrite ligneCommande){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.updateLigneCommandeUriComponentsBuilder(ligId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.PUT, new HttpEntity<>(ligneCommande, headers), LigneCommandeRead.class);
 	}
 }

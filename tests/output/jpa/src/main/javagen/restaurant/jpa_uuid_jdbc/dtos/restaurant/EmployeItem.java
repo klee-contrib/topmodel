@@ -13,16 +13,6 @@ import jakarta.annotation.Generated;
 public interface EmployeItem {
 
 	/**
-	 * Matricule de l'employé.
-	 */
-	String getMatricule();
-
-	/**
-	 * Restaurant où travaille l'employé.
-	 */
-	Integer getRestaurantId();
-
-	/**
 	 * Identifiant de l'employé.
 	 */
 	Integer getId();
@@ -38,12 +28,22 @@ public interface EmployeItem {
 	String getPrenom();
 
 	/**
+	 * Matricule de l'employé.
+	 */
+	String getMatricule();
+
+	/**
+	 * Restaurant où travaille l'employé.
+	 */
+	Integer getRestaurantId();
+
+	/**
 	 * Hydrate values of instance.
-	 * @param matricule value to set.
-	 * @param restaurantId value to set.
 	 * @param id value to set.
 	 * @param nom value to set.
 	 * @param prenom value to set.
+	 * @param matricule value to set.
+	 * @param restaurantId value to set.
 	 */
-	void hydrate(String matricule, Integer restaurantId, Integer id, String nom, String prenom);
+	void hydrate(Integer id, String nom, String prenom, String matricule, Integer restaurantId);
 }

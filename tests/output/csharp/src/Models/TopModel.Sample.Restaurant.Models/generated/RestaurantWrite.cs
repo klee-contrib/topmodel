@@ -36,12 +36,6 @@ public partial record RestaurantWrite
     public string Telephone { get; set; }
 
     /// <summary>
-    /// Association réciproque de Reservation.RestaurantId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> Reservations { get; set; }
-
-    /// <summary>
     /// Association réciproque de Menu.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]

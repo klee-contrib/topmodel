@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "@/domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type ReservationRead = EntityToType<ReservationReadEntityType>;
@@ -32,5 +32,20 @@ export const ReservationReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.reservation.restaurantId")
+    ),
+    clientNom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.nom")
+    ),
+    clientPrenom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.prenom")
+    ),
+    clientEmail: e.field(DO_LIBELLE, f => f.optional()
+        .label("restaurant.client.email")
+    ),
+    tableNumero: e.field(DO_CODE, f => f
+        .label("restaurant.tableRestaurant.numero")
+    ),
+    tableCapacite: e.field(DO_QUANTITE, f => f
+        .label("restaurant.tableRestaurant.capacite")
     )
 });

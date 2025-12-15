@@ -67,4 +67,10 @@ public partial record MenuRead
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Liste des plats du menu.
+    /// </summary>
+    [Required]
+    public ICollection<PlatItem> Plats { get; set; } = new List<PlatItem>();
 }

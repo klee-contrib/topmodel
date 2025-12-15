@@ -53,12 +53,6 @@ public class Restaurant {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Reservation.RestaurantId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
-	private List<Reservation> reservations;
-
-	/**
 	 * Association réciproque de Menu.RestaurantId.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
@@ -122,18 +116,6 @@ public class Restaurant {
 	 */
 	public String getTelephone() {
 		return this.telephone;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Reservation> getReservations() {
-		if (this.reservations == null) {
-			this.reservations = new ArrayList<>();
-		}
-		return this.reservations;
 	}
 
 	/**
@@ -229,14 +211,6 @@ public class Restaurant {
 	}
 
 	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Set the value of {@link #menus menus}.
 	 * @param menus value to set.
 	 */
@@ -274,15 +248,6 @@ public class Restaurant {
 	 */
 	public void setTables(List<TableRestaurant> tables) {
 		this.tables = tables;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservations reservations}.
-	 * @param reservation value to add to restaurant.
-	 */
-	void addReservation(Reservation reservation) {
-		this.reservations.add(reservation);
-		reservation.setRestaurant(this);
 	}
 
 	/**
@@ -328,15 +293,6 @@ public class Restaurant {
 	void addTableRestaurant(TableRestaurant tableRestaurant) {
 		this.tables.add(tableRestaurant);
 		tableRestaurant.setRestaurant(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.Restaurant#reservations reservations}.
-	 * @param reservation reservation value to remove.
-	 */
-	void removeReservation(Reservation reservation) {
-		this.reservations.remove(reservation);
-		reservation.setRestaurant(null);
 	}
 
 	/**
@@ -392,7 +348,6 @@ public class Restaurant {
 		NOM(String.class),
 		ADRESSE(String.class),
 		TELEPHONE(String.class),
-		RESERVATIONS(List.class),
 		MENUS(List.class),
 		PLATS(List.class),
 		PROMOTIONS(List.class),

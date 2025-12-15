@@ -59,20 +59,6 @@ public class ClientAvecCommandes implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de Commande.ClientId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#getCommandes() Client#getCommandes()}
-	 */
-	@NotNull
-	private List<Integer> commandes;
-
-	/**
-	 * Association réciproque de Reservation.ClientId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#getReservations() Client#getReservations()}
-	 */
-	@NotNull
-	private List<Integer> reservations;
-
-	/**
 	 * Association réciproque de AvisClient.ClientId.
 	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
@@ -173,24 +159,6 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getEmail() {
 		return this.email;
-	}
-
-	/**
-	 * Getter for commandes.
-	 *
-	 * @return value of {@link #commandes commandes}.
-	 */
-	public List<Integer> getCommandes() {
-		return this.commandes;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Integer> getReservations() {
-		return this.reservations;
 	}
 
 	/**
@@ -316,22 +284,6 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandes commandes}.
-	 * @param commandes value to set.
-	 */
-	public void setCommandes(List<Integer> commandes) {
-		this.commandes = commandes;
-	}
-
-	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Integer> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Set the value of {@link #avisClients avisClients}.
 	 * @param avisClients value to set.
 	 */
@@ -419,8 +371,6 @@ public class ClientAvecCommandes implements Serializable {
 		NOM(String.class),
 		PRENOM(String.class),
 		EMAIL(String.class),
-		COMMANDES(List.class),
-		RESERVATIONS(List.class),
 		AVIS_CLIENTS(List.class),
 		COMMANDE_ID(List.class),
 		COMMANDE_DATE_COMMANDE(List.class),

@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_sequence_metamodel.dtos.restaurant.MenuComplet;
+import restaurant.jpa_sequence_metamodel.dtos.restaurant.MenuRead;
 import restaurant.jpa_sequence_metamodel.dtos.restaurant.PlatItem;
 import restaurant.jpa_sequence_metamodel.dtos.restaurant.RestaurantAvecStatistiques;
 import restaurant.jpa_sequence_metamodel.dtos.restaurant.RestaurantItem;
@@ -98,7 +98,7 @@ public interface RestaurantController {
 	 */
 	@GetMapping(path = "{resId}/menus/{menId}")
 	@Operation(description = "Récupère un menu spécifique d'un restaurant")
-	MenuComplet getRestaurantMenu(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Identifiant du menu") @PathVariable("menId") Integer menId);
+	MenuRead getRestaurantMenu(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Identifiant du menu") @PathVariable("menId") Integer menId);
 
 	/**
 	 * Liste les plats d'un restaurant.

@@ -6,7 +6,6 @@ package restaurant.jpa_uuid_jdbc.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -60,20 +59,6 @@ public class TableWrite implements Serializable {
 	private Integer restaurantId;
 
 	/**
-	 * Association réciproque de Commande.TableId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getCommandes() TableRestaurant#getCommandes()}
-	 */
-	@Column("com_id")
-	private List<Integer> commandes;
-
-	/**
-	 * Association réciproque de Reservation.TableId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.TableRestaurant#getReservations() TableRestaurant#getReservations()}
-	 */
-	@Column("rev_id")
-	private List<Integer> reservations;
-
-	/**
 	 * Getter for numero.
 	 *
 	 * @return value of {@link #numero numero}.
@@ -110,24 +95,6 @@ public class TableWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for commandes.
-	 *
-	 * @return value of {@link #commandes commandes}.
-	 */
-	public List<Integer> getCommandes() {
-		return this.commandes;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Integer> getReservations() {
-		return this.reservations;
-	}
-
-	/**
 	 * Set the value of {@link #numero numero}.
 	 * @param numero value to set.
 	 */
@@ -160,31 +127,13 @@ public class TableWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandes commandes}.
-	 * @param commandes value to set.
-	 */
-	public void setCommandes(List<Integer> commandes) {
-		this.commandes = commandes;
-	}
-
-	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Integer> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.TableWrite TableWrite}.
 	 */
 	public enum Fields {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),
 		DISPONIBLE(Boolean.class),
-		RESTAURANT_ID(Integer.class),
-		COMMANDES(List.class),
-		RESERVATIONS(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

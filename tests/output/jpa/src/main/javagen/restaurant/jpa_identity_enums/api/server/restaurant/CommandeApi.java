@@ -26,14 +26,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_identity_enums.dtos.restaurant.CommandeDetailRead;
 import restaurant.jpa_identity_enums.dtos.restaurant.CommandeItem;
 import restaurant.jpa_identity_enums.dtos.restaurant.CommandeRead;
 import restaurant.jpa_identity_enums.dtos.restaurant.CommandeWrite;
-import restaurant.jpa_identity_enums.dtos.restaurant.LigneCommandeItem;
-import restaurant.jpa_identity_enums.dtos.restaurant.LigneCommandeRead;
-import restaurant.jpa_identity_enums.dtos.restaurant.LigneCommandeWrite;
-import restaurant.jpa_identity_enums.dtos.restaurant.ReservationAvecDetails;
+import restaurant.jpa_identity_enums.dtos.restaurant.ReservationRead;
 import restaurant.jpa_identity_enums.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_identity_enums.enums.restaurant.StatutCommande;
 
@@ -52,16 +48,6 @@ public interface CommandeApi {
 	CommandeRead addCommande(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Commande à créer") @RequestBody @Valid CommandeWrite commande);
 
 	/**
-	 * Ajoute une ligne de commande.
-	 * @param ligneCommande Ligne de commande à créer.
-	 *
-	 * @return Ligne de commande créée.
-	 */
-	@PostMapping(path = "api/restaurants/ligne-commandes")
-	@Operation(description = "Ajoute une ligne de commande")
-	LigneCommandeRead addLigneCommande(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Ligne de commande à créer") @RequestBody @Valid LigneCommandeWrite ligneCommande);
-
-	/**
 	 * Crée une réservation.
 	 * @param reservation Réservation à créer.
 	 *
@@ -69,7 +55,7 @@ public interface CommandeApi {
 	 */
 	@Operation(description = "Crée une réservation")
 	@PostMapping(path = "api/restaurants/reservations")
-	ReservationAvecDetails createReservation(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Réservation à créer") @RequestBody @Valid ReservationWrite reservation);
+	ReservationRead createReservation(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Réservation à créer") @RequestBody @Valid ReservationWrite reservation);
 
 	/**
 	 * Supprime une commande.
@@ -79,15 +65,6 @@ public interface CommandeApi {
 	@Operation(description = "Supprime une commande")
 	@DeleteMapping(path = "api/restaurants/commandes/{comId}")
 	void deleteCommande(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId);
-
-	/**
-	 * Supprime une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 */
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(description = "Supprime une ligne de commande")
-	@DeleteMapping(path = "api/restaurants/ligne-commandes/{ligId}")
-	void deleteLigneCommande(@Parameter(description = "Identifiant de la ligne") @PathVariable("ligId") Integer ligId);
 
 	/**
 	 * Exporte les commandes au format CSV.
@@ -112,26 +89,6 @@ public interface CommandeApi {
 	CommandeRead getCommande(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId);
 
 	/**
-	 * Récupère le détail complet d'une commande avec ses lignes.
-	 * @param comId Identifiant de la commande.
-	 *
-	 * @return Détail complet de la commande.
-	 */
-	@GetMapping(path = "api/restaurants/commandes/{comId}/detail")
-	@Operation(description = "Récupère le détail complet d'une commande avec ses lignes")
-	CommandeDetailRead getCommandeDetail(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId);
-
-	/**
-	 * Liste les lignes d'une commande.
-	 * @param comId Identifiant de la commande.
-	 *
-	 * @return Liste des lignes de la commande.
-	 */
-	@Operation(description = "Liste les lignes d'une commande")
-	@GetMapping(path = "api/restaurants/commandes/{comId}/lignes")
-	List<LigneCommandeItem> getCommandeLignes(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId);
-
-	/**
 	 * Liste toutes les commandes.
 	 * @param clientId Client ayant passé la commande.
 	 * @param statutCommandeCode Statut de la commande.
@@ -152,27 +109,6 @@ public interface CommandeApi {
 	@GetMapping(path = "api/restaurants/commandes/by-date")
 	@Operation(description = "Récupère les commandes par date")
 	List<CommandeItem> getCommandesByDate(@Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateCommande", required = true) LocalDateTime dateCommande);
-
-	/**
-	 * Charge le détail d'une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 *
-	 * @return Détail de la ligne de commande.
-	 */
-	@GetMapping(path = "api/restaurants/ligne-commandes/{ligId}")
-	@Operation(description = "Charge le détail d'une ligne de commande")
-	LigneCommandeRead getLigneCommande(@Parameter(description = "Identifiant de la ligne") @PathVariable("ligId") Integer ligId);
-
-	/**
-	 * Liste toutes les lignes de commande.
-	 * @param commandeId Commande à laquelle appartient la ligne.
-	 * @param platId Plat commandé.
-	 *
-	 * @return Liste des lignes de commande.
-	 */
-	@GetMapping(path = "api/restaurants/ligne-commandes")
-	@Operation(description = "Liste toutes les lignes de commande")
-	List<LigneCommandeItem> getLigneCommandes(@Parameter(description = "Commande à laquelle appartient la ligne") @RequestParam(value = "commandeId", required = true) Integer commandeId, @Parameter(description = "Plat commandé") @RequestParam(value = "platId", required = true) Integer platId);
 
 	/**
 	 * Liste tous les statuts de commande.
@@ -215,15 +151,4 @@ public interface CommandeApi {
 	@PatchMapping(path = "api/restaurants/commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
 	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommandeCode", required = true) StatutCommande statutCommandeCode);
-
-	/**
-	 * Met à jour une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 * @param ligneCommande Ligne de commande à mettre à jour.
-	 *
-	 * @return Ligne de commande mise à jour.
-	 */
-	@Operation(description = "Met à jour une ligne de commande")
-	@PutMapping(path = "api/restaurants/ligne-commandes/{ligId}")
-	LigneCommandeRead updateLigneCommande(@Parameter(description = "Identifiant de la ligne") @PathVariable("ligId") Integer ligId, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Ligne de commande à mettre à jour") @RequestBody @Valid LigneCommandeWrite ligneCommande);
 }

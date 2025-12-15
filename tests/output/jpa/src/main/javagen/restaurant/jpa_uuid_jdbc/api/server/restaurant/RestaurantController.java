@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuComplet;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatItem;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.RestaurantAvecStatistiques;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.RestaurantItem;
@@ -88,7 +88,7 @@ public interface RestaurantController {
 	 * @return Menu du restaurant.
 	 */
 	@GetMapping(path = "{resId}/menus/{menId}")
-	MenuComplet getRestaurantMenu(@PathVariable("resId") Integer resId, @PathVariable("menId") Integer menId);
+	MenuRead getRestaurantMenu(@PathVariable("resId") Integer resId, @PathVariable("menId") Integer menId);
 
 	/**
 	 * Liste les plats d'un restaurant.

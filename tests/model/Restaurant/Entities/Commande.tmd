@@ -6,6 +6,7 @@ uses:
   - Restaurant/Entities/Menu
   - Restaurant/Entities/Personne
   - Restaurant/Entities/Restaurant
+  - Restaurant/References
 ---
 class:
   name: Commande
@@ -34,12 +35,10 @@ class:
 
     - association: Client
       required: true
-      withReverse: true
       comment: Client ayant passé la commande
 
     - association: TableRestaurant
       className: Table
-      withReverse: true
       comment: Table associée à la commande
 
     - association: Reservation
@@ -83,7 +82,6 @@ class:
 
     - association: Plat
       required: true
-      withReverse: true
       comment: Plat commandé
 
   unique:
@@ -122,17 +120,14 @@ class:
 
     - association: Client
       required: true
-      withReverse: true
       comment: Client ayant fait la réservation
 
     - association: TableRestaurant
       className: Table
-      withReverse: true
       comment: Table réservée
 
     - association: Restaurant
       required: true
-      withReverse: true
       comment: Restaurant concerné par la réservation
 
   unique:

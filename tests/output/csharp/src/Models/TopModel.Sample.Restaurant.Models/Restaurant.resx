@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="restaurant.clientMinimal.id" xml:space="preserve">
+  <data name="restaurant.clientItem.id" xml:space="preserve">
     <value>Informations client</value>
   </data>
-  <data name="restaurant.clientMinimal.nom" xml:space="preserve">
+  <data name="restaurant.clientItem.nom" xml:space="preserve">
     <value>Informations client</value>
   </data>
-  <data name="restaurant.clientMinimal.prenom" xml:space="preserve">
+  <data name="restaurant.clientItem.prenom" xml:space="preserve">
     <value>Informations client</value>
   </data>
 </root>

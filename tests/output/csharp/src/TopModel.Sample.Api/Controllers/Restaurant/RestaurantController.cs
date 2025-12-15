@@ -76,7 +76,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Menu du restaurant</returns>
     [HttpGet("api/restaurants/{resId:int}/menus/{menId:int}")]
-    public async Task<MenuComplet> GetRestaurantMenu(int resId, int menId, CancellationToken ct = default)
+    public async Task<MenuRead> GetRestaurantMenu(int resId, int menId, CancellationToken ct = default)
     {
 
     }

@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
-import restaurant.jpa_identity_associations.dtos.restaurant.MenuComplet;
+import restaurant.jpa_identity_associations.dtos.restaurant.MenuRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.PlatItem;
 import restaurant.jpa_identity_associations.dtos.restaurant.RestaurantAvecStatistiques;
 import restaurant.jpa_identity_associations.dtos.restaurant.RestaurantItem;
@@ -168,10 +168,10 @@ public abstract class AbstractRestaurantClient {
 	 * @param menId Identifiant du menu
 	 * @return Menu du restaurant
 	 */
-	public ResponseEntity<MenuComplet> getRestaurantMenu(Integer resId, Integer menId){
+	public ResponseEntity<MenuRead> getRestaurantMenu(Integer resId, Integer menId){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.getRestaurantMenuUriComponentsBuilder(resId, menId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), MenuComplet.class);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), MenuRead.class);
 	}
 
 	/**

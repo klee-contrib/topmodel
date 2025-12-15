@@ -68,8 +68,8 @@ public partial record CommandeRead
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Liste des lignes de commande.
     /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> LigneCommandes { get; set; }
+    [Required]
+    public ICollection<LigneCommandeRead> Lignes { get; set; } = new List<LigneCommandeRead>();
 }

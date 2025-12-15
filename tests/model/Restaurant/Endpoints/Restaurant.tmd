@@ -230,7 +230,7 @@ endpoint:
         property: Id
 
   returns:
-    composition: MenuComplet
+    composition: MenuRead
     name: menu
     comment: Menu du restaurant
 ---

@@ -2,9 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_LISTE, DO_PRIX} from "@/domains";
+import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
+import {LigneCommandeReadEntity} from "./ligne-commande-read";
 import {StatutCommandeCode} from "./references";
 
 export type CommandeRead = EntityToType<CommandeReadEntityType>;
@@ -35,7 +36,7 @@ export const CommandeReadEntity = entity({
     statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
         .label("restaurant.commande.statutCommandeCode")
     ),
-    ligneCommandes: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.commande.ligneCommandes")
+    lignes: e.list(LigneCommandeReadEntity, f => f
+        .label("restaurant.commandeRead.lignes")
     )
 });

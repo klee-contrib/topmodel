@@ -39,13 +39,13 @@ public partial class MenuClient(HttpClient client)
     /// <param name="menu">Menu à créer.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Menu créé avec ses plats.</returns>
-    public async Task<MenuComplet> CreateMenu(MenuWrite menu, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu(MenuWrite menu, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/menus") { Content = JsonContent.Create(menu, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<MenuComplet>(_jsOptions, ct);
+        return await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct);
     }
 
     /// <summary>

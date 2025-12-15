@@ -37,18 +37,6 @@ public partial record ClientWrite
     public string Email { get; set; }
 
     /// <summary>
-    /// Association réciproque de Commande.ClientId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> Commandes { get; set; }
-
-    /// <summary>
-    /// Association réciproque de Reservation.ClientId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> Reservations { get; set; }
-
-    /// <summary>
     /// Association réciproque de AvisClient.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]

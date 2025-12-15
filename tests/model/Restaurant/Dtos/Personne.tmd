@@ -14,11 +14,6 @@ class:
   comment: Détail d'un employé en liste
 
   properties:
-    - alias:
-        class: Employe
-        include:
-          - Matricule
-          - RestaurantId
     - name: Id
       domain: DO_ID
       comment: Identifiant de l'employé
@@ -28,6 +23,11 @@ class:
     - name: Prenom
       domain: DO_LIBELLE
       comment: Prénom de l'employé
+    - alias:
+        class: Employe
+        include:
+          - Matricule
+          - RestaurantId
 ---
 class:
   name: EmployeRead
@@ -35,10 +35,9 @@ class:
 
   properties:
     - alias:
+        class: Personne
+    - alias:
         class: Employe
-        exclude:
-          - Telephone
-          - DateNaissance
 
   mappers:
     from:
@@ -51,10 +50,10 @@ class:
 
   properties:
     - alias:
+        class: Personne
+        exclude: Id
+    - alias:
         class: Employe
-        exclude:
-          - Telephone
-          - DateNaissance
 
   mappers:
     to:
@@ -62,9 +61,7 @@ class:
 ---
 class:
   name: ClientItem
-  abstract: true
   comment: Détail d'un client en liste
-
   properties:
     - alias:
         class: Personne
@@ -72,9 +69,16 @@ class:
           - Id
           - Nom
           - Prenom
-    - alias:
-        class: Client
-        include: Email
+      label: Informations client
+    - name: NomComplet
+      domain: DO_LIBELLE
+      readonly: true
+      comment: Nom complet du client (calculé)
+
+  mappers:
+    from:
+      - params:
+          - class: Client
 ---
 class:
   name: ClientRead
@@ -120,44 +124,6 @@ class:
       prefix: true
       as: list
       comment: Liste des commandes du client
----
-class:
-  name: ClientMinimal
-  comment: Version minimale d'un client
-
-  properties:
-    - alias:
-        class: Personne
-        include:
-          - Id
-          - Nom
-          - Prenom
-      label: Informations client
-    - name: NomComplet
-      domain: DO_LIBELLE
-      readonly: true
-      comment: Nom complet du client (calculé)
-
-  mappers:
-    from:
-      - params:
-          - class: Client
----
-class:
-  name: AvisClientItem
-  abstract: true
-  comment: Détail d'un avis en liste
-
-  properties:
-    - alias:
-        class: AvisClient
-        include:
-          - Id
-          - Note
-          - DateAvis
-          - Approuve
-          - ClientId
-          - RestaurantId
 ---
 class:
   name: AvisClientRead

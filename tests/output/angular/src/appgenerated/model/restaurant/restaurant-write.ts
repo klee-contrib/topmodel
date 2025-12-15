@@ -18,9 +18,6 @@ export const RestaurantWriteEntity = entity({
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.restaurant.telephone")
     ),
-    reservations: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.reservations")
-    ),
     menus: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.menus")
     ),

@@ -21,25 +21,13 @@ public class CommandeController : Controller
     }
 
     /// <summary>
-    /// Ajoute une ligne de commande
-    /// </summary>
-    /// <param name="ligneCommande">Ligne de commande à créer</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Ligne de commande créée</returns>
-    [HttpPost("api/restaurants/ligne-commandes")]
-    public async Task<LigneCommandeRead> AddLigneCommande([FromBody] LigneCommandeWrite ligneCommande, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
     /// Crée une réservation
     /// </summary>
     /// <param name="reservation">Réservation à créer</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Réservation créée</returns>
     [HttpPost("api/restaurants/reservations")]
-    public async Task<ReservationAvecDetails> CreateReservation([FromBody] ReservationWrite reservation, CancellationToken ct = default)
+    public async Task<ReservationRead> CreateReservation([FromBody] ReservationWrite reservation, CancellationToken ct = default)
     {
 
     }
@@ -52,18 +40,6 @@ public class CommandeController : Controller
     /// <returns>Task.</returns>
     [HttpDelete("api/restaurants/commandes/{comId:int}")]
     public async Task DeleteCommande(int comId, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
-    /// Supprime une ligne de commande
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Task.</returns>
-    [HttpDelete("api/restaurants/ligne-commandes/{ligId:int}")]
-    public async Task DeleteLigneCommande(int ligId, CancellationToken ct = default)
     {
 
     }
@@ -97,30 +73,6 @@ public class CommandeController : Controller
     }
 
     /// <summary>
-    /// Récupère le détail complet d'une commande avec ses lignes
-    /// </summary>
-    /// <param name="comId">Identifiant de la commande</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Détail complet de la commande</returns>
-    [HttpGet("api/restaurants/commandes/{comId:int}/detail")]
-    public async Task<CommandeDetailRead> GetCommandeDetail(int comId, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
-    /// Liste les lignes d'une commande
-    /// </summary>
-    /// <param name="comId">Identifiant de la commande</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Liste des lignes de la commande</returns>
-    [HttpGet("api/restaurants/commandes/{comId:int}/lignes")]
-    public async Task<ICollection<LigneCommandeItem>> GetCommandeLignes(int comId, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
     /// Liste toutes les commandes
     /// </summary>
     /// <param name="clientId">Client ayant passé la commande</param>
@@ -142,31 +94,6 @@ public class CommandeController : Controller
     /// <returns>Commandes pour la date spécifiée</returns>
     [HttpGet("api/restaurants/commandes/by-date")]
     public async Task<ICollection<CommandeItem>> GetCommandesByDate([Required] DateTime? dateCommande = null, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
-    /// Charge le détail d'une ligne de commande
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Détail de la ligne de commande</returns>
-    [HttpGet("api/restaurants/ligne-commandes/{ligId:int}")]
-    public async Task<LigneCommandeRead> GetLigneCommande(int ligId, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
-    /// Liste toutes les lignes de commande
-    /// </summary>
-    /// <param name="commandeId">Commande à laquelle appartient la ligne</param>
-    /// <param name="platId">Plat commandé</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Liste des lignes de commande</returns>
-    [HttpGet("api/restaurants/ligne-commandes")]
-    public async Task<ICollection<LigneCommandeItem>> GetLigneCommandes([Required] int? commandeId = null, [Required] int? platId = null, CancellationToken ct = default)
     {
 
     }
@@ -217,19 +144,6 @@ public class CommandeController : Controller
     /// <returns>Commande avec le statut mis à jour</returns>
     [HttpPatch("api/restaurants/commandes/{comId:int}/statut")]
     public async Task<CommandeRead> UpdateCommandeStatut(int comId, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, CancellationToken ct = default)
-    {
-
-    }
-
-    /// <summary>
-    /// Met à jour une ligne de commande
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne</param>
-    /// <param name="ligneCommande">Ligne de commande à mettre à jour</param>
-    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Ligne de commande mise à jour</returns>
-    [HttpPut("api/restaurants/ligne-commandes/{ligId:int}")]
-    public async Task<LigneCommandeRead> UpdateLigneCommande(int ligId, [FromBody] LigneCommandeWrite ligneCommande, CancellationToken ct = default)
     {
 
     }

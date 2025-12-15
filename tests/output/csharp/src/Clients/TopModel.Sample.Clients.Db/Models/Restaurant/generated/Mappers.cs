@@ -33,15 +33,15 @@ public static class Mappers
     }
 
     /// <summary>
-    /// Crée une nouvelle instance de 'ClientMinimal'.
+    /// Crée une nouvelle instance de 'ClientItem'.
     /// </summary>
     /// <param name="client">Instance de 'Client'.</param>
-    /// <returns>Une nouvelle instance de 'ClientMinimal'.</returns>
-    public static ClientMinimal CreateClientMinimal(Client client)
+    /// <returns>Une nouvelle instance de 'ClientItem'.</returns>
+    public static ClientItem CreateClientItem(Client client)
     {
         ArgumentNullException.ThrowIfNull(client);
 
-        return new ClientMinimal
+        return new ClientItem
         {
             Id = client.Id,
             Nom = client.Nom,
@@ -64,8 +64,6 @@ public static class Mappers
             Nom = client.Nom,
             Prenom = client.Prenom,
             Email = client.Email,
-            Commandes = client.Commandes,
-            Reservations = client.Reservations,
             AvisClients = client.AvisClients
         };
     }
@@ -88,8 +86,7 @@ public static class Mappers
             ClientId = commande.ClientId,
             TableId = commande.TableId,
             ReservationId = commande.ReservationId,
-            StatutCommandeCode = commande.StatutCommandeCode,
-            LigneCommandes = commande.LigneCommandes
+            StatutCommandeCode = commande.StatutCommandeCode
         };
     }
 
@@ -104,6 +101,11 @@ public static class Mappers
 
         return new EmployeRead
         {
+            Id = employe.Id,
+            Nom = employe.Nom,
+            Prenom = employe.Prenom,
+            Telephone = employe.Telephone,
+            DateNaissance = employe.DateNaissance,
             Matricule = employe.Matricule,
             DateEmbauche = employe.DateEmbauche,
             Salaire = employe.Salaire,
@@ -154,28 +156,6 @@ public static class Mappers
     }
 
     /// <summary>
-    /// Crée une nouvelle instance de 'PlatAvecDetails'.
-    /// </summary>
-    /// <param name="plat">Instance de 'Plat'.</param>
-    /// <returns>Une nouvelle instance de 'PlatAvecDetails'.</returns>
-    public static PlatAvecDetails CreatePlatAvecDetails(Plat plat)
-    {
-        ArgumentNullException.ThrowIfNull(plat);
-
-        return new PlatAvecDetails
-        {
-            Id = plat.Id,
-            Nom = plat.Nom,
-            Description = plat.Description,
-            Prix = plat.Prix,
-            Disponible = plat.Disponible,
-            CategoriePlatCode = plat.CategoriePlatCode,
-            RestaurantId = plat.RestaurantId,
-            LigneCommandes = plat.LigneCommandes
-        };
-    }
-
-    /// <summary>
     /// Crée une nouvelle instance de 'PlatRead'.
     /// </summary>
     /// <param name="plat">Instance de 'Plat'.</param>
@@ -192,8 +172,7 @@ public static class Mappers
             Prix = plat.Prix,
             Disponible = plat.Disponible,
             CategoriePlatCode = plat.CategoriePlatCode,
-            RestaurantId = plat.RestaurantId,
-            LigneCommandes = plat.LigneCommandes
+            RestaurantId = plat.RestaurantId
         };
     }
 
@@ -258,7 +237,6 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            Reservations = restaurant.Reservations,
             Menus = restaurant.Menus,
             Plats = restaurant.Plats,
             Promotions = restaurant.Promotions,
@@ -285,7 +263,6 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            Reservations = restaurant.Reservations,
             Menus = restaurant.Menus,
             Plats = restaurant.Plats,
             Promotions = restaurant.Promotions,
@@ -331,9 +308,7 @@ public static class Mappers
             Numero = table.Numero,
             Capacite = table.Capacite,
             Disponible = table.Disponible,
-            RestaurantId = table.RestaurantId,
-            Commandes = table.Commandes,
-            Reservations = table.Reservations
+            RestaurantId = table.RestaurantId
         };
     }
 
@@ -384,8 +359,6 @@ public static class Mappers
             Nom = source.Nom,
             Prenom = source.Prenom,
             Email = source.Email,
-            Commandes = source.Commandes,
-            Reservations = source.Reservations,
             AvisClients = source.AvisClients
         };
     }
@@ -401,8 +374,6 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
         dest.Email = source.Email;
-        dest.Commandes = source.Commandes;
-        dest.Reservations = source.Reservations;
         dest.AvisClients = source.AvisClients;
         return dest;
     }
@@ -411,21 +382,18 @@ public static class Mappers
     /// Mappe 'CommandeWrite' vers 'Commande'.
     /// </summary>
     /// <param name="source">Instance de 'CommandeWrite'.</param>
-    /// <param name="dateCommande">Date et heure de la commande.</param>
-    /// <param name="montantTotal">Montant total de la commande.</param>
     /// <returns>Une nouvelle instance de 'Commande'.</returns>
-    public static Commande ToCommande(this CommandeWrite source, DateTime? dateCommande = null, decimal? montantTotal = null)
+    public static Commande ToCommande(this CommandeWrite source)
     {
         return new Commande
         {
+            DateCommande = source.DateCommande,
             DateLivraison = source.DateLivraison,
+            MontantTotal = source.MontantTotal,
             ClientId = source.ClientId,
             TableId = source.TableId,
             ReservationId = source.ReservationId,
-            StatutCommandeCode = source.StatutCommandeCode,
-            LigneCommandes = source.LigneCommandes,
-            DateCommande = dateCommande,
-            MontantTotal = montantTotal
+            StatutCommandeCode = source.StatutCommandeCode
         };
     }
 
@@ -437,12 +405,13 @@ public static class Mappers
     /// <returns>L'instance pré-existante de 'Commande'.</returns>
     public static Commande ToCommande(this CommandeWrite source, Commande dest)
     {
+        dest.DateCommande = source.DateCommande;
         dest.DateLivraison = source.DateLivraison;
+        dest.MontantTotal = source.MontantTotal;
         dest.ClientId = source.ClientId;
         dest.TableId = source.TableId;
         dest.ReservationId = source.ReservationId;
         dest.StatutCommandeCode = source.StatutCommandeCode;
-        dest.LigneCommandes = source.LigneCommandes;
         return dest;
     }
 
@@ -455,6 +424,10 @@ public static class Mappers
     {
         return new Employe
         {
+            Nom = source.Nom,
+            Prenom = source.Prenom,
+            Telephone = source.Telephone,
+            DateNaissance = source.DateNaissance,
             Matricule = source.Matricule,
             DateEmbauche = source.DateEmbauche,
             Salaire = source.Salaire,
@@ -470,6 +443,10 @@ public static class Mappers
     /// <returns>L'instance pré-existante de 'Employe'.</returns>
     public static Employe ToEmploye(this EmployeWrite source, Employe dest)
     {
+        dest.Nom = source.Nom;
+        dest.Prenom = source.Prenom;
+        dest.Telephone = source.Telephone;
+        dest.DateNaissance = source.DateNaissance;
         dest.Matricule = source.Matricule;
         dest.DateEmbauche = source.DateEmbauche;
         dest.Salaire = source.Salaire;
@@ -561,8 +538,7 @@ public static class Mappers
             Prix = source.Prix,
             Disponible = source.Disponible,
             CategoriePlatCode = source.CategoriePlatCode,
-            RestaurantId = source.RestaurantId,
-            LigneCommandes = source.LigneCommandes
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -580,7 +556,6 @@ public static class Mappers
         dest.Disponible = source.Disponible;
         dest.CategoriePlatCode = source.CategoriePlatCode;
         dest.RestaurantId = source.RestaurantId;
-        dest.LigneCommandes = source.LigneCommandes;
         return dest;
     }
 
@@ -668,7 +643,6 @@ public static class Mappers
             Nom = source.Nom,
             Adresse = source.Adresse,
             Telephone = source.Telephone,
-            Reservations = source.Reservations,
             Menus = source.Menus,
             Plats = source.Plats,
             Promotions = source.Promotions,
@@ -688,7 +662,6 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Adresse = source.Adresse;
         dest.Telephone = source.Telephone;
-        dest.Reservations = source.Reservations;
         dest.Menus = source.Menus;
         dest.Plats = source.Plats;
         dest.Promotions = source.Promotions;
@@ -709,9 +682,7 @@ public static class Mappers
             Numero = source.Numero,
             Capacite = source.Capacite,
             Disponible = source.Disponible,
-            RestaurantId = source.RestaurantId,
-            Commandes = source.Commandes,
-            Reservations = source.Reservations
+            RestaurantId = source.RestaurantId
         };
     }
 
@@ -727,8 +698,6 @@ public static class Mappers
         dest.Capacite = source.Capacite;
         dest.Disponible = source.Disponible;
         dest.RestaurantId = source.RestaurantId;
-        dest.Commandes = source.Commandes;
-        dest.Reservations = source.Reservations;
         return dest;
     }
 }

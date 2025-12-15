@@ -83,6 +83,44 @@ public class ReservationRead implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Informations du client ayant fait la réservation.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Personne#getNom() Personne#getNom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	private String clientNom;
+
+	/**
+	 * Informations du client ayant fait la réservation.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	private String clientPrenom;
+
+	/**
+	 * Informations du client ayant fait la réservation.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Client#getEmail() Client#getEmail()}
+	 */
+	@Size(max = 100)
+	private String clientEmail;
+
+	/**
+	 * Table réservée.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
+	 */
+	@NotNull
+	@Size(max = 10)
+	private String tableNumero;
+
+	/**
+	 * Table réservée.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
+	 */
+	@NotNull
+	private Integer tableCapacite;
+
+	/**
 	 * No arg constructor.
 	 */
 	public ReservationRead() {
@@ -172,6 +210,51 @@ public class ReservationRead implements Serializable {
 	}
 
 	/**
+	 * Getter for clientNom.
+	 *
+	 * @return value of {@link #clientNom clientNom}.
+	 */
+	public String getClientNom() {
+		return this.clientNom;
+	}
+
+	/**
+	 * Getter for clientPrenom.
+	 *
+	 * @return value of {@link #clientPrenom clientPrenom}.
+	 */
+	public String getClientPrenom() {
+		return this.clientPrenom;
+	}
+
+	/**
+	 * Getter for clientEmail.
+	 *
+	 * @return value of {@link #clientEmail clientEmail}.
+	 */
+	public String getClientEmail() {
+		return this.clientEmail;
+	}
+
+	/**
+	 * Getter for tableNumero.
+	 *
+	 * @return value of {@link #tableNumero tableNumero}.
+	 */
+	public String getTableNumero() {
+		return this.tableNumero;
+	}
+
+	/**
+	 * Getter for tableCapacite.
+	 *
+	 * @return value of {@link #tableCapacite tableCapacite}.
+	 */
+	public Integer getTableCapacite() {
+		return this.tableCapacite;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -236,6 +319,46 @@ public class ReservationRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #clientNom clientNom}.
+	 * @param clientNom value to set.
+	 */
+	public void setClientNom(String clientNom) {
+		this.clientNom = clientNom;
+	}
+
+	/**
+	 * Set the value of {@link #clientPrenom clientPrenom}.
+	 * @param clientPrenom value to set.
+	 */
+	public void setClientPrenom(String clientPrenom) {
+		this.clientPrenom = clientPrenom;
+	}
+
+	/**
+	 * Set the value of {@link #clientEmail clientEmail}.
+	 * @param clientEmail value to set.
+	 */
+	public void setClientEmail(String clientEmail) {
+		this.clientEmail = clientEmail;
+	}
+
+	/**
+	 * Set the value of {@link #tableNumero tableNumero}.
+	 * @param tableNumero value to set.
+	 */
+	public void setTableNumero(String tableNumero) {
+		this.tableNumero = tableNumero;
+	}
+
+	/**
+	 * Set the value of {@link #tableCapacite tableCapacite}.
+	 * @param tableCapacite value to set.
+	 */
+	public void setTableCapacite(Integer tableCapacite) {
+		this.tableCapacite = tableCapacite;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.dtos.restaurant.ReservationRead ReservationRead}.
 	 */
 	public enum Fields {
@@ -246,7 +369,12 @@ public class ReservationRead implements Serializable {
 		CONFIRMEE(Boolean.class),
 		CLIENT_ID(Integer.class),
 		TABLE_ID(Integer.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		CLIENT_NOM(String.class),
+		CLIENT_PRENOM(String.class),
+		CLIENT_EMAIL(String.class),
+		TABLE_NUMERO(String.class),
+		TABLE_CAPACITE(Integer.class);
 
 		private final Class<?> type;
 

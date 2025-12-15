@@ -4,10 +4,7 @@
 
 package restaurant.jpa_identity_associations.entities.restaurant;
 
-import java.util.List;
-
 import jakarta.annotation.Generated;
-import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
@@ -25,10 +22,6 @@ public class TableRestaurant_ {
 
 	public static volatile SingularAttribute<TableRestaurant, Restaurant> restaurant;
 
-	public static volatile ListAttribute<TableRestaurant, Commande> commandes;
-
-	public static volatile ListAttribute<TableRestaurant, Reservation> reservations;
-
 	public static final String ID = "id";
 
 	public static final String NUMERO = "numero";
@@ -38,8 +31,4 @@ public class TableRestaurant_ {
 	public static final String DISPONIBLE = "disponible";
 
 	public static final String RESTAURANT = "restaurant";
-
-	public static final String COMMANDES = "commandes";
-
-	public static final String RESERVATIONS = "reservations";
 }

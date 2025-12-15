@@ -29,7 +29,7 @@ public class MenuController : Controller
     [Authorize]
     [Authorize(Roles = "MANAGER")]
     [HttpPost("api/restaurants/menus")]
-    public async Task<MenuComplet> CreateMenu([FromBody] MenuWrite menu, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu([FromBody] MenuWrite menu, CancellationToken ct = default)
     {
 
     }

@@ -29,6 +29,35 @@ public class EmployeWrite implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Nom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Personne#getNom() Personne#getNom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	private String nom;
+
+	/**
+	 * Prénom de la personne.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	private String prenom;
+
+	/**
+	 * Numéro de téléphone de l'employé.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Employe#getTelephone() Employe#getTelephone()}
+	 */
+	@Size(max = 20)
+	private String telephone;
+
+	/**
+	 * Date de naissance.
+	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Employe#getDateNaissance() Employe#getDateNaissance()}
+	 */
+	private LocalDateTime dateNaissance;
+
+	/**
 	 * Matricule de l'employé.
 	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Employe#getMatricule() Employe#getMatricule()}
 	 */
@@ -55,6 +84,42 @@ public class EmployeWrite implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link #nom nom}.
+	 */
+	public String getNom() {
+		return this.nom;
+	}
+
+	/**
+	 * Getter for prenom.
+	 *
+	 * @return value of {@link #prenom prenom}.
+	 */
+	public String getPrenom() {
+		return this.prenom;
+	}
+
+	/**
+	 * Getter for telephone.
+	 *
+	 * @return value of {@link #telephone telephone}.
+	 */
+	public String getTelephone() {
+		return this.telephone;
+	}
+
+	/**
+	 * Getter for dateNaissance.
+	 *
+	 * @return value of {@link #dateNaissance dateNaissance}.
+	 */
+	public LocalDateTime getDateNaissance() {
+		return this.dateNaissance;
+	}
 
 	/**
 	 * Getter for matricule.
@@ -90,6 +155,38 @@ public class EmployeWrite implements Serializable {
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #nom nom}.
+	 * @param nom value to set.
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
+	 * Set the value of {@link #prenom prenom}.
+	 * @param prenom value to set.
+	 */
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #telephone telephone}.
+	 * @param telephone value to set.
+	 */
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	/**
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
+	 */
+	public void setDateNaissance(LocalDateTime dateNaissance) {
+		this.dateNaissance = dateNaissance;
 	}
 
 	/**
@@ -138,6 +235,10 @@ public class EmployeWrite implements Serializable {
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_associations.dtos.restaurant.EmployeWrite EmployeWrite}.
 	 */
 	public enum Fields {
+		NOM(String.class),
+		PRENOM(String.class),
+		TELEPHONE(String.class),
+		DATE_NAISSANCE(LocalDateTime.class),
 		MATRICULE(String.class),
 		DATE_EMBAUCHE(LocalDateTime.class),
 		SALAIRE(BigDecimal.class),

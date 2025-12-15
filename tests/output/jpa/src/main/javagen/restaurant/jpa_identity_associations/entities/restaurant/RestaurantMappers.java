@@ -12,7 +12,7 @@ import jakarta.annotation.Generated;
 
 import restaurant.jpa_identity_associations.dtos.restaurant.AvisClientRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.AvisClientWrite;
-import restaurant.jpa_identity_associations.dtos.restaurant.ClientMinimal;
+import restaurant.jpa_identity_associations.dtos.restaurant.ClientItem;
 import restaurant.jpa_identity_associations.dtos.restaurant.ClientRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.ClientWrite;
 import restaurant.jpa_identity_associations.dtos.restaurant.CommandeRead;
@@ -23,7 +23,6 @@ import restaurant.jpa_identity_associations.dtos.restaurant.LigneCommandeRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.LigneCommandeWrite;
 import restaurant.jpa_identity_associations.dtos.restaurant.MenuRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.MenuWrite;
-import restaurant.jpa_identity_associations.dtos.restaurant.PlatAvecDetails;
 import restaurant.jpa_identity_associations.dtos.restaurant.PlatRead;
 import restaurant.jpa_identity_associations.dtos.restaurant.PlatWrite;
 import restaurant.jpa_identity_associations.dtos.restaurant.PromotionRead;
@@ -91,23 +90,23 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'ClientMinimal' en mappant les champs sources.
+	 * Crée une nouvelle instance de la classe 'ClientItem' en mappant les champs sources.
 	 * @param client Instance de 'Client' source.
 	 *
-	 * @return Une nouvelle instance de 'ClientMinimal' sur laquelle les champs sources ont été mappés.
+	 * @return Une nouvelle instance de 'ClientItem' sur laquelle les champs sources ont été mappés.
 	 */
-	public static ClientMinimal createClientMinimal(Client client) {
-		return mapClientMinimal(client, new ClientMinimal());
+	public static ClientItem createClientItem(Client client) {
+		return mapClientItem(client, new ClientItem());
 	}
 
 	/**
-	 * Mappe les champs sources sur l'instance de la classe 'ClientMinimal' passée en paramètre.
+	 * Mappe les champs sources sur l'instance de la classe 'ClientItem' passée en paramètre.
 	 * @param client Instance de 'Client' source.
-	 * @param target Instance de 'ClientMinimal' cible.
+	 * @param target Instance de 'ClientItem' cible.
 	 *
-	 * @return L'instance de 'ClientMinimal' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 * @return L'instance de 'ClientItem' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static ClientMinimal mapClientMinimal(Client client, ClientMinimal target) {
+	public static ClientItem mapClientItem(Client client, ClientItem target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
@@ -152,18 +151,6 @@ public class RestaurantMappers {
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
 		target.setEmail(client.getEmail());
-		if (client.getCommandes() != null) {
-			target.setCommandes(client.getCommandes().stream().filter(Objects::nonNull).map(Commande::getId).collect(Collectors.toList()));
-		} else {
-			target.setCommandes(null);
-		}
-
-		if (client.getReservations() != null) {
-			target.setReservations(client.getReservations().stream().filter(Objects::nonNull).map(Reservation::getId).collect(Collectors.toList()));
-		} else {
-			target.setReservations(null);
-		}
-
 		if (client.getAvisClients() != null) {
 			target.setAvisClients(client.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
 		} else {
@@ -227,12 +214,6 @@ public class RestaurantMappers {
 			target.setStatutCommandeCode(null);
 		}
 
-		if (commande.getLigneCommandes() != null) {
-			target.setLigneCommandes(commande.getLigneCommandes().stream().filter(Objects::nonNull).map(LigneCommande::getId).collect(Collectors.toList()));
-		} else {
-			target.setLigneCommandes(null);
-		}
-
 		return target;
 	}
 
@@ -262,6 +243,11 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("employe cannot be null");
 		}
 
+		target.setId(employe.getId());
+		target.setNom(employe.getNom());
+		target.setPrenom(employe.getPrenom());
+		target.setTelephone(employe.getTelephone());
+		target.setDateNaissance(employe.getDateNaissance());
 		target.setMatricule(employe.getMatricule());
 		target.setDateEmbauche(employe.getDateEmbauche());
 		target.setSalaire(employe.getSalaire());
@@ -362,58 +348,6 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'PlatAvecDetails' en mappant les champs sources.
-	 * @param plat Instance de 'Plat' source.
-	 *
-	 * @return Une nouvelle instance de 'PlatAvecDetails' sur laquelle les champs sources ont été mappés.
-	 */
-	public static PlatAvecDetails createPlatAvecDetails(Plat plat) {
-		return mapPlatAvecDetails(plat, new PlatAvecDetails());
-	}
-
-	/**
-	 * Mappe les champs sources sur l'instance de la classe 'PlatAvecDetails' passée en paramètre.
-	 * @param plat Instance de 'Plat' source.
-	 * @param target Instance de 'PlatAvecDetails' cible.
-	 *
-	 * @return L'instance de 'PlatAvecDetails' passée en paramètres sur lesquels les champs sources ont été mappés.
-	 */
-	public static PlatAvecDetails mapPlatAvecDetails(Plat plat, PlatAvecDetails target) {
-		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
-		}
-
-		if (plat == null) {
-			throw new IllegalArgumentException("plat cannot be null");
-		}
-
-		target.setId(plat.getId());
-		target.setNom(plat.getNom());
-		target.setDescription(plat.getDescription());
-		target.setPrix(plat.getPrix());
-		target.setDisponible(plat.getDisponible());
-		if (plat.getCategoriePlat() != null) {
-			target.setCategoriePlatCode(plat.getCategoriePlat().getCode());
-		} else {
-			target.setCategoriePlatCode(null);
-		}
-
-		if (plat.getRestaurant() != null) {
-			target.setRestaurantId(plat.getRestaurant().getId());
-		} else {
-			target.setRestaurantId(null);
-		}
-
-		if (plat.getLigneCommandes() != null) {
-			target.setLigneCommandes(plat.getLigneCommandes().stream().filter(Objects::nonNull).map(LigneCommande::getId).collect(Collectors.toList()));
-		} else {
-			target.setLigneCommandes(null);
-		}
-
-		return target;
-	}
-
-	/**
 	 * Crée une nouvelle instance de la classe 'PlatRead' en mappant les champs sources.
 	 * @param plat Instance de 'Plat' source.
 	 *
@@ -454,12 +388,6 @@ public class RestaurantMappers {
 			target.setRestaurantId(plat.getRestaurant().getId());
 		} else {
 			target.setRestaurantId(null);
-		}
-
-		if (plat.getLigneCommandes() != null) {
-			target.setLigneCommandes(plat.getLigneCommandes().stream().filter(Objects::nonNull).map(LigneCommande::getId).collect(Collectors.toList()));
-		} else {
-			target.setLigneCommandes(null);
 		}
 
 		return target;
@@ -594,12 +522,6 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
-		if (restaurant.getReservations() != null) {
-			target.setReservations(restaurant.getReservations().stream().filter(Objects::nonNull).map(Reservation::getId).collect(Collectors.toList()));
-		} else {
-			target.setReservations(null);
-		}
-
 		if (restaurant.getMenus() != null) {
 			target.setMenus(restaurant.getMenus().stream().filter(Objects::nonNull).map(Menu::getId).collect(Collectors.toList()));
 		} else {
@@ -666,12 +588,6 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
-		if (restaurant.getReservations() != null) {
-			target.setReservations(restaurant.getReservations().stream().filter(Objects::nonNull).map(Reservation::getId).collect(Collectors.toList()));
-		} else {
-			target.setReservations(null);
-		}
-
 		if (restaurant.getMenus() != null) {
 			target.setMenus(restaurant.getMenus().stream().filter(Objects::nonNull).map(Menu::getId).collect(Collectors.toList()));
 		} else {
@@ -778,18 +694,6 @@ public class RestaurantMappers {
 			target.setRestaurantId(null);
 		}
 
-		if (table.getCommandes() != null) {
-			target.setCommandes(table.getCommandes().stream().filter(Objects::nonNull).map(Commande::getId).collect(Collectors.toList()));
-		} else {
-			target.setCommandes(null);
-		}
-
-		if (table.getReservations() != null) {
-			target.setReservations(table.getReservations().stream().filter(Objects::nonNull).map(Reservation::getId).collect(Collectors.toList()));
-		} else {
-			target.setReservations(null);
-		}
-
 		return target;
 	}
 
@@ -883,7 +787,9 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
+		target.setDateCommande(source.getDateCommande());
 		target.setDateLivraison(source.getDateLivraison());
+		target.setMontantTotal(source.getMontantTotal());
 		if (source.getStatutCommandeCode() != null) {
 			target.setStatutCommande(new StatutCommande(source.getStatutCommandeCode()));
 		} else {
@@ -919,6 +825,10 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
+		target.setNom(source.getNom());
+		target.setPrenom(source.getPrenom());
+		target.setTelephone(source.getTelephone());
+		target.setDateNaissance(source.getDateNaissance());
 		target.setMatricule(source.getMatricule());
 		target.setDateEmbauche(source.getDateEmbauche());
 		target.setSalaire(source.getSalaire());

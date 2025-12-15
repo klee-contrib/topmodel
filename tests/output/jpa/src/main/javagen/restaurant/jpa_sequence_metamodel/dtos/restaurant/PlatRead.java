@@ -7,7 +7,6 @@ package restaurant.jpa_sequence_metamodel.dtos.restaurant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
@@ -78,13 +77,6 @@ public class PlatRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
-
-	/**
-	 * Association réciproque de LigneCommande.PlatId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#getLigneCommandes() Plat#getLigneCommandes()}
-	 */
-	@NotNull
-	private List<Integer> ligneCommandes;
 
 	/**
 	 * No arg constructor.
@@ -167,15 +159,6 @@ public class PlatRead implements Serializable {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
-	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
-	 */
-	public List<Integer> getLigneCommandes() {
-		return this.ligneCommandes;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -232,14 +215,6 @@ public class PlatRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
-	 */
-	public void setLigneCommandes(List<Integer> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.PlatRead PlatRead}.
 	 */
 	public enum Fields {
@@ -249,8 +224,7 @@ public class PlatRead implements Serializable {
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT_CODE(CategoriePlatCode.class),
-		RESTAURANT_ID(Integer.class),
-		LIGNE_COMMANDES(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

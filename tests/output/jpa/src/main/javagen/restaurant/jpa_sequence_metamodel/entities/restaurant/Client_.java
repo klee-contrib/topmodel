@@ -17,17 +17,9 @@ public class Client_ extends Personne_ {
 
 	public static volatile SingularAttribute<Client, String> email;
 
-	public static volatile ListAttribute<Client, Commande> commandes;
-
-	public static volatile ListAttribute<Client, Reservation> reservations;
-
 	public static volatile ListAttribute<Client, AvisClient> avisClients;
 
 	public static final String EMAIL = "email";
-
-	public static final String COMMANDES = "commandes";
-
-	public static final String RESERVATIONS = "reservations";
 
 	public static final String AVIS_CLIENTS = "avisClients";
 }

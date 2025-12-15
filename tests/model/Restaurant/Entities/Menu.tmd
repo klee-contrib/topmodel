@@ -3,7 +3,6 @@ module: Restaurant
 tags:
   - back
 uses:
-  - Restaurant/Entities/Commande
   - Restaurant/Entities/Restaurant
   - Restaurant/References
 ---

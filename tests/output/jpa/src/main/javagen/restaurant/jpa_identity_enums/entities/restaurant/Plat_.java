@@ -32,8 +32,6 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Plat, LigneCommande> ligneCommandes;
-
 	public static volatile ListAttribute<Plat, PromotionPlat> promotions;
 
 	public static final String ID = "id";
@@ -49,8 +47,6 @@ public class Plat_ {
 	public static final String CATEGORIE_PLAT = "categoriePlat";
 
 	public static final String RESTAURANT = "restaurant";
-
-	public static final String LIGNE_COMMANDES = "ligneCommandes";
 
 	public static final String PROMOTIONS = "promotions";
 }

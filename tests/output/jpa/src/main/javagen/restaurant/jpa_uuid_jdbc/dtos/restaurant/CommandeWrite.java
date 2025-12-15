@@ -6,6 +6,7 @@ package restaurant.jpa_uuid_jdbc.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 /**
  * Détail d'une commande en écriture.
@@ -28,15 +30,31 @@ public class CommandeWrite implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Date et heure de la commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getDateCommande() CommandeRead#getDateCommande()}
+	 */
+	@NotNull
+	@Column("com_date_commande")
+	private LocalDateTime dateCommande;
+
+	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getDateLivraison() CommandeRead#getDateLivraison()}
 	 */
 	@Column("com_date_livraison")
 	private LocalDateTime dateLivraison;
 
 	/**
+	 * Montant total de la commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getMontantTotal() CommandeRead#getMontantTotal()}
+	 */
+	@NotNull
+	@Column("com_montant_total")
+	private BigDecimal montantTotal;
+
+	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getClientId() Commande#getClientId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getClientId() CommandeRead#getClientId()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -44,21 +62,21 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getTableId() Commande#getTableId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getTableId() CommandeRead#getTableId()}
 	 */
 	@Column("tab_id")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getReservationId() Commande#getReservationId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getReservationId() CommandeRead#getReservationId()}
 	 */
 	@Column("rev_id")
 	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getStatutCommandeCode() CommandeRead#getStatutCommandeCode()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -66,12 +84,21 @@ public class CommandeWrite implements Serializable {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
+	 * Liste des lignes de commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
+	@Valid
 	@NotNull
-	@Column("lig_id")
-	private List<Integer> ligneCommandes;
+	private List<LigneCommandeWrite> lignes;
+
+	/**
+	 * Getter for dateCommande.
+	 *
+	 * @return value of {@link #dateCommande dateCommande}.
+	 */
+	public LocalDateTime getDateCommande() {
+		return this.dateCommande;
+	}
 
 	/**
 	 * Getter for dateLivraison.
@@ -80,6 +107,15 @@ public class CommandeWrite implements Serializable {
 	 */
 	public LocalDateTime getDateLivraison() {
 		return this.dateLivraison;
+	}
+
+	/**
+	 * Getter for montantTotal.
+	 *
+	 * @return value of {@link #montantTotal montantTotal}.
+	 */
+	public BigDecimal getMontantTotal() {
+		return this.montantTotal;
 	}
 
 	/**
@@ -119,12 +155,20 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
+	 * Getter for lignes.
 	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
+	 * @return value of {@link #lignes lignes}.
 	 */
-	public List<Integer> getLigneCommandes() {
-		return this.ligneCommandes;
+	public List<LigneCommandeWrite> getLignes() {
+		return this.lignes;
+	}
+
+	/**
+	 * Set the value of {@link #dateCommande dateCommande}.
+	 * @param dateCommande value to set.
+	 */
+	public void setDateCommande(LocalDateTime dateCommande) {
+		this.dateCommande = dateCommande;
 	}
 
 	/**
@@ -133,6 +177,14 @@ public class CommandeWrite implements Serializable {
 	 */
 	public void setDateLivraison(LocalDateTime dateLivraison) {
 		this.dateLivraison = dateLivraison;
+	}
+
+	/**
+	 * Set the value of {@link #montantTotal montantTotal}.
+	 * @param montantTotal value to set.
+	 */
+	public void setMontantTotal(BigDecimal montantTotal) {
+		this.montantTotal = montantTotal;
 	}
 
 	/**
@@ -168,23 +220,25 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
+	 * Set the value of {@link #lignes lignes}.
+	 * @param lignes value to set.
 	 */
-	public void setLigneCommandes(List<Integer> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
+	public void setLignes(List<LigneCommandeWrite> lignes) {
+		this.lignes = lignes;
 	}
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeWrite CommandeWrite}.
 	 */
 	public enum Fields {
+		DATE_COMMANDE(LocalDateTime.class),
 		DATE_LIVRAISON(LocalDateTime.class),
+		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT_ID(Integer.class),
 		TABLE_ID(Integer.class),
 		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE_CODE(String.class),
-		LIGNE_COMMANDES(List.class);
+		LIGNES(List.class);
 
 		private final Class<?> type;
 

@@ -6,7 +6,7 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { MenuComplet } from "../../model/restaurant/menu-complet";
+import { MenuRead } from "../../model/restaurant/menu-read";
 import { MenuWrite } from "../../model/restaurant/menu-write";
 import { PlatItem } from "../../model/restaurant/plat-item";
 import { PlatRead } from "../../model/restaurant/plat-read";
@@ -35,8 +35,8 @@ export class MenuService {
      * @param menu Menu à créer
      * @returns Menu créé avec ses plats
      */
-    createMenu(menu: MenuWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuComplet> {
-        return this.http.post<MenuComplet>(`/api/restaurants/menus`, menu, {observe: 'body', ...options});
+    createMenu(menu: MenuWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuRead> {
+        return this.http.post<MenuRead>(`/api/restaurants/menus`, menu, {observe: 'body', ...options});
     }
 
     /**

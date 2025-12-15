@@ -21,12 +21,6 @@ export const ClientReadEntity = entity({
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
     ),
-    commandes: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.client.commandes")
-    ),
-    reservations: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.client.reservations")
-    ),
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.client.avisClients")
     )

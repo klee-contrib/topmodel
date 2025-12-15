@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "@/domains";
+import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {CategoriePlatCode} from "./references";
@@ -31,8 +31,5 @@ export const PlatReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.plat.restaurantId")
-    ),
-    ligneCommandes: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.ligneCommandes")
     )
 });

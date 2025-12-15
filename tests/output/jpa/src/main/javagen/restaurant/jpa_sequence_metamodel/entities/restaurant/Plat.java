@@ -78,12 +78,6 @@ public class Plat {
 	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de LigneCommande.PlatId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat")
-	private List<LigneCommande> ligneCommandes;
-
-	/**
 	 * Association réciproque de PromotionPlat.PlatId.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat")
@@ -150,18 +144,6 @@ public class Plat {
 	 */
 	public Restaurant getRestaurant() {
 		return this.restaurant;
-	}
-
-	/**
-	 * Getter for ligneCommandes.
-	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
-	 */
-	public List<LigneCommande> getLigneCommandes() {
-		if (this.ligneCommandes == null) {
-			this.ligneCommandes = new ArrayList<>();
-		}
-		return this.ligneCommandes;
 	}
 
 	/**
@@ -233,28 +215,11 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
-	 */
-	public void setLigneCommandes(List<LigneCommande> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
-	}
-
-	/**
 	 * Set the value of {@link #promotions promotions}.
 	 * @param promotions value to set.
 	 */
 	public void setPromotions(List<PromotionPlat> promotions) {
 		this.promotions = promotions;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#ligneCommandes ligneCommandes}.
-	 * @param ligneCommande value to add to plat.
-	 */
-	void addLigneCommande(LigneCommande ligneCommande) {
-		this.ligneCommandes.add(ligneCommande);
-		ligneCommande.setPlat(this);
 	}
 
 	/**
@@ -264,15 +229,6 @@ public class Plat {
 	void addPromotionPlat(PromotionPlat promotionPlat) {
 		this.promotions.add(promotionPlat);
 		promotionPlat.setPlat(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#ligneCommandes ligneCommandes}.
-	 * @param ligneCommande ligneCommande value to remove.
-	 */
-	void removeLigneCommande(LigneCommande ligneCommande) {
-		this.ligneCommandes.remove(ligneCommande);
-		ligneCommande.setPlat(null);
 	}
 
 	/**
@@ -295,7 +251,6 @@ public class Plat {
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT(CategoriePlat.class),
 		RESTAURANT(Restaurant.class),
-		LIGNE_COMMANDES(List.class),
 		PROMOTIONS(List.class);
 
 		private final Class<?> type;

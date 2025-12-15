@@ -28,6 +28,47 @@ public class EmployeRead implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Identifiant de la personne.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Personne#getId() Personne#getId()}
+	 */
+	@NotNull
+	@Column("per_id")
+	private Integer id;
+
+	/**
+	 * Nom de la personne.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Personne#getNom() Personne#getNom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	@Column("per_nom")
+	private String nom;
+
+	/**
+	 * Prénom de la personne.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
+	 */
+	@NotNull
+	@Size(max = 100)
+	@Column("per_prenom")
+	private String prenom;
+
+	/**
+	 * Numéro de téléphone de l'employé.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Employe#getTelephone() Employe#getTelephone()}
+	 */
+	@Size(max = 20)
+	@Column("emp_telephone")
+	private String telephone;
+
+	/**
+	 * Date de naissance.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Employe#getDateNaissance() Employe#getDateNaissance()}
+	 */
+	@Column("emp_date_naissance")
+	private LocalDateTime dateNaissance;
+
+	/**
 	 * Matricule de l'employé.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Employe#getMatricule() Employe#getMatricule()}
 	 */
@@ -58,6 +99,51 @@ public class EmployeRead implements Serializable {
 	@NotNull
 	@Column("res_id")
 	private Integer restaurantId;
+
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link #id id}.
+	 */
+	public Integer getId() {
+		return this.id;
+	}
+
+	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link #nom nom}.
+	 */
+	public String getNom() {
+		return this.nom;
+	}
+
+	/**
+	 * Getter for prenom.
+	 *
+	 * @return value of {@link #prenom prenom}.
+	 */
+	public String getPrenom() {
+		return this.prenom;
+	}
+
+	/**
+	 * Getter for telephone.
+	 *
+	 * @return value of {@link #telephone telephone}.
+	 */
+	public String getTelephone() {
+		return this.telephone;
+	}
+
+	/**
+	 * Getter for dateNaissance.
+	 *
+	 * @return value of {@link #dateNaissance dateNaissance}.
+	 */
+	public LocalDateTime getDateNaissance() {
+		return this.dateNaissance;
+	}
 
 	/**
 	 * Getter for matricule.
@@ -96,6 +182,46 @@ public class EmployeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link #nom nom}.
+	 * @param nom value to set.
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
+	 * Set the value of {@link #prenom prenom}.
+	 * @param prenom value to set.
+	 */
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #telephone telephone}.
+	 * @param telephone value to set.
+	 */
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	/**
+	 * Set the value of {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance value to set.
+	 */
+	public void setDateNaissance(LocalDateTime dateNaissance) {
+		this.dateNaissance = dateNaissance;
+	}
+
+	/**
 	 * Set the value of {@link #matricule matricule}.
 	 * @param matricule value to set.
 	 */
@@ -131,6 +257,11 @@ public class EmployeRead implements Serializable {
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.EmployeRead EmployeRead}.
 	 */
 	public enum Fields {
+		ID(Integer.class),
+		NOM(String.class),
+		PRENOM(String.class),
+		TELEPHONE(String.class),
+		DATE_NAISSANCE(LocalDateTime.class),
 		MATRICULE(String.class),
 		DATE_EMBAUCHE(LocalDateTime.class),
 		SALAIRE(BigDecimal.class),

@@ -23,8 +23,6 @@ public class Restaurant_ {
 
 	public static volatile SingularAttribute<Restaurant, String> telephone;
 
-	public static volatile ListAttribute<Restaurant, Reservation> reservations;
-
 	public static volatile ListAttribute<Restaurant, Menu> menus;
 
 	public static volatile ListAttribute<Restaurant, Plat> plats;
@@ -42,8 +40,6 @@ public class Restaurant_ {
 	public static final String ADRESSE = "adresse";
 
 	public static final String TELEPHONE = "telephone";
-
-	public static final String RESERVATIONS = "reservations";
 
 	public static final String MENUS = "menus";
 

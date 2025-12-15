@@ -2,13 +2,25 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
+import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX, DO_TELEPHONE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type EmployeWrite = EntityToType<EmployeWriteEntityType>;
 export type EmployeWriteEntityType = typeof EmployeWriteEntity;
 
 export const EmployeWriteEntity = entity({
+    nom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.nom")
+    ),
+    prenom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.prenom")
+    ),
+    telephone: e.field(DO_TELEPHONE, f => f.optional()
+        .label("restaurant.employe.telephone")
+    ),
+    dateNaissance: e.field(DO_DATE_HEURE, f => f.optional()
+        .label("restaurant.employe.dateNaissance")
+    ),
     matricule: e.field(DO_CODE, f => f
         .label("restaurant.employe.matricule")
     ),

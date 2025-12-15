@@ -31,6 +31,13 @@ class:
   properties:
     - alias:
         class: Commande
+        exclude: LigneCommandes
+
+    - composition: LigneCommandeRead
+      name: Lignes
+      domain: DO_LISTE
+      required: true
+      comment: Liste des lignes de commande
 
   mappers:
     from:
@@ -43,28 +50,18 @@ class:
 
   properties:
     - alias:
-        class: Commande
+        class: CommandeRead
         exclude:
           - Id
-          - DateCommande
-          - MontantTotal
+          - Lignes
+    - alias:
+        class: CommandeRead
+        property: Lignes
+      composition: LigneCommandeWrite
 
   mappers:
     to:
       - class: Commande
----
-class:
-  name: CommandeDetailRead
-  comment: Détail complet d'une commande avec ses lignes
-
-  properties:
-    - alias:
-        class: Commande
-    - composition: LigneCommandeItem
-      name: Lignes
-      domain: DO_LISTE
-      required: true
-      comment: Liste des lignes de commande
 ---
 class:
   name: CommandeResume
@@ -74,24 +71,7 @@ class:
   properties:
     - alias:
         endpoint: GetCommande
-        include:
-          - Id
----
-class:
-  name: LigneCommandeItem
-  abstract: true
-  comment: Détail d'une ligne de commande en liste
-
-  properties:
-    - alias:
-        class: LigneCommande
-        include:
-          - Id
-          - Quantite
-          - PrixUnitaire
-          - PrixTotal
-          - CommandeId
-          - PlatId
+        include: Id
 ---
 class:
   name: LigneCommandeRead
@@ -121,51 +101,8 @@ class:
       - class: LigneCommande
 ---
 class:
-  name: ReservationItem
-  abstract: true
-  comment: Détail d'une réservation en liste
-
-  properties:
-    - alias:
-        class: Reservation
-        include:
-          - Id
-          - DateReservation
-          - NombrePersonnes
-          - Confirmee
-          - ClientId
-          - RestaurantId
----
-class:
   name: ReservationRead
   comment: Détail d'une réservation en lecture
-
-  properties:
-    - alias:
-        class: Reservation
-
-  mappers:
-    from:
-      - params:
-          - class: Reservation
----
-class:
-  name: ReservationWrite
-  comment: Détail d'une réservation en écriture
-
-  properties:
-    - alias:
-        class: Reservation
-        exclude:
-          - Id
-
-  mappers:
-    to:
-      - class: Reservation
----
-class:
-  name: ReservationAvecDetails
-  comment: Réservation avec détails du client et de la table
 
   properties:
     - alias:
@@ -190,3 +127,22 @@ class:
           - Capacite
       prefix: Table
       comment: Table réservée
+
+  mappers:
+    from:
+      - params:
+          - class: Reservation
+---
+class:
+  name: ReservationWrite
+  comment: Détail d'une réservation en écriture
+
+  properties:
+    - alias:
+        class: Reservation
+        exclude:
+          - Id
+
+  mappers:
+    to:
+      - class: Reservation

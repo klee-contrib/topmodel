@@ -21,11 +21,9 @@
     },
     "client": {
         "avisClients": "AvisClients",
-        "commandes": "Commandes",
-        "email": "Email",
-        "reservations": "Reservations"
+        "email": "Email"
     },
-    "clientMinimal": {
+    "clientItem": {
         "id": "Informations client",
         "nom": "Informations client",
         "nomComplet": "NomComplet",
@@ -42,14 +40,16 @@
         "statutCommandeCode": "StatutCommandeCode",
         "tableId": "TableId"
     },
-    "commandeDetailRead": {
+    "commandeRead": {
         "lignes": "Lignes"
     },
     "employe": {
         "dateEmbauche": "DateEmbauche",
+        "dateNaissance": "DateNaissance",
         "matricule": "Matricule",
         "restaurantId": "RestaurantId",
-        "salaire": "Salaire"
+        "salaire": "Salaire",
+        "telephone": "Telephone"
     },
     "employeItem": {
         "id": "Id",
@@ -74,7 +74,7 @@
         "prix": "Prix",
         "restaurantId": "RestaurantId"
     },
-    "menuComplet": {
+    "menuRead": {
         "plats": "Plats"
     },
     "personne": {
@@ -87,7 +87,6 @@
         "description": "Description",
         "disponible": "Disponible",
         "id": "Id",
-        "ligneCommandes": "LigneCommandes",
         "nom": "Nom",
         "prix": "Prix",
         "restaurantId": "RestaurantId"
@@ -119,7 +118,6 @@
         "nom": "Nom",
         "plats": "Plats",
         "promotions": "Promotions",
-        "reservations": "Reservations",
         "tables": "Tables",
         "telephone": "Telephone"
     },
@@ -148,11 +146,9 @@
     },
     "tableRestaurant": {
         "capacite": "Capacite",
-        "commandes": "Commandes",
         "disponible": "Disponible",
         "id": "Id",
         "numero": "Numero",
-        "reservations": "Reservations",
         "restaurantId": "RestaurantId"
     }
 }

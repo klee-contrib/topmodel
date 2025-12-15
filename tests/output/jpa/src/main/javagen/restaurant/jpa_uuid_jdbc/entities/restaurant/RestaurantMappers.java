@@ -10,7 +10,7 @@ import jakarta.annotation.Generated;
 
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.AvisClientRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.AvisClientWrite;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.ClientMinimal;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.ClientItem;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.ClientRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.ClientWrite;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead;
@@ -21,7 +21,6 @@ import restaurant.jpa_uuid_jdbc.dtos.restaurant.LigneCommandeRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.LigneCommandeWrite;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuWrite;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatAvecDetails;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatWrite;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PromotionRead;
@@ -79,23 +78,23 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'ClientMinimal' en mappant les champs sources.
+	 * Crée une nouvelle instance de la classe 'ClientItem' en mappant les champs sources.
 	 * @param client Instance de 'Client' source.
 	 *
-	 * @return Une nouvelle instance de 'ClientMinimal' sur laquelle les champs sources ont été mappés.
+	 * @return Une nouvelle instance de 'ClientItem' sur laquelle les champs sources ont été mappés.
 	 */
-	public static ClientMinimal createClientMinimal(Client client) {
-		return mapClientMinimal(client, new ClientMinimal());
+	public static ClientItem createClientItem(Client client) {
+		return mapClientItem(client, new ClientItem());
 	}
 
 	/**
-	 * Mappe les champs sources sur l'instance de la classe 'ClientMinimal' passée en paramètre.
+	 * Mappe les champs sources sur l'instance de la classe 'ClientItem' passée en paramètre.
 	 * @param client Instance de 'Client' source.
-	 * @param target Instance de 'ClientMinimal' cible.
+	 * @param target Instance de 'ClientItem' cible.
 	 *
-	 * @return L'instance de 'ClientMinimal' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 * @return L'instance de 'ClientItem' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static ClientMinimal mapClientMinimal(Client client, ClientMinimal target) {
+	public static ClientItem mapClientItem(Client client, ClientItem target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
@@ -206,6 +205,11 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("employe cannot be null");
 		}
 
+		target.setId(employe.getId());
+		target.setNom(employe.getNom());
+		target.setPrenom(employe.getPrenom());
+		target.setTelephone(employe.getTelephone());
+		target.setDateNaissance(employe.getDateNaissance());
 		target.setMatricule(employe.getMatricule());
 		target.setDateEmbauche(employe.getDateEmbauche());
 		target.setSalaire(employe.getSalaire());
@@ -282,42 +286,6 @@ public class RestaurantMappers {
 		target.setDateDebut(menu.getDateDebut());
 		target.setDateFin(menu.getDateFin());
 		target.setRestaurantId(menu.getRestaurantId());
-		return target;
-	}
-
-	/**
-	 * Crée une nouvelle instance de la classe 'PlatAvecDetails' en mappant les champs sources.
-	 * @param plat Instance de 'Plat' source.
-	 *
-	 * @return Une nouvelle instance de 'PlatAvecDetails' sur laquelle les champs sources ont été mappés.
-	 */
-	public static PlatAvecDetails createPlatAvecDetails(Plat plat) {
-		return mapPlatAvecDetails(plat, new PlatAvecDetails());
-	}
-
-	/**
-	 * Mappe les champs sources sur l'instance de la classe 'PlatAvecDetails' passée en paramètre.
-	 * @param plat Instance de 'Plat' source.
-	 * @param target Instance de 'PlatAvecDetails' cible.
-	 *
-	 * @return L'instance de 'PlatAvecDetails' passée en paramètres sur lesquels les champs sources ont été mappés.
-	 */
-	public static PlatAvecDetails mapPlatAvecDetails(Plat plat, PlatAvecDetails target) {
-		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
-		}
-
-		if (plat == null) {
-			throw new IllegalArgumentException("plat cannot be null");
-		}
-
-		target.setId(plat.getId());
-		target.setNom(plat.getNom());
-		target.setDescription(plat.getDescription());
-		target.setPrix(plat.getPrix());
-		target.setDisponible(plat.getDisponible());
-		target.setCategoriePlatCode(plat.getCategoriePlatCode());
-		target.setRestaurantId(plat.getRestaurantId());
 		return target;
 	}
 
@@ -668,7 +636,9 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
+		target.setDateCommande(source.getDateCommande());
 		target.setDateLivraison(source.getDateLivraison());
+		target.setMontantTotal(source.getMontantTotal());
 		target.setClientId(source.getClientId());
 		target.setTableId(source.getTableId());
 		target.setReservationId(source.getReservationId());
@@ -702,6 +672,10 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
+		target.setNom(source.getNom());
+		target.setPrenom(source.getPrenom());
+		target.setTelephone(source.getTelephone());
+		target.setDateNaissance(source.getDateNaissance());
 		target.setMatricule(source.getMatricule());
 		target.setDateEmbauche(source.getDateEmbauche());
 		target.setSalaire(source.getSalaire());

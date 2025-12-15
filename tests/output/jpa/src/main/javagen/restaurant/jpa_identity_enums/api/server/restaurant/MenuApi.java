@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_identity_enums.dtos.restaurant.MenuComplet;
+import restaurant.jpa_identity_enums.dtos.restaurant.MenuRead;
 import restaurant.jpa_identity_enums.dtos.restaurant.MenuWrite;
 import restaurant.jpa_identity_enums.dtos.restaurant.PlatItem;
 import restaurant.jpa_identity_enums.dtos.restaurant.PlatRead;
@@ -57,7 +57,7 @@ public interface MenuApi {
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping(path = "api/restaurants/menus")
 	@Operation(description = "Crée un menu avec ses plats")
-	MenuComplet createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @RequestBody @Valid MenuWrite menu);
+	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @RequestBody @Valid MenuWrite menu);
 
 	/**
 	 * Supprime un plat.

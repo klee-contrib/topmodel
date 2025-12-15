@@ -30,18 +30,6 @@ public class Client extends Personne {
 	private String email;
 
 	/**
-	 * Association réciproque de Commande.ClientId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
-	private List<Commande> commandes;
-
-	/**
-	 * Association réciproque de Reservation.ClientId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
-	private List<Reservation> reservations;
-
-	/**
 	 * Association réciproque de AvisClient.ClientId.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
@@ -54,30 +42,6 @@ public class Client extends Personne {
 	 */
 	public String getEmail() {
 		return this.email;
-	}
-
-	/**
-	 * Getter for commandes.
-	 *
-	 * @return value of {@link #commandes commandes}.
-	 */
-	public List<Commande> getCommandes() {
-		if (this.commandes == null) {
-			this.commandes = new ArrayList<>();
-		}
-		return this.commandes;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Reservation> getReservations() {
-		if (this.reservations == null) {
-			this.reservations = new ArrayList<>();
-		}
-		return this.reservations;
 	}
 
 	/**
@@ -101,45 +65,11 @@ public class Client extends Personne {
 	}
 
 	/**
-	 * Set the value of {@link #commandes commandes}.
-	 * @param commandes value to set.
-	 */
-	public void setCommandes(List<Commande> commandes) {
-		this.commandes = commandes;
-	}
-
-	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Set the value of {@link #avisClients avisClients}.
 	 * @param avisClients value to set.
 	 */
 	public void setAvisClients(List<AvisClient> avisClients) {
 		this.avisClients = avisClients;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#commandes commandes}.
-	 * @param commande value to add to client.
-	 */
-	void addCommande(Commande commande) {
-		this.commandes.add(commande);
-		commande.setClient(this);
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#reservations reservations}.
-	 * @param reservation value to add to client.
-	 */
-	void addReservation(Reservation reservation) {
-		this.reservations.add(reservation);
-		reservation.setClient(this);
 	}
 
 	/**
@@ -149,24 +79,6 @@ public class Client extends Personne {
 	void addAvisClient(AvisClient avisClient) {
 		this.avisClients.add(avisClient);
 		avisClient.setClient(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#commandes commandes}.
-	 * @param commande commande value to remove.
-	 */
-	void removeCommande(Commande commande) {
-		this.commandes.remove(commande);
-		commande.setClient(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Client#reservations reservations}.
-	 * @param reservation reservation value to remove.
-	 */
-	void removeReservation(Reservation reservation) {
-		this.reservations.remove(reservation);
-		reservation.setClient(null);
 	}
 
 	/**
@@ -183,8 +95,6 @@ public class Client extends Personne {
 	 */
 	public enum Fields {
 		EMAIL(String.class),
-		COMMANDES(List.class),
-		RESERVATIONS(List.class),
 		AVIS_CLIENTS(List.class);
 
 		private final Class<?> type;

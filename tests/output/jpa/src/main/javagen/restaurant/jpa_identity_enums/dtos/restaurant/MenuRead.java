@@ -8,10 +8,12 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_enums.entities.restaurant.Menu;
 import restaurant.jpa_identity_enums.entities.restaurant.RestaurantMappers;
@@ -82,6 +84,13 @@ public class MenuRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * Liste des plats du menu.
+	 */
+	@Valid
+	@NotNull
+	private List<PlatItem> plats;
 
 	/**
 	 * No arg constructor.
@@ -173,6 +182,15 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Getter for plats.
+	 *
+	 * @return value of {@link #plats plats}.
+	 */
+	public List<PlatItem> getPlats() {
+		return this.plats;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -237,6 +255,14 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
+	 */
+	public void setPlats(List<PlatItem> plats) {
+		this.plats = plats;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.dtos.restaurant.MenuRead MenuRead}.
 	 */
 	public enum Fields {
@@ -247,7 +273,8 @@ public class MenuRead implements Serializable {
 		DISPONIBLE(Boolean.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		PLATS(List.class);
 
 		private final Class<?> type;
 

@@ -9,12 +9,6 @@ export type EmployeItem = EntityToType<EmployeItemEntityType>;
 export type EmployeItemEntityType = typeof EmployeItemEntity;
 
 export const EmployeItemEntity = entity({
-    matricule: e.field(DO_CODE, f => f
-        .label("restaurant.employe.matricule")
-    ),
-    restaurantId: e.field(DO_ID, f => f
-        .label("restaurant.employe.restaurantId")
-    ),
     id: e.field(DO_ID, f => f.optional()
         .label("restaurant.employeItem.id")
     ),
@@ -23,5 +17,11 @@ export const EmployeItemEntity = entity({
     ),
     prenom: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.employeItem.prenom")
+    ),
+    matricule: e.field(DO_CODE, f => f
+        .label("restaurant.employe.matricule")
+    ),
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.employe.restaurantId")
     )
 });

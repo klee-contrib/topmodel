@@ -7,7 +7,6 @@ package restaurant.jpa_uuid_jdbc.dtos.restaurant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -86,14 +85,6 @@ public class PlatRead implements Serializable {
 	private Integer restaurantId;
 
 	/**
-	 * Association réciproque de LigneCommande.PlatId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Plat#getLigneCommandes() Plat#getLigneCommandes()}
-	 */
-	@NotNull
-	@Column("lig_id")
-	private List<Integer> ligneCommandes;
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -157,15 +148,6 @@ public class PlatRead implements Serializable {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
-	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
-	 */
-	public List<Integer> getLigneCommandes() {
-		return this.ligneCommandes;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -222,14 +204,6 @@ public class PlatRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
-	 */
-	public void setLigneCommandes(List<Integer> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatRead PlatRead}.
 	 */
 	public enum Fields {
@@ -239,8 +213,7 @@ public class PlatRead implements Serializable {
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT_CODE(String.class),
-		RESTAURANT_ID(Integer.class),
-		LIGNE_COMMANDES(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

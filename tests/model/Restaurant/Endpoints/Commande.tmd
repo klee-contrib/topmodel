@@ -137,105 +137,6 @@ endpoint:
     comment: Commande avec le statut mis à jour
 ---
 endpoint:
-  name: GetLigneCommandes
-  method: GET
-  route: /ligne-commandes
-  description: Liste toutes les lignes de commande
-
-  params:
-    - alias:
-        class: LigneCommande
-        property: CommandeId
-    - alias:
-        class: LigneCommande
-        property: PlatId
-
-  returns:
-    composition: LigneCommandeItem
-    name: ligneCommandes
-    domain: DO_LISTE
-    comment: Liste des lignes de commande
----
-endpoint:
-  name: GetLigneCommande
-  method: GET
-  route: /ligne-commandes/{ligId}
-  description: Charge le détail d'une ligne de commande
-
-  params:
-    - alias:
-        class: LigneCommande
-        property: Id
-
-  returns:
-    composition: LigneCommandeRead
-    name: ligneCommande
-    comment: Détail de la ligne de commande
----
-endpoint:
-  name: AddLigneCommande
-  method: POST
-  route: /ligne-commandes
-  description: Ajoute une ligne de commande
-
-  params:
-    - composition: LigneCommandeWrite
-      comment: Ligne de commande à créer
-      name: ligneCommande
-
-  returns:
-    composition: LigneCommandeRead
-    name: ligneCommande
-    comment: Ligne de commande créée
----
-endpoint:
-  name: UpdateLigneCommande
-  method: PUT
-  route: /ligne-commandes/{ligId}
-  description: Met à jour une ligne de commande
-
-  params:
-    - alias:
-        class: LigneCommande
-        property: Id
-    - composition: LigneCommandeWrite
-      comment: Ligne de commande à mettre à jour
-      name: ligneCommande
-
-  returns:
-    composition: LigneCommandeRead
-    name: ligneCommande
-    comment: Ligne de commande mise à jour
----
-endpoint:
-  name: DeleteLigneCommande
-  method: DELETE
-  route: /ligne-commandes/{ligId}
-  description: Supprime une ligne de commande
-
-  params:
-    - alias:
-        class: LigneCommande
-        property: Id
----
-endpoint:
-  name: GetCommandeLignes
-  method: GET
-  route: /commandes/{comId}/lignes
-  description: Liste les lignes d'une commande
-
-  params:
-    - alias:
-        class: Commande
-        property: Id
-
-  returns:
-    composition: LigneCommandeItem
-    name: lignes
-    domain: DO_LISTE
-    comment: Liste des lignes de la commande
----
-endpoint:
   name: GetStatutCommandes
   method: GET
   route: /statuts-commande
@@ -263,22 +164,6 @@ endpoint:
     name: commandes
     domain: DO_LISTE
     comment: Commandes pour la date spécifiée
----
-endpoint:
-  name: GetCommandeDetail
-  method: GET
-  route: /commandes/{comId}/detail
-  description: Récupère le détail complet d'une commande avec ses lignes
-
-  params:
-    - alias:
-        class: Commande
-        property: Id
-
-  returns:
-    composition: CommandeDetailRead
-    name: commande
-    comment: Détail complet de la commande
 ---
 endpoint:
   name: ExportCommandes
@@ -318,6 +203,6 @@ endpoint:
       name: reservation
 
   returns:
-    composition: ReservationAvecDetails
+    composition: ReservationRead
     name: reservation
     comment: Réservation créée

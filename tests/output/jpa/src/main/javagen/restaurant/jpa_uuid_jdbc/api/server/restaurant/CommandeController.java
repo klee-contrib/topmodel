@@ -23,14 +23,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeDetailRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeItem;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeWrite;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.LigneCommandeItem;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.LigneCommandeRead;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.LigneCommandeWrite;
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.ReservationAvecDetails;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.ReservationRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_uuid_jdbc.entities.restaurant.StatutCommande;
 
@@ -48,22 +44,13 @@ public interface CommandeController {
 	CommandeRead addCommande(@RequestBody @Valid CommandeWrite commande);
 
 	/**
-	 * Ajoute une ligne de commande.
-	 * @param ligneCommande Ligne de commande à créer.
-	 *
-	 * @return Ligne de commande créée.
-	 */
-	@PostMapping(path = "ligne-commandes")
-	LigneCommandeRead addLigneCommande(@RequestBody @Valid LigneCommandeWrite ligneCommande);
-
-	/**
 	 * Crée une réservation.
 	 * @param reservation Réservation à créer.
 	 *
 	 * @return Réservation créée.
 	 */
 	@PostMapping(path = "reservations")
-	ReservationAvecDetails createReservation(@RequestBody @Valid ReservationWrite reservation);
+	ReservationRead createReservation(@RequestBody @Valid ReservationWrite reservation);
 
 	/**
 	 * Supprime une commande.
@@ -72,14 +59,6 @@ public interface CommandeController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(path = "commandes/{comId}")
 	void deleteCommande(@PathVariable("comId") Integer comId);
-
-	/**
-	 * Supprime une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 */
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@DeleteMapping(path = "ligne-commandes/{ligId}")
-	void deleteLigneCommande(@PathVariable("ligId") Integer ligId);
 
 	/**
 	 * Exporte les commandes au format CSV.
@@ -102,24 +81,6 @@ public interface CommandeController {
 	CommandeRead getCommande(@PathVariable("comId") Integer comId);
 
 	/**
-	 * Récupère le détail complet d'une commande avec ses lignes.
-	 * @param comId Identifiant de la commande.
-	 *
-	 * @return Détail complet de la commande.
-	 */
-	@GetMapping(path = "commandes/{comId}/detail")
-	CommandeDetailRead getCommandeDetail(@PathVariable("comId") Integer comId);
-
-	/**
-	 * Liste les lignes d'une commande.
-	 * @param comId Identifiant de la commande.
-	 *
-	 * @return Liste des lignes de la commande.
-	 */
-	@GetMapping(path = "commandes/{comId}/lignes")
-	List<LigneCommandeItem> getCommandeLignes(@PathVariable("comId") Integer comId);
-
-	/**
 	 * Liste toutes les commandes.
 	 * @param clientId Client ayant passé la commande.
 	 * @param statutCommandeCode Statut de la commande.
@@ -138,25 +99,6 @@ public interface CommandeController {
 	 */
 	@GetMapping(path = "commandes/by-date")
 	List<CommandeItem> getCommandesByDate(@RequestParam(value = "dateCommande", required = true) LocalDateTime dateCommande);
-
-	/**
-	 * Charge le détail d'une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 *
-	 * @return Détail de la ligne de commande.
-	 */
-	@GetMapping(path = "ligne-commandes/{ligId}")
-	LigneCommandeRead getLigneCommande(@PathVariable("ligId") Integer ligId);
-
-	/**
-	 * Liste toutes les lignes de commande.
-	 * @param commandeId Commande à laquelle appartient la ligne.
-	 * @param platId Plat commandé.
-	 *
-	 * @return Liste des lignes de commande.
-	 */
-	@GetMapping(path = "ligne-commandes")
-	List<LigneCommandeItem> getLigneCommandes(@RequestParam(value = "commandeId", required = true) Integer commandeId, @RequestParam(value = "platId", required = true) Integer platId);
 
 	/**
 	 * Liste tous les statuts de commande.
@@ -195,14 +137,4 @@ public interface CommandeController {
 	 */
 	@PatchMapping(path = "commandes/{comId}/statut")
 	CommandeRead updateCommandeStatut(@PathVariable("comId") Integer comId, @RequestParam(value = "statutCommandeCode", required = true) String statutCommandeCode);
-
-	/**
-	 * Met à jour une ligne de commande.
-	 * @param ligId Identifiant de la ligne.
-	 * @param ligneCommande Ligne de commande à mettre à jour.
-	 *
-	 * @return Ligne de commande mise à jour.
-	 */
-	@PutMapping(path = "ligne-commandes/{ligId}")
-	LigneCommandeRead updateLigneCommande(@PathVariable("ligId") Integer ligId, @RequestBody @Valid LigneCommandeWrite ligneCommande);
 }

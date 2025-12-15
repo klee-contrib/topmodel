@@ -10,15 +10,15 @@ export type ClientItemEntityType = typeof ClientItemEntity;
 
 export const ClientItemEntity = entity({
     id: e.field(DO_ID, f => f.optional()
-        .label("restaurant.personne.id")
+        .label("restaurant.clientItem.id")
     ),
     nom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.nom")
+        .label("restaurant.clientItem.nom")
     ),
     prenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.prenom")
+        .label("restaurant.clientItem.prenom")
     ),
-    email: e.field(DO_LIBELLE, f => f.optional()
-        .label("restaurant.client.email")
+    nomComplet: e.field(DO_LIBELLE, f => f.optional()
+        .label("restaurant.clientItem.nomComplet")
     )
 });

@@ -6,7 +6,7 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { MenuComplet } from "../../model/restaurant/menu-complet";
+import { MenuRead } from "../../model/restaurant/menu-read";
 import { PlatItem } from "../../model/restaurant/plat-item";
 import { CategoriePlatCode } from "../../model/restaurant/references";
 import { RestaurantAvecStatistiques } from "../../model/restaurant/restaurant-avec-statistiques";
@@ -73,8 +73,8 @@ export class RestaurantService {
      * @param menId Identifiant du menu
      * @returns Menu du restaurant
      */
-    getRestaurantMenu(resId: number, menId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuComplet> {
-        return this.http.get<MenuComplet>(`/api/restaurants/${resId}/menus/${menId}`, {observe: 'body', ...options});
+    getRestaurantMenu(resId: number, menId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuRead> {
+        return this.http.get<MenuRead>(`/api/restaurants/${resId}/menus/${menId}`, {observe: 'body', ...options});
     }
 
     /**

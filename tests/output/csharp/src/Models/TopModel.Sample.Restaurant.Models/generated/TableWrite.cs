@@ -41,16 +41,4 @@ public partial record TableWrite
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
-
-    /// <summary>
-    /// Association réciproque de Commande.TableId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> Commandes { get; set; }
-
-    /// <summary>
-    /// Association réciproque de Reservation.TableId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> Reservations { get; set; }
 }

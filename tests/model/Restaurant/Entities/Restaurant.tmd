@@ -4,6 +4,7 @@ tags:
   - back
 uses:
   - Restaurant/Entities/Menu
+  - Restaurant/Entities/Personne
 ---
 class:
   name: Restaurant

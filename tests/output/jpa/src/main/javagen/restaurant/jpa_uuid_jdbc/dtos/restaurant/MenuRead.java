@@ -8,12 +8,14 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 /**
  * Détail d'un menu en lecture.
@@ -91,6 +93,13 @@ public class MenuRead implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Liste des plats du menu.
+	 */
+	@Valid
+	@NotNull
+	private List<PlatItem> plats;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -163,6 +172,15 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Getter for plats.
+	 *
+	 * @return value of {@link #plats plats}.
+	 */
+	public List<PlatItem> getPlats() {
+		return this.plats;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -227,6 +245,14 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #plats plats}.
+	 * @param plats value to set.
+	 */
+	public void setPlats(List<PlatItem> plats) {
+		this.plats = plats;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuRead MenuRead}.
 	 */
 	public enum Fields {
@@ -237,7 +263,8 @@ public class MenuRead implements Serializable {
 		DISPONIBLE(Boolean.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		PLATS(List.class);
 
 		private final Class<?> type;
 

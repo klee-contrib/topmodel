@@ -9,9 +9,9 @@ using TopModel.Sample.Common;
 namespace TopModel.Sample.Restaurant.Models;
 
 /// <summary>
-/// Version minimale d'un client.
+/// Détail d'un client en liste.
 /// </summary>
-public partial record ClientMinimal
+public partial record ClientItem
 {
     /// <summary>
     /// Identifiant de la personne.

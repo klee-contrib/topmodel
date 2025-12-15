@@ -30,7 +30,7 @@ endpoint:
       name: menu
 
   returns:
-    composition: MenuComplet
+    composition: MenuRead
     name: menu
     comment: Menu créé avec ses plats
 ---

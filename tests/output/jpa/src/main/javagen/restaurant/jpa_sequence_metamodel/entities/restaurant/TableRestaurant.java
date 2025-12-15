@@ -4,11 +4,7 @@
 
 package restaurant.jpa_sequence_metamodel.entities.restaurant;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.annotation.Generated;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -65,18 +60,6 @@ public class TableRestaurant {
 	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de Commande.TableId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "table")
-	private List<Commande> commandes;
-
-	/**
-	 * Association réciproque de Reservation.TableId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "table")
-	private List<Reservation> reservations;
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -122,30 +105,6 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Getter for commandes.
-	 *
-	 * @return value of {@link #commandes commandes}.
-	 */
-	public List<Commande> getCommandes() {
-		if (this.commandes == null) {
-			this.commandes = new ArrayList<>();
-		}
-		return this.commandes;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Reservation> getReservations() {
-		if (this.reservations == null) {
-			this.reservations = new ArrayList<>();
-		}
-		return this.reservations;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -186,58 +145,6 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Set the value of {@link #commandes commandes}.
-	 * @param commandes value to set.
-	 */
-	public void setCommandes(List<Commande> commandes) {
-		this.commandes = commandes;
-	}
-
-	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#commandes commandes}.
-	 * @param commande value to add to table.
-	 */
-	void addCommande(Commande commande) {
-		this.commandes.add(commande);
-		commande.setTable(this);
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#reservations reservations}.
-	 * @param reservation value to add to table.
-	 */
-	void addReservation(Reservation reservation) {
-		this.reservations.add(reservation);
-		reservation.setTable(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#commandes commandes}.
-	 * @param commande commande value to remove.
-	 */
-	void removeCommande(Commande commande) {
-		this.commandes.remove(commande);
-		commande.setTable(null);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#reservations reservations}.
-	 * @param reservation reservation value to remove.
-	 */
-	void removeReservation(Reservation reservation) {
-		this.reservations.remove(reservation);
-		reservation.setTable(null);
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant TableRestaurant}.
 	 */
 	public enum Fields {
@@ -245,9 +152,7 @@ public class TableRestaurant {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),
 		DISPONIBLE(Boolean.class),
-		RESTAURANT(Restaurant.class),
-		COMMANDES(List.class),
-		RESERVATIONS(List.class);
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

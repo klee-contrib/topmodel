@@ -52,14 +52,6 @@ public class RestaurantWrite implements Serializable {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Reservation.RestaurantId.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getReservations() Restaurant#getReservations()}
-	 */
-	@NotNull
-	@Column("rev_id")
-	private List<Integer> reservations;
-
-	/**
 	 * Association réciproque de Menu.RestaurantId.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
 	 */
@@ -123,15 +115,6 @@ public class RestaurantWrite implements Serializable {
 	 */
 	public String getTelephone() {
 		return this.telephone;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Integer> getReservations() {
-		return this.reservations;
 	}
 
 	/**
@@ -204,14 +187,6 @@ public class RestaurantWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Integer> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Set the value of {@link #menus menus}.
 	 * @param menus value to set.
 	 */
@@ -258,7 +233,6 @@ public class RestaurantWrite implements Serializable {
 		NOM(String.class),
 		ADRESSE(String.class),
 		TELEPHONE(String.class),
-		RESERVATIONS(List.class),
 		MENUS(List.class),
 		PLATS(List.class),
 		PROMOTIONS(List.class),

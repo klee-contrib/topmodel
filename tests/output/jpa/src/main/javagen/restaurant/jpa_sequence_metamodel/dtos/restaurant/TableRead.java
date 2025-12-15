@@ -6,7 +6,6 @@ package restaurant.jpa_sequence_metamodel.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
@@ -62,18 +61,6 @@ public class TableRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
-
-	/**
-	 * Association réciproque de Commande.TableId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#getCommandes() TableRestaurant#getCommandes()}
-	 */
-	private List<Integer> commandes;
-
-	/**
-	 * Association réciproque de Reservation.TableId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.TableRestaurant#getReservations() TableRestaurant#getReservations()}
-	 */
-	private List<Integer> reservations;
 
 	/**
 	 * No arg constructor.
@@ -138,24 +125,6 @@ public class TableRead implements Serializable {
 	}
 
 	/**
-	 * Getter for commandes.
-	 *
-	 * @return value of {@link #commandes commandes}.
-	 */
-	public List<Integer> getCommandes() {
-		return this.commandes;
-	}
-
-	/**
-	 * Getter for reservations.
-	 *
-	 * @return value of {@link #reservations reservations}.
-	 */
-	public List<Integer> getReservations() {
-		return this.reservations;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -196,22 +165,6 @@ public class TableRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandes commandes}.
-	 * @param commandes value to set.
-	 */
-	public void setCommandes(List<Integer> commandes) {
-		this.commandes = commandes;
-	}
-
-	/**
-	 * Set the value of {@link #reservations reservations}.
-	 * @param reservations value to set.
-	 */
-	public void setReservations(List<Integer> reservations) {
-		this.reservations = reservations;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.TableRead TableRead}.
 	 */
 	public enum Fields {
@@ -219,9 +172,7 @@ public class TableRead implements Serializable {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),
 		DISPONIBLE(Boolean.class),
-		RESTAURANT_ID(Integer.class),
-		COMMANDES(List.class),
-		RESERVATIONS(List.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 

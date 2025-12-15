@@ -49,13 +49,6 @@ public partial record Restaurant
     public string Telephone { get; set; }
 
     /// <summary>
-    /// Association réciproque de Reservation.RestaurantId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int> Reservations { get; set; }
-
-    /// <summary>
     /// Association réciproque de Menu.RestaurantId.
     /// </summary>
     [Domain(Domains.Liste)]

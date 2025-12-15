@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuComplet;
+import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuRead;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.MenuWrite;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatItem;
 import restaurant.jpa_uuid_jdbc.dtos.restaurant.PlatRead;
@@ -52,7 +52,7 @@ public interface MenuController {
 	 */
 	@PostMapping(path = "menus")
 	@PreAuthorize("isAuthenticated()")
-	MenuComplet createMenu(@RequestBody @Valid MenuWrite menu);
+	MenuRead createMenu(@RequestBody @Valid MenuWrite menu);
 
 	/**
 	 * Supprime un plat.

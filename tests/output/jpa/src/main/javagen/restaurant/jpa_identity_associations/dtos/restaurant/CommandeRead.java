@@ -12,6 +12,7 @@ import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_associations.entities.restaurant.Commande;
 import restaurant.jpa_identity_associations.entities.restaurant.RestaurantMappers;
@@ -83,11 +84,11 @@ public class CommandeRead implements Serializable {
 	private StatutCommandeCode statutCommandeCode = StatutCommandeCode.EN_ATT;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
-	 * Alias of {@link restaurant.jpa_identity_associations.entities.restaurant.Commande#getLigneCommandes() Commande#getLigneCommandes()}
+	 * Liste des lignes de commande.
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> ligneCommandes;
+	private List<LigneCommandeRead> lignes;
 
 	/**
 	 * No arg constructor.
@@ -179,12 +180,12 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Getter for ligneCommandes.
+	 * Getter for lignes.
 	 *
-	 * @return value of {@link #ligneCommandes ligneCommandes}.
+	 * @return value of {@link #lignes lignes}.
 	 */
-	public List<Integer> getLigneCommandes() {
-		return this.ligneCommandes;
+	public List<LigneCommandeRead> getLignes() {
+		return this.lignes;
 	}
 
 	/**
@@ -252,11 +253,11 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #ligneCommandes ligneCommandes}.
-	 * @param ligneCommandes value to set.
+	 * Set the value of {@link #lignes lignes}.
+	 * @param lignes value to set.
 	 */
-	public void setLigneCommandes(List<Integer> ligneCommandes) {
-		this.ligneCommandes = ligneCommandes;
+	public void setLignes(List<LigneCommandeRead> lignes) {
+		this.lignes = lignes;
 	}
 
 	/**
@@ -271,7 +272,7 @@ public class CommandeRead implements Serializable {
 		TABLE_ID(Integer.class),
 		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE_CODE(StatutCommandeCode.class),
-		LIGNE_COMMANDES(List.class);
+		LIGNES(List.class);
 
 		private final Class<?> type;
 

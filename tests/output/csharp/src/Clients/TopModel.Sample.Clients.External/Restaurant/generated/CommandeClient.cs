@@ -35,33 +35,18 @@ public partial class CommandeClient(HttpClient client)
     }
 
     /// <summary>
-    /// Ajoute une ligne de commande.
-    /// </summary>
-    /// <param name="ligneCommande">Ligne de commande à créer.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Ligne de commande créée.</returns>
-    public async Task<LigneCommandeRead> AddLigneCommande(LigneCommandeWrite ligneCommande, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/ligne-commandes") { Content = JsonContent.Create(ligneCommande, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<LigneCommandeRead>(_jsOptions, ct);
-    }
-
-    /// <summary>
     /// Crée une réservation.
     /// </summary>
     /// <param name="reservation">Réservation à créer.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Réservation créée.</returns>
-    public async Task<ReservationAvecDetails> CreateReservation(ReservationWrite reservation, CancellationToken ct = default)
+    public async Task<ReservationRead> CreateReservation(ReservationWrite reservation, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/reservations") { Content = JsonContent.Create(reservation, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ReservationAvecDetails>(_jsOptions, ct);
+        return await res.Content.ReadFromJsonAsync<ReservationRead>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -74,19 +59,6 @@ public partial class CommandeClient(HttpClient client)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/restaurants/commandes/{comId}"), ct);
-        await EnsureSuccess(res, ct);
-    }
-
-    /// <summary>
-    /// Supprime une ligne de commande.
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Task.</returns>
-    public async Task DeleteLigneCommande(int ligId, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/restaurants/ligne-commandes/{ligId}"), ct);
         await EnsureSuccess(res, ct);
     }
 
@@ -134,36 +106,6 @@ public partial class CommandeClient(HttpClient client)
     }
 
     /// <summary>
-    /// Récupère le détail complet d'une commande avec ses lignes.
-    /// </summary>
-    /// <param name="comId">Identifiant de la commande.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Détail complet de la commande.</returns>
-    public async Task<CommandeDetailRead> GetCommandeDetail(int comId, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/{comId}/detail"), HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<CommandeDetailRead>(_jsOptions, ct);
-    }
-
-    /// <summary>
-    /// Liste les lignes d'une commande.
-    /// </summary>
-    /// <param name="comId">Identifiant de la commande.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Liste des lignes de la commande.</returns>
-    public async Task<ICollection<LigneCommandeItem>> GetCommandeLignes(int comId, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/{comId}/lignes"), HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<ICollection<LigneCommandeItem>>(_jsOptions, ct);
-    }
-
-    /// <summary>
     /// Liste toutes les commandes.
     /// </summary>
     /// <param name="clientId">Client ayant passé la commande.</param>
@@ -203,42 +145,6 @@ public partial class CommandeClient(HttpClient client)
         await EnsureSuccess(res, ct);
 
         return await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct);
-    }
-
-    /// <summary>
-    /// Charge le détail d'une ligne de commande.
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Détail de la ligne de commande.</returns>
-    public async Task<LigneCommandeRead> GetLigneCommande(int ligId, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/ligne-commandes/{ligId}"), HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<LigneCommandeRead>(_jsOptions, ct);
-    }
-
-    /// <summary>
-    /// Liste toutes les lignes de commande.
-    /// </summary>
-    /// <param name="commandeId">Commande à laquelle appartient la ligne.</param>
-    /// <param name="platId">Plat commandé.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Liste des lignes de commande.</returns>
-    public async Task<ICollection<LigneCommandeItem>> GetLigneCommandes(int? commandeId = null, int? platId = null, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            ["commandeId"] = commandeId?.ToString(CultureInfo.InvariantCulture),
-            ["platId"] = platId?.ToString(CultureInfo.InvariantCulture),
-        }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/ligne-commandes?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<ICollection<LigneCommandeItem>>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -305,22 +211,6 @@ public partial class CommandeClient(HttpClient client)
         await EnsureSuccess(res, ct);
 
         return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
-    }
-
-    /// <summary>
-    /// Met à jour une ligne de commande.
-    /// </summary>
-    /// <param name="ligId">Identifiant de la ligne.</param>
-    /// <param name="ligneCommande">Ligne de commande à mettre à jour.</param>
-    /// <param name="ct">CancellationToken.</param>
-    /// <returns>Ligne de commande mise à jour.</returns>
-    public async Task<LigneCommandeRead> UpdateLigneCommande(int ligId, LigneCommandeWrite ligneCommande, CancellationToken ct = default)
-    {
-        await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/ligne-commandes/{ligId}") { Content = JsonContent.Create(ligneCommande, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
-        await EnsureSuccess(res, ct);
-
-        return await res.Content.ReadFromJsonAsync<LigneCommandeRead>(_jsOptions, ct);
     }
 
     /// <summary>

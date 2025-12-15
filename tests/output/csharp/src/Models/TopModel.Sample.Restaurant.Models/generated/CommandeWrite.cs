@@ -14,10 +14,24 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record CommandeWrite
 {
     /// <summary>
+    /// Date et heure de la commande.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCommande { get; set; }
+
+    /// <summary>
     /// Date et heure de livraison.
     /// </summary>
     [Domain(Domains.DateHeure)]
     public DateTime? DateLivraison { get; set; }
+
+    /// <summary>
+    /// Montant total de la commande.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Prix)]
+    public decimal? MontantTotal { get; set; }
 
     /// <summary>
     /// Client ayant passé la commande.
@@ -47,8 +61,8 @@ public partial record CommandeWrite
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Liste des lignes de commande.
     /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int> LigneCommandes { get; set; }
+    [Required]
+    public ICollection<LigneCommandeWrite> Lignes { get; set; } = new List<LigneCommandeWrite>();
 }
