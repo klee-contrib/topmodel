@@ -67,6 +67,15 @@ public interface CommandeApi {
 	void deleteCommande(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId);
 
 	/**
+	 * Supprime une commande.
+	 * @param commandeItem Commande item à supprimer dans le body.
+	 */
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(description = "Supprime une commande")
+	@DeleteMapping(path = "api/restaurants/commandes")
+	void deleteCommandeWithBody(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Commande item à supprimer dans le body") @RequestBody @Valid CommandeItem commandeItem);
+
+	/**
 	 * Exporte les commandes au format CSV.
 	 * @param dateDebut Date et heure de la commande.
 	 * @param dateFin Date et heure de la commande.

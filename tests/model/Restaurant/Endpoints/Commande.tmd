@@ -206,3 +206,14 @@ endpoint:
     composition: ReservationRead
     name: reservation
     comment: Réservation créée
+---
+endpoint:
+  name: DeleteCommandeWithBody
+  method: DELETE
+  route: /commandes
+  description: Supprime une commande
+
+  params:
+    - composition: CommandeItem
+      name: commandeItem
+      comment: Commande item à supprimer dans le body

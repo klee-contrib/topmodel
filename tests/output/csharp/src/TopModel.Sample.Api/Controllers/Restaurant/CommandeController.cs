@@ -45,6 +45,18 @@ public class CommandeController : Controller
     }
 
     /// <summary>
+    /// Supprime une commande
+    /// </summary>
+    /// <param name="commandeItem">Commande item à supprimer dans le body</param>
+    /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
+    /// <returns>Task.</returns>
+    [HttpDelete("api/restaurants/commandes")]
+    public async Task DeleteCommandeWithBody([FromBody] CommandeItem commandeItem, CancellationToken ct = default)
+    {
+
+    }
+
+    /// <summary>
     /// Exporte les commandes au format CSV
     /// </summary>
     /// <param name="dateDebut">Date et heure de la commande</param>

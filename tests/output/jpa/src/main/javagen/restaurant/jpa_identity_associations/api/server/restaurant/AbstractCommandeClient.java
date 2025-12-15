@@ -108,6 +108,24 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
+	 * UriComponentsBuilder pour la méthode deleteCommandeWithBody.
+	 */
+	protected UriComponentsBuilder deleteCommandeWithBodyUriComponentsBuilder() {
+		String uri = host + "/api/restaurants/commandes";
+		return UriComponentsBuilder.fromUri(URI.create(uri));
+	}
+
+	/**
+	 * Supprime une commande.
+	 * @param commandeItem Commande item à supprimer dans le body
+	 */
+	public ResponseEntity deleteCommandeWithBody(CommandeItem commandeItem){
+		HttpHeaders headers = this.getHeaders();
+		UriComponentsBuilder uri = this.deleteCommandeWithBodyUriComponentsBuilder();
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(commandeItem, headers), (Class<?>) null);
+	}
+
+	/**
 	 * UriComponentsBuilder pour la méthode exportCommandes.
 	 * @param dateDebut Date et heure de la commande
 	 * @param dateFin Date et heure de la commande

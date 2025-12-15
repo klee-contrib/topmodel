@@ -63,6 +63,19 @@ public partial class CommandeClient(HttpClient client)
     }
 
     /// <summary>
+    /// Supprime une commande.
+    /// </summary>
+    /// <param name="commandeItem">Commande item à supprimer dans le body.</param>
+    /// <param name="ct">CancellationToken.</param>
+    /// <returns>Task.</returns>
+    public async Task DeleteCommandeWithBody(CommandeItem commandeItem, CancellationToken ct = default)
+    {
+        await EnsureAuthentication(ct);
+        using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/restaurants/commandes") { Content = JsonContent.Create(commandeItem, options: _jsOptions) }, ct);
+        await EnsureSuccess(res, ct);
+    }
+
+    /// <summary>
     /// Exporte les commandes au format CSV.
     /// </summary>
     /// <param name="dateDebut">Date et heure de la commande.</param>

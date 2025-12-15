@@ -259,7 +259,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             2,
             $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{getter}(`/{fullRoute}`"
         );
-        if (endpoint.GetJsonBodyParam() != null)
+        if (endpoint.GetJsonBodyParam() != null && endpoint.Method != "DELETE")
         {
             fw.Write($", {endpoint.GetJsonBodyParam()!.GetParamName()}");
         }
@@ -267,21 +267,26 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         {
             fw.Write($", body");
         }
-        else if (endpoint.Method != "OPTIONS" && endpoint.Method != "GET" && endpoint.Method != "DELETE")
+        else if (endpoint.Method != "GET" && endpoint.Method != "DELETE")
         {
             fw.Write(", {}");
         }
 
+        var options = new Dictionary<string, string> { ["observe"] = $"'{observe}'" };
         if (needResponseType)
         {
             var responseType = returnType == "string" ? "text" : returnType.ToLower();
-            fw.Write(@$", {{responseType: ""{responseType}"", observe: '{observe}', ...options}}");
-        }
-        else
-        {
-            fw.Write(@$", {{observe: '{observe}', ...options}}");
+            options["responseType"] = $"'{responseType}'";
         }
 
+        if (endpoint.GetJsonBodyParam() != null && endpoint.Method == "DELETE")
+        {
+            options["body"] = endpoint.GetJsonBodyParam()!.GetParamName();
+        }
+
+        fw.Write(
+            @$", {{{string.Join(", ", options.OrderBy(o => o.Key).Select(o => $"{o.Key}: {o.Value}"))}, ...options}}"
+        );
         fw.WriteLine($"{(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? ")" : string.Empty)});");
         fw.WriteLine(1, "}");
     }

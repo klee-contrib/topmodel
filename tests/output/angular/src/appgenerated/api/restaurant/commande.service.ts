@@ -46,6 +46,14 @@ export class CommandeService {
     }
 
     /**
+     * @description Supprime une commande
+     * @param commandeItem Commande item à supprimer dans le body
+     */
+    deleteCommandeWithBody(commandeItem: CommandeItem, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
+        return this.http.delete<void>(`/api/restaurants/commandes`, {body: commandeItem, observe: 'body', ...options});
+    }
+
+    /**
      * @description Exporte les commandes au format CSV
      * @param dateDebut Date et heure de la commande
      * @param dateFin Date et heure de la commande
@@ -67,7 +75,7 @@ export class CommandeService {
         addParam('dateDebut', dateDebut);
         addParam('dateFin', dateFin);
 
-        return this.http.get(`/api/restaurants/commandes/export`, {responseType: "blob", observe: 'body', ...options});
+        return this.http.get(`/api/restaurants/commandes/export`, {observe: 'body', responseType: 'blob', ...options});
     }
 
     /**
