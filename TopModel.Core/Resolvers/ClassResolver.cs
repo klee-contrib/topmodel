@@ -25,7 +25,7 @@ internal class ClassResolver(
             {
                 foreach (
                     var property in classe.ExtendedProperties.Where(
-                        (e, i) => classe.ExtendedProperties.Where((p, j) => p.Name == e.Name && j < i).Any()
+                        (e, i) => classe.ExtendedProperties.Where((p, j) => p.NamePascal == e.NamePascal && j < i).Any()
                     )
                 )
                 {
@@ -236,7 +236,9 @@ internal class ClassResolver(
     {
         foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
-            var properties = classe.ExtendedProperties.GroupBy(p => p.Name).ToDictionary(p => p.Key, p => p.First());
+            var properties = classe
+                .ExtendedProperties.GroupBy(p => p.NamePascal)
+                .ToDictionary(p => p.Key, p => p.First());
 
             IProperty? TryGetProperty(params IEnumerable<string> names)
             {
