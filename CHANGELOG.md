@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.3
+
+- [`5d59757`](https://github.com/klee-contrib/topmodel/commit/5d59757e103a89ae8bb0d5bf99de68ec64c0adbb) - [Core] Check doublon de propriétés + propriétés spéciales en PascalCase
+
 ## 3.8.2
 
 - [`7bd2841`](https://github.com/klee-contrib/topmodel/commit/7bd2841ae667f2d72b11362108583ac07b30a31f) - Alias d'association en composition
