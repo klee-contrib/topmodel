@@ -8,5 +8,5 @@ import restaurant.jpa_sequence_metamodel.entities.restaurant.PromotionPlat;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface PromotionPlatDAO extends CustomCrudRepository<PromotionPlat, Integer> {
+public interface PromotionPlatDAO extends CustomCrudRepository<PromotionPlat, PromotionPlat.PromotionPlatId> {
 }
