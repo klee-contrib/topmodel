@@ -26,8 +26,8 @@ public static class JpaUtils
 
     public static string ToFilePath(this string path)
     {
-        var beforePackage = path.Split(':')[0];
-        var package = path.Contains(':') ? path.Split(':')[1].ToPackageName(): string.Empty;
+        var package = path.Split(':')[^1];
+        var beforePackage = path.Replace(package, string.Empty);
         return Path.Combine(beforePackage, package.Replace('.', Path.DirectorySeparatorChar));
     }
 
