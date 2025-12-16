@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## x.y.z
+
+- [`02c41bf`](https://github.com/klee-contrib/topmodel/commit/02c41bfd719b7fa8de48714a0fff4a181dd4c82d) - [JPA] Gestion package vide
+
 ## 3.5.0
 
 Compatibilité avec TopModel 3.8
