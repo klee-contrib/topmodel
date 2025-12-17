@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.4
+
+- [`35142ea`](https://github.com/klee-contrib/topmodel/commit/35142eaabf4831186afbf1a86a1bd534299f9ad1) - Fix casse DefaultProperty (et autres) explicite
+
 ## 3.8.3
 
 - [`5d59757`](https://github.com/klee-contrib/topmodel/commit/5d59757e103a89ae8bb0d5bf99de68ec64c0adbb) - [Core] Check doublon de propriétés + propriétés spéciales en PascalCase
