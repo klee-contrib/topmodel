@@ -342,11 +342,16 @@ _(en preview, documentation à venir)_
 
   _Valeur par défaut_: `true`
 
-- `usePrimaryConstructors`
+- `dotnetVersion`
 
-  Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références).
+  Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.
 
-  _Valeur par défaut_: `true`
+  Si >= 8 :
+
+  - Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, DbContext, accesseurs de références).
+  - Utilise les initialiseurs de collection quand c'est possible.
+
+  _Valeur par défaut_: `10`
 
 - `useCancellationTokens`
 

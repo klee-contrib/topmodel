@@ -186,14 +186,14 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseEFComments { get; set; }
 
     /// <summary>
+    /// Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération. Par défaut : 10.
+    /// </summary>
+    public virtual int DotnetVersion { get; set; } = 10;
+
+    /// <summary>
     /// Utilise des records (mutables) au lieu de classes pour la génération de classes.
     /// </summary>
     public virtual bool UseRecords { get; set; } = true;
-
-    /// <summary>
-    /// Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références). Par défaut : 'true'.
-    /// </summary>
-    public virtual bool UsePrimaryConstructors { get; set; } = true;
 
     /// <summary>
     /// Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).

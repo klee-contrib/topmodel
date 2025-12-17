@@ -70,5 +70,5 @@ public partial record CommandeRead
     /// Association réciproque de LigneCommande.CommandeId.
     /// </summary>
     [Required]
-    public ICollection<LigneCommandeRead> Lignes { get; set; } = new List<LigneCommandeRead>();
+    public ICollection<LigneCommandeRead> Lignes { get; set; } = [];
 }

@@ -71,5 +71,5 @@ public partial record MenuRead
     /// Liste des plats du menu.
     /// </summary>
     [Required]
-    public ICollection<PlatItem> Plats { get; set; } = new List<PlatItem>();
+    public ICollection<PlatItem> Plats { get; set; } = [];
 }

@@ -382,9 +382,9 @@
             "type": "boolean",
             "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'."
           },
-          "usePrimaryConstructors": {
-            "type": "boolean",
-            "description": "Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références). Par défaut : 'true'."
+          "dotnetVersion": {
+            "type": "number",
+            "description": "Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération. Par défaut : 10."
           },
           "useCancellationTokens": {
             "type": "boolean",

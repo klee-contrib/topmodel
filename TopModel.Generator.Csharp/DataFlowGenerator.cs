@@ -60,19 +60,32 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
         var name = $"{dataFlow.Name.ToPascalCase()}Flow";
 
-        w.WriteClassDeclaration(name, $"DataFlow<{dataFlow.Class.NamePascal}>", isRecord: false);
+        var primaryConstructor = Config.DotnetVersion >= 8;
+
+        var parameters = $"ILogger<{name}> logger, ConnectionPool connectionPool, EtlMonitor monitor";
+        var baseParameters = "logger, connectionPool, monitor";
+
+        w.WriteClassDeclaration(
+            name,
+            $"DataFlow<{dataFlow.Class.NamePascal}>",
+            isRecord: false,
+            parameters: primaryConstructor ? parameters : null,
+            baseParameters: primaryConstructor ? baseParameters : null
+        );
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
             w.WriteLine(1, $"private IConnection {GetConnectionName(source)};");
         }
 
-        w.WriteLine();
-
-        w.WriteLine(1, $"public {name}(ILogger<{name}> logger, ConnectionPool connectionPool, EtlMonitor monitor)");
-        w.WriteLine(2, ": base(logger, connectionPool, monitor)");
-        w.WriteLine(1, "{");
-        w.WriteLine(1, "}");
+        if (!primaryConstructor)
+        {
+            w.WriteLine();
+            w.WriteLine(1, $"public {name}({parameters})");
+            w.WriteLine(2, $": base({baseParameters})");
+            w.WriteLine(1, "{");
+            w.WriteLine(1, "}");
+        }
 
         w.WriteLine();
         w.WriteLine(1, $"public override string Name => \"{dataFlow.Name.ToPascalCase()}\";");
@@ -94,9 +107,11 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         if (dataFlow.DependsOn.Count > 0)
         {
             w.WriteLine();
+            var dependsOn = string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""));
+
             w.WriteLine(
                 1,
-                $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};"
+                $"public override string[] DependsOn => {(primaryConstructor ? $"[{dependsOn}]" : $"new {{ {dependsOn} }}")};"
             );
         }
 

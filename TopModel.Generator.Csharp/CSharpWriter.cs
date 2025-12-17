@@ -134,12 +134,14 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
     /// <param name="parameters">Paramètres (si constructeur principal).</param>
+    /// <param name="parameters">Paramètres de la classe parente (si constructeur principal).</param>
     public virtual void WriteClassDeclaration(
         string name,
         string? inheritedClass,
         bool isRecord,
         string[]? ifList = null,
-        string? parameters = null
+        string? parameters = null,
+        string? baseParameters = null
     )
     {
         if (string.IsNullOrEmpty(name))
@@ -168,10 +170,22 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
 
         if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Length > 0)
         {
+            if (baseParameters != null)
+            {
+                sb.AppendLine();
+                sb.Append("    ");
+            }
+
             sb.Append(" : ");
             if (!string.IsNullOrEmpty(inheritedClass))
             {
                 sb.Append(inheritedClass);
+
+                if (baseParameters != null)
+                {
+                    sb.Append($"({baseParameters})");
+                }
+
                 if (ifList != null && ifList.Length > 0)
                 {
                     sb.Append(", ");

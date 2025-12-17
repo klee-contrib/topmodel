@@ -63,5 +63,5 @@ public partial record CommandeWrite
     /// Association réciproque de LigneCommande.CommandeId.
     /// </summary>
     [Required]
-    public ICollection<LigneCommandeWrite> Lignes { get; set; } = new List<LigneCommandeWrite>();
+    public ICollection<LigneCommandeWrite> Lignes { get; set; } = [];
 }

@@ -121,7 +121,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         fw.WriteNamespace(ns);
 
-        var client = $"{(!Config.UsePrimaryConstructors ? "_" : string.Empty)}client";
+        var primaryConstructor = Config.DotnetVersion >= 8;
+
+        var client = $"{(!primaryConstructor ? "_" : string.Empty)}client";
 
         while (endpoints.SelectMany(e => e.Params).Any(p => p.GetParamName() == client))
         {
@@ -131,7 +133,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         var parameters = $"HttpClient {client}";
 
         fw.WriteSummary($"Client {fileName}");
-        if (Config.UsePrimaryConstructors)
+        if (primaryConstructor)
         {
             fw.WriteParam(client, "HttpClient injecté.", 0);
         }
@@ -140,10 +142,10 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             className,
             inheritedClass: null,
             isRecord: false,
-            parameters: Config.UsePrimaryConstructors ? parameters : null
+            parameters: primaryConstructor ? parameters : null
         );
 
-        if (!Config.UsePrimaryConstructors)
+        if (!primaryConstructor)
         {
             fw.WriteLine(1, $"private readonly HttpClient {client};");
         }
@@ -156,7 +158,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             );
         }
 
-        if (!Config.UsePrimaryConstructors)
+        if (!primaryConstructor)
         {
             fw.WriteLine();
             fw.WriteSummary(1, "Constructeur");
@@ -185,7 +187,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             var query = GetSafeVariableName("query");
             var res = GetSafeVariableName("res");
 
-            if (orderedEndpoints.IndexOf(endpoint) > 0 || !Config.UsePrimaryConstructors || hasJson)
+            if (orderedEndpoints.IndexOf(endpoint) > 0 || !primaryConstructor || hasJson)
             {
                 fw.WriteLine();
             }
@@ -309,7 +311,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         var first = listQPs.IndexOf(qp) == 0;
                         fw.WriteLine(
                             first ? 0 : 3,
-                            $@"{(first ? string.Empty : " ")}.Concat({qp.GetParamName()}?.Select(i => new KeyValuePair<string, string>(""{qp.GetParamName()}"", i{toString})) ?? new Dictionary<string, string>())"
+                            $@"{(first ? string.Empty : " ")}.Concat({qp.GetParamName()}?.Select(i => new KeyValuePair<string, string{(Config.NullableEnable ? "?" : string.Empty)}>(""{qp.GetParamName()}"", i{toString})) ?? {(primaryConstructor ? "[]" : $"new Dictionary<string, string{(Config.NullableEnable ? "?" : string.Empty)}>()")})"
                         );
                     }
 

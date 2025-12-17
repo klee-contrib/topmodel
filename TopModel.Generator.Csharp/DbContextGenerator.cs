@@ -144,7 +144,10 @@ public class DbContextGenerator(
         w.WriteNamespace(contextNs);
 
         w.WriteSummary("DbContext généré pour Entity Framework Core.");
-        if (Config.UsePrimaryConstructors)
+
+        var primaryConstructor = Config.DotnetVersion >= 8;
+
+        if (primaryConstructor)
         {
             w.WriteLine(
                 $"public partial class {dbContextName}(DbContextOptions<{dbContextName}> options) : DbContext(options)"
@@ -166,7 +169,7 @@ public class DbContextGenerator(
 
         foreach (var classe in classes)
         {
-            if (classes.IndexOf(classe) > 0 || !Config.UsePrimaryConstructors)
+            if (classes.IndexOf(classe) > 0 || !primaryConstructor)
             {
                 w.WriteLine();
             }

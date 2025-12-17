@@ -11,7 +11,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 {
     public override string Name => "CSharpClassGen";
 
-    protected virtual IDictionary<string, string> NewableTypes { get; } =
+    protected virtual IDictionary<string, string> CollectionTypes { get; } =
         new Dictionary<string, string>()
         {
             ["IEnumerable"] = "List",
@@ -372,11 +372,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteExample(1, example);
         }
 
-        var cp = property.Composition != null ? property : null;
-
         var type = Config.GetType(
             property,
-            nonNullable: cp != null && cp.Required || property.Required && Config.RequiredNonNullable(tag)
+            nonNullable: property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
         );
 
         if (!property.Class.Abstract)
@@ -470,12 +468,21 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             var defaultValue = Config.GetValue(property);
 
-            if (cp != null && cp.Required)
+            if (type != null && property.Composition != null && property.Required)
             {
-                var newableType = GetNewableType(cp);
-                if (newableType != null && (!Config.RequiredNonNullable(tag) || newableType != type))
+                var genericType = type.Split('<')[0];
+
+                if (property.Domain == null)
                 {
-                    defaultValue = $"new {newableType}()";
+                    if (!Config.RequiredNonNullable(tag))
+                    {
+                        defaultValue = $"new()";
+                    }
+                }
+                else if (CollectionTypes.TryGetValue(genericType, out var collectionType))
+                {
+                    defaultValue =
+                        Config.DotnetVersion >= 8 ? "[]" : $"new {type.Replace(genericType, collectionType)}()";
                 }
             }
 
@@ -597,24 +604,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     protected virtual string GetNamespace(Class classe, string tag)
     {
         return Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag));
-    }
-
-    protected virtual string? GetNewableType(IProperty property)
-    {
-        var type = Config.GetType(property, nonNullable: true);
-        var genericType = type.Split('<')[0];
-
-        if (property.Domain == null)
-        {
-            return type;
-        }
-
-        if (NewableTypes.TryGetValue(genericType, out var newableType))
-        {
-            return type.Replace(genericType, newableType);
-        }
-
-        return null;
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)

@@ -10,6 +10,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 {
     public override string Name => "CSharpRefAccessGen";
 
+    private bool PrimaryConstructor => Config.DotnetVersion >= 8;
+
     /// <summary>
     /// Génère l'implémentation des ReferenceAccessors.
     /// </summary>
@@ -101,7 +103,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteSummary($"Implémentation de {interfaceName}.");
 
-        if (Config.UsePrimaryConstructors)
+        if (PrimaryConstructor)
         {
             if (Config.DbContextPath != null)
             {
@@ -125,9 +127,9 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 inheritedClass: null,
                 isRecord: false,
                 [interfaceName],
-                Config.UsePrimaryConstructors ? parameters : null
+                PrimaryConstructor ? parameters : null
             );
-            if (!Config.UsePrimaryConstructors)
+            if (!PrimaryConstructor)
             {
                 w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
                 w.WriteLine();
@@ -149,9 +151,9 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 inheritedClass: null,
                 isRecord: false,
                 [interfaceName],
-                Config.UsePrimaryConstructors ? parameters : null
+                PrimaryConstructor ? parameters : null
             );
-            if (!Config.UsePrimaryConstructors)
+            if (!PrimaryConstructor)
             {
                 w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
                 w.WriteLine();
@@ -323,7 +325,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         var defaultProperty = classe.OrderProperty ?? classe.DefaultProperty;
 
         var queryParameter = string.Empty;
-        var dbContext = $"{(Config.UsePrimaryConstructors ? string.Empty : "_")}dbContext";
+        var dbContext = $"{(PrimaryConstructor ? string.Empty : "_")}dbContext";
         if (Config.DbContextPath != null)
         {
             if (Config.PersistedReferencesResources)
@@ -397,7 +399,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
             w.WriteLine(
                 2,
-                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
             );
         }
     }
