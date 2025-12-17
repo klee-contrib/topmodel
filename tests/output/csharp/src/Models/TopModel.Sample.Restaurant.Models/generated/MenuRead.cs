@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -26,14 +25,14 @@ public partial record MenuRead
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Description du menu.
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Prix du menu.

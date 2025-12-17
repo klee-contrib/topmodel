@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -26,7 +25,7 @@ public partial record TableRead
     [Required]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string Numero { get; set; }
+    public string? Numero { get; set; }
 
     /// <summary>
     /// Capacité de la table (nombre de places).

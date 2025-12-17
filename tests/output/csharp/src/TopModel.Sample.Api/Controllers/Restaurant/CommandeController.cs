@@ -2,7 +2,10 @@
 //// ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !
 ////
 
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Api.Restaurant;
 
@@ -17,7 +20,7 @@ public class CommandeController : Controller
     [HttpPost("api/restaurants/commandes")]
     public async Task<CommandeRead> AddCommande([FromBody] CommandeWrite commande, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -29,7 +32,7 @@ public class CommandeController : Controller
     [HttpPost("api/restaurants/reservations")]
     public async Task<ReservationRead> CreateReservation([FromBody] ReservationWrite reservation, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -41,7 +44,7 @@ public class CommandeController : Controller
     [HttpDelete("api/restaurants/commandes/{comId:int}")]
     public async Task DeleteCommande(int comId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -53,7 +56,7 @@ public class CommandeController : Controller
     [HttpDelete("api/restaurants/commandes")]
     public async Task DeleteCommandeWithBody([FromBody] CommandeItem commandeItem, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -67,9 +70,9 @@ public class CommandeController : Controller
     [Authorize]
     [Authorize(Roles = "ADMIN")]
     [HttpGet("api/restaurants/commandes/export")]
-    public async Task<byte[]> ExportCommandes([Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<byte[]?> ExportCommandes([Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -81,7 +84,7 @@ public class CommandeController : Controller
     [HttpGet("api/restaurants/commandes/{comId:int}")]
     public async Task<CommandeRead> GetCommande(int comId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -95,7 +98,7 @@ public class CommandeController : Controller
     [HttpGet("api/restaurants/commandes")]
     public async Task<ICollection<CommandeItem>> GetCommandes([Required] int? clientId = null, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -107,7 +110,7 @@ public class CommandeController : Controller
     [HttpGet("api/restaurants/commandes/by-date")]
     public async Task<ICollection<CommandeItem>> GetCommandesByDate([Required] DateTime? dateCommande = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -118,7 +121,7 @@ public class CommandeController : Controller
     [HttpGet("api/restaurants/statuts-commande")]
     public async Task<ICollection<StatutCommande>> GetStatutCommandes(CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -131,7 +134,7 @@ public class CommandeController : Controller
     [HttpPatch("api/restaurants/commandes/{comId:int}")]
     public async Task<CommandeRead> PatchCommande(int comId, [FromBody] CommandeWrite commande, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -144,7 +147,7 @@ public class CommandeController : Controller
     [HttpPut("api/restaurants/commandes/{comId:int}")]
     public async Task<CommandeRead> UpdateCommande(int comId, [FromBody] CommandeWrite commande, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -157,7 +160,6 @@ public class CommandeController : Controller
     [HttpPatch("api/restaurants/commandes/{comId:int}/statut")]
     public async Task<CommandeRead> UpdateCommandeStatut(int comId, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
-
 }

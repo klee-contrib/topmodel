@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,8 +12,8 @@ namespace TopModel.Sample.Clients.External.Restaurant;
 /// <summary>
 /// Client Personne.
 /// </summary>
-/// <param name="client">HttpClient injecté.</param>
-public partial class PersonneClient(HttpClient client)
+/// <param name="_client">HttpClient injecté.</param>
+public partial class PersonneClient(HttpClient _client)
 {
     private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -27,10 +26,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ClientRead> AddClient(ClientWrite client, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/clients") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/restaurants/clients") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -42,10 +41,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<EmployeRead> AddEmploye(EmployeWrite employe, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/employes") { Content = JsonContent.Create(employe, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/restaurants/employes") { Content = JsonContent.Create(employe, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<EmployeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<EmployeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -57,7 +56,7 @@ public partial class PersonneClient(HttpClient client)
     public async Task DeleteClient(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Delete, $"api/restaurants/clients/{perId}"), ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Delete, $"api/restaurants/clients/{perId}"), ct);
         await EnsureSuccess(res, ct);
     }
 
@@ -74,18 +73,18 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ICollection<AvisClientRead>> GetAvisClients(int? resRestaurantId = null, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["resRestaurantId"] = resRestaurantId?.ToString(CultureInfo.InvariantCulture),
-            ["noteMin"] = noteMin?.ToString(CultureInfo.InvariantCulture),
-            ["approuve"] = approuve?.ToString(CultureInfo.InvariantCulture),
-            ["dateDebut"] = dateDebut?.ToString(CultureInfo.InvariantCulture),
-            ["dateFin"] = dateFin?.ToString(CultureInfo.InvariantCulture),
+            ["resRestaurantId"] = resRestaurantId?.ToString(),
+            ["noteMin"] = noteMin?.ToString(),
+            ["approuve"] = approuve.ToString(),
+            ["dateDebut"] = dateDebut?.ToString("o"),
+            ["dateFin"] = dateFin?.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/avis?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/avis?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<AvisClientRead>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<AvisClientRead>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -97,10 +96,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ClientRead> GetClient(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}"), HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -112,10 +111,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ClientAvecCommandes> GetClientAvecCommandes(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/avec-commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/avec-commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ClientAvecCommandes>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ClientAvecCommandes>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -127,10 +126,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ICollection<CommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -140,18 +139,18 @@ public partial class PersonneClient(HttpClient client)
     /// <param name="email">Adresse email du client.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des clients.</returns>
-    public async Task<ICollection<ClientItem>> GetClients(string nom = null, string email = null, CancellationToken ct = default)
+    public async Task<ICollection<ClientItem>> GetClients(string? nom = null, string? email = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
             ["nom"] = nom,
             ["email"] = email,
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<ClientItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<ClientItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -164,10 +163,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ClientRead> PatchClient(int perId, ClientWrite client, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/clients/{perId}") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/clients/{perId}") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -180,10 +179,10 @@ public partial class PersonneClient(HttpClient client)
     public async Task<ClientRead> UpdateClient(int perId, ClientWrite client, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/clients/{perId}") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Put, $"api/restaurants/clients/{perId}") { Content = JsonContent.Create(client, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ClientRead>(_jsOptions, ct))!;
     }
 
     /// <summary>

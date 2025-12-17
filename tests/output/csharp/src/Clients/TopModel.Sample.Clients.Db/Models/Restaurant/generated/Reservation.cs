@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -45,7 +45,7 @@ public partial record Reservation
     [Column("rev_commentaire")]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Commentaire { get; set; }
+    public string? Commentaire { get; set; }
 
     /// <summary>
     /// Indique si la réservation est confirmée.

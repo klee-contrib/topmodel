@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,7 +29,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants") { Content = JsonContent.Create(restaurant, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/tables") { Content = JsonContent.Create(table, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -86,7 +85,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -102,7 +101,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/menus/{menId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -116,15 +115,15 @@ public partial class RestaurantClient(HttpClient client)
     public async Task<ICollection<PlatItem>> GetRestaurantPlats(int resId, bool disponible = true, CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["disponible"] = disponible?.ToString(CultureInfo.InvariantCulture),
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(CultureInfo.InvariantCulture),
+            ["disponible"] = disponible.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -138,15 +137,15 @@ public partial class RestaurantClient(HttpClient client)
     public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateDebut"] = dateDebut?.ToString(CultureInfo.InvariantCulture),
-            ["dateFin"] = dateFin?.ToString(CultureInfo.InvariantCulture),
+            ["dateDebut"] = dateDebut?.ToString("o"),
+            ["dateFin"] = dateFin?.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/statistiques?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<StatistiquesRestaurant>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<StatistiquesRestaurant>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -159,14 +158,14 @@ public partial class RestaurantClient(HttpClient client)
     public async Task<ICollection<TableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["disponible"] = disponible?.ToString(CultureInfo.InvariantCulture),
+            ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/tables?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<TableItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<TableItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -180,7 +179,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<RestaurantItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<RestaurantItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -195,7 +194,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/tables/{tabId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -208,15 +207,15 @@ public partial class RestaurantClient(HttpClient client)
     public async Task<ICollection<TableItem>> GetTables(int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["restaurantId"] = restaurantId?.ToString(CultureInfo.InvariantCulture),
-            ["disponible"] = disponible?.ToString(CultureInfo.InvariantCulture),
+            ["restaurantId"] = restaurantId?.ToString(),
+            ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/tables?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<TableItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<TableItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -227,19 +226,19 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="noteMin">Note minimum requise.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des restaurants correspondant aux critères.</returns>
-    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants(string nom = null, string adresse = null, int? noteMin = null, CancellationToken ct = default)
+    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants(string? nom = null, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
             ["nom"] = nom,
             ["adresse"] = adresse,
-            ["noteMin"] = noteMin?.ToString(CultureInfo.InvariantCulture),
+            ["noteMin"] = noteMin?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<RestaurantAvecStatistiques>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<RestaurantAvecStatistiques>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -255,7 +254,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/{resId}") { Content = JsonContent.Create(restaurant, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<RestaurantRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -271,7 +270,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/tables/{tabId}") { Content = JsonContent.Create(table, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<TableRead>(_jsOptions, ct))!;
     }
 
     /// <summary>

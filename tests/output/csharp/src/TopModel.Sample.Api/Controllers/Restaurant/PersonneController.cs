@@ -2,7 +2,10 @@
 //// ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !
 ////
 
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Api.Restaurant;
 
@@ -17,7 +20,7 @@ public class PersonneController : Controller
     [HttpPost("api/restaurants/clients")]
     public async Task<ClientRead> AddClient([FromBody] ClientWrite client, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -31,7 +34,7 @@ public class PersonneController : Controller
     [HttpPost("api/restaurants/employes")]
     public async Task<EmployeRead> AddEmploye([FromBody] EmployeWrite employe, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -43,7 +46,7 @@ public class PersonneController : Controller
     [HttpDelete("api/restaurants/clients/{perId:int}")]
     public async Task DeleteClient(int perId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -59,7 +62,7 @@ public class PersonneController : Controller
     [HttpGet("api/restaurants/avis")]
     public async Task<ICollection<AvisClientRead>> GetAvisClients([Required] int? resRestaurantId = null, [Required] int? noteMin = null, bool approuve = false, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -71,7 +74,7 @@ public class PersonneController : Controller
     [HttpGet("api/restaurants/clients/{perId:int}")]
     public async Task<ClientRead> GetClient(int perId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -83,7 +86,7 @@ public class PersonneController : Controller
     [HttpGet("api/restaurants/clients/{perId:int}/avec-commandes")]
     public async Task<ClientAvecCommandes> GetClientAvecCommandes(int perId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -95,7 +98,7 @@ public class PersonneController : Controller
     [HttpGet("api/restaurants/clients/{perId:int}/commandes")]
     public async Task<ICollection<CommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -106,9 +109,9 @@ public class PersonneController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des clients</returns>
     [HttpGet("api/restaurants/clients")]
-    public async Task<ICollection<ClientItem>> GetClients([Required] string nom = null, string email = null, CancellationToken ct = default)
+    public async Task<ICollection<ClientItem>> GetClients([Required] string? nom = null, string? email = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -121,7 +124,7 @@ public class PersonneController : Controller
     [HttpPatch("api/restaurants/clients/{perId:int}")]
     public async Task<ClientRead> PatchClient(int perId, [FromBody] ClientWrite client, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -134,7 +137,6 @@ public class PersonneController : Controller
     [HttpPut("api/restaurants/clients/{perId:int}")]
     public async Task<ClientRead> UpdateClient(int perId, [FromBody] ClientWrite client, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
-
 }

@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -39,7 +38,7 @@ public partial record ReservationRead
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Commentaire { get; set; }
+    public string? Commentaire { get; set; }
 
     /// <summary>
     /// Indique si la réservation est confirmée.
@@ -74,7 +73,7 @@ public partial record ReservationRead
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string ClientNom { get; set; }
+    public string? ClientNom { get; set; }
 
     /// <summary>
     /// Informations du client ayant fait la réservation.
@@ -82,14 +81,14 @@ public partial record ReservationRead
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string ClientPrenom { get; set; }
+    public string? ClientPrenom { get; set; }
 
     /// <summary>
     /// Informations du client ayant fait la réservation.
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string ClientEmail { get; set; }
+    public string? ClientEmail { get; set; }
 
     /// <summary>
     /// Table réservée.
@@ -97,7 +96,7 @@ public partial record ReservationRead
     [Required]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string TableNumero { get; set; }
+    public string? TableNumero { get; set; }
 
     /// <summary>
     /// Table réservée.

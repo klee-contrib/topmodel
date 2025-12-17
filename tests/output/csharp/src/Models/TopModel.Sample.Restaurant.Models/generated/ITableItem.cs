@@ -17,7 +17,7 @@ public interface ITableItem
     /// <summary>
     /// Numéro de la table.
     /// </summary>
-    string Numero { get; }
+    string? Numero { get; }
 
     /// <summary>
     /// Capacité de la table (nombre de places).
@@ -43,5 +43,5 @@ public interface ITableItem
     /// <param name="disponible">Indique si la table est disponible.</param>
     /// <param name="restaurantId">Restaurant auquel appartient la table.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract ITableItem Create(int? id = null, string numero = null, int? capacite = null, bool? disponible = null, int? restaurantId = null);
+    static abstract ITableItem Create(int? id = null, string? numero = null, int? capacite = null, bool? disponible = null, int? restaurantId = null);
 }

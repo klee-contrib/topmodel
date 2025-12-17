@@ -2,7 +2,10 @@
 //// ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !
 ////
 
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Api.Restaurant;
 
@@ -17,7 +20,7 @@ public class RestaurantController : Controller
     [HttpPost("api/restaurants")]
     public async Task<RestaurantRead> AddRestaurant([FromBody] RestaurantWrite restaurant, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -29,7 +32,7 @@ public class RestaurantController : Controller
     [HttpPost("api/restaurants/tables")]
     public async Task<TableRead> AddTable([FromBody] TableWrite table, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -41,7 +44,7 @@ public class RestaurantController : Controller
     [HttpDelete("api/restaurants/{resId:int}")]
     public async Task DeleteRestaurant(int resId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -53,7 +56,7 @@ public class RestaurantController : Controller
     [HttpDelete("api/restaurants/tables/{tabId:int}")]
     public async Task DeleteTable(int tabId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -65,7 +68,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/{resId:int}")]
     public async Task<RestaurantRead> GetRestaurant(int resId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -78,7 +81,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/{resId:int}/menus/{menId:int}")]
     public async Task<MenuRead> GetRestaurantMenu(int resId, int menId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -92,7 +95,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/{resId:int}/plats")]
     public async Task<ICollection<PlatItem>> GetRestaurantPlats(int resId, bool disponible = true, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -107,7 +110,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/{resId:int}/statistiques")]
     public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -120,7 +123,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/{resId:int}/tables")]
     public async Task<ICollection<TableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -131,7 +134,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants")]
     public async Task<ICollection<RestaurantItem>> GetRestaurants(CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -143,7 +146,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/tables/{tabId:int}")]
     public async Task<TableRead> GetTable(int tabId, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -156,7 +159,7 @@ public class RestaurantController : Controller
     [HttpGet("api/restaurants/tables")]
     public async Task<ICollection<TableItem>> GetTables([Required] int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -168,9 +171,9 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des restaurants correspondant aux critères</returns>
     [HttpGet("api/restaurants/search")]
-    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants([Required] string nom = null, string adresse = null, [Required] int? noteMin = null, CancellationToken ct = default)
+    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants([Required] string? nom = null, string? adresse = null, [Required] int? noteMin = null, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -183,7 +186,7 @@ public class RestaurantController : Controller
     [HttpPut("api/restaurants/{resId:int}")]
     public async Task<RestaurantRead> UpdateRestaurant(int resId, [FromBody] RestaurantWrite restaurant, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -196,7 +199,6 @@ public class RestaurantController : Controller
     [HttpPut("api/restaurants/tables/{tabId:int}")]
     public async Task<TableRead> UpdateTable(int tabId, [FromBody] TableWrite table, CancellationToken ct = default)
     {
-
+        throw new NotImplementedException();
     }
-
 }

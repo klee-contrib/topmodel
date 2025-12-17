@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -19,7 +18,7 @@ public partial record EmployeWrite
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Prénom de la personne.
@@ -27,14 +26,14 @@ public partial record EmployeWrite
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Prenom { get; set; }
+    public string? Prenom { get; set; }
 
     /// <summary>
     /// Numéro de téléphone de l'employé.
     /// </summary>
     [Domain(Domains.Telephone)]
     [StringLength(20)]
-    public string Telephone { get; set; }
+    public string? Telephone { get; set; }
 
     /// <summary>
     /// Date de naissance.
@@ -48,7 +47,7 @@ public partial record EmployeWrite
     [Required]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string Matricule { get; set; }
+    public string? Matricule { get; set; }
 
     /// <summary>
     /// Date d'embauche.

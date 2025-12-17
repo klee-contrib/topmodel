@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -26,7 +25,7 @@ public partial record ClientAvecCommandes
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Prénom de la personne.
@@ -34,66 +33,66 @@ public partial record ClientAvecCommandes
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Prenom { get; set; }
+    public string? Prenom { get; set; }
 
     /// <summary>
     /// Adresse email du client.
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
     /// Association réciproque de AvisClient.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> AvisClients { get; set; }
+    public ICollection<int>? AvisClients { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Required]
     [Domain(Domains.Liste)]
-    public ICollection<int> CommandeId { get; set; }
+    public ICollection<int>? CommandeId { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Required]
     [Domain(Domains.Liste)]
-    public ICollection<DateTime> CommandeDateCommande { get; set; }
+    public ICollection<DateTime>? CommandeDateCommande { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<DateTime> CommandeDateLivraison { get; set; }
-
-    /// <summary>
-    /// Liste des commandes du client.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Liste)]
-    public ICollection<decimal> CommandeMontantTotal { get; set; }
+    public ICollection<DateTime>? CommandeDateLivraison { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Required]
     [Domain(Domains.Liste)]
-    public ICollection<int> CommandeClientId { get; set; }
+    public ICollection<decimal>? CommandeMontantTotal { get; set; }
+
+    /// <summary>
+    /// Liste des commandes du client.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Liste)]
+    public ICollection<int>? CommandeClientId { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> CommandeTableId { get; set; }
+    public ICollection<int>? CommandeTableId { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> CommandeReservationId { get; set; }
+    public ICollection<int>? CommandeReservationId { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
@@ -101,11 +100,11 @@ public partial record ClientAvecCommandes
     [Required]
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Liste)]
-    public ICollection<StatutCommande.Codes> CommandeStatutCommandeCode { get; set; }
+    public ICollection<StatutCommande.Codes>? CommandeStatutCommandeCode { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<ICollection<int>> CommandeLignes { get; set; }
+    public ICollection<ICollection<int>>? CommandeLignes { get; set; }
 }

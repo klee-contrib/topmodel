@@ -5,7 +5,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
@@ -83,5 +82,5 @@ public partial record Commande
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> Lignes { get; set; }
+    public ICollection<int>? Lignes { get; set; }
 }

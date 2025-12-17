@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -30,7 +30,7 @@ public partial record Personne
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Prénom de la personne.
@@ -39,5 +39,5 @@ public partial record Personne
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Prenom { get; set; }
+    public string? Prenom { get; set; }
 }

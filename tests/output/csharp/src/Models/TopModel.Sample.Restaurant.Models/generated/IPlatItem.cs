@@ -17,7 +17,7 @@ public interface IPlatItem
     /// <summary>
     /// Nom du plat.
     /// </summary>
-    string Nom { get; }
+    string? Nom { get; }
 
     /// <summary>
     /// Prix du plat.
@@ -43,5 +43,5 @@ public interface IPlatItem
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="categoriePlatCode">Catégorie du plat.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IPlatItem Create(int? id = null, string nom = null, decimal? prix = null, bool? disponible = null, CategoriePlat.Codes? categoriePlatCode = null);
+    static abstract IPlatItem Create(int? id = null, string? nom = null, decimal? prix = null, bool? disponible = null, CategoriePlat.Codes? categoriePlatCode = null);
 }

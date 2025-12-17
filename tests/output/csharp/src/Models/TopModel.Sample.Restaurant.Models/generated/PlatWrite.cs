@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -19,14 +18,14 @@ public partial record PlatWrite
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Description du plat.
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Prix du plat.

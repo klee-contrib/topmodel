@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -21,7 +21,7 @@ public partial record Employe : Personne
     [Column("emp_telephone")]
     [Domain(Domains.Telephone)]
     [StringLength(20)]
-    public string Telephone { get; set; }
+    public string? Telephone { get; set; }
 
     /// <summary>
     /// Date de naissance.
@@ -37,7 +37,7 @@ public partial record Employe : Personne
     [Required]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string Matricule { get; set; }
+    public string? Matricule { get; set; }
 
     /// <summary>
     /// Date d'embauche.

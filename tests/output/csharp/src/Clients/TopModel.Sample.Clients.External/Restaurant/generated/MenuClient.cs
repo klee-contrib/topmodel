@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,7 +29,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/plats") { Content = JsonContent.Create(plat, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/menus") { Content = JsonContent.Create(menu, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -72,7 +71,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/categorie-plats"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<CategoriePlat>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<CategoriePlat>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -87,7 +86,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats/{plaId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -101,16 +100,16 @@ public partial class MenuClient(HttpClient client)
     public async Task<ICollection<PlatItem>> GetPlats(bool disponible = true, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["disponible"] = disponible?.ToString(CultureInfo.InvariantCulture),
-            ["restaurantId"] = restaurantId?.ToString(CultureInfo.InvariantCulture),
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(CultureInfo.InvariantCulture),
+            ["disponible"] = disponible.ToString(),
+            ["restaurantId"] = restaurantId?.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -126,7 +125,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/plats/{plaId}") { Content = JsonContent.Create(plat, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -142,7 +141,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/promotions/{proId}") { Content = JsonContent.Create(promotion, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<PromotionRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<PromotionRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -154,20 +153,20 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Plats correspondant aux critères de recherche.</returns>
-    public async Task<ICollection<PlatItem>> SearchPlats(string nom = null, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<PlatItem>> SearchPlats(string? nom = null, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
             ["nom"] = nom,
-            ["restaurantId"] = restaurantId?.ToString(CultureInfo.InvariantCulture),
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(CultureInfo.InvariantCulture),
-            ["disponible"] = disponible?.ToString(CultureInfo.InvariantCulture),
+            ["restaurantId"] = restaurantId?.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
+            ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -183,7 +182,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/plats/{plaId}") { Content = JsonContent.Create(plat, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<PlatRead>(_jsOptions, ct))!;
     }
 
     /// <summary>

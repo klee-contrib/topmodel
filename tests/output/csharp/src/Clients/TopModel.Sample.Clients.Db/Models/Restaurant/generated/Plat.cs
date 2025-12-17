@@ -5,7 +5,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
@@ -31,7 +30,7 @@ public partial record Plat
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Description du plat.
@@ -39,7 +38,7 @@ public partial record Plat
     [Column("pla_description")]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Prix du plat.
@@ -79,5 +78,5 @@ public partial record Plat
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> Promotions { get; set; }
+    public ICollection<int>? Promotions { get; set; }
 }

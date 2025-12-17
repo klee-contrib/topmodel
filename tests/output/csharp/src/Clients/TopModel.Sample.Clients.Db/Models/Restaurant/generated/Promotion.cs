@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
+using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -30,7 +30,7 @@ public partial record Promotion
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Libelle { get; set; }
+    public string? Libelle { get; set; }
 
     /// <summary>
     /// Pourcentage de réduction (0-100).
@@ -76,5 +76,5 @@ public partial record Promotion
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
-    public ICollection<int> Plats { get; set; }
+    public ICollection<int>? Plats { get; set; }
 }

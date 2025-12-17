@@ -134,7 +134,7 @@ public partial class TopModelSampleDbContext : DbContext
         reservation.Property(p => p.TableId).HasComment("Table réservée");
         reservation.Property(p => p.RestaurantId).HasComment("Restaurant concerné par la réservation");
 
-        var restaurant = modelBuilder.Entity<Restaurant>();
+        var restaurant = modelBuilder.Entity<Models.Restaurant.Restaurant>();
         restaurant.ToTable(t => t.HasComment("Restaurant"));
         restaurant.Property(p => p.Id).HasComment("Identifiant du restaurant");
         restaurant.Property(p => p.Nom).HasComment("Nom du restaurant");

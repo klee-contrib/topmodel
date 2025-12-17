@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -26,7 +25,7 @@ public partial record ClientRead
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Nom { get; set; }
+    public string? Nom { get; set; }
 
     /// <summary>
     /// Prénom de la personne.
@@ -34,18 +33,18 @@ public partial record ClientRead
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Prenom { get; set; }
+    public string? Prenom { get; set; }
 
     /// <summary>
     /// Adresse email du client.
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
     /// Association réciproque de AvisClient.ClientId.
     /// </summary>
     [Domain(Domains.Liste)]
-    public ICollection<int> AvisClients { get; set; }
+    public ICollection<int>? AvisClients { get; set; }
 }

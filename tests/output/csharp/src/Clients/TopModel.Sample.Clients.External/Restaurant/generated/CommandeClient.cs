@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -31,7 +30,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/commandes") { Content = JsonContent.Create(commande, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -46,7 +45,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/reservations") { Content = JsonContent.Create(reservation, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ReservationRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ReservationRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -82,13 +81,13 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="dateFin">Date et heure de la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Fichier CSV des commandes.</returns>
-    public async Task<byte[]> ExportCommandes(DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<byte[]?> ExportCommandes(DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateDebut"] = dateDebut?.ToString(CultureInfo.InvariantCulture),
-            ["dateFin"] = dateFin?.ToString(CultureInfo.InvariantCulture),
+            ["dateDebut"] = dateDebut?.ToString("o"),
+            ["dateFin"] = dateFin?.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/export?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
@@ -98,9 +97,7 @@ public partial class CommandeClient(HttpClient client)
             return null;
         }
 
-        using var ms = new MemoryStream();
-        (await res.Content.ReadAsStreamAsync(ct)).CopyTo(ms);
-        return ms.ToArray();
+        return await res.Content.ReadFromJsonAsync<byte[]?>(_jsOptions, ct);
     }
 
     /// <summary>
@@ -115,7 +112,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/{comId}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -129,16 +126,16 @@ public partial class CommandeClient(HttpClient client)
     public async Task<ICollection<CommandeItem>> GetCommandes(int? clientId = null, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["clientId"] = clientId?.ToString(CultureInfo.InvariantCulture),
-            ["statutCommandeCode"] = statutCommandeCode?.ToString(CultureInfo.InvariantCulture),
-            ["tableId"] = tableId?.ToString(CultureInfo.InvariantCulture),
+            ["clientId"] = clientId?.ToString(),
+            ["statutCommandeCode"] = statutCommandeCode.ToString(),
+            ["tableId"] = tableId?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -150,14 +147,14 @@ public partial class CommandeClient(HttpClient client)
     public async Task<ICollection<CommandeItem>> GetCommandesByDate(DateTime? dateCommande = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateCommande"] = dateCommande?.ToString(CultureInfo.InvariantCulture),
+            ["dateCommande"] = dateCommande?.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/by-date?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -171,7 +168,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/statuts-commande"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<ICollection<StatutCommande>>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<ICollection<StatutCommande>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -187,7 +184,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/commandes/{comId}") { Content = JsonContent.Create(commande, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -203,7 +200,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Put, $"api/restaurants/commandes/{comId}") { Content = JsonContent.Create(commande, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -216,14 +213,14 @@ public partial class CommandeClient(HttpClient client)
     public async Task<CommandeRead> UpdateCommandeStatut(int comId, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["statutCommandeCode"] = statutCommandeCode?.ToString(CultureInfo.InvariantCulture),
+            ["statutCommandeCode"] = statutCommandeCode.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/commandes/{comId}/statut?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct);
+        return (await res.Content.ReadFromJsonAsync<CommandeRead>(_jsOptions, ct))!;
     }
 
     /// <summary>

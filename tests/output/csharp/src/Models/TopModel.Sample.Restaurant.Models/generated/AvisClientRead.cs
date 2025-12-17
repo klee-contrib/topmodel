@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Common;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -32,7 +31,7 @@ public partial record AvisClientRead
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string Commentaire { get; set; }
+    public string? Commentaire { get; set; }
 
     /// <summary>
     /// Date de l'avis.

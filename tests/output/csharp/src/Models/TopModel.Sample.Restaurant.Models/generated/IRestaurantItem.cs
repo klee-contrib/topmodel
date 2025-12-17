@@ -17,17 +17,17 @@ public interface IRestaurantItem
     /// <summary>
     /// Nom du restaurant.
     /// </summary>
-    string Nom { get; }
+    string? Nom { get; }
 
     /// <summary>
     /// Adresse du restaurant.
     /// </summary>
-    string Adresse { get; }
+    string? Adresse { get; }
 
     /// <summary>
     /// Numéro de téléphone.
     /// </summary>
-    string Telephone { get; }
+    string? Telephone { get; }
 
     /// <summary>
     /// Factory pour instancier la classe.
@@ -37,5 +37,5 @@ public interface IRestaurantItem
     /// <param name="adresse">Adresse du restaurant.</param>
     /// <param name="telephone">Numéro de téléphone.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract IRestaurantItem Create(int? id = null, string nom = null, string adresse = null, string telephone = null);
+    static abstract IRestaurantItem Create(int? id = null, string? nom = null, string? adresse = null, string? telephone = null);
 }
