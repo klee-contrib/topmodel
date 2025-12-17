@@ -1,3 +1,23 @@
+## 3.7.0
+
+- [`02e9ea7`](https://github.com/klee-contrib/topmodel/commit/02e9ea73e8b0bb11cbe8721dcb2a6b7854d90217) - [C#] `usePrimaryConstructors` => `dotnetVersion`, et utilisation d'initialiseurs de collections
+
+  **impacts** :
+
+  - L'option `usePrimaryConstructors` (qui était déjà par défaut à `true`) a été remplacée par une option `dotnetVersion`, qui vaut `10` par défaut. Avoir `dotnetVersion` >= 8 est équivalent à avoir l'ancienne option à `true`. De plus, les DataFlows sont désormais également générés avec des constructeurs principaux.
+  - Dans les classes, les initialisations de compositions simples sont désormais toujours générées avec un `new()` (qui existe depuis .NET 5...), et les initialisations de composition avec collection sont générées avec un `[]` si `dotnetVersion` > 8.
+
+- [`a4dde22`](https://github.com/klee-contrib/topmodel/commit/a4dde22dbed87a927e64d30552859b5a82970e47) - [C#] ClientApi : Fixes génération query string
+
+  **impacts** :
+
+  - Les query params ne sont désormais générés avec des `.ToString(CurrentCulture.InvariantCulture)` que pour `decimal`, `double` et `float`. Ce n'était en particulier par nécessaire pour `int`, `bool` et les enums.
+  - Les dates sont désormais correctement sérialisées en ISO String (avec un `ToString("o")` au lieu de la culture invariante, qui ne génèrerait pas un format standard)
+  - En `nullableEnable`/`requiredNonNullable`, la nullabilité des différents paramètres et objets créés dans l'appel est désormais correctement respectée.
+
+- [`8d8764c`](https://github.com/klee-contrib/topmodel/commit/8d8764ce25ad42c8d5d031f02582e3eee9fc0951) - [C#] DbContext : Fix quand la classe a le même nom que le module.
+- [`c3a2953`](https://github.com/klee-contrib/topmodel/commit/c3a2953e7c285529ee2304fea296a8a98346723f) - [C#] Class : Fix option "DatabaseGeneratedOption.None"
+
 ## 3.6.0
 
 Compatibilité avec Topmodel 3.8
