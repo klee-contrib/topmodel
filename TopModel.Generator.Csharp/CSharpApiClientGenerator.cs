@@ -84,7 +84,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     .Any(qp =>
                     {
                         var typeName = Config.GetType(qp);
-                        return !typeName.StartsWith("string") && !typeName.StartsWith("Guid");
+                        return typeName.Contains("decimal")
+                            || typeName.Contains("double")
+                            || typeName.Contains("float");
                     })
             )
         )
@@ -119,12 +121,19 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         fw.WriteNamespace(ns);
 
-        var parameters = "HttpClient client";
+        var client = $"{(!Config.UsePrimaryConstructors ? "_" : string.Empty)}client";
+
+        while (endpoints.SelectMany(e => e.Params).Any(p => p.GetParamName() == client))
+        {
+            client = $"_{client}";
+        }
+
+        var parameters = $"HttpClient {client}";
 
         fw.WriteSummary($"Client {fileName}");
         if (Config.UsePrimaryConstructors)
         {
-            fw.WriteParam("client", "HttpClient injecté.", 0);
+            fw.WriteParam(client, "HttpClient injecté.", 0);
         }
 
         fw.WriteClassDeclaration(
@@ -136,7 +145,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         if (!Config.UsePrimaryConstructors)
         {
-            fw.WriteLine(1, "private readonly HttpClient _client;");
+            fw.WriteLine(1, $"private readonly HttpClient {client};");
         }
 
         if (hasJson)
@@ -154,7 +163,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             fw.WriteParam("client", "HttpClient injecté.");
             fw.WriteLine(1, $"public {className}(HttpClient client)");
             fw.WriteLine(1, "{");
-            fw.WriteLine(2, "_client = client;");
+            fw.WriteLine(2, $"{client} = client;");
             fw.WriteLine(1, "}");
         }
 
@@ -164,7 +173,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         {
             string GetSafeVariableName(string varName)
             {
-                while (endpoint.Params.Any(p => p.NameCamel == varName))
+                while (endpoint.Params.Any(p => p.GetParamName() == varName))
                 {
                     varName = $"_{varName}";
                 }
@@ -253,16 +262,23 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             if (endpoint.GetQueryParams().Any())
             {
-                fw.WriteLine(2, $"var {query} = await new FormUrlEncodedContent(new Dictionary<string, string>");
+                fw.WriteLine(
+                    2,
+                    $"var {query} = await new FormUrlEncodedContent(new Dictionary<string, string{(Config.NullableEnable ? "?" : string.Empty)}>"
+                );
                 fw.WriteLine(2, "{");
 
                 foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
-                    var toString = Config.GetType(qp)?.TrimEnd('?') switch
+                    var type = Config.GetType(qp, nonNullable: Config.GetValue(qp) != "null");
+                    var nullable = type.EndsWith('?');
+                    var toString = type.TrimEnd("?") switch
                     {
                         "string" => string.Empty,
-                        "Guid" => "?.ToString()",
-                        _ => $"?.ToString(CultureInfo.InvariantCulture)",
+                        "decimal" or "double" or "float" =>
+                            $"{(nullable ? "?" : string.Empty)}.ToString(CultureInfo.InvariantCulture)",
+                        "DateTime" or "DateOnly" => $"{(nullable ? "?" : string.Empty)}.ToString(\"o\")",
+                        _ => $"{(nullable ? "?" : string.Empty)}.ToString()",
                     };
 
                     fw.WriteLine(3, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
@@ -285,8 +301,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         var toString = Config.GetType(qp) switch
                         {
                             "string[]" => string.Empty,
-                            "Guid[]" => ".ToString()",
-                            _ => $".ToString(CultureInfo.InvariantCulture)",
+                            "decimal[]" or "double[]" or "float[]" => $".ToString(CultureInfo.InvariantCulture)",
+                            "DateTime[]" or "DateOnly[]" => $".ToString(\"o\")",
+                            _ => $".ToString()",
                         };
 
                         var first = listQPs.IndexOf(qp) == 0;
@@ -305,7 +322,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             fw.WriteLine(
                 2,
-                $"using var {res} = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? $"?{{{query}}}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
+                $"using var {res} = await {client}.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? $"?{{{query}}}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
             );
             fw.WriteLine(2, $"await EnsureSuccess({res}{(Config.UseCancellationTokens ? $", {ct}" : string.Empty)});");
 
