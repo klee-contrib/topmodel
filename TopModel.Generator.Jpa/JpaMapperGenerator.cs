@@ -327,17 +327,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     getter = $"{sourceName}.{getterName}()";
                     var mapperName = Config.GetMapperName(cpMapperNs, cpMapperModelPath);
-                    if (propertySource.AssociationToMany)
-                    {
-                        getter = $"{getter}.stream().map({mapperName} :: create{cpc}).collect({collector})";
-                        imports.Add("java.util.stream.Collectors");
-                    }
-                    else
-                    {
-                        var target = $"target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}()";
-                        getter =
-                            $"{target} != null ? {mapperName}.map{cpc}({getter}, {target}) : {mapperName}.create{cpc}({getter})";
-                    }
+                    var target = $"target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}()";
+                    getter =
+                        $"{target} != null ? {mapperName}.map{cpc}({getter}, {target}) : {mapperName}.create{cpc}({getter})";
 
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
@@ -411,33 +403,15 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     if (Config.EnumsAsEnums)
                     {
-                        if (propertyTarget.AssociationToMany)
-                        {
-                            checkSourceNull = true;
-                            getter = $@"{sourceName}.{getterName}().stream().collect({collector})";
-                            imports.Add("java.util.stream.Collectors");
-                        }
-                        else
-                        {
-                            getter = $@"{sourceName}.{getterName}()";
-                            imports.Add(aTarget.GetImport(Config, tag));
-                            checkSourceNull = false;
-                        }
+                        getter = $@"{sourceName}.{getterName}()";
+                        imports.Add(aTarget.GetImport(Config, tag));
+                        checkSourceNull = false;
                     }
                     else
                     {
                         checkSourceNull = true;
-                        if (propertyTarget.AssociationToMany)
-                        {
-                            getter =
-                                $@"{sourceName}.{getterName}().stream().map({aTarget.NamePascal}::new).collect({collector})";
-                            imports.Add("java.util.stream.Collectors");
-                        }
-                        else
-                        {
-                            getter = $"new {aTarget.NamePascal}({sourceName}.{getterName}())";
-                            imports.Add(aTarget.GetImport(Config, tag));
-                        }
+                        getter = $"new {aTarget.NamePascal}({sourceName}.{getterName}())";
+                        imports.Add(aTarget.GetImport(Config, tag));
                     }
                 }
                 else
@@ -456,22 +430,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var cpMapper = cpc.ToMappers.Single(t => t.Class == aTarget);
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
-                    var isMultiple = propertyTarget.AssociationToMany;
-
-                    if (isMultiple)
-                    {
-                        checkSourceNull = !propertySource.Class.IsPersistent;
-                        getter =
-                            $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: {cpMapper.Name.ToCamelCase()}).collect({collector})" : string.Empty)}";
-                        imports.Add("java.util.stream.Collectors");
-                    }
-                    else
-                    {
-                        checkSourceNull = true;
-                        getter =
-                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.{JpaModelPropertyGenerator.GetGetterName(apTarget)}())";
-                        imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
-                    }
+                    checkSourceNull = true;
+                    getter =
+                        $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.{JpaModelPropertyGenerator.GetGetterName(apTarget)}())";
+                    imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
                 else
                 {

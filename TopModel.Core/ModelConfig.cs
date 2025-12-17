@@ -13,8 +13,6 @@ public class ModelConfig : ConfigBase
 
     public bool UseLegacyRoleNames { get; set; }
 
-    public bool UseLegacyAssociationCompositionMappers { get; set; }
-
     public I18nConfig I18n { get; set; } = new();
 
     public IDictionary<string, IEnumerable<IDictionary<string, object>>> Generators { get; } =

@@ -110,12 +110,6 @@ public class FileChecker
                 case (YamlScalarNode { Value: "useLegacyRoleNames" }, YamlScalarNode { Value: var value }):
                     config.UseLegacyRoleNames = value == "true";
                     break;
-                case (
-                    YamlScalarNode { Value: "useLegacyAssociationCompositionMappers" },
-                    YamlScalarNode { Value: var value }
-                ):
-                    config.UseLegacyAssociationCompositionMappers = value == "true";
-                    break;
                 case (YamlScalarNode { Value: "i18n" }, YamlMappingNode map):
                     config.I18n = ParseNode<I18nConfig>(map);
                     break;

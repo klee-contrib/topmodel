@@ -712,13 +712,7 @@ public class ModelStore(
         var decoratorResolver = new DecoratorResolver(localizer, modelFiles, config, referencedDecorators);
         var domainResolver = new DomainResolver(localizer, modelFiles, config, Domains, Converters);
         var endpointResolver = new EndpointResolver(localizer, modelFiles);
-        var mapperResolver = new MapperResolver(
-            localizer,
-            modelFiles,
-            referencedClasses,
-            Converters,
-            config.UseLegacyAssociationCompositionMappers
-        );
+        var mapperResolver = new MapperResolver(localizer, modelFiles, referencedClasses, Converters);
         var propertyResolver = new PropertyResolver(
             localizer,
             modelFiles,

@@ -10,8 +10,7 @@ internal class MapperResolver(
     IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
-    IEnumerable<Converter> converters,
-    bool useLegacyAssociationCompositionMappers
+    IEnumerable<Converter> converters
 )
 {
     /// <summary>
@@ -126,10 +125,7 @@ internal class MapperResolver(
                                     mapping.Value
                                 );
                             }
-                            else if (
-                                !useLegacyAssociationCompositionMappers
-                                && (mappedProperty.AssociationToMany || currentProperty.Domain != null)
-                            )
+                            else if (mappedProperty.AssociationToMany || currentProperty.Domain != null)
                             {
                                 yield return new ModelError(
                                     ErrorType.TMD8005,
@@ -139,8 +135,7 @@ internal class MapperResolver(
                                 );
                             }
                             else if (
-                                !useLegacyAssociationCompositionMappers
-                                && currentProperty.CompositionPrimaryKey?.Domain != mappedProperty.Domain
+                                currentProperty.CompositionPrimaryKey?.Domain != mappedProperty.Domain
                                 && !converters.Any(c =>
                                     c.From.Any(cf => cf == currentProperty.CompositionPrimaryKey?.Domain)
                                     && c.To.Any(ct => ct == mappedProperty.Domain)
