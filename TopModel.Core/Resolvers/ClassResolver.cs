@@ -249,7 +249,7 @@ internal class ClassResolver(
 
             if (classe.DefaultPropertyReference != null)
             {
-                classe.DefaultProperty = TryGetProperty(classe.DefaultPropertyReference.ReferenceName);
+                classe.DefaultProperty = TryGetProperty(classe.DefaultPropertyReference.ReferenceName.ToPascalCase());
 
                 if (classe.DefaultProperty == null)
                 {
@@ -270,7 +270,7 @@ internal class ClassResolver(
 
             if (classe.OrderPropertyReference != null)
             {
-                classe.OrderProperty = TryGetProperty(classe.OrderPropertyReference.ReferenceName);
+                classe.OrderProperty = TryGetProperty(classe.OrderPropertyReference.ReferenceName.ToPascalCase());
 
                 if (classe.OrderProperty == null)
                 {
@@ -291,7 +291,7 @@ internal class ClassResolver(
 
             if (classe.FlagPropertyReference != null)
             {
-                classe.FlagProperty = TryGetProperty(classe.FlagPropertyReference.ReferenceName);
+                classe.FlagProperty = TryGetProperty(classe.FlagPropertyReference.ReferenceName.ToPascalCase());
 
                 if (classe.FlagProperty == null)
                 {
@@ -312,7 +312,7 @@ internal class ClassResolver(
 
             if (classe.LocalePropertyReference != null)
             {
-                classe.LocaleProperty = TryGetProperty(classe.LocalePropertyReference.ReferenceName);
+                classe.LocaleProperty = TryGetProperty(classe.LocalePropertyReference.ReferenceName.ToPascalCase());
 
                 if (classe.LocaleProperty == null)
                 {

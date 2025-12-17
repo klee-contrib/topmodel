@@ -413,7 +413,7 @@ for (var i = 0; i < configs.Count; i++)
                 Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")
             )
                 .GetFiles($"*.dll", SearchOption.AllDirectories)
-                .Where(a => !modgenAssemblies.Contains(a.Name))
+                .Where(a => !modgenAssemblies.Contains(a.Name.Replace(".resources", string.Empty)))
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
