@@ -72,7 +72,8 @@ public class TypescriptDefinitionGenerator(
             .ClassDependencies.Select(dep =>
                 (
                     Import: (
-                        dep is { Source: IProperty { Composition: not null, Domain: not null } cp }
+                        dep is { Source: IProperty { Composition: Class cpc } cp }
+                        && cpc.NamePascal != Config.GetType(cp)
                         && !Config.IsListComposition(cp)
                     )
                         ? dep.Classe.NamePascal
@@ -137,12 +138,13 @@ public class TypescriptDefinitionGenerator(
             foreach (var property in classe.Properties)
             {
                 fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
+                var type = Config.GetType(property);
 
                 if (Config.EntityMode == EntityMode.TYPED)
                 {
                     switch (property)
                     {
-                        case { Composition: Class cpc, Domain: null }:
+                        case { Composition: Class cpc } when cpc.NamePascal == type:
                             fw.Write($"ObjectEntry<{cpc.NamePascal}EntityType>;");
                             break;
                         case { Composition: Class cpc } cp when Config.IsListComposition(cp):
@@ -157,7 +159,7 @@ public class TypescriptDefinitionGenerator(
 
                             break;
                         default:
-                            fw.Write($"FieldEntry2<typeof {property.Domain!.Name}, {Config.GetType(property)}>;");
+                            fw.Write($"FieldEntry2<typeof {property.Domain!.Name}, {type}>;");
                             break;
                     }
                 }
@@ -197,9 +199,10 @@ public class TypescriptDefinitionGenerator(
                 fw.Write(": {\r\n");
                 fw.Write("        type: ");
 
+                var type = Config.GetType(property);
                 switch (property)
                 {
-                    case { Composition: not null, Domain: null }:
+                    case { Composition: Class cpc } when cpc.NamePascal == type:
                         fw.Write("\"object\",");
                         break;
                     case { Composition: Class cpc } when Config.IsListComposition(property) && cpc.Name == classe.Name:
@@ -220,7 +223,10 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write("\r\n");
 
-                if (property.Composition == null || property.Domain != null && !Config.IsListComposition(property))
+                if (
+                    property.Composition == null
+                    || property.Composition!.NamePascal != type && !Config.IsListComposition(property)
+                )
                 {
                     fw.WriteLine(2, $"name: \"{property.NameCamel}\",");
                     fw.WriteLine(2, $"domain: {property.Domain!.Name},");
@@ -231,7 +237,7 @@ public class TypescriptDefinitionGenerator(
                         fw.WriteLine(2, $"defaultValue: {defaultValue},");
                     }
                 }
-                else if (property.Composition!.Name != classe.Name)
+                else if (property.Composition!.NamePascal != classe.NamePascal)
                 {
                     fw.Write(2, $"entity: {property.Composition!.NamePascal}Entity");
 
@@ -245,7 +251,7 @@ public class TypescriptDefinitionGenerator(
 
                 if (
                     property.Composition == null
-                    || property.Domain != null && !Config.IsListComposition(property)
+                    || property.Composition!.NamePascal != type && !Config.IsListComposition(property)
                     || Config.ExtendedCompositions
                 )
                 {
@@ -307,10 +313,11 @@ public class TypescriptDefinitionGenerator(
             foreach (var property in classe.Properties)
             {
                 fw.Write(1, $"{property.NameCamel}: e.");
+                var type = Config.GetType(property);
 
                 switch (property)
                 {
-                    case { Composition: not null, Domain: null }:
+                    case { Composition: Class cpc } when cpc.NamePascal == type:
                         fw.Write("object");
                         break;
                     case { Composition: Class cpc } when Config.IsListComposition(property) && cpc.Name == classe.Name:
@@ -331,7 +338,10 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write("(");
 
-                if (property.Composition != null && (Config.IsListComposition(property) || property.Domain == null))
+                if (
+                    property.Composition != null
+                    && (Config.IsListComposition(property) || type == property.Composition!.NamePascal)
+                )
                 {
                     fw.Write($"{property.Composition!.NamePascal}Entity");
                 }
@@ -342,10 +352,11 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write(", f => f");
 
-                var type = Config.GetType(property);
                 if (
                     property.Composition == null && type != Config.GetImplementation(property.Domain)?.Type
-                    || property.Composition != null && property.Domain != null && !Config.IsListComposition(property)
+                    || property.Composition != null
+                        && type != property.Composition!.NamePascal
+                        && !Config.IsListComposition(property)
                 )
                 {
                     fw.Write($".type<{type}>()");
@@ -408,7 +419,7 @@ public class TypescriptDefinitionGenerator(
             yield return "FieldEntry2";
         }
 
-        if (classe.Properties.Any(p => p is { Composition: not null, Domain: null }))
+        if (classe.Properties.Any(p => p is { Composition: Class cpc } && cpc.NamePascal == Config.GetType(p)))
         {
             yield return "ObjectEntry";
         }

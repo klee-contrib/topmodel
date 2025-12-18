@@ -21,23 +21,20 @@ export const RestaurantAvecStatistiquesEntity = entity({
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.restaurant.telephone")
     ),
-    tableClientsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.tableClientsRestaurant")
+    menus: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.menus")
     ),
-    platsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.platsRestaurant")
+    plats: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.plats")
     ),
-    avisClientsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.avisClientsRestaurant")
+    promotions: e.field(DO_LISTE, f => f.type<number[]>().optional()
+        .label("restaurant.restaurant.promotions")
     ),
-    menusRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.menusRestaurant")
+    avisClients: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.avisClients")
     ),
-    reservationsRestaurant: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.reservationsRestaurant")
-    ),
-    promotionsRestaurant: e.field(DO_LISTE, f => f.type<number[]>().optional()
-        .label("restaurant.restaurant.promotionsRestaurant")
+    tables: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.tables")
     ),
     nombrePlats: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.restaurantAvecStatistiques.nombrePlats")

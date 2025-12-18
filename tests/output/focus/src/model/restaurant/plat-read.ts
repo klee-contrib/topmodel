@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
 
 import {CategoriePlatCode} from "./references";
 
@@ -26,19 +26,10 @@ export const PlatReadEntity = entity({
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.plat.disponible")
     ),
-    categoriePlatCodeCategoriePlat: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
-        .label("restaurant.plat.categoriePlatCodeCategoriePlat")
+    categoriePlatCode: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
+        .label("restaurant.plat.categoriePlatCode")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.plat.restaurantIdRestaurant")
-    ),
-    ligneCommandes: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.ligneCommandes")
-    ),
-    menuPlatsPlat: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.menuPlatsPlat")
-    ),
-    promotionPlatsPlat: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.plat.promotionPlatsPlat")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.plat.restaurantId")
     )
 });

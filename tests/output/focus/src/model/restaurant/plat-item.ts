@@ -23,7 +23,7 @@ export const PlatItemEntity = entity({
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.plat.disponible")
     ),
-    categoriePlatCodeCategoriePlat: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
-        .label("restaurant.plat.categoriePlatCodeCategoriePlat")
+    categoriePlatCode: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
+        .label("restaurant.plat.categoriePlatCode")
     )
 });

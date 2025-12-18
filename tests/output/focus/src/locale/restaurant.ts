@@ -5,29 +5,29 @@
 export const restaurant = {
     avisClient: {
         approuve: "Approuve",
-        clientIdClient: "ClientIdClient",
+        clientId: "ClientId",
         commentaire: "Commentaire",
         dateAvis: "DateAvis",
         id: "Id",
         nombreVues: "NombreVues",
         note: "Note",
-        restaurantIdRestaurant: "RestaurantIdRestaurant"
+        restaurantId: "RestaurantId"
     },
     categoriePlat: {
         code: "Code",
-        libelle: "Libelle"
+        libelle: "Libelle",
+        values: {
+            Entree: "Entrée",
+            Plat: "Plat principal",
+            Dessert: "Dessert",
+            Boisson: "Boisson"
+        }
     },
     client: {
-        avisClientsClient: "AvisClientsClient",
-        commandes: "Commandes",
-        email: "Email",
-        id: "Id",
-        nom: "Nom",
-        prenom: "Prenom",
-        reservationsClient: "ReservationsClient",
-        telephone: "Telephone"
+        avisClients: "AvisClients",
+        email: "Email"
     },
-    clientMinimal: {
+    clientItem: {
         id: "Informations client",
         nom: "Informations client",
         nomComplet: "NomComplet",
@@ -38,19 +38,22 @@ export const restaurant = {
         dateCommande: "DateCommande",
         dateLivraison: "DateLivraison",
         id: "Id",
-        ligneCommandes: "LigneCommandes",
+        lignes: "Lignes",
         montantTotal: "MontantTotal",
+        reservationId: "ReservationId",
         statutCommandeCode: "StatutCommandeCode",
-        tableClientId: "TableClientId"
+        tableId: "TableId"
     },
-    commandeDetailRead: {
-        lignes: "Lignes"
+    commandeRead: {
+        reservation: "Reservation"
     },
     employe: {
         dateEmbauche: "DateEmbauche",
+        dateNaissance: "DateNaissance",
         matricule: "Matricule",
-        restaurantIdRestaurant: "RestaurantIdRestaurant",
-        salaire: "Salaire"
+        restaurantId: "RestaurantId",
+        salaire: "Salaire",
+        telephone: "Telephone"
     },
     employeItem: {
         id: "Id",
@@ -71,25 +74,26 @@ export const restaurant = {
         description: "Description",
         disponible: "Disponible",
         id: "Id",
-        menuPlatsMenu: "MenuPlatsMenu",
         nom: "Nom",
         prix: "Prix",
-        restaurantIdRestaurant: "RestaurantIdRestaurant"
+        restaurantId: "RestaurantId"
     },
-    menuComplet: {
+    menuRead: {
         plats: "Plats"
     },
+    personne: {
+        id: "Id",
+        nom: "Nom",
+        prenom: "Prenom"
+    },
     plat: {
-        categoriePlatCodeCategoriePlat: "CategoriePlatCodeCategoriePlat",
+        categoriePlatCode: "CategoriePlatCode",
         description: "Description",
         disponible: "Disponible",
         id: "Id",
-        ligneCommandes: "LigneCommandes",
-        menuPlatsPlat: "MenuPlatsPlat",
         nom: "Nom",
         prix: "Prix",
-        promotionPlatsPlat: "PromotionPlatsPlat",
-        restaurantIdRestaurant: "RestaurantIdRestaurant"
+        restaurantId: "RestaurantId"
     },
     promotion: {
         active: "Active",
@@ -98,29 +102,27 @@ export const restaurant = {
         id: "Id",
         libelle: "Libelle",
         pourcentageReduction: "PourcentageReduction",
-        promotionPlatsPromotion: "PromotionPlatsPromotion",
-        restaurantIdRestaurant: "RestaurantIdRestaurant"
+        restaurantId: "RestaurantId"
     },
     reservation: {
-        clientIdClient: "ClientIdClient",
+        clientId: "ClientId",
         commentaire: "Commentaire",
         confirmee: "Confirmee",
         dateReservation: "DateReservation",
         id: "Id",
         nombrePersonnes: "NombrePersonnes",
-        restaurantIdRestaurant: "RestaurantIdRestaurant",
-        tableClientIdTable: "TableClientIdTable"
+        restaurantId: "RestaurantId",
+        tableId: "TableId"
     },
     restaurant: {
         adresse: "Adresse",
-        avisClientsRestaurant: "AvisClientsRestaurant",
+        avisClients: "AvisClients",
         id: "Id",
-        menusRestaurant: "MenusRestaurant",
+        menus: "Menus",
         nom: "Nom",
-        platsRestaurant: "PlatsRestaurant",
-        promotionsRestaurant: "PromotionsRestaurant",
-        reservationsRestaurant: "ReservationsRestaurant",
-        tableClientsRestaurant: "TableClientsRestaurant",
+        plats: "Plats",
+        promotions: "Promotions",
+        tables: "Tables",
         telephone: "Telephone"
     },
     restaurantAvecStatistiques: {
@@ -137,15 +139,20 @@ export const restaurant = {
     },
     statutCommande: {
         code: "Code",
-        libelle: "Libelle"
+        libelle: "Libelle",
+        values: {
+            EnAttente: "En attente",
+            EnPreparation: "En préparation",
+            Prete: "Prête",
+            Servie: "Servie",
+            Annulee: "Annulée"
+        }
     },
-    tableClient: {
+    tableRestaurant: {
         capacite: "Capacite",
-        commandes: "Commandes",
         disponible: "Disponible",
         id: "Id",
         numero: "Numero",
-        reservationsTable: "ReservationsTable",
-        restaurantIdRestaurant: "RestaurantIdRestaurant"
+        restaurantId: "RestaurantId"
     }
 };

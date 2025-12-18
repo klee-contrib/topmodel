@@ -6,7 +6,7 @@ version: 3.8.4
 custom:
   ../../TopModel.Generator.Jpa: 0509e91d4a07f48ab1eb2eb07e5f237a
   ../../TopModel.Generator.Csharp: db597d56d0fcc3ba16a9baed06e9a36e
-  ../../TopModel.Generator.Javascript: 65a0dd091f4f6e3349eecf0ed67e810b
+  ../../TopModel.Generator.Javascript: b6d91df6bbf93d78236e352daaa7ac6c
   ../../TopModel.Generator.Sql: 854668f25a6118ba91b347854ff387bc
   ../../TopModel.Generator.Translation: 42f228bfbbe42e2db8a3adf7f52a8d62
 generatedFiles:
@@ -111,6 +111,44 @@ generatedFiles:
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/MenuController.cs
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/PersonneController.cs
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/RestaurantController.cs
+  - ../output/focus/src/locale/restaurant.ts
+  - ../output/focus/src/model/restaurant/avis-client-read.ts
+  - ../output/focus/src/model/restaurant/avis-client-write.ts
+  - ../output/focus/src/model/restaurant/client-avec-commandes.ts
+  - ../output/focus/src/model/restaurant/client-item.ts
+  - ../output/focus/src/model/restaurant/client-read.ts
+  - ../output/focus/src/model/restaurant/client-write.ts
+  - ../output/focus/src/model/restaurant/commande-item.ts
+  - ../output/focus/src/model/restaurant/commande-read.ts
+  - ../output/focus/src/model/restaurant/commande-resume.ts
+  - ../output/focus/src/model/restaurant/commande-write.ts
+  - ../output/focus/src/model/restaurant/employe-item.ts
+  - ../output/focus/src/model/restaurant/employe-read.ts
+  - ../output/focus/src/model/restaurant/employe-write.ts
+  - ../output/focus/src/model/restaurant/ligne-commande-read.ts
+  - ../output/focus/src/model/restaurant/ligne-commande-write.ts
+  - ../output/focus/src/model/restaurant/menu-read.ts
+  - ../output/focus/src/model/restaurant/menu-write.ts
+  - ../output/focus/src/model/restaurant/plat-item.ts
+  - ../output/focus/src/model/restaurant/plat-read.ts
+  - ../output/focus/src/model/restaurant/plat-write.ts
+  - ../output/focus/src/model/restaurant/promotion-read.ts
+  - ../output/focus/src/model/restaurant/promotion-write.ts
+  - ../output/focus/src/model/restaurant/references.ts
+  - ../output/focus/src/model/restaurant/reservation-read.ts
+  - ../output/focus/src/model/restaurant/reservation-write.ts
+  - ../output/focus/src/model/restaurant/restaurant-avec-statistiques.ts
+  - ../output/focus/src/model/restaurant/restaurant-item.ts
+  - ../output/focus/src/model/restaurant/restaurant-read.ts
+  - ../output/focus/src/model/restaurant/restaurant-write.ts
+  - ../output/focus/src/model/restaurant/statistiques-restaurant.ts
+  - ../output/focus/src/model/restaurant/table-item.ts
+  - ../output/focus/src/model/restaurant/table-read.ts
+  - ../output/focus/src/model/restaurant/table-write.ts
+  - ../output/focus/src/services/restaurant/commande.ts
+  - ../output/focus/src/services/restaurant/menu.ts
+  - ../output/focus/src/services/restaurant/personne.ts
+  - ../output/focus/src/services/restaurant/restaurant.ts
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_associations/api/server/restaurant/AbstractCommandeClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_associations/api/server/restaurant/AbstractMenuClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_associations/api/server/restaurant/AbstractPersonneClient.java

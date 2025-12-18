@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "../../domains";
 
 export type ReservationRead = EntityToType<ReservationReadEntityType>;
 export type ReservationReadEntityType = typeof ReservationReadEntity;
@@ -24,13 +24,28 @@ export const ReservationReadEntity = entity({
     confirmee: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.reservation.confirmee")
     ),
-    clientIdClient: e.field(DO_ID, f => f
-        .label("restaurant.reservation.clientIdClient")
+    clientId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.clientId")
     ),
-    tableClientIdTable: e.field(DO_ID, f => f.optional()
-        .label("restaurant.reservation.tableClientIdTable")
+    tableId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.reservation.tableId")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.reservation.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.reservation.restaurantId")
+    ),
+    clientNom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.nom")
+    ),
+    clientPrenom: e.field(DO_LIBELLE, f => f
+        .label("restaurant.personne.prenom")
+    ),
+    clientEmail: e.field(DO_LIBELLE, f => f.optional()
+        .label("restaurant.client.email")
+    ),
+    tableNumero: e.field(DO_CODE, f => f
+        .label("restaurant.tableRestaurant.numero")
+    ),
+    tableCapacite: e.field(DO_QUANTITE, f => f
+        .label("restaurant.tableRestaurant.capacite")
     )
 });

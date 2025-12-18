@@ -3,7 +3,9 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
+
+import {PlatItemEntity} from "./plat-item";
 
 export type MenuRead = EntityToType<MenuReadEntityType>;
 export type MenuReadEntityType = typeof MenuReadEntity;
@@ -30,10 +32,10 @@ export const MenuReadEntity = entity({
     dateFin: e.field(DO_DATE_HEURE, f => f.optional()
         .label("restaurant.menu.dateFin")
     ),
-    restaurantIdRestaurant: e.field(DO_ID, f => f
-        .label("restaurant.menu.restaurantIdRestaurant")
+    restaurantId: e.field(DO_ID, f => f
+        .label("restaurant.menu.restaurantId")
     ),
-    menuPlatsMenu: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.menu.menuPlatsMenu")
+    plats: e.list(PlatItemEntity, f => f
+        .label("restaurant.menuRead.plats")
     )
 });
