@@ -472,7 +472,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 var genericType = type.Split('<')[0];
 
-                if (property.Domain == null)
+                if (type == property.Composition!.NamePascal)
                 {
                     if (!Config.RequiredNonNullable(tag))
                     {

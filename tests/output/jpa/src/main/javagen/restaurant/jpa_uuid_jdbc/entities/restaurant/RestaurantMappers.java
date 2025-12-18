@@ -168,13 +168,12 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("commande cannot be null");
 		}
 
+		target.setReservation(commande.getReservationId());
 		target.setId(commande.getId());
 		target.setDateCommande(commande.getDateCommande());
 		target.setDateLivraison(commande.getDateLivraison());
 		target.setMontantTotal(commande.getMontantTotal());
-		target.setClientId(commande.getClientId());
 		target.setTableId(commande.getTableId());
-		target.setReservationId(commande.getReservationId());
 		target.setStatutCommandeCode(commande.getStatutCommandeCode());
 		return target;
 	}

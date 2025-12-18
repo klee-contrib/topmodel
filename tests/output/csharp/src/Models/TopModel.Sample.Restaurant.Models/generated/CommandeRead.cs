@@ -40,23 +40,10 @@ public partial record CommandeRead
     public decimal? MontantTotal { get; set; }
 
     /// <summary>
-    /// Client ayant passé la commande.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
-
-    /// <summary>
     /// Table associée à la commande.
     /// </summary>
     [Domain(Domains.Id)]
     public int? TableId { get; set; }
-
-    /// <summary>
-    /// Réservation associée à la commande.
-    /// </summary>
-    [Domain(Domains.Id)]
-    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.
@@ -65,6 +52,17 @@ public partial record CommandeRead
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Code)]
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
+
+    /// <summary>
+    /// Client ayant passé la commande.
+    /// </summary>
+    [Required]
+    public ClientRead Client { get; set; } = new();
+
+    /// <summary>
+    /// Réservation.
+    /// </summary>
+    public ReservationRead? Reservation { get; set; }
 
     /// <summary>
     /// Association réciproque de LigneCommande.CommandeId.

@@ -58,23 +58,10 @@ public class CommandeRead implements Serializable {
 	private BigDecimal montantTotal;
 
 	/**
-	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getClient() Commande#getClient()}
-	 */
-	@NotNull
-	private Integer clientId;
-
-	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
 	private Integer tableId;
-
-	/**
-	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getReservation() Commande#getReservation()}
-	 */
-	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
@@ -82,6 +69,20 @@ public class CommandeRead implements Serializable {
 	 */
 	@NotNull
 	private StatutCommande statutCommandeCode = StatutCommande.EN_ATT;
+
+	/**
+	 * Client ayant passé la commande.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getClient() Commande#getClient()}
+	 */
+	@Valid
+	@NotNull
+	private ClientRead client;
+
+	/**
+	 * Réservation.
+	 */
+	@Valid
+	private ReservationRead reservation;
 
 	/**
 	 * Association réciproque de LigneCommande.CommandeId.
@@ -145,15 +146,6 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Getter for clientId.
-	 *
-	 * @return value of {@link #clientId clientId}.
-	 */
-	public Integer getClientId() {
-		return this.clientId;
-	}
-
-	/**
 	 * Getter for tableId.
 	 *
 	 * @return value of {@link #tableId tableId}.
@@ -163,21 +155,30 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Getter for reservationId.
-	 *
-	 * @return value of {@link #reservationId reservationId}.
-	 */
-	public Integer getReservationId() {
-		return this.reservationId;
-	}
-
-	/**
 	 * Getter for statutCommandeCode.
 	 *
 	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
 	 */
 	public StatutCommande getStatutCommandeCode() {
 		return this.statutCommandeCode;
+	}
+
+	/**
+	 * Getter for client.
+	 *
+	 * @return value of {@link #client client}.
+	 */
+	public ClientRead getClient() {
+		return this.client;
+	}
+
+	/**
+	 * Getter for reservation.
+	 *
+	 * @return value of {@link #reservation reservation}.
+	 */
+	public ReservationRead getReservation() {
+		return this.reservation;
 	}
 
 	/**
@@ -222,14 +223,6 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
-	 */
-	public void setClientId(Integer clientId) {
-		this.clientId = clientId;
-	}
-
-	/**
 	 * Set the value of {@link #tableId tableId}.
 	 * @param tableId value to set.
 	 */
@@ -238,19 +231,27 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #reservationId reservationId}.
-	 * @param reservationId value to set.
-	 */
-	public void setReservationId(Integer reservationId) {
-		this.reservationId = reservationId;
-	}
-
-	/**
 	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
 	 * @param statutCommandeCode value to set.
 	 */
 	public void setStatutCommandeCode(StatutCommande statutCommandeCode) {
 		this.statutCommandeCode = statutCommandeCode;
+	}
+
+	/**
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
+	 */
+	public void setClient(ClientRead client) {
+		this.client = client;
+	}
+
+	/**
+	 * Set the value of {@link #reservation reservation}.
+	 * @param reservation value to set.
+	 */
+	public void setReservation(ReservationRead reservation) {
+		this.reservation = reservation;
 	}
 
 	/**
@@ -269,10 +270,10 @@ public class CommandeRead implements Serializable {
 		DATE_COMMANDE(LocalDateTime.class),
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
-		CLIENT_ID(Integer.class),
 		TABLE_ID(Integer.class),
-		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE_CODE(StatutCommande.class),
+		CLIENT(ClientRead.class),
+		RESERVATION(ReservationRead.class),
 		LIGNES(List.class);
 
 		private final Class<?> type;

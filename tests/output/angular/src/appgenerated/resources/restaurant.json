@@ -40,6 +40,9 @@
         "statutCommandeCode": "StatutCommandeCode",
         "tableId": "TableId"
     },
+    "commandeRead": {
+        "reservation": "Reservation"
+    },
     "employe": {
         "dateEmbauche": "DateEmbauche",
         "dateNaissance": "DateNaissance",

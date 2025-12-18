@@ -79,13 +79,12 @@ public static class Mappers
 
         return new CommandeRead
         {
+            Reservation = new() { Id = commande.ReservationId },
             Id = commande.Id,
             DateCommande = commande.DateCommande,
             DateLivraison = commande.DateLivraison,
             MontantTotal = commande.MontantTotal,
-            ClientId = commande.ClientId,
             TableId = commande.TableId,
-            ReservationId = commande.ReservationId,
             StatutCommandeCode = commande.StatutCommandeCode
         };
     }

@@ -186,26 +186,20 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("commande cannot be null");
 		}
 
+		if (commande.getReservation() != null) {
+			target.setReservation(RestaurantMappers.createReservationRead(commande.getReservation(), target.getReservation()));
+		} else {
+			target.setReservation(null);
+		}
+
 		target.setId(commande.getId());
 		target.setDateCommande(commande.getDateCommande());
 		target.setDateLivraison(commande.getDateLivraison());
 		target.setMontantTotal(commande.getMontantTotal());
-		if (commande.getClient() != null) {
-			target.setClientId(commande.getClient().getId());
-		} else {
-			target.setClientId(null);
-		}
-
 		if (commande.getTable() != null) {
 			target.setTableId(commande.getTable().getId());
 		} else {
 			target.setTableId(null);
-		}
-
-		if (commande.getReservation() != null) {
-			target.setReservationId(commande.getReservation().getId());
-		} else {
-			target.setReservationId(null);
 		}
 
 		if (commande.getStatutCommande() != null) {

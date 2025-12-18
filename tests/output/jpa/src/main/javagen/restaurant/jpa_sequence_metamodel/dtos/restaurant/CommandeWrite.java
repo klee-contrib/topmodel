@@ -32,46 +32,46 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getDateCommande() CommandeRead#getDateCommande()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getDateLivraison() CommandeRead#getDateLivraison()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getMontantTotal() CommandeRead#getMontantTotal()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@NotNull
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getClientId() CommandeRead#getClientId()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@NotNull
 	private Integer clientId;
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getTableId() CommandeRead#getTableId()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getReservationId() CommandeRead#getReservationId()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.dtos.restaurant.CommandeRead#getStatutCommandeCode() CommandeRead#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
 	private StatutCommandeCode statutCommandeCode = StatutCommandeCode.EN_ATT;

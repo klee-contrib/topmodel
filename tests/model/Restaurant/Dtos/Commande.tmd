@@ -4,6 +4,7 @@ tags:
   - front
   - back
 uses:
+  - Restaurant/Dtos/Personne
   - Restaurant/Endpoints/Commande
   - Restaurant/Entities/Commande
   - Restaurant/Entities/Personne
@@ -31,7 +32,21 @@ class:
   properties:
     - alias:
         class: Commande
-        exclude: Lignes
+        exclude:
+          - ClientId
+          - Lignes
+          - ReservationId
+
+    - alias:
+        class: Commande
+        property: ClientId
+      composition: ClientRead
+      name: Client
+
+    - composition: ReservationRead
+      name: Reservation
+      required: false
+      comment: Réservation.
 
     - alias:
         class: Commande
@@ -42,6 +57,9 @@ class:
     from:
       - params:
           - class: Commande
+            mappings:
+              #Client: ClientId
+              Reservation: ReservationId
 ---
 class:
   name: CommandeWrite
@@ -49,7 +67,7 @@ class:
 
   properties:
     - alias:
-        class: CommandeRead
+        class: Commande
         exclude:
           - Id
           - Lignes

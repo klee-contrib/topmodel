@@ -31,7 +31,7 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getDateCommande() CommandeRead#getDateCommande()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
 	@Column("com_date_commande")
@@ -39,14 +39,14 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getDateLivraison() CommandeRead#getDateLivraison()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	@Column("com_date_livraison")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getMontantTotal() CommandeRead#getMontantTotal()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@NotNull
 	@Column("com_montant_total")
@@ -54,7 +54,7 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getClientId() CommandeRead#getClientId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getClientId() Commande#getClientId()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -62,21 +62,21 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getTableId() CommandeRead#getTableId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	@Column("tab_id")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getReservationId() CommandeRead#getReservationId()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getReservationId() Commande#getReservationId()}
 	 */
 	@Column("rev_id")
 	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getStatutCommandeCode() CommandeRead#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
 	 */
 	@NotNull
 	@Size(max = 10)

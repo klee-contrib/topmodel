@@ -5,8 +5,10 @@
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
+import {ClientRead} from "./client-read";
 import {LigneCommandeReadEntity} from "./ligne-commande-read";
 import {StatutCommandeCode} from "./references";
+import {ReservationReadEntity} from "./reservation-read";
 
 export type CommandeRead = EntityToType<CommandeReadEntityType>;
 export type CommandeReadEntityType = typeof CommandeReadEntity;
@@ -24,17 +26,17 @@ export const CommandeReadEntity = entity({
     montantTotal: e.field(DO_PRIX, f => f
         .label("restaurant.commande.montantTotal")
     ),
-    clientId: e.field(DO_ID, f => f
-        .label("restaurant.commande.clientId")
-    ),
     tableId: e.field(DO_ID, f => f.optional()
         .label("restaurant.commande.tableId")
     ),
-    reservationId: e.field(DO_ID, f => f.optional()
-        .label("restaurant.commande.reservationId")
-    ),
     statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
         .label("restaurant.commande.statutCommandeCode")
+    ),
+    client: e.field(DO_ID, f => f.type<ClientRead>()
+        .label("restaurant.commande.clientId")
+    ),
+    reservation: e.object(ReservationReadEntity, f => f.optional()
+        .label("restaurant.commandeRead.reservation")
     ),
     lignes: e.list(LigneCommandeReadEntity, f => f
         .label("restaurant.commande.lignes")
