@@ -187,7 +187,7 @@ public class RestaurantMappers {
 		}
 
 		if (commande.getReservation() != null) {
-			target.setReservation(RestaurantMappers.createReservationRead(commande.getReservation(), target.getReservation()));
+			target.setReservation(target.getReservation() != null ? RestaurantMappers.mapReservationRead(commande.getReservation(), target.getReservation()) : RestaurantMappers.createReservationRead(commande.getReservation()));
 		} else {
 			target.setReservation(null);
 		}

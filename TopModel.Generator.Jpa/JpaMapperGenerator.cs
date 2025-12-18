@@ -313,16 +313,17 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpc, cpMapper));
 
                     getter = $"{sourceName}.{getterName}()";
+                    var mapperName = Config.GetMapperName(cpMapperNs, cpMapperModelPath);
                     if (propertySource.AssociationToMany)
                     {
-                        getter =
-                            $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cpc}).collect({collector})";
+                        getter = $"{getter}.stream().map({mapperName} :: create{cpc}).collect({collector})";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
                     {
+                        var target = $"target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}()";
                         getter =
-                            $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cpc}({getter}, target.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}())";
+                            $"{target} != null ? {mapperName}.map{cpc}({getter}, {target}) : {mapperName}.create{cpc}({getter})";
                     }
 
                     imports.Add(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
