@@ -697,6 +697,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             && (
                 propertyTarget.Class.IsPersistent && propertyTarget.AssociationToMany
                 || propertySource.Class.IsPersistent && propertySource.AssociationToMany
+                || propertySource.Composition != null
+                || propertyTarget.Composition != null
             )
         );
     }
