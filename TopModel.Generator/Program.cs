@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -32,6 +32,66 @@ var regularCommand = false;
 var returnCode = 0;
 
 var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
+
+var initCommand = new Command("init", "Initialise un nouveau fichier de configuration topmodel.");
+var initAppOption = new Option<string?>(["-a", "--app"], "Nom de l'application.");
+var initFileOption = new Option<string?>(["-f", "--file"], "Nom du fichier de configuration à créer.");
+initCommand.AddOption(initAppOption);
+initCommand.AddOption(initFileOption);
+initCommand.SetHandler(
+    (app, file) =>
+    {
+        var fileName = file ?? "topmodel.config";
+        var filePath = Path.GetFullPath(fileName);
+
+        if (File.Exists(filePath))
+        {
+            AnsiConsole.MarkupLine($"[red]Le fichier '{fileName}' existe déjà.[/]");
+            returnCode = 1;
+            return;
+        }
+
+        var appName = app ?? Path.GetFileName(Directory.GetCurrentDirectory());
+
+        var availableGenerators = new[] { "csharp", "jpa", "javascript", "sql" };
+        var selectedGenerators = AnsiConsole.Prompt(
+            new MultiSelectionPrompt<string>()
+                .Title("Sélectionnez les générateurs à utiliser :")
+                .NotRequired()
+                .PageSize(10)
+                .InstructionsText(
+                    "[grey](Appuyez sur [blue]<espace>[/] pour sélectionner, [green]<entrée>[/] pour valider)[/]"
+                )
+                .AddChoices(availableGenerators)
+        );
+
+        var configBuilder = new StringBuilder();
+        configBuilder.AppendLine("---");
+        configBuilder.AppendLine($"app: {appName}");
+
+        foreach (var generator in selectedGenerators)
+        {
+            configBuilder.AppendLine();
+            configBuilder.AppendLine($"{generator}:");
+            configBuilder.AppendLine("  - tags:");
+            configBuilder.AppendLine(
+                $"      - {((generator == "csharp" || generator == "jpa" || generator == "sql") ? "back" : "front")}"
+            );
+            configBuilder.AppendLine("    outputDirectory: ./generated");
+        }
+
+        File.WriteAllText(filePath, configBuilder.ToString());
+        AnsiConsole.MarkupLine($"[green]Fichier de configuration '{fileName}' créé avec succès.[/]");
+        AnsiConsole.MarkupLine($"[grey]Application : {appName}[/]");
+        if (selectedGenerators.Count > 0)
+        {
+            AnsiConsole.MarkupLine($"[grey]Générateurs : {string.Join(", ", selectedGenerators)}[/]");
+        }
+    },
+    initAppOption,
+    initFileOption
+);
+command.AddCommand(initCommand);
 
 var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin vers un fichier de config.");
 var excludeOption = new Option<IEnumerable<string>>(["-e", "--exclude"], "Tag à ignorer lors de la génération.");
