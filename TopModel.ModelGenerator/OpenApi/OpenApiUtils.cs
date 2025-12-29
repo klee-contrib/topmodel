@@ -131,6 +131,7 @@ public static class OpenApiUtils
                         .Where(a => a.Type == JsonSchemaType.Object)
                         .SelectMany(a => a.Properties ?? new Dictionary<string, IOpenApiSchema>())
                 )
+                .DistinctBy(a => a.Key)
                 .ToDictionary(a => a.Key, a => a.Value)
             ?? [];
     }
