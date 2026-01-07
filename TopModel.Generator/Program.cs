@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Help;
 using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -20,132 +21,132 @@ using TopModel.Generator;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
-var fileChecker = new FileChecker("schema.config.json");
+var fileOption = new Option<IEnumerable<FileInfo>>("--file", "-f")
+{
+    Description = "Chemin vers un fichier de config.",
+};
+var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")
+{
+    Description = "Tag à ignorer lors de la génération.",
+};
+var watchOption = new Option<bool>("--watch", "-w") { Description = "Lance le générateur en mode 'watch'" };
+var checkOption = new Option<bool>("--check", "-c")
+{
+    Description = "Vérifie que le code généré est conforme au modèle.",
+};
+var updateOption = new Option<string>("--update", "-u")
+{
+    Description = "Met à jour le module de générateurs spécifié (ou tous les modules si 'all').",
+};
+var schemaOption = new Option<bool>("--schema", "-s")
+{
+    Description = "Génère le fichier de schéma JSON du fichier de config.",
+};
 
-var configs = new Dictionary<string, ModelConfig>();
-var excludedTags = Array.Empty<string>();
-var watchMode = false;
-var checkMode = false;
-string? updateMode = null;
-var schemaMode = false;
-var regularCommand = false;
-var returnCode = 0;
-
-var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
-
-var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin vers un fichier de config.");
-var excludeOption = new Option<IEnumerable<string>>(["-e", "--exclude"], "Tag à ignorer lors de la génération.");
-var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
-var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le code généré est conforme au modèle.");
-var updateOption = new Option<string>(
-    ["-u", "--update"],
-    "Met à jour le module de générateurs spécifié (ou tous les modules si 'all')."
-);
-var schemaOption = new Option<bool>(["-s", "--schema"], "Génère le fichier de schéma JSON du fichier de config.");
-command.AddOption(fileOption);
-command.AddOption(excludeOption);
-command.AddOption(watchOption);
-command.AddOption(checkOption);
-command.AddOption(updateOption);
-command.AddOption(schemaOption);
-command.SetHandler(
-    (files, excludes, watch, update, check, schema) =>
-    {
-        regularCommand = true;
-        excludedTags = excludes.ToArray();
-        watchMode = watch;
-        checkMode = check;
-        updateMode = update;
-        schemaMode = schema;
-
-        void HandleFile(FileInfo file)
-        {
-            try
-            {
-                fileChecker.CheckConfigFile(file.FullName);
-                using var text = file.OpenText();
-                var config = fileChecker.DeserializeConfig(text.ReadToEnd()).Init(file.DirectoryName!);
-                configs.Add(file.FullName, config);
-            }
-            catch (ModelException me)
-            {
-                returnCode = 1;
-                AnsiConsole.WriteLine($"[red]{me.Message}[/]");
-            }
-        }
-
-        if (files.Any())
-        {
-            foreach (var file in files)
-            {
-                if (!file.Exists)
-                {
-                    AnsiConsole.MarkupLine($"[red]{file.FullName}[/]");
-                }
-                else
-                {
-                    HandleFile(file);
-                }
-            }
-        }
-        else
-        {
-            var dir = Directory.GetCurrentDirectory();
-            var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
-
-            void SearchConfigFile(string dirName, int depth = 0)
-            {
-                if (depth > 3)
-                {
-                    return;
-                }
-
-                foreach (var entryName in Directory.EnumerateFileSystemEntries(dirName))
-                {
-                    if (Directory.Exists(entryName))
-                    {
-                        SearchConfigFile(entryName, depth + 1);
-                    }
-                    else if (pattern.IsMatch(entryName))
-                    {
-                        HandleFile(new FileInfo(entryName));
-                    }
-                }
-            }
-
-            SearchConfigFile(dir);
-
-            if (configs.Count == 0)
-            {
-                var found = false;
-                while (!found && dir != null)
-                {
-                    dir = Directory.GetParent(dir)?.FullName;
-                    if (dir != null)
-                    {
-                        foreach (var fileName in Directory.EnumerateFiles(dir).Where(f => pattern.IsMatch(f)))
-                        {
-                            HandleFile(new FileInfo(fileName));
-                            found = true;
-                        }
-                    }
-                }
-            }
-        }
-    },
+var command = new RootCommand("Lance le générateur topmodel.")
+{
     fileOption,
     excludeOption,
     watchOption,
-    updateOption,
     checkOption,
-    schemaOption
-);
+    updateOption,
+    schemaOption,
+};
 
-await command.InvokeAsync(args);
+var helpOption = command.Options.OfType<HelpOption>().Single();
+var versionOption = command.Options.OfType<VersionOption>().Single();
 
-if (!regularCommand)
+var result = command.Parse(args);
+
+if (result.GetResult(helpOption) != null || result.GetResult(versionOption) != null)
 {
-    return returnCode;
+    return await result.InvokeAsync();
+}
+
+var files = result.GetValue(fileOption) ?? [];
+var watchMode = result.GetValue(watchOption);
+var excludedTags = result.GetValue(excludeOption)?.ToArray() ?? [];
+var checkMode = result.GetValue(checkOption);
+var updateMode = result.GetValue(updateOption);
+var schemaMode = result.GetValue(schemaOption);
+
+var fileChecker = new FileChecker("schema.config.json");
+var configs = new Dictionary<string, ModelConfig>();
+var returnCode = 0;
+
+void HandleFile(FileInfo file)
+{
+    try
+    {
+        fileChecker.CheckConfigFile(file.FullName);
+        using var text = file.OpenText();
+        var config = fileChecker.DeserializeConfig(text.ReadToEnd()).Init(file.DirectoryName!);
+        configs.Add(file.FullName, config);
+    }
+    catch (ModelException me)
+    {
+        returnCode = 1;
+        AnsiConsole.WriteLine($"[red]{me.Message}[/]");
+    }
+}
+
+if (files.Any())
+{
+    foreach (var file in files)
+    {
+        if (!file.Exists)
+        {
+            AnsiConsole.MarkupLine($"[red]{file.FullName}[/]");
+        }
+        else
+        {
+            HandleFile(file);
+        }
+    }
+}
+else
+{
+    var dir = Directory.GetCurrentDirectory();
+    var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
+
+    void SearchConfigFile(string dirName, int depth = 0)
+    {
+        if (depth > 3)
+        {
+            return;
+        }
+
+        foreach (var entryName in Directory.EnumerateFileSystemEntries(dirName))
+        {
+            if (Directory.Exists(entryName))
+            {
+                SearchConfigFile(entryName, depth + 1);
+            }
+            else if (pattern.IsMatch(entryName))
+            {
+                HandleFile(new FileInfo(entryName));
+            }
+        }
+    }
+
+    SearchConfigFile(dir);
+
+    if (configs.Count == 0)
+    {
+        var found = false;
+        while (!found && dir != null)
+        {
+            dir = Directory.GetParent(dir)?.FullName;
+            if (dir != null)
+            {
+                foreach (var fileName in Directory.EnumerateFiles(dir).Where(f => pattern.IsMatch(f)))
+                {
+                    HandleFile(new FileInfo(fileName));
+                    found = true;
+                }
+            }
+        }
+    }
 }
 
 if (configs.Count == 0)
