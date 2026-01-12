@@ -185,7 +185,10 @@ public class ModelStore(
             var files = await Directory
                 .EnumerateFiles(config.ModelRoot, "*.tmd", SearchOption.AllDirectories)
                 .ToAsyncEnumerable()
-                .SelectAwait(async fullPath => await LoadFile(fullPath, WatcherChangeTypes.Created))
+                .Select(
+                    async (string fullPath, CancellationToken ct) =>
+                        await LoadFile(fullPath, WatcherChangeTypes.Created, ct: ct)
+                )
                 .ToListAsync(cancellationToken: ct);
 
             await LoadTranslations(ct);

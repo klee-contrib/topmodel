@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="TopModel.Core/TopModel.Core.csproj" />
+  <Project Path="TopModel.Generator.Core/TopModel.Generator.Core.csproj" />
+  <Project Path="TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj" />
+  <Project Path="TopModel.Generator.Javascript/TopModel.Generator.Javascript.csproj" />
+  <Project Path="TopModel.Generator.Jpa/TopModel.Generator.Jpa.csproj" />
+  <Project Path="TopModel.Generator.Sql/TopModel.Generator.Sql.csproj" />
+  <Project Path="TopModel.Generator.Translation/TopModel.Generator.Translation.csproj" />
+  <Project Path="TopModel.Generator/TopModel.Generator.csproj" />
+  <Project Path="TopModel.LanguageServer/TopModel.LanguageServer.csproj" />
+  <Project Path="TopModel.ModelGenerator/TopModel.ModelGenerator.csproj" />
+  <Project Path="TopModel.Utils/TopModel.Utils.csproj" />
+</Solution>

@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Help;
 using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,86 +12,83 @@ using TopModel.ModelGenerator.Database;
 using TopModel.ModelGenerator.OpenApi;
 using TopModel.Utils;
 
-var command = new RootCommand("Lance le générateur de fichiers tmd.") { Name = "tmdgen" };
-var watchMode = false;
-var checkMode = false;
-var regularCommand = false;
+var fileOption = new Option<IEnumerable<FileInfo>>("--file", "-f")
+{
+    Description = "Chemin vers un fichier de config.",
+};
+var watchOption = new Option<bool>("--watch", "-w") { Description = "Lance le générateur en mode 'watch'" };
+var checkOption = new Option<bool>("--check", "-c")
+{
+    Description = "Vérifie que le modèle généré est conforme aux sources.",
+};
+
+var command = new RootCommand("Lance le générateur de fichiers tmd.") { fileOption, watchOption, checkOption };
+
+var helpOption = command.Options.OfType<HelpOption>().Single();
+var versionOption = command.Options.OfType<VersionOption>().Single();
+
+var result = command.Parse(args);
+
+if (result.GetResult(helpOption) != null || result.GetResult(versionOption) != null)
+{
+    return await result.InvokeAsync();
+}
+
+var files = result.GetValue(fileOption) ?? [];
+var watchMode = result.GetValue(watchOption);
+var checkMode = result.GetValue(checkOption);
+
 var configs = new List<(string FullPath, string DirectoryName)>();
 var serializer = new Serializer(new() { NamingConvention = new CamelCaseNamingConvention() });
 
-var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin vers un fichier de config.");
-var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
-var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le modèle généré est conforme aux sources.");
-command.AddOption(fileOption);
-command.AddOption(watchOption);
-command.AddOption(checkOption);
-command.SetHandler(
-    (files, watch, check) =>
+void HandleFile(FileInfo file)
+{
+    configs.Add((file.FullName, file.DirectoryName!));
+}
+
+if (files.Any())
+{
+    foreach (var file in files)
     {
-        regularCommand = true;
-        watchMode = watch;
-        checkMode = check;
-
-        void HandleFile(FileInfo file)
+        if (!file.Exists)
         {
-            configs.Add((file.FullName, file.DirectoryName!));
-        }
-
-        if (files.Any())
-        {
-            foreach (var file in files)
-            {
-                if (!file.Exists)
-                {
-                    AnsiConsole.MarkupLine($"[red]Le fichier '{file.FullName}' est introuvable.[/]");
-                }
-                else
-                {
-                    HandleFile(file);
-                }
-            }
+            AnsiConsole.MarkupLine($"[red]Le fichier '{file.FullName}' est introuvable.[/]");
         }
         else
         {
-            var dir = Directory.GetCurrentDirectory();
-            var pattern = "tmdgen*.config";
-            foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
-            {
-                var foundFile = new FileInfo(fileName);
-                if (foundFile != null)
-                {
-                    HandleFile(foundFile);
-                }
-            }
+            HandleFile(file);
+        }
+    }
+}
+else
+{
+    var dir = Directory.GetCurrentDirectory();
+    var pattern = "tmdgen*.config";
+    foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
+    {
+        var foundFile = new FileInfo(fileName);
+        if (foundFile != null)
+        {
+            HandleFile(foundFile);
+        }
+    }
 
-            if (!configs.Any())
+    if (!configs.Any())
+    {
+        var found = false;
+        while (!found && dir != null)
+        {
+            dir = Directory.GetParent(dir)?.FullName;
+            if (dir != null)
             {
-                var found = false;
-                while (!found && dir != null)
+                foreach (var fileName in Directory.GetFiles(dir, pattern))
                 {
-                    dir = Directory.GetParent(dir)?.FullName;
-                    if (dir != null)
-                    {
-                        foreach (var fileName in Directory.GetFiles(dir, pattern))
-                        {
-                            HandleFile(new FileInfo(fileName));
-                            found = true;
-                        }
-                    }
+                    HandleFile(new FileInfo(fileName));
+                    found = true;
                 }
             }
         }
-    },
-    fileOption,
-    watchOption,
-    checkOption
-);
-
-await command.InvokeAsync(args);
-
-if (!regularCommand)
-{
-    return 0;
+    }
 }
 
 if (!configs.Any())
