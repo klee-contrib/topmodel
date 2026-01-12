@@ -7,13 +7,13 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using System.Xml;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.ProjectModel;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
@@ -343,48 +343,47 @@ for (var i = 0; i < configs.Count; i++)
 
     foreach (var cg in config.CustomGenerators)
     {
-        string? csproj = null;
-        if (Directory.Exists(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!)))
-        {
-            csproj = Directory
-                .GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj")
-                .FirstOrDefault();
-        }
+        var projDir = Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!);
 
-        if (csproj == null)
+        if (!Directory.EnumerateFiles(projDir, "*.csproj").Any())
         {
             logger.LogError($"Aucun fichier csproj trouvé pour le module de générateurs '{cg}'.");
             returnCode = 1;
             continue;
         }
 
-        var csprojXml = new XmlDocument();
-        csprojXml.LoadXml(await File.ReadAllTextAsync(csproj));
+        var assetsPath = Path.Combine(projDir, "obj", "project.assets.json");
+
+        if (!File.Exists(assetsPath))
+        {
+            logger.LogError($"Le module de générateurs '{cg}' n'a pas été buildé correctement...");
+            returnCode = 1;
+            continue;
+        }
+
+        var lockFile = LockFileUtilities.GetLockFile(assetsPath, NullLogger.Instance);
 
         foreach (
-            var dep in csprojXml
-                .GetElementsByTagName("PackageReference")
-                .Cast<XmlNode>()
-                .Where(n => n.ChildNodes.Count == 0)
-                .ToDictionary(n => n.Attributes!["Include"]!.Value, n => n.Attributes!["Version"]!.Value)
-                .Where(n => n.Key.StartsWith("TopModel.Generator"))
+            var dep in lockFile
+                .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= dotnetMajor)
+                ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
+            ?? []
         )
         {
-            if (dep.Key == "TopModel.Generator.Core")
+            if (dep.Name == "TopModel.Generator.Core")
             {
-                var depVersion = dep.Value.Split('.').Select(int.Parse).ToArray();
-                if (depVersion[0] != fullVersion.Major)
+                if (dep.Version?.Major != fullVersion.Major)
                 {
                     logger.LogError(
-                        $"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Value} < {version})."
+                        $"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version})."
                     );
                     returnCode = 1;
                     continue;
                 }
-                else if (depVersion[1] > fullVersion.Minor)
+                else if (dep.Version?.Minor > fullVersion.Minor)
                 {
                     logger.LogError(
-                        $"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Value} > {version})."
+                        $"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Version} > {version})."
                     );
                     returnCode = 1;
                     continue;
@@ -392,15 +391,15 @@ for (var i = 0; i < configs.Count; i++)
             }
             else
             {
-                var configKey = dep.Key.Split('.')[^1].ToLower();
+                var configKey = dep.Name?.Split('.')[^1].ToLower() ?? string.Empty;
                 if (!topModelLock.Modules.TryGetValue(configKey, out var ev))
                 {
-                    topModelLock.Modules.Add(configKey, new() { Version = dep.Value });
+                    topModelLock.Modules.Add(configKey, new() { Version = dep.Version?.ToString() ?? string.Empty });
                 }
-                else if (ev.Version != dep.Value)
+                else if (ev.Version != dep.Version?.ToString())
                 {
                     logger.LogError(
-                        $"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Value}', ce qui n'est pas la version du lockfile ('{ev}')."
+                        $"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Version}', ce qui n'est pas la version du lockfile ('{ev}')."
                     );
                     returnCode = 1;
                     continue;
