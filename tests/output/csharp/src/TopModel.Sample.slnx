@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Éléments de solution/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Clients/TopModel.Sample.Clients.Db/TopModel.Sample.Clients.Db.csproj" />
+  <Project Path="Clients/TopModel.Sample.Clients.External/TopModel.Sample.Clients.External.csproj" />
+  <Project Path="Models/TopModel.Sample.Restaurant.Models/TopModel.Sample.Restaurant.Models.csproj" />
+  <Project Path="TopModel.Sample.Api/TopModel.Sample.Api.csproj" />
+</Solution>
