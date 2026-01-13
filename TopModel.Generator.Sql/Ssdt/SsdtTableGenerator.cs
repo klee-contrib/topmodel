@@ -76,7 +76,11 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="properties">Champs.</param>
     private void GenerateIndexForeignKey(IFileWriter writer, string tableName, IEnumerable<IProperty> properties)
     {
-        foreach (var property in properties.Where(p => p.Association != null))
+        foreach (
+            var property in properties.Where(p =>
+                p.Association != null && (p.Class.PrimaryKey.Count() != 1 || p.Class.PrimaryKey.Single() != p)
+            )
+        )
         {
             var propertyName = property.SqlName;
             var indexName = "IDX_" + tableName + "_" + propertyName + "_FK";

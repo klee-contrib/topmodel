@@ -32,7 +32,10 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
 
         foreach (var fkProperty in classes.OrderBy(c => c.SqlName).SelectMany(GetForeignKeys))
         {
-            GenerateIndexForeignKey(fkProperty, writer);
+            if (fkProperty.Class.PrimaryKey.Count() != 1 || fkProperty.Class.PrimaryKey.Single() != fkProperty)
+            {
+                GenerateIndexForeignKey(fkProperty, writer);
+            }
             GenerateConstraintForeignKey(fkProperty, writer);
         }
 
