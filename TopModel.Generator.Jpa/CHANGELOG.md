@@ -1,8 +1,11 @@
 # Changelog JPA
 
-## x.y.z
+## 3.5.1
 
 - [`02c41bf`](https://github.com/klee-contrib/topmodel/commit/02c41bfd719b7fa8de48714a0fff4a181dd4c82d) - [JPA] Gestion package vide
+- [`7aaf564`](https://github.com/klee-contrib/topmodel/commit/7aaf5643e377568d762dcb43d7b89f3832d31fe0) - [JPA] Fix génération mapper association => composition
+- [`60ed209`](https://github.com/klee-contrib/topmodel/commit/60ed20949a84d7f835203e65563526b1827db924) - [JPA] Retrait génération mappers composition pour JDBC
+- [`14ad65f`](https://github.com/klee-contrib/topmodel/commit/14ad65fbfa5ab36309556ff4cac18b3e30de6d38) - [JPA] Fix mapper vers PK association oneToOne
 
 ## 3.5.0
 

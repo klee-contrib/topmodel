@@ -1,3 +1,7 @@
+## 3.6.1
+
+- [`5dcf17d`](https://github.com/klee-contrib/topmodel/commit/5dcf17d82fa0abe64af9c53b8e2304b76b529611) - [SQL] Fix génération associations one to one (indexes et séquences en trop)
+
 ## 3.6.0
 
 Compatibilité avec Topmodel 3.8
