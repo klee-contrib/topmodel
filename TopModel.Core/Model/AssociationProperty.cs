@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class AssociationProperty : IProperty
+internal class AssociationProperty : IProperty
 {
     private IProperty? _property;
 

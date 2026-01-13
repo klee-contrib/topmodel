@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0618, S1133
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -151,18 +149,12 @@ public abstract class TranslationGeneratorBase<T>(
         IEnumerable<(string ModuleFilePath, string ModuleName)> modules
     ) { }
 
-    protected virtual void HandleResourceFile(
+    protected abstract void HandleResourceFile(
         string filePath,
         string tag,
         string lang,
         IEnumerable<IProperty> properties
-    )
-    {
-        HandleResourceFile(filePath, lang, properties);
-    }
-
-    [Obsolete("Utiliser la surcharge avec le tag en paramètres.")]
-    protected virtual void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties) { }
+    );
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IProperty property, string tag)
     {

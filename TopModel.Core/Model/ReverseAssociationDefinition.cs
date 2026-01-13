@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-public class ReverseAssociationDefinition : IAnnotationContainer
+internal class ReverseAssociationDefinition : IAnnotationContainer
 {
     public required AssociationProperty Property { get; set; }
 

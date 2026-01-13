@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-public class ReverseAssociationProperty : AssociationProperty
+internal class ReverseAssociationProperty : AssociationProperty
 {
 #nullable disable
     public override required AssociationProperty ReverseProperty { get; set; }

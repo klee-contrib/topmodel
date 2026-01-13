@@ -1,12 +1,10 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class CompositionProperty : IProperty
+internal class CompositionProperty : IProperty
 {
 #nullable disable
     public Class Composition { get; set; }
@@ -65,9 +63,6 @@ public class CompositionProperty : IProperty
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
-
-    [Obsolete("Utiliser IProperty.CompositionPrimaryKey à la place.")]
-    public IProperty? CompositionPrimaryKey => ModelExtensions.get_CompositionPrimaryKey(this);
 
     public bool UseLegacyRoleName { get; init; }
 

@@ -1,12 +1,10 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class AliasProperty : IProperty
+internal class AliasProperty : IProperty
 {
     private string? _comment;
     private Class? _composition;
@@ -228,9 +226,6 @@ public class AliasProperty : IProperty
         : OriginalProperty is AliasProperty op ? op.PersistentProperty
         : OriginalProperty?.Class?.IsPersistent ?? false ? OriginalProperty
         : null;
-
-    [Obsolete("Utiliser IProperty.PrimaryKeyish à la place.")]
-    public bool AliasedPrimaryKey => ModelExtensions.get_PrimaryKeyish(this);
 
     public AliasReference? Reference { get; set; }
 

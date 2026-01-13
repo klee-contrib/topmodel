@@ -1,6 +1,4 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
@@ -8,18 +6,6 @@ namespace TopModel.Core.Utils;
 
 public static class CoreUtils
 {
-    [Obsolete("Utiliser IProperty.AssociationToMany à la place.")]
-    public static bool IsAssociationToMany(this IProperty property)
-    {
-        return Model.ModelExtensions.get_AssociationToMany(property);
-    }
-
-    [Obsolete("Utiliser AssociationType.ToMany  à la place.")]
-    public static bool IsToMany(this AssociationType associationType)
-    {
-        return Model.ModelExtensions.get_ToMany(associationType);
-    }
-
     public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
         where T : notnull
     {

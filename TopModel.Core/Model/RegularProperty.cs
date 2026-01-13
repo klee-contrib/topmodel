@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class RegularProperty : IProperty
+internal class RegularProperty : IProperty
 {
 #nullable disable
     public string Name { get; set; }
