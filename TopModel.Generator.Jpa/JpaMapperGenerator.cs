@@ -377,8 +377,13 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     }
                     else if (aSource.PrimaryKey.Count() == 1)
                     {
+                        var targetGetterName =
+                            JpaModelPropertyGenerator
+                                .GetMapIdPropertyGetter(aSource, Config.GetBestClassTag(aSource, tag))
+                                ?.Name ?? JpaModelPropertyGenerator.GetGetterName(apSource);
+
                         getter =
-                            $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({aSource.NamePascal}::{JpaModelPropertyGenerator.GetGetterName(apSource)}).collect({collector})";
+                            $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({aSource.NamePascal}::{targetGetterName}).collect({collector})";
                         imports.Add(aSource.GetImport(Config, tag));
                     }
                     else if (aSource.PrimaryKey.Count() > 1)

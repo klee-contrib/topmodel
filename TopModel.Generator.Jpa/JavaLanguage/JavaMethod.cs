@@ -38,7 +38,7 @@ public class JavaMethod
 
     public string ReturnType { get; }
 
-    protected string Name { get; }
+    public string Name { get; }
 
     protected IList<string> GenericTypes { get; } = [];
 

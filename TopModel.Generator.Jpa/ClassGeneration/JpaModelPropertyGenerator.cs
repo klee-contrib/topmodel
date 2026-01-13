@@ -232,6 +232,27 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         };
     }
 
+    public virtual JavaMethod? GetMapIdPropertyGetter(Class classe, string tag)
+    {
+        if (
+            classe.PrimaryKey.Count() == 1
+            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap } pk
+        )
+        {
+            var propertyType = GetPropertyType(ap);
+            string getterName = $"get{pk.NamePascal}";
+            var method = new JavaMethod(propertyType, getterName)
+            {
+                Visibility = "public",
+                Comment = $"Getter for {pk.NameCamel}",
+                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{pk.NameCamel} {pk.NameCamel}}}",
+            };
+            method.AddBodyLine(@$"return this.{pk.NameCamel};");
+            return method;
+        }
+        return null;
+    }
+
     public virtual string GetPropertyName(IProperty property)
     {
         return UseClassForAssociation(property) ? property.NameByClassCamel : property.NameCamel;

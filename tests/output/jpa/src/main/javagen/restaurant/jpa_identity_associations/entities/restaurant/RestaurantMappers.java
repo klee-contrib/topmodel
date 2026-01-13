@@ -540,7 +540,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}
@@ -606,7 +606,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}

@@ -204,7 +204,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             yield return getter;
         }
 
-        var mapIdGetter = GetMapIdPropertyGetter(classe, tag);
+        var mapIdGetter = JpaModelPropertyGenerator.GetMapIdPropertyGetter(classe, tag);
         if (mapIdGetter != null)
         {
             yield return mapIdGetter;
@@ -346,27 +346,6 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 yield return adder;
             }
         }
-    }
-
-    private JavaMethod? GetMapIdPropertyGetter(Class classe, string tag)
-    {
-        if (
-            classe.PrimaryKey.Count() == 1
-            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap } pk
-        )
-        {
-            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap);
-            string getterName = $"get{pk.NamePascal}";
-            var method = new JavaMethod(propertyType, getterName)
-            {
-                Visibility = "public",
-                Comment = $"Getter for {pk.NameCamel}",
-                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{pk.NameCamel} {pk.NameCamel}}}",
-            };
-            method.AddBodyLine(@$"return this.{pk.NameCamel};");
-            return method;
-        }
-        return null;
     }
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
