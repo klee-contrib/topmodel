@@ -58,6 +58,7 @@ create table COMMANDE (
 	TAB_ID int,
 	REV_ID int,
 	STC_CODE varchar(10) not null,
+	AVI_ID int,
 	constraint PK_COMMANDE primary key (COM_ID)
 );
 
@@ -78,6 +79,7 @@ create table COMMANDE_EXPORT (
 	TAB_ID int,
 	REV_ID int,
 	STC_CODE varchar(10) not null,
+	AVI_ID int,
 	constraint PK_COMMANDE_EXPORT primary key (COM_ID)
 );
 
@@ -181,28 +183,14 @@ create sequence SEQ_PLAT as INT start 1000 increment 50 owned by PLAT.PLA_ID;
   * Création de la table PROMOTION
  **/
 create table PROMOTION (
-	PRO_ID int not null,
+	PLA_ID int not null,
 	PRO_LIBELLE varchar(100) not null,
 	PRO_POURCENTAGE_REDUCTION int not null,
 	PRO_DATE_DEBUT timestamp not null,
 	PRO_DATE_FIN timestamp not null,
 	PRO_ACTIVE boolean not null,
 	RES_ID int,
-	constraint PK_PROMOTION primary key (PRO_ID)
-);
-
-/**
-  * Création de la séquence pour la clé primaire de la table PROMOTION
- **/
-create sequence SEQ_PROMOTION as INT start 1000 increment 50 owned by PROMOTION.PRO_ID;
-
-/**
-  * Création de la table PROMOTION_PLAT
- **/
-create table PROMOTION_PLAT (
-	PRO_ID int not null,
-	PLA_ID int not null,
-	constraint PK_PROMOTION_PLAT primary key (PRO_ID,PLA_ID)
+	constraint PK_PROMOTION primary key (PLA_ID)
 );
 
 /**

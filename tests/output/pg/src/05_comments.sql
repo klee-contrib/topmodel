@@ -47,6 +47,7 @@ COMMENT ON COLUMN COMMANDE.PER_ID IS 'Client ayant passé la commande';
 COMMENT ON COLUMN COMMANDE.TAB_ID IS 'Table associée à la commande';
 COMMENT ON COLUMN COMMANDE.REV_ID IS 'Réservation associée à la commande';
 COMMENT ON COLUMN COMMANDE.STC_CODE IS 'Statut de la commande';
+COMMENT ON COLUMN COMMANDE.AVI_ID IS 'Avis laissé par le client sur la commande.';
 
 /**
   * Commentaires pour la table COMMANDE_EXPORT
@@ -60,6 +61,7 @@ COMMENT ON COLUMN COMMANDE_EXPORT.PER_ID IS 'Client ayant passé la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.TAB_ID IS 'Table associée à la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.REV_ID IS 'Réservation associée à la commande';
 COMMENT ON COLUMN COMMANDE_EXPORT.STC_CODE IS 'Statut de la commande';
+COMMENT ON COLUMN COMMANDE_EXPORT.AVI_ID IS 'Avis laissé par le client sur la commande.';
 
 /**
   * Commentaires pour la table EMPLOYE
@@ -128,21 +130,14 @@ COMMENT ON COLUMN PLAT.RES_ID IS 'Restaurant proposant ce plat';
 /**
   * Commentaires pour la table PROMOTION
  **/
-COMMENT ON TABLE PROMOTION IS 'Promotion sur les plats';
-COMMENT ON COLUMN PROMOTION.PRO_ID IS 'Identifiant de la promotion';
+COMMENT ON TABLE PROMOTION IS 'Promotion sur un plat';
+COMMENT ON COLUMN PROMOTION.PLA_ID IS 'Plat concerné par la promotion.';
 COMMENT ON COLUMN PROMOTION.PRO_LIBELLE IS 'Libellé de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_POURCENTAGE_REDUCTION IS 'Pourcentage de réduction (0-100)';
 COMMENT ON COLUMN PROMOTION.PRO_DATE_DEBUT IS 'Date de début de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_DATE_FIN IS 'Date de fin de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_ACTIVE IS 'Indique si la promotion est active';
 COMMENT ON COLUMN PROMOTION.RES_ID IS 'Restaurant concerné par la promotion (null si globale)';
-
-/**
-  * Commentaires pour la table PROMOTION_PLAT
- **/
-COMMENT ON TABLE PROMOTION_PLAT IS 'Association entre une promotion et un plat';
-COMMENT ON COLUMN PROMOTION_PLAT.PRO_ID IS 'Promotion concernée';
-COMMENT ON COLUMN PROMOTION_PLAT.PLA_ID IS 'Plat concerné par la promotion';
 
 /**
   * Commentaires pour la table RESERVATION

@@ -131,14 +131,14 @@ public partial class MenuClient(HttpClient client)
     /// <summary>
     /// Met à jour partiellement une promotion.
     /// </summary>
-    /// <param name="proId">Identifiant de la promotion.</param>
+    /// <param name="plaId">Identifiant du plat.</param>
     /// <param name="promotion">Données partielles de la promotion.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Promotion mise à jour.</returns>
-    public async Task<PromotionRead> PatchPromotion(int proId, PromotionWrite promotion, CancellationToken ct = default)
+    public async Task<PromotionRead> PatchPromotion(int plaId, PromotionWrite promotion, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/promotions/{proId}") { Content = JsonContent.Create(promotion, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/plats/{plaId}/promotion") { Content = JsonContent.Create(promotion, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
         return (await res.Content.ReadFromJsonAsync<PromotionRead>(_jsOptions, ct))!;

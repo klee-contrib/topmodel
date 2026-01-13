@@ -174,6 +174,7 @@ public class RestaurantMappers {
 		target.setMontantTotal(commande.getMontantTotal());
 		target.setTableId(commande.getTableId());
 		target.setStatutCommandeCode(commande.getStatutCommandeCode());
+		target.setAvisClientId(commande.getAvisClientId());
 		return target;
 	}
 
@@ -349,7 +350,7 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("promotion cannot be null");
 		}
 
-		target.setId(promotion.getId());
+		target.setPlatId(promotion.getPlatId());
 		target.setLibelle(promotion.getLibelle());
 		target.setPourcentageReduction(promotion.getPourcentageReduction());
 		target.setDateDebut(promotion.getDateDebut());
@@ -641,6 +642,7 @@ public class RestaurantMappers {
 		target.setTableId(source.getTableId());
 		target.setReservationId(source.getReservationId());
 		target.setStatutCommandeCode(source.getStatutCommandeCode());
+		target.setAvisClientId(source.getAvisClientId());
 		return target;
 	}
 

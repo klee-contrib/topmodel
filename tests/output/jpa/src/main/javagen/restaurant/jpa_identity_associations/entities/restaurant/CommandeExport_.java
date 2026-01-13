@@ -33,6 +33,8 @@ public class CommandeExport_ {
 
 	public static volatile SingularAttribute<CommandeExport, StatutCommande> statutCommande;
 
+	public static volatile SingularAttribute<CommandeExport, AvisClient> avisClient;
+
 	public static volatile ListAttribute<CommandeExport, LigneCommande> lignes;
 
 	public static final String ID = "id";
@@ -50,6 +52,8 @@ public class CommandeExport_ {
 	public static final String RESERVATION = "reservation";
 
 	public static final String STATUT_COMMANDE = "statutCommande";
+
+	public static final String AVIS_CLIENT = "avisClient";
 
 	public static final String LIGNES = "lignes";
 }

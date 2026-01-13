@@ -5,24 +5,21 @@
 package restaurant.jpa_identity_associations.entities.restaurant;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 /**
- * Promotion sur les plats.
+ * Promotion sur un plat.
  */
 @Entity
 @Table(name = "PROMOTION")
@@ -30,12 +27,18 @@ import jakarta.persistence.Table;
 public class Promotion {
 
 	/**
-	 * Identifiant de la promotion.
+	 * Identifiant technique mappé avec celui de la classe {@link restaurant.jpa_identity_associations.entities.restaurant.Plat} Plat.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PRO_ID", nullable = false, columnDefinition = "int")
-	private Integer id;
+	private Integer platId;
+
+	/**
+	 * Plat concerné par la promotion.
+	 */
+	@MapsId
+	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID", unique = true)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+	private Plat plat;
 
 	/**
 	 * Libellé de la promotion.
@@ -75,18 +78,12 @@ public class Promotion {
 	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de PromotionPlat.PromotionId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "promotion")
-	private List<PromotionPlat> plats;
-
-	/**
-	 * Getter for id.
+	 * Getter for plat.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #plat plat}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Plat getPlat() {
+		return this.plat;
 	}
 
 	/**
@@ -144,23 +141,20 @@ public class Promotion {
 	}
 
 	/**
-	 * Getter for plats.
+	 * Getter for platId.
 	 *
-	 * @return value of {@link #plats plats}.
+	 * @return value of {@link restaurant.jpa_identity_associations.entities.restaurant.Promotion#platId platId}.
 	 */
-	public List<PromotionPlat> getPlats() {
-		if (this.plats == null) {
-			this.plats = new ArrayList<>();
-		}
-		return this.plats;
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setPlat(Plat plat) {
+		this.plat = plat;
 	}
 
 	/**
@@ -212,43 +206,24 @@ public class Promotion {
 	}
 
 	/**
-	 * Set the value of {@link #plats plats}.
-	 * @param plats value to set.
+	 * Setter for platId.
+	 * @param platId Set the value of {@link restaurant.jpa_identity_associations.entities.restaurant.Promotion#platId platId}.
 	 */
-	public void setPlats(List<PromotionPlat> plats) {
-		this.plats = plats;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_identity_associations.entities.restaurant.Promotion#plats plats}.
-	 * @param promotionPlat value to add to promotion.
-	 */
-	void addPromotionPlat(PromotionPlat promotionPlat) {
-		this.plats.add(promotionPlat);
-		promotionPlat.setPromotion(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_associations.entities.restaurant.Promotion#plats plats}.
-	 * @param promotionPlat promotionPlat value to remove.
-	 */
-	void removePromotionPlat(PromotionPlat promotionPlat) {
-		this.plats.remove(promotionPlat);
-		promotionPlat.setPromotion(null);
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_associations.entities.restaurant.Promotion Promotion}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
+		PLAT(Plat.class),
 		LIBELLE(String.class),
 		POURCENTAGE_REDUCTION(Integer.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		ACTIVE(Boolean.class),
-		RESTAURANT(Restaurant.class),
-		PLATS(List.class);
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

@@ -72,11 +72,4 @@ public partial record Plat
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
-
-    /// <summary>
-    /// Association réciproque de PromotionPlat.PlatId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Promotions { get; set; }
 }

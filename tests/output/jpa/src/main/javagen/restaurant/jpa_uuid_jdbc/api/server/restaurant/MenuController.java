@@ -102,14 +102,14 @@ public interface MenuController {
 
 	/**
 	 * Met à jour partiellement une promotion.
-	 * @param proId Identifiant de la promotion.
+	 * @param plaId Identifiant du plat.
 	 * @param promotion Données partielles de la promotion.
 	 *
 	 * @return Promotion mise à jour.
 	 */
 	@PreAuthorize("isAuthenticated()")
-	@PatchMapping(path = "promotions/{proId}")
-	PromotionRead patchPromotion(@PathVariable("proId") Integer proId, @RequestBody @Valid PromotionWrite promotion);
+	@PatchMapping(path = "plats/{plaId}/promotion")
+	PromotionRead patchPromotion(@PathVariable("plaId") Integer plaId, @RequestBody @Valid PromotionWrite promotion);
 
 	/**
 	 * Recherche de plats avec critères multiples.

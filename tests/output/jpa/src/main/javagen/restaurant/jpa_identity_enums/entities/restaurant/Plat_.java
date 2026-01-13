@@ -5,10 +5,8 @@
 package restaurant.jpa_identity_enums.entities.restaurant;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
@@ -32,8 +30,6 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Plat, PromotionPlat> promotions;
-
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -47,6 +43,4 @@ public class Plat_ {
 	public static final String CATEGORIE_PLAT = "categoriePlat";
 
 	public static final String RESTAURANT = "restaurant";
-
-	public static final String PROMOTIONS = "promotions";
 }

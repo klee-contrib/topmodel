@@ -208,6 +208,12 @@ public class RestaurantMappers {
 			target.setStatutCommandeCode(null);
 		}
 
+		if (commande.getAvisClient() != null) {
+			target.setAvisClientId(commande.getAvisClient().getId());
+		} else {
+			target.setAvisClientId(null);
+		}
+
 		return target;
 	}
 
@@ -413,7 +419,12 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("promotion cannot be null");
 		}
 
-		target.setId(promotion.getId());
+		if (promotion.getPlat() != null) {
+			target.setPlatId(promotion.getPlat().getId());
+		} else {
+			target.setPlatId(null);
+		}
+
 		target.setLibelle(promotion.getLibelle());
 		target.setPourcentageReduction(promotion.getPourcentageReduction());
 		target.setDateDebut(promotion.getDateDebut());
@@ -529,7 +540,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getId).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}
@@ -595,7 +606,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getId).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}

@@ -107,6 +107,20 @@ alter table COMMANDE
 		references STATUT_COMMANDE (STC_CODE);
 
 /**
+  * Création de l'index de clef étrangère pour COMMANDE.AVI_ID
+ **/
+create index IDX_COM_AVI_ID_FK on COMMANDE (
+	AVI_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COMMANDE.AVI_ID
+ **/
+alter table COMMANDE
+	add constraint FK_COMMANDE_AVI_ID foreign key (AVI_ID)
+		references AVIS_CLIENT (AVI_ID);
+
+/**
   * Création de l'index de clef étrangère pour COMMANDE_EXPORT.PER_ID
  **/
 create index IDX_COMMANDE_EXPORT_PER_ID_FK on COMMANDE_EXPORT (
@@ -161,6 +175,20 @@ create index IDX_COMMANDE_EXPORT_STC_CODE_FK on COMMANDE_EXPORT (
 alter table COMMANDE_EXPORT
 	add constraint FK_COMMANDE_EXPORT_STC_CODE foreign key (STC_CODE)
 		references STATUT_COMMANDE (STC_CODE);
+
+/**
+  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.AVI_ID
+ **/
+create index IDX_COMMANDE_EXPORT_AVI_ID_FK on COMMANDE_EXPORT (
+	AVI_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.AVI_ID
+ **/
+alter table COMMANDE_EXPORT
+	add constraint FK_COMMANDE_EXPORT_AVI_ID foreign key (AVI_ID)
+		references AVIS_CLIENT (AVI_ID);
 
 /**
   * Création de l'index de clef étrangère pour EMPLOYE.RES_ID
@@ -289,6 +317,13 @@ alter table PLAT
 		references RESTAURANT (RES_ID);
 
 /**
+  * Génération de la contrainte de clef étrangère pour PROMOTION.PLA_ID
+ **/
+alter table PROMOTION
+	add constraint FK_PROMOTION_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
+
+/**
   * Création de l'index de clef étrangère pour PROMOTION.RES_ID
  **/
 create index IDX_PRO_RES_ID_FK on PROMOTION (
@@ -301,34 +336,6 @@ create index IDX_PRO_RES_ID_FK on PROMOTION (
 alter table PROMOTION
 	add constraint FK_PROMOTION_RES_ID foreign key (RES_ID)
 		references RESTAURANT (RES_ID);
-
-/**
-  * Création de l'index de clef étrangère pour PROMOTION_PLAT.PRO_ID
- **/
-create index IDX_PPL_PRO_ID_FK on PROMOTION_PLAT (
-	PRO_ID ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROMOTION_PLAT.PRO_ID
- **/
-alter table PROMOTION_PLAT
-	add constraint FK_PROMOTION_PLAT_PRO_ID foreign key (PRO_ID)
-		references PROMOTION (PRO_ID);
-
-/**
-  * Création de l'index de clef étrangère pour PROMOTION_PLAT.PLA_ID
- **/
-create index IDX_PPL_PLA_ID_FK on PROMOTION_PLAT (
-	PLA_ID ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROMOTION_PLAT.PLA_ID
- **/
-alter table PROMOTION_PLAT
-	add constraint FK_PROMOTION_PLAT_PLA_ID foreign key (PLA_ID)
-		references PLAT (PLA_ID);
 
 /**
   * Création de l'index de clef étrangère pour RESERVATION.PER_ID

@@ -85,7 +85,8 @@ public static class Mappers
             DateLivraison = commande.DateLivraison,
             MontantTotal = commande.MontantTotal,
             TableId = commande.TableId,
-            StatutCommandeCode = commande.StatutCommandeCode
+            StatutCommandeCode = commande.StatutCommandeCode,
+            AvisClientId = commande.AvisClientId
         };
     }
 
@@ -186,7 +187,7 @@ public static class Mappers
 
         return new PromotionRead
         {
-            Id = promotion.Id,
+            PlatId = promotion.PlatId,
             Libelle = promotion.Libelle,
             PourcentageReduction = promotion.PourcentageReduction,
             DateDebut = promotion.DateDebut,
@@ -392,7 +393,8 @@ public static class Mappers
             ClientId = source.ClientId,
             TableId = source.TableId,
             ReservationId = source.ReservationId,
-            StatutCommandeCode = source.StatutCommandeCode
+            StatutCommandeCode = source.StatutCommandeCode,
+            AvisClientId = source.AvisClientId
         };
     }
 
@@ -411,6 +413,7 @@ public static class Mappers
         dest.TableId = source.TableId;
         dest.ReservationId = source.ReservationId;
         dest.StatutCommandeCode = source.StatutCommandeCode;
+        dest.AvisClientId = source.AvisClientId;
         return dest;
     }
 

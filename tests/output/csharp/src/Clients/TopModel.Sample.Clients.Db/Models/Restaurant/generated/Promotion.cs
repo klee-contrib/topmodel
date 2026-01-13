@@ -10,18 +10,18 @@ using TopModel.Sample.Restaurant.Models;
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
 /// <summary>
-/// Promotion sur les plats.
+/// Promotion sur un plat.
 /// </summary>
 [Table("promotion")]
 public partial record Promotion
 {
     /// <summary>
-    /// Identifiant de la promotion.
+    /// Plat concerné par la promotion.
     /// </summary>
-    [Column("pro_id")]
+    [Column("pla_id")]
     [Domain(Domains.Id)]
     [Key]
-    public int? Id { get; set; }
+    public int? PlatId { get; set; }
 
     /// <summary>
     /// Libellé de la promotion.
@@ -70,11 +70,4 @@ public partial record Promotion
     [Column("res_id")]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
-
-    /// <summary>
-    /// Association réciproque de PromotionPlat.PromotionId.
-    /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Plats { get; set; }
 }

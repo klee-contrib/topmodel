@@ -60,6 +60,12 @@ public partial record CommandeWrite
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
+    /// Avis laissé par le client sur la commande.
+    /// </summary>
+    [Domain(Domains.Id)]
+    public int? AvisClientId { get; set; }
+
+    /// <summary>
     /// Association réciproque de LigneCommande.CommandeId.
     /// </summary>
     [Required]

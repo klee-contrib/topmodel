@@ -65,7 +65,6 @@ class:
   properties:
     - alias:
         class: Plat
-        exclude: Promotions
 
   mappers:
     from:
@@ -81,8 +80,6 @@ class:
         class: Plat
         exclude:
           - Id
-          - Promotions
-
   mappers:
     to:
       - class: Plat
@@ -94,7 +91,6 @@ class:
   properties:
     - alias:
         class: Promotion
-        exclude: Plats
 
   mappers:
     from:
@@ -109,8 +105,7 @@ class:
     - alias:
         class: Promotion
         exclude:
-          - Id
-          - Plats
+          - PlatId
 
   mappers:
     to:

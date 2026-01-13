@@ -27,12 +27,12 @@ public class PromotionRead implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Identifiant de la promotion.
-	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Promotion#getId() Promotion#getId()}
+	 * Plat concerné par la promotion.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Promotion#getPlatId() Promotion#getPlatId()}
 	 */
 	@NotNull
-	@Column("pro_id")
-	private Integer id;
+	@Column("pla_id")
+	private Integer platId;
 
 	/**
 	 * Libellé de la promotion.
@@ -83,12 +83,12 @@ public class PromotionRead implements Serializable {
 	private Integer restaurantId;
 
 	/**
-	 * Getter for id.
+	 * Getter for platId.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #platId platId}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
@@ -146,11 +146,11 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class PromotionRead implements Serializable {
 	 * Enumération des champs de la classe {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.PromotionRead PromotionRead}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
+		PLAT_ID(Integer.class),
 		LIBELLE(String.class),
 		POURCENTAGE_REDUCTION(Integer.class),
 		DATE_DEBUT(LocalDateTime.class),

@@ -106,5 +106,11 @@ public partial record ClientAvecCommandes
     /// Liste des commandes du client.
     /// </summary>
     [Domain(Domains.Liste)]
+    public ICollection<int>? CommandeAvisClientId { get; set; }
+
+    /// <summary>
+    /// Liste des commandes du client.
+    /// </summary>
+    [Domain(Domains.Liste)]
     public ICollection<ICollection<int>>? CommandeLignes { get; set; }
 }

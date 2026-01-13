@@ -84,6 +84,13 @@ public class CommandeWrite implements Serializable {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
+	 * Avis laissé par le client sur la commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 */
+	@Column("avi_id")
+	private Integer avisClientId;
+
+	/**
 	 * Association réciproque de LigneCommande.CommandeId.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
@@ -155,6 +162,15 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for avisClientId.
+	 *
+	 * @return value of {@link #avisClientId avisClientId}.
+	 */
+	public Integer getAvisClientId() {
+		return this.avisClientId;
+	}
+
+	/**
 	 * Getter for lignes.
 	 *
 	 * @return value of {@link #lignes lignes}.
@@ -220,6 +236,14 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
+	 */
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
+	}
+
+	/**
 	 * Set the value of {@link #lignes lignes}.
 	 * @param lignes value to set.
 	 */
@@ -238,6 +262,7 @@ public class CommandeWrite implements Serializable {
 		TABLE_ID(Integer.class),
 		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE_CODE(String.class),
+		AVIS_CLIENT_ID(Integer.class),
 		LIGNES(List.class);
 
 		private final Class<?> type;

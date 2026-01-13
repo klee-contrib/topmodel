@@ -102,13 +102,13 @@ public class MenuController : Controller
     /// <summary>
     /// Met à jour partiellement une promotion
     /// </summary>
-    /// <param name="proId">Identifiant de la promotion</param>
+    /// <param name="plaId">Identifiant du plat</param>
     /// <param name="promotion">Données partielles de la promotion</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Promotion mise à jour</returns>
     [Authorize]
-    [HttpPatch("api/restaurants/promotions/{proId:int}")]
-    public async Task<PromotionRead> PatchPromotion(int proId, [FromBody] PromotionWrite promotion, CancellationToken ct = default)
+    [HttpPatch("api/restaurants/plats/{plaId:int}/promotion")]
+    public async Task<PromotionRead> PatchPromotion(int plaId, [FromBody] PromotionWrite promotion, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

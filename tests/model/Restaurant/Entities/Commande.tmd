@@ -48,6 +48,12 @@ class:
       required: true
       defaultValue: EN_ATT
       comment: Statut de la commande
+
+    - association: AvisClient
+      comment: Avis laissé par le client sur la commande.
+
+  unique:
+    - [AvisClientId]
 ---
 class:
   name: LigneCommande
@@ -77,7 +83,7 @@ class:
 
     - association: Commande
       required: true
-      withReverse: 
+      withReverse:
         className: Lignes
       comment: Commande à laquelle appartient la ligne
 

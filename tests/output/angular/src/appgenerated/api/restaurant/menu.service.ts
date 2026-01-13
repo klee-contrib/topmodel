@@ -103,12 +103,12 @@ export class MenuService {
 
     /**
      * @description Met à jour partiellement une promotion
-     * @param proId Identifiant de la promotion
+     * @param plaId Identifiant du plat
      * @param promotion Données partielles de la promotion
      * @returns Promotion mise à jour
      */
-    patchPromotion(proId: number, promotion: PromotionWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PromotionRead> {
-        return this.http.patch<PromotionRead>(`/api/restaurants/promotions/${proId}`, promotion, {observe: 'body', ...options});
+    patchPromotion(plaId: number, promotion: PromotionWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PromotionRead> {
+        return this.http.patch<PromotionRead>(`/api/restaurants/plats/${plaId}/promotion`, promotion, {observe: 'body', ...options});
     }
 
     /**

@@ -7,14 +7,15 @@
 -- ===========================================================================================
 
 create table [dbo].[PROMOTION] (
-	[PRO_ID] int identity,
+	[PLA_ID] int,
 	[PRO_LIBELLE] varchar not null,
 	[PRO_POURCENTAGE_REDUCTION] int not null,
 	[PRO_DATE_DEBUT] timestamp not null,
 	[PRO_DATE_FIN] timestamp not null,
 	[PRO_ACTIVE] boolean not null default true,
 	[RES_ID] int,
-	constraint [PK_PROMOTION] primary key clustered ([PRO_ID] ASC),
+	constraint [PK_PROMOTION] primary key clustered ([PLA_ID] ASC),
+	constraint [FK_PROMOTION_PLAT_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
 	constraint [FK_PROMOTION_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
@@ -26,9 +27,9 @@ go
 /**
   * Commentaires pour la table PROMOTION
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Promotion sur les plats', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Promotion sur un plat', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la promotion', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'PRO_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Plat concerné par la promotion.', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'PLA_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé de la promotion', 'SCHEMA', 'dbo', 'TABLE', 'PROMOTION', 'COLUMN', 'PRO_LIBELLE'
 go

@@ -34,6 +34,7 @@ export const restaurant = {
         prenom: "Informations client"
     },
     commande: {
+        avisClientId: "AvisClientId",
         clientId: "ClientId",
         dateCommande: "DateCommande",
         dateLivraison: "DateLivraison",
@@ -99,8 +100,8 @@ export const restaurant = {
         active: "Active",
         dateDebut: "DateDebut",
         dateFin: "DateFin",
-        id: "Id",
         libelle: "Libelle",
+        platId: "PlatId",
         pourcentageReduction: "PourcentageReduction",
         restaurantId: "RestaurantId"
     },

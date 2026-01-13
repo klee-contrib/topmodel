@@ -112,15 +112,15 @@ public interface MenuApi {
 
 	/**
 	 * Met à jour partiellement une promotion.
-	 * @param proId Identifiant de la promotion.
+	 * @param plaId Identifiant du plat.
 	 * @param promotion Données partielles de la promotion.
 	 *
 	 * @return Promotion mise à jour.
 	 */
 	@PreAuthorize("isAuthenticated()")
-	@PatchMapping(path = "api/restaurants/promotions/{proId}")
+	@PatchMapping(path = "api/restaurants/plats/{plaId}/promotion")
 	@Operation(description = "Met à jour partiellement une promotion")
-	PromotionRead patchPromotion(@Parameter(description = "Identifiant de la promotion") @PathVariable("proId") Integer proId, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Données partielles de la promotion") @RequestBody @Valid PromotionWrite promotion);
+	PromotionRead patchPromotion(@Parameter(description = "Identifiant du plat") @PathVariable("plaId") Integer plaId, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Données partielles de la promotion") @RequestBody @Valid PromotionWrite promotion);
 
 	/**
 	 * Recherche de plats avec critères multiples.

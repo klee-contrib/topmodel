@@ -32,6 +32,9 @@ export const CommandeReadEntity = entity({
     statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
         .label("restaurant.commande.statutCommandeCode")
     ),
+    avisClientId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.commande.avisClientId")
+    ),
     client: e.object(ClientReadEntity, f => f
         .label("restaurant.commande.clientId")
     ),

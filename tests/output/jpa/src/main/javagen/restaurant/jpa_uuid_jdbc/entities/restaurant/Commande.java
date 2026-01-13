@@ -75,6 +75,12 @@ public class Commande {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
+	 * Avis laissé par le client sur la commande.
+	 */
+	@Column("avi_id")
+	private Integer avisClientId;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -147,6 +153,15 @@ public class Commande {
 	}
 
 	/**
+	 * Getter for avisClientId.
+	 *
+	 * @return value of {@link #avisClientId avisClientId}.
+	 */
+	public Integer getAvisClientId() {
+		return this.avisClientId;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -208,5 +223,13 @@ public class Commande {
 	 */
 	public void setStatutCommandeCode(String statutCommandeCode) {
 		this.statutCommandeCode = statutCommandeCode;
+	}
+
+	/**
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
+	 */
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
 	}
 }

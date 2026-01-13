@@ -14,18 +14,18 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Promotion sur les plats.
+ * Promotion sur un plat.
  */
 @Table(name = "promotion")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Promotion {
 
 	/**
-	 * Identifiant de la promotion.
+	 * Plat concerné par la promotion.
 	 */
 	@Id
-	@Column("pro_id")
-	private Integer id;
+	@Column("pla_id")
+	private Integer platId;
 
 	/**
 	 * Libellé de la promotion.
@@ -69,12 +69,12 @@ public class Promotion {
 	private Integer restaurantId;
 
 	/**
-	 * Getter for id.
+	 * Getter for platId.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #platId platId}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
@@ -132,11 +132,11 @@ public class Promotion {
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 
 	/**

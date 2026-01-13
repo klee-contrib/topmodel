@@ -201,23 +201,23 @@ public abstract class AbstractMenuClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode patchPromotion.
-	 * @param proId Identifiant de la promotion
+	 * @param plaId Identifiant du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder patchPromotionUriComponentsBuilder(Integer proId) {
-		String uri = host + "/api/restaurants/promotions/%s".formatted(proId);
+	protected UriComponentsBuilder patchPromotionUriComponentsBuilder(Integer plaId) {
+		String uri = host + "/api/restaurants/plats/%s/promotion".formatted(plaId);
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
 	/**
 	 * Met à jour partiellement une promotion.
-	 * @param proId Identifiant de la promotion
+	 * @param plaId Identifiant du plat
 	 * @param promotion Données partielles de la promotion
 	 * @return Promotion mise à jour
 	 */
-	public ResponseEntity<PromotionRead> patchPromotion(Integer proId, PromotionWrite promotion){
+	public ResponseEntity<PromotionRead> patchPromotion(Integer plaId, PromotionWrite promotion){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.patchPromotionUriComponentsBuilder(proId);
+		UriComponentsBuilder uri = this.patchPromotionUriComponentsBuilder(plaId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.PATCH, new HttpEntity<>(promotion, headers), PromotionRead.class);
 	}
 

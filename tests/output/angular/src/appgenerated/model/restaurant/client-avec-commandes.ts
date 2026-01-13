@@ -50,6 +50,9 @@ export const ClientAvecCommandesEntity = entity({
     commandeStatutCommandeCode: e.field(DO_LISTE, f => f.type<StatutCommandeCode[]>()
         .label("restaurant.commande.statutCommandeCode")
     ),
+    commandeAvisClientId: e.field(DO_LISTE, f => f.type<number[]>().optional()
+        .label("restaurant.commande.avisClientId")
+    ),
     commandeLignes: e.field(DO_LISTE, f => f.type<number[][]>()
         .label("restaurant.commande.lignes")
     )

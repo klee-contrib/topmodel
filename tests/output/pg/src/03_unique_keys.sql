@@ -10,6 +10,10 @@
 
 alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS unique (PER_ID, RES_ID, AVI_DATE_AVIS);
 
+alter table COMMANDE add constraint UK_COMMANDE_AVI_ID unique (AVI_ID);
+
+alter table COMMANDE_EXPORT add constraint UK_COMMANDE_EXPORT_AVI_ID unique (AVI_ID);
+
 alter table EMPLOYE add constraint UK_EMPLOYE_EMP_MATRICULE unique (EMP_MATRICULE);
 
 alter table LIGNE_COMMANDE add constraint UK_LIGNE_COMMANDE_COM_ID_PLA_ID unique (COM_ID, PLA_ID);

@@ -80,7 +80,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 * Association réciproque de Promotion.RestaurantId.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
 	 */
-	@Column("pro_id")
+	@Column("pla_id")
 	private List<Integer> promotions;
 
 	/**

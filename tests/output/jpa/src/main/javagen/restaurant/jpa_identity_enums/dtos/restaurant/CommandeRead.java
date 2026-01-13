@@ -71,6 +71,12 @@ public class CommandeRead implements Serializable {
 	private StatutCommande statutCommandeCode = StatutCommande.EN_ATT;
 
 	/**
+	 * Avis laissé par le client sur la commande.
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
+	 */
+	private Integer avisClientId;
+
+	/**
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
@@ -164,6 +170,15 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Getter for avisClientId.
+	 *
+	 * @return value of {@link #avisClientId avisClientId}.
+	 */
+	public Integer getAvisClientId() {
+		return this.avisClientId;
+	}
+
+	/**
 	 * Getter for client.
 	 *
 	 * @return value of {@link #client client}.
@@ -239,6 +254,14 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
+	 */
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
+	}
+
+	/**
 	 * Set the value of {@link #client client}.
 	 * @param client value to set.
 	 */
@@ -272,6 +295,7 @@ public class CommandeRead implements Serializable {
 		MONTANT_TOTAL(BigDecimal.class),
 		TABLE_ID(Integer.class),
 		STATUT_COMMANDE_CODE(StatutCommande.class),
+		AVIS_CLIENT_ID(Integer.class),
 		CLIENT(ClientRead.class),
 		RESERVATION(ReservationRead.class),
 		LIGNES(List.class);

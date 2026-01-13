@@ -33,6 +33,9 @@ export const CommandeWriteEntity = entity({
     statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
         .label("restaurant.commande.statutCommandeCode")
     ),
+    avisClientId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.commande.avisClientId")
+    ),
     lignes: e.list(LigneCommandeWriteEntity, f => f
         .label("restaurant.commande.lignes")
     )

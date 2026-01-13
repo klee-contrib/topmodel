@@ -5,11 +5,8 @@
 package restaurant.jpa_sequence_metamodel.entities.restaurant;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -76,12 +72,6 @@ public class Plat {
 	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
-
-	/**
-	 * Association réciproque de PromotionPlat.PlatId.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat")
-	private List<PromotionPlat> promotions;
 
 	/**
 	 * Getter for id.
@@ -147,18 +137,6 @@ public class Plat {
 	}
 
 	/**
-	 * Getter for promotions.
-	 *
-	 * @return value of {@link #promotions promotions}.
-	 */
-	public List<PromotionPlat> getPromotions() {
-		if (this.promotions == null) {
-			this.promotions = new ArrayList<>();
-		}
-		return this.promotions;
-	}
-
-	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -215,32 +193,6 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #promotions promotions}.
-	 * @param promotions value to set.
-	 */
-	public void setPromotions(List<PromotionPlat> promotions) {
-		this.promotions = promotions;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotions promotions}.
-	 * @param promotionPlat value to add to plat.
-	 */
-	void addPromotionPlat(PromotionPlat promotionPlat) {
-		this.promotions.add(promotionPlat);
-		promotionPlat.setPlat(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat#promotions promotions}.
-	 * @param promotionPlat promotionPlat value to remove.
-	 */
-	void removePromotionPlat(PromotionPlat promotionPlat) {
-		this.promotions.remove(promotionPlat);
-		promotionPlat.setPlat(null);
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Plat Plat}.
 	 */
 	public enum Fields {
@@ -250,8 +202,7 @@ public class Plat {
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT(CategoriePlat.class),
-		RESTAURANT(Restaurant.class),
-		PROMOTIONS(List.class);
+		RESTAURANT(Restaurant.class);
 
 		private final Class<?> type;
 

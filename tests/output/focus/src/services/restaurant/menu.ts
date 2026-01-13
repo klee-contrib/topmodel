@@ -127,13 +127,13 @@ export async function patchPlat(plaId: number, plat: PlatWrite, options: Request
 
 /**
  * Met à jour partiellement une promotion
- * @param proId Identifiant de la promotion
+ * @param plaId Identifiant du plat
  * @param promotion Données partielles de la promotion
  * @param options Options pour 'fetch'.
  * @returns Promotion mise à jour
  */
-export async function patchPromotion(proId: number, promotion: PromotionWrite, options: RequestInit = {}): Promise<PromotionRead> {
-    const response = await fetch(`./api/restaurants/promotions/${proId}`, {
+export async function patchPromotion(plaId: number, promotion: PromotionWrite, options: RequestInit = {}): Promise<PromotionRead> {
+    const response = await fetch(`./api/restaurants/plats/${plaId}/promotion`, {
         ...options,
         method: "PATCH",
         body: JSON.stringify(promotion),

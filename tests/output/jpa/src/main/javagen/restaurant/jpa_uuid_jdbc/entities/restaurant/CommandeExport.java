@@ -83,6 +83,13 @@ public class CommandeExport {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
+	 * Avis laissé par le client sur la commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 */
+	@Column("avi_id")
+	private Integer avisClientId;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -155,6 +162,15 @@ public class CommandeExport {
 	}
 
 	/**
+	 * Getter for avisClientId.
+	 *
+	 * @return value of {@link #avisClientId avisClientId}.
+	 */
+	public Integer getAvisClientId() {
+		return this.avisClientId;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -216,5 +232,13 @@ public class CommandeExport {
 	 */
 	public void setStatutCommandeCode(String statutCommandeCode) {
 		this.statutCommandeCode = statutCommandeCode;
+	}
+
+	/**
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
+	 */
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
 	}
 }

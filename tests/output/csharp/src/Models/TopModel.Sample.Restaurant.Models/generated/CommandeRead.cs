@@ -54,6 +54,12 @@ public partial record CommandeRead
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
+    /// Avis laissé par le client sur la commande.
+    /// </summary>
+    [Domain(Domains.Id)]
+    public int? AvisClientId { get; set; }
+
+    /// <summary>
     /// Client ayant passé la commande.
     /// </summary>
     [Required]

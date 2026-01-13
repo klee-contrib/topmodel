@@ -22,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import restaurant.jpa_identity_enums.enums.restaurant.StatutCommande;
@@ -87,6 +88,13 @@ public class Commande {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
+
+	/**
+	 * Avis laissé par le client sur la commande.
+	 */
+	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	private AvisClient avisClient;
 
 	/**
 	 * Association réciproque de LigneCommande.CommandeId.
@@ -167,6 +175,15 @@ public class Commande {
 	}
 
 	/**
+	 * Getter for avisClient.
+	 *
+	 * @return value of {@link #avisClient avisClient}.
+	 */
+	public AvisClient getAvisClient() {
+		return this.avisClient;
+	}
+
+	/**
 	 * Getter for lignes.
 	 *
 	 * @return value of {@link #lignes lignes}.
@@ -243,6 +260,14 @@ public class Commande {
 	}
 
 	/**
+	 * Set the value of {@link #avisClient avisClient}.
+	 * @param avisClient value to set.
+	 */
+	public void setAvisClient(AvisClient avisClient) {
+		this.avisClient = avisClient;
+	}
+
+	/**
 	 * Set the value of {@link #lignes lignes}.
 	 * @param lignes value to set.
 	 */
@@ -280,6 +305,7 @@ public class Commande {
 		TABLE(TableRestaurant.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
+		AVIS_CLIENT(AvisClient.class),
 		LIGNES(List.class);
 
 		private final Class<?> type;

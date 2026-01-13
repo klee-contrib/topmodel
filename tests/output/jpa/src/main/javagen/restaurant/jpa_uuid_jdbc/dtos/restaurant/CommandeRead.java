@@ -77,6 +77,13 @@ public class CommandeRead implements Serializable {
 	private String statutCommandeCode = "EnAttente";
 
 	/**
+	 * Avis laissé par le client sur la commande.
+	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 */
+	@Column("avi_id")
+	private Integer avisClientId;
+
+	/**
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_uuid_jdbc.entities.restaurant.Commande#getClientId() Commande#getClientId()}
 	 */
@@ -150,6 +157,15 @@ public class CommandeRead implements Serializable {
 	 */
 	public String getStatutCommandeCode() {
 		return this.statutCommandeCode;
+	}
+
+	/**
+	 * Getter for avisClientId.
+	 *
+	 * @return value of {@link #avisClientId avisClientId}.
+	 */
+	public Integer getAvisClientId() {
+		return this.avisClientId;
 	}
 
 	/**
@@ -228,6 +244,14 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
+	 */
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
+	}
+
+	/**
 	 * Set the value of {@link #client client}.
 	 * @param client value to set.
 	 */
@@ -261,6 +285,7 @@ public class CommandeRead implements Serializable {
 		MONTANT_TOTAL(BigDecimal.class),
 		TABLE_ID(Integer.class),
 		STATUT_COMMANDE_CODE(String.class),
+		AVIS_CLIENT_ID(Integer.class),
 		CLIENT(ClientRead.class),
 		RESERVATION(ReservationRead.class),
 		LIGNES(List.class);

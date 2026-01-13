@@ -13,11 +13,11 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record PromotionRead
 {
     /// <summary>
-    /// Identifiant de la promotion.
+    /// Plat concerné par la promotion.
     /// </summary>
     [Required]
     [Domain(Domains.Id)]
-    public int? Id { get; set; }
+    public int? PlatId { get; set; }
 
     /// <summary>
     /// Libellé de la promotion.

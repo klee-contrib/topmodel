@@ -181,7 +181,7 @@ endpoint:
 endpoint:
   name: PatchPromotion
   method: PATCH
-  route: /promotions/{proId}
+  route: /plats/{plaId}/promotion
   description: Met à jour partiellement une promotion
 
   annotations:
@@ -189,7 +189,7 @@ endpoint:
 
   params:
     - alias:
-        class: Promotion
+        class: Plat
         property: Id
     - composition: PromotionWrite
       comment: Données partielles de la promotion

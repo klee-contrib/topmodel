@@ -9,8 +9,8 @@ export type PromotionRead = EntityToType<PromotionReadEntityType>;
 export type PromotionReadEntityType = typeof PromotionReadEntity;
 
 export const PromotionReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
-        .label("restaurant.promotion.id")
+    platId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.promotion.platId")
     ),
     libelle: e.field(DO_LIBELLE, f => f
         .label("restaurant.promotion.libelle")

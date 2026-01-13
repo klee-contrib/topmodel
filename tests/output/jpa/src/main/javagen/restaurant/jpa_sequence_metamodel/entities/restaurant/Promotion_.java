@@ -5,10 +5,8 @@
 package restaurant.jpa_sequence_metamodel.entities.restaurant;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
@@ -16,7 +14,7 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Promotion_ {
 
-	public static volatile SingularAttribute<Promotion, Integer> id;
+	public static volatile SingularAttribute<Promotion, Plat> plat;
 
 	public static volatile SingularAttribute<Promotion, String> libelle;
 
@@ -30,9 +28,7 @@ public class Promotion_ {
 
 	public static volatile SingularAttribute<Promotion, Restaurant> restaurant;
 
-	public static volatile ListAttribute<Promotion, PromotionPlat> plats;
-
-	public static final String ID = "id";
+	public static final String PLAT = "plat";
 
 	public static final String LIBELLE = "libelle";
 
@@ -45,6 +41,4 @@ public class Promotion_ {
 	public static final String ACTIVE = "active";
 
 	public static final String RESTAURANT = "restaurant";
-
-	public static final String PLATS = "plats";
 }

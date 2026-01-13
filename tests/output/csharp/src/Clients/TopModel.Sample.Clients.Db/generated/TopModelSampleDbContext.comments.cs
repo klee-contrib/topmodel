@@ -45,6 +45,7 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property(p => p.TableId).HasComment("Table associée à la commande");
         commande.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commande.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
+        commande.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
         var commandeExport = modelBuilder.Entity<CommandeExport>();
         commandeExport.ToTable(t => t.HasComment("Commande pour export avec préservation des clés primaires"));
@@ -56,6 +57,7 @@ public partial class TopModelSampleDbContext : DbContext
         commandeExport.Property(p => p.TableId).HasComment("Table associée à la commande");
         commandeExport.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commandeExport.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
+        commandeExport.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
@@ -109,19 +111,14 @@ public partial class TopModelSampleDbContext : DbContext
         plat.Property(p => p.RestaurantId).HasComment("Restaurant proposant ce plat");
 
         var promotion = modelBuilder.Entity<Promotion>();
-        promotion.ToTable(t => t.HasComment("Promotion sur les plats"));
-        promotion.Property(p => p.Id).HasComment("Identifiant de la promotion");
+        promotion.ToTable(t => t.HasComment("Promotion sur un plat"));
+        promotion.Property(p => p.PlatId).HasComment("Plat concerné par la promotion.");
         promotion.Property(p => p.Libelle).HasComment("Libellé de la promotion");
         promotion.Property(p => p.PourcentageReduction).HasComment("Pourcentage de réduction (0-100)");
         promotion.Property(p => p.DateDebut).HasComment("Date de début de la promotion");
         promotion.Property(p => p.DateFin).HasComment("Date de fin de la promotion");
         promotion.Property(p => p.Active).HasComment("Indique si la promotion est active");
         promotion.Property(p => p.RestaurantId).HasComment("Restaurant concerné par la promotion (null si globale)");
-
-        var promotionPlat = modelBuilder.Entity<PromotionPlat>();
-        promotionPlat.ToTable(t => t.HasComment("Association entre une promotion et un plat"));
-        promotionPlat.Property(p => p.PromotionId).HasComment("Promotion concernée");
-        promotionPlat.Property(p => p.PlatId).HasComment("Plat concerné par la promotion");
 
         var reservation = modelBuilder.Entity<Reservation>();
         reservation.ToTable(t => t.HasComment("Réservation d'une table"));

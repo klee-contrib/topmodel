@@ -79,6 +79,13 @@ public partial record CommandeExport
     public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
+    /// Avis laissé par le client sur la commande.
+    /// </summary>
+    [Column("avi_id")]
+    [Domain(Domains.Id)]
+    public int? AvisClientId { get; set; }
+
+    /// <summary>
     /// Association réciproque de LigneCommande.CommandeId.
     /// </summary>
     [Domain(Domains.Liste)]

@@ -117,13 +117,12 @@ class:
 class:
   name: Promotion
   trigram: PRO
-  comment: Promotion sur les plats
+  comment: Promotion sur un plat
 
   properties:
-    - name: Id
-      domain: DO_ID
+    - association: Plat
       primaryKey: true
-      comment: Identifiant de la promotion
+      comment: Plat concerné par la promotion.
 
     - name: Libelle
       domain: DO_LIBELLE
@@ -154,21 +153,3 @@ class:
     - association: Restaurant
       withReverse: true
       comment: Restaurant concerné par la promotion (null si globale)
----
-class:
-  name: PromotionPlat
-  trigram: PPL
-  comment: Association entre une promotion et un plat
-
-  properties:
-    - association: Promotion
-      primaryKey: true
-      withReverse:
-        className: Plats
-      comment: Promotion concernée
-
-    - association: Plat
-      primaryKey: true
-      withReverse:
-        className: Promotions
-      comment: Plat concerné par la promotion
