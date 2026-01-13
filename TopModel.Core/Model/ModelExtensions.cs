@@ -1,8 +1,4 @@
-﻿using TopModel.Core.FileModel;
-using TopModel.Utils;
-using YamlDotNet.Core.Events;
-
-namespace TopModel.Core.Model;
+﻿namespace TopModel.Core.Model;
 
 #pragma warning disable KTA1200, S2325 // Jusqu'à ce qu'on supporte les blocs d'extension...
 
@@ -47,23 +43,32 @@ public static class ModelExtensions
             };
 
         /// <summary>
-        /// Vérifie si la propriété est une association de type 'toMany'.
+        /// Vérifie si la propriété est une association multiple (oneToMany);
         /// </summary>
         /// <returns>Oui/non.</returns>
-        public bool AssociationToMany =>
-            prop.AssociationType == AssociationType.OneToMany || prop.AssociationType == AssociationType.ManyToMany;
-
-        /// <summary>
-        /// Si la propriété est une association, type de l'association.
-        /// </summary>
-        public AssociationType? AssociationType =>
+        public bool AssociationMultiple =>
             prop switch
             {
-                { Composition: not null } => null,
-                AssociationProperty ap => ap.Type,
-                AliasProperty { Property: AssociationProperty ap } => ap.Type,
-                _ => null,
+                { Composition: not null } => false,
+                AssociationProperty ap => ap.Multiple,
+                AliasProperty { Property: AssociationProperty ap } => ap.Multiple,
+                _ => false,
             };
+
+        /// <summary>
+        /// Vérifie si la propriété est la cible d'une contrainte d'unicité.
+        /// </summary>
+        /// <returns>Oui/non.</returns>
+#pragma warning disable S2190
+        public bool Unique =>
+            prop is ReverseAssociationProperty { ReverseProperty.Multiple: false, ReverseProperty.Unique: true }
+            || prop.Class != null
+                && !prop.AssociationMultiple
+                && (
+                    prop.Class.PrimaryKey.Count() == 1 && prop.Class.PrimaryKey.First() == prop
+                    || prop.Class.UniqueKeys.Any(uk => uk.Count == 1 && uk.Single() == prop)
+                );
+#pragma warning restore S2190
 
         /// <summary>
         /// Si la propriété est une composition, classe cible de la composition.
@@ -108,12 +113,7 @@ public static class ModelExtensions
                     && (op == null || op.Domain != prop.Domain || prop is AliasProperty { As: not null })
                 )
                 {
-                    yield return (
-                        prop.Domain,
-                        prop
-                            is AliasProperty { As: not null }
-                                or { AssociationType: AssociationType.OneToMany or AssociationType.ManyToMany }
-                    );
+                    yield return (prop.Domain, prop is AliasProperty { As: not null } or { AssociationMultiple: true });
                 }
 
                 if (op != null)
@@ -123,7 +123,7 @@ public static class ModelExtensions
                         yield return d;
                     }
                 }
-                else if (prop is AssociationProperty ap && ap.AssociationToMany && ap.Property.Domain != prop.Domain)
+                else if (prop is AssociationProperty { Multiple: true } ap && ap.Property.Domain != prop.Domain)
                 {
                     yield return (ap.Property.Domain, false);
                 }
@@ -142,63 +142,6 @@ public static class ModelExtensions
                 { Composition: not null } => null,
                 _ => prop,
             };
-
-        /// <summary>
-        /// Si la propriété est une association ManyToMany, retourne la classe de liaison implicite entre les deux classes associées.
-        /// </summary>
-        public Class? ManyToManyClass
-        {
-            get
-            {
-                if (prop.AssociationType == AssociationType.ManyToMany)
-                {
-                    var traClass = new Class
-                    {
-                        Comment = prop.Comment,
-                        Label = prop.Label,
-                        SqlName =
-                            $"{prop.Class.SqlName}_{prop.Association!.SqlName}{(prop.AssociationRole != null ? $"_{prop.AssociationRole!.ToConstantCase()}" : string.Empty)}",
-                        ModelFile = prop.Class.ModelFile,
-                    };
-
-                    traClass.Properties.Add(
-                        new AssociationProperty
-                        {
-                            Association = prop.Class,
-                            Class = traClass,
-                            Comment = prop.Comment,
-                            Type = AssociationType.ManyToOne,
-                            PrimaryKey = true,
-                            Required = true,
-                            Role = prop.AssociationRole,
-                            DefaultValue = prop.DefaultValue,
-                            Label = prop.Label,
-                            Trigram = prop.Class.PrimaryKey.Single().Trigram,
-                        }
-                    );
-
-                    traClass.Properties.Add(
-                        new AssociationProperty
-                        {
-                            Association = prop.Association,
-                            Class = traClass,
-                            Comment = prop.Comment,
-                            Type = AssociationType.ManyToOne,
-                            PrimaryKey = true,
-                            Required = true,
-                            Role = prop.AssociationRole,
-                            DefaultValue = prop.DefaultValue,
-                            Label = prop.Label,
-                            Trigram = new LocatedString(new Scalar(prop.FinalTrigram ?? string.Empty)),
-                        }
-                    );
-
-                    return traClass;
-                }
-
-                return null;
-            }
-        }
 
         /// <summary>
         /// Pour un alias, la propriété à partir de laquelle l'alias a été construit.
@@ -251,9 +194,8 @@ public static class ModelExtensions
         public IProperty? ReverseProperty => (prop as AssociationProperty)?.ReverseProperty;
 
         /// <summary>
-        /// Si la propriété est une association réciproque
+        /// Si la propriété est une association réciproque.
         /// </summary>
-        /// <remarks>(Un alias d'association réciproque sera considéré comme une association réciproque, mais ne faites pas ça</remarks>
         public bool IsReverseProperty =>
             prop is ReverseAssociationProperty || prop is AliasProperty ap && ap.Property is ReverseAssociationProperty;
     }
@@ -274,14 +216,5 @@ public static class ModelExtensions
                     PrimaryKey = !classe.PrimaryKey.Any(),
                 }
                 : null;
-    }
-
-    extension(AssociationType type)
-    {
-        /// <summary>
-        /// Vérifie si le type d'association est un type 'toMany'.
-        /// </summary>
-        /// <returns>Oui/non.</returns>
-        public bool ToMany => type == AssociationType.ManyToMany || type == AssociationType.OneToMany;
     }
 }

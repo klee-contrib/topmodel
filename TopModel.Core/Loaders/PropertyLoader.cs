@@ -118,15 +118,8 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                         case "role":
                             ap.Role = value!.Value;
                             break;
-                        case "type":
-                            ap.ExplicitType = new Reference(value!);
-                            ap.Type = value!.Value switch
-                            {
-                                "oneToOne" => AssociationType.OneToOne,
-                                "manyToOne" => AssociationType.ManyToOne,
-                                "manyToMany" => AssociationType.ManyToMany,
-                                _ => AssociationType.OneToMany,
-                            };
+                        case "multiple":
+                            ap.Multiple = value!.Value == "true";
                             break;
                         case "as":
                             ap.As = value!.Value;
@@ -267,7 +260,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
 
                 parser.Consume<MappingEnd>();
 
-                if (ap.Type == AssociationType.OneToMany && ap.WithReverse == null)
+                if (ap.Multiple && ap.WithReverse == null)
                 {
                     ap.WithReverse = new() { Property = ap, Location = ap.Location };
                 }

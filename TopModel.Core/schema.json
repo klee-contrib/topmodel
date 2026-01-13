@@ -164,15 +164,9 @@
               "type": "string",
               "description": "Suffixe de l'association, utile pour distinguer deux associations vers une même classe par exemple."
             },
-            "type": {
-              "type": "string",
-              "description": "[Déprécié] Type de l'association.",
-              "enum": [
-                "oneToOne",
-                "oneToMany",
-                "manyToOne",
-                "manyToMany"
-              ]
+            "multiple": {
+              "type": "boolean",
+              "description": "Précise si l'association doit être multiple (pour faire une oneToMany)."
             },
             "as": {
               "type": "string",

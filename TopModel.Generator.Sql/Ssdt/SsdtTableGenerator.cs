@@ -350,12 +350,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     private List<string> WriteUniqueConstraints(Class classe)
     {
         return classe
-            .UniqueKeys.Concat(
-                classe
-                    .Properties.Where(ap => ap.AssociationType == AssociationType.OneToOne && !ap.PrimaryKey)
-                    .Select(ap => new List<IProperty> { ap })
-            )
-            .Select(uk =>
+            .UniqueKeys.Select(uk =>
                 Config.TargetDBMS == TargetDBMS.Sqlserver
                     ? $"constraint [UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})"
                     : $"constraint UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))} unique ({string.Join(", ", uk.Select(p => $"{p.SqlName}"))})"

@@ -60,9 +60,7 @@ internal class AssociationProperty : IProperty
 
     public virtual string? Role { get; set; }
 
-    public virtual AssociationType Type { get; set; }
-
-    public Reference? ExplicitType { get; set; }
+    public virtual bool Multiple { get; set; }
 
     public virtual string As { get; set; } = "list";
 
@@ -101,7 +99,7 @@ internal class AssociationProperty : IProperty
             {
                 name.Append(ClassName);
             }
-            else if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
+            else if (Multiple)
             {
                 name.Append(Association.PluralName);
             }
@@ -110,7 +108,7 @@ internal class AssociationProperty : IProperty
                 name.Append(Association.Name);
             }
 
-            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
+            if (!Multiple)
             {
                 name.Append(Property?.Name);
             }
@@ -144,7 +142,7 @@ internal class AssociationProperty : IProperty
             {
                 name.Append(ClassName.ToCamelCase(strictIfUppercase: true));
             }
-            else if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
+            else if (Multiple)
             {
                 name.Append(Association.PluralNameCamel);
             }
@@ -153,7 +151,7 @@ internal class AssociationProperty : IProperty
                 name.Append(Association.NameCamel);
             }
 
-            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
+            if (!Multiple)
             {
                 if (name.Length != 0)
                 {
@@ -177,19 +175,19 @@ internal class AssociationProperty : IProperty
     public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
 
     public string NameByClassPascal =>
-        Type.ToMany
+        Multiple
             ? $"{NamePascal}"
             : $"{ClassName?.ToPascalCase(strictIfUppercase: true) ?? Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
 
     public string NameByClassCamel =>
-        Type.ToMany
+        Multiple
             ? $"{NameCamel}"
             : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
     public Domain Domain =>
-        Type.ToMany && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
+        Multiple && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
     public IDictionary<string, string> DomainParameters =>
         Property?.DomainParameters ?? new Dictionary<string, string>();
@@ -239,7 +237,7 @@ internal class AssociationProperty : IProperty
             Location = Location,
             Required = Required,
             Role = Role,
-            Type = Type,
+            Multiple = Multiple,
             Readonly = Readonly,
             PrimaryKey = PrimaryKey,
             WithReverse = WithReverse,

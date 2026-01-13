@@ -150,6 +150,9 @@ class:
         exclude: Lignes
       preservePrimaryKey: true
       preserveTrigram: true
+
+  unique:
+    - [AvisClientId]
 ---
 class:
   name: LigneCommandeHistorique

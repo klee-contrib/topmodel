@@ -76,16 +76,7 @@ Les associations réciproques de type "One to Many" sont des propriétés :
 - Dont le nom de la propriété sera déterminé automatiquement comme étant `{ClasseSource.PluralName}{Rôle}`
 - Dont le domaine sera égal au `asDomain` `list` (par défaut, surchargeable via `as` sur l'association) de la propriété d'association source. Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
 
-### Types d'association (déprécié)
-
-Une association peut définir explicitement sa multiplicité via la propriété `type`: `manyToOne` (par défaut), `oneToOne`, `oneToMany` et `manyToMany`. Cette définition est **dépréciée** et sera définitivement retirée en 4.0.
-
-Par rapport au fonctionnement décrit précédemment :
-
-- `manyToOne` ne change rien
-- `oneToOne` ajoute automatiquement la contrainte d'unicité sur la propriété d'association
-- `oneToMany` est la même chose qu'une réciproque de `manyToOne`, mais définie sur l'autre classe. **L'association réciproque** (qui est donc une `manyToOne`) **est obligatoirement ajoutée**, indépendement de la valeur de `withReverse`.
-- `manyToMany` introduit une classe de jointure implicite entre les deux classes associées. La réciproque d'une `manyToMany` est également une `manyToMany`.
+_Remarque : Vous pouvez aussi déclarer une association comme étant `multiple`, ce qui permet de créer une "One To Many" sans avoir à la définir comme une réciproque._
 
 ## Composition
 

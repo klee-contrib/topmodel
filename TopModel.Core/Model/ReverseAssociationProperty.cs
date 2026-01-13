@@ -11,11 +11,7 @@ internal class ReverseAssociationProperty : AssociationProperty
 
     public override Class Association => ReverseProperty.Class;
 
-    public override AssociationType Type =>
-        ReverseProperty.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-        : ReverseProperty.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-        : ReverseProperty.Type == AssociationType.OneToOne ? AssociationType.OneToOne
-        : AssociationType.ManyToMany;
+    public override bool Multiple => !ReverseProperty.Multiple && !ReverseProperty.Unique;
 
     public override string As => ReverseProperty.As;
 

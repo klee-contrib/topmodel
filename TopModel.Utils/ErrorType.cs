@@ -152,11 +152,6 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
-    /// Les associations d'une clé primaire composite doivent être de type 'manyToOne'.
-    /// </summary>
-    TMD3007,
-
-    /// <summary>
     /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
     /// </summary>
     TMD3008,
@@ -409,26 +404,6 @@ public enum ErrorType
     /// Composition sur un alias d'autre chose qu'une composition ou association.
     /// </summary>
     TMD9009,
-
-    /// <summary>
-    /// 'type' déprécié 'manyToOne'.
-    /// </summary>
-    TMD9010,
-
-    /// <summary>
-    /// 'type' déprécié 'oneToOne'.
-    /// </summary>
-    TMD9011,
-
-    /// <summary>
-    /// 'type' déprécié 'oneToMany'.
-    /// </summary>
-    TMD9012,
-
-    /// <summary>
-    /// 'type' déprécié 'manyToMany'.
-    /// </summary>
-    TMD9013,
 
     /// <summary>
     /// Alias association multiple impossible.

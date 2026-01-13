@@ -61,24 +61,6 @@ internal class ClassResolver(
                             : property.GetLocation()
                     );
                 }
-
-                if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap)
-                {
-                    ap.Type = AssociationType.OneToOne;
-                }
-
-                if (
-                    classe.PrimaryKey.Count() > 1
-                    && classe.PrimaryKey.Any(pk => pk is AssociationProperty ap && ap.Type != AssociationType.ManyToOne)
-                )
-                {
-                    yield return new ModelError(
-                        ErrorType.TMD3007,
-                        modelFile,
-                        "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.",
-                        classe.GetLocation()
-                    );
-                }
             }
         }
 
@@ -451,14 +433,7 @@ internal class ClassResolver(
                     }
                 }
 
-                if (uk.Count == 1 && uk[0] is AssociationProperty ap)
-                {
-                    ap.Type = AssociationType.OneToOne;
-                }
-                else
-                {
-                    classe.UniqueKeys.Add(uk);
-                }
+                classe.UniqueKeys.Add(uk);
             }
         }
     }

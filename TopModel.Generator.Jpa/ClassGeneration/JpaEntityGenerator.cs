@@ -39,16 +39,21 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             "name",
             $@"""{classe.SqlName}"""
         );
-        if (classe.UniqueKeys.Count > 0)
+
+        var uks = classe.UniqueKeys.Where(uk =>
+            uk.Count > 1 || !classe.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
+        );
+        if (uks.Any())
         {
-            var uks = classe.UniqueKeys.Select(uk =>
-                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint").AddAttribute(
-                    "columnNames",
-                    uk.Select(u => $@"""{u.SqlName}""").ToArray()
+            tableAnnotation.AddAttribute(
+                "uniqueConstraints",
+                uks.Select(uk =>
+                    new JavaAnnotation(
+                        "UniqueConstraint",
+                        imports: "jakarta.persistence.UniqueConstraint"
+                    ).AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
                 )
             );
-
-            tableAnnotation.AddAttribute("uniqueConstraints", uks);
         }
 
         yield return tableAnnotation;
@@ -322,7 +327,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.AssociationToMany))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple))
         {
             if (ap.ReverseProperty != null)
             {
@@ -338,7 +343,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.add({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.AssociationToMany)
+                if (ap.ReverseProperty!.AssociationMultiple)
                 {
                     adder.AddBodyLine(
                         @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().add(this);"
@@ -358,7 +363,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(t => t.AssociationToMany))
+        foreach (var ap in classe.Properties.Where(t => t.AssociationMultiple))
         {
             if (ap.ReverseProperty != null)
             {
@@ -375,7 +380,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.remove({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.AssociationToMany)
+                if (ap.ReverseProperty!.AssociationMultiple)
                 {
                     remover.AddBodyLine(
                         @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().remove(this);"

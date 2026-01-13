@@ -22,7 +22,7 @@ public class DbContextGenerator(
             .SelectMany(c => c.Properties)
             .Where(p =>
                 p is { Association.IsPersistent: true }
-                && (p.AssociationType == AssociationType.ManyToOne || p.AssociationType == AssociationType.OneToOne)
+                && !p.AssociationMultiple
                 && Config.AvailableClasses.Contains(p.Association)
                 && Config.IsPersistent(p.Association!, Config.GetBestClassTag(p.Association!, tag))
             );
@@ -70,11 +70,7 @@ public class DbContextGenerator(
                 $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
             );
 
-            foreach (
-                var property in classe.Properties.Where(p =>
-                    p is not { AssociationType: AssociationType.OneToMany or AssociationType.ManyToMany }
-                )
-            )
+            foreach (var property in classe.Properties.Where(p => !p.AssociationMultiple))
             {
                 cw.WriteLine(
                     2,
@@ -253,7 +249,7 @@ public class DbContextGenerator(
                     {
                         c.Class,
                         c.Association,
-                        c.AssociationType,
+                        c.Unique,
                         c.AssociationRole,
                     })
             )
@@ -261,7 +257,7 @@ public class DbContextGenerator(
                 hasFk = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{GetClassName(g.Key.Association!, tag)}>().With{(g.Key.AssociationType == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(g.Key.AssociationType == AssociationType.ManyToOne ? string.Empty : $"<{GetClassName(g.Key.Class, tag)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
+                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{GetClassName(g.Key.Association!, tag)}>().With{(!g.Key.Unique ? "Many" : "One")}().HasForeignKey{(!g.Key.Unique ? string.Empty : $"<{GetClassName(g.Key.Class, tag)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
                 );
             }
 
@@ -271,7 +267,17 @@ public class DbContextGenerator(
             }
 
             var hasUk = false;
-            foreach (var uk in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.UniqueKeys))
+            foreach (
+                var uk in classes
+                    .Distinct()
+                    .OrderBy(c => c.NamePascal)
+                    .SelectMany(c =>
+                        c.UniqueKeys.Where(uk =>
+                            uk.Count > 1
+                            || !c.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
+                        )
+                    )
+            )
             {
                 hasUk = true;
                 var expr =

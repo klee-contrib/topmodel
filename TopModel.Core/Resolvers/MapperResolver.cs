@@ -125,7 +125,7 @@ internal class MapperResolver(
                                     mapping.Value
                                 );
                             }
-                            else if (mappedProperty.AssociationToMany || currentProperty.Domain != null)
+                            else if (mappedProperty.AssociationMultiple || currentProperty.Domain != null)
                             {
                                 yield return new ModelError(
                                     ErrorType.TMD8005,

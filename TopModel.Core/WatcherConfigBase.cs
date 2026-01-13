@@ -120,9 +120,7 @@ public class WatcherConfigBase
             if (_classes == null)
             {
                 _classes = Files
-                    .SelectMany(f =>
-                        f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()).Concat(GetExtraClasses(f.Value))
-                    )
+                    .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()))
                     .Distinct()
                     .ToHashSet();
             }
@@ -159,11 +157,6 @@ public class WatcherConfigBase
     }
 
     protected virtual bool PersistentOnly => false;
-
-    public virtual IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return [];
-    }
 
     /// <summary>
     /// Récupère les implémentations de l'annotation pour la config.

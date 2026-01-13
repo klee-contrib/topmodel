@@ -343,10 +343,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
             else
             {
-                if (
-                    propertySource.AssociationType == AssociationType.OneToOne
-                    || propertySource.AssociationType == AssociationType.ManyToOne
-                )
+                if (!propertySource.AssociationMultiple)
                 {
                     if (Config.EnumsAsEnums && Config.CanClassUseEnums(aSource, apSource))
                     {
@@ -618,8 +615,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         return !(
             Config.UseJdbc
             && (
-                propertyTarget.Class.IsPersistent && propertyTarget.AssociationToMany
-                || propertySource.Class.IsPersistent && propertySource.AssociationToMany
+                propertyTarget.Class.IsPersistent && propertyTarget.AssociationMultiple
+                || propertySource.Class.IsPersistent && propertySource.AssociationMultiple
                 || propertySource.Composition != null
                 || propertyTarget.Composition != null
             )

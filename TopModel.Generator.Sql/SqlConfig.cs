@@ -1,5 +1,4 @@
 ﻿using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
@@ -112,15 +111,6 @@ public class SqlConfig : GeneratorConfigBase
                 $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
             )
             : identifier;
-    }
-
-    public override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file
-            .Classes.Where(c => c.IsPersistent && !c.Abstract)
-            .SelectMany(cl => cl.Properties)
-            .Select(p => p.ManyToManyClass!)
-            .Where(c => c != null);
     }
 
     public virtual string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)

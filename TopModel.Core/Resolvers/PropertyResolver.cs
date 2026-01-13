@@ -388,12 +388,12 @@ internal class PropertyResolver(
                 break;
             }
 
-            if (ap.Type.ToMany && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
+            if (ap.Multiple && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
                 yield return new ModelError(
                     localizer,
                     ErrorType.TMD9003,
-                    [ap.Type.ToString(), ap.Property?.Domain.Name ?? string.Empty, ap.As],
+                    [ap.Property?.Domain.Name ?? string.Empty, ap.As],
                     ap,
                     ap.Reference
                 );
@@ -402,7 +402,8 @@ internal class PropertyResolver(
 
             if (
                 ap.WithReverse != null
-                && !ap.Type.ToMany
+                && !ap.Multiple
+                && !ap.Unique
                 && !(ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
             )
             {
@@ -443,7 +444,7 @@ internal class PropertyResolver(
                 yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
             }
 
-            if (alp.AssociationToMany && alp.Class?.IsPersistent == true)
+            if (alp.AssociationMultiple && alp.Class?.IsPersistent == true)
             {
                 yield return new ModelError(
                     localizer,
@@ -507,30 +508,11 @@ internal class PropertyResolver(
                     break;
 
                 case AssociationProperty ap:
-                    if (ap.ExplicitType != null)
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ap.Type switch
-                            {
-                                AssociationType.ManyToOne => ErrorType.TMD9010,
-                                AssociationType.OneToOne => ErrorType.TMD9011,
-                                AssociationType.OneToMany => ErrorType.TMD9012,
-                                AssociationType.ManyToMany => ErrorType.TMD9013,
-                                _ => ErrorType.TMD0000,
-                            },
-                            [],
-                            ap,
-                            ap.ExplicitType,
-                            isError: false
-                        );
-                    }
-
                     if (
                         (
                             ap.Class == null
                             || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1
-                        ) && ap.Type.ToMany
+                        ) && ap.Multiple
                     )
                     {
                         yield return new ModelError(localizer, ErrorType.TMD9006, [], ap, ap.Reference);

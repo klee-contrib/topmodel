@@ -335,7 +335,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
         var sameColumnSet = new HashSet<string>(
-            item.Properties.Where(p => !p.AssociationToMany)
+            item.Properties.Where(p => !p.AssociationMultiple)
                 .GroupBy(g => g.SqlName)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
@@ -388,7 +388,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && Config.AvailableClasses.Contains(property.PersistentClass)
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
-                && !property.AssociationToMany
+                && !property.AssociationMultiple
             )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
@@ -402,7 +402,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 property.Required
                     && !Config.RequiredNonNullable(tag)
                     && !property.PrimaryKey
-                    && !property.AssociationToMany
+                    && !property.AssociationMultiple
                 || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
             )
             {
@@ -445,7 +445,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, annotation);
             }
 
-            if (Config.IsPersistent(property.Class, tag) && property.AssociationToMany)
+            if (Config.IsPersistent(property.Class, tag) && property.AssociationMultiple)
             {
                 w.WriteAttribute(1, "NotMapped");
             }
