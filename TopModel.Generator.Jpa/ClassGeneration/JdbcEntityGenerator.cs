@@ -69,13 +69,8 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             .GetAvailableProperties(classe)
             .Select(prop =>
             {
-                string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
-                var javaType = Config.GetType(
-                    prop,
-                    useClassForAssociation: classe.IsPersistent
-                        && !Config.UseJdbc
-                        && prop is { Association.IsPersistent: true }
-                );
+                string name = prop.NameCamel.ToConstantCase();
+                var javaType = Config.GetType(prop);
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)
                 {

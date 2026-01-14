@@ -55,31 +55,31 @@ public class Restaurant {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
+	 * Association réciproque de Menu.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Menu> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
+	 * Association réciproque de Plat.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Plat> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
+	 * Association réciproque de Promotion.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Promotion> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
+	 * Association réciproque de AvisClient.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<AvisClient> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de TableRestaurant.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<TableRestaurant> tables;

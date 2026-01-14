@@ -49,37 +49,27 @@ public partial record Restaurant
     public string? Telephone { get; set; }
 
     /// <summary>
-    /// Association réciproque de Menu.RestaurantId.
+    /// Association réciproque de Menu.Restaurant.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Menus { get; set; }
+    public ICollection<Menu> Menus { get; set; } = [];
 
     /// <summary>
-    /// Association réciproque de Plat.RestaurantId.
+    /// Association réciproque de Plat.Restaurant.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Plats { get; set; }
+    public ICollection<Plat> Plats { get; set; } = [];
 
     /// <summary>
-    /// Association réciproque de Promotion.RestaurantId.
+    /// Association réciproque de Promotion.Restaurant.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Promotions { get; set; }
+    public ICollection<Promotion> Promotions { get; set; } = [];
 
     /// <summary>
-    /// Association réciproque de AvisClient.RestaurantId.
+    /// Association réciproque de AvisClient.Restaurant.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? AvisClients { get; set; }
+    public ICollection<AvisClient> AvisClients { get; set; } = [];
 
     /// <summary>
-    /// Association réciproque de TableRestaurant.RestaurantId.
+    /// Association réciproque de TableRestaurant.Restaurant.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Tables { get; set; }
+    public ICollection<TableRestaurant> Tables { get; set; } = [];
 }

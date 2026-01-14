@@ -17,9 +17,9 @@ internal class CompositionProperty : IProperty
     public string NameCamel =>
         ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
 
-    public string NameByClassPascal => NamePascal;
+    public string PropertyNamePascal => NamePascal;
 
-    public string NameByClassCamel => NameCamel;
+    public string PropertyNameCamel => NameCamel;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 

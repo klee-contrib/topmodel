@@ -18,10 +18,7 @@ public partial record Promotion
     /// <summary>
     /// Plat concerné par la promotion.
     /// </summary>
-    [Column("pla_id")]
-    [Domain(Domains.Id)]
-    [Key]
-    public int? PlatId { get; set; }
+    public Plat? Plat { get; set; }
 
     /// <summary>
     /// Libellé de la promotion.
@@ -67,7 +64,5 @@ public partial record Promotion
     /// <summary>
     /// Restaurant concerné par la promotion (null si globale).
     /// </summary>
-    [Column("res_id")]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

@@ -53,7 +53,7 @@ public class ClientWrite implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull

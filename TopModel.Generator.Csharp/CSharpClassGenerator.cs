@@ -374,7 +374,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var type = Config.GetType(
             property,
-            nonNullable: property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
+            nonNullable: property.AssociationMultiple && property.UseClassForAssociation
+                || property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
         );
 
         if (!property.Class.Abstract)
@@ -389,6 +390,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
                 && !property.AssociationMultiple
+                && !property.UseClassForAssociation
             )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
@@ -430,7 +432,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            if (Config.Kinetix && property.Composition == null)
+            if (Config.Kinetix && property.Composition == null && !property.UseClassForAssociation)
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -445,12 +447,20 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, annotation);
             }
 
-            if (Config.IsPersistent(property.Class, tag) && property.AssociationMultiple)
+            if (
+                Config.IsPersistent(property.Class, tag)
+                && property.AssociationMultiple
+                && !property.UseClassForAssociation
+            )
             {
                 w.WriteAttribute(1, "NotMapped");
             }
 
-            var isPk = property.Class.IsPersistent && property.PrimaryKey && property.Class.PrimaryKey.Count() == 1;
+            var isPk =
+                property.Class.IsPersistent
+                && property.PrimaryKey
+                && property.Class.PrimaryKey.Count() == 1
+                && !property.UseClassForAssociation;
 
             if (isPk)
             {
@@ -466,13 +476,19 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            var defaultValue = Config.GetValue(property);
+            var defaultValue = property.UseClassForAssociation ? "null" : Config.GetValue(property);
 
-            if (type != null && property.Composition != null && property.Required)
+            if (
+                type != null
+                && (
+                    property.Composition != null && property.Required
+                    || property.AssociationMultiple && property.UseClassForAssociation
+                )
+            )
             {
                 var genericType = type.Split('<')[0];
 
-                if (type == property.Composition!.NamePascal)
+                if (type == property.Composition?.NamePascal)
                 {
                     if (!Config.RequiredNonNullable(tag))
                     {

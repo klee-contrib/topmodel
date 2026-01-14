@@ -72,7 +72,7 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
 
                     var quote = isString ? "\"" : string.Empty;
                     var val = quote + value + quote;
-                    constructor.AddBodyLine(2, $@"this.{prop.NameByClassCamel} = {val};");
+                    constructor.AddBodyLine(2, $@"this.{prop.NameCamel} = {val};");
                 }
 
                 constructor.AddBodyLine(2, $@"break;");

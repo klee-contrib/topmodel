@@ -83,7 +83,7 @@ public class CommandeWrite implements Serializable {
 	private Integer avisClientId;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Association réciproque de LigneCommande.Commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
 	@Valid

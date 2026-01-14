@@ -38,13 +38,13 @@ endpoint:
   params:
     - alias:
         class: Commande
-        property: ClientId
+        property: Client
     - alias:
         class: Commande
-        property: StatutCommandeCode
+        property: StatutCommande
     - alias:
         class: Commande
-        property: TableId
+        property: Table
 
   returns:
     composition: CommandeItem
@@ -129,7 +129,7 @@ endpoint:
         property: Id
     - alias:
         class: Commande
-        property: StatutCommandeCode
+        property: StatutCommande
 
   returns:
     composition: CommandeRead

@@ -53,7 +53,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         }
 
         services.AddGenerator<JpaModelInterfaceGenerator, JpaConfig>(config, number);
-        services.AddGenerator<JpaMapperGenerator, JpaConfig>(config, number);
+        // services.AddGenerator<JpaMapperGenerator, JpaConfig>(config, number);
         if (config.DaosPath != null)
         {
             services.AddGenerator<JpaDaoGenerator, JpaConfig>(config, number);

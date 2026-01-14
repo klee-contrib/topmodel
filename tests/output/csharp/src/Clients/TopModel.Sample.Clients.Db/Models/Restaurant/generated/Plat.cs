@@ -59,17 +59,13 @@ public partial record Plat
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    [Column("cat_code")]
     [Required]
     [ReferencedType(typeof(CategoriePlat))]
-    [Domain(Domains.Code)]
-    public CategoriePlat.Codes? CategoriePlatCode { get; set; }
+    public CategoriePlat? CategoriePlat { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce plat.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

@@ -65,4 +65,4 @@ class:
       comment: Restaurant auquel appartient la table
 
   unique:
-    - [RestaurantId, Numero]
+    - [Restaurant, Numero]

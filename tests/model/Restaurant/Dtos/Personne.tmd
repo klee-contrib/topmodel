@@ -27,7 +27,7 @@ class:
         class: Employe
         include:
           - Matricule
-          - RestaurantId
+          - Restaurant
 ---
 class:
   name: EmployeRead

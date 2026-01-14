@@ -5,13 +5,13 @@
 export const restaurant = {
     avisClient: {
         approuve: "Approuve",
-        clientId: "ClientId",
+        clientId: "Client",
         commentaire: "Commentaire",
         dateAvis: "DateAvis",
         id: "Id",
         nombreVues: "NombreVues",
         note: "Note",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     categoriePlat: {
         code: "Code",
@@ -34,16 +34,16 @@ export const restaurant = {
         prenom: "Informations client"
     },
     commande: {
-        avisClientId: "AvisClientId",
-        clientId: "ClientId",
+        avisClientId: "AvisClient",
+        clientId: "Client",
         dateCommande: "DateCommande",
         dateLivraison: "DateLivraison",
         id: "Id",
         lignes: "Lignes",
         montantTotal: "MontantTotal",
-        reservationId: "ReservationId",
-        statutCommandeCode: "StatutCommandeCode",
-        tableId: "TableId"
+        reservationId: "Reservation",
+        statutCommandeCode: "StatutCommande",
+        tableId: "Table"
     },
     commandeRead: {
         reservation: "Reservation"
@@ -52,7 +52,7 @@ export const restaurant = {
         dateEmbauche: "DateEmbauche",
         dateNaissance: "DateNaissance",
         matricule: "Matricule",
-        restaurantId: "RestaurantId",
+        restaurantId: "Restaurant",
         salaire: "Salaire",
         telephone: "Telephone"
     },
@@ -62,9 +62,9 @@ export const restaurant = {
         prenom: "Prenom"
     },
     ligneCommande: {
-        commandeId: "CommandeId",
+        commandeId: "Commande",
         id: "Id",
-        platId: "PlatId",
+        platId: "Plat",
         prixTotal: "PrixTotal",
         prixUnitaire: "PrixUnitaire",
         quantite: "Quantite"
@@ -77,7 +77,7 @@ export const restaurant = {
         id: "Id",
         nom: "Nom",
         prix: "Prix",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     menuRead: {
         plats: "Plats"
@@ -88,32 +88,32 @@ export const restaurant = {
         prenom: "Prenom"
     },
     plat: {
-        categoriePlatCode: "CategoriePlatCode",
+        categoriePlatCode: "CategoriePlat",
         description: "Description",
         disponible: "Disponible",
         id: "Id",
         nom: "Nom",
         prix: "Prix",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     promotion: {
         active: "Active",
         dateDebut: "DateDebut",
         dateFin: "DateFin",
         libelle: "Libelle",
-        platId: "PlatId",
+        platId: "Plat",
         pourcentageReduction: "PourcentageReduction",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     reservation: {
-        clientId: "ClientId",
+        clientId: "Client",
         commentaire: "Commentaire",
         confirmee: "Confirmee",
         dateReservation: "DateReservation",
         id: "Id",
         nombrePersonnes: "NombrePersonnes",
-        restaurantId: "RestaurantId",
-        tableId: "TableId"
+        restaurantId: "Restaurant",
+        tableId: "Table"
     },
     restaurant: {
         adresse: "Adresse",
@@ -154,6 +154,6 @@ export const restaurant = {
         disponible: "Disponible",
         id: "Id",
         numero: "Numero",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     }
 };

@@ -53,7 +53,7 @@ class:
       comment: Avis laissé par le client sur la commande.
 
   unique:
-    - [AvisClientId]
+    - [AvisClient]
 ---
 class:
   name: LigneCommande
@@ -92,7 +92,7 @@ class:
       comment: Plat commandé
 
   unique:
-    - [CommandeId, PlatId]
+    - [Commande, Plat]
 ---
 class:
   name: Reservation
@@ -138,7 +138,7 @@ class:
       comment: Restaurant concerné par la réservation
 
   unique:
-    - [TableId, DateReservation]
+    - [Table, DateReservation]
 ---
 class:
   name: CommandeHistorique
@@ -152,7 +152,7 @@ class:
       preserveTrigram: true
 
   unique:
-    - [AvisClientId]
+    - [AvisClient]
 ---
 class:
   name: LigneCommandeHistorique
@@ -161,7 +161,7 @@ class:
   properties:
     - alias:
         class: LigneCommande
-        exclude: CommandeId
+        exclude: Commande
       preservePrimaryKey: true
       preserveTrigram: true
 

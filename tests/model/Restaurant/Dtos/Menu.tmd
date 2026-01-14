@@ -56,7 +56,7 @@ class:
           - Nom
           - Prix
           - Disponible
-          - CategoriePlatCode
+          - CategoriePlat
 ---
 class:
   name: PlatRead
@@ -105,7 +105,7 @@ class:
     - alias:
         class: Promotion
         exclude:
-          - PlatId
+          - Plat
 
   mappers:
     to:

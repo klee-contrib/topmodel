@@ -94,7 +94,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="property">Propriété.</param>
     private void WriteColumn(StringBuilder sb, IProperty property)
     {
-        var persistentType = Config.GetType(property);
+        var persistentType = Config.GetType(property, forceAssociationPropertyType: true);
         sb.Append('[').Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
     }
 

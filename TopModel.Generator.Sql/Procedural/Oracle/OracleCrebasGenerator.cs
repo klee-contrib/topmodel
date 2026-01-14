@@ -16,7 +16,7 @@ public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, IFileW
         /* En Oracle, en 2024, il n'y a pas de type booléen. On utilise un numeric(1) et on rajoute une check constraint pour forcer les valeurs 0 et 1. */
         bool IsNumericBoolean(IProperty property)
         {
-            var sqlType = Config.GetType(property);
+            var sqlType = Config.GetType(property, forceAssociationPropertyType: true);
             return sqlType == "number(1)" && SqlConfig.IsBoolean(property);
         }
 

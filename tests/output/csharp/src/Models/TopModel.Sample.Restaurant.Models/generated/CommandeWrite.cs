@@ -66,7 +66,7 @@ public partial record CommandeWrite
     public int? AvisClientId { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Association réciproque de LigneCommande.Commande.
     /// </summary>
     [Required]
     public ICollection<LigneCommandeWrite> Lignes { get; set; } = [];

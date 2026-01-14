@@ -18,7 +18,7 @@ public static class ImportsJpaExtensions
         this IProperty p,
         JpaConfig config,
         string tag,
-        bool forcePropertyType = false
+        bool forceAssociationPropertyType = false
     )
     {
         foreach (var di in config.GetDomainImports(p, tag))
@@ -47,7 +47,7 @@ public static class ImportsJpaExtensions
             }
         }
 
-        if (p is { Association: Class association, AssociationProperty: IProperty ap } && !forcePropertyType)
+        if (p is { Association: Class association, AssociationProperty: IProperty ap } && !forceAssociationPropertyType)
         {
             if (config.CanClassUseEnums(association, ap))
             {

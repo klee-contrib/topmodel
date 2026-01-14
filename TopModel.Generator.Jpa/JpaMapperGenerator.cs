@@ -268,7 +268,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var imports = new List<string>();
         var getterName = JpaModelPropertyGenerator.GetGetterName(propertySource);
         var converter = propertySource.Domain.GetConverter(propertyTarget.Domain);
-        var targetType = JpaModelPropertyGenerator.GetPropertyType(propertyTarget);
+        var targetType = Config.GetType(propertyTarget);
         var collector = $"Collectors.to{targetType.Split('<')[0]}()";
         if (converter != null && Config.GetImplementation(converter) != null)
         {
@@ -607,9 +607,6 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         fw.Write(0, mapperClass);
     }
 
-    protected virtual bool UseClassForAssociation(IProperty p, Class classe) =>
-        classe.IsPersistent && !Config.UseJdbc && p is { Association.IsPersistent: true };
-
     private bool FilterMapping(IProperty propertySource, IProperty propertyTarget)
     {
         return !(
@@ -638,10 +635,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var param in mapper.PropertyParams)
         {
-            var methodParameter = new JavaMethodParameter(
-                Config.GetType(param.Property, useClassForAssociation: UseClassForAssociation(param.Property, classe)),
-                param.Property.NameCamel
-            )
+            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property), param.Property.NameCamel)
             {
                 Comment = param.Property.Comment,
             };

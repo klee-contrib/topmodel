@@ -24,9 +24,7 @@ public partial record Client : Personne
     public string? Email { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.ClientId.
+    /// Association réciproque de AvisClient.Client.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? AvisClients { get; set; }
+    public ICollection<AvisClient> AvisClients { get; set; } = [];
 }

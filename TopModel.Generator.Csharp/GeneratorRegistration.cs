@@ -22,7 +22,7 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
 
         services.AddGenerator<CSharpClassGenerator, CsharpConfig>(config, number);
-        services.AddGenerator<MapperGenerator, CsharpConfig>(config, number);
+        // services.AddGenerator<MapperGenerator, CsharpConfig>(config, number);
 
         if (config.DbContextPath != null)
         {

@@ -1,4 +1,7 @@
-﻿namespace TopModel.Core.Model;
+﻿using System.Text;
+using TopModel.Utils;
+
+namespace TopModel.Core.Model;
 
 #pragma warning disable KTA1200, S2325 // Jusqu'à ce qu'on supporte les blocs d'extension...
 
@@ -52,6 +55,17 @@ public static class ModelExtensions
                 { Composition: not null } => false,
                 AssociationProperty ap => ap.Multiple,
                 AliasProperty { Property: AssociationProperty ap } => ap.Multiple,
+                _ => false,
+            };
+
+        /// <summary>
+        /// Type l'association avec la classe cible plutôt qu'avec celui de la propriété cible.
+        /// </summary>
+        public bool UseClassForAssociation =>
+            prop switch
+            {
+                AssociationProperty ap => ap.UseClass,
+                AliasProperty { Property: AssociationProperty } alp => alp.UseClass,
                 _ => false,
             };
 
@@ -198,6 +212,55 @@ public static class ModelExtensions
         /// </summary>
         public bool IsReverseProperty =>
             prop is ReverseAssociationProperty || prop is AliasProperty ap && ap.Property is ReverseAssociationProperty;
+
+        /// <summary>
+        /// Calcule le nom d'une propriété d'association.
+        /// </summary>
+        /// <param name="pascalCase">Si on veut le nom en PascalCase.</param>
+        /// <param name="forcePropertyName">Si le nom doit inclure le nom de la propriété cible, indépendemment de la valeur de `UseClass`.</param>
+        /// <returns></returns>
+        internal string GetAssociationName(bool pascalCase = false, bool forcePropertyName = false)
+        {
+            if (prop.Association == null)
+            {
+                return string.Empty;
+            }
+
+            var name = new StringBuilder();
+
+            var className = prop switch
+            {
+                AssociationProperty ap => ap.ClassName,
+                AliasProperty { Property: AssociationProperty ap } => ap.ClassName,
+                _ => null,
+            };
+
+            if (className != null)
+            {
+                name.Append(pascalCase ? className.ToPascalCase(strictIfUppercase: true) : className);
+            }
+            else if (prop.AssociationMultiple)
+            {
+                name.Append(pascalCase ? prop.Association?.PluralNamePascal : prop.Association?.PluralName);
+            }
+            else if (prop.Association?.Extends == null || !(prop.Association?.PrimaryKey.Any() ?? false))
+            {
+                name.Append(pascalCase ? prop.Association?.NamePascal : prop.Association?.Name);
+            }
+
+            if (!prop.AssociationMultiple && (!prop.UseClassForAssociation || forcePropertyName))
+            {
+                name.Append(pascalCase ? prop.AssociationProperty?.NamePascal : prop.AssociationProperty?.Name);
+            }
+
+            if (!string.IsNullOrWhiteSpace(prop.AssociationRole))
+            {
+                var role = prop.AssociationRole?.Replace(" ", string.Empty);
+                name.Append(pascalCase ? role?.ToPascalCase(strictIfUppercase: true) : role);
+            }
+
+            return name.ToString();
+        }
     }
 
     extension(Class classe)

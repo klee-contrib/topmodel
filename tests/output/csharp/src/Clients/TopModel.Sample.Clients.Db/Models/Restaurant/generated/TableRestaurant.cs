@@ -51,8 +51,6 @@ public partial record TableRestaurant
     /// <summary>
     /// Restaurant auquel appartient la table.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

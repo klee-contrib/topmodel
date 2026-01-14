@@ -59,7 +59,7 @@ public class ClientAvecCommandes implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull

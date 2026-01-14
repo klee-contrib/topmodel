@@ -113,10 +113,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     annotations.Add(JpaModelPropertyGenerator.EnumAnnotation);
                 }
             }
-            var field = new JavaField(
-                JpaModelPropertyGenerator.GetPropertyType(pk),
-                JpaModelPropertyGenerator.GetPropertyName(pk)
-            ).AddRange(annotations);
+            var field = new JavaField(Config.GetType(pk), pk.NameCamel).AddRange(annotations);
             javaClass.Add(field);
         }
 
@@ -148,7 +145,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             equalsMethod.AddBodyLine();
             equalsMethod.AddBodyLine(
-                @$"if ({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{"
+                @$"if ({string.Join(" || ", associations.Select(pk => pk.NameCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{"
             );
             equalsMethod.AddBodyLine(1, "return false;");
             equalsMethod.AddBodyLine("}");
@@ -156,7 +153,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         equalsMethod.AddBodyLine();
         equalsMethod.AddBodyLine(
-            $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)})"))};"
+            $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)})"))};"
         );
 
         javaClass.Add(equalsMethod);
@@ -165,7 +162,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             new JavaAnnotation("Override")
         );
         hashCodeMethod.AddBodyLine(
-            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameByClassCamel} == null ? null : " : string.Empty)}{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}"))});"
+            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}"))});"
         );
         hashCodeMethod.Imports.Add("java.util.Objects");
         javaClass.Add(hashCodeMethod);
@@ -179,7 +176,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && classe.PrimaryKey.First() is { Association: Class association, AssociationProperty: IProperty ap } pk
         )
         {
-            var javaField = new JavaField(JpaModelPropertyGenerator.GetPropertyType(ap), pk.NameCamel)
+            var javaField = new JavaField(Config.GetType(ap, forceAssociationPropertyType: true), pk.PropertyNameCamel)
             {
                 Comment =
                 {
@@ -248,9 +245,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap }
         )
         {
-            var propertyName = classe.PrimaryKey.First().NameCamel;
-            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap);
-            string setterName = $"set{classe.PrimaryKey.First().NamePascal}";
+            var propertyName = classe.PrimaryKey.First().PropertyNameCamel;
+            var propertyType = Config.GetType(ap);
+            string setterName = $"set{classe.PrimaryKey.First().PropertyNamePascal}";
             var method = new JavaMethod("void", setterName)
             {
                 Visibility = "public",
@@ -331,7 +328,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             if (ap.ReverseProperty != null)
             {
-                var propertyName = ap.NameByClassCamel;
+                var propertyName = ap.NameCamel;
                 var adder = new JavaMethod("void", $"add{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
                     Comment = $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
@@ -339,21 +336,17 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     .AddParameter(
                         new JavaMethodParameter(ap.Association!.NamePascal, ap.Association!.NameCamel)
                         {
-                            Comment = $"value to add to {ap.ReverseProperty!.NameByClassCamel}",
+                            Comment = $"value to add to {ap.ReverseProperty!.NameCamel}",
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.add({ap.Association!.NameCamel});");
                 if (ap.ReverseProperty!.AssociationMultiple)
                 {
-                    adder.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().add(this);"
-                    );
+                    adder.AddBodyLine(@$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NamePascal}().add(this);");
                 }
                 else
                 {
-                    adder.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NameByClassPascal}(this);"
-                    );
+                    adder.AddBodyLine(@$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NamePascal}(this);");
                 }
 
                 yield return adder;
@@ -367,7 +360,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             if (ap.ReverseProperty != null)
             {
-                var propertyName = ap.NameByClassCamel;
+                var propertyName = ap.NameCamel;
                 var remover = new JavaMethod("void", $"remove{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
                     Comment =
@@ -383,14 +376,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 if (ap.ReverseProperty!.AssociationMultiple)
                 {
                     remover.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().remove(this);"
+                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NamePascal}().remove(this);"
                     );
                 }
                 else
                 {
-                    remover.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NameByClassPascal}(null);"
-                    );
+                    remover.AddBodyLine(@$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NamePascal}(null);");
                 }
                 yield return remover;
             }

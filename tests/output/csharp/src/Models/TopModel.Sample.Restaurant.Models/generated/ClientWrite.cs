@@ -36,7 +36,7 @@ public partial record ClientWrite
     public string? Email { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.ClientId.
+    /// Association réciproque de AvisClient.Client.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? AvisClients { get; set; }

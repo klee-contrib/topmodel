@@ -126,8 +126,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             .GetAvailableProperties(classe)
             .Select(prop =>
             {
-                string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
-                var javaType = JpaModelPropertyGenerator.GetPropertyType(prop);
+                string name = prop.NameCamel.ToConstantCase();
+                var javaType = Config.GetType(prop);
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)
                 {

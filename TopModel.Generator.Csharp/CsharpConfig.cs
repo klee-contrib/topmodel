@@ -562,9 +562,9 @@ public class CsharpConfig : GeneratorConfigBase
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers ? typeName : $"async Task<{typeName}>";
     }
 
-    public virtual string GetType(IProperty prop, bool useClassForAssociation = false, bool nonNullable = false)
+    public virtual string GetType(IProperty prop, bool forceAssociationPropertyType = false, bool nonNullable = false)
     {
-        var type = base.GetType(prop, useClassForAssociation);
+        var type = base.GetType(prop, forceAssociationPropertyType);
 
         if (
             !nonNullable

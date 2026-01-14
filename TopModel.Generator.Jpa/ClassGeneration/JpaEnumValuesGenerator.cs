@@ -125,12 +125,12 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         foreach (var prop in notPkProperties)
         {
             fw.WriteLine();
-            fw.WriteDocStart(1, $@"{prop.NameByClassPascal}");
+            fw.WriteDocStart(1, $@"{prop.NamePascal}");
             fw.WriteDocEnd(1);
-            var fieldName = prop.NameByClassCamel;
+            var fieldName = prop.NameCamel;
             if (prop is { Association: Class association })
             {
-                fieldName = $"{prop.NameByClassCamel}";
+                fieldName = $"{prop.NameCamel}";
                 fw.WriteLine(1, $@"private final {association.NamePascal} {fieldName};");
             }
             else
@@ -146,11 +146,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 
         foreach (var prop in notPkProperties)
         {
-            var fieldName = prop.NameByClassCamel;
+            var fieldName = prop.NameCamel;
             var fieldType = Config.GetType(prop);
             if (prop is { Association: Class association } && Config.CanClassUseEnums(association))
             {
-                fieldName = $"{prop.NameByClassCamel}";
+                fieldName = $"{prop.NameCamel}";
                 fieldType = $"{association.NamePascal}";
             }
 
@@ -203,11 +203,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         var methodParams = properties.Select(
             (prop, index) =>
             {
-                var fieldName = prop.NameByClassCamel;
+                var fieldName = prop.NameCamel;
                 var fieldType = Config.GetType(prop);
                 if (prop is { Association: Class association })
                 {
-                    fieldName = $"{prop.NameByClassCamel}";
+                    fieldName = $"{prop.NameCamel}";
                     fieldType = $"{association.NamePascal}";
                 }
 

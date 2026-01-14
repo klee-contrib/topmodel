@@ -103,7 +103,7 @@ public class CommandeHistorique {
 	private AvisClient avisClient;
 
 	/**
-	 * Association réciproque de LigneCommandeHistorique.CommandeHistoriqueId.
+	 * Association réciproque de LigneCommandeHistorique.CommandeHistorique.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commandeHistorique")
 	private List<LigneCommandeHistorique> lignes;

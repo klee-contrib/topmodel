@@ -46,10 +46,10 @@ endpoint:
         property: Disponible
     - alias:
         class: Plat
-        property: RestaurantId
+        property: Restaurant
     - alias:
         class: Plat
-        property: CategoriePlatCode
+        property: CategoriePlat
 
   returns:
     composition: PlatItem
@@ -165,8 +165,8 @@ endpoint:
     - alias:
         class: Plat
         include:
-          - RestaurantId
-          - CategoriePlatCode
+          - Restaurant
+          - CategoriePlat
     - alias:
         class: Plat
         property: Disponible

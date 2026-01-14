@@ -97,7 +97,7 @@ public class Commande {
 	private AvisClient avisClient;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Association réciproque de LigneCommande.Commande.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
 	private List<LigneCommande> lignes;

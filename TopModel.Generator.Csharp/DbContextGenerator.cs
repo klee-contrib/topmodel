@@ -74,7 +74,7 @@ public class DbContextGenerator(
             {
                 cw.WriteLine(
                     2,
-                    $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");"
+                    $"{classe.NameCamel}.Property({(property.NamePascal == property.PropertyNamePascal ? $"p => p.{property.NamePascal}" : $"\"{property.PropertyNamePascal}\"")}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");"
                 );
             }
 
@@ -188,10 +188,20 @@ public class DbContextGenerator(
             if (fp.EnumProperty != null && Config.CanClassUseEnums(fp.EnumProperty!.Class, fp.EnumProperty))
             {
                 hasPropConfig = true;
-                w.WriteLine(
-                    2,
-                    $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
-                );
+                if (!fp.UseClassForAssociation)
+                {
+                    w.WriteLine(
+                        2,
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
+                    );
+                }
+                else if (fp.Domain?.Length != null)
+                {
+                    w.WriteLine(
+                        2,
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(\"{fp.PropertyNamePascal}\").HasMaxLength({fp.Domain.Length});"
+                    );
+                }
             }
 
             if (fp.Domain?.Length != null && fp.Domain?.Scale != null)
@@ -210,13 +220,18 @@ public class DbContextGenerator(
         }
 
         var hasPk = false;
-        foreach (var classe in classes.Distinct().Where(c => c.PrimaryKey.Count() > 1).OrderBy(c => c.NamePascal))
+        foreach (
+            var classe in classes
+                .Distinct()
+                .Where(c => c.PrimaryKey.Count() > 1 || c.PrimaryKey.Any(p => p.UseClassForAssociation))
+                .OrderBy(c => c.NamePascal)
+        )
         {
             hasPk = true;
-            w.WriteLine(
-                2,
-                $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.NamePascal}"))} }});"
-            );
+            var expr = classe.PrimaryKey.Any(p => p.UseClassForAssociation)
+                ? string.Join(", ", classe.PrimaryKey.Select(p => $"\"{p.PropertyNamePascal}\""))
+                : $"p => new {{ {string.Join(", ", classe.PrimaryKey.Select(p => $"p.{p.NamePascal}"))} }}";
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey({expr});");
         }
 
         if (hasPk)
@@ -251,14 +266,45 @@ public class DbContextGenerator(
                         c.Association,
                         c.Unique,
                         c.AssociationRole,
+                        c.UseClassForAssociation,
                     })
             )
             {
                 hasFk = true;
-                w.WriteLine(
-                    2,
-                    $"modelBuilder.Entity<{g.Key.Class}>().HasOne<{GetClassName(g.Key.Association!, tag)}>().With{(!g.Key.Unique ? "Many" : "One")}().HasForeignKey{(!g.Key.Unique ? string.Empty : $"<{GetClassName(g.Key.Class, tag)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")}).OnDelete(DeleteBehavior.Restrict);"
-                );
+                w.Write(2, $"modelBuilder.Entity<{g.Key.Class}>().HasOne");
+
+                if (g.Key.UseClassForAssociation)
+                {
+                    w.Write($"(p => p.{g.First().NamePascal})");
+                }
+                else
+                {
+                    w.Write($"<{GetClassName(g.Key.Association!, tag)}>()");
+                }
+
+                w.Write($".With{(!g.Key.Unique ? "Many" : "One")}");
+
+                if (g.Key.UseClassForAssociation && g.Single().ReverseProperty != null)
+                {
+                    w.Write($"(p => p.{g.Single().ReverseProperty?.NamePascal})");
+                }
+                else
+                {
+                    w.Write($"()");
+                }
+
+                if (!g.Key.UseClassForAssociation)
+                {
+                    w.Write(
+                        $".HasForeignKey{(!g.Key.Unique ? string.Empty : $"<{GetClassName(g.Key.Class, tag)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")})"
+                    );
+                }
+                else if (g.Key.Unique)
+                {
+                    w.Write($".HasForeignKey<{GetClassName(g.Key.Class, tag)}>(\"{g.Single().PropertyNamePascal}\")");
+                }
+
+                w.WriteLine(".OnDelete(DeleteBehavior.Restrict);");
             }
 
             if (hasFk)
@@ -281,16 +327,34 @@ public class DbContextGenerator(
             {
                 hasUk = true;
                 var expr =
-                    uk.Count == 1
-                        ? $"p.{uk.Single().NamePascal}"
-                        : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.NamePascal}"))} }}";
-                w.WriteLine(
-                    2,
-                    $"modelBuilder.Entity<{GetClassName(uk[0].Class, tag)}>().HasIndex(p => {expr}).IsUnique();"
-                );
+                    uk.Any(p => p.UseClassForAssociation)
+                        ? string.Join(", ", uk.Select(p => $"\"{p.PropertyNamePascal}\""))
+                    : uk.Count == 1 ? $"p => p.{uk.Single().NamePascal}"
+                    : $"p => new {{ {string.Join(", ", uk.Select(p => $"p.{p.NamePascal}"))} }}";
+                w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(uk[0].Class, tag)}>().HasIndex({expr}).IsUnique();");
             }
 
             if (hasUk)
+            {
+                w.WriteLine();
+            }
+
+            var hasSp = false;
+            foreach (
+                var sp in classes
+                    .Distinct()
+                    .OrderBy(c => c.NamePascal)
+                    .SelectMany(c => c.Properties.Where(p => !p.AssociationMultiple && p.UseClassForAssociation))
+            )
+            {
+                hasSp = true;
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.Entity<{GetClassName(sp.Class, tag)}>().Property(\"{sp.PropertyNamePascal}\").HasColumnName(\"{(Config.UseLowerCaseSqlNames ? sp.SqlName.ToLower() : sp.SqlName)}\");"
+                );
+            }
+
+            if (hasSp)
             {
                 w.WriteLine();
             }

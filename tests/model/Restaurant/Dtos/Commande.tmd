@@ -22,8 +22,8 @@ class:
           - Id
           - DateCommande
           - MontantTotal
-          - StatutCommandeCode
-          - ClientId
+          - StatutCommande
+          - Client
 ---
 class:
   name: CommandeRead
@@ -33,13 +33,13 @@ class:
     - alias:
         class: Commande
         exclude:
-          - ClientId
+          - Client
           - Lignes
-          - ReservationId
+          - Reservation
 
     - alias:
         class: Commande
-        property: ClientId
+        property: Client
       composition: ClientRead
       name: Client
 
@@ -59,7 +59,7 @@ class:
           - class: Commande
             mappings:
               #Client: ClientId
-              Reservation: ReservationId
+              Reservation: Reservation
 ---
 class:
   name: CommandeWrite

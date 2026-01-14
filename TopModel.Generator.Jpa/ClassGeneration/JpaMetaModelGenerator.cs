@@ -54,7 +54,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
-            var javaType = jpaModelPropertyGenerator.GetPropertyType(property);
+            var javaType = Config.GetType(property);
             var genericType = javaType.Split("<")[0];
             var attributeType = genericType switch
             {
@@ -65,17 +65,14 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
                 _ => "SingularAttribute",
             };
 
-            var propertyType = jpaModelPropertyGenerator.GetPropertyType(property);
+            var propertyType = Config.GetType(property);
 
             if (javaType != genericType)
             {
                 propertyType = javaType.Split('<')[1].Split('>')[0];
             }
 
-            var javaField = new JavaField(
-                $"{attributeType}<{classe.NamePascal}, {propertyType}>",
-                jpaModelPropertyGenerator.GetPropertyName(property)
-            )
+            var javaField = new JavaField($"{attributeType}<{classe.NamePascal}, {propertyType}>", property.NameCamel)
             {
                 Static = true,
                 Visibility = "public",
@@ -93,12 +90,12 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
             javaClass.Add(
-                new JavaField("String", jpaModelPropertyGenerator.GetPropertyName(property).ToConstantCase())
+                new JavaField("String", property.NameCamel.ToConstantCase())
                 {
                     Static = true,
                     Final = true,
                     Visibility = "public",
-                    DefaultValue = $"\"{jpaModelPropertyGenerator.GetPropertyName(property)}\"",
+                    DefaultValue = $"\"{property.NameCamel}\"",
                 }
             );
         }

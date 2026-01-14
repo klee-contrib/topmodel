@@ -83,7 +83,7 @@ public class Menu {
 	private Restaurant restaurant;
 
 	/**
-	 * Association réciproque de MenuPlat.MenuId.
+	 * Association réciproque de MenuPlat.Menu.
 	 */
 	@OrderBy("ordre ASC")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menu")

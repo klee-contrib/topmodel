@@ -71,7 +71,7 @@ public partial record CommandeRead
     public ReservationRead? Reservation { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Association réciproque de LigneCommande.Commande.
     /// </summary>
     [Required]
     public ICollection<LigneCommandeRead> Lignes { get; set; } = [];

@@ -73,15 +73,11 @@ public partial record Menu
     /// <summary>
     /// Restaurant proposant ce menu.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 
     /// <summary>
-    /// Association réciproque de MenuPlat.MenuId.
+    /// Association réciproque de MenuPlat.Menu.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Plats { get; set; }
+    public ICollection<MenuPlat> Plats { get; set; } = [];
 }

@@ -50,16 +50,12 @@ public partial record LigneCommande
     /// <summary>
     /// Commande à laquelle appartient la ligne.
     /// </summary>
-    [Column("com_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? CommandeId { get; set; }
+    public Commande? Commande { get; set; }
 
     /// <summary>
     /// Plat commandé.
     /// </summary>
-    [Column("pla_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? PlatId { get; set; }
+    public Plat? Plat { get; set; }
 }

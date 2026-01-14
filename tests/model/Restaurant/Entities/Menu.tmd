@@ -112,7 +112,7 @@ class:
       comment: Ordre d'affichage du plat dans le menu
 
   unique:
-    - [MenuId, Ordre]
+    - [Menu, Ordre]
 ---
 class:
   name: Promotion

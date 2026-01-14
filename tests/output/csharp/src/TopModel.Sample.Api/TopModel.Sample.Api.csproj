@@ -1,5 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Clients\TopModel.Sample.Clients.Db\TopModel.Sample.Clients.Db.csproj" />
     <ProjectReference Include="..\Clients\TopModel.Sample.Clients.External\TopModel.Sample.Clients.External.csproj" />
   </ItemGroup>

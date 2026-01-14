@@ -98,7 +98,7 @@ public class CommandeRead implements Serializable {
 	private ReservationRead reservation;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Association réciproque de LigneCommande.Commande.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@Valid

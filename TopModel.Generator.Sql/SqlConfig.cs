@@ -164,7 +164,9 @@ public class SqlConfig : GeneratorConfigBase
                 return false;
             }
 
-            return TargetDBMS == TargetDBMS.Oracle && GetType(property) == "number(1)" && IsBoolean(property);
+            return TargetDBMS == TargetDBMS.Oracle
+                && GetType(property, forceAssociationPropertyType: true) == "number(1)"
+                && IsBoolean(property);
         }
 
         if (NeedsBooleanConversionToNumeric())
@@ -177,7 +179,7 @@ public class SqlConfig : GeneratorConfigBase
 
     public override bool ShouldQuoteValue(IProperty property)
     {
-        var type = GetType(property);
+        var type = GetType(property, forceAssociationPropertyType: true);
         return (type ?? string.Empty).Contains("varchar")
             || type == "text"
             || type == "uniqueidentifier"

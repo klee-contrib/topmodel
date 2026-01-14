@@ -26,16 +26,6 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         ).AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
     }
 
-    public override string GetPropertyName(IProperty property)
-    {
-        return property.NameCamel;
-    }
-
-    public override string GetPropertyType(IProperty property)
-    {
-        return Config.GetType(property, useClassForAssociation: false);
-    }
-
     protected override string GetDefaultValue(IProperty property)
     {
         var defaultValue = Config.GetValue(property);

@@ -88,9 +88,9 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             }
             else
             {
-                pk = Config.GetType(classe.PrimaryKey.Single());
+                pk = Config.GetType(classe.PrimaryKey.Single(), forceAssociationPropertyType: true);
                 javaClass.Imports.AddRange(
-                    classe.PrimaryKey.Single().GetTypeImports(Config, tag, forcePropertyType: true)
+                    classe.PrimaryKey.Single().GetTypeImports(Config, tag, forceAssociationPropertyType: true)
                 );
             }
         }

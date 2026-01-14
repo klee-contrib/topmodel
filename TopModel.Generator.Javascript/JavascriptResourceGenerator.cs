@@ -181,7 +181,7 @@ public class JavascriptResourceGenerator(
         var i = 1;
         if (Config.TranslateProperties == true)
         {
-            foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
+            foreach (var property in container.OrderBy(p => p.PropertyNameCamel, StringComparer.Ordinal))
             {
                 var translation = isComment
                     ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace('"', '\'')
@@ -192,7 +192,7 @@ public class JavascriptResourceGenerator(
                     translation = property.Name;
                 }
 
-                fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
+                fw.Write(indentLevel + 1, $"{Quote(property.PropertyNameCamel)}: ");
                 fw.Write($@"""{translation}""");
                 fw.WriteLine(
                     container.Count() == i++

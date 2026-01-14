@@ -123,4 +123,4 @@ class:
       comment: Restaurant concerné par l'avis
 
   unique:
-    - [ClientId, RestaurantId, DateAvis]
+    - [Client, Restaurant, DateAvis]

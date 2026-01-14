@@ -40,7 +40,7 @@ public class PostgresCrebasGenerator(ILogger<PostgresCrebasGenerator> logger, IF
     protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)
     {
         writer.Write(
-            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()}"
+            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single(), forceAssociationPropertyType: true).ToUpper()}"
         );
 
         if (Config.Procedural!.Identity.Start != null)

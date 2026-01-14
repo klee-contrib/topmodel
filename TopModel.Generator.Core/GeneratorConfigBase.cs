@@ -353,9 +353,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>
-    /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
+    /// <param name="forceAssociationPropertyType">Pour une association, retourne toujours le type de la propriété cible.</param>
     /// <returns>Le type.</returns>
-    public virtual string GetType(IProperty property, bool useClassForAssociation = false)
+    public virtual string GetType(IProperty property, bool forceAssociationPropertyType = false)
     {
         string GetType(IEnumerable<(Domain Domain, bool Generic)> domainChain)
         {
@@ -365,9 +365,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
             if (queue.Count == 0)
             {
-                if (property is { Association: Class ac } && useClassForAssociation)
+                if (property.Association != null && property.UseClassForAssociation && !forceAssociationPropertyType)
                 {
-                    return ac.NamePascal;
+                    return property.Association!.NamePascal;
                 }
                 else if (
                     property is { EnumProperty: IProperty ep }

@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using System.Text;
+using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
@@ -15,11 +16,11 @@ internal class AliasProperty : IProperty
     private string? _label;
     private string? _name;
     private bool? _primaryKey;
-
 #nullable disable
     private IProperty _property;
     private bool? _readonly;
     private bool? _required;
+    private bool? _useClass;
 
     public IProperty Property
     {
@@ -65,47 +66,126 @@ internal class AliasProperty : IProperty
 
     public string Name
     {
-        get => (Prefix ?? string.Empty) + (_name ?? _property?.Name) + (Suffix ?? string.Empty);
+        get
+        {
+            var name = new StringBuilder();
+
+            if (Prefix != null)
+            {
+                name.Append(Prefix);
+            }
+
+            if (_name != null)
+            {
+                name.Append(_name);
+            }
+            else if (this.Association != null)
+            {
+                name.Append(this.GetAssociationName());
+            }
+            else
+            {
+                name.Append(_property?.Name);
+            }
+
+            if (Suffix != null)
+            {
+                name.Append(Suffix);
+            }
+
+            return name.ToString();
+        }
         set => _name = value;
     }
 
-    public string NamePascal =>
-        ((IProperty)this).Parent.PreservePropertyCasing
-            ? Name
-            : (Prefix?.ToFirstUpper() ?? string.Empty)
-                + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal)
-                + (Suffix ?? string.Empty);
+    public string NamePascal
+    {
+        get
+        {
+            if (((IProperty)this).Parent.PreservePropertyCasing)
+            {
+                return Name;
+            }
 
-    public string NameCamel =>
-        ((IProperty)this).Parent.PreservePropertyCasing
-            ? Name
-            : (Prefix?.ToFirstLower() ?? string.Empty)
-                + (
-                    string.IsNullOrWhiteSpace(Prefix)
-                        ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameCamel
-                        : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal
-                )
-                + (Suffix ?? string.Empty);
+            var name = new StringBuilder();
 
-    public string NameByClassPascal =>
-        Class.IsPersistent
-            ? (Prefix?.ToFirstUpper() ?? string.Empty)
-                + (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal)
-                + (Suffix ?? string.Empty)
-            : NamePascal;
+            if (Prefix != null)
+            {
+                name.Append(Prefix.ToFirstUpper());
+            }
 
-    public string NameByClassCamel =>
-        Class.IsPersistent
-            ? (Prefix?.ToFirstLower() ?? string.Empty)
-                + (
-                    string.IsNullOrWhiteSpace(Prefix)
-                        ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameByClassCamel
-                        : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal
-                )
-                + (Suffix ?? string.Empty)
-            : NameCamel;
+            if (_name != null)
+            {
+                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+            }
+            else if (this.Association != null)
+            {
+                name.Append(this.GetAssociationName(pascalCase: true));
+            }
+            else
+            {
+                name.Append(_property?.NamePascal);
+            }
+
+            if (Suffix != null)
+            {
+                name.Append(Suffix);
+            }
+
+            return name.ToString();
+        }
+    }
+
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NamePascal.ToFirstLower();
+
+    public string PropertyNamePascal
+    {
+        get
+        {
+            if (((IProperty)this).Parent.PreservePropertyCasing)
+            {
+                return Name;
+            }
+
+            var name = new StringBuilder();
+
+            if (Prefix != null)
+            {
+                name.Append(Prefix.ToFirstUpper());
+            }
+
+            if (_name != null)
+            {
+                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+            }
+            else if (this.Association != null)
+            {
+                name.Append(this.GetAssociationName(pascalCase: true, forcePropertyName: true));
+            }
+            else
+            {
+                name.Append(_property?.NamePascal);
+            }
+
+            if (Suffix != null)
+            {
+                name.Append(Suffix);
+            }
+
+            return name.ToString();
+        }
+    }
+
+    public string PropertyNameCamel =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : PropertyNamePascal.ToFirstLower();
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(PersistentProperty ?? this);
+
+    public bool UseClass
+    {
+        get => _useClass ?? (Class?.IsPersistent == true);
+        set => _useClass = value;
+    }
 
     public string? Label
     {
@@ -298,6 +378,11 @@ internal class AliasProperty : IProperty
             alp.Readonly = _readonly.Value;
         }
 
+        if (_useClass.HasValue)
+        {
+            alp.UseClass = _useClass.Value;
+        }
+
         return alp;
     }
 
@@ -363,6 +448,11 @@ internal class AliasProperty : IProperty
         if (_readonly.HasValue)
         {
             alp.Readonly = _readonly.Value;
+        }
+
+        if (_useClass.HasValue)
+        {
+            alp.UseClass = _useClass.Value;
         }
 
         return alp;

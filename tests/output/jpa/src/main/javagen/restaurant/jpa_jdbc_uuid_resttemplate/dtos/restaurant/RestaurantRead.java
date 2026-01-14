@@ -60,7 +60,7 @@ public class RestaurantRead implements Serializable {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
+	 * Association réciproque de Menu.Restaurant.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
 	 */
 	@NotNull
@@ -68,7 +68,7 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
+	 * Association réciproque de Plat.Restaurant.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
 	 */
 	@NotNull
@@ -76,14 +76,14 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
+	 * Association réciproque de Promotion.Restaurant.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
 	 */
 	@Column("pla_id")
 	private List<Integer> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
+	 * Association réciproque de AvisClient.Restaurant.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
 	 */
 	@NotNull
@@ -91,7 +91,7 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de TableRestaurant.Restaurant.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
 	 */
 	@NotNull
