@@ -4,7 +4,7 @@
 
 version: 3.8.4
 custom:
-  ../../TopModel.Generator.Jpa: 8fdb5822488f0819d7455eb41441e889
+  ../../TopModel.Generator.Jpa: fab1bc1b4ce59f7941fe7c20d5b169bd
   ../../TopModel.Generator.Csharp: db597d56d0fcc3ba16a9baed06e9a36e
   ../../TopModel.Generator.Javascript: b6d91df6bbf93d78236e352daaa7ac6c
   ../../TopModel.Generator.Sql: 42adfe769a6424bde05af99a14897000
@@ -450,38 +450,22 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/dtos/restaurant/TableItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/dtos/restaurant/TableRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/dtos/restaurant/TableWrite.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/AvisClient_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/AvisClient.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/CategoriePlat_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/CategoriePlat.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Client_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Client.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Commande_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Commande.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/CommandeExport_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/CommandeExport.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Employe_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Employe.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/LigneCommande_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/LigneCommande.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Menu_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Menu.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/MenuPlat_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/MenuPlat.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Personne_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Personne.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Plat_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Plat.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Promotion_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Promotion.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Reservation_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Reservation.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Restaurant_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/Restaurant.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/RestaurantMappers.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/StatutCommande_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/StatutCommande.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/TableRestaurant_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_uuid_jdbc/entities/restaurant/TableRestaurant.java
   - ../output/jpa/src/main/resources/jpa-identity-associations/i18n/model/restaurant.properties
   - ../output/jpa/src/main/resources/jpa-identity-enums/i18n/model/restaurant.properties
