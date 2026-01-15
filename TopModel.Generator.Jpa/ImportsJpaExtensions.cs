@@ -14,7 +14,12 @@ public static class ImportsJpaExtensions
         return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
     }
 
-    public static IEnumerable<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
+    public static IEnumerable<string> GetTypeImports(
+        this IProperty p,
+        JpaConfig config,
+        string tag,
+        bool forcePropertyType = false
+    )
     {
         foreach (var di in config.GetDomainImports(p, tag))
         {
@@ -42,7 +47,7 @@ public static class ImportsJpaExtensions
             }
         }
 
-        if (p is { Association: Class association, AssociationProperty: IProperty ap })
+        if (p is { Association: Class association, AssociationProperty: IProperty ap } && !forcePropertyType)
         {
             if (config.CanClassUseEnums(association, ap))
             {
