@@ -192,4 +192,7 @@
   <data name="TMD9013" xml:space="preserve">
     <value>Property 'type' is deprecated. Use an explicit association class to defined a 'manyToMany'.</value>
   </data>
+  <data name="TMD9014" xml:space="preserve">
+    <value>Cannot define alias on property '{0}' of class '{1}' because it is a multiple association and target class is persisted.</value>
+  </data>
 </root>

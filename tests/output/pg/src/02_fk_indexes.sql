@@ -121,73 +121,73 @@ alter table COMMANDE
 		references AVIS_CLIENT (AVI_ID);
 
 /**
-  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.PER_ID
+  * Création de l'index de clef étrangère pour COMMANDE_HISTORIQUE.PER_ID
  **/
-create index IDX_COMMANDE_EXPORT_PER_ID_FK on COMMANDE_EXPORT (
+create index IDX_COMMANDE_HISTORIQUE_PER_ID_FK on COMMANDE_HISTORIQUE (
 	PER_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.PER_ID
+  * Génération de la contrainte de clef étrangère pour COMMANDE_HISTORIQUE.PER_ID
  **/
-alter table COMMANDE_EXPORT
-	add constraint FK_COMMANDE_EXPORT_PER_ID foreign key (PER_ID)
+alter table COMMANDE_HISTORIQUE
+	add constraint FK_COMMANDE_HISTORIQUE_PER_ID foreign key (PER_ID)
 		references CLIENT (PER_ID);
 
 /**
-  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.TAB_ID
+  * Création de l'index de clef étrangère pour COMMANDE_HISTORIQUE.TAB_ID
  **/
-create index IDX_COMMANDE_EXPORT_TAB_ID_FK on COMMANDE_EXPORT (
+create index IDX_COMMANDE_HISTORIQUE_TAB_ID_FK on COMMANDE_HISTORIQUE (
 	TAB_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.TAB_ID
+  * Génération de la contrainte de clef étrangère pour COMMANDE_HISTORIQUE.TAB_ID
  **/
-alter table COMMANDE_EXPORT
-	add constraint FK_COMMANDE_EXPORT_TAB_ID foreign key (TAB_ID)
+alter table COMMANDE_HISTORIQUE
+	add constraint FK_COMMANDE_HISTORIQUE_TAB_ID foreign key (TAB_ID)
 		references TABLE (TAB_ID);
 
 /**
-  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.REV_ID
+  * Création de l'index de clef étrangère pour COMMANDE_HISTORIQUE.REV_ID
  **/
-create index IDX_COMMANDE_EXPORT_REV_ID_FK on COMMANDE_EXPORT (
+create index IDX_COMMANDE_HISTORIQUE_REV_ID_FK on COMMANDE_HISTORIQUE (
 	REV_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.REV_ID
+  * Génération de la contrainte de clef étrangère pour COMMANDE_HISTORIQUE.REV_ID
  **/
-alter table COMMANDE_EXPORT
-	add constraint FK_COMMANDE_EXPORT_REV_ID foreign key (REV_ID)
+alter table COMMANDE_HISTORIQUE
+	add constraint FK_COMMANDE_HISTORIQUE_REV_ID foreign key (REV_ID)
 		references RESERVATION (REV_ID);
 
 /**
-  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.STC_CODE
+  * Création de l'index de clef étrangère pour COMMANDE_HISTORIQUE.STC_CODE
  **/
-create index IDX_COMMANDE_EXPORT_STC_CODE_FK on COMMANDE_EXPORT (
+create index IDX_COMMANDE_HISTORIQUE_STC_CODE_FK on COMMANDE_HISTORIQUE (
 	STC_CODE ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.STC_CODE
+  * Génération de la contrainte de clef étrangère pour COMMANDE_HISTORIQUE.STC_CODE
  **/
-alter table COMMANDE_EXPORT
-	add constraint FK_COMMANDE_EXPORT_STC_CODE foreign key (STC_CODE)
+alter table COMMANDE_HISTORIQUE
+	add constraint FK_COMMANDE_HISTORIQUE_STC_CODE foreign key (STC_CODE)
 		references STATUT_COMMANDE (STC_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour COMMANDE_EXPORT.AVI_ID
+  * Création de l'index de clef étrangère pour COMMANDE_HISTORIQUE.AVI_ID
  **/
-create index IDX_COMMANDE_EXPORT_AVI_ID_FK on COMMANDE_EXPORT (
+create index IDX_COMMANDE_HISTORIQUE_AVI_ID_FK on COMMANDE_HISTORIQUE (
 	AVI_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE_EXPORT.AVI_ID
+  * Génération de la contrainte de clef étrangère pour COMMANDE_HISTORIQUE.AVI_ID
  **/
-alter table COMMANDE_EXPORT
-	add constraint FK_COMMANDE_EXPORT_AVI_ID foreign key (AVI_ID)
+alter table COMMANDE_HISTORIQUE
+	add constraint FK_COMMANDE_HISTORIQUE_AVI_ID foreign key (AVI_ID)
 		references AVIS_CLIENT (AVI_ID);
 
 /**
@@ -245,6 +245,34 @@ create index IDX_LIG_PLA_ID_FK on LIGNE_COMMANDE (
 alter table LIGNE_COMMANDE
 	add constraint FK_LIGNE_COMMANDE_PLA_ID foreign key (PLA_ID)
 		references PLAT (PLA_ID);
+
+/**
+  * Création de l'index de clef étrangère pour LIGNE_COMMANDE_HISTORIQUE.PLA_ID
+ **/
+create index IDX_LIGNE_COMMANDE_HISTORIQUE_PLA_ID_FK on LIGNE_COMMANDE_HISTORIQUE (
+	PLA_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour LIGNE_COMMANDE_HISTORIQUE.PLA_ID
+ **/
+alter table LIGNE_COMMANDE_HISTORIQUE
+	add constraint FK_LIGNE_COMMANDE_HISTORIQUE_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
+
+/**
+  * Création de l'index de clef étrangère pour LIGNE_COMMANDE_HISTORIQUE.COM_ID
+ **/
+create index IDX_LIGNE_COMMANDE_HISTORIQUE_COM_ID_FK on LIGNE_COMMANDE_HISTORIQUE (
+	COM_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour LIGNE_COMMANDE_HISTORIQUE.COM_ID
+ **/
+alter table LIGNE_COMMANDE_HISTORIQUE
+	add constraint FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID foreign key (COM_ID)
+		references COMMANDE_HISTORIQUE (COM_ID);
 
 /**
   * Création de l'index de clef étrangère pour MENU.RES_ID

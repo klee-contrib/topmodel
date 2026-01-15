@@ -4,9 +4,9 @@
 
 package restaurant.jpa_sequence_metamodel.daos.restaurant;
 
-import restaurant.jpa_sequence_metamodel.entities.restaurant.CommandeExport;
+import restaurant.jpa_sequence_metamodel.entities.restaurant.CommandeHistorique;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface CommandeExportDAO extends CustomCrudRepository<CommandeExport, Integer> {
+public interface CommandeHistoriqueDAO extends CustomCrudRepository<CommandeHistorique, Integer> {
 }

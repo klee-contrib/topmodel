@@ -4,9 +4,9 @@
 
 package restaurant.jpa_identity_associations.daos.restaurant;
 
-import restaurant.jpa_identity_associations.entities.restaurant.CommandeExport;
+import restaurant.jpa_identity_associations.entities.restaurant.CommandeHistorique;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface CommandeExportDAO extends CustomCrudRepository<CommandeExport, Integer> {
+public interface CommandeHistoriqueDAO extends CustomCrudRepository<CommandeHistorique, Integer> {
 }

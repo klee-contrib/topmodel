@@ -47,17 +47,17 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
         commande.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
-        var commandeExport = modelBuilder.Entity<CommandeExport>();
-        commandeExport.ToTable(t => t.HasComment("Commande pour export avec préservation des clés primaires"));
-        commandeExport.Property(p => p.Id).HasComment("Identifiant de la commande");
-        commandeExport.Property(p => p.DateCommande).HasComment("Date et heure de la commande");
-        commandeExport.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
-        commandeExport.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
-        commandeExport.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
-        commandeExport.Property(p => p.TableId).HasComment("Table associée à la commande");
-        commandeExport.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
-        commandeExport.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
-        commandeExport.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
+        var commandeHistorique = modelBuilder.Entity<CommandeHistorique>();
+        commandeHistorique.ToTable(t => t.HasComment("Commande pour historique avec préservation des clés primaires"));
+        commandeHistorique.Property(p => p.Id).HasComment("Identifiant de la commande");
+        commandeHistorique.Property(p => p.DateCommande).HasComment("Date et heure de la commande");
+        commandeHistorique.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
+        commandeHistorique.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
+        commandeHistorique.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
+        commandeHistorique.Property(p => p.TableId).HasComment("Table associée à la commande");
+        commandeHistorique.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
+        commandeHistorique.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
+        commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
@@ -76,6 +76,15 @@ public partial class TopModelSampleDbContext : DbContext
         ligneCommande.Property(p => p.PrixTotal).HasComment("Prix total de la ligne");
         ligneCommande.Property(p => p.CommandeId).HasComment("Commande à laquelle appartient la ligne");
         ligneCommande.Property(p => p.PlatId).HasComment("Plat commandé");
+
+        var ligneCommandeHistorique = modelBuilder.Entity<LigneCommandeHistorique>();
+        ligneCommandeHistorique.ToTable(t => t.HasComment("Ligne de commande pour historique avec préservation des clés primaires"));
+        ligneCommandeHistorique.Property(p => p.Id).HasComment("Identifiant de la ligne");
+        ligneCommandeHistorique.Property(p => p.Quantite).HasComment("Quantité commandée");
+        ligneCommandeHistorique.Property(p => p.PrixUnitaire).HasComment("Prix unitaire au moment de la commande");
+        ligneCommandeHistorique.Property(p => p.PrixTotal).HasComment("Prix total de la ligne");
+        ligneCommandeHistorique.Property(p => p.PlatId).HasComment("Plat commandé");
+        ligneCommandeHistorique.Property(p => p.CommandeHistoriqueId).HasComment("Commande à laquelle appartient la ligne");
 
         var menu = modelBuilder.Entity<Menu>();
         menu.ToTable(t => t.HasComment("Menu du restaurant"));

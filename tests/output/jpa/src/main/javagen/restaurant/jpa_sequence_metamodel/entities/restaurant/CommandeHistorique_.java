@@ -13,29 +13,29 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetamodel(CommandeExport.class)
+@StaticMetamodel(CommandeHistorique.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class CommandeExport_ {
+public class CommandeHistorique_ {
 
-	public static volatile SingularAttribute<CommandeExport, Integer> id;
+	public static volatile SingularAttribute<CommandeHistorique, Integer> id;
 
-	public static volatile SingularAttribute<CommandeExport, LocalDateTime> dateCommande;
+	public static volatile SingularAttribute<CommandeHistorique, LocalDateTime> dateCommande;
 
-	public static volatile SingularAttribute<CommandeExport, LocalDateTime> dateLivraison;
+	public static volatile SingularAttribute<CommandeHistorique, LocalDateTime> dateLivraison;
 
-	public static volatile SingularAttribute<CommandeExport, BigDecimal> montantTotal;
+	public static volatile SingularAttribute<CommandeHistorique, BigDecimal> montantTotal;
 
-	public static volatile SingularAttribute<CommandeExport, Client> client;
+	public static volatile SingularAttribute<CommandeHistorique, Client> client;
 
-	public static volatile SingularAttribute<CommandeExport, TableRestaurant> table;
+	public static volatile SingularAttribute<CommandeHistorique, TableRestaurant> table;
 
-	public static volatile SingularAttribute<CommandeExport, Reservation> reservation;
+	public static volatile SingularAttribute<CommandeHistorique, Reservation> reservation;
 
-	public static volatile SingularAttribute<CommandeExport, StatutCommande> statutCommande;
+	public static volatile SingularAttribute<CommandeHistorique, StatutCommande> statutCommande;
 
-	public static volatile SingularAttribute<CommandeExport, AvisClient> avisClient;
+	public static volatile SingularAttribute<CommandeHistorique, AvisClient> avisClient;
 
-	public static volatile ListAttribute<CommandeExport, LigneCommande> lignes;
+	public static volatile ListAttribute<CommandeHistorique, LigneCommandeHistorique> lignes;
 
 	public static final String ID = "id";
 

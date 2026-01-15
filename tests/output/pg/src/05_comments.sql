@@ -50,18 +50,18 @@ COMMENT ON COLUMN COMMANDE.STC_CODE IS 'Statut de la commande';
 COMMENT ON COLUMN COMMANDE.AVI_ID IS 'Avis laissé par le client sur la commande.';
 
 /**
-  * Commentaires pour la table COMMANDE_EXPORT
+  * Commentaires pour la table COMMANDE_HISTORIQUE
  **/
-COMMENT ON TABLE COMMANDE_EXPORT IS 'Commande pour export avec préservation des clés primaires';
-COMMENT ON COLUMN COMMANDE_EXPORT.COM_ID IS 'Identifiant de la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.COM_DATE_COMMANDE IS 'Date et heure de la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
-COMMENT ON COLUMN COMMANDE_EXPORT.COM_MONTANT_TOTAL IS 'Montant total de la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.PER_ID IS 'Client ayant passé la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.TAB_ID IS 'Table associée à la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.REV_ID IS 'Réservation associée à la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.STC_CODE IS 'Statut de la commande';
-COMMENT ON COLUMN COMMANDE_EXPORT.AVI_ID IS 'Avis laissé par le client sur la commande.';
+COMMENT ON TABLE COMMANDE_HISTORIQUE IS 'Commande pour historique avec préservation des clés primaires';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_ID IS 'Identifiant de la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_COMMANDE IS 'Date et heure de la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_MONTANT_TOTAL IS 'Montant total de la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.PER_ID IS 'Client ayant passé la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.TAB_ID IS 'Table associée à la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.REV_ID IS 'Réservation associée à la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.STC_CODE IS 'Statut de la commande';
+COMMENT ON COLUMN COMMANDE_HISTORIQUE.AVI_ID IS 'Avis laissé par le client sur la commande.';
 
 /**
   * Commentaires pour la table EMPLOYE
@@ -85,6 +85,17 @@ COMMENT ON COLUMN LIGNE_COMMANDE.LIG_PRIX_UNITAIRE IS 'Prix unitaire au moment d
 COMMENT ON COLUMN LIGNE_COMMANDE.LIG_PRIX_TOTAL IS 'Prix total de la ligne';
 COMMENT ON COLUMN LIGNE_COMMANDE.COM_ID IS 'Commande à laquelle appartient la ligne';
 COMMENT ON COLUMN LIGNE_COMMANDE.PLA_ID IS 'Plat commandé';
+
+/**
+  * Commentaires pour la table LIGNE_COMMANDE_HISTORIQUE
+ **/
+COMMENT ON TABLE LIGNE_COMMANDE_HISTORIQUE IS 'Ligne de commande pour historique avec préservation des clés primaires';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_ID IS 'Identifiant de la ligne';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_QUANTITE IS 'Quantité commandée';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_PRIX_UNITAIRE IS 'Prix unitaire au moment de la commande';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_PRIX_TOTAL IS 'Prix total de la ligne';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.PLA_ID IS 'Plat commandé';
+COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.COM_ID IS 'Commande à laquelle appartient la ligne';
 
 /**
   * Commentaires pour la table MENU

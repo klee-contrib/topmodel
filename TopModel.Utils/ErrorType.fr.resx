@@ -192,4 +192,7 @@
   <data name="TMD9013" xml:space="preserve">
     <value>La propriété 'type' est dépréciée et sera retirée en 4.0. Vous devez définir une classe d'association explicite pour votre 'manyToMany'.</value>
   </data>
+  <data name="TMD9014" xml:space="preserve">
+    <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>
+  </data>
 </root>

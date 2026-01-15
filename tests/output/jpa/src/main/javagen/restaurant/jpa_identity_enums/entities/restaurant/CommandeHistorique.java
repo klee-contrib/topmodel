@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_sequence_metamodel.entities.restaurant;
+package restaurant.jpa_identity_enums.entities.restaurant;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +13,8 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -21,19 +23,19 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import restaurant.jpa_sequence_metamodel.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_identity_enums.enums.restaurant.StatutCommande;
 
 /**
- * Commande pour export avec préservation des clés primaires.
+ * Commande pour historique avec préservation des clés primaires.
  */
 @Entity
-@Table(name = "COMMANDE_EXPORT")
+@Table(name = "COMMANDE_HISTORIQUE")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class CommandeExport {
+public class CommandeHistorique {
 
 	/**
 	 * Identifiant de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getId() Commande#getId()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@Id
 	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
@@ -41,28 +43,28 @@ public class CommandeExport {
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getClient() Commande#getClient()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
@@ -70,7 +72,7 @@ public class CommandeExport {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getTable() Commande#getTable()}
 	 */
 	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
@@ -78,7 +80,7 @@ public class CommandeExport {
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	@JoinColumn(name = "REV_ID", referencedColumnName = "REV_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Reservation.class)
@@ -86,27 +88,25 @@ public class CommandeExport {
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
-	@JoinColumn(name = "STC_CODE", referencedColumnName = "STC_CODE")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = StatutCommande.class)
-	private StatutCommande statutCommande = new StatutCommande(StatutCommandeCode.EN_ATT);
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
+	 * Alias of {@link restaurant.jpa_identity_enums.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
 	private AvisClient avisClient;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
-	 * Alias of {@link restaurant.jpa_sequence_metamodel.entities.restaurant.Commande#getLignes() Commande#getLignes()}
+	 * Association réciproque de LigneCommandeHistorique.CommandeHistoriqueId.
 	 */
-	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<LigneCommande> lignes;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commandeHistorique")
+	private List<LigneCommandeHistorique> lignes;
 
 	/**
 	 * Getter for id.
@@ -194,7 +194,7 @@ public class CommandeExport {
 	 *
 	 * @return value of {@link #lignes lignes}.
 	 */
-	public List<LigneCommande> getLignes() {
+	public List<LigneCommandeHistorique> getLignes() {
 		if (this.lignes == null) {
 			this.lignes = new ArrayList<>();
 		}
@@ -277,12 +277,30 @@ public class CommandeExport {
 	 * Set the value of {@link #lignes lignes}.
 	 * @param lignes value to set.
 	 */
-	public void setLignes(List<LigneCommande> lignes) {
+	public void setLignes(List<LigneCommandeHistorique> lignes) {
 		this.lignes = lignes;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_metamodel.entities.restaurant.CommandeExport CommandeExport}.
+	 * Add a value to {@link restaurant.jpa_identity_enums.entities.restaurant.CommandeHistorique#lignes lignes}.
+	 * @param ligneCommandeHistorique value to add to commandeHistorique.
+	 */
+	void addLigneCommandeHistorique(LigneCommandeHistorique ligneCommandeHistorique) {
+		this.lignes.add(ligneCommandeHistorique);
+		ligneCommandeHistorique.setCommandeHistorique(this);
+	}
+
+	/**
+	 * Remove a value from {@link restaurant.jpa_identity_enums.entities.restaurant.CommandeHistorique#lignes lignes}.
+	 * @param ligneCommandeHistorique ligneCommandeHistorique value to remove.
+	 */
+	void removeLigneCommandeHistorique(LigneCommandeHistorique ligneCommandeHistorique) {
+		this.lignes.remove(ligneCommandeHistorique);
+		ligneCommandeHistorique.setCommandeHistorique(null);
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link restaurant.jpa_identity_enums.entities.restaurant.CommandeHistorique CommandeHistorique}.
 	 */
 	public enum Fields {
 		ID(Integer.class),

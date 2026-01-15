@@ -430,5 +430,10 @@ public enum ErrorType
     /// </summary>
     TMD9013,
 
+    /// <summary>
+    /// Alias association multiple impossible.
+    /// </summary>
+    TMD9014,
+
     #endregion
 }

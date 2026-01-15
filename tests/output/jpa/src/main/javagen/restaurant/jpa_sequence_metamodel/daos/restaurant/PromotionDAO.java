@@ -4,6 +4,7 @@
 
 package restaurant.jpa_sequence_metamodel.daos.restaurant;
 
+import restaurant.jpa_sequence_metamodel.entities.restaurant.Plat;
 import restaurant.jpa_sequence_metamodel.entities.restaurant.Promotion;
 
 import topmodel.test.CustomCrudRepository;

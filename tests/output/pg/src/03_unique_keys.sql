@@ -12,7 +12,7 @@ alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVI
 
 alter table COMMANDE add constraint UK_COMMANDE_AVI_ID unique (AVI_ID);
 
-alter table COMMANDE_EXPORT add constraint UK_COMMANDE_EXPORT_AVI_ID unique (AVI_ID);
+alter table COMMANDE_HISTORIQUE add constraint UK_COMMANDE_HISTORIQUE_AVI_ID unique (AVI_ID);
 
 alter table EMPLOYE add constraint UK_EMPLOYE_EMP_MATRICULE unique (EMP_MATRICULE);
 

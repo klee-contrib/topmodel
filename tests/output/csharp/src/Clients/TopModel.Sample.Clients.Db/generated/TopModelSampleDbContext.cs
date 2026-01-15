@@ -34,9 +34,9 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<Commande> Commandes { get; set; }
 
     /// <summary>
-    /// Accès à l'entité CommandeExport.
+    /// Accès à l'entité CommandeHistorique.
     /// </summary>
-    public DbSet<CommandeExport> CommandeExports { get; set; }
+    public DbSet<CommandeHistorique> CommandeHistoriques { get; set; }
 
     /// <summary>
     /// Accès à l'entité Employe.
@@ -47,6 +47,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// Accès à l'entité LigneCommande.
     /// </summary>
     public DbSet<LigneCommande> LigneCommandes { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité LigneCommandeHistorique.
+    /// </summary>
+    public DbSet<LigneCommandeHistorique> LigneCommandeHistoriques { get; set; }
 
     /// <summary>
     /// Accès à l'entité Menu.
@@ -101,7 +106,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     {
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Commande>().Property(p => p.StatutCommandeCode).HasConversion<string>().HasMaxLength(10);
-        modelBuilder.Entity<CommandeExport>().Property(p => p.StatutCommandeCode).HasConversion<string>().HasMaxLength(10);
+        modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommandeCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Plat>().Property(p => p.CategoriePlatCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<StatutCommande>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
 
@@ -114,14 +119,16 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Commande>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<AvisClient>().WithOne().HasForeignKey<Commande>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeExport>().HasOne<AvisClient>().WithOne().HasForeignKey<CommandeExport>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeHistorique>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeHistorique>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeHistorique>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeHistorique>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CommandeHistorique>().HasOne<AvisClient>().WithOne().HasForeignKey<CommandeHistorique>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Employe>().HasOne<Models.Restaurant.Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne<Commande>().WithMany().HasForeignKey(p => p.CommandeId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne<Plat>().WithMany().HasForeignKey(p => p.PlatId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LigneCommandeHistorique>().HasOne<Plat>().WithMany().HasForeignKey(p => p.PlatId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LigneCommandeHistorique>().HasOne<CommandeHistorique>().WithMany().HasForeignKey(p => p.CommandeHistoriqueId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Menu>().HasOne<Models.Restaurant.Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne<Menu>().WithMany().HasForeignKey(p => p.MenuId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne<Plat>().WithMany().HasForeignKey(p => p.PlatId).OnDelete(DeleteBehavior.Restrict);

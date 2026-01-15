@@ -141,11 +141,29 @@ class:
     - [TableId, DateReservation]
 ---
 class:
-  name: CommandeExport
-  comment: Commande pour export avec préservation des clés primaires
+  name: CommandeHistorique
+  comment: Commande pour historique avec préservation des clés primaires
 
   properties:
     - alias:
         class: Commande
+        exclude: Lignes
       preservePrimaryKey: true
       preserveTrigram: true
+---
+class:
+  name: LigneCommandeHistorique
+  comment: Ligne de commande pour historique avec préservation des clés primaires
+
+  properties:
+    - alias:
+        class: LigneCommande
+        exclude: CommandeId
+      preservePrimaryKey: true
+      preserveTrigram: true
+
+    - association: CommandeHistorique
+      required: true
+      withReverse:
+        className: Lignes
+      comment: Commande à laquelle appartient la ligne

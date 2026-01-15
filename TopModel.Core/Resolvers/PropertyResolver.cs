@@ -436,15 +436,22 @@ internal class PropertyResolver(
             }
         }
 
-        foreach (
-            var alp in modelFiles
-                .SelectMany(mf => mf.Properties.OfType<AliasProperty>())
-                .Where(ap => ap.Composition != null)
-        )
+        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties.OfType<AliasProperty>()))
         {
-            if (alp.Property is not CompositionProperty and not AssociationProperty)
+            if (alp.Composition != null && alp.Property is not CompositionProperty and not AssociationProperty)
             {
                 yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
+            }
+
+            if (alp.AssociationToMany && alp.Class?.IsPersistent == true)
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9014,
+                    [alp.OriginalProperty?.Name ?? string.Empty, alp.OriginalProperty?.Class.Name ?? string.Empty],
+                    alp,
+                    alp.PropertyReference ?? alp.Reference?.ContainerReference
+                );
             }
         }
     }

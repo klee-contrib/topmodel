@@ -4,6 +4,7 @@
 
 package restaurant.jpa_identity_enums.daos.restaurant;
 
+import restaurant.jpa_identity_enums.entities.restaurant.Plat;
 import restaurant.jpa_identity_enums.entities.restaurant.Promotion;
 
 import topmodel.test.CustomCrudRepository;

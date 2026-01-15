@@ -68,9 +68,9 @@ create table COMMANDE (
 create sequence SEQ_COMMANDE as INT start 1000 increment 50 owned by COMMANDE.COM_ID;
 
 /**
-  * Création de la table COMMANDE_EXPORT
+  * Création de la table COMMANDE_HISTORIQUE
  **/
-create table COMMANDE_EXPORT (
+create table COMMANDE_HISTORIQUE (
 	COM_ID int not null,
 	COM_DATE_COMMANDE timestamp not null,
 	COM_DATE_LIVRAISON timestamp,
@@ -80,7 +80,7 @@ create table COMMANDE_EXPORT (
 	REV_ID int,
 	STC_CODE varchar(10) not null,
 	AVI_ID int,
-	constraint PK_COMMANDE_EXPORT primary key (COM_ID)
+	constraint PK_COMMANDE_HISTORIQUE primary key (COM_ID)
 );
 
 /**
@@ -114,6 +114,19 @@ create table LIGNE_COMMANDE (
   * Création de la séquence pour la clé primaire de la table LIGNE_COMMANDE
  **/
 create sequence SEQ_LIGNE_COMMANDE as INT start 1000 increment 50 owned by LIGNE_COMMANDE.LIG_ID;
+
+/**
+  * Création de la table LIGNE_COMMANDE_HISTORIQUE
+ **/
+create table LIGNE_COMMANDE_HISTORIQUE (
+	LIG_ID int not null,
+	LIG_QUANTITE int not null,
+	LIG_PRIX_UNITAIRE decimal not null,
+	LIG_PRIX_TOTAL decimal not null,
+	PLA_ID int not null,
+	COM_ID int not null,
+	constraint PK_LIGNE_COMMANDE_HISTORIQUE primary key (LIG_ID)
+);
 
 /**
   * Création de la table MENU

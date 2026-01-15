@@ -15,11 +15,11 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Commande pour export avec préservation des clés primaires.
+ * Commande pour historique avec préservation des clés primaires.
  */
-@Table(name = "commande_export")
+@Table(name = "commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class CommandeExport {
+public class CommandeHistorique {
 
 	/**
 	 * Identifiant de la commande.

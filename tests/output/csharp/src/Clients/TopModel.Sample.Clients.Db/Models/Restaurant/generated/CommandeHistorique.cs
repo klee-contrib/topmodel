@@ -10,10 +10,10 @@ using TopModel.Sample.Restaurant.Models;
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
 /// <summary>
-/// Commande pour export avec préservation des clés primaires.
+/// Commande pour historique avec préservation des clés primaires.
 /// </summary>
-[Table("commande_export")]
-public partial record CommandeExport
+[Table("commande_historique")]
+public partial record CommandeHistorique
 {
     /// <summary>
     /// Identifiant de la commande.
@@ -86,7 +86,7 @@ public partial record CommandeExport
     public int? AvisClientId { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Association réciproque de LigneCommandeHistorique.CommandeHistoriqueId.
     /// </summary>
     [Domain(Domains.Liste)]
     [NotMapped]
