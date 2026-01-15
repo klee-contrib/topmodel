@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.5
+
+- [`864b3ac`](https://github.com/klee-contrib/topmodel/commit/864b3ac4091dd734153eeb54e6ca9bdfc1dde8e0) - [Core] Bloque les alias d'associations multiples sur classes persistées
+
 ## 3.8.4
 
 - [`35142ea`](https://github.com/klee-contrib/topmodel/commit/35142eaabf4831186afbf1a86a1bd534299f9ad1) - Fix casse DefaultProperty (et autres) explicite

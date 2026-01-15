@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>3.8.4</Version>
+    <Version>3.8.5</Version>
     <Description>Librarie de base pour écrire un générateur TopModel.</Description>
   </PropertyGroup>
   <ItemGroup>
