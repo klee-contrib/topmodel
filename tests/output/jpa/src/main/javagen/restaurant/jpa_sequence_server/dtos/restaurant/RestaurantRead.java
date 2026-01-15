@@ -81,11 +81,11 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.Restaurant.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
+	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
 	@NotNull
-	private List<Integer> tables;
+	private List<Integer> tableIds;
 
 	/**
 	 * Getter for id.
@@ -160,12 +160,12 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
-	 * Getter for tables.
+	 * Getter for tableIds.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTables() {
-		return this.tables;
+	public List<Integer> getTableIds() {
+		return this.tableIds;
 	}
 
 	/**
@@ -233,10 +233,10 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Set the value of {@link #tableIds tableIds}.
+	 * @param tableIds value to set.
 	 */
-	public void setTables(List<Integer> tables) {
-		this.tables = tables;
+	public void setTableIds(List<Integer> tableIds) {
+		this.tableIds = tableIds;
 	}
 }

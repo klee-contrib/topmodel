@@ -55,7 +55,9 @@ public partial record Commande
     /// <summary>
     /// Table associée à la commande.
     /// </summary>
-    public TableRestaurant? Table { get; set; }
+    [Column("tab_id")]
+    [Domain(Domains.Id)]
+    public int? TableId { get; set; }
 
     /// <summary>
     /// Réservation associée à la commande.

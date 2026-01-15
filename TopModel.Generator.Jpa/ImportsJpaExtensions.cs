@@ -47,7 +47,7 @@ public static class ImportsJpaExtensions
             }
         }
 
-        if (p is { Association: Class association, AssociationProperty: IProperty ap } && !forceAssociationPropertyType)
+        if (p is { Association: Class association, AssociationProperty: IProperty ap })
         {
             if (config.CanClassUseEnums(association, ap))
             {
@@ -55,11 +55,17 @@ public static class ImportsJpaExtensions
                 {
                     yield return $"{config.GetEnumValuePackageName(association.EnumKey!.Class, config.GetBestClassTag(association.EnumKey!.Class, tag))}.{association.NamePascal}";
                 }
-                else if (p.Class?.IsPersistent != true)
+                else if (p.Class?.IsPersistent != true || !p.UseClassForAssociation)
                 {
                     yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumName(ap, association)}";
                 }
-                else if (!config.UseJdbc && p.Class != null && association.IsPersistent && p.Class.IsPersistent)
+                else if (
+                    !config.UseJdbc
+                    && p.Class != null
+                    && association.IsPersistent
+                    && p.Class.IsPersistent
+                    && !forceAssociationPropertyType
+                )
                 {
                     yield return association.GetImport(config, config.GetBestClassTag(association, tag));
                 }

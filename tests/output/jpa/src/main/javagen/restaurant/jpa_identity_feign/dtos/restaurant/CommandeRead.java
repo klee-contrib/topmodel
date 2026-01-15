@@ -14,8 +14,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_identity_feign.entities.restaurant.Commande;
-import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 import restaurant.jpa_identity_feign.enums.restaurant.StatutCommande;
 
 /**
@@ -59,7 +57,7 @@ public class CommandeRead implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private Integer tableId;
 
@@ -97,23 +95,6 @@ public class CommandeRead implements Serializable {
 	@Valid
 	@NotNull
 	private List<LigneCommandeRead> lignes;
-
-	/**
-	 * No arg constructor.
-	 */
-	public CommandeRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'CommandeRead'.
-	 * @param commande Instance de 'Commande'.
-	 *
-	 * @return Une nouvelle instance de 'CommandeRead'.
-	 */
-	public CommandeRead(Commande commande) {
-		RestaurantMappers.mapCommandeRead(commande, this);
-	}
 
 	/**
 	 * Getter for id.

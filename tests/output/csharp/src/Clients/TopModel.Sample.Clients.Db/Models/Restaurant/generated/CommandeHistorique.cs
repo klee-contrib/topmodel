@@ -50,33 +50,38 @@ public partial record CommandeHistorique
     /// <summary>
     /// Client ayant passé la commande.
     /// </summary>
+    [Column("per_id")]
     [Required]
-    public Client? Client { get; set; }
+    [Domain(Domains.Id)]
+    public int? ClientId { get; set; }
 
     /// <summary>
     /// Table associée à la commande.
     /// </summary>
-    public TableRestaurant? Table { get; set; }
+    [Column("tab_id")]
+    [Domain(Domains.Id)]
+    public int? TableId { get; set; }
 
     /// <summary>
     /// Réservation associée à la commande.
     /// </summary>
-    public Reservation? Reservation { get; set; }
+    [Column("rev_id")]
+    [Domain(Domains.Id)]
+    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.
     /// </summary>
+    [Column("stc_code")]
     [Required]
     [ReferencedType(typeof(StatutCommande))]
-    public StatutCommande? StatutCommande { get; set; }
+    [Domain(Domains.Code)]
+    public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
     /// </summary>
-    public AvisClient? AvisClient { get; set; }
-
-    /// <summary>
-    /// Association réciproque de LigneCommandeHistorique.CommandeHistorique.
-    /// </summary>
-    public ICollection<LigneCommandeHistorique> Lignes { get; set; } = [];
+    [Column("avi_id")]
+    [Domain(Domains.Id)]
+    public int? AvisClientId { get; set; }
 }

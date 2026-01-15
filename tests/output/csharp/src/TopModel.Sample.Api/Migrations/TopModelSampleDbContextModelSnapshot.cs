@@ -883,7 +883,7 @@ namespace TopModel.Sample.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", "Table")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -895,48 +895,36 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Reservation");
 
                     b.Navigation("StatutCommande");
-
-                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", b =>
                 {
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.AvisClient", "AvisClient")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.AvisClient", null)
                         .WithOne()
                         .HasForeignKey("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", "AvisClientId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Client", "Client")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Client", null)
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Reservation", "Reservation")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Reservation", null)
                         .WithMany()
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TopModel.Sample.Restaurant.Models.StatutCommande", "StatutCommande")
+                    b.HasOne("TopModel.Sample.Restaurant.Models.StatutCommande", null)
                         .WithMany()
                         .HasForeignKey("StatutCommandeCode")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", "Table")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("AvisClient");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Reservation");
-
-                    b.Navigation("StatutCommande");
-
-                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.LigneCommande", b =>
@@ -960,21 +948,17 @@ namespace TopModel.Sample.Api.Migrations
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.LigneCommandeHistorique", b =>
                 {
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", "CommandeHistorique")
-                        .WithMany("Lignes")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", null)
+                        .WithMany()
                         .HasForeignKey("CommandeHistoriqueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", "Plat")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", null)
                         .WithMany()
                         .HasForeignKey("PlatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("CommandeHistorique");
-
-                    b.Navigation("Plat");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Menu", b =>
@@ -1058,7 +1042,7 @@ namespace TopModel.Sample.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", "Table")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1066,19 +1050,15 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Restaurant");
-
-                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", b =>
                 {
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", "Restaurant")
-                        .WithMany("Tables")
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", null)
+                        .WithMany()
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Client", b =>
@@ -1112,11 +1092,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Lignes");
                 });
 
-            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", b =>
-                {
-                    b.Navigation("Lignes");
-                });
-
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Menu", b =>
                 {
                     b.Navigation("Plats");
@@ -1131,8 +1106,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Plats");
 
                     b.Navigation("Promotions");
-
-                    b.Navigation("Tables");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Client", b =>

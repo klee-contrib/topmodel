@@ -33,8 +33,8 @@ export const RestaurantAvecStatistiquesEntity = entity({
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.avisClients")
     ),
-    tables: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.tables")
+    tableIds: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.tableIds")
     ),
     nombrePlats: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.restaurantAvecStatistiques.nombrePlats")

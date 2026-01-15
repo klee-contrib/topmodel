@@ -14,7 +14,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
         switch (parser.Current)
         {
             case Scalar { Value: "name" }:
-                var rp = new RegularProperty { UseLegacyRoleName = modelConfig.UseLegacyRoleNames };
+                var rp = new RegularProperty();
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -102,6 +102,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                 var ap = new AssociationProperty
                 {
                     Location = new Reference(s),
+                    DefaultAssociationUseClass = modelConfig.DefaultAssociationUseClass,
                     UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
                 };
 
@@ -123,6 +124,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                             break;
                         case "as":
                             ap.As = value!.Value;
+                            break;
+                        case "useClass":
+                            ap.UseClass = value!.Value == "true";
                             break;
                         case "label":
                             ap.Label = value!.Value;
@@ -268,11 +272,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                 return ap;
 
             case Scalar { Value: "composition" } s:
-                var cp = new CompositionProperty
-                {
-                    Location = new Reference(s),
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
-                };
+                var cp = new CompositionProperty { Location = new Reference(s) };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -398,11 +398,7 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
 
                 parser.Consume<MappingEnd>();
 
-                var alp = new AliasProperty
-                {
-                    Location = new Reference(s),
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
-                };
+                var alp = new AliasProperty { Location = new Reference(s) };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -452,6 +448,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                             break;
                         case "as":
                             alp.As = value!.Value;
+                            break;
+                        case "useClass":
+                            alp.UseClass = value!.Value == "true";
                             break;
                         case "name":
                             alp.Name = value!.Value;

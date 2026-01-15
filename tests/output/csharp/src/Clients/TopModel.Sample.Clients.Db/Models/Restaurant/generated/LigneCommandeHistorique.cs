@@ -51,12 +51,16 @@ public partial record LigneCommandeHistorique
     /// <summary>
     /// Plat commandé.
     /// </summary>
+    [Column("pla_id")]
     [Required]
-    public Plat? Plat { get; set; }
+    [Domain(Domains.Id)]
+    public int? PlatId { get; set; }
 
     /// <summary>
     /// Commande à laquelle appartient la ligne.
     /// </summary>
+    [Column("com_id")]
     [Required]
-    public CommandeHistorique? CommandeHistorique { get; set; }
+    [Domain(Domains.Id)]
+    public int? CommandeHistoriqueId { get; set; }
 }

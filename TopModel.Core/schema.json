@@ -170,7 +170,11 @@
             },
             "as": {
               "type": "string",
-              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association `toMany`. Par défaut : 'list'."
+              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association multiple. Par défaut : 'list'."
+            },
+            "useClass": {
+              "type": "boolean",
+              "description": "Représente l'association avec sa classe cible au lieu de sa propriété cible dans une classe persistée. Sa valeur par défaut est égale à la valeur de `defaultAssociationUseClass` dans la configuration TopModel globale."
             },
             "required": {
               "type": "boolean",
@@ -469,6 +473,10 @@
             "as": {
               "type": "string",
               "description": "Utilise le domaine correspondant dans `asDomains` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
+            },
+            "useClass": {
+              "type": "boolean",
+              "description": "Surcharge la valeur de `useClass` pour un alias d'association (cela n'a toujours d'effet que si la classe qui contient l'alias est persistée)."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."

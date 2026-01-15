@@ -100,7 +100,7 @@ class:
           - Numero
           - Capacite
           - Disponible
-          - Restaurant
+          - RestaurantId
 ---
 class:
   name: TableRead

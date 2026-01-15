@@ -29,7 +29,7 @@ public class Commande_ {
 
 	public static volatile SingularAttribute<Commande, Client> client;
 
-	public static volatile SingularAttribute<Commande, TableRestaurant> table;
+	public static volatile SingularAttribute<Commande, Integer> tableId;
 
 	public static volatile SingularAttribute<Commande, Reservation> reservation;
 
@@ -49,7 +49,7 @@ public class Commande_ {
 
 	public static final String CLIENT = "client";
 
-	public static final String TABLE = "table";
+	public static final String TABLE_ID = "tableId";
 
 	public static final String RESERVATION = "reservation";
 

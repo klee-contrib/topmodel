@@ -22,9 +22,9 @@ public class LigneCommandeHistorique_ {
 
 	public static volatile SingularAttribute<LigneCommandeHistorique, BigDecimal> prixTotal;
 
-	public static volatile SingularAttribute<LigneCommandeHistorique, Plat> plat;
+	public static volatile SingularAttribute<LigneCommandeHistorique, Integer> platId;
 
-	public static volatile SingularAttribute<LigneCommandeHistorique, CommandeHistorique> commandeHistorique;
+	public static volatile SingularAttribute<LigneCommandeHistorique, Integer> commandeHistoriqueId;
 
 	public static final String ID = "id";
 
@@ -34,7 +34,7 @@ public class LigneCommandeHistorique_ {
 
 	public static final String PRIX_TOTAL = "prixTotal";
 
-	public static final String PLAT = "plat";
+	public static final String PLAT_ID = "platId";
 
-	public static final String COMMANDE_HISTORIQUE = "commandeHistorique";
+	public static final String COMMANDE_HISTORIQUE_ID = "commandeHistoriqueId";
 }

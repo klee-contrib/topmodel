@@ -12,9 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
-import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un restaurant en lecture.
  */
@@ -84,28 +81,11 @@ public class RestaurantRead implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.Restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
+	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
 	@NotNull
-	private List<Integer> tables;
-
-	/**
-	 * No arg constructor.
-	 */
-	public RestaurantRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'RestaurantRead'.
-	 * @param restaurant Instance de 'Restaurant'.
-	 *
-	 * @return Une nouvelle instance de 'RestaurantRead'.
-	 */
-	public RestaurantRead(Restaurant restaurant) {
-		RestaurantMappers.mapRestaurantRead(restaurant, this);
-	}
+	private List<Integer> tableIds;
 
 	/**
 	 * Getter for id.
@@ -180,12 +160,12 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
-	 * Getter for tables.
+	 * Getter for tableIds.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTables() {
-		return this.tables;
+	public List<Integer> getTableIds() {
+		return this.tableIds;
 	}
 
 	/**
@@ -253,11 +233,11 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Set the value of {@link #tableIds tableIds}.
+	 * @param tableIds value to set.
 	 */
-	public void setTables(List<Integer> tables) {
-		this.tables = tables;
+	public void setTableIds(List<Integer> tableIds) {
+		this.tableIds = tableIds;
 	}
 
 	/**
@@ -272,7 +252,7 @@ public class RestaurantRead implements Serializable {
 		PLATS(List.class),
 		PROMOTIONS(List.class),
 		AVIS_CLIENTS(List.class),
-		TABLES(List.class);
+		TABLE_IDS(List.class);
 
 		private final Class<?> type;
 

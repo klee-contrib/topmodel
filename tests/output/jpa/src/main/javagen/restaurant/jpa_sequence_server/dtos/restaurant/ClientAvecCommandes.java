@@ -101,7 +101,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private List<Integer> commandeTableId;
 

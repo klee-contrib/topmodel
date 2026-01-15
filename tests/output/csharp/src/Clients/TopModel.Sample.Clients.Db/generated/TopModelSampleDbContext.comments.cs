@@ -42,7 +42,7 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
         commande.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
         commande.Property("ClientId").HasComment("Client ayant passé la commande");
-        commande.Property("TableId").HasComment("Table associée à la commande");
+        commande.Property(p => p.TableId).HasComment("Table associée à la commande");
         commande.Property("ReservationId").HasComment("Réservation associée à la commande");
         commande.Property("StatutCommandeCode").HasComment("Statut de la commande");
         commande.Property("AvisClientId").HasComment("Avis laissé par le client sur la commande.");
@@ -53,11 +53,11 @@ public partial class TopModelSampleDbContext : DbContext
         commandeHistorique.Property(p => p.DateCommande).HasComment("Date et heure de la commande");
         commandeHistorique.Property(p => p.DateLivraison).HasComment("Date et heure de livraison");
         commandeHistorique.Property(p => p.MontantTotal).HasComment("Montant total de la commande");
-        commandeHistorique.Property("ClientId").HasComment("Client ayant passé la commande");
-        commandeHistorique.Property("TableId").HasComment("Table associée à la commande");
-        commandeHistorique.Property("ReservationId").HasComment("Réservation associée à la commande");
-        commandeHistorique.Property("StatutCommandeCode").HasComment("Statut de la commande");
-        commandeHistorique.Property("AvisClientId").HasComment("Avis laissé par le client sur la commande.");
+        commandeHistorique.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
+        commandeHistorique.Property(p => p.TableId).HasComment("Table associée à la commande");
+        commandeHistorique.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
+        commandeHistorique.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
+        commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
@@ -83,8 +83,8 @@ public partial class TopModelSampleDbContext : DbContext
         ligneCommandeHistorique.Property(p => p.Quantite).HasComment("Quantité commandée");
         ligneCommandeHistorique.Property(p => p.PrixUnitaire).HasComment("Prix unitaire au moment de la commande");
         ligneCommandeHistorique.Property(p => p.PrixTotal).HasComment("Prix total de la ligne");
-        ligneCommandeHistorique.Property("PlatId").HasComment("Plat commandé");
-        ligneCommandeHistorique.Property("CommandeHistoriqueId").HasComment("Commande à laquelle appartient la ligne");
+        ligneCommandeHistorique.Property(p => p.PlatId).HasComment("Plat commandé");
+        ligneCommandeHistorique.Property(p => p.CommandeHistoriqueId).HasComment("Commande à laquelle appartient la ligne");
 
         var menu = modelBuilder.Entity<Menu>();
         menu.ToTable(t => t.HasComment("Menu du restaurant"));
@@ -137,7 +137,7 @@ public partial class TopModelSampleDbContext : DbContext
         reservation.Property(p => p.Commentaire).HasComment("Commentaire sur la réservation");
         reservation.Property(p => p.Confirmee).HasComment("Indique si la réservation est confirmée");
         reservation.Property("ClientId").HasComment("Client ayant fait la réservation");
-        reservation.Property("TableId").HasComment("Table réservée");
+        reservation.Property(p => p.TableId).HasComment("Table réservée");
         reservation.Property("RestaurantId").HasComment("Restaurant concerné par la réservation");
 
         var restaurant = modelBuilder.Entity<Models.Restaurant.Restaurant>();
@@ -158,6 +158,6 @@ public partial class TopModelSampleDbContext : DbContext
         tableRestaurant.Property(p => p.Numero).HasComment("Numéro de la table");
         tableRestaurant.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
         tableRestaurant.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
-        tableRestaurant.Property("RestaurantId").HasComment("Restaurant auquel appartient la table");
+        tableRestaurant.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
     }
 }

@@ -26,7 +26,7 @@ public class Reservation_ {
 
 	public static volatile SingularAttribute<Reservation, Client> client;
 
-	public static volatile SingularAttribute<Reservation, TableRestaurant> table;
+	public static volatile SingularAttribute<Reservation, Integer> tableId;
 
 	public static volatile SingularAttribute<Reservation, Restaurant> restaurant;
 
@@ -42,7 +42,7 @@ public class Reservation_ {
 
 	public static final String CLIENT = "client";
 
-	public static final String TABLE = "table";
+	public static final String TABLE_ID = "tableId";
 
 	public static final String RESTAURANT = "restaurant";
 }

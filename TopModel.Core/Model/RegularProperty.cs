@@ -66,8 +66,6 @@ internal class RegularProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public bool UseLegacyRoleName { get; init; }
-
     public Decorator? SourceDecorator { get; set; }
 
 #nullable disable
@@ -94,7 +92,6 @@ internal class RegularProperty : IProperty
             Required = Required,
             Readonly = Readonly,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
             Annotations = Annotations,
         };

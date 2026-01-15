@@ -43,7 +43,7 @@ export const restaurant = {
         montantTotal: "MontantTotal",
         reservationId: "Reservation",
         statutCommandeCode: "StatutCommande",
-        tableId: "Table"
+        tableId: "TableId"
     },
     commandeRead: {
         reservation: "Reservation"
@@ -113,7 +113,7 @@ export const restaurant = {
         id: "Id",
         nombrePersonnes: "NombrePersonnes",
         restaurantId: "Restaurant",
-        tableId: "Table"
+        tableId: "TableId"
     },
     restaurant: {
         adresse: "Adresse",
@@ -123,7 +123,7 @@ export const restaurant = {
         nom: "Nom",
         plats: "Plats",
         promotions: "Promotions",
-        tables: "Tables",
+        tableIds: "TableIds",
         telephone: "Telephone"
     },
     restaurantAvecStatistiques: {
@@ -154,6 +154,6 @@ export const restaurant = {
         disponible: "Disponible",
         id: "Id",
         numero: "Numero",
-        restaurantId: "Restaurant"
+        restaurantId: "RestaurantId"
     }
 };

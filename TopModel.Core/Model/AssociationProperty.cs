@@ -102,9 +102,9 @@ internal class AssociationProperty : IProperty
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
-    public bool UseClass
+    public virtual bool UseClass
     {
-        get => _useClass ?? (Class?.IsPersistent == true);
+        get => Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass);
         set => _useClass = value;
     }
 
@@ -125,8 +125,6 @@ internal class AssociationProperty : IProperty
 #nullable disable
     public ClassReference Reference { get; set; }
 
-    public bool UseLegacyRoleName { get; init; }
-
     internal Reference Location { get; set; }
 
 #nullable enable
@@ -142,6 +140,10 @@ internal class AssociationProperty : IProperty
             return sqlName;
         }
     }
+
+    internal virtual bool DefaultAssociationUseClass { get; init; }
+
+    internal virtual bool UseLegacyRoleName { get; init; }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
@@ -164,10 +166,11 @@ internal class AssociationProperty : IProperty
             PrimaryKey = PrimaryKey,
             WithReverse = WithReverse,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
             Annotations = Annotations,
             ClassName = ClassName,
+            DefaultAssociationUseClass = DefaultAssociationUseClass,
+            UseLegacyRoleName = UseLegacyRoleName,
         };
 
         if (_useClass.HasValue)

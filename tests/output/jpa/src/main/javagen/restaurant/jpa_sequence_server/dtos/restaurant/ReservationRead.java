@@ -68,7 +68,7 @@ public class ReservationRead implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Reservation#getTable() Reservation#getTable()}
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Reservation#getTableId() Reservation#getTableId()}
 	 */
 	private Integer tableId;
 

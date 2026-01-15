@@ -30,7 +30,7 @@ export const RestaurantWriteEntity = entity({
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.avisClients")
     ),
-    tables: e.field(DO_LISTE, f => f.type<number[]>()
-        .label("restaurant.restaurant.tables")
+    tableIds: e.field(DO_LISTE, f => f.type<number[]>()
+        .label("restaurant.restaurant.tableIds")
     )
 });

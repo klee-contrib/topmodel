@@ -79,10 +79,9 @@ public class Restaurant {
 	private List<AvisClient> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.Restaurant.
+	 * Association réciproque de TableRestaurant.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
-	private List<TableRestaurant> tables;
+	private List<Integer> tableIds;
 
 	/**
 	 * Getter for id.
@@ -169,15 +168,15 @@ public class Restaurant {
 	}
 
 	/**
-	 * Getter for tables.
+	 * Getter for tableIds.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<TableRestaurant> getTables() {
-		if (this.tables == null) {
-			this.tables = new ArrayList<>();
+	public List<Integer> getTableIds() {
+		if (this.tableIds == null) {
+			this.tableIds = new ArrayList<>();
 		}
-		return this.tables;
+		return this.tableIds;
 	}
 
 	/**
@@ -245,11 +244,11 @@ public class Restaurant {
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Set the value of {@link #tableIds tableIds}.
+	 * @param tableIds value to set.
 	 */
-	public void setTables(List<TableRestaurant> tables) {
-		this.tables = tables;
+	public void setTableIds(List<Integer> tableIds) {
+		this.tableIds = tableIds;
 	}
 
 	/**
@@ -264,7 +263,7 @@ public class Restaurant {
 		PLATS(List.class),
 		PROMOTIONS(List.class),
 		AVIS_CLIENTS(List.class),
-		TABLES(List.class);
+		TABLE_IDS(List.class);
 
 		private final Class<?> type;
 

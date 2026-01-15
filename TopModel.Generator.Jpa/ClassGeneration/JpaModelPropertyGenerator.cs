@@ -241,7 +241,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         if (
             classe.PrimaryKey.Count() == 1
-            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap } pk
+            && classe.PrimaryKey.FirstOrDefault()
+                is { AssociationProperty: IProperty ap, UseClassForAssociation: true } pk
         )
         {
             var propertyType = Config.GetType(ap);
@@ -303,7 +304,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 && property.EnumProperty != null
                 && Config.CanClassUseEnums(property.EnumProperty!.Class, property.EnumProperty)
             )
-            && Config.AvailableClasses.Contains(property.Association);
+            && Config.AvailableClasses.Contains(property.Association)
+            && property.UseClassForAssociation;
 
         if (shouldWriteAssociation && property.Association != null)
         {
@@ -333,6 +335,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             if (
                 (property.Class.IsPersistent || Config.UseJdbc && property.Composition == null)
                 && !(property.PrimaryKey && property.Class.PrimaryKey.Count() > 1)
+                && !property.AssociationMultiple
             )
             {
                 yield return GetColumnAnnotation(property);
@@ -438,7 +441,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 {
                     return $"{defaultValue}";
                 }
-                else if (property.Class.IsPersistent)
+                else if (property.Class.IsPersistent && property.UseClassForAssociation)
                 {
                     return $"new {association.NamePascal}({defaultValue})";
                 }

@@ -40,4 +40,10 @@ internal class ReverseAssociationProperty : AssociationProperty
 
     public override IList<AnnotationReference> ExcludedAnnotationReferences =>
         ReverseProperty.WithReverse?.ExcludedAnnotationReferences ?? [];
+
+    public override bool UseClass => ReverseProperty.UseClass;
+
+    internal override bool UseLegacyRoleName => ReverseProperty.UseLegacyRoleName;
+
+    internal override bool DefaultAssociationUseClass => ReverseProperty.DefaultAssociationUseClass;
 }

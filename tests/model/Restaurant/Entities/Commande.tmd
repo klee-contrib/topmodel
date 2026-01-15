@@ -39,6 +39,7 @@ class:
 
     - association: TableRestaurant
       className: Table
+      useClass: false
       comment: Table associée à la commande
 
     - association: Reservation
@@ -131,6 +132,7 @@ class:
 
     - association: TableRestaurant
       className: Table
+      useClass: false
       comment: Table réservée
 
     - association: Restaurant
@@ -138,7 +140,7 @@ class:
       comment: Restaurant concerné par la réservation
 
   unique:
-    - [Table, DateReservation]
+    - [TableId, DateReservation]
 ---
 class:
   name: CommandeHistorique
@@ -150,9 +152,10 @@ class:
         exclude: Lignes
       preservePrimaryKey: true
       preserveTrigram: true
+      useClass: false
 
   unique:
-    - [AvisClient]
+    - [AvisClientId]
 ---
 class:
   name: LigneCommandeHistorique
@@ -164,9 +167,9 @@ class:
         exclude: Commande
       preservePrimaryKey: true
       preserveTrigram: true
+      useClass: false
 
     - association: CommandeHistorique
       required: true
-      withReverse:
-        className: Lignes
+      useClass: false
       comment: Commande à laquelle appartient la ligne

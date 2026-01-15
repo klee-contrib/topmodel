@@ -44,7 +44,7 @@ endpoint:
         property: StatutCommande
     - alias:
         class: Commande
-        property: Table
+        property: TableId
 
   returns:
     composition: CommandeItem

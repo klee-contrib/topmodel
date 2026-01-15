@@ -183,7 +183,7 @@ internal class AliasProperty : IProperty
 
     public bool UseClass
     {
-        get => _useClass ?? (Class?.IsPersistent == true);
+        get => Class?.IsPersistent == true && (_useClass ?? (_property as AssociationProperty)?.UseClass ?? false);
         set => _useClass = value;
     }
 
@@ -316,8 +316,6 @@ internal class AliasProperty : IProperty
     public string? Suffix { get; set; }
 
 #nullable disable
-    public bool UseLegacyRoleName { get; init; }
-
     internal Reference Location { get; set; }
 
 #nullable enable
@@ -346,7 +344,6 @@ internal class AliasProperty : IProperty
             Trigram = Trigram,
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,
@@ -416,7 +413,6 @@ internal class AliasProperty : IProperty
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
             OriginalAliasProperty = this,
-            UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,

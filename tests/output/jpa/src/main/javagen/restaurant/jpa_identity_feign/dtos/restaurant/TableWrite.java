@@ -11,9 +11,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_identity_feign.entities.restaurant.TableRestaurant;
-
 /**
  * Détail d'une table en écriture.
  */
@@ -50,7 +47,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.TableRestaurant#getRestaurant() TableRestaurant#getRestaurant()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
 	 */
 	@NotNull
 	private Integer restaurantId;
@@ -121,16 +118,6 @@ public class TableWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
-	}
-
-	/**
-	 * Mappe 'TableWrite' vers 'TableRestaurant'.
-	 * @param target Instance pré-existante de 'TableRestaurant'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'TableRestaurant'.
-	 */
-	public TableRestaurant toTableRestaurant(TableRestaurant target) {
-		return RestaurantMappers.toTableRestaurant(this, target);
 	}
 
 	/**

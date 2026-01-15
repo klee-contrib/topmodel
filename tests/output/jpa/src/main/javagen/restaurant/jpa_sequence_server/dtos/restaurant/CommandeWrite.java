@@ -57,7 +57,7 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private Integer tableId;
 

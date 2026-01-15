@@ -65,7 +65,6 @@ public class ClientRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
-	@Column("avi_id")
 	private List<Integer> avisClients;
 
 	/**

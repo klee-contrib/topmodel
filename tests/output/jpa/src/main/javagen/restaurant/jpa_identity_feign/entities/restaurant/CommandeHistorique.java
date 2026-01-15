@@ -6,21 +6,13 @@ package restaurant.jpa_identity_feign.entities.restaurant;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import restaurant.jpa_identity_feign.enums.restaurant.StatutCommande;
@@ -66,25 +58,22 @@ public class CommandeHistorique {
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
-	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
-	private Client client;
+	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
+	private Integer clientId;
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
-	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
-	private TableRestaurant table;
+	@Column(name = "TAB_ID", columnDefinition = "int")
+	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
-	@JoinColumn(name = "REV_ID", referencedColumnName = "REV_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Reservation.class)
-	private Reservation reservation;
+	@Column(name = "REV_ID", columnDefinition = "int")
+	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
@@ -92,21 +81,14 @@ public class CommandeHistorique {
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
-	private StatutCommande statutCommande = StatutCommande.EN_ATT;
+	private StatutCommande statutCommandeCode = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
-	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
-	private AvisClient avisClient;
-
-	/**
-	 * Association réciproque de LigneCommandeHistorique.CommandeHistorique.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commandeHistorique")
-	private List<LigneCommandeHistorique> lignes;
+	@Column(name = "AVI_ID", columnDefinition = "int")
+	private Integer avisClientId;
 
 	/**
 	 * Getter for id.
@@ -145,60 +127,48 @@ public class CommandeHistorique {
 	}
 
 	/**
-	 * Getter for client.
+	 * Getter for clientId.
 	 *
-	 * @return value of {@link #client client}.
+	 * @return value of {@link #clientId clientId}.
 	 */
-	public Client getClient() {
-		return this.client;
+	public Integer getClientId() {
+		return this.clientId;
 	}
 
 	/**
-	 * Getter for table.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #table table}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public TableRestaurant getTable() {
-		return this.table;
+	public Integer getTableId() {
+		return this.tableId;
 	}
 
 	/**
-	 * Getter for reservation.
+	 * Getter for reservationId.
 	 *
-	 * @return value of {@link #reservation reservation}.
+	 * @return value of {@link #reservationId reservationId}.
 	 */
-	public Reservation getReservation() {
-		return this.reservation;
+	public Integer getReservationId() {
+		return this.reservationId;
 	}
 
 	/**
-	 * Getter for statutCommande.
+	 * Getter for statutCommandeCode.
 	 *
-	 * @return value of {@link #statutCommande statutCommande}.
+	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
 	 */
-	public StatutCommande getStatutCommande() {
-		return this.statutCommande;
+	public StatutCommande getStatutCommandeCode() {
+		return this.statutCommandeCode;
 	}
 
 	/**
-	 * Getter for avisClient.
+	 * Getter for avisClientId.
 	 *
-	 * @return value of {@link #avisClient avisClient}.
+	 * @return value of {@link #avisClientId avisClientId}.
 	 */
-	public AvisClient getAvisClient() {
-		return this.avisClient;
-	}
-
-	/**
-	 * Getter for lignes.
-	 *
-	 * @return value of {@link #lignes lignes}.
-	 */
-	public List<LigneCommandeHistorique> getLignes() {
-		if (this.lignes == null) {
-			this.lignes = new ArrayList<>();
-		}
-		return this.lignes;
+	public Integer getAvisClientId() {
+		return this.avisClientId;
 	}
 
 	/**
@@ -234,69 +204,43 @@ public class CommandeHistorique {
 	}
 
 	/**
-	 * Set the value of {@link #client client}.
-	 * @param client value to set.
+	 * Set the value of {@link #clientId clientId}.
+	 * @param clientId value to set.
 	 */
-	public void setClient(Client client) {
-		this.client = client;
+	public void setClientId(Integer clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #table table}.
-	 * @param table value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTable(TableRestaurant table) {
-		this.table = table;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #reservation reservation}.
-	 * @param reservation value to set.
+	 * Set the value of {@link #reservationId reservationId}.
+	 * @param reservationId value to set.
 	 */
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
+	public void setReservationId(Integer reservationId) {
+		this.reservationId = reservationId;
 	}
 
 	/**
-	 * Set the value of {@link #statutCommande statutCommande}.
-	 * @param statutCommande value to set.
+	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
+	 * @param statutCommandeCode value to set.
 	 */
-	public void setStatutCommande(StatutCommande statutCommande) {
-		this.statutCommande = statutCommande;
+	public void setStatutCommandeCode(StatutCommande statutCommandeCode) {
+		this.statutCommandeCode = statutCommandeCode;
 	}
 
 	/**
-	 * Set the value of {@link #avisClient avisClient}.
-	 * @param avisClient value to set.
+	 * Set the value of {@link #avisClientId avisClientId}.
+	 * @param avisClientId value to set.
 	 */
-	public void setAvisClient(AvisClient avisClient) {
-		this.avisClient = avisClient;
-	}
-
-	/**
-	 * Set the value of {@link #lignes lignes}.
-	 * @param lignes value to set.
-	 */
-	public void setLignes(List<LigneCommandeHistorique> lignes) {
-		this.lignes = lignes;
-	}
-
-	/**
-	 * Add a value to {@link restaurant.jpa_identity_feign.entities.restaurant.CommandeHistorique#lignes lignes}.
-	 * @param ligneCommandeHistorique value to add to commandeHistorique.
-	 */
-	void addLigneCommandeHistorique(LigneCommandeHistorique ligneCommandeHistorique) {
-		this.lignes.add(ligneCommandeHistorique);
-		ligneCommandeHistorique.setCommandeHistorique(this);
-	}
-
-	/**
-	 * Remove a value from {@link restaurant.jpa_identity_feign.entities.restaurant.CommandeHistorique#lignes lignes}.
-	 * @param ligneCommandeHistorique ligneCommandeHistorique value to remove.
-	 */
-	void removeLigneCommandeHistorique(LigneCommandeHistorique ligneCommandeHistorique) {
-		this.lignes.remove(ligneCommandeHistorique);
-		ligneCommandeHistorique.setCommandeHistorique(null);
+	public void setAvisClientId(Integer avisClientId) {
+		this.avisClientId = avisClientId;
 	}
 
 	/**
@@ -307,12 +251,11 @@ public class CommandeHistorique {
 		DATE_COMMANDE(LocalDateTime.class),
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
-		CLIENT(Client.class),
-		TABLE(TableRestaurant.class),
-		RESERVATION(Reservation.class),
-		STATUT_COMMANDE(StatutCommande.class),
-		AVIS_CLIENT(AvisClient.class),
-		LIGNES(List.class);
+		CLIENT_ID(Integer.class),
+		TABLE_ID(Integer.class),
+		RESERVATION_ID(Integer.class),
+		STATUT_COMMANDE_CODE(StatutCommande.class),
+		AVIS_CLIENT_ID(Integer.class);
 
 		private final Class<?> type;
 

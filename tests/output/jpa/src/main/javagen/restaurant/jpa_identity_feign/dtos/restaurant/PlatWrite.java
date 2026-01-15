@@ -12,8 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_identity_feign.entities.restaurant.Plat;
-import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
 
 /**
@@ -171,16 +169,6 @@ public class PlatWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
-	}
-
-	/**
-	 * Mappe 'PlatWrite' vers 'Plat'.
-	 * @param target Instance pré-existante de 'Plat'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Plat'.
-	 */
-	public Plat toPlat(Plat target) {
-		return RestaurantMappers.toPlat(this, target);
 	}
 
 	/**

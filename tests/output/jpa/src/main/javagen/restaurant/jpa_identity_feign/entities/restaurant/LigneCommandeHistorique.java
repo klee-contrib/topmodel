@@ -9,10 +9,7 @@ import java.math.BigDecimal;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -56,16 +53,14 @@ public class LigneCommandeHistorique {
 	 * Plat commandé.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
-	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
-	private Plat plat;
+	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	private Integer platId;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
-	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CommandeHistorique.class)
-	private CommandeHistorique commandeHistorique;
+	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	private Integer commandeHistoriqueId;
 
 	/**
 	 * Getter for id.
@@ -104,21 +99,21 @@ public class LigneCommandeHistorique {
 	}
 
 	/**
-	 * Getter for plat.
+	 * Getter for platId.
 	 *
-	 * @return value of {@link #plat plat}.
+	 * @return value of {@link #platId platId}.
 	 */
-	public Plat getPlat() {
-		return this.plat;
+	public Integer getPlatId() {
+		return this.platId;
 	}
 
 	/**
-	 * Getter for commandeHistorique.
+	 * Getter for commandeHistoriqueId.
 	 *
-	 * @return value of {@link #commandeHistorique commandeHistorique}.
+	 * @return value of {@link #commandeHistoriqueId commandeHistoriqueId}.
 	 */
-	public CommandeHistorique getCommandeHistorique() {
-		return this.commandeHistorique;
+	public Integer getCommandeHistoriqueId() {
+		return this.commandeHistoriqueId;
 	}
 
 	/**
@@ -154,19 +149,19 @@ public class LigneCommandeHistorique {
 	}
 
 	/**
-	 * Set the value of {@link #plat plat}.
-	 * @param plat value to set.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
-	public void setPlat(Plat plat) {
-		this.plat = plat;
+	public void setPlatId(Integer platId) {
+		this.platId = platId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeHistorique commandeHistorique}.
-	 * @param commandeHistorique value to set.
+	 * Set the value of {@link #commandeHistoriqueId commandeHistoriqueId}.
+	 * @param commandeHistoriqueId value to set.
 	 */
-	public void setCommandeHistorique(CommandeHistorique commandeHistorique) {
-		this.commandeHistorique = commandeHistorique;
+	public void setCommandeHistoriqueId(Integer commandeHistoriqueId) {
+		this.commandeHistoriqueId = commandeHistoriqueId;
 	}
 
 	/**
@@ -177,8 +172,8 @@ public class LigneCommandeHistorique {
 		QUANTITE(Integer.class),
 		PRIX_UNITAIRE(BigDecimal.class),
 		PRIX_TOTAL(BigDecimal.class),
-		PLAT(Plat.class),
-		COMMANDE_HISTORIQUE(CommandeHistorique.class);
+		PLAT_ID(Integer.class),
+		COMMANDE_HISTORIQUE_ID(Integer.class);
 
 		private final Class<?> type;
 

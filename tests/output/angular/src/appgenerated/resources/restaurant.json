@@ -39,7 +39,7 @@
         "montantTotal": "MontantTotal",
         "reservationId": "Reservation",
         "statutCommandeCode": "StatutCommande",
-        "tableId": "Table"
+        "tableId": "TableId"
     },
     "commandeRead": {
         "reservation": "Reservation"
@@ -109,7 +109,7 @@
         "id": "Id",
         "nombrePersonnes": "NombrePersonnes",
         "restaurantId": "Restaurant",
-        "tableId": "Table"
+        "tableId": "TableId"
     },
     "restaurant": {
         "adresse": "Adresse",
@@ -119,7 +119,7 @@
         "nom": "Nom",
         "plats": "Plats",
         "promotions": "Promotions",
-        "tables": "Tables",
+        "tableIds": "TableIds",
         "telephone": "Telephone"
     },
     "restaurantAvecStatistiques": {
@@ -150,6 +150,6 @@
         "disponible": "Disponible",
         "id": "Id",
         "numero": "Numero",
-        "restaurantId": "Restaurant"
+        "restaurantId": "RestaurantId"
     }
 }

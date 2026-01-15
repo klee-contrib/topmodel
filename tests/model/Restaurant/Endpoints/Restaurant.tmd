@@ -122,7 +122,7 @@ endpoint:
   params:
     - alias:
         class: TableRestaurant
-        property: Restaurant
+        property: RestaurantId
     - alias:
         class: TableRestaurant
         property: Disponible

@@ -242,7 +242,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (
             classe.PrimaryKey.Count() == 1
-            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap }
+            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap, UseClassForAssociation: true }
         )
         {
             var propertyName = classe.PrimaryKey.First().PropertyNameCamel;
@@ -324,7 +324,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {
@@ -356,7 +356,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(t => t.AssociationMultiple))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {

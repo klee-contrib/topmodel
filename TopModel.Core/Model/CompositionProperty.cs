@@ -64,8 +64,6 @@ internal class CompositionProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
-    public bool UseLegacyRoleName { get; init; }
-
     public Decorator? SourceDecorator { get; set; }
 
     public DomainReference? DomainReference { get; set; }
@@ -96,7 +94,6 @@ internal class CompositionProperty : IProperty
             CustomProperties = CustomProperties,
             Readonly = Readonly,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             Annotations = Annotations,
         };
     }
