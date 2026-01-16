@@ -13,9 +13,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une ligne de commande en écriture.
  */
@@ -151,15 +148,5 @@ public class LigneCommandeWrite implements Serializable {
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
-	}
-
-	/**
-	 * Mappe 'LigneCommandeWrite' vers 'LigneCommande'.
-	 * @param target Instance pré-existante de 'LigneCommande'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'LigneCommande'.
-	 */
-	public LigneCommande toLigneCommande(LigneCommande target) {
-		return RestaurantMappers.toLigneCommande(this, target);
 	}
 }

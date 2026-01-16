@@ -12,9 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_sequence_server.entities.restaurant.Promotion;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une promotion en écriture.
  */
@@ -169,15 +166,5 @@ public class PromotionWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
-	}
-
-	/**
-	 * Mappe 'PromotionWrite' vers 'Promotion'.
-	 * @param target Instance pré-existante de 'Promotion'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Promotion'.
-	 */
-	public Promotion toPromotion(Promotion target) {
-		return RestaurantMappers.toPromotion(this, target);
 	}
 }

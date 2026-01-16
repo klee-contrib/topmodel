@@ -17,9 +17,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une commande en écriture.
  */
@@ -252,15 +249,5 @@ public class CommandeWrite implements Serializable {
 	 */
 	public void setLignes(List<LigneCommandeWrite> lignes) {
 		this.lignes = lignes;
-	}
-
-	/**
-	 * Mappe 'CommandeWrite' vers 'Commande'.
-	 * @param target Instance pré-existante de 'Commande'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Commande'.
-	 */
-	public Commande toCommande(Commande target) {
-		return RestaurantMappers.toCommande(this, target);
 	}
 }

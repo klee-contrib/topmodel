@@ -11,9 +11,6 @@ import java.math.BigDecimal;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
-import restaurant.jpa_sequence_server.entities.restaurant.Restaurant;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Statistiques d'un restaurant.
  */
@@ -54,27 +51,6 @@ public class StatistiquesRestaurant implements Serializable {
 	 * Note moyenne des avis.
 	 */
 	private BigDecimal noteMoyenne;
-
-	/**
-	 * No arg constructor.
-	 */
-	public StatistiquesRestaurant() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'StatistiquesRestaurant'.
-	 * @param restaurant Instance de 'Restaurant'.
-	 * @param nombreCommandes Nombre de commandes.
-	 * @param chiffreAffaires Chiffre d'affaires.
-	 * @param nombreClients Nombre de clients.
-	 * @param noteMoyenne Note moyenne.
-	 *
-	 * @return Une nouvelle instance de 'StatistiquesRestaurant'.
-	 */
-	public StatistiquesRestaurant(Restaurant restaurant, Integer nombreCommandes, BigDecimal chiffreAffaires, Integer nombreClients, BigDecimal noteMoyenne) {
-		RestaurantMappers.mapStatistiquesRestaurant(restaurant, nombreCommandes, chiffreAffaires, nombreClients, noteMoyenne, this);
-	}
 
 	/**
 	 * Getter for restaurantId.

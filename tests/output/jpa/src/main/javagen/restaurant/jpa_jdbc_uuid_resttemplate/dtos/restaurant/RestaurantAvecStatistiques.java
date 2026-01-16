@@ -15,9 +15,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Restaurant avec ses statistiques.
  */
@@ -121,26 +118,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 */
 	@Column("note_moyenne")
 	private BigDecimal noteMoyenne;
-
-	/**
-	 * No arg constructor.
-	 */
-	public RestaurantAvecStatistiques() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'RestaurantAvecStatistiques'.
-	 * @param restaurant Instance de 'Restaurant'.
-	 * @param nombrePlats Nombre de plats.
-	 * @param nombreTables Nombre de tables.
-	 * @param noteMoyenne Note moyenne.
-	 *
-	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques'.
-	 */
-	public RestaurantAvecStatistiques(Restaurant restaurant, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
-		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, nombrePlats, nombreTables, noteMoyenne, this);
-	}
 
 	/**
 	 * Getter for id.

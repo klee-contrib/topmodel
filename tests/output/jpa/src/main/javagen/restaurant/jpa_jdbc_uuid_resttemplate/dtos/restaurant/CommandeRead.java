@@ -17,9 +17,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une commande en lecture.
  */
@@ -107,23 +104,6 @@ public class CommandeRead implements Serializable {
 	@Valid
 	@NotNull
 	private List<LigneCommandeRead> lignes;
-
-	/**
-	 * No arg constructor.
-	 */
-	public CommandeRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'CommandeRead'.
-	 * @param commande Instance de 'Commande'.
-	 *
-	 * @return Une nouvelle instance de 'CommandeRead'.
-	 */
-	public CommandeRead(Commande commande) {
-		RestaurantMappers.mapCommandeRead(commande, this);
-	}
 
 	/**
 	 * Getter for id.

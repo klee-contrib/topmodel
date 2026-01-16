@@ -12,9 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_sequence_server.entities.restaurant.AvisClient;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un avis en lecture.
  */
@@ -82,23 +79,6 @@ public class AvisClientRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
-
-	/**
-	 * No arg constructor.
-	 */
-	public AvisClientRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'AvisClientRead'.
-	 * @param avisClient Instance de 'AvisClient'.
-	 *
-	 * @return Une nouvelle instance de 'AvisClientRead'.
-	 */
-	public AvisClientRead(AvisClient avisClient) {
-		RestaurantMappers.mapAvisClientRead(avisClient, this);
-	}
 
 	/**
 	 * Getter for id.

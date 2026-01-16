@@ -11,9 +11,6 @@ import java.math.BigDecimal;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
-import restaurant.jpa_sequence_server.entities.restaurant.LigneCommande;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une ligne de commande en écriture.
  */
@@ -144,15 +141,5 @@ public class LigneCommandeWrite implements Serializable {
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
-	}
-
-	/**
-	 * Mappe 'LigneCommandeWrite' vers 'LigneCommande'.
-	 * @param target Instance pré-existante de 'LigneCommande'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'LigneCommande'.
-	 */
-	public LigneCommande toLigneCommande(LigneCommande target) {
-		return RestaurantMappers.toLigneCommande(this, target);
 	}
 }

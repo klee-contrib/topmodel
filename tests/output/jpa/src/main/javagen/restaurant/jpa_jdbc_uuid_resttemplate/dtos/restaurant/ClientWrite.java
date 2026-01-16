@@ -14,9 +14,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un client en écriture.
  */
@@ -129,15 +126,5 @@ public class ClientWrite implements Serializable {
 	 */
 	public void setAvisClients(List<Integer> avisClients) {
 		this.avisClients = avisClients;
-	}
-
-	/**
-	 * Mappe 'ClientWrite' vers 'Client'.
-	 * @param target Instance pré-existante de 'Client'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Client'.
-	 */
-	public Client toClient(Client target) {
-		return RestaurantMappers.toClient(this, target);
 	}
 }

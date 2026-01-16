@@ -12,9 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_sequence_server.entities.restaurant.Reservation;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une réservation en lecture.
  */
@@ -119,23 +116,6 @@ public class ReservationRead implements Serializable {
 	 */
 	@NotNull
 	private Integer tableCapacite;
-
-	/**
-	 * No arg constructor.
-	 */
-	public ReservationRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'ReservationRead'.
-	 * @param reservation Instance de 'Reservation'.
-	 *
-	 * @return Une nouvelle instance de 'ReservationRead'.
-	 */
-	public ReservationRead(Reservation reservation) {
-		RestaurantMappers.mapReservationRead(reservation, this);
-	}
 
 	/**
 	 * Getter for id.

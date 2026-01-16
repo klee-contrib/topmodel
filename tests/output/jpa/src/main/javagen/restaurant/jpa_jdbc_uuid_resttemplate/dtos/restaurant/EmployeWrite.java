@@ -15,9 +15,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Employe;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un employé en écriture.
  */
@@ -229,15 +226,5 @@ public class EmployeWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
-	}
-
-	/**
-	 * Mappe 'EmployeWrite' vers 'Employe'.
-	 * @param target Instance pré-existante de 'Employe'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Employe'.
-	 */
-	public Employe toEmploye(Employe target) {
-		return RestaurantMappers.toEmploye(this, target);
 	}
 }

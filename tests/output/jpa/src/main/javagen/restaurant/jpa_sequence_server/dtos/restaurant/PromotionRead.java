@@ -12,9 +12,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_sequence_server.entities.restaurant.Promotion;
-import restaurant.jpa_sequence_server.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une promotion en lecture.
  */
@@ -75,23 +72,6 @@ public class PromotionRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
 	 */
 	private Integer restaurantId;
-
-	/**
-	 * No arg constructor.
-	 */
-	public PromotionRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'PromotionRead'.
-	 * @param promotion Instance de 'Promotion'.
-	 *
-	 * @return Une nouvelle instance de 'PromotionRead'.
-	 */
-	public PromotionRead(Promotion promotion) {
-		RestaurantMappers.mapPromotionRead(promotion, this);
-	}
 
 	/**
 	 * Getter for platId.
