@@ -1,0 +1,224 @@
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+package restaurant.jpa_identity_feign.entities.restaurant;
+
+import java.math.BigDecimal;
+
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
+
+/**
+ * Plat du menu.
+ */
+@Entity
+@Table(name = "PLAT")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public class Plat {
+
+	/**
+	 * Identifiant du plat.
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	private Integer id;
+
+	/**
+	 * Nom du plat.
+	 */
+	@Column(name = "PLA_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	private String nom;
+
+	/**
+	 * Description du plat.
+	 */
+	@Column(name = "PLA_DESCRIPTION", length = 100, columnDefinition = "varchar")
+	private String description;
+
+	/**
+	 * Prix du plat.
+	 */
+	@Column(name = "PLA_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
+	private BigDecimal prix;
+
+	/**
+	 * Indique si le plat est disponible.
+	 */
+	@Column(name = "PLA_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	private Boolean disponible = true;
+
+	/**
+	 * Catégorie du plat.
+	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "CAT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	private CategoriePlat categoriePlat;
+
+	/**
+	 * Restaurant proposant ce plat.
+	 */
+	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
+	private Restaurant restaurant;
+
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link #id id}.
+	 */
+	public Integer getId() {
+		return this.id;
+	}
+
+	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link #nom nom}.
+	 */
+	public String getNom() {
+		return this.nom;
+	}
+
+	/**
+	 * Getter for description.
+	 *
+	 * @return value of {@link #description description}.
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	/**
+	 * Getter for prix.
+	 *
+	 * @return value of {@link #prix prix}.
+	 */
+	public BigDecimal getPrix() {
+		return this.prix;
+	}
+
+	/**
+	 * Getter for disponible.
+	 *
+	 * @return value of {@link #disponible disponible}.
+	 */
+	public Boolean getDisponible() {
+		return this.disponible;
+	}
+
+	/**
+	 * Getter for categoriePlat.
+	 *
+	 * @return value of {@link #categoriePlat categoriePlat}.
+	 */
+	public CategoriePlat getCategoriePlat() {
+		return this.categoriePlat;
+	}
+
+	/**
+	 * Getter for restaurant.
+	 *
+	 * @return value of {@link #restaurant restaurant}.
+	 */
+	public Restaurant getRestaurant() {
+		return this.restaurant;
+	}
+
+	/**
+	 * Set the value of {@link #id id}.
+	 * @param id value to set.
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link #nom nom}.
+	 * @param nom value to set.
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
+	 * Set the value of {@link #description description}.
+	 * @param description value to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * Set the value of {@link #prix prix}.
+	 * @param prix value to set.
+	 */
+	public void setPrix(BigDecimal prix) {
+		this.prix = prix;
+	}
+
+	/**
+	 * Set the value of {@link #disponible disponible}.
+	 * @param disponible value to set.
+	 */
+	public void setDisponible(Boolean disponible) {
+		this.disponible = disponible;
+	}
+
+	/**
+	 * Set the value of {@link #categoriePlat categoriePlat}.
+	 * @param categoriePlat value to set.
+	 */
+	public void setCategoriePlat(CategoriePlat categoriePlat) {
+		this.categoriePlat = categoriePlat;
+	}
+
+	/**
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
+	 */
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.entities.restaurant.Plat Plat}.
+	 */
+	public enum Fields {
+		ID(Integer.class),
+		NOM(String.class),
+		DESCRIPTION(String.class),
+		PRIX(BigDecimal.class),
+		DISPONIBLE(Boolean.class),
+		CATEGORIE_PLAT(CategoriePlat.class),
+		RESTAURANT(Restaurant.class);
+
+		private final Class<?> type;
+
+		Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
+}

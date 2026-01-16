@@ -1,0 +1,46 @@
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+package restaurant.jpa_identity_feign.entities.restaurant;
+
+import java.math.BigDecimal;
+
+import jakarta.annotation.Generated;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
+
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
+
+@StaticMetamodel(Plat.class)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public class Plat_ {
+
+	public static volatile SingularAttribute<Plat, Integer> id;
+
+	public static volatile SingularAttribute<Plat, String> nom;
+
+	public static volatile SingularAttribute<Plat, String> description;
+
+	public static volatile SingularAttribute<Plat, BigDecimal> prix;
+
+	public static volatile SingularAttribute<Plat, Boolean> disponible;
+
+	public static volatile SingularAttribute<Plat, CategoriePlat> categoriePlat;
+
+	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
+
+	public static final String ID = "id";
+
+	public static final String NOM = "nom";
+
+	public static final String DESCRIPTION = "description";
+
+	public static final String PRIX = "prix";
+
+	public static final String DISPONIBLE = "disponible";
+
+	public static final String CATEGORIE_PLAT = "categoriePlat";
+
+	public static final String RESTAURANT = "restaurant";
+}
