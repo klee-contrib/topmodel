@@ -541,11 +541,16 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             );
         }
 
-        if (property.ReverseProperty != null)
+        if (
+            property is { ReverseProperty: not null }
+            && (
+                !(property is { AssociationType: AssociationType.ManyToOne }) && property is { IsReverseProperty: true }
+            )
+        )
         {
             association.AddAttribute("mappedBy", $@"""{property.ReverseProperty!.NameByClassCamel}""");
         }
-        else
+        if (property is { IsReverseProperty: false } || property is { AssociationType: AssociationType.ManyToOne })
         {
             var joinColumns = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn").AddAttribute(
                 "name",

@@ -249,6 +249,13 @@ public static class ModelExtensions
         /// </summary>
         /// <remarks>(Un alias d'association n'hérite pas de son association réciproque.)</remarks>
         public IProperty? ReverseProperty => (prop as AssociationProperty)?.ReverseProperty;
+
+        /// <summary>
+        /// Si la propriété est une association réciproque
+        /// </summary>
+        /// <remarks>(Un alias d'association réciproque sera considéré comme une association réciproque, mais ne faites pas ça</remarks>
+        public bool IsReverseProperty =>
+            prop is ReverseAssociationProperty || prop is AliasProperty ap && ap.Property is ReverseAssociationProperty;
     }
 
     extension(Class classe)
