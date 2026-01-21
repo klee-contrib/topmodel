@@ -220,8 +220,7 @@ var dotnetMajor = Environment.Version.Major;
 var providers = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
-var modgenAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.ManifestModule.Name).ToHashSet();
-
+var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.ManifestModule.Name).ToHashSet();
 var proxyGenerator = new ProxyGenerator();
 var interceptor = new ReferencedTagInterceptor();
 
@@ -413,10 +412,11 @@ for (var i = 0; i < configs.Count; i++)
                 Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")
             )
                 .GetFiles($"*.dll", SearchOption.AllDirectories)
-                .Where(a => !modgenAssemblies.Contains(a.Name.Replace(".resources", string.Empty)))
+                .Where(f => !f.Name.EndsWith(".resources.dll") && !loadedAssemblies.Contains(f.Name))
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
+            loadedAssemblies.UnionWith(assemblies.Select(a => a.ManifestModule.Name));
 
             generators.AddRange(
                 assemblies
