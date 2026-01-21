@@ -11,7 +11,11 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
+
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
 
 /**
  * Plat du menu.
@@ -59,7 +63,8 @@ public class Plat {
 	 */
 	@NotNull
 	@Column("cat_code")
-	private String categoriePlatCode;
+	@Enumerated(EnumType.STRING)
+	private CategoriePlatCode categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
@@ -118,7 +123,7 @@ public class Plat {
 	 *
 	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public String getCategoriePlatCode() {
+	public CategoriePlatCode getCategoriePlatCode() {
 		return this.categoriePlatCode;
 	}
 
@@ -175,7 +180,7 @@ public class Plat {
 	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
 	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCode(String categoriePlatCode) {
+	public void setCategoriePlatCode(CategoriePlatCode categoriePlatCode) {
 		this.categoriePlatCode = categoriePlatCode;
 	}
 

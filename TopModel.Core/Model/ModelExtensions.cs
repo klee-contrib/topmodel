@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -145,17 +146,54 @@ public static class ModelExtensions
         }
 
         /// <summary>
-        /// Propriété utilisée pour la détermination du type enum de la propriété.
+        /// Si la propriété est une enum, retourne la propriété qui la définit.
         /// </summary>
-        /// <remarks>(Cela peut être la propriété cible d'une association, où la propriété originale d'un alias.)</remarks>
-        public IProperty? EnumProperty =>
-            prop switch
+        public IProperty? EnumProperty
+        {
+            get
             {
-                { AssociationProperty: IProperty ap } => ap,
-                AliasProperty alp => alp.Property,
-                { Composition: not null } => null,
-                _ => prop,
-            };
+                var elp = prop.EnumLikeProperty;
+                return
+                    elp?.Class.Enum != null
+                    && elp.Class.Values.All(r => r.Value.ContainsKey(elp) && IsEnumNameValid(r.Value[elp]))
+                    ? elp
+                    : null;
+            }
+        }
+
+        /// <summary>
+        /// Si la propriété devrait être une enum mais ne peut pas l'être pour raison technique, retourne la propriété qui la définit.
+        /// </summary>
+        public IProperty? EnumLikeProperty
+        {
+            get
+            {
+                var enumProp = prop switch
+                {
+                    { AssociationProperty: IProperty ap } => ap,
+                    AliasProperty alp => alp.Property,
+                    { Composition: not null } => null,
+                    _ => prop,
+                };
+
+                var enumClass = enumProp?.Class;
+
+                if (enumProp == null || enumClass == null)
+                {
+                    return null;
+                }
+
+                if (
+                    enumProp == enumClass.EnumKey
+                    || enumClass.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop)
+                )
+                {
+                    return enumProp;
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Pour un alias, la propriété à partir de laquelle l'alias a été construit.
@@ -248,7 +286,11 @@ public static class ModelExtensions
                 name.Append(pascalCase ? prop.Association?.NamePascal : prop.Association?.Name);
             }
 
-            if (!prop.AssociationMultiple && (!prop.UseClassForAssociation || forcePropertyName))
+            if (
+                !prop.AssociationMultiple
+                && (!prop.UseClassForAssociation || forcePropertyName)
+                && prop.Association?.Enum != EnumMode.Enum
+            )
             {
                 name.Append(pascalCase ? prop.AssociationProperty?.NamePascal : prop.AssociationProperty?.Name);
             }
@@ -279,5 +321,16 @@ public static class ModelExtensions
                     PrimaryKey = !classe.PrimaryKey.Any(),
                 }
                 : null;
+    }
+
+    private static bool IsEnumNameValid(string name)
+    {
+        return !Regex.IsMatch(name, "^\\d")
+            && !name.Contains('-')
+            && name.FirstOrDefault() != name.ToLower().FirstOrDefault()
+            && !Regex.IsMatch(
+                name ?? string.Empty,
+                "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"
+            );
     }
 }

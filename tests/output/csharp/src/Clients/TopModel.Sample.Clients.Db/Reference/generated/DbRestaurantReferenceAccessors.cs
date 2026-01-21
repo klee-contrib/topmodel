@@ -19,10 +19,4 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     {
         return dbContext.CategoriePlats.OrderBy(row => row.Libelle).ToList();
     }
-
-    /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadStatutCommandes" />
-    public ICollection<StatutCommande> LoadStatutCommandes()
-    {
-        return dbContext.StatutCommandes.OrderBy(row => row.Libelle).ToList();
-    }
 }

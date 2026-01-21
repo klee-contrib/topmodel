@@ -104,7 +104,9 @@ internal class AssociationProperty : IProperty
 
     public virtual bool UseClass
     {
-        get => Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass);
+        get =>
+            Property?.Class.Enum == EnumMode.Enum
+            || Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass);
         set => _useClass = value;
     }
 

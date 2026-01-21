@@ -261,9 +261,14 @@
         "non-persisted"
       ]
     },
-    "enumsForStaticReferences": {
-      "type": "boolean",
-      "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'."
+    "enumGeneration": {
+      "type": "string",
+      "description": "Mode de génération des propriétés de classes enum : `none`, `as-const`, `as-enum`. Par défaut : `as-enum`.",
+      "enum": [
+        "none",
+        "as-const",
+        "as-enum"
+      ]
     },
     "useEFComments": {
       "type": "boolean",

@@ -119,17 +119,17 @@ public partial class CommandeClient(HttpClient client)
     /// Liste toutes les commandes.
     /// </summary>
     /// <param name="clientId">Client ayant passé la commande.</param>
-    /// <param name="statutCommandeCode">Statut de la commande.</param>
+    /// <param name="statutCommande">Statut de la commande.</param>
     /// <param name="tableId">Table associée à la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des commandes.</returns>
-    public async Task<ICollection<CommandeItem>> GetCommandes(int? clientId = null, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, int? tableId = null, CancellationToken ct = default)
+    public async Task<ICollection<CommandeItem>> GetCommandes(int? clientId = null, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
             ["clientId"] = clientId?.ToString(),
-            ["statutCommandeCode"] = statutCommandeCode.ToString(),
+            ["statutCommande"] = statutCommande.ToString(),
             ["tableId"] = tableId?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
@@ -207,15 +207,15 @@ public partial class CommandeClient(HttpClient client)
     /// Met à jour uniquement le statut d'une commande.
     /// </summary>
     /// <param name="comId">Identifiant de la commande.</param>
-    /// <param name="statutCommandeCode">Statut de la commande.</param>
+    /// <param name="statutCommande">Statut de la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Commande avec le statut mis à jour.</returns>
-    public async Task<CommandeRead> UpdateCommandeStatut(int comId, StatutCommande.Codes statutCommandeCode = StatutCommande.Codes.EN_ATT, CancellationToken ct = default)
+    public async Task<CommandeRead> UpdateCommandeStatut(int comId, StatutCommande statutCommande = StatutCommande.EN_ATT, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["statutCommandeCode"] = statutCommandeCode.ToString(),
+            ["statutCommande"] = statutCommande.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Patch, $"api/restaurants/commandes/{comId}/statut?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);

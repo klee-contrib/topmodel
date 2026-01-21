@@ -206,6 +206,16 @@ public enum ErrorType
     /// </summary>
     TMD3018,
 
+    /// <summary>
+    /// La classe {classe} doit avoir une clé primaire convertible en enum pour être marquée avec `enum: true`.
+    /// </summary>
+    TMD3019,
+
+    /// <summary>
+    /// La classe enum '{classe}' ne peut pas avoir de propriété de composition, ni d'association si la classe cible n'est pas une enum elle-aussi.
+    /// </summary>
+    TMD3020,
+
     #endregion
 
     #region Erreurs de dataflows (4)
@@ -404,6 +414,11 @@ public enum ErrorType
     /// Composition sur un alias d'autre chose qu'une composition ou association.
     /// </summary>
     TMD9009,
+
+    /// <summary>
+    /// Composition sur une enum: true.
+    /// </summary>
+    TMD9010,
 
     /// <summary>
     /// Alias association multiple impossible.

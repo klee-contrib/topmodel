@@ -14,7 +14,7 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en lecture.
@@ -66,7 +66,7 @@ public class CommandeRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	private StatutCommandeCode statutCommandeCode = StatutCommandeCode.EN_ATT;
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
@@ -142,12 +142,12 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Getter for statutCommandeCode.
+	 * Getter for statutCommande.
 	 *
-	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
+	 * @return value of {@link #statutCommande statutCommande}.
 	 */
-	public StatutCommandeCode getStatutCommandeCode() {
-		return this.statutCommandeCode;
+	public StatutCommande getStatutCommande() {
+		return this.statutCommande;
 	}
 
 	/**
@@ -227,11 +227,11 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
-	 * @param statutCommandeCode value to set.
+	 * Set the value of {@link #statutCommande statutCommande}.
+	 * @param statutCommande value to set.
 	 */
-	public void setStatutCommandeCode(StatutCommandeCode statutCommandeCode) {
-		this.statutCommandeCode = statutCommandeCode;
+	public void setStatutCommande(StatutCommande statutCommande) {
+		this.statutCommande = statutCommande;
 	}
 
 	/**

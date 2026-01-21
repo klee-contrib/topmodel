@@ -9,6 +9,7 @@ class:
   name: StatutCommande
   trigram: STC
   reference: true
+  enum: true
   comment: Statut d'une commande
 
   properties:
@@ -33,6 +34,7 @@ class:
   name: CategoriePlat
   trigram: CAT
   reference: true
+  enum: class
   comment: Catégorie de plat
 
   properties:

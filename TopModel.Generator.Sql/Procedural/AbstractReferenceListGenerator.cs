@@ -34,11 +34,7 @@ public abstract class AbstractReferenceListGenerator(
             {
                 nameValueDict[property.SqlName] = Config.GetValue(property, value);
 
-                if (
-                    Config.TranslateReferences == true
-                    && modelClass.DefaultProperty == property
-                    && !Config.CanClassUseEnums(modelClass, prop: property)
-                )
+                if (Config.TranslateReferences == true && modelClass.DefaultProperty == property)
                 {
                     nameValueDict[property.SqlName] = $@"'{initItem.ResourceKey}'";
                 }

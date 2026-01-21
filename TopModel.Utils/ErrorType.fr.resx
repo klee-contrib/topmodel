@@ -180,6 +180,9 @@
   <data name="TMD9009" xml:space="preserve">
     <value>Il est impossible de surcharger la composition sur un alias d'une propriété standard (ni association, ni composition).</value>
   </data>
+  <data name="TMD9010" xml:space="preserve">
+    <value>Il est impossible de définir une composition sur la classe '{0}', car il s'agit d'une classe `enum: true`.</value>
+  </data>
   <data name="TMD9014" xml:space="preserve">
     <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>
   </data>

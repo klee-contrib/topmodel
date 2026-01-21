@@ -44,7 +44,7 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property("ClientId").HasComment("Client ayant passé la commande");
         commande.Property(p => p.TableId).HasComment("Table associée à la commande");
         commande.Property("ReservationId").HasComment("Réservation associée à la commande");
-        commande.Property("StatutCommandeCode").HasComment("Statut de la commande");
+        commande.Property(p => p.StatutCommande).HasComment("Statut de la commande");
         commande.Property("AvisClientId").HasComment("Avis laissé par le client sur la commande.");
 
         var commandeHistorique = modelBuilder.Entity<CommandeHistorique>();
@@ -56,7 +56,7 @@ public partial class TopModelSampleDbContext : DbContext
         commandeHistorique.Property(p => p.ClientId).HasComment("Client ayant passé la commande");
         commandeHistorique.Property(p => p.TableId).HasComment("Table associée à la commande");
         commandeHistorique.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
-        commandeHistorique.Property(p => p.StatutCommandeCode).HasComment("Statut de la commande");
+        commandeHistorique.Property(p => p.StatutCommande).HasComment("Statut de la commande");
         commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
 
         var employe = modelBuilder.Entity<Employe>();
@@ -146,11 +146,6 @@ public partial class TopModelSampleDbContext : DbContext
         restaurant.Property(p => p.Nom).HasComment("Nom du restaurant");
         restaurant.Property(p => p.Adresse).HasComment("Adresse du restaurant");
         restaurant.Property(p => p.Telephone).HasComment("Numéro de téléphone");
-
-        var statutCommande = modelBuilder.Entity<StatutCommande>();
-        statutCommande.ToTable(t => t.HasComment("Statut d'une commande"));
-        statutCommande.Property(p => p.Code).HasComment("Code du statut");
-        statutCommande.Property(p => p.Libelle).HasComment("Libellé du statut");
 
         var tableRestaurant = modelBuilder.Entity<TableRestaurant>();
         tableRestaurant.ToTable(t => t.HasComment("Table du restaurant"));

@@ -31,7 +31,7 @@ public class CommandeHistorique_ {
 
 	public static volatile SingularAttribute<CommandeHistorique, Integer> reservationId;
 
-	public static volatile SingularAttribute<CommandeHistorique, StatutCommande> statutCommandeCode;
+	public static volatile SingularAttribute<CommandeHistorique, StatutCommande> statutCommande;
 
 	public static volatile SingularAttribute<CommandeHistorique, Integer> avisClientId;
 
@@ -49,7 +49,7 @@ public class CommandeHistorique_ {
 
 	public static final String RESERVATION_ID = "reservationId";
 
-	public static final String STATUT_COMMANDE_CODE = "statutCommandeCode";
+	public static final String STATUT_COMMANDE = "statutCommande";
 
 	public static final String AVIS_CLIENT_ID = "avisClientId";
 }

@@ -4,7 +4,6 @@ using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Utils;
 using TopModel.Generator.Core;
-using TopModel.Utils;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Generator.Csharp;
@@ -176,11 +175,6 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual AnnotationConstraint MapperLocationPriority { get; set; } = AnnotationConstraint.Persisted;
 
     /// <summary>
-    /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'.
-    /// </summary>
-    public virtual bool EnumsForStaticReferences { get; set; } = true;
-
-    /// <summary>
     /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`). Par défaut : 'true'.
     /// </summary>
     public virtual bool UseEFComments { get; set; }
@@ -261,11 +255,6 @@ public class CsharpConfig : GeneratorConfigBase
         ];
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesResxPath)];
-
-    public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
-    {
-        return EnumsForStaticReferences && base.CanClassUseEnums(classe, prop);
-    }
 
     public virtual string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
@@ -496,10 +485,37 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="classe">La classe.</param>
     /// <param name="tag">Tag.</param>
+    /// <param name="containingNs">Si on a besoin du namespace de la classe dans un autre namespace, pour chercher à le simplifier.</param>
     /// <returns>Namespace.</returns>
-    public virtual string GetNamespace(Class classe, string tag)
+    public virtual string GetNamespace(Class classe, string tag, string? containingNs = null)
     {
-        return GetNamespace(classe.Namespace, GetModelPathRaw(classe, tag), tag);
+        var ns = GetNamespace(classe.Namespace, GetModelPathRaw(classe, tag), tag);
+
+        if (containingNs == null)
+        {
+            return ns;
+        }
+
+        var containingNsSplit = containingNs.Split('.');
+        var nsStack = new Stack<string>(ns.Split('.'));
+
+        var classes = AvailableClasses.Select(c => c.NamePascal).ToHashSet();
+
+        var finalNs = string.Empty;
+        while (nsStack.TryPop(out var item))
+        {
+            finalNs = $"{item}.{finalNs}";
+
+            if (
+                !nsStack.Reverse().SkipWhile((spl, i) => spl == containingNsSplit.ElementAtOrDefault(i)).Any()
+                && !classes.Contains(item)
+            )
+            {
+                break;
+            }
+        }
+
+        return finalNs.TrimEnd('.');
     }
 
     public virtual string GetNamespace(Namespace ns, string modelPath, string tag)
@@ -590,9 +606,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         return prop switch
         {
-            { EnumProperty: IProperty ep }
-                when CanClassUseEnums(ep.Class, ep)
-                    && string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
+            { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
             { Composition: not null } => false,
             _ => AllValueTypes.Contains(GetType(prop!, nonNullable: true)),
         };
@@ -608,9 +622,9 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(RequiredNonNullableParam ?? string.Empty, tag) == true.ToString();
     }
 
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
+    protected override string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)
     {
-        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
+        return $"{(internalReference ? string.Empty : $"{className}.")}{propName}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
     }
 
     protected virtual string GetModelPathRaw(Class classe, string tag)
@@ -618,13 +632,6 @@ public class CsharpConfig : GeneratorConfigBase
         return classe.Reference && ReferencesModelPath != null ? ReferencesModelPath
             : classe.IsPersistent && !NoPersistence(tag) ? PersistentModelPath
             : NonPersistentModelPath;
-    }
-
-    protected override bool IsEnumNameValid(string name)
-    {
-        return base.IsEnumNameValid(name)
-            && !name.Contains('-')
-            && name.FirstOrDefault() != name.ToLower().FirstOrDefault();
     }
 
     private static string AddModuleFlat(string name)

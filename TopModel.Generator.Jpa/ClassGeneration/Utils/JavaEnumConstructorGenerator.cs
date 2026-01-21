@@ -1,6 +1,6 @@
 ﻿using TopModel.Core.Model;
 
-namespace TopModel.Generator.Jpa.ClassGeneration;
+namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
@@ -45,7 +45,7 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
                     }
                     else if (
                         prop is { Association: Class association, AssociationProperty: IProperty ap }
-                        && Config.CanClassUseEnums(association, prop: ap)
+                        && ap.EnumProperty != null
                         && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
                     )
                     {
@@ -53,19 +53,11 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
                         isString = false;
                         constructor.Imports.Add(association.GetImport(Config, tag));
                     }
-                    else if (
-                        prop is { EnumProperty: IProperty ep }
-                        && Config.CanClassUseEnums(ep.Class, ep)
-                        && ep.Class != prop.Class
-                    )
+                    else if (prop is { EnumProperty: IProperty ep } && ep.Class != prop.Class)
                     {
                         value = Config.GetType(ep) + "." + value;
                     }
-                    else if (
-                        Config.TranslateReferences == true
-                        && classe.DefaultProperty == prop
-                        && !Config.CanClassUseEnums(classe, prop)
-                    )
+                    else if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
                     {
                         value = refValue.ResourceKey;
                     }

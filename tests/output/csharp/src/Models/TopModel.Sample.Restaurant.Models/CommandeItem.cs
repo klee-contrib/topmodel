@@ -8,7 +8,7 @@ public class CommandeItem : ICommandeItem
 
     public decimal? MontantTotal => throw new NotImplementedException();
 
-    public StatutCommande.Codes? StatutCommandeCode => throw new NotImplementedException();
+    public StatutCommande? StatutCommande => throw new NotImplementedException();
 
     public int? ClientId => throw new NotImplementedException();
 
@@ -16,7 +16,7 @@ public class CommandeItem : ICommandeItem
         int? id = null,
         DateTime? dateCommande = null,
         decimal? montantTotal = null,
-        StatutCommande.Codes? statutCommandeCode = null,
+        StatutCommande? statutCommande = null,
         int? clientId = null
     )
     {

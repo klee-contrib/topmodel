@@ -4,6 +4,7 @@ using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -11,8 +12,6 @@ namespace TopModel.Generator.Jpa;
 public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterProvider writerProvider)
     : MapperGeneratorBase<JpaConfig>(logger, writerProvider)
 {
-    private readonly ILogger<JpaMapperGenerator> _logger = logger;
-
     private JpaModelPropertyGenerator? _jpaModelPropertyGenerator;
 
     public override string Name => "JpaMapperGenerator";
@@ -245,15 +244,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetFromMappers(Class classe, FromMapper mapper, string tag)
     {
-        if (Config.CanClassUseEnums(classe))
-        {
-            _logger.LogWarning($"La classe {classe.Name} ne peut pas être mappée car c'est une enum");
-        }
-        else
-        {
-            yield return GetFromMapperNoTarget(classe, mapper, tag);
-            yield return GetFromMapperWithTarget(classe, mapper, tag);
-        }
+        yield return GetFromMapperNoTarget(classe, mapper, tag);
+        yield return GetFromMapperWithTarget(classe, mapper, tag);
     }
 
     protected virtual (string Getter, bool CheckSourceNull, IEnumerable<string> Imports) GetSourceGetter(
@@ -345,7 +337,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 if (!propertySource.AssociationMultiple)
                 {
-                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(aSource, apSource))
+                    if (aSource.Enum == EnumMode.Enum)
                     {
                         getter = $"{sourceName}.{getterName}()";
                         checkSourceNull = false;
@@ -360,7 +352,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     checkSourceNull = true;
                     imports.Add("java.util.stream.Collectors");
                     imports.Add("java.util.Objects");
-                    if (Config.EnumsAsEnums && Config.CanClassUseEnums(aSource, apSource))
+                    if (aSource.Enum == EnumMode.Enum)
                     {
                         getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect({collector})";
                     }
@@ -394,11 +386,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             )
         )
         {
-            if (Config.CanClassUseEnums(apTarget.Class))
+            if (apTarget.Class.Enum != null)
             {
                 if (!propertySource.Class.IsPersistent)
                 {
-                    if (Config.EnumsAsEnums)
+                    if (apTarget.Class.Enum == EnumMode.Enum)
                     {
                         getter = $@"{sourceName}.{getterName}()";
                         imports.Add(aTarget.GetImport(Config, tag));
@@ -584,15 +576,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, ClassMappings mapper, string tag)
     {
-        if (Config.CanClassUseEnums(mapper.Class))
-        {
-            _logger.LogWarning($"La classe {mapper.Class.Name} ne peut pas être mappée car c'est une enum");
-        }
-        else
-        {
-            yield return GetToMapperMethodNoTarget(classe, mapper, tag);
-            yield return GetToMapperMethodWithTarget(classe, mapper, tag);
-        }
+        yield return GetToMapperMethodNoTarget(classe, mapper, tag);
+        yield return GetToMapperMethodWithTarget(classe, mapper, tag);
     }
 
     protected override void HandleFile(

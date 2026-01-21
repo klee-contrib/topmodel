@@ -15,9 +15,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent
-            && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1)
-            && !Config.CanClassUseEnums(classe);
+        return classe.IsPersistent && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1) && classe.Enum == null;
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -67,18 +65,15 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         };
         javaClass.Imports.Add(classe.GetImport(Config, tag));
 
-        if (Config.CanClassUseEnums(classe))
-        {
-            javaClass.Imports.Add(
-                $"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends!.PrimaryKey.Single())}"
-            );
-        }
-
         string pk;
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
             pk = Config.GetType(classe.ExtendedProperties.Single(p => p.PrimaryKey));
-            javaClass.Imports.AddRange(classe.ExtendedProperties.Single(p => p.PrimaryKey).GetTypeImports(Config, tag));
+            javaClass.Imports.AddRange(
+                classe
+                    .ExtendedProperties.Single(p => p.PrimaryKey)
+                    .GetTypeImports(Config, tag, forceAssociationPropertyType: true)
+            );
         }
         else
         {

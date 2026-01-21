@@ -66,9 +66,9 @@ public class Class : IPropertyContainer
             ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.FirstOrDefault()
             : null;
 
-    public IProperty? EnumKey => Enum ? ReferenceKey : null;
+    public IProperty? EnumKey => Enum != null ? ReferenceKey : null;
 
-    public bool Enum { get; set; }
+    public EnumMode? Enum { get; set; }
 
     public bool Translation { get; set; }
 

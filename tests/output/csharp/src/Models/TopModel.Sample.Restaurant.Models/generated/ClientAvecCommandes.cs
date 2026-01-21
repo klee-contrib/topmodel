@@ -100,7 +100,7 @@ public partial record ClientAvecCommandes
     [Required]
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Liste)]
-    public ICollection<StatutCommande.Codes>? CommandeStatutCommandeCode { get; set; }
+    public ICollection<StatutCommande>? CommandeStatutCommande { get; set; }
 
     /// <summary>
     /// Liste des commandes du client.

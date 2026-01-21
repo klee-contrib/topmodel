@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
+
 /**
  * Détail d'une commande en liste.
  */
@@ -33,7 +35,7 @@ public interface CommandeItem {
 	/**
 	 * Statut de la commande.
 	 */
-	String getStatutCommandeCode();
+	StatutCommande getStatutCommande();
 
 	/**
 	 * Client ayant passé la commande.
@@ -45,8 +47,8 @@ public interface CommandeItem {
 	 * @param id value to set.
 	 * @param dateCommande value to set.
 	 * @param montantTotal value to set.
-	 * @param statutCommandeCode value to set.
+	 * @param statutCommande value to set.
 	 * @param clientId value to set.
 	 */
-	void hydrate(Integer id, LocalDateTime dateCommande, BigDecimal montantTotal, String statutCommandeCode, Integer clientId);
+	void hydrate(Integer id, LocalDateTime dateCommande, BigDecimal montantTotal, StatutCommande statutCommande, Integer clientId);
 }

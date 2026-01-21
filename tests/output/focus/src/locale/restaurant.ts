@@ -42,7 +42,7 @@ export const restaurant = {
         lignes: "Lignes",
         montantTotal: "MontantTotal",
         reservationId: "Reservation",
-        statutCommandeCode: "StatutCommande",
+        statutCommande: "StatutCommande",
         tableId: "TableId"
     },
     commandeRead: {

@@ -99,7 +99,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourceRootPath)];
 
-    protected override bool UseNamedEnums => false;
+    protected override bool UseEnumNameForValues => false;
 
     protected override string NullValue => "undefined";
 
@@ -272,16 +272,6 @@ public class JavascriptConfig : GeneratorConfigBase
         var cp = property.Composition != null ? property : null;
 
         return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
-    }
-
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
-    {
-        return $"{className.ToPascalCase(strictIfUppercase: true)}{propName.ToPascalCase(strictIfUppercase: true)}";
-    }
-
-    protected override bool IsEnumNameValid(string name)
-    {
-        return true;
     }
 
     protected override string ResolveTagVariables(string value, string tag)

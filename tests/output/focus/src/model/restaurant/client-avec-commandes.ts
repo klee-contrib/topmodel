@@ -5,7 +5,7 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_ID, DO_LIBELLE, DO_LISTE} from "../../domains";
 
-import {StatutCommandeCode} from "./references";
+import {StatutCommande} from "./references";
 
 export type ClientAvecCommandes = EntityToType<ClientAvecCommandesEntityType>;
 export type ClientAvecCommandesEntityType = typeof ClientAvecCommandesEntity;
@@ -47,8 +47,8 @@ export const ClientAvecCommandesEntity = entity({
     commandeReservationId: e.field(DO_LISTE, f => f.type<number[]>().optional()
         .label("restaurant.commande.reservationId")
     ),
-    commandeStatutCommandeCode: e.field(DO_LISTE, f => f.type<StatutCommandeCode[]>()
-        .label("restaurant.commande.statutCommandeCode")
+    commandeStatutCommande: e.field(DO_LISTE, f => f.type<StatutCommande[]>()
+        .label("restaurant.commande.statutCommande")
     ),
     commandeAvisClientId: e.field(DO_LISTE, f => f.type<number[]>().optional()
         .label("restaurant.commande.avisClientId")

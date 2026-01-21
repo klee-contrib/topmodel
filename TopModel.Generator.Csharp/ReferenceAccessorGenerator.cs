@@ -269,7 +269,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.Reference)
+        if (classe.Reference && classe.Enum != EnumMode.Enum)
         {
             if (!Config.NoPersistence(tag) && (classe.IsPersistent || classe.Values.Count > 0))
             {

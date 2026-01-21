@@ -76,7 +76,7 @@ public partial record CommandeHistorique
     [Required]
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Code)]
-    public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
+    public StatutCommande? StatutCommande { get; set; } = Sample.Restaurant.Models.StatutCommande.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.

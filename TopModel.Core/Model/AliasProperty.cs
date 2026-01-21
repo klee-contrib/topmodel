@@ -79,7 +79,7 @@ internal class AliasProperty : IProperty
             {
                 name.Append(_name);
             }
-            else if (this.Association != null)
+            else if (_property is AssociationProperty && Composition == null)
             {
                 name.Append(this.GetAssociationName());
             }
@@ -118,7 +118,7 @@ internal class AliasProperty : IProperty
             {
                 name.Append(_name.ToPascalCase(strictIfUppercase: true));
             }
-            else if (this.Association != null)
+            else if (_property is AssociationProperty && Composition == null)
             {
                 name.Append(this.GetAssociationName(pascalCase: true));
             }
@@ -158,7 +158,7 @@ internal class AliasProperty : IProperty
             {
                 name.Append(_name.ToPascalCase(strictIfUppercase: true));
             }
-            else if (this.Association != null)
+            else if (_property is AssociationProperty && Composition == null)
             {
                 name.Append(this.GetAssociationName(pascalCase: true, forcePropertyName: true));
             }

@@ -6,9 +6,9 @@ public static class ImportsJpaExtensions
 {
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        if (config.EnumsAsEnums && config.CanClassUseEnums(classe))
+        if (classe.Enum == EnumMode.Enum)
         {
-            return $"{config.GetEnumValuePackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
+            return $"{config.GetEnumPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
         }
 
         return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
@@ -31,37 +31,29 @@ public static class ImportsJpaExtensions
             yield return cpc.GetImport(config, config.GetBestClassTag(cpc, tag));
         }
 
-        if (
-            p is { EnumProperty: IProperty ep, Association: null }
-            && ep.Class != null
-            && config.CanClassUseEnums(ep.Class, ep)
-        )
+        if (p is { EnumProperty: IProperty ep, Association: null } && config.AvailableClasses.Contains(ep.Class))
         {
-            if (config.EnumsAsEnums)
-            {
-                yield return $"{config.GetEnumValuePackageName(ep.Class.EnumKey!.Class, config.GetBestClassTag(ep.Class.EnumKey!.Class, tag))}.{ep.Class.NamePascal}";
-            }
-            else
-            {
-                yield return $"{config.GetEnumPackageName(ep.Class, config.GetBestClassTag(ep.Class, tag))}.{config.GetEnumName(ep, ep.Class)}";
-            }
+            yield return $"{config.GetEnumPackageName(ep.Class, config.GetBestClassTag(ep.Class, tag))}.{config.GetEnumType(ep)}";
         }
 
-        if (p is { Association: Class association, AssociationProperty: IProperty ap })
+        if (
+            p is { Association: Class association, AssociationProperty: IProperty ap }
+            && config.AvailableClasses.Contains(association)
+        )
         {
-            if (config.CanClassUseEnums(association, ap))
+            if (association.Enum != null)
             {
-                if (config.EnumsAsEnums)
+                if (
+                    association.Enum == EnumMode.Enum
+                    || p.Class?.IsPersistent != true
+                    || !p.UseClassForAssociation
+                    || config.UseJdbc
+                )
                 {
-                    yield return $"{config.GetEnumValuePackageName(association.EnumKey!.Class, config.GetBestClassTag(association.EnumKey!.Class, tag))}.{association.NamePascal}";
-                }
-                else if (p.Class?.IsPersistent != true || !p.UseClassForAssociation)
-                {
-                    yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumName(ap, association)}";
+                    yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";
                 }
                 else if (
-                    !config.UseJdbc
-                    && p.Class != null
+                    p.Class != null
                     && association.IsPersistent
                     && p.Class.IsPersistent
                     && !forceAssociationPropertyType
@@ -70,7 +62,13 @@ public static class ImportsJpaExtensions
                     yield return association.GetImport(config, config.GetBestClassTag(association, tag));
                 }
             }
-            else if (!config.UseJdbc && p.Class != null && association.IsPersistent && p.Class.IsPersistent)
+            else if (
+                !config.UseJdbc
+                && p.Class != null
+                && association.IsPersistent
+                && p.Class.IsPersistent
+                && !forceAssociationPropertyType
+            )
             {
                 yield return association.GetImport(config, config.GetBestClassTag(association, tag));
             }

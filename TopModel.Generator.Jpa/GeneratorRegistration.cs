@@ -12,16 +12,10 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, JpaConfig config, int number)
     {
-        if (config.EnumsValuesPath == "default")
-        {
-            config.EnumsValuesPath = config.EnumsPath;
-        }
-
         TrimSlashes(config, c => c.EntitiesPath);
         TrimSlashes(config, c => c.DaosPath);
         TrimSlashes(config, c => c.DtosPath);
         TrimSlashes(config, c => c.EnumsPath);
-        TrimSlashes(config, c => c.EnumsValuesPath);
         TrimSlashes(config, c => c.ApiPath);
         TrimSlashes(config, c => c.ResourcesPath);
         TrimSlashes(config, c => c.DataFlowsPath);
@@ -38,19 +32,13 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         }
         else
         {
-            if (config.EnumsAsEnums)
-            {
-                services.AddGenerator<JpaEnumValuesGenerator, JpaConfig>(config, number);
-            }
-            else
-            {
-                services.AddGenerator<JpaEnumGenerator, JpaConfig>(config, number);
-                services.AddGenerator<JpaEnumEntityGenerator, JpaConfig>(config, number);
-                services.AddGenerator<JavaEnumDtoGenerator, JpaConfig>(config, number);
-            }
-
             services.AddGenerator<JpaEntityGenerator, JpaConfig>(config, number);
+            services.AddGenerator<JpaEnumEntityGenerator, JpaConfig>(config, number);
         }
+
+        services.AddGenerator<JavaEnumClassPropertyGenerator, JpaConfig>(config, number);
+        services.AddGenerator<JavaEnumDtoGenerator, JpaConfig>(config, number);
+        services.AddGenerator<JavaEnumEnumGenerator, JpaConfig>(config, number);
 
         services.AddGenerator<JpaModelInterfaceGenerator, JpaConfig>(config, number);
         // services.AddGenerator<JpaMapperGenerator, JpaConfig>(config, number);

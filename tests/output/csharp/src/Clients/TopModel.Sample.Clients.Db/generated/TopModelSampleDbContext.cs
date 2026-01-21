@@ -89,11 +89,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<Models.Restaurant.Restaurant> Restaurants { get; set; }
 
     /// <summary>
-    /// Accès à l'entité StatutCommande.
-    /// </summary>
-    public DbSet<StatutCommande> StatutCommandes { get; set; }
-
-    /// <summary>
     /// Accès à l'entité TableRestaurant.
     /// </summary>
     public DbSet<TableRestaurant> TableRestaurants { get; set; }
@@ -105,10 +100,9 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
-        modelBuilder.Entity<Commande>().Property("StatutCommandeCode").HasMaxLength(10);
-        modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommandeCode).HasConversion<string>().HasMaxLength(10);
+        modelBuilder.Entity<Commande>().Property("StatutCommande").HasMaxLength(10);
+        modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasMaxLength(10);
-        modelBuilder.Entity<StatutCommande>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
 
         modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
@@ -118,12 +112,10 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Commande>().HasOne(p => p.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.Reservation).WithMany().OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Commande>().HasOne(p => p.StatutCommande).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.AvisClient).WithOne().HasForeignKey<Commande>("AvisClientId").OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeHistorique>().HasOne<StatutCommande>().WithMany().HasForeignKey(p => p.StatutCommandeCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<AvisClient>().WithOne().HasForeignKey<CommandeHistorique>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Employe>().HasOne(p => p.Restaurant).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne(p => p.Commande).WithMany(p => p.Lignes).OnDelete(DeleteBehavior.Restrict);
@@ -153,7 +145,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("res_id");
         modelBuilder.Entity<Commande>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
-        modelBuilder.Entity<Commande>().Property("StatutCommandeCode").HasColumnName("stc_code");
+        modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");
         modelBuilder.Entity<Commande>().Property("AvisClientId").HasColumnName("avi_id");
         modelBuilder.Entity<Employe>().Property("RestaurantId").HasColumnName("res_id");
         modelBuilder.Entity<LigneCommande>().Property("CommandeId").HasColumnName("com_id");
@@ -173,12 +165,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
             new CategoriePlat { Code = CategoriePlat.Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat" },
             new CategoriePlat { Code = CategoriePlat.Codes.DESSERT, Libelle = "restaurant.categoriePlat.values.Dessert" },
             new CategoriePlat { Code = CategoriePlat.Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson" });
-        modelBuilder.Entity<StatutCommande>().HasData(
-            new StatutCommande { Code = StatutCommande.Codes.EN_ATT, Libelle = "restaurant.statutCommande.values.EnAttente" },
-            new StatutCommande { Code = StatutCommande.Codes.EN_PREP, Libelle = "restaurant.statutCommande.values.EnPreparation" },
-            new StatutCommande { Code = StatutCommande.Codes.PRETE, Libelle = "restaurant.statutCommande.values.Prete" },
-            new StatutCommande { Code = StatutCommande.Codes.SERVIE, Libelle = "restaurant.statutCommande.values.Servie" },
-            new StatutCommande { Code = StatutCommande.Codes.ANNULE, Libelle = "restaurant.statutCommande.values.Annulee" });
 
         AddComments(modelBuilder);
         OnModelCreatingPartial(modelBuilder);

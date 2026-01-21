@@ -180,6 +180,9 @@
   <data name="TMD9009" xml:space="preserve">
     <value>Cannot override 'composition' on a regular (non association, non composition) alias property.</value>
   </data>
+  <data name="TMD9010" xml:space="preserve">
+    <value>Cannot define a composition property on class '{0}' since it has `enum: true`.</value>
+  </data>
   <data name="TMD9014" xml:space="preserve">
     <value>Cannot define alias on property '{0}' of class '{1}' because it is a multiple association and target class is persisted.</value>
   </data>

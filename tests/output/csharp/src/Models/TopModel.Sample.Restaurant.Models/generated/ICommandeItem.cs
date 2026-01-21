@@ -27,7 +27,7 @@ public interface ICommandeItem
     /// <summary>
     /// Statut de la commande.
     /// </summary>
-    StatutCommande.Codes? StatutCommandeCode { get; }
+    StatutCommande? StatutCommande { get; }
 
     /// <summary>
     /// Client ayant passé la commande.
@@ -40,8 +40,8 @@ public interface ICommandeItem
     /// <param name="id">Identifiant de la commande.</param>
     /// <param name="dateCommande">Date et heure de la commande.</param>
     /// <param name="montantTotal">Montant total de la commande.</param>
-    /// <param name="statutCommandeCode">Statut de la commande.</param>
+    /// <param name="statutCommande">Statut de la commande.</param>
     /// <param name="clientId">Client ayant passé la commande.</param>
     /// <returns>Instance de la classe.</returns>
-    static abstract ICommandeItem Create(int? id = null, DateTime? dateCommande = null, decimal? montantTotal = null, StatutCommande.Codes? statutCommandeCode = null, int? clientId = null);
+    static abstract ICommandeItem Create(int? id = null, DateTime? dateCommande = null, decimal? montantTotal = null, StatutCommande? statutCommande = null, int? clientId = null);
 }

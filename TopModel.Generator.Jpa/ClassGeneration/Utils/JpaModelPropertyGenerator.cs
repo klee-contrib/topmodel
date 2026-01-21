@@ -2,7 +2,7 @@
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
-namespace TopModel.Generator.Jpa.ClassGeneration;
+namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
@@ -28,6 +28,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         new("NotNull", imports: "jakarta.validation.constraints.NotNull");
 
     protected virtual JavaAnnotation ValidAnnotation => new("Valid", imports: "jakarta.validation.Valid");
+
+    public static bool ShouldWriteEnumAnnotation(IProperty property)
+    {
+        return property.EnumProperty != null && property.Class.IsPersistent;
+    }
 
     public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
@@ -150,7 +155,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         if (
             property is { OriginalProperty: IProperty op }
             && Config.AvailableClasses.Contains(op.Class)
-            && !(Config.EnumsAsEnums && Config.CanClassUseEnums(op.Class, op))
+            && (op.Class.Enum != EnumMode.Enum || op != op.Class.EnumKey)
         )
         {
             var getter = $"#{GetGetterName(op)}()";
@@ -286,24 +291,13 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         return propertyName.ToPascalCase().WithPrefix("set");
     }
 
-    public bool ShouldWriteEnumAnnotation(IProperty property)
-    {
-        return property.EnumProperty != null
-            && Config.CanClassUseEnums(property.EnumProperty!.Class, property.EnumProperty)
-            && property.Class.IsPersistent;
-    }
-
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(IProperty property, string tag)
     {
         var shouldWriteAssociation =
             !Config.UseJdbc
             && property.Class.IsPersistent
             && (property.Association?.IsPersistent ?? false)
-            && !(
-                Config.EnumsAsEnums
-                && property.EnumProperty != null
-                && Config.CanClassUseEnums(property.EnumProperty!.Class, property.EnumProperty)
-            )
+            && property.EnumProperty?.Class.Enum != EnumMode.Enum
             && Config.AvailableClasses.Contains(property.Association)
             && property.UseClassForAssociation;
 
@@ -431,17 +425,9 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var defaultValue = Config.GetValue(property);
         if (property is { Association: Class association })
         {
-            if (
-                association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(association, prop: association.PrimaryKey.Single())
-                && defaultValue != "null"
-            )
+            if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
             {
-                if (Config.EnumsAsEnums)
-                {
-                    return $"{defaultValue}";
-                }
-                else if (property.Class.IsPersistent && property.UseClassForAssociation)
+                if (property.Class.IsPersistent && property.UseClassForAssociation && association.Enum != EnumMode.Enum)
                 {
                     return $"new {association.NamePascal}({defaultValue})";
                 }
@@ -465,11 +451,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var defaultValue = Config.GetValue(property);
         if (property is { Association: Class association })
         {
-            if (
-                association.PrimaryKey.Count() == 1
-                && Config.CanClassUseEnums(association, association.PrimaryKey.Single())
-                && defaultValue != "null"
-            )
+            if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
             {
                 return
                 [

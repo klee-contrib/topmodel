@@ -569,6 +569,18 @@ internal class PropertyResolver(
                         break;
                     }
 
+                    if (composition.Enum == EnumMode.Enum)
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD9010,
+                            [cp.Reference.ReferenceName],
+                            cp,
+                            cp.Reference
+                        );
+                        break;
+                    }
+
                     cp.Composition = composition;
 
                     if (cp.DomainReference != null)

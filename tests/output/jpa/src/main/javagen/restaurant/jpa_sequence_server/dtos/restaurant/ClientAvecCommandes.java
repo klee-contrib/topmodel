@@ -14,7 +14,7 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
 
 /**
  * Client avec la liste de ses commandes.
@@ -116,7 +116,7 @@ public class ClientAvecCommandes implements Serializable {
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	private List<StatutCommandeCode> commandeStatutCommandeCode;
+	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
@@ -240,12 +240,12 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeStatutCommandeCode.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public List<StatutCommandeCode> getCommandeStatutCommandeCode() {
-		return this.commandeStatutCommandeCode;
+	public List<StatutCommande> getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
@@ -363,11 +363,11 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
-	 * @param commandeStatutCommandeCode value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setCommandeStatutCommandeCode(List<StatutCommandeCode> commandeStatutCommandeCode) {
-		this.commandeStatutCommandeCode = commandeStatutCommandeCode;
+	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**

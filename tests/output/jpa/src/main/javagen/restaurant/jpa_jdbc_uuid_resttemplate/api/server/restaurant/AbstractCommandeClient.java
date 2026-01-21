@@ -23,7 +23,7 @@ import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.CommandeRead;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.CommandeWrite;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.ReservationRead;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.ReservationWrite;
-import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.StatutCommande;
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractCommandeClient {
@@ -174,15 +174,15 @@ public abstract class AbstractCommandeClient {
 	/**
 	 * UriComponentsBuilder pour la méthode getCommandes.
 	 * @param clientId Client ayant passé la commande
-	 * @param statutCommandeCode Statut de la commande
+	 * @param statutCommande Statut de la commande
 	 * @param tableId Table associée à la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getCommandesUriComponentsBuilder(Integer clientId, String statutCommandeCode, Integer tableId) {
+	protected UriComponentsBuilder getCommandesUriComponentsBuilder(Integer clientId, StatutCommande statutCommande, Integer tableId) {
 		String uri = host + "/api/restaurants/commandes";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("clientId", clientId);
-		uriBuilder.queryParam("statutCommandeCode", statutCommandeCode);
+		uriBuilder.queryParam("statutCommande", statutCommande);
 		if (tableId != null) {
 			uriBuilder.queryParam("tableId", tableId);
 		}
@@ -193,13 +193,13 @@ public abstract class AbstractCommandeClient {
 	/**
 	 * Liste toutes les commandes.
 	 * @param clientId Client ayant passé la commande
-	 * @param statutCommandeCode Statut de la commande
+	 * @param statutCommande Statut de la commande
 	 * @param tableId Table associée à la commande
 	 * @return Liste des commandes
 	 */
-	public ResponseEntity<List<CommandeItem>> getCommandes(Integer clientId, String statutCommandeCode, Integer tableId){
+	public ResponseEntity<List<CommandeItem>> getCommandes(Integer clientId, StatutCommande statutCommande, Integer tableId){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getCommandesUriComponentsBuilder(clientId, statutCommandeCode, tableId);
+		UriComponentsBuilder uri = this.getCommandesUriComponentsBuilder(clientId, statutCommande, tableId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<CommandeItem>>() {});
 	}
 
@@ -292,25 +292,25 @@ public abstract class AbstractCommandeClient {
 	/**
 	 * UriComponentsBuilder pour la méthode updateCommandeStatut.
 	 * @param comId Identifiant de la commande
-	 * @param statutCommandeCode Statut de la commande
+	 * @param statutCommande Statut de la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder updateCommandeStatutUriComponentsBuilder(Integer comId, String statutCommandeCode) {
+	protected UriComponentsBuilder updateCommandeStatutUriComponentsBuilder(Integer comId, StatutCommande statutCommande) {
 		String uri = host + "/api/restaurants/commandes/%s/statut".formatted(comId);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("statutCommandeCode", statutCommandeCode);
+		uriBuilder.queryParam("statutCommande", statutCommande);
 		return uriBuilder;
 	}
 
 	/**
 	 * Met à jour uniquement le statut d'une commande.
 	 * @param comId Identifiant de la commande
-	 * @param statutCommandeCode Statut de la commande
+	 * @param statutCommande Statut de la commande
 	 * @return Commande avec le statut mis à jour
 	 */
-	public ResponseEntity<CommandeRead> updateCommandeStatut(Integer comId, String statutCommandeCode){
+	public ResponseEntity<CommandeRead> updateCommandeStatut(Integer comId, StatutCommande statutCommande){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.updateCommandeStatutUriComponentsBuilder(comId, statutCommandeCode);
+		UriComponentsBuilder uri = this.updateCommandeStatutUriComponentsBuilder(comId, statutCommande);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.PATCH, new HttpEntity<>(headers), CommandeRead.class);
 	}
 }

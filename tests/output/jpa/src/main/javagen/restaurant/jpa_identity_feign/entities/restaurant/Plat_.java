@@ -10,8 +10,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
-
 @StaticMetamodel(Plat.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Plat_ {

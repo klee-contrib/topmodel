@@ -75,9 +75,7 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
 
         foreach (var property in properties)
         {
-            var persistentType = property is { Composition: null }
-                ? Config.GetType(property, forceAssociationPropertyType: true)
-                : JsonType;
+            var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {

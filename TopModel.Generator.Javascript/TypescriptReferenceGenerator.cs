@@ -90,42 +90,27 @@ public class TypescriptReferenceGenerator(
                 fw.WriteLine();
             }
 
-            if (reference.EnumKey != null)
+            var values = Config.GetAllValues(reference).ToList();
+
+            foreach (var enumProp in reference.Properties.Where(e => e.EnumProperty == e))
             {
-                var values = Config.GetAllValues(reference).ToList();
-
-                if (reference.Extends == null)
+                fw.Write("export type ");
+                fw.Write(reference.NamePascal);
+                if (reference.Enum == EnumMode.Class)
                 {
-                    fw.Write("export type ");
-                    fw.Write(reference.NamePascal);
-                    fw.Write($"{reference.EnumKey.NamePascal} = ");
-                    var type = Config.GetImplementation(reference.EnumKey.Domain)?.Type;
-                    var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
-                    fw.Write(
-                        string.Join(
-                            " | ",
-                            values
-                                .Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}")
-                                .Order(StringComparer.Ordinal)
-                        )
-                    );
-                    fw.WriteLine(";");
+                    fw.Write(enumProp.NamePascal);
                 }
+                fw.Write(" = ");
 
-                foreach (
-                    var uk in reference
-                        .UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required)
-                        .Select(uk => uk.Single())
-                )
-                {
-                    fw.Write("export type ");
-                    fw.Write(reference.NamePascal);
-                    fw.Write($"{uk} = ");
-                    fw.Write(
-                        string.Join(" | ", values.Select(r => $@"""{r.Value[uk]}""").Order(StringComparer.Ordinal))
-                    );
-                    fw.WriteLine(";");
-                }
+                var type = Config.GetImplementation(enumProp.Domain)?.Type;
+                var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
+                fw.Write(
+                    string.Join(
+                        " | ",
+                        values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").Order(StringComparer.Ordinal)
+                    )
+                );
+                fw.WriteLine(";");
             }
 
             if (reference.FlagProperty != null)
@@ -153,45 +138,80 @@ public class TypescriptReferenceGenerator(
 
             if (reference.Reference)
             {
-                fw.Write("export interface ");
-                fw.Write(reference.NamePascal);
-
-                if (reference.Extends != null)
+                if (Config.ReferenceMode == ReferenceMode.VALUES || reference.Enum != EnumMode.Enum)
                 {
-                    fw.Write($" extends {reference.Extends.NamePascal}");
+                    fw.Write("export interface ");
+                    fw.Write(reference.NamePascal);
+
+                    if (reference.Enum == EnumMode.Enum)
+                    {
+                        fw.Write("Object");
+                    }
+
+                    if (reference.Extends != null)
+                    {
+                        fw.Write($" extends {reference.Extends.NamePascal}");
+                    }
+
+                    fw.Write(" {\r\n");
+
+                    foreach (var property in reference.Properties)
+                    {
+                        fw.Write("    ");
+                        fw.Write(property.NameCamel);
+                        fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
+                        fw.Write(": ");
+                        fw.Write(Config.GetType(property));
+                        fw.Write(";\r\n");
+                    }
+
+                    fw.Write("}\r\n");
                 }
-
-                fw.Write(" {\r\n");
-
-                foreach (var property in reference.Properties)
-                {
-                    fw.Write("    ");
-                    fw.Write(property.NameCamel);
-                    fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
-                    fw.Write(": ");
-                    fw.Write(Config.GetType(property));
-                    fw.Write(";\r\n");
-                }
-
-                fw.Write("}\r\n");
 
                 if (Config.ReferenceMode == ReferenceMode.VALUES)
                 {
                     WriteReferenceValues(fw, reference);
                 }
-                else
+                else if (reference.Enum != EnumMode.Enum)
                 {
                     WriteReferenceDefinition(fw, reference);
                 }
+                else
+                {
+                    WriteReferenceMap(fw, reference);
+                }
             }
         }
+    }
+
+    private void WriteReferenceMap(IFileWriter fw, Class reference)
+    {
+        if (reference.DefaultProperty == null)
+        {
+            return;
+        }
+
+        fw.Write("export const ");
+        fw.Write(reference.NameCamel);
+        fw.Write("Labels = {");
+        fw.WriteLine();
+        foreach (var refValue in reference.Values)
+        {
+            fw.Write(
+                $"    {refValue.Value[reference.EnumKey]}: \"{(Config.TranslateReferences == true ? refValue.ResourceKey : refValue.Value[reference.DefaultProperty])}\""
+            );
+            fw.WriteLine(reference.Values[^1] != refValue ? "," : string.Empty);
+        }
+
+        fw.WriteLine("};");
+        fw.WriteLine();
     }
 
     private void WriteReferenceValues(IFileWriter fw, Class reference)
     {
         fw.Write("export const ");
         fw.Write(reference.NameCamel);
-        fw.Write($"List: {reference.NamePascal}[] = [");
+        fw.Write($"List: {reference.NamePascal}{(reference.Enum == EnumMode.Enum ? "Object" : string.Empty)}[] = [");
         fw.WriteLine();
         foreach (var refValue in reference.Values)
         {

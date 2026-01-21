@@ -24,13 +24,14 @@ public class DbContextGenerator(
                 p is { Association.IsPersistent: true }
                 && !p.AssociationMultiple
                 && Config.AvailableClasses.Contains(p.Association)
+                && p.Association?.Enum != EnumMode.Enum
                 && Config.IsPersistent(p.Association!, Config.GetBestClassTag(p.Association!, tag))
             );
     }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag))
+        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag) && classe.Enum != EnumMode.Enum)
         {
             yield return ("main", Config.GetDbContextFilePath(tag));
 
@@ -185,7 +186,7 @@ public class DbContextGenerator(
         var hasPropConfig = false;
         foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties))
         {
-            if (fp.EnumProperty != null && Config.CanClassUseEnums(fp.EnumProperty!.Class, fp.EnumProperty))
+            if (fp.EnumProperty != null && Config.EnumGeneration == EnumGenerationMode.AsEnum)
             {
                 hasPropConfig = true;
                 if (!fp.UseClassForAssociation)
@@ -376,7 +377,7 @@ public class DbContextGenerator(
                 }
 
                 var resourceProperties = classes
-                    .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)
+                    .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum != null)
                     .OrderBy(c => c.SqlName)
                     .Select(c => c.DefaultProperty!);
 
@@ -411,14 +412,7 @@ public class DbContextGenerator(
                         var value = Config.GetValue(refProp.Key, refProp.Value);
                         if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
                         {
-                            var targetNs = Config.GetNamespace(targetClass, tag);
-                            var contextNsSplit = contextNs.Split('.');
-                            var targetNsSplit = targetNs.Split('.');
-                            targetNs = string.Join(
-                                '.',
-                                targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i))
-                            );
-                            value = $"{targetNs}.{value}";
+                            value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
                         }
 
                         if (
@@ -502,12 +496,7 @@ public class DbContextGenerator(
         var classNs = Config.GetNamespace(classe, tag);
         if (classNs.Split(".").Contains(classe.NamePascal))
         {
-            var contextNs = Config.GetDbContextNamespace(tag);
-            if (classNs.StartsWith(contextNs))
-            {
-                classNs = classNs[(contextNs.Length + 1)..];
-            }
-            return $"{classNs}.{classe.NamePascal}";
+            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{classe.NamePascal}";
         }
         else
         {

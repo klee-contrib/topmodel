@@ -2,21 +2,21 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_sequence_server.entities.restaurant;
+package restaurant.jpa_identity_feign.entities.restaurant;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
-@StaticMetamodel(StatutCommande.class)
+@StaticMetamodel(CategoriePlat.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class StatutCommande_ {
+public class CategoriePlat_ {
 
-	public static volatile SingularAttribute<StatutCommande, StatutCommandeCode> code;
+	public static volatile SingularAttribute<CategoriePlat, CategoriePlatCode> code;
 
-	public static volatile SingularAttribute<StatutCommande, String> libelle;
+	public static volatile SingularAttribute<CategoriePlat, String> libelle;
 
 	public static final String CODE = "code";
 

@@ -199,7 +199,7 @@ public class JavascriptResourceGenerator(
                     && !onlyProperties
                     && !(
                         Config.TranslateReferences == true
-                        && container.Key is Class { DefaultProperty: not null, Enum: true }
+                        && container.Key is Class { DefaultProperty: not null, Enum: not null }
                         && container.Key is Class { Values.Count: > 0 }
                     )
                         ? string.Empty
@@ -210,7 +210,7 @@ public class JavascriptResourceGenerator(
 
         if (
             Config.TranslateReferences == true
-            && container.Key is Class { DefaultProperty: not null, Enum: true } classe
+            && container.Key is Class { DefaultProperty: not null, Enum: not null } classe
             && classe?.Values.Count > 0
         )
         {

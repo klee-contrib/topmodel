@@ -16,6 +16,8 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
+
 /**
  * Client avec la liste de ses commandes.
  */
@@ -124,11 +126,11 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
 	@Column("stc_code")
-	private List<String> commandeStatutCommandeCode;
+	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
@@ -253,12 +255,12 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeStatutCommandeCode.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public List<String> getCommandeStatutCommandeCode() {
-		return this.commandeStatutCommandeCode;
+	public List<StatutCommande> getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
@@ -376,11 +378,11 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
-	 * @param commandeStatutCommandeCode value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setCommandeStatutCommandeCode(List<String> commandeStatutCommandeCode) {
-		this.commandeStatutCommandeCode = commandeStatutCommandeCode;
+	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**

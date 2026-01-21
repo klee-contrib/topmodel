@@ -5,7 +5,7 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "../../domains";
 
-import {StatutCommandeCode} from "./references";
+import {StatutCommande} from "./references";
 
 export type CommandeItem = EntityToType<CommandeItemEntityType>;
 export type CommandeItemEntityType = typeof CommandeItemEntity;
@@ -20,8 +20,8 @@ export const CommandeItemEntity = entity({
     montantTotal: e.field(DO_PRIX, f => f
         .label("restaurant.commande.montantTotal")
     ),
-    statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
-        .label("restaurant.commande.statutCommandeCode")
+    statutCommande: e.field(DO_CODE, f => f.type<StatutCommande>().defaultValue("EN_ATT")
+        .label("restaurant.commande.statutCommande")
     ),
     clientId: e.field(DO_ID, f => f
         .label("restaurant.commande.clientId")

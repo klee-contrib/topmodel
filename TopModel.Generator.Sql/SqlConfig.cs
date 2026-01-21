@@ -8,6 +8,11 @@ namespace TopModel.Generator.Sql;
 
 public class SqlConfig : GeneratorConfigBase
 {
+    public SqlConfig()
+    {
+        EnumGeneration = EnumGenerationMode.None;
+    }
+
     /// <summary>
     /// Config pour la génération en mode procédural.
     /// </summary>
@@ -81,7 +86,7 @@ public class SqlConfig : GeneratorConfigBase
 
     protected override bool PersistentOnly => true;
 
-    protected override bool UseNamedEnums => false;
+    protected override bool UseEnumNameForValues => false;
 
     public static bool IsBoolean(IProperty property)
     {
@@ -92,11 +97,6 @@ public class SqlConfig : GeneratorConfigBase
             || domain.Implementations.Values.Any(di =>
                 di.Type?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false
             );
-    }
-
-    public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
-    {
-        return false;
     }
 
     /// <summary>
@@ -141,6 +141,11 @@ public class SqlConfig : GeneratorConfigBase
         };
     }
 
+    public string GetType(IProperty property)
+    {
+        return GetType(property, forceAssociationPropertyType: true);
+    }
+
     public virtual string GetUniqueConstraintName(string tableName, string columnNames, string propertyNames)
     {
         return ReplaceCustomVariables(
@@ -164,9 +169,7 @@ public class SqlConfig : GeneratorConfigBase
                 return false;
             }
 
-            return TargetDBMS == TargetDBMS.Oracle
-                && GetType(property, forceAssociationPropertyType: true) == "number(1)"
-                && IsBoolean(property);
+            return TargetDBMS == TargetDBMS.Oracle && GetType(property) == "number(1)" && IsBoolean(property);
         }
 
         if (NeedsBooleanConversionToNumeric())
@@ -179,7 +182,7 @@ public class SqlConfig : GeneratorConfigBase
 
     public override bool ShouldQuoteValue(IProperty property)
     {
-        var type = GetType(property, forceAssociationPropertyType: true);
+        var type = GetImplementation(property.Domain)?.Type?.ToLower();
         return (type ?? string.Empty).Contains("varchar")
             || type == "text"
             || type == "uniqueidentifier"
@@ -187,11 +190,6 @@ public class SqlConfig : GeneratorConfigBase
             || type == "bit"
             || (type ?? string.Empty).Contains("date")
             || (type ?? string.Empty).Contains("time");
-    }
-
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
-    {
-        throw new NotSupportedException();
     }
 
     protected override string QuoteValue(string value)

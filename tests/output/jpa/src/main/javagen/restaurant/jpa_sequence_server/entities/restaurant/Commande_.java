@@ -13,6 +13,8 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
+
 @StaticMetamodel(Commande.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Commande_ {

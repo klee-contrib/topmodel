@@ -12,7 +12,7 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
 /**
  * Détail d'un plat en écriture.
@@ -60,7 +60,7 @@ public class PlatWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Plat#getCategoriePlat() Plat#getCategoriePlat()}
 	 */
 	@NotNull
-	private CategoriePlat categoriePlatCode;
+	private CategoriePlatCode categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
@@ -110,7 +110,7 @@ public class PlatWrite implements Serializable {
 	 *
 	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public CategoriePlat getCategoriePlatCode() {
+	public CategoriePlatCode getCategoriePlatCode() {
 		return this.categoriePlatCode;
 	}
 
@@ -159,7 +159,7 @@ public class PlatWrite implements Serializable {
 	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
 	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCode(CategoriePlat categoriePlatCode) {
+	public void setCategoriePlatCode(CategoriePlatCode categoriePlatCode) {
 		this.categoriePlatCode = categoriePlatCode;
 	}
 
@@ -179,7 +179,7 @@ public class PlatWrite implements Serializable {
 		DESCRIPTION(String.class),
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
-		CATEGORIE_PLAT_CODE(CategoriePlat.class),
+		CATEGORIE_PLAT_CODE(CategoriePlatCode.class),
 		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;

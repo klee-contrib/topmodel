@@ -143,9 +143,10 @@ endpoint:
   description: Liste tous les statuts de commande
 
   returns:
-    composition: StatutCommande
-    name: statuts
-    domain: DO_LISTE
+    alias:
+      class: StatutCommande
+      property: Code
+    as: list
     comment: Liste des statuts de commande
 ---
 endpoint:

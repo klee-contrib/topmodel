@@ -105,10 +105,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             switch (property)
             {
-                case { Association: Class a } when Config.CanClassUseEnums(a):
-                    usings.Add(GetNamespace(a, tag));
-                    break;
-                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                case { EnumProperty: IProperty ep } when Config.EnumGeneration == EnumGenerationMode.AsEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { Composition: Class cpc }:

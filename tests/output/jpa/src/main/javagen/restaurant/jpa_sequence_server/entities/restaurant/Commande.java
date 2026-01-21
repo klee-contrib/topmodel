@@ -13,6 +13,8 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
 
 /**
  * Commande d'un client.
@@ -84,9 +86,9 @@ public class Commande {
 	/**
 	 * Statut de la commande.
 	 */
-	@JoinColumn(name = "STC_CODE", referencedColumnName = "STC_CODE")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = StatutCommande.class)
-	private StatutCommande statutCommande = new StatutCommande(StatutCommandeCode.EN_ATT);
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.

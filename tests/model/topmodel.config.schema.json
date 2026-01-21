@@ -377,9 +377,14 @@
               "non-persisted"
             ]
           },
-          "enumsForStaticReferences": {
-            "type": "boolean",
-            "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'."
+          "enumGeneration": {
+            "type": "string",
+            "description": "Mode de génération des propriétés de classes enum : `none`, `as-const`, `as-enum`. Par défaut : `as-enum`.",
+            "enum": [
+              "none",
+              "as-const",
+              "as-enum"
+            ]
           },
           "useEFComments": {
             "type": "boolean",
@@ -692,13 +697,14 @@
               "type": "string",
               "enum": [
                 "JavaDtoGen",
+                "JavaEnumClassPropGen",
                 "JavaEnumDtoGen",
+                "JavaEnumEnumGen",
                 "JdbcEntityGen",
                 "JpaDaoGen",
                 "JpaEntityGen",
                 "JpaEnumEntityGen",
-                "JpaEnumGen",
-                "JpaEnumValuesGen",
+                "JpaMetaModelGen",
                 "JpaInterfaceGen",
                 "SpringDataFlowGen",
                 "FeignClientApiGen",
@@ -757,16 +763,6 @@
             "type": "string",
             "description": "Localisation des enums du modèle, relative au répertoire de génération.",
             "default": "javagen:{app:path}/enums/{module:path}"
-          },
-          "enumsValuesPath": {
-            "type": "string",
-            "description": "Localisation des enums de valeur du modèle, relative au répertoire de génération. Prend la valeur de enumsPath si non défini",
-            "default": "javagen:{app:path}/enums/{module:path}"
-          },
-          "enumsAsEnums": {
-            "type": "boolean",
-            "description": "Transforme les classes contenant des values en enum",
-            "default": "false"
           },
           "metaModel": {
             "type": "boolean",

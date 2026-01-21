@@ -15,7 +15,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && !classe.IsPersistent && !Config.CanClassUseEnums(classe);
+        return !classe.Abstract && !classe.IsPersistent && classe.Enum == null;
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)

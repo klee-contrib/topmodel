@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -25,7 +26,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && Config.CanClassUseEnums(classe) && classe.IsPersistent;
+        return !classe.Abstract && classe.IsPersistent && classe.Enum == EnumMode.Class;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
@@ -45,7 +46,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
                 Visibility = "public",
                 Static = true,
                 Final = true,
-                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumType(codeProperty)}.{code})",
             }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
         }
         foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))

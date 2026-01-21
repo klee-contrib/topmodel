@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 
 import jakarta.annotation.Generated;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
+
 /**
  * Détail d'un plat en liste.
  */
@@ -37,7 +39,7 @@ public interface PlatItem {
 	/**
 	 * Catégorie du plat.
 	 */
-	String getCategoriePlatCode();
+	CategoriePlatCode getCategoriePlatCode();
 
 	/**
 	 * Hydrate values of instance.
@@ -47,5 +49,5 @@ public interface PlatItem {
 	 * @param disponible value to set.
 	 * @param categoriePlatCode value to set.
 	 */
-	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, String categoriePlatCode);
+	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, CategoriePlatCode categoriePlatCode);
 }

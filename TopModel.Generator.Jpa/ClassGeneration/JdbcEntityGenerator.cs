@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -26,7 +27,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent;
+        return !classe.Abstract && classe.IsPersistent && classe.Enum != EnumMode.Enum;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
@@ -40,20 +41,27 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         return annotations;
     }
 
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        if (classe.Enum != null)
+        {
+            yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
+        }
+    }
+
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        if (Config.CanClassUseEnums(classe))
+        if (classe.EnumKey != null)
         {
-            var codeProperty = classe.EnumKey!;
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
-                var code = refValue.Value[codeProperty];
+                var code = refValue.Value[classe.EnumKey];
 
                 yield return new JavaField(classe.NamePascal, code)
                 {
                     Static = true,
                     Final = true,
-                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumType(classe.EnumKey)}.{code})",
                 }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
             }
         }
@@ -109,7 +117,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
         var properties = JpaModelPropertyGenerator.GetAvailableProperties(classe);
-        if (!Config.CanClassUseEnums(classe))
+        if (classe.Enum == null)
         {
             foreach (var property in properties)
             {

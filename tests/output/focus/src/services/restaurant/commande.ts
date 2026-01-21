@@ -5,7 +5,7 @@
 import {CommandeItem} from "../../model/restaurant/commande-item";
 import {CommandeRead} from "../../model/restaurant/commande-read";
 import {CommandeWrite} from "../../model/restaurant/commande-write";
-import {StatutCommande, StatutCommandeCode} from "../../model/restaurant/references";
+import {StatutCommande} from "../../model/restaurant/references";
 import {ReservationRead} from "../../model/restaurant/reservation-read";
 import {ReservationWrite} from "../../model/restaurant/reservation-write";
 
@@ -109,18 +109,18 @@ export async function getCommande(comId: number, options: RequestInit = {}): Pro
 /**
  * Liste toutes les commandes
  * @param clientId Client ayant passé la commande
- * @param statutCommandeCode Statut de la commande
+ * @param statutCommande Statut de la commande
  * @param tableId Table associée à la commande
  * @param options Options pour 'fetch'.
  * @returns Liste des commandes
  */
-export async function getCommandes(clientId?: number, statutCommandeCode: StatutCommandeCode = "EN_ATT", tableId?: number, options: RequestInit = {}): Promise<CommandeItem[]> {
+export async function getCommandes(clientId?: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: RequestInit = {}): Promise<CommandeItem[]> {
     const query = new URLSearchParams();
     if (clientId !== undefined) {
         query.append("clientId", `${clientId}`)
     }
-    if (statutCommandeCode !== undefined) {
-        query.append("statutCommandeCode", statutCommandeCode)
+    if (statutCommande !== undefined) {
+        query.append("statutCommande", statutCommande)
     }
     if (tableId !== undefined) {
         query.append("tableId", `${tableId}`)
@@ -200,14 +200,14 @@ export async function updateCommande(comId: number, commande: CommandeWrite, opt
 /**
  * Met à jour uniquement le statut d'une commande
  * @param comId Identifiant de la commande
- * @param statutCommandeCode Statut de la commande
+ * @param statutCommande Statut de la commande
  * @param options Options pour 'fetch'.
  * @returns Commande avec le statut mis à jour
  */
-export async function updateCommandeStatut(comId: number, statutCommandeCode: StatutCommandeCode = "EN_ATT", options: RequestInit = {}): Promise<CommandeRead> {
+export async function updateCommandeStatut(comId: number, statutCommande: StatutCommande = "EN_ATT", options: RequestInit = {}): Promise<CommandeRead> {
     const query = new URLSearchParams();
-    if (statutCommandeCode !== undefined) {
-        query.append("statutCommandeCode", statutCommandeCode)
+    if (statutCommande !== undefined) {
+        query.append("statutCommande", statutCommande)
     }
     const response = await fetch(`./api/restaurants/commandes/${comId}/statut?${query}`, {
         ...options,

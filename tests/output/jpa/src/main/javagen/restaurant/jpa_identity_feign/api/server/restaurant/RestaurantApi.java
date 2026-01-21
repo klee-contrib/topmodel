@@ -35,7 +35,7 @@ import restaurant.jpa_identity_feign.dtos.restaurant.StatistiquesRestaurant;
 import restaurant.jpa_identity_feign.dtos.restaurant.TableItem;
 import restaurant.jpa_identity_feign.dtos.restaurant.TableRead;
 import restaurant.jpa_identity_feign.dtos.restaurant.TableWrite;
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
 @FeignClient(name = "Restaurant", contextId = "RestaurantApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -110,7 +110,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/{resId}/plats")
 	@Operation(description = "Liste les plats d'un restaurant")
-	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlat categoriePlatCode);
+	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
 
 	/**
 	 * Récupère les statistiques d'un restaurant.

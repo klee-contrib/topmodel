@@ -27,12 +27,12 @@ export const categoriePlatList: CategoriePlat[] = [
 ];
 
 
-export type StatutCommandeCode = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
-export interface StatutCommande {
-    code: StatutCommandeCode;
+export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
+export interface StatutCommandeObject {
+    code: StatutCommande;
     libelle: string;
 }
-export const statutCommandeList: StatutCommande[] = [
+export const statutCommandeList: StatutCommandeObject[] = [
     {
         code: "EN_ATT",
         libelle: "restaurant.statutCommande.values.EnAttente"

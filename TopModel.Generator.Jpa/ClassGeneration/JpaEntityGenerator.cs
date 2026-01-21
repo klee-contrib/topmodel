@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -15,7 +16,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && !Config.CanClassUseEnums(classe);
+        return !classe.Abstract && classe.IsPersistent && classe.Enum == null;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
@@ -68,7 +69,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (classe.Reference)
         {
             var cacheAnnotation = new JavaAnnotation("Cache", imports: "org.hibernate.annotations.Cache");
-            if (Config.CanClassUseEnums(classe))
+            if (classe.Enum != null)
             {
                 yield return new JavaAnnotation("Immutable", imports: "org.hibernate.annotations.Immutable");
                 cacheAnnotation.AddAttribute(
@@ -97,10 +98,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var annotations = new List<JavaAnnotation>();
             annotations.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(pk, tag));
-            if (
-                pk is { Association: Class association }
-                && !(Config.CanClassUseEnums(association) && Config.EnumsAsEnums)
-            )
+            if (pk is { Association: Class { Enum: not EnumMode.Enum } })
             {
                 annotations.AddRange(JpaModelPropertyGenerator.GetJpaAssociationAnnotations(pk, tag));
             }
@@ -304,7 +302,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
     {
-        if (pk is { AssociationProperty: IProperty ap } && !Config.EnumsAsEnums)
+        if (pk is { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum })
         {
             return $".{JpaModelPropertyGenerator.GetGetterName(ap)}()";
         }

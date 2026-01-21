@@ -29,7 +29,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="tag">Tag.</param>
     protected virtual void GenerateClassDeclaration(CSharpWriter w, Class item, string tag)
     {
-        if (!item.Abstract)
+        if (!item.Abstract && item.Enum != EnumMode.Enum)
         {
             if (item.Reference && Config.Kinetix)
             {
@@ -69,6 +69,12 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         foreach (var (annotation, _) in Config.GetAnnotations(item, tag))
         {
             w.WriteAttribute(annotation);
+        }
+
+        if (item.Enum == EnumMode.Enum)
+        {
+            WriteEnum(w, item.EnumKey!, GetRefs(item), indent: 0);
+            return;
         }
 
         var extends = Config.GetClassExtends(item, tag);
@@ -125,27 +131,16 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             var label = refValue.GetLabel(item);
 
-            if (!Config.CanClassUseEnums(item) && item.EnumKey != null)
-            {
-                var code = refValue.Value[item.EnumKey];
-                consts.Add((item.EnumKey, refValue.Name, code, label));
-            }
-
             foreach (
-                var uk in item.UniqueKeys.Where(uk =>
-                    uk.Count == 1
-                    && Config.GetType(uk.Single())?.TrimEnd('?') == "string"
-                    && refValue.Value.ContainsKey(uk.Single())
+                var prop in item.Properties.Where(p =>
+                    p.EnumLikeProperty == p
+                    && (p.EnumProperty == null || Config.EnumGeneration != EnumGenerationMode.AsEnum)
+                    && Config.GetType(p, nonNullable: true) == "string"
                 )
             )
             {
-                var prop = uk.Single();
-
-                if (!Config.CanClassUseEnums(item, prop))
-                {
-                    var code = refValue.Value[prop];
-                    consts.Add((prop, $"{refValue.Name}{prop}", code, label));
-                }
+                var code = refValue.Value[prop];
+                consts.Add((prop, $"{refValue.Name}{(prop != item.EnumKey ? prop : string.Empty)}", code, label));
             }
         }
 
@@ -239,46 +234,19 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="item">La classe générée.</param>
     protected virtual void GenerateEnumValues(CSharpWriter w, Class item)
     {
-        bool WriteEnum(IProperty prop)
+        if (item.Extends?.Enum != null || Config.EnumGeneration != EnumGenerationMode.AsEnum)
         {
-            if (item.Extends != null && Config.CanClassUseEnums(item.Extends, prop))
-            {
-                return false;
-            }
-
-            var refs = Config.GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-
-            w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(1, $"public enum {Config.GetEnumType(prop, isPrimaryKeyDef: true)}");
-            w.WriteLine(1, "{");
-
-            foreach (var refValue in refs)
-            {
-                w.WriteSummary(2, refValue.GetLabel(item));
-                w.Write(2, refValue.Value[prop]);
-
-                if (refs.IndexOf(refValue) != refs.Count - 1)
-                {
-                    w.WriteLine(",");
-                }
-
-                w.WriteLine();
-            }
-
-            w.WriteLine(1, "}");
-            return true;
+            return;
         }
 
-        var hasLine = Config.CanClassUseEnums(item) && WriteEnum(item.EnumKey!);
+        var hasLine = false;
+        var refs = GetRefs(item);
 
-        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, uk.Single())))
+        foreach (var prop in item.Properties.Where(p => p.EnumProperty == p))
         {
-            if (hasLine)
-            {
-                w.WriteLine();
-            }
-
-            hasLine |= WriteEnum(uk.Single());
+            hasLine = true;
+            w.WriteSummary(1, $"Valeurs possibles de la liste de référence {prop.Class}.");
+            WriteEnum(w, prop, refs);
         }
 
         if (hasLine)
@@ -479,6 +447,19 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             var defaultValue = property.UseClassForAssociation ? "null" : Config.GetValue(property);
 
             if (
+                property.EnumProperty != null
+                && property.Class.Properties.Any(p => p.NamePascal == defaultValue.Split(".")[0])
+            )
+            {
+                defaultValue =
+                    $"{Config
+                    .GetNamespace(
+                        property.EnumProperty!.Class,
+                        Config.GetBestClassTag(property.EnumProperty!.Class, tag), Config.GetNamespace(property.Class, tag)
+                    )}.{defaultValue}";
+            }
+
+            if (
                 type != null
                 && (
                     property.Composition != null && property.Required
@@ -592,11 +573,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 case { Association: Class a, AssociationProperty: IProperty ap }
                     when Config.AvailableClasses.Contains(a)
-                        && (Config.CanClassUseEnums(a, ap) || Config.Kinetix && a.IsPersistent && a.Reference):
+                        && (
+                            ap.EnumProperty != null && Config.EnumGeneration == EnumGenerationMode.AsEnum
+                            || Config.Kinetix && a.IsPersistent && a.Reference
+                        ):
                     usings.Add(GetNamespace(a, tag));
                     break;
                 case { EnumProperty: IProperty ep }
-                    when Config.AvailableClasses.Contains(ep.Class) && Config.CanClassUseEnums(ep.Class, ep):
+                    when Config.AvailableClasses.Contains(ep.Class)
+                        && Config.EnumGeneration == EnumGenerationMode.AsEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { ReferenceClass: Class refClass, PrimaryKeyish: false }
@@ -622,6 +607,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         return Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag));
     }
 
+    protected virtual IList<ClassValue> GetRefs(Class item)
+    {
+        return Config.GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+    }
+
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         using var w = this.OpenCSharpWriter(fileName);
@@ -630,5 +620,26 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         w.WriteNamespace(Config.GetNamespace(classe, tag));
         w.WriteSummary(classe.Comment);
         GenerateClassDeclaration(w, classe, tag);
+    }
+
+    protected virtual void WriteEnum(CSharpWriter w, IProperty prop, IList<ClassValue> refs, int indent = 1)
+    {
+        w.WriteLine(indent, $"public enum {Config.GetEnumType(prop, internalReference: true)}");
+        w.WriteLine(indent, "{");
+
+        foreach (var refValue in refs)
+        {
+            w.WriteSummary(indent + 1, refValue.GetLabel(prop.Class));
+            w.Write(indent + 1, refValue.Value[prop]);
+
+            if (refs.IndexOf(refValue) != refs.Count - 1)
+            {
+                w.WriteLine(",");
+            }
+
+            w.WriteLine();
+        }
+
+        w.WriteLine(indent, "}");
     }
 }

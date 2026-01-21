@@ -14,8 +14,9 @@ import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
+
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en écriture.
@@ -76,12 +77,11 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	@Size(max = 10)
 	@Column("stc_code")
-	private String statutCommandeCode = "EnAttente";
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
@@ -153,12 +153,12 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for statutCommandeCode.
+	 * Getter for statutCommande.
 	 *
-	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
+	 * @return value of {@link #statutCommande statutCommande}.
 	 */
-	public String getStatutCommandeCode() {
-		return this.statutCommandeCode;
+	public StatutCommande getStatutCommande() {
+		return this.statutCommande;
 	}
 
 	/**
@@ -228,11 +228,11 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
-	 * @param statutCommandeCode value to set.
+	 * Set the value of {@link #statutCommande statutCommande}.
+	 * @param statutCommande value to set.
 	 */
-	public void setStatutCommandeCode(String statutCommandeCode) {
-		this.statutCommandeCode = statutCommandeCode;
+	public void setStatutCommande(StatutCommande statutCommande) {
+		this.statutCommande = statutCommande;
 	}
 
 	/**

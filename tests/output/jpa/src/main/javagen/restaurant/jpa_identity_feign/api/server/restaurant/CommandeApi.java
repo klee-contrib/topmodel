@@ -100,14 +100,14 @@ public interface CommandeApi {
 	/**
 	 * Liste toutes les commandes.
 	 * @param clientId Client ayant passé la commande.
-	 * @param statutCommandeCode Statut de la commande.
+	 * @param statutCommande Statut de la commande.
 	 * @param tableId Table associée à la commande.
 	 *
 	 * @return Liste des commandes.
 	 */
 	@GetMapping(path = "api/restaurants/commandes")
 	@Operation(description = "Liste toutes les commandes")
-	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommandeCode", required = true) StatutCommande statutCommandeCode, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
+	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
 
 	/**
 	 * Récupère les commandes par date.
@@ -153,11 +153,11 @@ public interface CommandeApi {
 	/**
 	 * Met à jour uniquement le statut d'une commande.
 	 * @param comId Identifiant de la commande.
-	 * @param statutCommandeCode Statut de la commande.
+	 * @param statutCommande Statut de la commande.
 	 *
 	 * @return Commande avec le statut mis à jour.
 	 */
 	@PatchMapping(path = "api/restaurants/commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
-	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommandeCode", required = true) StatutCommande statutCommandeCode);
+	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande);
 }

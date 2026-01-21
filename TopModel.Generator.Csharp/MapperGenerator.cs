@@ -70,7 +70,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             switch (property)
             {
-                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                case { EnumProperty: IProperty ep } when Config.AvailableClasses.Contains(ep.Class):
                     usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
                     break;
                 case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):

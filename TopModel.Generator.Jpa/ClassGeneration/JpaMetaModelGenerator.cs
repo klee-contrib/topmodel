@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -11,6 +12,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
     private JpaModelPropertyGenerator? _jpaModelConstructorGenerator;
 
     public override string Name => "JpaMetaModelGen";
+
     protected virtual JpaModelPropertyGenerator jpaModelPropertyGenerator
     {
         get
@@ -22,7 +24,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract && !(Config.EnumsAsEnums && Config.CanClassUseEnums(classe));
+        return classe.IsPersistent && !classe.Abstract && classe.Enum != EnumMode.Enum;
     }
 
     protected override string GetFileName(Class classe, string tag)

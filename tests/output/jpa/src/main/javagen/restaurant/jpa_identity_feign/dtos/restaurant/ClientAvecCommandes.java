@@ -116,7 +116,7 @@ public class ClientAvecCommandes implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	private List<StatutCommande> commandeStatutCommandeCode;
+	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
@@ -240,12 +240,12 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeStatutCommandeCode.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public List<StatutCommande> getCommandeStatutCommandeCode() {
-		return this.commandeStatutCommandeCode;
+	public List<StatutCommande> getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
@@ -363,11 +363,11 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
-	 * @param commandeStatutCommandeCode value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setCommandeStatutCommandeCode(List<StatutCommande> commandeStatutCommandeCode) {
-		this.commandeStatutCommandeCode = commandeStatutCommandeCode;
+	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**
@@ -402,7 +402,7 @@ public class ClientAvecCommandes implements Serializable {
 		COMMANDE_CLIENT_ID(List.class),
 		COMMANDE_TABLE_ID(List.class),
 		COMMANDE_RESERVATION_ID(List.class),
-		COMMANDE_STATUT_COMMANDE_CODE(List.class),
+		COMMANDE_STATUT_COMMANDE(List.class),
 		COMMANDE_AVIS_CLIENT_ID(List.class),
 		COMMANDE_LIGNES(List.class);
 

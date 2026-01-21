@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 import { CommandeItem } from "../../model/restaurant/commande-item";
 import { CommandeRead } from "../../model/restaurant/commande-read";
 import { CommandeWrite } from "../../model/restaurant/commande-write";
-import { StatutCommande, StatutCommandeCode } from "../../model/restaurant/references";
+import { StatutCommande } from "../../model/restaurant/references";
 import { ReservationRead } from "../../model/restaurant/reservation-read";
 import { ReservationWrite } from "../../model/restaurant/reservation-write";
 @Injectable({
@@ -90,11 +90,11 @@ export class CommandeService {
     /**
      * @description Liste toutes les commandes
      * @param clientId Client ayant passé la commande
-     * @param statutCommandeCode Statut de la commande
+     * @param statutCommande Statut de la commande
      * @param tableId Table associée à la commande
      * @returns Liste des commandes
      */
-    getCommandes(clientId?: number, statutCommandeCode: StatutCommandeCode = "EN_ATT", tableId?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
+    getCommandes(clientId?: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -108,7 +108,7 @@ export class CommandeService {
           }
         };
         addParam('clientId', clientId);
-        addParam('statutCommandeCode', statutCommandeCode);
+        addParam('statutCommande', statutCommande);
         addParam('tableId', tableId);
 
         return this.http.get<CommandeItem[]>(`/api/restaurants/commandes`, {observe: 'body', ...options});
@@ -168,10 +168,10 @@ export class CommandeService {
     /**
      * @description Met à jour uniquement le statut d'une commande
      * @param comId Identifiant de la commande
-     * @param statutCommandeCode Statut de la commande
+     * @param statutCommande Statut de la commande
      * @returns Commande avec le statut mis à jour
      */
-    updateCommandeStatut(comId: number, statutCommandeCode: StatutCommandeCode = "EN_ATT", options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeRead> {
+    updateCommandeStatut(comId: number, statutCommande: StatutCommande = "EN_ATT", options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeRead> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -184,7 +184,7 @@ export class CommandeService {
             }
           }
         };
-        addParam('statutCommandeCode', statutCommandeCode);
+        addParam('statutCommande', statutCommande);
 
         return this.http.patch<CommandeRead>(`/api/restaurants/commandes/${comId}/statut`, {}, {observe: 'body', ...options});
     }

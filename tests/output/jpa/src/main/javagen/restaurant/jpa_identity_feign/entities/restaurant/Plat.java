@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
 
 /**
  * Plat du menu.
@@ -64,8 +60,8 @@ public class Plat {
 	/**
 	 * Catégorie du plat.
 	 */
-	@Enumerated(EnumType.STRING)
-	@Column(name = "CAT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CategoriePlat.class)
 	private CategoriePlat categoriePlat;
 
 	/**
