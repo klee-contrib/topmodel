@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.5.3
+
+- [`79fee2e`](https://github.com/klee-contrib/topmodel/commit/79fee2ea912304c4538158e80b278e9c12894a6c) - [Jpa] Update property handling for reverse associations in JpaModelPropertyGenerator
+
 ## 3.5.2
 
 - [`83fc853`](https://github.com/klee-contrib/topmodel/commit/83fc853f9e64abcd980b66c9168e87557775367e) - [JPA] Désactive la génération du métamodèle en mode JDBC
