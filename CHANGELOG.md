@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.6
+
+- [`79fee2`](https://github.com/klee-contrib/topmodel/commit/79fee2ea912304c4538158e80b278e9c12894a6c) - [Model] Add IsReverseAssociationProperty to identify reverse associations
+
 ## 3.8.5
 
 - [`864b3ac`](https://github.com/klee-contrib/topmodel/commit/864b3ac4091dd734153eeb54e6ca9bdfc1dde8e0) - [Core] Bloque les alias d'associations multiples sur classes persistées
