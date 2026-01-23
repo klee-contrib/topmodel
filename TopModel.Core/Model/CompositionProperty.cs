@@ -50,7 +50,7 @@ public class CompositionProperty : IProperty
 
     public bool Required { get; set; } = true;
 
-    public string DefaultValue => throw new NotSupportedException();
+    public string? DefaultValue => null;
 
     public LocatedString? Trigram { get; set; }
 
