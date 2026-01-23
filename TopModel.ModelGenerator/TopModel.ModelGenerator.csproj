@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.12.10</Version>
+    <Version>1.12.11</Version>
     <Description>Générateur de modèle TopModel à partir de sources externes (OpenAPI, Postgresql, Oracle...).</Description>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
