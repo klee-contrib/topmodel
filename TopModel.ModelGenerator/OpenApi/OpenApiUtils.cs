@@ -176,6 +176,19 @@ public static class OpenApiUtils
             {
                 schemas.Add(s.Key, s.Value);
             }
+            if (s.Value?.Properties != null)
+            {
+                foreach (var propertySchema in s.Value.Properties)
+                {
+                    if (
+                        !schemas.Values.Any(sc => sc == propertySchema.Value)
+                        && !schemas.ContainsKey($"{s.Key}{propertySchema.Key}")
+                    )
+                    {
+                        schemas.Add($"{s.Key}{propertySchema.Key}", propertySchema.Value);
+                    }
+                }
+            }
         }
 
         foreach (
@@ -204,6 +217,10 @@ public static class OpenApiUtils
             {
                 schemas.Add(s.Key, s.Value);
             }
+            if (s.Value != null && s.Value.Items != null && !schemas.Values.Any(sc => sc == s.Value.Items))
+            {
+                schemas.Add(s.Key + "Items", s.Value.Items);
+            }
         }
 
         foreach (
@@ -226,6 +243,7 @@ public static class OpenApiUtils
             .Where(s =>
                 (
                     s.Value.Type == JsonSchemaType.Object
+                    || s.Value.Type is null && s.Value.Properties?.Any() == true
                     || s.Value.Type == JsonSchemaType.String && (s.Value.Enum?.Any() ?? false)
                     || (s.Value.AllOf?.Any() ?? false) && s.Value.AllOf.All(a => a.Type == JsonSchemaType.Object)
                     || (s.Value.AnyOf?.Any() ?? false)
