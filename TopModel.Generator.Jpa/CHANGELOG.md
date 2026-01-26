@@ -1,8 +1,12 @@
 # Changelog JPA
 
+## 3.5.5
+
+- [`ba4169efb0`](https://github.com/klee-contrib/topmodel/commit/ba4169efb0c0554246b5298197bf46fa4232d9f8) - [JPA] Ajout annotations manquantes dans l cas MapsId
+
 ## 3.5.4
 
-- [`88dda9cf83d6d158e34f0f29f587c1f62147219f`](https://github.com/klee-contrib/topmodel/commit/88dda9cf83d6d158e34f0f29f587c1f62147219f) - [JPA] Include type type imports in MapId property
+- [`88dda9c`](https://github.com/klee-contrib/topmodel/commit/88dda9cf83d6d158e34f0f29f587c1f62147219f) - [JPA] Include type type imports in MapId property
 Fix [#538](https://github.com/klee-contrib/topmodel/issues/538)
 
 ## 3.5.3
@@ -28,7 +32,7 @@ Compatibilité avec TopModel 3.8
 - [`06bfc01`](https://github.com/klee-contrib/topmodel/commit/06bfc01e6589e5e6090f46443a35ab72024c52f4) - Remove persistence mode, hardcode Jakarta.
 - [`61b7dc6`](https://github.com/klee-contrib/topmodel/commit/61b7dc6526d3aaaaf7284ccdb6997412d31fdd4f) - [JPA] Fix calcul nom package
 
-**breaking changes**
+### **breaking changes**
 
 - La config `persistenceMode` a été retirée, elle vaut toujours `jakarta` maintenant.
 - La casse des modules est respectée dans les chemins de fichiers (attention à bien mettre des `:lower` si besoin dans vos variables `module` dans vos configs du coup)
