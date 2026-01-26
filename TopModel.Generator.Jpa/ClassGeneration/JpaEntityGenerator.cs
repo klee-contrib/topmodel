@@ -174,13 +174,15 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && classe.PrimaryKey.First() is { Association: Class association, AssociationProperty: IProperty ap } pk
         )
         {
-            yield return new JavaField(JpaModelPropertyGenerator.GetPropertyType(ap), pk.NameCamel)
+            var javaField = new JavaField(JpaModelPropertyGenerator.GetPropertyType(ap), pk.NameCamel)
             {
                 Comment =
                 {
                     @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}",
                 },
             }.Add(JpaModelPropertyGenerator.IdAnnotation);
+            javaField.Imports.AddRange(ap.GetTypeImports(Config, tag));
+            yield return javaField;
         }
         foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))
         {
