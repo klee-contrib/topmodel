@@ -1,5 +1,10 @@
 # Changelog JPA
 
+## 3.5.4
+
+- [`88dda9cf83d6d158e34f0f29f587c1f62147219f`](https://github.com/klee-contrib/topmodel/commit/88dda9cf83d6d158e34f0f29f587c1f62147219f) - [JPA] Include type type imports in MapId property
+Fix [#538](https://github.com/klee-contrib/topmodel/issues/538)
+
 ## 3.5.3
 
 - [`79fee2e`](https://github.com/klee-contrib/topmodel/commit/79fee2ea912304c4538158e80b278e9c12894a6c) - [Jpa] Update property handling for reverse associations in JpaModelPropertyGenerator
