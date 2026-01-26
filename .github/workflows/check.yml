@@ -21,11 +21,11 @@ jobs:
       - name: build
         run: dotnet build
 
-      - name: modgen
-        run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
-
       - name: tmdgen
         run: dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/open-api/tmdgen.config -c
+
+      - name: modgen
+        run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
 
       - name: build C# sample
         run: dotnet build

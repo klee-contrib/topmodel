@@ -182,10 +182,10 @@ public static class OpenApiUtils
                 {
                     if (
                         !schemas.Values.Any(sc => sc == propertySchema.Value)
-                        && !schemas.ContainsKey($"{s.Key}{propertySchema.Key}")
+                        && !schemas.ContainsKey($"{s.Key}{propertySchema.Key.ToPascalCase()}")
                     )
                     {
-                        schemas.Add($"{s.Key}{propertySchema.Key}", propertySchema.Value);
+                        schemas.Add($"{s.Key}{propertySchema.Key.ToPascalCase()}", propertySchema.Value);
                     }
                 }
             }
