@@ -182,6 +182,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 },
             }.Add(JpaModelPropertyGenerator.IdAnnotation);
             javaField.Imports.AddRange(ap.GetTypeImports(Config, tag));
+            javaField.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(ap, tag));
+            if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(ap))
+            {
+                javaField.Add(JpaModelPropertyGenerator.EnumAnnotation);
+            }
+
             yield return javaField;
         }
         foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))
