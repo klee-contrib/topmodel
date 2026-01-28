@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
+import restaurant.jpa_identity_feign.entities.restaurant.LigneCommande;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+
 /**
  * Détail d'une ligne de commande en lecture.
  */
@@ -64,6 +67,23 @@ public class LigneCommandeRead implements Serializable {
 	 */
 	@NotNull
 	private Integer platId;
+
+	/**
+	 * No arg constructor.
+	 */
+	public LigneCommandeRead() {
+		// No arg constructor
+	}
+
+	/**
+	 * Crée une nouvelle instance de 'LigneCommandeRead'.
+	 * @param ligneCommande Instance de 'LigneCommande'.
+	 *
+	 * @return Une nouvelle instance de 'LigneCommandeRead'.
+	 */
+	public LigneCommandeRead(LigneCommande ligneCommande) {
+		RestaurantMappers.mapLigneCommandeRead(ligneCommande, this);
+	}
 
 	/**
 	 * Getter for id.

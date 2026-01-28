@@ -15,6 +15,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
+import restaurant.jpa_identity_feign.entities.restaurant.Menu;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+
 /**
  * Détail d'un menu en lecture.
  */
@@ -88,6 +91,23 @@ public class MenuRead implements Serializable {
 	@Valid
 	@NotNull
 	private List<PlatItem> plats;
+
+	/**
+	 * No arg constructor.
+	 */
+	public MenuRead() {
+		// No arg constructor
+	}
+
+	/**
+	 * Crée une nouvelle instance de 'MenuRead'.
+	 * @param menu Instance de 'Menu'.
+	 *
+	 * @return Une nouvelle instance de 'MenuRead'.
+	 */
+	public MenuRead(Menu menu) {
+		RestaurantMappers.mapMenuRead(menu, this);
+	}
 
 	/**
 	 * Getter for id.

@@ -5,6 +5,8 @@
 import {DO_LIBELLE, DO_LISTE, DO_TELEPHONE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
+import {TableItemEntity} from "./table-item";
+
 export type RestaurantWrite = EntityToType<RestaurantWriteEntityType>;
 export type RestaurantWriteEntityType = typeof RestaurantWriteEntity;
 
@@ -30,7 +32,7 @@ export const RestaurantWriteEntity = entity({
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.avisClients")
     ),
-    tableIds: e.field(DO_LISTE, f => f.type<number[]>()
+    tableIds: e.list(TableItemEntity, f => f
         .label("restaurant.restaurant.tableIds")
     )
 });

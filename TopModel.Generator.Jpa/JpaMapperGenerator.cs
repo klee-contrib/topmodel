@@ -3,7 +3,6 @@ using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Generator.Core;
-using TopModel.Generator.Jpa.ClassGeneration;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
@@ -294,7 +293,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             && (!propertyTarget.Class.IsPersistent || propertyTarget.Association == null)
             && (
                 propertySource is
-                { Association: { IsPersistent: true } aSource, AssociationProperty: IProperty apSource }
+                { Association: Class aSource, UseClassForAssociation: true, AssociationProperty: IProperty apSource }
             )
         )
         {
@@ -378,12 +377,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
         }
         else if (
-            (!propertySource.Class.IsPersistent || propertySource.Association == null)
-            && propertyTarget.Class.IsPersistent
-            && (
-                propertyTarget is
-                { Association: { IsPersistent: true } aTarget, AssociationProperty: IProperty apTarget }
-            )
+            propertyTarget is
+            { Association: Class aTarget, UseClassForAssociation: true, AssociationProperty: IProperty apTarget }
         )
         {
             if (apTarget.Class.Enum != null)

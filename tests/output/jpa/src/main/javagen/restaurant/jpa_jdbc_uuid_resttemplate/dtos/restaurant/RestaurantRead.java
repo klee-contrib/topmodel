@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 /**
  * Détail d'un restaurant en lecture.
@@ -90,8 +91,9 @@ public class RestaurantRead implements Serializable {
 	 * Association réciproque de TableRestaurant.RestaurantId.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> tableIds;
+	private List<TableItem> tableIds;
 
 	/**
 	 * Getter for id.
@@ -170,7 +172,7 @@ public class RestaurantRead implements Serializable {
 	 *
 	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTableIds() {
+	public List<TableItem> getTableIds() {
 		return this.tableIds;
 	}
 
@@ -242,7 +244,7 @@ public class RestaurantRead implements Serializable {
 	 * Set the value of {@link #tableIds tableIds}.
 	 * @param tableIds value to set.
 	 */
-	public void setTableIds(List<Integer> tableIds) {
+	public void setTableIds(List<TableItem> tableIds) {
 		this.tableIds = tableIds;
 	}
 }

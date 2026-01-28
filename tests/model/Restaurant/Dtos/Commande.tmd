@@ -57,9 +57,6 @@ class:
     from:
       - params:
           - class: Commande
-            mappings:
-              #Client: ClientId
-              Reservation: Reservation
 ---
 class:
   name: CommandeWrite

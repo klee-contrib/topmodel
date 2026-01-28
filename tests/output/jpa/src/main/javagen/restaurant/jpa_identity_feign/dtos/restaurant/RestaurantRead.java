@@ -11,6 +11,10 @@ import java.util.List;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+
+import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 
 /**
  * Détail d'un restaurant en lecture.
@@ -84,8 +88,26 @@ public class RestaurantRead implements Serializable {
 	 * Association réciproque de TableRestaurant.RestaurantId.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> tableIds;
+	private List<TableItem> tableIds;
+
+	/**
+	 * No arg constructor.
+	 */
+	public RestaurantRead() {
+		// No arg constructor
+	}
+
+	/**
+	 * Crée une nouvelle instance de 'RestaurantRead'.
+	 * @param restaurant Instance de 'Restaurant'.
+	 *
+	 * @return Une nouvelle instance de 'RestaurantRead'.
+	 */
+	public RestaurantRead(Restaurant restaurant) {
+		RestaurantMappers.mapRestaurantRead(restaurant, this);
+	}
 
 	/**
 	 * Getter for id.
@@ -164,7 +186,7 @@ public class RestaurantRead implements Serializable {
 	 *
 	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTableIds() {
+	public List<TableItem> getTableIds() {
 		return this.tableIds;
 	}
 
@@ -236,7 +258,7 @@ public class RestaurantRead implements Serializable {
 	 * Set the value of {@link #tableIds tableIds}.
 	 * @param tableIds value to set.
 	 */
-	public void setTableIds(List<Integer> tableIds) {
+	public void setTableIds(List<TableItem> tableIds) {
 		this.tableIds = tableIds;
 	}
 

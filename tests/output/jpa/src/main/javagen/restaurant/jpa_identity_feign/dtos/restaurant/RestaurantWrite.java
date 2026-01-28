@@ -11,6 +11,10 @@ import java.util.List;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+
+import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 
 /**
  * Détail d'un restaurant en écriture.
@@ -26,7 +30,7 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Nom du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getNom() Restaurant#getNom()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getNom() RestaurantRead#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -34,51 +38,52 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Adresse du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAdresse() Restaurant#getAdresse()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getAdresse() RestaurantRead#getAdresse()}
 	 */
 	@Size(max = 100)
 	private String adresse;
 
 	/**
 	 * Numéro de téléphone.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTelephone() Restaurant#getTelephone()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getTelephone() RestaurantRead#getTelephone()}
 	 */
 	@Size(max = 20)
 	private String telephone;
 
 	/**
 	 * Association réciproque de Menu.Restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getMenus() RestaurantRead#getMenus()}
 	 */
 	@NotNull
 	private List<Integer> menus;
 
 	/**
 	 * Association réciproque de Plat.Restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getPlats() RestaurantRead#getPlats()}
 	 */
 	@NotNull
 	private List<Integer> plats;
 
 	/**
 	 * Association réciproque de Promotion.Restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getPromotions() RestaurantRead#getPromotions()}
 	 */
 	private List<Integer> promotions;
 
 	/**
 	 * Association réciproque de AvisClient.Restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getAvisClients() RestaurantRead#getAvisClients()}
 	 */
 	@NotNull
 	private List<Integer> avisClients;
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getTableIds() RestaurantRead#getTableIds()}
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> tableIds;
+	private List<TableItem> tableIds;
 
 	/**
 	 * Getter for nom.
@@ -148,7 +153,7 @@ public class RestaurantWrite implements Serializable {
 	 *
 	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTableIds() {
+	public List<TableItem> getTableIds() {
 		return this.tableIds;
 	}
 
@@ -212,8 +217,18 @@ public class RestaurantWrite implements Serializable {
 	 * Set the value of {@link #tableIds tableIds}.
 	 * @param tableIds value to set.
 	 */
-	public void setTableIds(List<Integer> tableIds) {
+	public void setTableIds(List<TableItem> tableIds) {
 		this.tableIds = tableIds;
+	}
+
+	/**
+	 * Mappe 'RestaurantWrite' vers 'Restaurant'.
+	 * @param target Instance pré-existante de 'Restaurant'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'Restaurant'.
+	 */
+	public Restaurant toRestaurant(Restaurant target) {
+		return RestaurantMappers.toRestaurant(this, target);
 	}
 
 	/**

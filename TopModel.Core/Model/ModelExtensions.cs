@@ -97,23 +97,6 @@ public static class ModelExtensions
             };
 
         /// <summary>
-        /// Si la propriété est une composition, clé primaire de la classe cible de la composition.
-        /// </summary>
-        public IProperty? CompositionPrimaryKey
-        {
-            get
-            {
-                if (prop.Composition == null)
-                {
-                    return null;
-                }
-
-                var cpPks = prop.Composition!.ExtendedProperties.Where(p => p.PrimaryKeyish);
-                return cpPks.Count() == 1 ? cpPks.Single() : null;
-            }
-        }
-
-        /// <summary>
         /// Hiérarchie des domaines de la propriété.
         /// </summary>
         /// <remarks>(Une propriété peut être construite à partir de plusieurs domaines avec des alias 'as' ou des associations 'toMany'.)</remarks>
@@ -250,6 +233,34 @@ public static class ModelExtensions
         /// </summary>
         public bool IsReverseProperty =>
             prop is ReverseAssociationProperty || prop is AliasProperty ap && ap.Property is ReverseAssociationProperty;
+
+        /// <summary>
+        /// Détermine le type de la propriété pour déterminer comment elle doit être mappée.
+        /// </summary>
+        public (Domain? Domain, Class? Class, IProperty? ClassProperty) MappingType =>
+            prop switch
+            {
+                { Composition: Class c } => (
+                    prop.Domain,
+                    c,
+                    c.ExtendedProperties.Count(p => p.PrimaryKeyish) == 1
+                        ? c.ExtendedProperties.Single(p => p.PrimaryKeyish)
+                        : null
+                ),
+                { EnumProperty.Class.Enum: EnumMode.Enum } => (prop.Domain, null, null),
+                {
+                    Association: Class c,
+                    AssociationProperty: IProperty ap,
+                    UseClassForAssociation: true,
+                    AssociationMultiple: true
+                } => (prop.Domain, c, ap),
+                { Association: Class c, AssociationProperty: IProperty ap, UseClassForAssociation: true } => (
+                    null,
+                    c,
+                    ap
+                ),
+                _ => (prop.Domain, null, null),
+            };
 
         /// <summary>
         /// Calcule le nom d'une propriété d'association.

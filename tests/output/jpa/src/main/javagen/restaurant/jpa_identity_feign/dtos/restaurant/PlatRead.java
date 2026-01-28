@@ -12,6 +12,8 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_identity_feign.entities.restaurant.Plat;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
 /**
@@ -75,6 +77,23 @@ public class PlatRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * No arg constructor.
+	 */
+	public PlatRead() {
+		// No arg constructor
+	}
+
+	/**
+	 * Crée une nouvelle instance de 'PlatRead'.
+	 * @param plat Instance de 'Plat'.
+	 *
+	 * @return Une nouvelle instance de 'PlatRead'.
+	 */
+	public PlatRead(Plat plat) {
+		RestaurantMappers.mapPlatRead(plat, this);
+	}
 
 	/**
 	 * Getter for id.

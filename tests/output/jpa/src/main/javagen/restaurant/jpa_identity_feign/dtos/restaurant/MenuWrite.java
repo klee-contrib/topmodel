@@ -13,6 +13,9 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_identity_feign.entities.restaurant.Menu;
+import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+
 /**
  * Détail d'un menu en écriture.
  */
@@ -190,6 +193,16 @@ public class MenuWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+
+	/**
+	 * Mappe 'MenuWrite' vers 'Menu'.
+	 * @param target Instance pré-existante de 'Menu'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'Menu'.
+	 */
+	public Menu toMenu(Menu target) {
+		return RestaurantMappers.toMenu(this, target);
 	}
 
 	/**
