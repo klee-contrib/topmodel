@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.8.7
+
+- [`72014`](https://github.com/klee-contrib/topmodel/commit/72014af5ba937e5b7cbdc2c659c324f4df54c9f5) - [Core] Fix mode watch perte d'annotations
+
 ## 3.8.6
 
 - [`79fee2`](https://github.com/klee-contrib/topmodel/commit/79fee2ea912304c4538158e80b278e9c12894a6c) - [Model] Add IsReverseAssociationProperty to identify reverse associations
