@@ -5,6 +5,8 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.Generated;
 
@@ -150,6 +152,12 @@ public class RestaurantMappers {
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
 		target.setEmail(client.getEmail());
+		if (client.getAvisClients() != null) {
+			target.setAvisClients(client.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
+		} else {
+			target.setAvisClients(null);
+		}
+
 		return target;
 	}
 
@@ -499,6 +507,30 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
+		if (restaurant.getMenus() != null) {
+			target.setMenus(restaurant.getMenus().stream().filter(Objects::nonNull).map(Menu::getId).collect(Collectors.toList()));
+		} else {
+			target.setMenus(null);
+		}
+
+		if (restaurant.getPlats() != null) {
+			target.setPlats(restaurant.getPlats().stream().filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
+		} else {
+			target.setPlats(null);
+		}
+
+		if (restaurant.getPromotions() != null) {
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
+		} else {
+			target.setPromotions(null);
+		}
+
+		if (restaurant.getAvisClients() != null) {
+			target.setAvisClients(restaurant.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
+		} else {
+			target.setAvisClients(null);
+		}
+
 		target.setTableIds(restaurant.getTableIds());
 		target.setNombrePlats(nombrePlats);
 		target.setNombreTables(nombreTables);
@@ -536,6 +568,30 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
+		if (restaurant.getMenus() != null) {
+			target.setMenus(restaurant.getMenus().stream().filter(Objects::nonNull).map(Menu::getId).collect(Collectors.toList()));
+		} else {
+			target.setMenus(null);
+		}
+
+		if (restaurant.getPlats() != null) {
+			target.setPlats(restaurant.getPlats().stream().filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
+		} else {
+			target.setPlats(null);
+		}
+
+		if (restaurant.getPromotions() != null) {
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
+		} else {
+			target.setPromotions(null);
+		}
+
+		if (restaurant.getAvisClients() != null) {
+			target.setAvisClients(restaurant.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
+		} else {
+			target.setAvisClients(null);
+		}
+
 		return target;
 	}
 
@@ -941,6 +997,7 @@ public class RestaurantMappers {
 		target.setNom(source.getNom());
 		target.setAdresse(source.getAdresse());
 		target.setTelephone(source.getTelephone());
+		target.setTableIds(source.getTables());
 		return target;
 	}
 

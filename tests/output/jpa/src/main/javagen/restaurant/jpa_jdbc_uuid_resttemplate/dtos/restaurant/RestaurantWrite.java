@@ -81,11 +81,11 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.RestaurantRead#getTableIds() RestaurantRead#getTableIds()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.RestaurantRead#getTables() RestaurantRead#getTables()}
 	 */
 	@Valid
 	@NotNull
-	private List<TableItem> tableIds;
+	private List<TableItem> tables;
 
 	/**
 	 * Getter for nom.
@@ -151,12 +151,12 @@ public class RestaurantWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for tableIds.
+	 * Getter for tables.
 	 *
-	 * @return value of {@link #tableIds tableIds}.
+	 * @return value of {@link #tables tables}.
 	 */
-	public List<TableItem> getTableIds() {
-		return this.tableIds;
+	public List<TableItem> getTables() {
+		return this.tables;
 	}
 
 	/**
@@ -216,10 +216,10 @@ public class RestaurantWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tableIds tableIds}.
-	 * @param tableIds value to set.
+	 * Set the value of {@link #tables tables}.
+	 * @param tables value to set.
 	 */
-	public void setTableIds(List<TableItem> tableIds) {
-		this.tableIds = tableIds;
+	public void setTables(List<TableItem> tables) {
+		this.tables = tables;
 	}
 }

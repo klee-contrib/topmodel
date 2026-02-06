@@ -153,6 +153,18 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
+  <data name="TMD6001" xml:space="preserve">
+    <value>Domain '{0}' already exists.</value>
+  </data>
+  <data name="TMD6002" xml:space="preserve">
+    <value>Conversion between '{0}' and '{1}' already exists in another converter.</value>
+  </data>
+  <data name="TMD6003" xml:space="preserve">
+    <value>Configuration '{0}' needs for domain '{1}' to have an implementation for at least one of these languages : {2}.</value>
+  </data>
+  <data name="TMD6004" xml:space="preserve">
+    <value>Cannot define domain as 'collection' since it is not generic (`genericType` must be defined on every implementation).</value>
+  </data>
   <data name="TMD9001" xml:space="preserve">
     <value>Property '{0}' already referenced in alias definition.</value>
   </data>
@@ -182,6 +194,9 @@
   </data>
   <data name="TMD9010" xml:space="preserve">
     <value>Cannot define a composition property on class '{0}' since it has `enum: true`.</value>
+  </data>
+  <data name="TMD9011" xml:space="preserve">
+    <value>Cannot use domain '{0}' for property '{1}' because it is not non-generic (`type` must be defined on every implementation).</value>
   </data>
   <data name="TMD9014" xml:space="preserve">
     <value>Cannot define alias on property '{0}' of class '{1}' because it is a multiple association and target class is persisted.</value>

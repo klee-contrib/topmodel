@@ -105,7 +105,7 @@ internal class PropertyResolver(
     public IEnumerable<ModelError> ResolveAliases(Func<AliasProperty, bool> filter)
     {
         var aliasedProperties = modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>().Where(filter);
-        var sortedAliases = CoreUtils.Sort<AliasProperty>(
+        var sortedAliases = CoreUtils.Sort(
             aliasedProperties,
             a =>
                 aliasedProperties
@@ -454,6 +454,21 @@ internal class PropertyResolver(
                     alp.PropertyReference ?? alp.Reference?.ContainerReference
                 );
             }
+        }
+
+        foreach (
+            var cp in modelFiles.SelectMany(mf =>
+                mf.Properties.Where(p => p.Composition == null && !p.DomainChain.Last().Domain.NonGeneric)
+            )
+        )
+        {
+            yield return new ModelError(
+                localizer,
+                ErrorType.TMD9011,
+                [cp.DomainChain.Last().Domain.Name, cp.Name],
+                cp,
+                cp.DomainReference
+            );
         }
     }
 

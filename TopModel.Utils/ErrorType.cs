@@ -254,19 +254,24 @@ public enum ErrorType
     #region Erreurs de domaines (6)
 
     /// <summary>
-    /// Le domaine '{domain}' est déjà défini.
+    /// Domaine en doublon.
     /// </summary>
     TMD6001,
 
     /// <summary>
-    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter.
+    /// Conversion déjà définie.
     /// </summary>
     TMD6002,
 
     /// <summary>
-    /// La configuration '{Name}' requiert que le domaine '{domain}' ait une implémentation pour le language '{Language}'.
+    /// Implémentation manquante.
     /// </summary>
     TMD6003,
+
+    /// <summary>
+    /// Domaine de collection non générique.
+    /// </summary>
+    TMD6004,
 
     #endregion
 
@@ -419,6 +424,11 @@ public enum ErrorType
     /// Composition sur une enum: true.
     /// </summary>
     TMD9010,
+
+    /// <summary>
+    /// Propriété simple sans domaine non générique.
+    /// </summary>
+    TMD9011,
 
     /// <summary>
     /// Alias association multiple impossible.

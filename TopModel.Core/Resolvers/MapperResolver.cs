@@ -442,7 +442,7 @@ internal class MapperResolver(
 
     private bool CheckPossibleMapping(bool to, IProperty currentProperty, IProperty mappedProperty)
     {
-        bool CheckDomains(Domain currentDomain, Domain mappedDomain)
+        bool CheckDomains(Domain? currentDomain, Domain? mappedDomain)
         {
             return currentDomain == mappedDomain
                 || converters.Any(c =>
@@ -453,8 +453,8 @@ internal class MapperResolver(
 
         // Mapping primitif => primitif
         if (
-            currentProperty.MappingType.Class == null
-            && mappedProperty.MappingType.Class == null
+            currentProperty.MappingType.IsT0
+            && mappedProperty.MappingType.IsT0
             && CheckDomains(currentProperty.Domain, mappedProperty.Domain)
         )
         {
@@ -463,9 +463,10 @@ internal class MapperResolver(
 
         // Mapping classe => même classe
         if (
-            currentProperty.MappingType.Class == mappedProperty.MappingType.Class
-            && currentProperty.MappingType.Domain == null
-            && mappedProperty.MappingType.Domain == null
+            currentProperty.MappingType.TryPickT1(out var cmt1, out _)
+            && mappedProperty.MappingType.TryPickT1(out var cmt2, out _)
+            && cmt1.Class == cmt2.Class
+            && CheckDomains(cmt1.Domain, cmt2.Domain)
         )
         {
             return true;
@@ -474,18 +475,22 @@ internal class MapperResolver(
         // Mapping classe => propriété
         if (
             to
-                && currentProperty.MappingType.ClassProperty != null
-                && mappedProperty.MappingType.Class == null
+                && mappedProperty.MappingType.TryPickT0(out var mp, out _)
                 && (
-                    CheckDomains(currentProperty.MappingType.ClassProperty!.Domain, mappedProperty.Domain)
-                // || CheckDomains(currentProperty.Domain, mappedProperty.Domain) <- Il faut vérifier plus de choses que ça pour l'autoriser
+                    currentProperty.MappingType.TryPickT1(out var cp1, out _)
+                        && CheckDomains(cp1.Property?.Domain, mp.Domain)
+                    || currentProperty.MappingType.TryPickT2(out var cp2, out _)
+                        && mp.ItemDomain != null
+                        && CheckDomains(cp2.Property?.Domain, mp.ItemDomain)
                 )
             || !to
-                && mappedProperty.MappingType.ClassProperty != null
-                && currentProperty.MappingType.Class == null
+                && currentProperty.MappingType.TryPickT0(out var cp, out _)
                 && (
-                    CheckDomains(mappedProperty.MappingType.ClassProperty!.Domain, currentProperty.Domain)
-                // || CheckDomains(mappedProperty.Domain, currentProperty.Domain) <- Il faut vérifier plus de choses que ça pour l'autoriser
+                    mappedProperty.MappingType.TryPickT1(out var mp1, out _)
+                        && CheckDomains(mp1.Property?.Domain, cp.Domain)
+                    || mappedProperty.MappingType.TryPickT2(out var mp2, out _)
+                        && cp.ItemDomain != null
+                        && CheckDomains(mp2.Property?.Domain, cp.ItemDomain)
                 )
         )
         {

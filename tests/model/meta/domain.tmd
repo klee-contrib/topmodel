@@ -130,17 +130,19 @@ domain:
   name: DO_LISTE
   asDomains:
     list: DO_LISTE
-
   label: Liste pour composition
+  collection: true
   csharp:
     genericType: ICollection<{T}>
+    collector: ToList()
   java:
     genericType: List<{T}>
     imports:
       - java.util.List
   ts:
     genericType: "{T}[]"
-  sql: {}
+  sql:
+    genericType: jsonb
 ---
 domain:
   name: DO_FICHIER
@@ -152,4 +154,5 @@ domain:
     type: byte[]
   java:
     type: byte[]
-  sql: {}
+  sql:
+    type: blob

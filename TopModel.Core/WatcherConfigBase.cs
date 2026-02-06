@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.Localization;
 using Spectre.Console;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders.YamlUtils;
@@ -343,7 +344,10 @@ public class WatcherConfigBase
         return result;
     }
 
-    internal IEnumerable<ModelError> CheckDomainImplementations(IEnumerable<ModelFile> files)
+    internal IEnumerable<ModelError> CheckDomainImplementations(
+        IEnumerable<ModelFile> files,
+        IStringLocalizer localizer
+    )
     {
         var handledFiles = files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any());
 
@@ -359,9 +363,10 @@ public class WatcherConfigBase
             )
             {
                 yield return new ModelError(
+                    localizer,
                     ErrorType.TMD6003,
-                    domain,
-                    $"La configuration '{Name}' requiert que le domaine '{domain}' ait une implémentation pour l'un des languages suivants : {string.Join(", ", Language.Select(l => $"'{l}'"))}."
+                    [Name ?? string.Empty, domain.ToString(), string.Join(", ", Language.Select(l => $"'{l}'"))],
+                    domain
                 );
             }
         }

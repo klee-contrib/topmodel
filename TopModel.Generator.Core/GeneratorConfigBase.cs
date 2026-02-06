@@ -350,8 +350,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// </summary>
     /// <param name="property">Domaine.</param>
     /// <param name="forceAssociationPropertyType">Pour une association, retourne toujours le type de la propriété cible.</param>
+    /// <param name="skipChain">Récupère le type à l'index demandé dans la hiérarchie de domaine.</param>
     /// <returns>Le type.</returns>
-    public virtual string GetType(IProperty property, bool forceAssociationPropertyType = false)
+    public virtual string GetType(IProperty property, bool forceAssociationPropertyType = false, int skipChain = 0)
     {
         string GetType(IEnumerable<(Domain Domain, bool Generic)> domainChain)
         {
@@ -393,7 +394,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 .Replace("{T}", "{composition.name}")
                 .ParseTemplate(property, this),
             { Composition: Class c } => c.NamePascal,
-            _ => GetType(property.DomainChain),
+            _ => GetType(property.DomainChain.Skip(skipChain)),
         };
     }
 

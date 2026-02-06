@@ -63,7 +63,8 @@ public static class Mappers
             Id = client.Id,
             Nom = client.Nom,
             Prenom = client.Prenom,
-            Email = client.Email
+            Email = client.Email,
+            AvisClients = client.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -235,6 +236,10 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
+            Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
+            Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Select(p => p.Plat!.Id!.Value).ToList(),
+            AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList(),
             TableIds = restaurant.TableIds,
             NombrePlats = nombrePlats,
             NombreTables = nombreTables,
@@ -256,7 +261,11 @@ public static class Mappers
             Id = restaurant.Id,
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
-            Telephone = restaurant.Telephone
+            Telephone = restaurant.Telephone,
+            Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
+            Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Select(p => p.Plat!.Id!.Value).ToList(),
+            AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -625,7 +634,8 @@ public static class Mappers
         {
             Nom = source.Nom,
             Adresse = source.Adresse,
-            Telephone = source.Telephone
+            Telephone = source.Telephone,
+            TableIds = source.Tables.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -640,6 +650,7 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Adresse = source.Adresse;
         dest.Telephone = source.Telephone;
+        dest.TableIds = source.Tables.Select(p => p.Id!.Value).ToList();
         return dest;
     }
 

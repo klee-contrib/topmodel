@@ -23,9 +23,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
     protected virtual string GetSourceMapping(IProperty property)
     {
-        if (property is { MappingType.ClassProperty: IProperty cpk })
+        if (property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
         {
-            return $"{property.NamePascal}?.{cpk.NamePascal}";
+            return $"{property.NamePascal}?.{t1.Property.NamePascal}";
         }
         else
         {
@@ -94,6 +94,130 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             w.AddUsings(usings.Where(@using => !ns.Contains(@using)));
         }
 
+        string GetValue(
+            string paramName,
+            bool paramRequired,
+            IProperty source,
+            IProperty target,
+            bool rrnSource,
+            bool rrnTarget
+        )
+        {
+            var value = $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
+
+            if (source.MappingType.TryPickT2(out var t2, out _) && t2.Property != null)
+            {
+                var innerProp = t2.Property.NamePascal;
+                if (t2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
+                {
+                    innerProp +=
+                        $"{(Config.NullableEnable && t2.Property.Required ? "!" : string.Empty)}.{t1.Property.NamePascal}";
+                }
+
+                value +=
+                    $"{(rrnSource && !source.Required ? "?" : string.Empty)}.Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? t2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(t2.Domain)}";
+            }
+            else
+            {
+                if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)
+                {
+                    source = t1.Property;
+                    value += $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.{t1.Property.NamePascal}";
+                }
+
+                value = HandleConversion(value, source, target, rrnSource, rrnTarget, paramRequired);
+            }
+
+            return value;
+        }
+
+        string HandleConversion(
+            string value,
+            IProperty source,
+            IProperty target,
+            bool rrnSource,
+            bool rrnTarget,
+            bool paramRequired,
+            bool collection = false
+        )
+        {
+            var isValueType = Config.IsValueType(source);
+
+            var targetType = Config.GetType(target, skipChain: collection ? 1 : 0, nonNullable: true);
+            var sourceType = Config.GetType(source, nonNullable: true);
+            if (
+                !sourceType.EndsWith(targetType)
+                && !targetType.EndsWith(sourceType)
+                && Config.GetEnumType(target).EndsWith(targetType)
+            )
+            {
+                var enumType = Config.GetEnumType(target);
+                value = $"<{enumType}>({value}";
+
+                w.AddUsing(Config.GetEnumTypeNamespace(target, Config.GetBestClassTag(target.Class, tag)));
+
+                if (!rrnSource || !target.Required && !source.Required)
+                {
+                    value = $"Enum.TryParse{value}, out var {source.NameCamel}) ? {source.NameCamel} : null";
+                }
+                else
+                {
+                    value = $"Enum.Parse{value})";
+                }
+            }
+            else if (
+                !sourceType.EndsWith(targetType)
+                && !targetType.EndsWith(sourceType)
+                && Config.GetEnumType(source).EndsWith(sourceType)
+            )
+            {
+                if (!rrnSource || !target.Required && !source.Required)
+                {
+                    value = $"{value} != null ? Enum.GetName({value}.Value) : null";
+                }
+                else
+                {
+                    if (rrnSource && !source.Required)
+                    {
+                        value += ".Value";
+                    }
+
+                    value = $"Enum.GetName({value})";
+                }
+            }
+            else if (isValueType && rrnSource && target.Required && !paramRequired)
+            {
+                var type = Config.GetType(source, nonNullable: true);
+                var enumType = Config.GetEnumType(source);
+                var cast = enumType.Contains($".{type}") ? enumType : type;
+
+                value = $"({cast}){value}";
+            }
+            else if (
+                isValueType
+                && (
+                    rrnSource && target.Required && !source.Required
+                    || collection && source.Required
+                    || rrnTarget && (!rrnSource || !source.Required) && target.Required
+                )
+            )
+            {
+                if (Config.NullableEnable && !rrnSource && source.Required)
+                {
+                    value += "!";
+                }
+
+                value += ".Value";
+            }
+
+            return Config.GetConvertedValue(
+                value,
+                source.Domain,
+                target.Domain,
+                isValueType && (!rrnSource || !source.Required)
+            );
+        }
+
         w.WriteNamespace(ns);
         w.WriteSummary($"Mappers pour le module '{mapperNs.Module}'.");
         w.WriteLine($"public static class {Config.GetMapperName(mapperNs)}");
@@ -103,7 +227,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         {
             var (classe, mapper) = fromMapper;
 
-            var requiredNonNullable = Config.RequiredNonNullable(Config.GetBestClassTag(classe, tag));
+            var rrnTarget = Config.RequiredNonNullable(Config.GetBestClassTag(classe, tag));
 
             w.WriteSummary(
                 1,
@@ -155,7 +279,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 wlForCheck = true;
             }
 
-            if (requiredNonNullable)
+            if (rrnTarget)
             {
                 foreach (var param in mapper.ClassParams)
                 {
@@ -202,112 +326,27 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 p.Switch(
                     param =>
                     {
+                        var rrnSource = Config.RequiredNonNullable(Config.GetBestClassTag(param.Class, tag));
+
                         var mappings = param.Mappings.ToList();
                         foreach (var mapping in mappings)
                         {
+                            var value = GetValue(
+                                param.Name,
+                                param.Required,
+                                mapping.Value,
+                                mapping.Key,
+                                rrnSource,
+                                rrnTarget
+                            );
+
                             if (classe.Abstract)
                             {
-                                w.Write(3, $"{mapping.Key.NameCamel}: ");
+                                w.Write(3, $"{mapping.Key.NameCamel}: {value}");
                             }
                             else
                             {
-                                w.Write(3, $"{mapping.Key.NamePascal} = ");
-                            }
-
-                            var value =
-                                $"{param.Name}{(!param.Required && mapping.Key is not { Composition: not null } ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
-
-                            var cpk = mapping.Value.MappingType.ClassProperty;
-                            if (cpk != null)
-                            {
-                                if (!requiredNonNullable || !requiredNonNullable && !mapping.Value.Required)
-                                {
-                                    value += "?";
-                                }
-
-                                value += $".{cpk.NamePascal}";
-                            }
-
-                            var isValueType = Config.IsValueType(cpk ?? mapping.Value);
-
-                            var targetType = Config.GetType(mapping.Key, nonNullable: true);
-                            var sourceType = Config.GetType(cpk ?? mapping.Value, nonNullable: true);
-                            if (
-                                !sourceType.EndsWith(targetType)
-                                && !targetType.EndsWith(sourceType)
-                                && Config.GetEnumType(mapping.Key).EndsWith(targetType)
-                            )
-                            {
-                                var enumType = Config.GetEnumType(mapping.Key);
-                                value = $"<{enumType}>({value}";
-
-                                w.AddUsing(
-                                    Config.GetEnumTypeNamespace(
-                                        mapping.Key,
-                                        Config.GetBestClassTag(mapping.Key.Class, tag)
-                                    )
-                                );
-
-                                if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
-                                {
-                                    value =
-                                        $"Enum.TryParse{value}, out var {mapping.Value.NameCamel}) ? {mapping.Value.NameCamel} : null";
-                                }
-                                else
-                                {
-                                    value = $"Enum.Parse{value})";
-                                }
-                            }
-                            else if (
-                                !sourceType.EndsWith(targetType)
-                                && !targetType.EndsWith(sourceType)
-                                && Config.GetEnumType(mapping.Value).EndsWith(sourceType)
-                            )
-                            {
-                                if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
-                                {
-                                    value = $"{value} != null ? Enum.GetName({value}.Value) : null";
-                                }
-                                else
-                                {
-                                    if (requiredNonNullable && !mapping.Value.Required)
-                                    {
-                                        value += ".Value";
-                                    }
-
-                                    value = $"Enum.GetName({value})";
-                                }
-                            }
-                            else if (isValueType && requiredNonNullable && mapping.Key.Required && !param.Required)
-                            {
-                                var type = Config.GetType(mapping.Value, nonNullable: true);
-                                var enumType = Config.GetEnumType(mapping.Value);
-                                var cast = enumType.Contains($".{type}") ? enumType : type;
-
-                                value = $"({cast}){value}";
-                            }
-                            else if (
-                                isValueType
-                                && requiredNonNullable
-                                && mapping.Key.Required
-                                && !mapping.Value.Required
-                            )
-                            {
-                                value += ".Value";
-                            }
-
-                            value = Config.GetConvertedValue(
-                                value,
-                                mapping.Value.Domain,
-                                mapping.Key.Domain,
-                                isValueType && (!requiredNonNullable || !mapping.Value.Required)
-                            );
-
-                            w.Write(value);
-
-                            if (mapping.Key is { Composition: not null } && mapping.Value is { Composition: null })
-                            {
-                                w.Write(" }");
+                                w.Write(3, $"{mapping.Key.NamePascal} = {value}");
                             }
 
                             if (
@@ -331,7 +370,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                         if (
                             Config.IsValueType(param.Property)
-                            && requiredNonNullable
+                            && rrnTarget
                             && param.TargetProperty.Required
                             && !param.Property.Required
                         )
@@ -452,61 +491,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             foreach (var mapping in mapper.Mappings)
             {
-                var value = $"source.{GetSourceMapping(mapping.Key)}";
-
-                var isValueType = Config.IsValueType(mapping.Key);
-                if (isValueType && rrnTarget && (!rrnSource || !mapping.Key.Required) && mapping.Value.Required)
-                {
-                    value += ".Value";
-                }
-
-                var sourceType = Config.GetType(mapping.Key, nonNullable: true);
-                var targetType = Config.GetType(mapping.Value, nonNullable: true);
-                if (
-                    !sourceType.EndsWith(targetType)
-                    && !targetType.EndsWith(sourceType)
-                    && Config.GetEnumType(mapping.Key).EndsWith(sourceType)
-                )
-                {
-                    if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
-                    {
-                        value = $"{value} != null ? Enum.GetName({value}.Value) : null";
-                    }
-                    else
-                    {
-                        value = $"Enum.GetName({value})";
-                    }
-                }
-                else if (
-                    !sourceType.EndsWith(targetType)
-                    && !targetType.EndsWith(sourceType)
-                    && Config.GetEnumType(mapping.Value).EndsWith(targetType)
-                )
-                {
-                    var enumType = Config.GetEnumType(mapping.Value);
-                    value = $"<{enumType}>({value}";
-
-                    w.AddUsing(
-                        Config.GetEnumTypeNamespace(mapping.Value, Config.GetBestClassTag(mapping.Value.Class, tag))
-                    );
-
-                    if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
-                    {
-                        value =
-                            $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
-                    }
-                    else
-                    {
-                        value = $"Enum.Parse{value})";
-                    }
-                }
-
-                value = Config.GetConvertedValue(
-                    value,
-                    mapping.Key.Domain,
-                    mapping.Value.Domain,
-                    isValueType && (!rrnSource || !mapping.Key.Required)
-                );
+                var value = GetValue("source", paramRequired: true, mapping.Key, mapping.Value, rrnSource, rrnTarget);
 
                 if (mapper.Class.Abstract)
                 {
@@ -597,62 +582,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                 foreach (var mapping in mapper.Mappings)
                 {
-                    var value = $"source.{GetSourceMapping(mapping.Key)}";
-
-                    var isValueType = Config.IsValueType(mapping.Key);
-                    if (isValueType && rrnTarget && (!rrnSource || !mapping.Key.Required) && mapping.Value.Required)
-                    {
-                        value += ".Value";
-                    }
-
-                    var sourceType = Config.GetType(mapping.Key, nonNullable: true);
-                    var targetType = Config.GetType(mapping.Value, nonNullable: true);
-                    if (
-                        !sourceType.EndsWith(targetType)
-                        && !targetType.EndsWith(sourceType)
-                        && Config.GetEnumType(mapping.Key).EndsWith(sourceType)
-                    )
-                    {
-                        if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
-                        {
-                            value = $"{value} != null ? Enum.GetName({value}.Value) : null";
-                        }
-                        else
-                        {
-                            value = $"Enum.GetName({value})";
-                        }
-                    }
-                    else if (
-                        !sourceType.EndsWith(targetType)
-                        && !targetType.EndsWith(sourceType)
-                        && Config.GetEnumType(mapping.Value).EndsWith(targetType)
-                    )
-                    {
-                        var enumType = Config.GetEnumType(mapping.Value);
-                        value = $"<{enumType}>({value}";
-
-                        w.AddUsing(
-                            Config.GetEnumTypeNamespace(mapping.Value, Config.GetBestClassTag(mapping.Value.Class, tag))
-                        );
-
-                        if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
-                        {
-                            value =
-                                $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
-                        }
-                        else
-                        {
-                            value = $"Enum.Parse{value})";
-                        }
-                    }
-
-                    value = Config.GetConvertedValue(
-                        value,
-                        mapping.Key.Domain,
-                        mapping.Value.Domain,
-                        isValueType && (!rrnSource || !mapping.Key.Required)
+                    var value = GetValue(
+                        "source",
+                        paramRequired: true,
+                        mapping.Key,
+                        mapping.Value,
+                        rrnSource,
+                        rrnTarget
                     );
-
                     w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
                 }
 

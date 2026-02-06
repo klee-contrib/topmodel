@@ -53,6 +53,11 @@ internal class DomainResolver(
                     templateParam.GetLocation()
                 );
             }
+
+            if (domain.Collection && !domain.Generic)
+            {
+                yield return new ModelError(localizer, ErrorType.TMD6004, [], domain, domain.GetLocation());
+            }
         }
     }
 

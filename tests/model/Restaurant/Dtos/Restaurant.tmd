@@ -33,6 +33,7 @@ class:
         class: Restaurant
         include: TableIds
       composition: TableItem
+      name: Tables
 
   mappers:
     from:

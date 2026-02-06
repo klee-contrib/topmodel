@@ -391,11 +391,11 @@ public class ModelStore(
         {
             foreach (var domain in g.Skip(1))
             {
-                yield return new ModelError(ErrorType.TMD6001, domain, $"Le domaine '{domain}' est déjà défini");
+                yield return new ModelError(localizer, ErrorType.TMD6001, [domain.ToString()], domain);
             }
         }
 
-        foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files)))
+        foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files, localizer)))
         {
             yield return error;
         }
@@ -410,11 +410,7 @@ public class ModelStore(
             {
                 foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD6002,
-                        converter,
-                        $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter"
-                    );
+                    yield return new ModelError(localizer, ErrorType.TMD6002, [from.Name, to.Name], converter);
                 }
             }
         }

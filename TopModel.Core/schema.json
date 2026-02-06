@@ -824,6 +824,10 @@
               "type": "boolean",
               "description": "Passe un champ de ce domaine comme body param dans un endpoint."
             },
+            "collection": {
+              "type": "boolean",
+              "description": "Définit ce domaine comme étant un domaine de collection, pour pouvoir définir des mappings entre éléments de collection."
+            },
             "asDomains": {
               "type": "object",
               "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association `xxxToMany` (avec `as`).",
@@ -877,6 +881,10 @@
                   "type": "string",
                   "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
                 }
+              },
+              "collector": {
+                "type": "string",
+                "description": "Pour un domaine de collection, le collecteur utilisé pour matérialiser la collection cible. Par défaut : 'to{genericType}' (sans la partie générique)."
               },
               "values": {
                 "type": "object",

@@ -153,6 +153,18 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
+  <data name="TMD6001" xml:space="preserve">
+    <value>Le domaine '{0}' est déjà défini.</value>
+  </data>
+  <data name="TMD6002" xml:space="preserve">
+    <value>La conversion entre '{0}' et '{1}' est déjà définie dans un autre convertisseur.</value>
+  </data>
+  <data name="TMD6003" xml:space="preserve">
+    <value>La configuration '{0}' requiert que le domaine '{1}' ait une implémentation pour l'un des langages suivants : {2}.</value>
+  </data>
+  <data name="TMD6004" xml:space="preserve">
+    <value>Le domaine doit être générique pour être défini comme un domaine de collection (`genericType` doit être défini sur toutes les implémentations).</value>
+  </data>
   <data name="TMD9001" xml:space="preserve">
     <value>La propriété '{0}' est déjà référencée dans la définition de l'alias.</value>
   </data>
@@ -182,6 +194,9 @@
   </data>
   <data name="TMD9010" xml:space="preserve">
     <value>Il est impossible de définir une composition sur la classe '{0}', car il s'agit d'une classe `enum: true`.</value>
+  </data>
+  <data name="TMD9011" xml:space="preserve">
+    <value>Il est impossible d'utiliser le domaine '{0}' pour la propriété '{1}' car il n'est pas non générique (`type` doit être défini sur toutes les implémentations).</value>
   </data>
   <data name="TMD9014" xml:space="preserve">
     <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using OneOf;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -99,7 +100,7 @@ public static class ModelExtensions
         /// <summary>
         /// Hiérarchie des domaines de la propriété.
         /// </summary>
-        /// <remarks>(Une propriété peut être construite à partir de plusieurs domaines avec des alias 'as' ou des associations 'toMany'.)</remarks>
+        /// <remarks>(Une propriété peut être construite à partir de plusieurs domaines avec des alias 'as' ou des associations multiple.)</remarks>
         public IEnumerable<(Domain Domain, bool Generic)> DomainChain
         {
             get
@@ -237,30 +238,43 @@ public static class ModelExtensions
         /// <summary>
         /// Détermine le type de la propriété pour déterminer comment elle doit être mappée.
         /// </summary>
-        public (Domain? Domain, Class? Class, IProperty? ClassProperty) MappingType =>
-            prop switch
+        public OneOf<PropertyMappingType, ClassMappingType, ClassCollectionMappingType> MappingType
+        {
+            get
             {
-                { Composition: Class c } => (
-                    prop.Domain,
-                    c,
-                    c.ExtendedProperties.Count(p => p.PrimaryKeyish) == 1
-                        ? c.ExtendedProperties.Single(p => p.PrimaryKeyish)
+                var propMappingType = new PropertyMappingType(
+                    prop.Domain!,
+                    prop.Domain?.Collection == true && prop.DomainChain.Count() > 1 && prop.DomainChain.First().Generic
+                        ? prop.DomainChain.ElementAt(1).Domain
                         : null
-                ),
-                { EnumProperty.Class.Enum: EnumMode.Enum } => (prop.Domain, null, null),
+                );
+
+                var cpk =
+                    prop.Composition != null && prop.Composition!.ExtendedProperties.Count(p => p.PrimaryKeyish) == 1
+                        ? prop.Composition!.ExtendedProperties.Single(p => p.PrimaryKeyish)
+                        : null;
+
+                return prop switch
                 {
-                    Association: Class c,
-                    AssociationProperty: IProperty ap,
-                    UseClassForAssociation: true,
-                    AssociationMultiple: true
-                } => (prop.Domain, c, ap),
-                { Association: Class c, AssociationProperty: IProperty ap, UseClassForAssociation: true } => (
-                    null,
-                    c,
-                    ap
-                ),
-                _ => (prop.Domain, null, null),
-            };
+                    { Composition: Class c, Domain.Collection: true } => new ClassCollectionMappingType(
+                        c,
+                        prop.Domain,
+                        cpk
+                    ),
+                    { Composition: Class c } => new ClassMappingType(c, prop.Domain, cpk),
+                    { EnumProperty.Class.Enum: EnumMode.Enum } => propMappingType,
+                    {
+                        Association: Class c,
+                        AssociationProperty: IProperty ap,
+                        UseClassForAssociation: true,
+                        AssociationMultiple: true
+                    } => new ClassCollectionMappingType(c, prop.Domain!, ap),
+                    { Association: Class c, AssociationProperty: IProperty ap, UseClassForAssociation: true } =>
+                        new ClassMappingType(c, prop.Domain, ap),
+                    _ => propMappingType,
+                };
+            }
+        }
 
         /// <summary>
         /// Calcule le nom d'une propriété d'association.

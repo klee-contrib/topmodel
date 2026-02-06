@@ -276,6 +276,13 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
+    public string GetCollector(Domain domain)
+    {
+        var impl = GetImplementation(domain)!;
+        return impl.Collector
+            ?? $"To{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type).TrimStart("I")}()";
+    }
+
     public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
     {
         if (nullableValueType && fromDomain != null && toDomain != null)
@@ -578,9 +585,14 @@ public class CsharpConfig : GeneratorConfigBase
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers ? typeName : $"async Task<{typeName}>";
     }
 
-    public virtual string GetType(IProperty prop, bool forceAssociationPropertyType = false, bool nonNullable = false)
+    public virtual string GetType(
+        IProperty prop,
+        bool forceAssociationPropertyType = false,
+        int skipChain = 0,
+        bool nonNullable = false
+    )
     {
-        var type = base.GetType(prop, forceAssociationPropertyType);
+        var type = base.GetType(prop, forceAssociationPropertyType, skipChain);
 
         if (
             !nonNullable
