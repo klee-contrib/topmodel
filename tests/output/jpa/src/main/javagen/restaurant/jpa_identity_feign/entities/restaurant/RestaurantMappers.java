@@ -199,6 +199,18 @@ public class RestaurantMappers {
 			target.setAvisClientId(null);
 		}
 
+		if (commande.getClient() != null) {
+			target.setClient(target.getClient() != null ? RestaurantMappers.mapClientRead(commande.getClient(), target.getClient()) : RestaurantMappers.createClientRead(commande.getClient()));
+		} else {
+			target.setClient(null);
+		}
+
+		if (commande.getReservation() != null) {
+			target.setReservation(target.getReservation() != null ? RestaurantMappers.mapReservationRead(commande.getReservation(), target.getReservation()) : RestaurantMappers.createReservationRead(commande.getReservation()));
+		} else {
+			target.setReservation(null);
+		}
+
 		return target;
 	}
 
@@ -761,6 +773,18 @@ public class RestaurantMappers {
 		target.setMontantTotal(source.getMontantTotal());
 		target.setTableId(source.getTableId());
 		target.setStatutCommande(source.getStatutCommande());
+		if (source.getClient() != null) {
+			target.setClient(RestaurantMappers.toClient(source.getClient(), target.getId()));
+		} else {
+			target.setClient(null);
+		}
+
+		if (source.getReservation() != null) {
+			target.setReservation(RestaurantMappers.toReservation(source.getReservation(), target.getId()));
+		} else {
+			target.setReservation(null);
+		}
+
 		return target;
 	}
 

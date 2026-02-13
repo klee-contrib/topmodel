@@ -67,7 +67,20 @@ class:
         class: Commande
         exclude:
           - Id
+          - Client
+          - Reservation
           - Lignes
+
+    - alias:
+        class: CommandeRead
+        property: Client
+      composition: ClientWrite
+
+    - alias:
+        class: CommandeRead
+        property: Reservation
+      composition: ReservationWrite
+
     - alias:
         class: CommandeRead
         property: Lignes

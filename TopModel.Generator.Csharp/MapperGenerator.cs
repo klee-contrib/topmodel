@@ -45,12 +45,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();
 
-        var (mapperNs, modelPath) =
+        var (mapperName, mapperNs) =
             sampleFromMapper != default
-                ? Config.GetMapperLocation(sampleFromMapper, tag)
-                : Config.GetMapperLocation(sampleToMapper, tag);
-
-        var ns = Config.GetNamespace(mapperNs, modelPath, tag);
+                ? Config.GetMapperNameAndNamespace(sampleFromMapper, tag)
+                : Config.GetMapperNameAndNamespace(sampleToMapper, tag);
 
         var usings = fromMappers
             .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
@@ -89,13 +87,13 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Key.Domain, m.Value.Domain)));
         }
 
-        if (usings.Exists(@using => !ns.Contains(@using)))
+        if (usings.Exists(@using => !mapperNs.Contains(@using)))
         {
-            w.AddUsings(usings.Where(@using => !ns.Contains(@using)));
+            w.AddUsings(usings.Where(@using => !mapperNs.Contains(@using)));
         }
 
         string GetValue(
-            string paramName,
+            string? paramName,
             bool paramRequired,
             IProperty source,
             IProperty target,
@@ -103,7 +101,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             bool rrnTarget
         )
         {
-            var value = $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
+            var value =
+                paramName == null
+                    ? source.NameCamel
+                    : $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
 
             if (source.MappingType.TryPickT2(out var t2, out _) && t2.Property != null)
             {
@@ -116,6 +117,52 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                 value +=
                     $"{(rrnSource && !source.Required ? "?" : string.Empty)}.Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? t2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(t2.Domain)}";
+            }
+            else if (
+                source.MappingType.TryPickT1(out var st1, out _)
+                && target.MappingType.TryPickT1(out var tt1, out _)
+                && st1.Class != tt1.Class
+            )
+            {
+                var mapper = st1.Class.GetMapperTo(tt1.Class)!.Value;
+                mapper.Switch(
+                    fromMapper =>
+                    {
+                        var targetTag = Config.GetBestClassTag(tt1.Class, tag);
+                        var (targetMapperName, targetMapperNs) = Config.GetMapperNameAndNamespace(
+                            (tt1.Class, fromMapper),
+                            targetTag
+                        );
+
+                        if (targetMapperNs != mapperNs)
+                        {
+                            w.AddUsing(targetMapperNs);
+                        }
+
+                        var mapped =
+                            $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{tt1.Class.NamePascal}({value})";
+                        value =
+                            !rrnSource && paramName != null || !source.Required || !paramRequired
+                                ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
+                                : mapped;
+                    },
+                    toMapper =>
+                    {
+                        var targetTag = Config.GetBestClassTag(st1.Class, tag);
+                        var (_, targetMapperNs) = Config.GetMapperNameAndNamespace((tt1.Class, toMapper), targetTag);
+
+                        if (targetMapperNs != mapperNs)
+                        {
+                            w.AddUsing(targetMapperNs);
+                        }
+
+                        value = $"{value}{(!rrnSource || !source.Required ? "?" : string.Empty)}.To{tt1.Class}()";
+                        if (!rrnTarget && target.Required && target.Composition != null)
+                        {
+                            value += " ?? new()";
+                        }
+                    }
+                );
             }
             else
             {
@@ -218,9 +265,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             );
         }
 
-        w.WriteNamespace(ns);
-        w.WriteSummary($"Mappers pour le module '{mapperNs.Module}'.");
-        w.WriteLine($"public static class {Config.GetMapperName(mapperNs)}");
+        w.WriteNamespace(mapperNs);
+        w.WriteSummary(
+            $"Mappers pour le module '{(sampleFromMapper != default ? sampleFromMapper.Classe.Namespace.Module : sampleToMapper.Classe.Namespace.Module)}'."
+        );
+        w.WriteLine($"public static class {mapperName}");
         w.WriteLine("{");
 
         foreach (var fromMapper in fromMappers)
@@ -366,17 +415,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     },
                     param =>
                     {
-                        var value = param.NameCamel;
-
-                        if (
-                            Config.IsValueType(param.Property)
-                            && rrnTarget
-                            && param.TargetProperty.Required
-                            && !param.Property.Required
-                        )
-                        {
-                            value += ".Value";
-                        }
+                        var value = GetValue(
+                            paramName: null,
+                            requiredParams.Contains(param),
+                            param.Property,
+                            param.TargetProperty,
+                            rrnTarget,
+                            rrnTarget
+                        );
 
                         if (classe.Abstract)
                         {

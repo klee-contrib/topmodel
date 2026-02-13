@@ -51,23 +51,10 @@ public class CommandeWrite implements Serializable {
 	private BigDecimal montantTotal;
 
 	/**
-	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getClient() Commande#getClient()}
-	 */
-	@NotNull
-	private Integer clientId;
-
-	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private Integer tableId;
-
-	/**
-	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getReservation() Commande#getReservation()}
-	 */
-	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
@@ -81,6 +68,21 @@ public class CommandeWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	private Integer avisClientId;
+
+	/**
+	 * Client ayant passé la commande.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.CommandeRead#getClient() CommandeRead#getClient()}
+	 */
+	@Valid
+	@NotNull
+	private ClientWrite client;
+
+	/**
+	 * Réservation.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.CommandeRead#getReservation() CommandeRead#getReservation()}
+	 */
+	@Valid
+	private ReservationWrite reservation;
 
 	/**
 	 * Association réciproque de LigneCommande.Commande.
@@ -118,30 +120,12 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for clientId.
-	 *
-	 * @return value of {@link #clientId clientId}.
-	 */
-	public Integer getClientId() {
-		return this.clientId;
-	}
-
-	/**
 	 * Getter for tableId.
 	 *
 	 * @return value of {@link #tableId tableId}.
 	 */
 	public Integer getTableId() {
 		return this.tableId;
-	}
-
-	/**
-	 * Getter for reservationId.
-	 *
-	 * @return value of {@link #reservationId reservationId}.
-	 */
-	public Integer getReservationId() {
-		return this.reservationId;
 	}
 
 	/**
@@ -160,6 +144,24 @@ public class CommandeWrite implements Serializable {
 	 */
 	public Integer getAvisClientId() {
 		return this.avisClientId;
+	}
+
+	/**
+	 * Getter for client.
+	 *
+	 * @return value of {@link #client client}.
+	 */
+	public ClientWrite getClient() {
+		return this.client;
+	}
+
+	/**
+	 * Getter for reservation.
+	 *
+	 * @return value of {@link #reservation reservation}.
+	 */
+	public ReservationWrite getReservation() {
+		return this.reservation;
 	}
 
 	/**
@@ -196,27 +198,11 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
-	 */
-	public void setClientId(Integer clientId) {
-		this.clientId = clientId;
-	}
-
-	/**
 	 * Set the value of {@link #tableId tableId}.
 	 * @param tableId value to set.
 	 */
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
-	}
-
-	/**
-	 * Set the value of {@link #reservationId reservationId}.
-	 * @param reservationId value to set.
-	 */
-	public void setReservationId(Integer reservationId) {
-		this.reservationId = reservationId;
 	}
 
 	/**
@@ -233,6 +219,22 @@ public class CommandeWrite implements Serializable {
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
+	}
+
+	/**
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
+	 */
+	public void setClient(ClientWrite client) {
+		this.client = client;
+	}
+
+	/**
+	 * Set the value of {@link #reservation reservation}.
+	 * @param reservation value to set.
+	 */
+	public void setReservation(ReservationWrite reservation) {
+		this.reservation = reservation;
 	}
 
 	/**
@@ -260,11 +262,11 @@ public class CommandeWrite implements Serializable {
 		DATE_COMMANDE(LocalDateTime.class),
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
-		CLIENT_ID(Integer.class),
 		TABLE_ID(Integer.class),
-		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		AVIS_CLIENT_ID(Integer.class),
+		CLIENT(ClientWrite.class),
+		RESERVATION(ReservationWrite.class),
 		LIGNES(List.class);
 
 		private final Class<?> type;

@@ -85,7 +85,9 @@ public static class Mappers
             MontantTotal = commande.MontantTotal,
             TableId = commande.TableId,
             StatutCommande = commande.StatutCommande,
-            AvisClientId = commande.AvisClient?.Id
+            AvisClientId = commande.AvisClient?.Id,
+            Client = commande.Client != null ? CreateClientRead(commande.Client) : new(),
+            Reservation = commande.Reservation != null ? CreateReservationRead(commande.Reservation) : null
         };
     }
 
@@ -378,9 +380,8 @@ public static class Mappers
     /// Mappe 'CommandeWrite' vers 'Commande'.
     /// </summary>
     /// <param name="source">Instance de 'CommandeWrite'.</param>
-    /// <param name="client">Client ayant passé la commande.</param>
     /// <returns>Une nouvelle instance de 'Commande'.</returns>
-    public static Commande ToCommande(this CommandeWrite source, Client? client = null)
+    public static Commande ToCommande(this CommandeWrite source)
     {
         return new Commande
         {
@@ -389,7 +390,8 @@ public static class Mappers
             MontantTotal = source.MontantTotal,
             TableId = source.TableId,
             StatutCommande = source.StatutCommande,
-            Client = client
+            Client = source.Client?.ToClient(),
+            Reservation = source.Reservation?.ToReservation()
         };
     }
 
@@ -406,6 +408,8 @@ public static class Mappers
         dest.MontantTotal = source.MontantTotal;
         dest.TableId = source.TableId;
         dest.StatutCommande = source.StatutCommande;
+        dest.Client = source.Client?.ToClient();
+        dest.Reservation = source.Reservation?.ToReservation();
         return dest;
     }
 

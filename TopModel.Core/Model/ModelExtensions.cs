@@ -346,6 +346,30 @@ public static class ModelExtensions
                     PrimaryKey = !classe.PrimaryKey.Any(),
                 }
                 : null;
+
+        /// <summary>
+        /// Récupère le potentiel mapper de la classe courante vers la classe cible.
+        /// </summary>
+        /// <param name="targetClass">Classe cible.</param>
+        /// <returns>Mapper (from ou to), s'il existe.</returns>
+        public OneOf<FromMapper, ClassMappings>? GetMapperTo(Class targetClass)
+        {
+            var fromMapper = targetClass.FromMappers.FirstOrDefault(fm =>
+                fm.Params.Count == 1 && fm.ClassParams.SingleOrDefault()?.Class == classe
+            );
+            if (fromMapper != null)
+            {
+                return fromMapper;
+            }
+
+            var toMapper = classe.ToMappers.FirstOrDefault(tm => tm.Class == targetClass);
+            if (toMapper != null)
+            {
+                return toMapper;
+            }
+
+            return null;
+        }
     }
 
     private static bool IsEnumNameValid(string name)

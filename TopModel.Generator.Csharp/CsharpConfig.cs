@@ -373,85 +373,26 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual (Namespace Namespace, string ModelPath) GetMapperLocation(
+    public virtual (string Name, string Namespace) GetMapperNameAndNamespace(
         (Class Class, FromMapper Mapper) mapper,
         string tag
     )
     {
-        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
-        if (MapperLocationPriority == AnnotationConstraint.Persisted)
-        {
-            if (mapper.Class.IsPersistent)
-            {
-                return (mapper.Class.Namespace, pmp);
-            }
-
-            var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p =>
-                p.Class.IsPersistent && (!p.Class.Reference || ReferencesModelPath == null)
-            );
-            if (persistentParam != null)
-            {
-                return (persistentParam.Class.Namespace, pmp);
-            }
-
-            return (mapper.Class.Namespace, NonPersistentModelPath);
-        }
-        else
-        {
-            if (!mapper.Class.IsPersistent)
-            {
-                return (mapper.Class.Namespace, NonPersistentModelPath);
-            }
-
-            var nonPersistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => !p.Class.IsPersistent);
-            if (nonPersistentParam != null)
-            {
-                return (nonPersistentParam.Class.Namespace, NonPersistentModelPath);
-            }
-
-            return (mapper.Class.Namespace, pmp);
-        }
+        var (ns, modelPath) = GetMapperLocation(mapper, tag);
+        var nsText = GetNamespace(ns, modelPath, tag);
+        var name = GetMapperName(ns);
+        return (name, nsText);
     }
 
-    public virtual (Namespace Namespace, string ModelPath) GetMapperLocation(
+    public virtual (string Name, string Namespace) GetMapperNameAndNamespace(
         (Class Class, ClassMappings Mapper) mapper,
         string tag
     )
     {
-        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
-        if (MapperLocationPriority == AnnotationConstraint.Persisted)
-        {
-            if (mapper.Class.IsPersistent)
-            {
-                return (mapper.Class.Namespace, pmp);
-            }
-
-            if (mapper.Mapper.Class.IsPersistent)
-            {
-                return (mapper.Mapper.Class.Namespace, pmp);
-            }
-
-            return (mapper.Class.Namespace, NonPersistentModelPath);
-        }
-        else
-        {
-            if (!mapper.Class.IsPersistent)
-            {
-                return (mapper.Class.Namespace, NonPersistentModelPath);
-            }
-
-            if (!mapper.Mapper.Class.IsPersistent)
-            {
-                return (mapper.Mapper.Class.Namespace, NonPersistentModelPath);
-            }
-
-            return (mapper.Class.Namespace, pmp);
-        }
-    }
-
-    public virtual string GetMapperName(Namespace ns)
-    {
-        return ResolveVariables(AddModuleFlat(MappersName), module: ns.Module);
+        var (ns, modelPath) = GetMapperLocation(mapper, tag);
+        var nsText = GetNamespace(ns, modelPath, tag);
+        var name = GetMapperName(ns);
+        return (name, nsText);
     }
 
     /// <summary>
@@ -637,6 +578,87 @@ public class CsharpConfig : GeneratorConfigBase
     protected override string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)
     {
         return $"{(internalReference ? string.Empty : $"{className}.")}{propName}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
+    }
+
+    protected virtual (Namespace Namespace, string ModelPath) GetMapperLocation(
+        (Class Class, FromMapper Mapper) mapper,
+        string tag
+    )
+    {
+        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
+        if (MapperLocationPriority == AnnotationConstraint.Persisted)
+        {
+            if (mapper.Class.IsPersistent)
+            {
+                return (mapper.Class.Namespace, pmp);
+            }
+
+            var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p =>
+                p.Class.IsPersistent && (!p.Class.Reference || ReferencesModelPath == null)
+            );
+            if (persistentParam != null)
+            {
+                return (persistentParam.Class.Namespace, pmp);
+            }
+
+            return (mapper.Class.Namespace, NonPersistentModelPath);
+        }
+        else
+        {
+            if (!mapper.Class.IsPersistent)
+            {
+                return (mapper.Class.Namespace, NonPersistentModelPath);
+            }
+
+            var nonPersistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => !p.Class.IsPersistent);
+            if (nonPersistentParam != null)
+            {
+                return (nonPersistentParam.Class.Namespace, NonPersistentModelPath);
+            }
+
+            return (mapper.Class.Namespace, pmp);
+        }
+    }
+
+    protected virtual (Namespace Namespace, string ModelPath) GetMapperLocation(
+        (Class Class, ClassMappings Mapper) mapper,
+        string tag
+    )
+    {
+        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
+        if (MapperLocationPriority == AnnotationConstraint.Persisted)
+        {
+            if (mapper.Class.IsPersistent)
+            {
+                return (mapper.Class.Namespace, pmp);
+            }
+
+            if (mapper.Mapper.Class.IsPersistent)
+            {
+                return (mapper.Mapper.Class.Namespace, pmp);
+            }
+
+            return (mapper.Class.Namespace, NonPersistentModelPath);
+        }
+        else
+        {
+            if (!mapper.Class.IsPersistent)
+            {
+                return (mapper.Class.Namespace, NonPersistentModelPath);
+            }
+
+            if (!mapper.Mapper.Class.IsPersistent)
+            {
+                return (mapper.Mapper.Class.Namespace, NonPersistentModelPath);
+            }
+
+            return (mapper.Class.Namespace, pmp);
+        }
+    }
+
+    protected virtual string GetMapperName(Namespace ns)
+    {
+        return ResolveVariables(AddModuleFlat(MappersName), module: ns.Module);
     }
 
     protected virtual string GetModelPathRaw(Class classe, string tag)

@@ -33,23 +33,10 @@ public partial record CommandeWrite
     public decimal? MontantTotal { get; set; }
 
     /// <summary>
-    /// Client ayant passé la commande.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
-
-    /// <summary>
     /// Table associée à la commande.
     /// </summary>
     [Domain(Domains.Id)]
     public int? TableId { get; set; }
-
-    /// <summary>
-    /// Réservation associée à la commande.
-    /// </summary>
-    [Domain(Domains.Id)]
-    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.
@@ -64,6 +51,17 @@ public partial record CommandeWrite
     /// </summary>
     [Domain(Domains.Id)]
     public int? AvisClientId { get; set; }
+
+    /// <summary>
+    /// Client ayant passé la commande.
+    /// </summary>
+    [Required]
+    public ClientWrite Client { get; set; } = new();
+
+    /// <summary>
+    /// Réservation.
+    /// </summary>
+    public ReservationWrite? Reservation { get; set; }
 
     /// <summary>
     /// Association réciproque de LigneCommande.Commande.

@@ -36,7 +36,13 @@ internal class MapperResolver(
                 }
 
                 mappings.Class = mappedClass;
+            }
+        }
 
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
+        {
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
+            {
                 mappings.Mappings.Clear();
 
                 foreach (var mapping in mappings.MappingReferences)
@@ -60,7 +66,7 @@ internal class MapperResolver(
                         continue;
                     }
 
-                    var mappedProperty = mappedClass.ExtendedProperties.FirstOrDefault(p =>
+                    var mappedProperty = mappings.Class.ExtendedProperties.FirstOrDefault(p =>
                         p.Name == mapping.Value.ReferenceName
                     );
 
@@ -69,7 +75,7 @@ internal class MapperResolver(
                         yield return new ModelError(
                             localizer,
                             ErrorType.TMD0004,
-                            [mapping.Value.ReferenceName, mappedClass.Name],
+                            [mapping.Value.ReferenceName, mappings.Class.Name],
                             classe,
                             mapping.Value
                         );
@@ -82,11 +88,9 @@ internal class MapperResolver(
                         foreach (
                             var error in CheckValidMapping(
                                 classe,
-                                mappings.To,
-                                currentProperty,
-                                mappedProperty,
-                                mapping.Value,
-                                mapping.Key
+                                mappings.To ? currentProperty : mappedProperty,
+                                mappings.To ? mappedProperty : currentProperty,
+                                mapping.Value
                             )
                         )
                         {
@@ -142,7 +146,6 @@ internal class MapperResolver(
                         foreach (
                             var error in CheckValidMapping(
                                 classe,
-                                to: false,
                                 mapping.Property,
                                 mapping.TargetProperty,
                                 mapping.Property.GetLocation()
@@ -239,7 +242,7 @@ internal class MapperResolver(
                             if (matchingProperties.Count() == 1)
                             {
                                 var mappedProperty = matchingProperties.Single();
-                                if (CheckPossibleMapping(to: false, currentProperty, mappedProperty))
+                                if (CheckPossibleMapping(mappedProperty, currentProperty))
                                 {
                                     param.Mappings.Add(currentProperty, mappedProperty);
                                 }
@@ -274,7 +277,7 @@ internal class MapperResolver(
                                 if (
                                     !param.Mappings.ContainsKey(currentProperty)
                                     && mappedProperty.Name == currentProperty.Name
-                                    && CheckPossibleMapping(to: false, currentProperty, mappedProperty)
+                                    && CheckPossibleMapping(mappedProperty, currentProperty)
                                 )
                                 {
                                     param.Mappings.Add(currentProperty, mappedProperty);
@@ -362,7 +365,7 @@ internal class MapperResolver(
                     if (matchingProperties.Count() == 1)
                     {
                         var mappedProperty = matchingProperties.Single();
-                        if (!mappedProperty.Readonly && CheckPossibleMapping(to: true, currentProperty, mappedProperty))
+                        if (!mappedProperty.Readonly && CheckPossibleMapping(currentProperty, mappedProperty))
                         {
                             mapper.Mappings.Add(currentProperty, mappedProperty);
                         }
@@ -385,7 +388,7 @@ internal class MapperResolver(
                         if (
                             !mappedProperty.Readonly
                             && mappedProperty.Name == currentProperty.Name
-                            && CheckPossibleMapping(to: true, currentProperty, mappedProperty)
+                            && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
                             mapper.Mappings.Add(currentProperty, mappedProperty);
@@ -440,33 +443,30 @@ internal class MapperResolver(
         }
     }
 
-    private bool CheckPossibleMapping(bool to, IProperty currentProperty, IProperty mappedProperty)
+    private bool CheckDomains(Domain? sourceDomain, Domain? targetDomain)
     {
-        bool CheckDomains(Domain? currentDomain, Domain? mappedDomain)
-        {
-            return currentDomain == mappedDomain
-                || converters.Any(c =>
-                    c.From.Any(cf => cf == (to ? currentDomain : mappedDomain))
-                    && c.To.Any(ct => ct == (to ? mappedDomain : currentDomain))
-                );
-        }
+        return sourceDomain == targetDomain
+            || converters.Any(c => c.From.Any(cf => cf == sourceDomain) && c.To.Any(ct => ct == targetDomain));
+    }
 
+    private bool CheckPossibleMapping(IProperty sourceProperty, IProperty targetProperty)
+    {
         // Mapping primitif => primitif
         if (
-            currentProperty.MappingType.IsT0
-            && mappedProperty.MappingType.IsT0
-            && CheckDomains(currentProperty.Domain, mappedProperty.Domain)
+            sourceProperty.MappingType.IsT0
+            && targetProperty.MappingType.IsT0
+            && CheckDomains(sourceProperty.Domain, targetProperty.Domain)
         )
         {
             return true;
         }
 
-        // Mapping classe => même classe
+        // Mapping classe => classe
         if (
-            currentProperty.MappingType.TryPickT1(out var cmt1, out _)
-            && mappedProperty.MappingType.TryPickT1(out var cmt2, out _)
-            && cmt1.Class == cmt2.Class
-            && CheckDomains(cmt1.Domain, cmt2.Domain)
+            sourceProperty.MappingType.TryPickT1(out var cmt1, out _)
+            && targetProperty.MappingType.TryPickT1(out var cmt2, out _)
+            && (cmt1.Class == cmt2.Class || cmt1.Class.GetMapperTo(cmt2.Class) != null)
+            && (CheckDomains(cmt1.Domain, cmt2.Domain) || cmt1.Domain?.Generic != true && cmt2.Domain?.Generic != true)
         )
         {
             return true;
@@ -474,24 +474,14 @@ internal class MapperResolver(
 
         // Mapping classe => propriété
         if (
-            to
-                && mappedProperty.MappingType.TryPickT0(out var mp, out _)
-                && (
-                    currentProperty.MappingType.TryPickT1(out var cp1, out _)
-                        && CheckDomains(cp1.Property?.Domain, mp.Domain)
-                    || currentProperty.MappingType.TryPickT2(out var cp2, out _)
-                        && mp.ItemDomain != null
-                        && CheckDomains(cp2.Property?.Domain, mp.ItemDomain)
-                )
-            || !to
-                && currentProperty.MappingType.TryPickT0(out var cp, out _)
-                && (
-                    mappedProperty.MappingType.TryPickT1(out var mp1, out _)
-                        && CheckDomains(mp1.Property?.Domain, cp.Domain)
-                    || mappedProperty.MappingType.TryPickT2(out var mp2, out _)
-                        && cp.ItemDomain != null
-                        && CheckDomains(mp2.Property?.Domain, cp.ItemDomain)
-                )
+            targetProperty.MappingType.TryPickT0(out var mp, out _)
+            && (
+                sourceProperty.MappingType.TryPickT1(out var cp1, out _)
+                    && CheckDomains(cp1.Property?.Domain, mp.Domain)
+                || sourceProperty.MappingType.TryPickT2(out var cp2, out _)
+                    && mp.ItemDomain != null
+                    && CheckDomains(cp2.Property?.Domain, mp.ItemDomain)
+            )
         )
         {
             return true;
@@ -502,39 +492,28 @@ internal class MapperResolver(
 
     private IEnumerable<ModelError> CheckValidMapping(
         Class classe,
-        bool to,
-        IProperty currentProperty,
-        IProperty mappedProperty,
-        Reference? valueRef,
-        Reference? keyRef = null
+        IProperty sourceProperty,
+        IProperty targetProperty,
+        Reference? propRef
     )
     {
-        if (to && mappedProperty.Readonly)
+        if (targetProperty.Readonly)
         {
             yield return new ModelError(
                 ErrorType.TMD8008,
                 classe,
-                $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
-                valueRef
-            );
-        }
-        else if (!to && currentProperty.Readonly)
-        {
-            yield return new ModelError(
-                ErrorType.TMD8008,
-                classe,
-                $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
-                keyRef
+                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
+                propRef
             );
         }
 
-        if (!CheckPossibleMapping(to, currentProperty, mappedProperty))
+        if (!CheckPossibleMapping(sourceProperty, targetProperty))
         {
             yield return new ModelError(
                 ErrorType.TMD8001,
                 classe,
-                $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}'.",
-                valueRef
+                $"La propriété '{sourceProperty.Name}' ne peut pas être mappée à '{targetProperty.Name}'.",
+                propRef
             );
         }
     }
