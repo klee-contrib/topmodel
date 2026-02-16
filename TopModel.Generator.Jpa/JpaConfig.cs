@@ -220,6 +220,12 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
+    public virtual string GetCollector(Domain domain)
+    {
+        var impl = GetImplementation(domain)!;
+        return $"collect(Collectors.{impl.Collector ?? $"to{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type)}()"})";
+    }
+
     public virtual string GetDataFlowConfigFilePath(string module)
     {
         return Path.Combine(

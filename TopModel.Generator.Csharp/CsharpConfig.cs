@@ -276,7 +276,7 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public string GetCollector(Domain domain)
+    public virtual string GetCollector(Domain domain)
     {
         var impl = GetImplementation(domain)!;
         return impl.Collector
