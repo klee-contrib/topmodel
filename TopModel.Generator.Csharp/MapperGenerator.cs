@@ -101,36 +101,15 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             bool rrnTarget
         )
         {
-            var value =
-                paramName == null
-                    ? source.NameCamel
-                    : $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
-
-            if (source.MappingType.TryPickT2(out var t2, out _) && t2.Property != null)
+            string GetMappedValue(string value, Class sourceClass, Class targetClass, bool nullCheck)
             {
-                var innerProp = t2.Property.NamePascal;
-                if (t2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
-                {
-                    innerProp +=
-                        $"{(Config.NullableEnable && t2.Property.Required ? "!" : string.Empty)}.{t1.Property.NamePascal}";
-                }
-
-                value +=
-                    $"{(rrnSource && !source.Required ? "?" : string.Empty)}.Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? t2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(t2.Domain)}";
-            }
-            else if (
-                source.MappingType.TryPickT1(out var st1, out _)
-                && target.MappingType.TryPickT1(out var tt1, out _)
-                && st1.Class != tt1.Class
-            )
-            {
-                var mapper = st1.Class.GetMapperTo(tt1.Class)!.Value;
-                mapper.Switch(
+                var mapper = sourceClass.GetMapperTo(targetClass)!.Value;
+                return mapper.Match(
                     fromMapper =>
                     {
-                        var targetTag = Config.GetBestClassTag(tt1.Class, tag);
+                        var targetTag = Config.GetBestClassTag(sourceClass, tag);
                         var (targetMapperName, targetMapperNs) = Config.GetMapperNameAndNamespace(
-                            (tt1.Class, fromMapper),
+                            (sourceClass, fromMapper),
                             targetTag
                         );
 
@@ -140,29 +119,69 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         }
 
                         var mapped =
-                            $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{tt1.Class.NamePascal}({value})";
-                        value =
-                            !rrnSource && paramName != null || !source.Required || !paramRequired
-                                ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
-                                : mapped;
+                            $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{targetClass.NamePascal}({value})";
+                        return nullCheck && (!rrnSource && paramName != null || !source.Required || !paramRequired)
+                            ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
+                            : mapped;
                     },
                     toMapper =>
                     {
-                        var targetTag = Config.GetBestClassTag(st1.Class, tag);
-                        var (_, targetMapperNs) = Config.GetMapperNameAndNamespace((tt1.Class, toMapper), targetTag);
+                        var targetTag = Config.GetBestClassTag(sourceClass, tag);
+                        var (_, targetMapperNs) = Config.GetMapperNameAndNamespace((targetClass, toMapper), targetTag);
 
                         if (targetMapperNs != mapperNs)
                         {
                             w.AddUsing(targetMapperNs);
                         }
 
-                        value = $"{value}{(!rrnSource || !source.Required ? "?" : string.Empty)}.To{tt1.Class}()";
-                        if (!rrnTarget && target.Required && target.Composition != null)
+                        value =
+                            $"{value}{(nullCheck && (!rrnSource || !source.Required) ? "?" : string.Empty)}.To{targetClass}()";
+                        if (nullCheck && !rrnTarget && target.Required && target.Composition != null)
                         {
                             value += " ?? new()";
                         }
+                        return value;
                     }
                 );
+            }
+
+            var value =
+                paramName == null
+                    ? source.NameCamel
+                    : $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
+
+            if (source.MappingType.TryPickT2(out var st2, out _))
+            {
+                if (target.MappingType.IsT0 && st2.Property != null)
+                {
+                    var innerProp = st2.Property.NamePascal;
+                    if (st2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
+                    {
+                        innerProp +=
+                            $"{(Config.NullableEnable && st2.Property.Required ? "!" : string.Empty)}.{t1.Property.NamePascal}";
+                    }
+
+                    value +=
+                        $"{(rrnSource && !source.Required ? "?" : string.Empty)}.Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain)}";
+                }
+                else if (target.MappingType.TryPickT2(out var tt2, out _))
+                {
+                    var selector = $"p => {GetMappedValue("p", st2.Class, tt2.Class, nullCheck: false)}";
+                    if (!selector.StartsWith("p => p."))
+                    {
+                        selector = selector[5..^3];
+                    }
+                    value =
+                        $"{value}{(rrnSource && !source.Required ? "?" : string.Empty)}.Select({selector}).{Config.GetCollector(st2.Domain)}";
+                }
+            }
+            else if (
+                source.MappingType.TryPickT1(out var st1, out _)
+                && target.MappingType.TryPickT1(out var tt1, out _)
+                && st1.Class != tt1.Class
+            )
+            {
+                value = GetMappedValue(value, st1.Class, tt1.Class, nullCheck: true);
             }
             else
             {

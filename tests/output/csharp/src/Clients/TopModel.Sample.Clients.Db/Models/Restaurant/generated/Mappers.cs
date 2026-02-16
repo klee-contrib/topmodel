@@ -87,6 +87,7 @@ public static class Mappers
             StatutCommande = commande.StatutCommande,
             AvisClientId = commande.AvisClient?.Id,
             Client = commande.Client != null ? CreateClientRead(commande.Client) : new(),
+            Lignes = commande.Lignes.Select(CreateLigneCommandeRead).ToList(),
             Reservation = commande.Reservation != null ? CreateReservationRead(commande.Reservation) : null
         };
     }
@@ -391,6 +392,7 @@ public static class Mappers
             TableId = source.TableId,
             StatutCommande = source.StatutCommande,
             Client = source.Client?.ToClient(),
+            Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList(),
             Reservation = source.Reservation?.ToReservation()
         };
     }
@@ -409,6 +411,7 @@ public static class Mappers
         dest.TableId = source.TableId;
         dest.StatutCommande = source.StatutCommande;
         dest.Client = source.Client?.ToClient();
+        dest.Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList();
         dest.Reservation = source.Reservation?.ToReservation();
         return dest;
     }

@@ -463,10 +463,21 @@ internal class MapperResolver(
 
         // Mapping classe => classe
         if (
-            sourceProperty.MappingType.TryPickT1(out var cmt1, out _)
-            && targetProperty.MappingType.TryPickT1(out var cmt2, out _)
-            && (cmt1.Class == cmt2.Class || cmt1.Class.GetMapperTo(cmt2.Class) != null)
-            && (CheckDomains(cmt1.Domain, cmt2.Domain) || cmt1.Domain?.Generic != true && cmt2.Domain?.Generic != true)
+            sourceProperty.MappingType.TryPickT1(out var st1, out _)
+            && targetProperty.MappingType.TryPickT1(out var tt1, out _)
+            && (st1.Class == tt1.Class || st1.Class.GetMapperTo(tt1.Class) != null)
+            && (CheckDomains(st1.Domain, tt1.Domain) || st1.Domain?.Generic != true && tt1.Domain?.Generic != true)
+        )
+        {
+            return true;
+        }
+
+        // Mapping collection classe => collection classe
+        if (
+            sourceProperty.MappingType.TryPickT2(out var st2, out _)
+            && targetProperty.MappingType.TryPickT2(out var tt2, out _)
+            && (st2.Class == tt2.Class || st2.Class.GetMapperTo(tt2.Class) != null)
+            && (CheckDomains(st2.Domain, tt2.Domain) || st2.Domain?.Generic != true && tt2.Domain?.Generic != true)
         )
         {
             return true;

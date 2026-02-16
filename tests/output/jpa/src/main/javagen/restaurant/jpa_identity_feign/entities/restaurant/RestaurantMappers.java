@@ -205,6 +205,12 @@ public class RestaurantMappers {
 			target.setClient(null);
 		}
 
+		if (commande.getLignes() != null) {
+			target.setLignes(target.getLignes() != null ? RestaurantMappers.mapLigneCommandeRead(commande.getLignes(), target.getLignes()) : RestaurantMappers.createLigneCommandeRead(commande.getLignes()));
+		} else {
+			target.setLignes(null);
+		}
+
 		if (commande.getReservation() != null) {
 			target.setReservation(target.getReservation() != null ? RestaurantMappers.mapReservationRead(commande.getReservation(), target.getReservation()) : RestaurantMappers.createReservationRead(commande.getReservation()));
 		} else {
@@ -783,6 +789,12 @@ public class RestaurantMappers {
 			target.setReservation(RestaurantMappers.toReservation(source.getReservation(), target.getId()));
 		} else {
 			target.setReservation(null);
+		}
+
+		if (source.getLignes() != null) {
+			target.setLignes(RestaurantMappers.toLigneCommande(source.getLignes(), target.getId()));
+		} else {
+			target.setLignes(null);
 		}
 
 		return target;
