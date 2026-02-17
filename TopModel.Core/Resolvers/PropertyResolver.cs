@@ -458,14 +458,16 @@ internal class PropertyResolver(
 
         foreach (
             var cp in modelFiles.SelectMany(mf =>
-                mf.Properties.Where(p => p.Composition == null && !p.DomainChain.Last().Domain.NonGeneric)
+                mf.Properties.Where(p =>
+                    p.Composition == null && !(p.DomainChain.LastOrDefault().Domain?.NonGeneric ?? false)
+                )
             )
         )
         {
             yield return new ModelError(
                 localizer,
                 ErrorType.TMD9011,
-                [cp.DomainChain.Last().Domain.Name, cp.Name],
+                [cp.DomainChain.LastOrDefault().Domain?.Name ?? string.Empty, cp.Name],
                 cp,
                 cp.DomainReference
             );
