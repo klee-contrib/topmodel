@@ -136,7 +136,7 @@ public static class ModelExtensions
         {
             get
             {
-                var elp = prop.EnumLikeProperty;
+                var elp = prop.UniqueValuedProperty;
                 return
                     elp?.Class.Enum != null
                     && elp.Class.Values.All(r => r.Value.ContainsKey(elp) && IsEnumNameValid(r.Value[elp]))
@@ -146,13 +146,25 @@ public static class ModelExtensions
         }
 
         /// <summary>
-        /// Si la propriété devrait être une enum mais ne peut pas l'être pour raison technique, retourne la propriété qui la définit.
+        /// Si la propriété devrait être une enum mais ne peut pas l'être à cause d'un identifiant invalide, retourne la propriété qui la définit.
         /// </summary>
         public IProperty? EnumLikeProperty
         {
             get
             {
-                var enumProp = prop switch
+                var elp = prop.UniqueValuedProperty;
+                return elp?.Class.Enum != null && elp.Class.Values.All(r => r.Value.ContainsKey(elp)) ? elp : null;
+            }
+        }
+
+        /// <summary>
+        /// Si la propriété fait référence à une propriété avec contrainte d'unicité dans une classe avec des valeurs, la propriété en question.
+        /// </summary>
+        public IProperty? UniqueValuedProperty
+        {
+            get
+            {
+                var sourceProp = prop switch
                 {
                     { AssociationProperty: IProperty ap } => ap,
                     AliasProperty alp => alp.Property,
@@ -160,19 +172,25 @@ public static class ModelExtensions
                     _ => prop,
                 };
 
-                var enumClass = enumProp?.Class;
+                var sourceClass = sourceProp?.Class;
 
-                if (enumProp == null || enumClass == null)
+                if (sourceProp == null || sourceClass == null)
                 {
                     return null;
                 }
 
                 if (
-                    enumProp == enumClass.EnumKey
-                    || enumClass.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop)
+                    sourceClass.Values.Any()
+                    && (
+                        sourceProp == sourceClass.ReferenceKey
+                        || sourceClass
+                            .UniqueKeys.Where(uk => uk.Count == 1)
+                            .Select(uk => uk.Single())
+                            .Contains(sourceProp)
+                    )
                 )
                 {
-                    return enumProp;
+                    return sourceProp;
                 }
 
                 return null;

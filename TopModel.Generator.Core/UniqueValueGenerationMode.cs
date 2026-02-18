@@ -2,7 +2,7 @@
 
 namespace TopModel.Generator.Core;
 
-public enum EnumGenerationMode
+public enum UniqueValueGenerationMode
 {
     None,
 

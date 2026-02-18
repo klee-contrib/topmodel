@@ -373,7 +373,7 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual (string Name, string Namespace) GetMapperNameAndNamespace(
+    public virtual (string Name, string Namespace, string Module) GetMapperInfo(
         (Class Class, FromMapper Mapper) mapper,
         string tag
     )
@@ -381,10 +381,10 @@ public class CsharpConfig : GeneratorConfigBase
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         var nsText = GetNamespace(ns, modelPath, tag);
         var name = GetMapperName(ns);
-        return (name, nsText);
+        return (name, nsText, ns.Module);
     }
 
-    public virtual (string Name, string Namespace) GetMapperNameAndNamespace(
+    public virtual (string Name, string Namespace, string Module) GetMapperInfo(
         (Class Class, ClassMappings Mapper) mapper,
         string tag
     )
@@ -392,7 +392,7 @@ public class CsharpConfig : GeneratorConfigBase
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         var nsText = GetNamespace(ns, modelPath, tag);
         var name = GetMapperName(ns);
-        return (name, nsText);
+        return (name, nsText, ns.Module);
     }
 
     /// <summary>

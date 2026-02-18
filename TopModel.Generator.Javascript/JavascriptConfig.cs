@@ -99,7 +99,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourceRootPath)];
 
-    protected override bool UseEnumNameForValues => false;
+    protected override bool UseValueNameForValues => false;
 
     protected override string NullValue => "undefined";
 
@@ -182,7 +182,7 @@ public class JavascriptConfig : GeneratorConfigBase
         string target;
         if (dep is { Source: IProperty and not { Composition: not null } })
         {
-            if (dep.Classe.EnumKey != null && AvailableClasses.Contains(dep.Classe))
+            if (dep.Classe.IsJSReference() && AvailableClasses.Contains(dep.Classe))
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }

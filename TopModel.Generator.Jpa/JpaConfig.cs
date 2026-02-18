@@ -366,20 +366,20 @@ public class JpaConfig : GeneratorConfigBase
         return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
     }
 
-    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)
-    {
-        return classe
-            .Annotations.SelectMany(a => GetImplementation(a.Annotation))
-            .Any(a => a.Text.Trim('@') == annotation.Trim('@'));
-    }
-
-    protected override string GetConstEnumName(string className, string refName)
+    public override string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
     {
         if (UseJdbc)
         {
             return @$"""{refName}""";
         }
 
-        return $"{className.ToPascalCase()}.{refName}";
+        return base.GetUniqueValuedName(property, refName, internalReference);
+    }
+
+    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)
+    {
+        return classe
+            .Annotations.SelectMany(a => GetImplementation(a.Annotation))
+            .Any(a => a.Text.Trim('@') == annotation.Trim('@'));
     }
 }

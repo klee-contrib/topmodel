@@ -20,9 +20,11 @@ internal static class DependenciesExtensions
             .Concat(
                 properties
                     .Where(p =>
-                        p.EnumProperty != null && p.EnumProperty!.Class != currentClass && !p.UseClassForAssociation
+                        p.EnumLikeProperty != null
+                        && p.EnumLikeProperty!.Class != currentClass
+                        && !p.UseClassForAssociation
                     )
-                    .Select(p => new ClassDependency(p.EnumProperty!.Class, p))
+                    .Select(p => new ClassDependency(p.EnumLikeProperty!.Class, p))
             )
             .Where(d => d != null)!;
     }

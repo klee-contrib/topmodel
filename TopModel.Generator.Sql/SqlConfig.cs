@@ -10,7 +10,7 @@ public class SqlConfig : GeneratorConfigBase
 {
     public SqlConfig()
     {
-        EnumGeneration = EnumGenerationMode.None;
+        UniqueValueGeneration = UniqueValueGenerationMode.None;
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class SqlConfig : GeneratorConfigBase
 
     protected override bool PersistentOnly => true;
 
-    protected override bool UseEnumNameForValues => false;
+    protected override bool UseValueNameForValues => false;
 
     public static bool IsBoolean(IProperty property)
     {

@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using System.Text;
+using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -36,14 +37,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual IList<string>? Disable { get; set; }
 
     /// <summary>
-    /// Mode de génération des enums.
+    /// Mode de génération des valeurs de propriétés avec clé d'unicité.
     /// </summary>
-    public virtual EnumGenerationMode EnumGeneration { get; set; } = EnumGenerationMode.AsEnum;
+    public virtual UniqueValueGenerationMode UniqueValueGeneration { get; set; } = UniqueValueGenerationMode.AsEnum;
 
     /// <summary>
-    /// Utilise le nom de l'enum pour référencer une valeur.
+    /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
     /// </summary>
-    protected virtual bool UseEnumNameForValues => true;
+    protected virtual bool UseValueNameForValues => true;
 
     protected virtual string NullValue => "null";
 
@@ -319,15 +320,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>Le nom du type.</returns>
     public virtual string GetEnumType(IProperty prop, bool internalReference = false)
     {
-        if (prop.EnumProperty == null)
+        if (prop.EnumLikeProperty == null)
         {
             return string.Empty;
         }
 
-        var className = prop.EnumProperty?.Class?.NamePascal ?? string.Empty;
-        var propName = prop.EnumProperty?.NamePascal ?? string.Empty;
+        var className = prop.EnumLikeProperty?.Class?.NamePascal ?? string.Empty;
+        var propName = prop.EnumLikeProperty?.NamePascal ?? string.Empty;
 
-        if (prop.EnumProperty?.Class?.Enum == EnumMode.Enum)
+        if (prop.EnumLikeProperty?.Class?.Enum == EnumMode.Enum)
         {
             return className;
         }
@@ -367,13 +368,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     return property.Association!.NamePascal;
                 }
                 else if (
-                    property is { EnumProperty: IProperty ep }
-                    && AvailableClasses.Contains(ep.Class)
-                    && EnumGeneration == EnumGenerationMode.AsEnum
+                    UniqueValueGeneration == UniqueValueGenerationMode.AsEnum
+                    && property is { EnumLikeProperty: IProperty elp }
+                    && AvailableClasses.Contains(elp.Class)
+                    && (!UseValueNameForValues || elp == property.EnumProperty)
                 )
                 {
-                    return (GetImplementation(ep.Domain)?.GenericType ?? "{T}")
-                        .Replace("{T}", GetEnumType(ep, ep.Class == property.Class))
+                    return (GetImplementation(elp.Domain)?.GenericType ?? "{T}")
+                        .Replace("{T}", GetEnumType(elp, elp.Class == property.Class))
                         .ParseTemplate(property, this);
                 }
             }
@@ -396,6 +398,25 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             { Composition: Class c } => c.NamePascal,
             _ => GetType(property.DomainChain.Skip(skipChain)),
         };
+    }
+
+    public virtual string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
+    {
+        var sb = new StringBuilder();
+
+        if (!internalReference)
+        {
+            sb.Append($"{property.Class.NamePascal}.");
+        }
+
+        sb.Append(refName.ToPascalCase(strictIfUppercase: true));
+
+        if (property != property.Class.ReferenceKey)
+        {
+            sb.Append(property.NamePascal);
+        }
+
+        return sb.ToString();
     }
 
     /// <summary>
@@ -423,8 +444,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
 
         if (
-            UseEnumNameForValues
-            && EnumGeneration == EnumGenerationMode.AsEnum
+            UseValueNameForValues
+            && UniqueValueGeneration == UniqueValueGenerationMode.AsEnum
             && property.EnumProperty != null
             && AvailableClasses.Contains(property.EnumProperty!.Class)
         )
@@ -432,18 +453,20 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             return $"{GetEnumType(property.EnumProperty!).TrimEnd('?')}.{value}";
         }
         else if (
-            UseEnumNameForValues
-            && EnumGeneration != EnumGenerationMode.None
-            && property.EnumLikeProperty != null
-            && AvailableClasses.Contains(property.EnumLikeProperty!.Class)
+            UseValueNameForValues
+            && UniqueValueGeneration != UniqueValueGenerationMode.None
+            && property.UniqueValuedProperty != null
+            && AvailableClasses.Contains(property.UniqueValuedProperty!.Class)
         )
         {
             var refName = property
-                .EnumLikeProperty!.Class.Values.SingleOrDefault(rv => rv.Value[property.EnumLikeProperty] == value)
+                .UniqueValuedProperty!.Class.Values.SingleOrDefault(rv =>
+                    rv.Value[property.UniqueValuedProperty] == value
+                )
                 ?.Name;
             if (refName != null)
             {
-                return GetConstEnumName(property.EnumLikeProperty!.Class.Name, refName);
+                return GetUniqueValuedName(property.UniqueValuedProperty!, refName);
             }
         }
 
@@ -486,11 +509,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual bool ShouldQuoteValue(IProperty property)
     {
         return GetImplementation(property.Domain)?.Type?.ToLower() == "string";
-    }
-
-    protected virtual string GetConstEnumName(string className, string refName)
-    {
-        return $"{className.ToPascalCase(strictIfUppercase: true)}.{refName.ToPascalCase(strictIfUppercase: true)}";
     }
 
     protected virtual string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)

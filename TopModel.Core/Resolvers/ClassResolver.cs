@@ -62,23 +62,21 @@ internal class ClassResolver(
                     );
                 }
 
-                if (
-                    classe.Enum != null
-                    && classe.Properties.Any(c =>
-                        c.Composition != null
-                        || c.Association != null
-                            && (
-                                c.Association?.Enum == null
-                                || c.Association?.Enum != EnumMode.Enum && classe.Enum == EnumMode.Enum
-                            )
-                    )
-                )
+                if (classe.Enum == EnumMode.Enum)
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3020,
-                        classe,
-                        $"La classe enum '{classe}' ne peut pas avoir de propriété de composition, ni d'association si la classe cible n'est pas une enum elle-aussi."
-                    );
+                    foreach (
+                        var prop in classe.Properties.Where(c =>
+                            c.Composition != null && c.Composition?.Enum != EnumMode.Enum
+                            || c.Association != null && c.Association?.Enum != EnumMode.Enum
+                        )
+                    )
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD3020,
+                            prop,
+                            $"Impossible de créer une composition ou une association vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe `enum: true` comme '{classe}'."
+                        );
+                    }
                 }
             }
         }

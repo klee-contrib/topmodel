@@ -92,7 +92,7 @@ public class TypescriptReferenceGenerator(
 
             var values = Config.GetAllValues(reference).ToList();
 
-            foreach (var enumProp in reference.Properties.Where(e => e.EnumProperty == e))
+            foreach (var enumProp in reference.Properties.Where(e => e.EnumLikeProperty == e))
             {
                 fw.Write("export type ");
                 fw.Write(reference.NamePascal);
@@ -107,7 +107,7 @@ public class TypescriptReferenceGenerator(
                 fw.Write(
                     string.Join(
                         " | ",
-                        values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").Order(StringComparer.Ordinal)
+                        values.Select(r => $@"{quote}{r.Value[enumProp]}{quote}").Order(StringComparer.Ordinal)
                     )
                 );
                 fw.WriteLine(";");

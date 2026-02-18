@@ -282,7 +282,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         {
             if (firstSource?.TargetFromMapper != null)
             {
-                var (mapperName, _) = Config.GetMapperNameAndNamespace(
+                var (mapperName, _, _) = Config.GetMapperInfo(
                     (dataFlow.Class, firstSource.TargetFromMapper),
                     Config.GetBestClassTag(dataFlow.Class, tag)
                 );

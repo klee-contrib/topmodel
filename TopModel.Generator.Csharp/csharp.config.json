@@ -261,9 +261,9 @@
         "non-persisted"
       ]
     },
-    "enumGeneration": {
+    "uniqueValueGeneration": {
       "type": "string",
-      "description": "Mode de génération des propriétés de classes enum : `none`, `as-const`, `as-enum`. Par défaut : `as-enum`.",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `as-const`, `as-enum`. Par défaut : `as-enum`.",
       "enum": [
         "none",
         "as-const",

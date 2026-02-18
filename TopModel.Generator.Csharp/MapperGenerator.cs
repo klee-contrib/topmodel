@@ -45,10 +45,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();
 
-        var (mapperName, mapperNs) =
+        var (mapperName, mapperNs, mapperModule) =
             sampleFromMapper != default
-                ? Config.GetMapperNameAndNamespace(sampleFromMapper, tag)
-                : Config.GetMapperNameAndNamespace(sampleToMapper, tag);
+                ? Config.GetMapperInfo(sampleFromMapper, tag)
+                : Config.GetMapperInfo(sampleToMapper, tag);
 
         var usings = fromMappers
             .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
@@ -108,7 +108,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     fromMapper =>
                     {
                         var targetTag = Config.GetBestClassTag(sourceClass, tag);
-                        var (targetMapperName, targetMapperNs) = Config.GetMapperNameAndNamespace(
+                        var (targetMapperName, targetMapperNs, _) = Config.GetMapperInfo(
                             (sourceClass, fromMapper),
                             targetTag
                         );
@@ -120,14 +120,16 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                         var mapped =
                             $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{targetClass.NamePascal}({value})";
-                        return nullCheck && (!rrnSource && paramName != null || !source.Required || !paramRequired)
+                        return
+                            nullCheck
+                            && (!rrnSource && !rrnTarget && paramName != null || !source.Required || !paramRequired)
                             ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
                             : mapped;
                     },
                     toMapper =>
                     {
                         var targetTag = Config.GetBestClassTag(sourceClass, tag);
-                        var (_, targetMapperNs) = Config.GetMapperNameAndNamespace((targetClass, toMapper), targetTag);
+                        var (_, targetMapperNs, _) = Config.GetMapperInfo((targetClass, toMapper), targetTag);
 
                         if (targetMapperNs != mapperNs)
                         {
@@ -135,7 +137,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         }
 
                         value =
-                            $"{value}{(nullCheck && (!rrnSource || !source.Required) ? "?" : string.Empty)}.To{targetClass}()";
+                            $"{value}{(nullCheck && (!rrnSource && !rrnTarget || !source.Required) ? "?" : string.Empty)}.To{targetClass}()";
                         if (nullCheck && !rrnTarget && target.Required && target.Composition != null)
                         {
                             value += " ?? new()";
@@ -268,7 +270,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 )
             )
             {
-                if (Config.NullableEnable && !rrnSource && source.Required)
+                if (Config.NullableEnable && !rrnSource && !rrnTarget && source.Required)
                 {
                     value += "!";
                 }
@@ -285,9 +287,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
 
         w.WriteNamespace(mapperNs);
-        w.WriteSummary(
-            $"Mappers pour le module '{(sampleFromMapper != default ? sampleFromMapper.Classe.Namespace.Module : sampleToMapper.Classe.Namespace.Module)}'."
-        );
+        w.WriteSummary($"Mappers pour le module '{mapperModule}'.");
         w.WriteLine($"public static class {mapperName}");
         w.WriteLine("{");
 
@@ -436,7 +436,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     {
                         var value = GetValue(
                             paramName: null,
-                            requiredParams.Contains(param),
+                            param.Property.Required,
                             param.Property,
                             param.TargetProperty,
                             rrnTarget,
