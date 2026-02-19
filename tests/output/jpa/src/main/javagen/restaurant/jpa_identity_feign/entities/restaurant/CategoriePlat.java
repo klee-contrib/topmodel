@@ -16,17 +16,19 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
  */
 @Entity
 @Immutable
-@Table(name = "CATEGORIE_PLAT")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@Table(name = "CATEGORIE_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"CAT_ORDRE"})})
 public class CategoriePlat {
 
 	@Transient
@@ -56,6 +58,12 @@ public class CategoriePlat {
 	private String libelle;
 
 	/**
+	 * Ordre d'affichage dans le menu.
+	 */
+	@Column(name = "CAT_ORDRE", nullable = false, columnDefinition = "int")
+	private Integer ordre;
+
+	/**
 	 * No arg constructor.
 	 */
 	public CategoriePlat() {
@@ -69,17 +77,21 @@ public class CategoriePlat {
 	public CategoriePlat(CategoriePlatCode code) {
 		this.code = code;
 		switch(code) {
-			case BOISSON:
+			case CategoriePlatCode.BOISSON:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
+				this.ordre = CategoriePlatOrdre.Boisson;
 				break;
-			case DESSERT:
+			case CategoriePlatCode.DESSERT:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
+				this.ordre = CategoriePlatOrdre.Dessert;
 				break;
-			case ENTREE:
+			case CategoriePlatCode.ENTREE:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
+				this.ordre = CategoriePlatOrdre.Entree;
 				break;
-			case PLAT:
+			case CategoriePlatCode.PLAT:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
+				this.ordre = CategoriePlatOrdre.Plat;
 				break;
 		}
 	}
@@ -103,11 +115,21 @@ public class CategoriePlat {
 	}
 
 	/**
+	 * Getter for ordre.
+	 *
+	 * @return value of {@link #ordre ordre}.
+	 */
+	public Integer getOrdre() {
+		return this.ordre;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.entities.restaurant.CategoriePlat CategoriePlat}.
 	 */
 	public enum Fields {
 		CODE(CategoriePlatCode.class),
-		LIBELLE(String.class);
+		LIBELLE(String.class),
+		ORDRE(Integer.class);
 
 		private final Class<?> type;
 

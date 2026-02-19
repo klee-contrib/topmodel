@@ -48,8 +48,39 @@ class:
       required: true
       comment: Libellé de la catégorie
 
+    - name: Ordre
+      domain: DO_QUANTITE
+      required: true
+      comment: Ordre d'affichage dans le menu.
+
+  unique:
+    - [Ordre]
+
   values:
-    Entree: { Code: ENTREE, Libelle: Entrée }
-    Plat: { Code: PLAT, Libelle: Plat principal }
-    Dessert: { Code: DESSERT, Libelle: Dessert }
-    Boisson: { Code: BOISSON, Libelle: Boisson }
+    Entree: { Code: ENTREE, Libelle: Entrée, Ordre: 2 }
+    Plat: { Code: PLAT, Libelle: Plat principal, Ordre: 3 }
+    Dessert: { Code: DESSERT, Libelle: Dessert, Ordre: 4 }
+    Boisson: { Code: BOISSON, Libelle: Boisson, Ordre: 1 }
+---
+class:
+  name: Departement
+  trigram: DEP
+  reference: true
+  comment: Département
+
+  properties:
+    - name: Code
+      domain: DO_CODE
+      primaryKey: true
+      comment: Code du département.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé du département.
+
+  values:
+    Paris: { Code: 75, Libelle: Paris }
+    HautsDeSeine: { Code: 92, Libelle: Hauts de Seine }
+    SeineSaintDenis: { Code: 93, Libelle: Seine Saint Denis }
+    SeineEtMarne: { Code: 94, Libelle: Seine et Marne }

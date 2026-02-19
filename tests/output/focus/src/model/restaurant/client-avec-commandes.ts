@@ -3,9 +3,9 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_ID, DO_LIBELLE, DO_LISTE} from "../../domains";
+import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "../../domains";
 
-import {StatutCommande} from "./references";
+import {DepartementCode, StatutCommande} from "./references";
 
 export type ClientAvecCommandes = EntityToType<ClientAvecCommandesEntityType>;
 export type ClientAvecCommandesEntityType = typeof ClientAvecCommandesEntity;
@@ -19,6 +19,9 @@ export const ClientAvecCommandesEntity = entity({
     ),
     prenom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personne.prenom")
+    ),
+    departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
+        .label("restaurant.personne.departementCode")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")

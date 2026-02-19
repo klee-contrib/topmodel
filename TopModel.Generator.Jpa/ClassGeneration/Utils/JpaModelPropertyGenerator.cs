@@ -453,10 +453,10 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         {
             if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
             {
-                return
-                [
-                    $"{Config.GetEnumPackageName(association, Config.GetBestClassTag(property.Class, tag))}.{Config.GetType(association.PrimaryKey.Single())}",
-                ];
+                var import =
+                    $"{Config.GetEnumPackageName(association, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(association.PrimaryKey.Single())}";
+
+                return [import];
             }
 
             return [];

@@ -10,6 +10,8 @@
 
 alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS unique (PER_ID, RES_ID, AVI_DATE_AVIS);
 
+alter table CATEGORIE_PLAT add constraint UK_CATEGORIE_PLAT_CAT_ORDRE unique (CAT_ORDRE);
+
 alter table COMMANDE add constraint UK_COMMANDE_AVI_ID unique (AVI_ID);
 
 alter table COMMANDE_HISTORIQUE add constraint UK_COMMANDE_HISTORIQUE_AVI_ID unique (AVI_ID);

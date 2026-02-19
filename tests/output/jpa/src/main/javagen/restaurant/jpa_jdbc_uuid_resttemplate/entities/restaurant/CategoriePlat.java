@@ -15,6 +15,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
@@ -51,23 +52,34 @@ public class CategoriePlat {
 	private String libelle;
 
 	/**
+	 * Ordre d'affichage dans le menu.
+	 */
+	@NotNull
+	@Column("cat_ordre")
+	private Integer ordre;
+
+	/**
 	 * Enum constructor.
 	 * @param code Code dont on veut obtenir l'instance.
 	 */
 	public CategoriePlat(CategoriePlatCode code) {
 		this.code = code;
 		switch(code) {
-			case BOISSON:
+			case CategoriePlatCode.BOISSON:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
+				this.ordre = CategoriePlatOrdre.Boisson;
 				break;
-			case DESSERT:
+			case CategoriePlatCode.DESSERT:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
+				this.ordre = CategoriePlatOrdre.Dessert;
 				break;
-			case ENTREE:
+			case CategoriePlatCode.ENTREE:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
+				this.ordre = CategoriePlatOrdre.Entree;
 				break;
-			case PLAT:
+			case CategoriePlatCode.PLAT:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
+				this.ordre = CategoriePlatOrdre.Plat;
 				break;
 		}
 	}
@@ -88,5 +100,14 @@ public class CategoriePlat {
 	 */
 	public String getLibelle() {
 		return this.libelle;
+	}
+
+	/**
+	 * Getter for ordre.
+	 *
+	 * @return value of {@link #ordre ordre}.
+	 */
+	public Integer getOrdre() {
+		return this.ordre;
 	}
 }

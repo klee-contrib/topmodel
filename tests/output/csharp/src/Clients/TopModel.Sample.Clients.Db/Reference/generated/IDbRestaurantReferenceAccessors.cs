@@ -19,4 +19,11 @@ public partial interface IDbRestaurantReferenceAccessors
     /// <returns>Liste de CategoriePlat.</returns>
     [ReferenceAccessor]
     ICollection<CategoriePlat> LoadCategoriePlats();
+
+    /// <summary>
+    /// Accesseur de référence pour le type Departement.
+    /// </summary>
+    /// <returns>Liste de Departement.</returns>
+    [ReferenceAccessor]
+    ICollection<Departement> LoadDepartements();
 }

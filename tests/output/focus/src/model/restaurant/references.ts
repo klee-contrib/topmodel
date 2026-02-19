@@ -3,11 +3,20 @@
 ////
 
 export type CategoriePlatCode = "BOISSON" | "DESSERT" | "ENTREE" | "PLAT";
+export type CategoriePlatOrdre = 1 | 2 | 3 | 4;
 export interface CategoriePlat {
     code: CategoriePlatCode;
     libelle: string;
+    ordre: CategoriePlatOrdre;
 }
 export const categoriePlat = {type: {} as CategoriePlat, valueKey: "code", labelKey: "libelle"} as const;
+
+export type DepartementCode = "75" | "92" | "93" | "94";
+export interface Departement {
+    code: DepartementCode;
+    libelle: string;
+}
+export const departement = {type: {} as Departement, valueKey: "code", labelKey: "libelle"} as const;
 
 export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
 export const statutCommandeLabels = {

@@ -40,4 +40,13 @@ public partial record Personne
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Prenom { get; set; }
+
+    /// <summary>
+    /// Département de résidence de la personne.
+    /// </summary>
+    [Column("dep_code")]
+    [ReferencedType(typeof(Departement))]
+    [Domain(Domains.Code)]
+    [StringLength(10)]
+    public string? DepartementCode { get; set; } = Departement.Paris;
 }

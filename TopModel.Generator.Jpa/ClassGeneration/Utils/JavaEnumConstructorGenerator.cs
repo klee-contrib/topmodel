@@ -20,6 +20,18 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
         {
             Comment = "Code dont on veut obtenir l'instance.",
         };
+
+        foreach (
+            var uvp in classe
+                .Properties.Where(p => p.UniqueValuedProperty != null && p.EnumProperty == null)
+                .Select(p => p.UniqueValuedProperty!)
+        )
+        {
+            parameter.Imports.Add(
+                $"{Config.GetEnumPackageName(uvp.Class, tag)}.{uvp.Class.NamePascal}{uvp.NamePascal}"
+            );
+        }
+
         constructor.AddParameter(parameter);
 
         if (Config.GetClassExtends(classe, tag) != null)
@@ -34,7 +46,8 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
-                constructor.AddBodyLine(1, $@"case {code}:");
+                constructor.AddBodyLine(1, $@"case {Config.GetValue(codeProperty, code)}:");
+
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
                     var isString = Config.GetType(prop) == "String";
@@ -53,13 +66,13 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
                         isString = false;
                         constructor.Imports.Add(association.GetImport(Config, tag));
                     }
-                    else if (prop is { EnumProperty: IProperty ep } && ep.Class != prop.Class)
-                    {
-                        value = Config.GetType(ep) + "." + value;
-                    }
                     else if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
                     {
                         value = refValue.ResourceKey;
+                    }
+                    else
+                    {
+                        value = Config.GetValue(prop, value);
                     }
 
                     var quote = isString ? "\"" : string.Empty;

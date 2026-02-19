@@ -39,6 +39,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<CommandeHistorique> CommandeHistoriques { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Departement.
+    /// </summary>
+    public DbSet<Departement> Departements { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Employe.
     /// </summary>
     public DbSet<Employe> Employes { get; set; }
@@ -125,6 +130,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Menu>().HasOne(p => p.Restaurant).WithMany(p => p.Menus).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne(p => p.Menu).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne(p => p.Plat).WithMany().OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Personne>().HasOne<Departement>().WithMany().HasForeignKey(p => p.DepartementCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.CategoriePlat).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.Restaurant).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Promotion>().HasOne(p => p.Plat).WithOne().HasForeignKey<Promotion>("PlatId").OnDelete(DeleteBehavior.Restrict);
@@ -135,6 +141,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<TableRestaurant>().HasOne<Models.Restaurant.Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
+        modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();
         modelBuilder.Entity<Employe>().HasIndex(p => p.Matricule).IsUnique();
         modelBuilder.Entity<LigneCommande>().HasIndex("CommandeId", "PlatId").IsUnique();
         modelBuilder.Entity<MenuPlat>().HasIndex("MenuId", "Ordre").IsUnique();
@@ -161,10 +168,15 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("res_id");
 
         modelBuilder.Entity<CategoriePlat>().HasData(
-            new CategoriePlat { Code = CategoriePlat.Codes.ENTREE, Libelle = "restaurant.categoriePlat.values.Entree" },
-            new CategoriePlat { Code = CategoriePlat.Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat" },
-            new CategoriePlat { Code = CategoriePlat.Codes.DESSERT, Libelle = "restaurant.categoriePlat.values.Dessert" },
-            new CategoriePlat { Code = CategoriePlat.Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson" });
+            new CategoriePlat { Code = CategoriePlat.Codes.ENTREE, Libelle = "restaurant.categoriePlat.values.Entree", Ordre = CategoriePlat.EntreeOrdre },
+            new CategoriePlat { Code = CategoriePlat.Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = CategoriePlat.PlatOrdre },
+            new CategoriePlat { Code = CategoriePlat.Codes.DESSERT, Libelle = "restaurant.categoriePlat.values.Dessert", Ordre = CategoriePlat.DessertOrdre },
+            new CategoriePlat { Code = CategoriePlat.Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson", Ordre = CategoriePlat.BoissonOrdre });
+        modelBuilder.Entity<Departement>().HasData(
+            new Departement { Code = Departement.Paris, Libelle = "restaurant.departement.values.Paris" },
+            new Departement { Code = Departement.HautsDeSeine, Libelle = "restaurant.departement.values.HautsDeSeine" },
+            new Departement { Code = Departement.SeineSaintDenis, Libelle = "restaurant.departement.values.SeineSaintDenis" },
+            new Departement { Code = Departement.SeineEtMarne, Libelle = "restaurant.departement.values.SeineEtMarne" });
 
         AddComments(modelBuilder);
         OnModelCreatingPartial(modelBuilder);

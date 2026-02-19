@@ -15,6 +15,8 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import restaurant.jpa_sequence_server.enums.restaurant.DepartementCode;
+
 /**
  * Classe de base représentant une personne.
  */
@@ -46,6 +48,12 @@ public class Personne {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 */
+	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
+	private String departementCode = DepartementCode.Paris;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -73,6 +81,15 @@ public class Personne {
 	}
 
 	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -97,12 +114,21 @@ public class Personne {
 	}
 
 	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.Personne Personne}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),
-		PRENOM(String.class);
+		PRENOM(String.class),
+		DEPARTEMENT_CODE(String.class);
 
 		private final Class<?> type;
 

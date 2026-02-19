@@ -17,6 +17,12 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadCategoriePlats" />
     public ICollection<CategoriePlat> LoadCategoriePlats()
     {
-        return dbContext.CategoriePlats.OrderBy(row => row.Libelle).ToList();
+        return dbContext.CategoriePlats.OrderBy(row => row.Ordre).ToList();
+    }
+
+    /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadDepartements" />
+    public ICollection<Departement> LoadDepartements()
+    {
+        return dbContext.Departements.OrderBy(row => row.Libelle).ToList();
     }
 }

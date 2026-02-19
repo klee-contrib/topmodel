@@ -18,7 +18,11 @@ public class CategoriePlat_ {
 
 	public static volatile SingularAttribute<CategoriePlat, String> libelle;
 
+	public static volatile SingularAttribute<CategoriePlat, Integer> ordre;
+
 	public static final String CODE = "code";
 
 	public static final String LIBELLE = "libelle";
+
+	public static final String ORDRE = "ordre";
 }

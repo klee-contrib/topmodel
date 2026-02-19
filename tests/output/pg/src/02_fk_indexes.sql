@@ -317,6 +317,20 @@ alter table MENU_PLAT
 		references PLAT (PLA_ID);
 
 /**
+  * Création de l'index de clef étrangère pour PERSONNE.DEP_CODE
+ **/
+create index IDX_PER_DEP_CODE_FK on PERSONNE (
+	DEP_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PERSONNE.DEP_CODE
+ **/
+alter table PERSONNE
+	add constraint FK_PERSONNE_DEP_CODE foreign key (DEP_CODE)
+		references DEPARTEMENT (DEP_CODE);
+
+/**
   * Création de l'index de clef étrangère pour PLAT.CAT_CODE
  **/
 create index IDX_PLA_CAT_CODE_FK on PLAT (

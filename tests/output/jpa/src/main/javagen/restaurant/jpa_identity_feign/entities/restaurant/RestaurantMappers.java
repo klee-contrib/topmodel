@@ -151,6 +151,7 @@ public class RestaurantMappers {
 		target.setId(client.getId());
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
+		target.setDepartementCode(client.getDepartementCode());
 		target.setEmail(client.getEmail());
 		if (client.getAvisClients() != null) {
 			target.setAvisClients(client.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
@@ -249,6 +250,7 @@ public class RestaurantMappers {
 		target.setId(employe.getId());
 		target.setNom(employe.getNom());
 		target.setPrenom(employe.getPrenom());
+		target.setDepartementCode(employe.getDepartementCode());
 		target.setTelephone(employe.getTelephone());
 		target.setDateNaissance(employe.getDateNaissance());
 		target.setMatricule(employe.getMatricule());
@@ -744,6 +746,7 @@ public class RestaurantMappers {
 
 		target.setNom(source.getNom());
 		target.setPrenom(source.getPrenom());
+		target.setDepartementCode(source.getDepartementCode());
 		target.setEmail(source.getEmail());
 		return target;
 	}
@@ -828,6 +831,7 @@ public class RestaurantMappers {
 
 		target.setNom(source.getNom());
 		target.setPrenom(source.getPrenom());
+		target.setDepartementCode(source.getDepartementCode());
 		target.setTelephone(source.getTelephone());
 		target.setDateNaissance(source.getDateNaissance());
 		target.setMatricule(source.getMatricule());

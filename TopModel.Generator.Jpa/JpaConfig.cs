@@ -368,12 +368,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
     {
-        if (UseJdbc)
-        {
-            return @$"""{refName}""";
-        }
-
-        return base.GetUniqueValuedName(property, refName, internalReference);
+        return $"{property.Class.NamePascal}{property.NamePascal}.{refName.ToPascalCase(strictIfUppercase: true)}";
     }
 
     public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)

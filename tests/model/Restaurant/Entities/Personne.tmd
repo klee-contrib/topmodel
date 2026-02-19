@@ -25,6 +25,11 @@ class:
       domain: DO_LIBELLE
       required: true
       comment: Prénom de la personne
+
+    - association: Departement
+      defaultValue: 75
+      useClass: false
+      comment: Département de résidence de la personne.
 ---
 class:
   name: Employe

@@ -63,6 +63,7 @@ public static class Mappers
             Id = client.Id,
             Nom = client.Nom,
             Prenom = client.Prenom,
+            DepartementCode = client.DepartementCode,
             Email = client.Email,
             AvisClients = client.AvisClients.Select(p => p.Id!.Value).ToList()
         };
@@ -106,6 +107,7 @@ public static class Mappers
             Id = employe.Id,
             Nom = employe.Nom,
             Prenom = employe.Prenom,
+            DepartementCode = employe.DepartementCode,
             Telephone = employe.Telephone,
             DateNaissance = employe.DateNaissance,
             Matricule = employe.Matricule,
@@ -359,6 +361,7 @@ public static class Mappers
         {
             Nom = source.Nom,
             Prenom = source.Prenom,
+            DepartementCode = source.DepartementCode,
             Email = source.Email
         };
     }
@@ -373,6 +376,7 @@ public static class Mappers
     {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
+        dest.DepartementCode = source.DepartementCode;
         dest.Email = source.Email;
         return dest;
     }
@@ -428,6 +432,7 @@ public static class Mappers
         {
             Nom = source.Nom,
             Prenom = source.Prenom,
+            DepartementCode = source.DepartementCode,
             Telephone = source.Telephone,
             DateNaissance = source.DateNaissance,
             Matricule = source.Matricule,
@@ -447,6 +452,7 @@ public static class Mappers
     {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
+        dest.DepartementCode = source.DepartementCode;
         dest.Telephone = source.Telephone;
         dest.DateNaissance = source.DateNaissance;
         dest.Matricule = source.Matricule;

@@ -53,6 +53,14 @@ public class ClientRead implements Serializable {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	@Column("dep_code")
+	private String departementCode;
+
+	/**
 	 * Adresse email du client.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
@@ -95,6 +103,15 @@ public class ClientRead implements Serializable {
 	}
 
 	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
+	}
+
+	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -134,6 +151,14 @@ public class ClientRead implements Serializable {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
 	}
 
 	/**

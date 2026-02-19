@@ -12,6 +12,8 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_sequence_server.enums.restaurant.DepartementCode;
+
 /**
  * Détail d'un client en écriture.
  */
@@ -39,6 +41,13 @@ public class ClientWrite implements Serializable {
 	@NotNull
 	@Size(max = 100)
 	private String prenom;
+
+	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	private String departementCode = DepartementCode.Paris;
 
 	/**
 	 * Adresse email du client.
@@ -73,6 +82,15 @@ public class ClientWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
+	}
+
+	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -104,6 +122,14 @@ public class ClientWrite implements Serializable {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
 	}
 
 	/**

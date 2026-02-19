@@ -2,8 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
+import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
+
+import {DepartementCode} from "./references";
 
 export type ClientRead = EntityToType<ClientReadEntityType>;
 export type ClientReadEntityType = typeof ClientReadEntity;
@@ -17,6 +19,9 @@ export const ClientReadEntity = entity({
     ),
     prenom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personne.prenom")
+    ),
+    departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
+        .label("restaurant.personne.departementCode")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")

@@ -16,6 +16,7 @@ export const restaurant = {
     categoriePlat: {
         code: "Code",
         libelle: "Libelle",
+        ordre: "Ordre",
         values: {
             Entree: "Entrée",
             Plat: "Plat principal",
@@ -47,6 +48,16 @@ export const restaurant = {
     },
     commandeRead: {
         reservation: "Reservation"
+    },
+    departement: {
+        code: "Code",
+        libelle: "Libelle",
+        values: {
+            Paris: "Paris",
+            HautsDeSeine: "Hauts de Seine",
+            SeineSaintDenis: "Seine Saint Denis",
+            SeineEtMarne: "Seine et Marne"
+        }
     },
     employe: {
         dateEmbauche: "DateEmbauche",
@@ -83,6 +94,7 @@ export const restaurant = {
         plats: "Plats"
     },
     personne: {
+        departementCode: "DepartementCode",
         id: "Id",
         nom: "Nom",
         prenom: "Prenom"

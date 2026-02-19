@@ -45,9 +45,7 @@ public static class ImportsJpaExtensions
             {
                 if (
                     association.Enum == EnumMode.Enum
-                    || p.Class?.IsPersistent != true
-                    || !p.UseClassForAssociation
-                    || config.UseJdbc
+                    || ap.EnumProperty != null && (!p.UseClassForAssociation || config.UseJdbc)
                 )
                 {
                     yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";

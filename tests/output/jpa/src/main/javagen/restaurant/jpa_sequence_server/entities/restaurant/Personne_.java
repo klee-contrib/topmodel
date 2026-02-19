@@ -18,9 +18,13 @@ public class Personne_ {
 
 	public static volatile SingularAttribute<Personne, String> prenom;
 
+	public static volatile SingularAttribute<Personne, String> departementCode;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
 
 	public static final String PRENOM = "prenom";
+
+	public static final String DEPARTEMENT_CODE = "departementCode";
 }

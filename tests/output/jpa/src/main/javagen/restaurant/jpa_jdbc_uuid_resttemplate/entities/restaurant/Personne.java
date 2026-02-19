@@ -11,6 +11,8 @@ import org.springframework.data.relational.core.mapping.Table;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.DepartementCode;
+
 /**
  * Classe de base représentant une personne.
  */
@@ -40,6 +42,12 @@ public class Personne {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 */
+	@Column("dep_code")
+	private String departementCode = DepartementCode.Paris;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -67,6 +75,15 @@ public class Personne {
 	}
 
 	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -88,5 +105,13 @@ public class Personne {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
 	}
 }

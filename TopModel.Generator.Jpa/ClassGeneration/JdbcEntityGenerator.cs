@@ -57,11 +57,11 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             {
                 var code = refValue.Value[classe.EnumKey];
 
-                yield return new JavaField(classe.NamePascal, code)
+                yield return new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
                 {
                     Static = true,
                     Final = true,
-                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumType(classe.EnumKey)}.{code})",
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetValue(classe.EnumKey, code)})",
                 }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
             }
         }

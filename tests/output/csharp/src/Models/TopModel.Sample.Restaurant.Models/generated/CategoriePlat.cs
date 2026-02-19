@@ -18,6 +18,26 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record CategoriePlat
 {
     /// <summary>
+    /// Boisson.
+    /// </summary>
+    public const int BoissonOrdre = 1;
+
+    /// <summary>
+    /// Dessert.
+    /// </summary>
+    public const int DessertOrdre = 4;
+
+    /// <summary>
+    /// Entrée.
+    /// </summary>
+    public const int EntreeOrdre = 2;
+
+    /// <summary>
+    /// Plat principal.
+    /// </summary>
+    public const int PlatOrdre = 3;
+
+    /// <summary>
     /// Valeurs possibles de la liste de référence CategoriePlat.
     /// </summary>
     public enum Codes
@@ -59,4 +79,12 @@ public partial record CategoriePlat
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; set; }
+
+    /// <summary>
+    /// Ordre d'affichage dans le menu.
+    /// </summary>
+    [Column("cat_ordre")]
+    [Required]
+    [Domain(Domains.Quantite)]
+    public int? Ordre { get; set; }
 }

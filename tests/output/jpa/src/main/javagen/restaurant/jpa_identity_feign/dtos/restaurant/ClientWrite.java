@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Client;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+import restaurant.jpa_identity_feign.enums.restaurant.DepartementCode;
 
 /**
  * Détail d'un client en écriture.
@@ -42,6 +43,13 @@ public class ClientWrite implements Serializable {
 	@NotNull
 	@Size(max = 100)
 	private String prenom;
+
+	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	private String departementCode = DepartementCode.Paris;
 
 	/**
 	 * Adresse email du client.
@@ -73,6 +81,15 @@ public class ClientWrite implements Serializable {
 	 */
 	public String getPrenom() {
 		return this.prenom;
+	}
+
+	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
 	}
 
 	/**
@@ -110,6 +127,14 @@ public class ClientWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
+	}
+
+	/**
 	 * Set the value of {@link #email email}.
 	 * @param email value to set.
 	 */
@@ -141,6 +166,7 @@ public class ClientWrite implements Serializable {
 	public enum Fields {
 		NOM(String.class),
 		PRENOM(String.class),
+		DEPARTEMENT_CODE(String.class),
 		EMAIL(String.class),
 		AVIS_CLIENTS(List.class);
 

@@ -30,6 +30,7 @@ public partial class TopModelSampleDbContext : DbContext
         categoriePlat.ToTable(t => t.HasComment("Catégorie de plat"));
         categoriePlat.Property(p => p.Code).HasComment("Code de la catégorie");
         categoriePlat.Property(p => p.Libelle).HasComment("Libellé de la catégorie");
+        categoriePlat.Property(p => p.Ordre).HasComment("Ordre d'affichage dans le menu.");
 
         var client = modelBuilder.Entity<Client>();
         client.ToTable(t => t.HasComment("Client du restaurant"));
@@ -58,6 +59,11 @@ public partial class TopModelSampleDbContext : DbContext
         commandeHistorique.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commandeHistorique.Property(p => p.StatutCommande).HasComment("Statut de la commande");
         commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
+
+        var departement = modelBuilder.Entity<Departement>();
+        departement.ToTable(t => t.HasComment("Département"));
+        departement.Property(p => p.Code).HasComment("Code du département.");
+        departement.Property(p => p.Libelle).HasComment("Libellé du département.");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
@@ -108,6 +114,7 @@ public partial class TopModelSampleDbContext : DbContext
         personne.Property(p => p.Id).HasComment("Identifiant de la personne");
         personne.Property(p => p.Nom).HasComment("Nom de la personne");
         personne.Property(p => p.Prenom).HasComment("Prénom de la personne");
+        personne.Property(p => p.DepartementCode).HasComment("Département de résidence de la personne.");
 
         var plat = modelBuilder.Entity<Plat>();
         plat.ToTable(t => t.HasComment("Plat du menu"));

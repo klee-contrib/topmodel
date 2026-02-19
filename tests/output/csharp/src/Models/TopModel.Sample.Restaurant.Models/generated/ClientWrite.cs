@@ -29,6 +29,14 @@ public partial record ClientWrite
     public string? Prenom { get; set; }
 
     /// <summary>
+    /// Département de résidence de la personne.
+    /// </summary>
+    [ReferencedType(typeof(Departement))]
+    [Domain(Domains.Code)]
+    [StringLength(10)]
+    public string? DepartementCode { get; set; } = Departement.Paris;
+
+    /// <summary>
     /// Adresse email du client.
     /// </summary>
     [Domain(Domains.Libelle)]

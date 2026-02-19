@@ -36,6 +36,7 @@ class:
   properties:
     - alias:
         class: Personne
+      defaultValue: null
     - alias:
         class: Employe
 
@@ -87,6 +88,7 @@ class:
   properties:
     - alias:
         class: Personne
+      defaultValue: null
     - alias:
         class: Client
 
@@ -117,6 +119,7 @@ class:
   properties:
     - alias:
         class: Personne
+      defaultValue: null
     - alias:
         class: Client
     - alias:
