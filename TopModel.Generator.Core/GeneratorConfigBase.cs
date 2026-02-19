@@ -37,9 +37,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual IList<string>? Disable { get; set; }
 
     /// <summary>
+    /// Si le langage cible de la configuration supporte les enums.
+    /// </summary>
+    public virtual bool HasEnumSupport => true;
+
+    /// <summary>
     /// Mode de génération des valeurs de propriétés avec clé d'unicité.
     /// </summary>
-    public virtual UniqueValueGenerationMode UniqueValueGeneration { get; set; } = UniqueValueGenerationMode.AsEnum;
+    public virtual UniqueValueGenerationMode UniqueValueGeneration { get; set; } =
+        UniqueValueGenerationMode.EnumOrConst;
 
     /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
@@ -368,9 +374,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     return property.Association!.NamePascal;
                 }
                 else if (
-                    UniqueValueGeneration == UniqueValueGenerationMode.AsEnum
+                    HasEnumSupport
                     && property is { EnumLikeProperty: IProperty elp }
                     && AvailableClasses.Contains(elp.Class)
+                    && (UniqueValueGeneration.CanEnum || elp.Class.Enum == EnumMode.Enum)
                     && (!UseValueNameForValues || elp == property.EnumProperty)
                 )
                 {
@@ -444,17 +451,18 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
 
         if (
-            UseValueNameForValues
-            && UniqueValueGeneration == UniqueValueGenerationMode.AsEnum
+            HasEnumSupport
+            && UseValueNameForValues
             && property.EnumProperty != null
             && AvailableClasses.Contains(property.EnumProperty!.Class)
+            && (UniqueValueGeneration.CanEnum || property.EnumProperty?.Class.Enum == EnumMode.Enum)
         )
         {
             return $"{GetEnumType(property.EnumProperty!).TrimEnd('?')}.{value}";
         }
         else if (
             UseValueNameForValues
-            && UniqueValueGeneration != UniqueValueGenerationMode.None
+            && UniqueValueGeneration.CanConst
             && property.UniqueValuedProperty != null
             && AvailableClasses.Contains(property.UniqueValuedProperty!.Class)
         )

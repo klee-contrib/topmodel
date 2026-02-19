@@ -4,10 +4,10 @@
 
 version: 3.9.4
 custom:
-  ../../TopModel.Generator.Jpa: 0817aee8368cc6f6866f635f76d929e9
-  ../../TopModel.Generator.Csharp: 3082779b0667b8d1ae47b52204e7610b
+  ../../TopModel.Generator.Jpa: 684e3afbf4033f7c926dd516f00de577
+  ../../TopModel.Generator.Csharp: 21f2b888c96a2c46d7b04f29c02607a8
   ../../TopModel.Generator.Javascript: 13a3936b037bcb0b1f2e20e424283839
-  ../../TopModel.Generator.Sql: d9de18b34d408000f2ac929e150927f4
+  ../../TopModel.Generator.Sql: f94f6bcc7f4d218424edd090d4c0df14
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
@@ -237,8 +237,6 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/TableRestaurant_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/TableRestaurant.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/CategoriePlatCode.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/CategoriePlatOrdre.java
-  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/DepartementCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/StatutCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractCommandeClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractMenuClient.java

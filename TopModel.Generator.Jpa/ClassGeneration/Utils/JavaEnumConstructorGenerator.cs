@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
@@ -21,15 +22,24 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
             Comment = "Code dont on veut obtenir l'instance.",
         };
 
-        foreach (
-            var uvp in classe
-                .Properties.Where(p => p.UniqueValuedProperty != null && p.EnumProperty == null)
-                .Select(p => p.UniqueValuedProperty!)
-        )
+        if (Config.UniqueValueGeneration.CanConst)
         {
-            parameter.Imports.Add(
-                $"{Config.GetEnumPackageName(uvp.Class, tag)}.{uvp.Class.NamePascal}{uvp.NamePascal}"
-            );
+            foreach (
+                var uvp in classe
+                    .Properties.Where(p =>
+                        p.UniqueValuedProperty != null
+                        && (
+                            p.EnumProperty == null
+                            || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly
+                        )
+                    )
+                    .Select(p => p.UniqueValuedProperty!)
+            )
+            {
+                parameter.Imports.Add(
+                    $"{Config.GetEnumPackageName(uvp.Class, tag)}.{uvp.Class.NamePascal}{uvp.NamePascal}"
+                );
+            }
         }
 
         constructor.AddParameter(parameter);

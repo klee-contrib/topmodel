@@ -125,6 +125,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="item">La classe générée.</param>
     protected virtual void GenerateConstProperties(CSharpWriter w, Class item)
     {
+        if (!Config.UniqueValueGeneration.CanConst)
+        {
+            return;
+        }
+
         var consts = new List<(IProperty Prop, string Name, string Code, string Label)>();
 
         foreach (var refValue in item.Values)
@@ -134,7 +139,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             foreach (
                 var prop in item.Properties.Where(p =>
                     p.UniqueValuedProperty == p
-                    && (p.EnumProperty == null || Config.UniqueValueGeneration != UniqueValueGenerationMode.AsEnum)
+                    && (p.EnumProperty == null || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
                 )
             )
             {
@@ -237,7 +242,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="item">La classe générée.</param>
     protected virtual void GenerateEnumValues(CSharpWriter w, Class item)
     {
-        if (item.Extends?.Enum != null || Config.UniqueValueGeneration != UniqueValueGenerationMode.AsEnum)
+        if (item.Extends?.Enum != null || !Config.UniqueValueGeneration.CanEnum)
         {
             return;
         }
@@ -577,14 +582,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 case { Association: Class a, AssociationProperty: IProperty ap }
                     when Config.AvailableClasses.Contains(a)
                         && (
-                            ap.EnumProperty != null && Config.UniqueValueGeneration == UniqueValueGenerationMode.AsEnum
+                            ap.EnumProperty != null && Config.UniqueValueGeneration.CanEnum
                             || Config.Kinetix && a.IsPersistent && a.Reference
                         ):
                     usings.Add(GetNamespace(a, tag));
                     break;
                 case { EnumProperty: IProperty ep }
-                    when Config.AvailableClasses.Contains(ep.Class)
-                        && Config.UniqueValueGeneration == UniqueValueGenerationMode.AsEnum:
+                    when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { ReferenceClass: Class refClass, PrimaryKeyish: false }
@@ -619,7 +623,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         using var w = this.OpenCSharpWriter(fileName);
 
-        GenerateUsings(w, classe, tag);
+        if (classe.Enum != EnumMode.Enum)
+        {
+            GenerateUsings(w, classe, tag);
+        }
         w.WriteNamespace(Config.GetNamespace(classe, tag));
         w.WriteSummary(classe.Comment);
         GenerateClassDeclaration(w, classe, tag);

@@ -186,7 +186,7 @@ public class DbContextGenerator(
         var hasPropConfig = false;
         foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties))
         {
-            if (fp.EnumProperty != null && Config.UniqueValueGeneration == UniqueValueGenerationMode.AsEnum)
+            if (fp.EnumProperty != null && Config.UniqueValueGeneration.CanEnum)
             {
                 hasPropConfig = true;
                 if (!fp.UseClassForAssociation)

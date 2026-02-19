@@ -105,8 +105,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             switch (property)
             {
-                case { EnumProperty: IProperty ep }
-                    when Config.UniqueValueGeneration == UniqueValueGenerationMode.AsEnum:
+                case { EnumProperty: IProperty ep } when Config.UniqueValueGeneration.CanEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { Composition: Class cpc }:

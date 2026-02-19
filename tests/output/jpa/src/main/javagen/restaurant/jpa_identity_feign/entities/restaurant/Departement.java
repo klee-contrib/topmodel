@@ -15,8 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import restaurant.jpa_identity_feign.enums.restaurant.DepartementCode;
-
 /**
  * Département.
  */
@@ -28,16 +26,16 @@ import restaurant.jpa_identity_feign.enums.restaurant.DepartementCode;
 public class Departement {
 
 	@Transient
-	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine);
+	public static final Departement HAUTS_DE_SEINE = new Departement("92");
 
 	@Transient
-	public static final Departement PARIS = new Departement(DepartementCode.Paris);
+	public static final Departement PARIS = new Departement("75");
 
 	@Transient
-	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne);
+	public static final Departement SEINE_ET_MARNE = new Departement("94");
 
 	@Transient
-	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis);
+	public static final Departement SEINE_SAINT_DENIS = new Departement("93");
 
 	/**
 	 * Code du département.
@@ -66,16 +64,16 @@ public class Departement {
 	public Departement(String code) {
 		this.code = code;
 		switch(code) {
-			case DepartementCode.HautsDeSeine:
+			case "92":
 				this.libelle = "restaurant.departement.values.HautsDeSeine";
 				break;
-			case DepartementCode.Paris:
+			case "75":
 				this.libelle = "restaurant.departement.values.Paris";
 				break;
-			case DepartementCode.SeineEtMarne:
+			case "94":
 				this.libelle = "restaurant.departement.values.SeineEtMarne";
 				break;
-			case DepartementCode.SeineSaintDenis:
+			case "93":
 				this.libelle = "restaurant.departement.values.SeineSaintDenis";
 				break;
 		}

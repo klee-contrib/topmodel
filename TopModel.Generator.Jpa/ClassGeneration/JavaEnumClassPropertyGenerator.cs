@@ -28,7 +28,7 @@ public class JavaEnumClassPropertyGenerator(
 
     protected virtual bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.Enum == EnumMode.Class;
+        return !classe.Abstract && classe.Enum == EnumMode.Class && Config.UniqueValueGeneration.CanEnum;
     }
 
     protected virtual IEnumerable<IProperty> GetEnumProperties(Class classe)

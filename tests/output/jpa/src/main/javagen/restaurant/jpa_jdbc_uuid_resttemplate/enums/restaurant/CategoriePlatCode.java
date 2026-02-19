@@ -5,23 +5,27 @@
 package restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant;
 
 /**
- * Enumération des valeurs possibles de la propriété Code de la classe CategoriePlat.
+ * Valeurs connues de la propriété Code de la classe CategoriePlat.
  */
-public enum CategoriePlatCode {
+public class CategoriePlatCode {
+
 	/**
 	 * Boisson.
 	 */
-	BOISSON,
+	public static final String Boisson = "BOISSON";
+
 	/**
 	 * Dessert.
 	 */
-	DESSERT,
+	public static final String Dessert = "DESSERT";
+
 	/**
 	 * Entrée.
 	 */
-	ENTREE,
+	public static final String Entree = "ENTREE";
+
 	/**
 	 * Plat principal.
 	 */
-	PLAT
+	public static final String Plat = "PLAT";
 }

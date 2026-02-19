@@ -26,9 +26,9 @@ public class JavaUniqueValuedPropertyGenerator(
             )
             .Distinct();
 
-    protected static bool FilterClass(Class classe)
+    protected bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.Enum != EnumMode.Enum;
+        return !classe.Abstract && classe.Enum != EnumMode.Enum && Config.UniqueValueGeneration.CanConst;
     }
 
     protected string GetFileName(IProperty property, Class classe, string tag)
@@ -38,7 +38,10 @@ public class JavaUniqueValuedPropertyGenerator(
 
     protected virtual IEnumerable<IProperty> GetUniqueValuedProperties(Class classe)
     {
-        return classe.Properties.Where(e => e.UniqueValuedProperty == e && e.EnumProperty == null);
+        return classe.Properties.Where(e =>
+            e.UniqueValuedProperty == e
+            && (e.EnumProperty == null || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
+        );
     }
 
     protected void HandleClass(Class classe, string tag)

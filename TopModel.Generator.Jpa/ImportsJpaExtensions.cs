@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa;
 
@@ -31,7 +32,11 @@ public static class ImportsJpaExtensions
             yield return cpc.GetImport(config, config.GetBestClassTag(cpc, tag));
         }
 
-        if (p is { EnumProperty: IProperty ep, Association: null } && config.AvailableClasses.Contains(ep.Class))
+        if (
+            p is { EnumProperty: IProperty ep, Association: null }
+            && config.AvailableClasses.Contains(ep.Class)
+            && (config.UniqueValueGeneration.CanEnum || ep.Class.Enum == EnumMode.Enum)
+        )
         {
             yield return $"{config.GetEnumPackageName(ep.Class, config.GetBestClassTag(ep.Class, tag))}.{config.GetEnumType(ep)}";
         }
@@ -45,7 +50,9 @@ public static class ImportsJpaExtensions
             {
                 if (
                     association.Enum == EnumMode.Enum
-                    || ap.EnumProperty != null && (!p.UseClassForAssociation || config.UseJdbc)
+                    || ap.EnumProperty != null
+                        && (!p.UseClassForAssociation || config.UseJdbc)
+                        && config.UniqueValueGeneration.CanEnum
                 )
                 {
                     yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";

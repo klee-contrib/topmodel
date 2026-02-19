@@ -25,16 +25,16 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre
 public class CategoriePlat {
 
 	@Transient
-	private static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON);
+	private static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson);
 
 	@Transient
-	private static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT);
+	private static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert);
 
 	@Transient
-	private static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE);
+	private static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree);
 
 	@Transient
-	private static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT);
+	private static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat);
 
 	/**
 	 * Code de la catégorie.
@@ -42,7 +42,7 @@ public class CategoriePlat {
 	@Id
 	@Column("cat_code")
 	@Enumerated(EnumType.STRING)
-	private CategoriePlatCode code;
+	private String code;
 
 	/**
 	 * Libellé de la catégorie.
@@ -62,22 +62,22 @@ public class CategoriePlat {
 	 * Enum constructor.
 	 * @param code Code dont on veut obtenir l'instance.
 	 */
-	public CategoriePlat(CategoriePlatCode code) {
+	public CategoriePlat(String code) {
 		this.code = code;
 		switch(code) {
-			case CategoriePlatCode.BOISSON:
+			case CategoriePlatCode.Boisson:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
 				this.ordre = CategoriePlatOrdre.Boisson;
 				break;
-			case CategoriePlatCode.DESSERT:
+			case CategoriePlatCode.Dessert:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
 				this.ordre = CategoriePlatOrdre.Dessert;
 				break;
-			case CategoriePlatCode.ENTREE:
+			case CategoriePlatCode.Entree:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
 				this.ordre = CategoriePlatOrdre.Entree;
 				break;
-			case CategoriePlatCode.PLAT:
+			case CategoriePlatCode.Plat:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
 				this.ordre = CategoriePlatOrdre.Plat;
 				break;
@@ -89,7 +89,7 @@ public class CategoriePlat {
 	 *
 	 * @return value of {@link #code code}.
 	 */
-	public CategoriePlatCode getCode() {
+	public String getCode() {
 		return this.code;
 	}
 

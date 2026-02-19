@@ -449,17 +449,28 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)
     {
         var defaultValue = Config.GetValue(property);
-        if (property is { Association: Class association })
+
+        if (
+            defaultValue != "null"
+            && property is { EnumProperty: IProperty ep }
+            && Config.UniqueValueGeneration != UniqueValueGenerationMode.None
+        )
         {
-            if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
-            {
-                var import =
-                    $"{Config.GetEnumPackageName(association, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(association.PrimaryKey.Single())}";
-
-                return [import];
-            }
-
-            return [];
+            return
+            [
+                $"{Config.GetEnumPackageName(ep.Class, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(ep)}",
+            ];
+        }
+        else if (
+            defaultValue != "null"
+            && property is { UniqueValuedProperty: IProperty uvp }
+            && Config.UniqueValueGeneration.CanConst
+        )
+        {
+            return
+            [
+                $"{Config.GetEnumPackageName(uvp.Class, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(uvp)}",
+            ];
         }
         else
         {

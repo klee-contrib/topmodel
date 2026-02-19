@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Employe;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_identity_feign.enums.restaurant.DepartementCode;
 
 /**
  * Détail d'un employé en écriture.
@@ -50,7 +49,7 @@ public class EmployeWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
 	 */
 	@Size(max = 10)
-	private String departementCode = DepartementCode.Paris;
+	private String departementCode = "75";
 
 	/**
 	 * Numéro de téléphone de l'employé.

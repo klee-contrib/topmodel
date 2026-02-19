@@ -15,8 +15,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
-
 /**
  * Plat du menu.
  */
@@ -64,7 +62,7 @@ public class Plat {
 	@NotNull
 	@Column("cat_code")
 	@Enumerated(EnumType.STRING)
-	private CategoriePlatCode categoriePlatCode;
+	private String categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
@@ -123,7 +121,7 @@ public class Plat {
 	 *
 	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public CategoriePlatCode getCategoriePlatCode() {
+	public String getCategoriePlatCode() {
 		return this.categoriePlatCode;
 	}
 
@@ -180,7 +178,7 @@ public class Plat {
 	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
 	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCode(CategoriePlatCode categoriePlatCode) {
+	public void setCategoriePlatCode(String categoriePlatCode) {
 		this.categoriePlatCode = categoriePlatCode;
 	}
 

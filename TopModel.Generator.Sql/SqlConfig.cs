@@ -8,11 +8,6 @@ namespace TopModel.Generator.Sql;
 
 public class SqlConfig : GeneratorConfigBase
 {
-    public SqlConfig()
-    {
-        UniqueValueGeneration = UniqueValueGenerationMode.None;
-    }
-
     /// <summary>
     /// Config pour la génération en mode procédural.
     /// </summary>
@@ -36,6 +31,11 @@ public class SqlConfig : GeneratorConfigBase
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
     /// </summary>
     public override bool IgnoreDefaultValues { get; set; } = true;
+
+    /// <summary>
+    /// Si le langage cible de la configuration supporte les enums.
+    /// </summary>
+    public override bool HasEnumSupport => false;
 
     /// <summary>
     /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).

@@ -19,7 +19,6 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
@@ -79,19 +78,19 @@ public class CategoriePlat {
 		switch(code) {
 			case CategoriePlatCode.BOISSON:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
-				this.ordre = CategoriePlatOrdre.Boisson;
+				this.ordre = 1;
 				break;
 			case CategoriePlatCode.DESSERT:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
-				this.ordre = CategoriePlatOrdre.Dessert;
+				this.ordre = 4;
 				break;
 			case CategoriePlatCode.ENTREE:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
-				this.ordre = CategoriePlatOrdre.Entree;
+				this.ordre = 2;
 				break;
 			case CategoriePlatCode.PLAT:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
-				this.ordre = CategoriePlatOrdre.Plat;
+				this.ordre = 3;
 				break;
 		}
 	}

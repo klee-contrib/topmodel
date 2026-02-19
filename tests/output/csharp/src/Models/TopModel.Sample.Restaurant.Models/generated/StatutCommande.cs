@@ -2,11 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-
 namespace TopModel.Sample.Restaurant.Models;
 
 /// <summary>

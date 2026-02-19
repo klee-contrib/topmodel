@@ -25,7 +25,6 @@ import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.PlatWrite;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.PromotionRead;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.PromotionWrite;
 import restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.CategoriePlat;
-import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractMenuClient {
@@ -155,7 +154,7 @@ public abstract class AbstractMenuClient {
 	 * @param categoriePlatCode Catégorie du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getPlatsUriComponentsBuilder(Boolean disponible, Integer restaurantId, CategoriePlatCode categoriePlatCode) {
+	protected UriComponentsBuilder getPlatsUriComponentsBuilder(Boolean disponible, Integer restaurantId, String categoriePlatCode) {
 		String uri = host + "/api/restaurants/plats";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("disponible", disponible);
@@ -171,7 +170,7 @@ public abstract class AbstractMenuClient {
 	 * @param categoriePlatCode Catégorie du plat
 	 * @return Liste des plats
 	 */
-	public ResponseEntity<List<PlatItem>> getPlats(Boolean disponible, Integer restaurantId, CategoriePlatCode categoriePlatCode){
+	public ResponseEntity<List<PlatItem>> getPlats(Boolean disponible, Integer restaurantId, String categoriePlatCode){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.getPlatsUriComponentsBuilder(disponible, restaurantId, categoriePlatCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<PlatItem>>() {});
@@ -229,7 +228,7 @@ public abstract class AbstractMenuClient {
 	 * @param disponible Indique si le plat est disponible
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchPlatsUriComponentsBuilder(String nom, Integer restaurantId, CategoriePlatCode categoriePlatCode, Boolean disponible) {
+	protected UriComponentsBuilder searchPlatsUriComponentsBuilder(String nom, Integer restaurantId, String categoriePlatCode, Boolean disponible) {
 		String uri = host + "/api/restaurants/plats/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("nom", nom);
@@ -247,7 +246,7 @@ public abstract class AbstractMenuClient {
 	 * @param disponible Indique si le plat est disponible
 	 * @return Plats correspondant aux critères de recherche
 	 */
-	public ResponseEntity<List<PlatItem>> searchPlats(String nom, Integer restaurantId, CategoriePlatCode categoriePlatCode, Boolean disponible){
+	public ResponseEntity<List<PlatItem>> searchPlats(String nom, Integer restaurantId, String categoriePlatCode, Boolean disponible){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchPlatsUriComponentsBuilder(nom, restaurantId, categoriePlatCode, disponible);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<PlatItem>>() {});

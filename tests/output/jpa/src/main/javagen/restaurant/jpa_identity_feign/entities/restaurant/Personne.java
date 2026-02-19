@@ -14,8 +14,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
-import restaurant.jpa_identity_feign.enums.restaurant.DepartementCode;
-
 /**
  * Classe de base représentant une personne.
  */
@@ -49,7 +47,7 @@ public class Personne {
 	 * Département de résidence de la personne.
 	 */
 	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
-	private String departementCode = DepartementCode.Paris;
+	private String departementCode = "75";
 
 	/**
 	 * Getter for id.

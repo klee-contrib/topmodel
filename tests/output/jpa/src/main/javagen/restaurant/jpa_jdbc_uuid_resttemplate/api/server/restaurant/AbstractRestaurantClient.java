@@ -28,7 +28,6 @@ import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.StatistiquesRestaur
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.TableItem;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.TableRead;
 import restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.TableWrite;
-import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractRestaurantClient {
@@ -181,7 +180,7 @@ public abstract class AbstractRestaurantClient {
 	 * @param categoriePlatCode Catégorie du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getRestaurantPlatsUriComponentsBuilder(Integer resId, Boolean disponible, CategoriePlatCode categoriePlatCode) {
+	protected UriComponentsBuilder getRestaurantPlatsUriComponentsBuilder(Integer resId, Boolean disponible, String categoriePlatCode) {
 		String uri = host + "/api/restaurants/%s/plats".formatted(resId);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("disponible", disponible);
@@ -196,7 +195,7 @@ public abstract class AbstractRestaurantClient {
 	 * @param categoriePlatCode Catégorie du plat
 	 * @return Liste des plats du restaurant
 	 */
-	public ResponseEntity<List<PlatItem>> getRestaurantPlats(Integer resId, Boolean disponible, CategoriePlatCode categoriePlatCode){
+	public ResponseEntity<List<PlatItem>> getRestaurantPlats(Integer resId, Boolean disponible, String categoriePlatCode){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.getRestaurantPlatsUriComponentsBuilder(resId, disponible, categoriePlatCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<PlatItem>>() {});

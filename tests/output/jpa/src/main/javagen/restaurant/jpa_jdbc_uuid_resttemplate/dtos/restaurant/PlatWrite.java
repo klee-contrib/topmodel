@@ -14,8 +14,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
-
 /**
  * Détail d'un plat en écriture.
  */
@@ -66,8 +64,9 @@ public class PlatWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Plat#getCategoriePlatCode() Plat#getCategoriePlatCode()}
 	 */
 	@NotNull
+	@Size(max = 10)
 	@Column("cat_code")
-	private CategoriePlatCode categoriePlatCode;
+	private String categoriePlatCode;
 
 	/**
 	 * Restaurant proposant ce plat.
@@ -118,7 +117,7 @@ public class PlatWrite implements Serializable {
 	 *
 	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
 	 */
-	public CategoriePlatCode getCategoriePlatCode() {
+	public String getCategoriePlatCode() {
 		return this.categoriePlatCode;
 	}
 
@@ -167,7 +166,7 @@ public class PlatWrite implements Serializable {
 	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
 	 * @param categoriePlatCode value to set.
 	 */
-	public void setCategoriePlatCode(CategoriePlatCode categoriePlatCode) {
+	public void setCategoriePlatCode(String categoriePlatCode) {
 		this.categoriePlatCode = categoriePlatCode;
 	}
 

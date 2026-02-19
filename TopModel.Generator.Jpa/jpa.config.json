@@ -113,6 +113,16 @@
       "type": "boolean",
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
     },
+    "uniqueValueGeneration": {
+      "type": "string",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
+      "enum": [
+        "none",
+        "const-only",
+        "enum-only",
+        "enum-or-const"
+      ]
+    },
     "rootModule": {
       "type": "string",
       "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).",
