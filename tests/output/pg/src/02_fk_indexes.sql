@@ -191,6 +191,20 @@ alter table COMMANDE_HISTORIQUE
 		references AVIS_CLIENT (AVI_ID);
 
 /**
+  * Création de l'index de clef étrangère pour DEPARTEMENT.REG_CODE
+ **/
+create index IDX_DEP_REG_CODE_FK on DEPARTEMENT (
+	REG_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour DEPARTEMENT.REG_CODE
+ **/
+alter table DEPARTEMENT
+	add constraint FK_DEPARTEMENT_REG_CODE foreign key (REG_CODE)
+		references REGION (REG_CODE);
+
+/**
   * Création de l'index de clef étrangère pour EMPLOYE.RES_ID
  **/
 create index IDX_EMP_RES_ID_FK on EMPLOYE (

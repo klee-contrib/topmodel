@@ -11,11 +11,14 @@ import org.hibernate.annotations.Immutable;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import restaurant.jpa_sequence_server.enums.restaurant.DepartementCode;
+import restaurant.jpa_sequence_server.enums.restaurant.RegionCode;
 
 /**
  * Département.
@@ -53,6 +56,13 @@ public class Departement {
 	private String libelle;
 
 	/**
+	 * Région associée.
+	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "REG_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	private RegionCode regionCode;
+
+	/**
 	 * No arg constructor.
 	 */
 	public Departement() {
@@ -68,15 +78,19 @@ public class Departement {
 		switch(code) {
 			case DepartementCode.HautsDeSeine:
 				this.libelle = "restaurant.departement.values.HautsDeSeine";
+				this.regionCode = RegionCode.IDF;
 				break;
 			case DepartementCode.Paris:
 				this.libelle = "restaurant.departement.values.Paris";
+				this.regionCode = RegionCode.IDF;
 				break;
 			case DepartementCode.SeineEtMarne:
 				this.libelle = "restaurant.departement.values.SeineEtMarne";
+				this.regionCode = RegionCode.IDF;
 				break;
 			case DepartementCode.SeineSaintDenis:
 				this.libelle = "restaurant.departement.values.SeineSaintDenis";
+				this.regionCode = RegionCode.IDF;
 				break;
 		}
 	}
@@ -100,11 +114,21 @@ public class Departement {
 	}
 
 	/**
+	 * Getter for regionCode.
+	 *
+	 * @return value of {@link #regionCode regionCode}.
+	 */
+	public RegionCode getRegionCode() {
+		return this.regionCode;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.Departement Departement}.
 	 */
 	public enum Fields {
 		CODE(String.class),
-		LIBELLE(String.class);
+		LIBELLE(String.class),
+		REGION_CODE(RegionCode.class);
 
 		private final Class<?> type;
 

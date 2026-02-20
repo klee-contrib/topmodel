@@ -189,7 +189,7 @@ public class DbContextGenerator(
             if (fp.EnumProperty != null && Config.UniqueValueGeneration.CanEnum)
             {
                 hasPropConfig = true;
-                if (!fp.UseClassForAssociation)
+                if (!fp.UseClassForAssociation || fp.EnumProperty?.Class.Enum == EnumMode.Enum)
                 {
                     w.WriteLine(
                         2,
@@ -400,41 +400,55 @@ public class DbContextGenerator(
             foreach (var classe in classes.Distinct().Where(c => c.Values.Count > 0).OrderBy(c => c.NamePascal))
             {
                 hasData = true;
-                w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
+                w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
                 foreach (var refValue in classe.Values)
                 {
-                    w.Write($"            new {GetClassName(classe, tag)} {{");
-
-                    foreach (var refProp in refValue.Value.ToList())
+                    if (classe.Enum == EnumMode.Class && classe.Readonly)
                     {
-                        var targetClass = refProp.Key.Association ?? refProp.Key.Class;
+                        w.Write($"{GetClassName(classe, tag)}.{refValue.Name.ToPascalCase(strictIfUppercase: true)}");
 
-                        var value = Config.GetValue(refProp.Key, refProp.Value);
-                        if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
+                        if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
                         {
-                            value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
-                        }
-
-                        if (
-                            classe.Reference
-                            && refProp.Key == classe.DefaultProperty
-                            && Config.TranslateReferences == true
-                        )
-                        {
-                            value = $"\"{refValue.ResourceKey}\"";
-                        }
-
-                        w.Write($" {refProp.Key.NamePascal} = {value}");
-                        if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
-                        {
-                            w.Write(",");
+                            w.Write(", ");
                         }
                     }
-
-                    w.Write(" }");
-                    if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
+                    else
                     {
-                        w.WriteLine(",");
+                        w.WriteLine();
+                        w.Write($"            new {GetClassName(classe, tag)} {{");
+
+                        foreach (var refProp in refValue.Value.ToList())
+                        {
+                            var targetClass = refProp.Key.Association ?? refProp.Key.Class;
+
+                            var value = Config.GetValue(refProp.Key, refProp.Value);
+                            if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
+                            {
+                                value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
+                            }
+
+                            if (
+                                classe.Reference
+                                && refProp.Key == classe.DefaultProperty
+                                && Config.TranslateReferences == true
+                            )
+                            {
+                                value = $"\"{refValue.ResourceKey}\"";
+                            }
+
+                            w.Write($" {refProp.Key.NamePascal} = {value}");
+                            if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
+                            {
+                                w.Write(",");
+                            }
+                        }
+
+                        w.Write(" }");
+
+                        if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
+                        {
+                            w.WriteLine(",");
+                        }
                     }
                 }
 

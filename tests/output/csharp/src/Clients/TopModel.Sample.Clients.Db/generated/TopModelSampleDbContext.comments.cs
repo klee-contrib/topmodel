@@ -64,6 +64,7 @@ public partial class TopModelSampleDbContext : DbContext
         departement.ToTable(t => t.HasComment("Département"));
         departement.Property(p => p.Code).HasComment("Code du département.");
         departement.Property(p => p.Libelle).HasComment("Libellé du département.");
+        departement.Property(p => p.RegionCode).HasComment("Région associée.");
 
         var employe = modelBuilder.Entity<Employe>();
         employe.ToTable(t => t.HasComment("Employé du restaurant"));
@@ -135,6 +136,12 @@ public partial class TopModelSampleDbContext : DbContext
         promotion.Property(p => p.DateFin).HasComment("Date de fin de la promotion");
         promotion.Property(p => p.Active).HasComment("Indique si la promotion est active");
         promotion.Property("RestaurantId").HasComment("Restaurant concerné par la promotion (null si globale)");
+
+        var region = modelBuilder.Entity<Region>();
+        region.ToTable(t => t.HasComment("Région"));
+        region.Property(p => p.Code).HasComment("Code de la région.");
+        region.Property(p => p.Libelle).HasComment("Libellé de la région.");
+        region.Property(p => p.NomResponsable).HasComment("Nom du responsable de la région.");
 
         var reservation = modelBuilder.Entity<Reservation>();
         reservation.ToTable(t => t.HasComment("Réservation d'une table"));

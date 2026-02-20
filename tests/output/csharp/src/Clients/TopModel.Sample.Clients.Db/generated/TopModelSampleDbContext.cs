@@ -84,6 +84,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<Promotion> Promotions { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Region.
+    /// </summary>
+    public DbSet<Region> Regions { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Reservation.
     /// </summary>
     public DbSet<Reservation> Reservations { get; set; }
@@ -105,9 +110,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
-        modelBuilder.Entity<Commande>().Property("StatutCommande").HasMaxLength(10);
+        modelBuilder.Entity<Commande>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
+        modelBuilder.Entity<Departement>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasMaxLength(10);
+        modelBuilder.Entity<Region>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
 
         modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
@@ -122,6 +129,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<CommandeHistorique>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CommandeHistorique>().HasOne<AvisClient>().WithOne().HasForeignKey<CommandeHistorique>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Departement>().HasOne<Region>().WithMany().HasForeignKey(p => p.RegionCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Employe>().HasOne(p => p.Restaurant).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne(p => p.Commande).WithMany(p => p.Lignes).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne(p => p.Plat).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -167,16 +175,10 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Reservation>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("res_id");
 
-        modelBuilder.Entity<CategoriePlat>().HasData(
-            new CategoriePlat { Code = CategoriePlat.Codes.ENTREE, Libelle = "restaurant.categoriePlat.values.Entree", Ordre = CategoriePlat.EntreeOrdre },
-            new CategoriePlat { Code = CategoriePlat.Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = CategoriePlat.PlatOrdre },
-            new CategoriePlat { Code = CategoriePlat.Codes.DESSERT, Libelle = "restaurant.categoriePlat.values.Dessert", Ordre = CategoriePlat.DessertOrdre },
-            new CategoriePlat { Code = CategoriePlat.Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson", Ordre = CategoriePlat.BoissonOrdre });
-        modelBuilder.Entity<Departement>().HasData(
-            new Departement { Code = Departement.Paris, Libelle = "restaurant.departement.values.Paris" },
-            new Departement { Code = Departement.HautsDeSeine, Libelle = "restaurant.departement.values.HautsDeSeine" },
-            new Departement { Code = Departement.SeineSaintDenis, Libelle = "restaurant.departement.values.SeineSaintDenis" },
-            new Departement { Code = Departement.SeineEtMarne, Libelle = "restaurant.departement.values.SeineEtMarne" });
+        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Entree, CategoriePlat.Plat, CategoriePlat.Dessert, CategoriePlat.Boisson);
+        modelBuilder.Entity<Departement>().HasData(Departement.Paris, Departement.HautsDeSeine, Departement.SeineSaintDenis, Departement.SeineEtMarne);
+        modelBuilder.Entity<Region>().HasData(
+            new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
 
         AddComments(modelBuilder);
         OnModelCreatingPartial(modelBuilder);

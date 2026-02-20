@@ -25,16 +25,16 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre
 public class CategoriePlat {
 
 	@Transient
-	private static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson);
+	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson);
 
 	@Transient
-	private static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert);
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert);
 
 	@Transient
-	private static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree);
+	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree);
 
 	@Transient
-	private static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat);
+	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat);
 
 	/**
 	 * Code de la catégorie.

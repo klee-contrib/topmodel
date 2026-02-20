@@ -29,7 +29,11 @@ internal class RegularProperty : IProperty
 
     public bool Required { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public LocatedString? Trigram { get; set; }
 

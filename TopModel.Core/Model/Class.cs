@@ -42,6 +42,8 @@ public class Class : IPropertyContainer
 
     public bool Abstract { get; set; }
 
+    public bool Readonly { get; set; }
+
     public IProperty? OrderProperty { get; set; }
 
     public IProperty? DefaultProperty { get; set; }

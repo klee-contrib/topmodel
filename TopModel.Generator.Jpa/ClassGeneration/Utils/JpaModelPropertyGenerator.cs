@@ -427,7 +427,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         {
             if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
             {
-                if (property.Class.IsPersistent && property.UseClassForAssociation && association.Enum != EnumMode.Enum)
+                if (
+                    property.Class.IsPersistent
+                    && property.UseClassForAssociation
+                    && association.Enum == EnumMode.Class
+                    && association.Readonly
+                )
                 {
                     return $"new {association.NamePascal}({defaultValue})";
                 }

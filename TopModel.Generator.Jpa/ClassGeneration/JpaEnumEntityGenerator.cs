@@ -26,7 +26,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && classe.Enum == EnumMode.Class;
+        return !classe.Abstract && classe.IsPersistent && classe.Enum == EnumMode.Class && classe.Readonly;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)

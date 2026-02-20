@@ -52,6 +52,7 @@ export const restaurant = {
     departement: {
         code: "Code",
         libelle: "Libelle",
+        regionCode: "RegionCode",
         values: {
             Paris: "Paris",
             HautsDeSeine: "Hauts de Seine",
@@ -116,6 +117,14 @@ export const restaurant = {
         platId: "Plat",
         pourcentageReduction: "PourcentageReduction",
         restaurantId: "Restaurant"
+    },
+    region: {
+        code: "Code",
+        libelle: "Libelle",
+        nomResponsable: "NomResponsable",
+        values: {
+            Idf: "Île de France"
+        }
     },
     reservation: {
         clientId: "Client",

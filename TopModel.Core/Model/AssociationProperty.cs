@@ -67,7 +67,11 @@ internal class AssociationProperty : IProperty
 
     public virtual bool Required { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public string? DefaultValue { get; set; }
 

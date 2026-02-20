@@ -26,4 +26,11 @@ public partial interface IDbRestaurantReferenceAccessors
     /// <returns>Liste de Departement.</returns>
     [ReferenceAccessor]
     ICollection<Departement> LoadDepartements();
+
+    /// <summary>
+    /// Accesseur de référence pour le type Region.
+    /// </summary>
+    /// <returns>Liste de Region.</returns>
+    [ReferenceAccessor]
+    ICollection<Region> LoadRegions();
 }

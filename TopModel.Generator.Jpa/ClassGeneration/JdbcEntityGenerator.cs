@@ -43,7 +43,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
-        if (classe.Enum != null)
+        if (classe.Enum != null && classe.Readonly)
         {
             yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
         }
@@ -51,7 +51,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        if (classe.EnumKey != null)
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
@@ -59,9 +59,10 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
                 yield return new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
                 {
+                    Visibility = "public",
                     Static = true,
                     Final = true,
-                    DefaultValue = $"new {classe.NamePascal}({Config.GetValue(classe.EnumKey, code)})",
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetValue(classe.EnumKey!, code)})",
                 }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
             }
         }

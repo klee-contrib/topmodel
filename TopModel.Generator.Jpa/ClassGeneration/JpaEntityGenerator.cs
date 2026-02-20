@@ -16,7 +16,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && classe.Enum == null;
+        return !classe.Abstract && classe.IsPersistent && !classe.Readonly;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
@@ -69,7 +69,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (classe.Reference)
         {
             var cacheAnnotation = new JavaAnnotation("Cache", imports: "org.hibernate.annotations.Cache");
-            if (classe.Enum != null)
+            if (classe.Readonly)
             {
                 yield return new JavaAnnotation("Immutable", imports: "org.hibernate.annotations.Immutable");
                 cacheAnnotation.AddAttribute(

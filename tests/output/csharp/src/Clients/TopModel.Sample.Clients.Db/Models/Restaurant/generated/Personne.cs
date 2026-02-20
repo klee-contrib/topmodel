@@ -48,5 +48,5 @@ public partial record Personne
     [ReferencedType(typeof(Departement))]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string? DepartementCode { get; set; } = Departement.Paris;
+    public string? DepartementCode { get; set; } = Departement.ParisCode;
 }

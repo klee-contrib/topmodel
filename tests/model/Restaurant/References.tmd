@@ -35,6 +35,7 @@ class:
   trigram: CAT
   reference: true
   enum: class
+  readonly: true
   comment: Catégorie de plat
 
   properties:
@@ -66,6 +67,7 @@ class:
   name: Departement
   trigram: DEP
   reference: true
+  readonly: true
   comment: Département
 
   properties:
@@ -79,8 +81,37 @@ class:
       required: true
       comment: Libellé du département.
 
+    - association: Region
+      required: true
+      useClass: false
+      comment: Région associée.
+
   values:
-    Paris: { Code: 75, Libelle: Paris }
-    HautsDeSeine: { Code: 92, Libelle: Hauts de Seine }
-    SeineSaintDenis: { Code: 93, Libelle: Seine Saint Denis }
-    SeineEtMarne: { Code: 94, Libelle: Seine et Marne }
+    Paris: { Code: 75, Libelle: Paris, RegionCode: IDF }
+    HautsDeSeine: { Code: 92, Libelle: Hauts de Seine, RegionCode: IDF }
+    SeineSaintDenis: { Code: 93, Libelle: Seine Saint Denis, RegionCode: IDF }
+    SeineEtMarne: { Code: 94, Libelle: Seine et Marne, RegionCode: IDF }
+---
+class:
+  name: Region
+  trigram: REG
+  reference: true
+  comment: Région
+
+  properties:
+    - name: Code
+      domain: DO_CODE
+      primaryKey: true
+      comment: Code de la région.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé de la région.
+
+    - name: NomResponsable
+      domain: DO_LIBELLE
+      comment: Nom du responsable de la région.
+
+  values:
+    Idf: { Code: IDF, Libelle: Île de France }

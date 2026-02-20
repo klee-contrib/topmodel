@@ -184,6 +184,11 @@ internal class ClassResolver(
                     $"La classe {classe} doit avoir une clé primaire convertible en enum pour être marquée avec `enum: true`."
                 );
             }
+
+            if (classe.Enum == EnumMode.Enum)
+            {
+                classe.Readonly = true;
+            }
         }
     }
 

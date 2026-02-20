@@ -95,11 +95,11 @@
             },
             "required": {
               "type": "boolean",
-              "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+              "description": "Précise si la propriété est obligatoire. Cette information pourra être utilisée pour exclure les valeurs nulles de son type, ou bien pour de la validation. Une primary key est forcément required."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+              "description": "Précise si la propriété doit être en lecture seule, qui ne pourra être définie qu'à l'initialisation de sa classe. Pour une classe abstraite, aucun setter ne sera géré. `readonly: true` sur la classe parente forcera `readonly: true` sur chaque propriété."
             },
             "domain": {
               "$ref": "#/definitions/domain"
@@ -1146,6 +1146,10 @@
             "abstract": {
               "type": "boolean",
               "description": "Permet de marquer la classe comme abstraite, pour laquelle aucune implémentation ne sera générée."
+            },
+            "readonly": {
+              "type": "boolean",
+              "description": "Permet de marquer la classe et toutes ses propriétés comme étant en lecture seule."
             },
             "comment": {
               "type": "string",

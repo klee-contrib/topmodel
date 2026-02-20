@@ -70,6 +70,7 @@ COMMENT ON COLUMN COMMANDE_HISTORIQUE.AVI_ID IS 'Avis laissé par le client sur 
 COMMENT ON TABLE DEPARTEMENT IS 'Département';
 COMMENT ON COLUMN DEPARTEMENT.DEP_CODE IS 'Code du département.';
 COMMENT ON COLUMN DEPARTEMENT.DEP_LIBELLE IS 'Libellé du département.';
+COMMENT ON COLUMN DEPARTEMENT.REG_CODE IS 'Région associée.';
 
 /**
   * Commentaires pour la table EMPLOYE
@@ -158,6 +159,14 @@ COMMENT ON COLUMN PROMOTION.PRO_DATE_DEBUT IS 'Date de début de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_DATE_FIN IS 'Date de fin de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_ACTIVE IS 'Indique si la promotion est active';
 COMMENT ON COLUMN PROMOTION.RES_ID IS 'Restaurant concerné par la promotion (null si globale)';
+
+/**
+  * Commentaires pour la table REGION
+ **/
+COMMENT ON TABLE REGION IS 'Région';
+COMMENT ON COLUMN REGION.REG_CODE IS 'Code de la région.';
+COMMENT ON COLUMN REGION.REG_LIBELLE IS 'Libellé de la région.';
+COMMENT ON COLUMN REGION.REG_NOM_RESPONSABLE IS 'Nom du responsable de la région.';
 
 /**
   * Commentaires pour la table RESERVATION

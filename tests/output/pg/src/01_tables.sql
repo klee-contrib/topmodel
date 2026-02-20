@@ -90,6 +90,7 @@ create table COMMANDE_HISTORIQUE (
 create table DEPARTEMENT (
 	DEP_CODE varchar(10) not null,
 	DEP_LIBELLE varchar(100) not null,
+	REG_CODE varchar(10) not null,
 	constraint PK_DEPARTEMENT primary key (DEP_CODE)
 );
 
@@ -215,6 +216,16 @@ create table PROMOTION (
 	PRO_ACTIVE boolean not null,
 	RES_ID int,
 	constraint PK_PROMOTION primary key (PLA_ID)
+);
+
+/**
+  * Création de la table REGION
+ **/
+create table REGION (
+	REG_CODE varchar(10) not null,
+	REG_LIBELLE varchar(100) not null,
+	REG_NOM_RESPONSABLE varchar(100),
+	constraint PK_REGION primary key (REG_CODE)
 );
 
 /**

@@ -37,23 +37,42 @@ export type DepartementCode = "75" | "92" | "93" | "94";
 export interface Departement {
     code: DepartementCode;
     libelle: string;
+    regionCode: RegionCode;
 }
 export const departementList: Departement[] = [
     {
         code: "75",
-        libelle: "restaurant.departement.values.Paris"
+        libelle: "restaurant.departement.values.Paris",
+        regionCode: "IDF"
     },
     {
         code: "92",
-        libelle: "restaurant.departement.values.HautsDeSeine"
+        libelle: "restaurant.departement.values.HautsDeSeine",
+        regionCode: "IDF"
     },
     {
         code: "93",
-        libelle: "restaurant.departement.values.SeineSaintDenis"
+        libelle: "restaurant.departement.values.SeineSaintDenis",
+        regionCode: "IDF"
     },
     {
         code: "94",
-        libelle: "restaurant.departement.values.SeineEtMarne"
+        libelle: "restaurant.departement.values.SeineEtMarne",
+        regionCode: "IDF"
+    },
+];
+
+
+export type RegionCode = "IDF";
+export interface Region {
+    code: RegionCode;
+    libelle: string;
+    nomResponsable?: string;
+}
+export const regionList: Region[] = [
+    {
+        code: "IDF",
+        libelle: "restaurant.region.values.Idf"
     },
 ];
 

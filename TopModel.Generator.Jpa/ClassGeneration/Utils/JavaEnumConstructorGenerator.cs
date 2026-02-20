@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
@@ -60,25 +61,25 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
 
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
-                    var isString = Config.GetType(prop) == "String";
+                    var isString =
+                        Config.GetType(prop) == "String"
+                        && (prop.UniqueValuedProperty == null || !Config.UniqueValueGeneration.CanConst);
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
                     if (value == "null")
                     {
                         isString = false;
                     }
-                    else if (
-                        prop is { Association: Class association, AssociationProperty: IProperty ap }
-                        && ap.EnumProperty != null
-                        && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
-                    )
-                    {
-                        value = association.NamePascal + "." + value;
-                        isString = false;
-                        constructor.Imports.Add(association.GetImport(Config, tag));
-                    }
                     else if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
                     {
                         value = refValue.ResourceKey;
+                    }
+                    else if (
+                        prop.UseClassForAssociation
+                        && prop.Association?.Enum == EnumMode.Class
+                        && prop.Association?.Readonly == true
+                    )
+                    {
+                        value = $"{prop.Association!.NamePascal}.{refValue.Name.ToConstantCase()}";
                     }
                     else
                     {

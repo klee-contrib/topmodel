@@ -15,8 +15,17 @@ export type DepartementCode = "75" | "92" | "93" | "94";
 export interface Departement {
     code: DepartementCode;
     libelle: string;
+    regionCode: RegionCode;
 }
 export const departement = {type: {} as Departement, valueKey: "code", labelKey: "libelle"} as const;
+
+export type RegionCode = "IDF";
+export interface Region {
+    code: RegionCode;
+    libelle: string;
+    nomResponsable?: string;
+}
+export const region = {type: {} as Region, valueKey: "code", labelKey: "libelle"} as const;
 
 export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
 export const statutCommandeLabels = {

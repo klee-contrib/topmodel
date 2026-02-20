@@ -121,7 +121,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_id")
                         .HasComment("Réservation associée à la commande");
 
-                    b.Property<string>("StatutCommandeCode")
+                    b.Property<string>("StatutCommande")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
@@ -141,8 +141,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ReservationId");
-
-                    b.HasIndex("StatutCommandeCode");
 
                     b.HasIndex("TableId");
 
@@ -189,7 +187,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_id")
                         .HasComment("Réservation associée à la commande");
 
-                    b.Property<string>("StatutCommandeCode")
+                    b.Property<string>("StatutCommande")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
@@ -209,8 +207,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ReservationId");
-
-                    b.HasIndex("StatutCommandeCode");
 
                     b.HasIndex("TableId");
 
@@ -410,6 +406,12 @@ namespace TopModel.Sample.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("DepartementCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("dep_code")
+                        .HasComment("Département de résidence de la personne.");
+
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -425,6 +427,8 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Prénom de la personne");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartementCode");
 
                     b.ToTable("personne", t =>
                         {
@@ -696,7 +700,15 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("cat_libelle")
                         .HasComment("Libellé de la catégorie");
 
+                    b.Property<int>("Ordre")
+                        .HasColumnType("integer")
+                        .HasColumnName("cat_ordre")
+                        .HasComment("Ordre d'affichage dans le menu.");
+
                     b.HasKey("Code");
+
+                    b.HasIndex("Ordre")
+                        .IsUnique();
 
                     b.ToTable("categorie_plat", t =>
                         {
@@ -707,72 +719,120 @@ namespace TopModel.Sample.Api.Migrations
                         new
                         {
                             Code = "ENTREE",
-                            Libelle = "restaurant.categoriePlat.values.Entree"
+                            Libelle = "restaurant.categoriePlat.values.Entree",
+                            Ordre = 2
                         },
                         new
                         {
                             Code = "PLAT",
-                            Libelle = "restaurant.categoriePlat.values.Plat"
+                            Libelle = "restaurant.categoriePlat.values.Plat",
+                            Ordre = 3
                         },
                         new
                         {
                             Code = "DESSERT",
-                            Libelle = "restaurant.categoriePlat.values.Dessert"
+                            Libelle = "restaurant.categoriePlat.values.Dessert",
+                            Ordre = 4
                         },
                         new
                         {
                             Code = "BOISSON",
-                            Libelle = "restaurant.categoriePlat.values.Boisson"
+                            Libelle = "restaurant.categoriePlat.values.Boisson",
+                            Ordre = 1
                         });
                 });
 
-            modelBuilder.Entity("TopModel.Sample.Restaurant.Models.StatutCommande", b =>
+            modelBuilder.Entity("TopModel.Sample.Restaurant.Models.Departement", b =>
                 {
                     b.Property<string>("Code")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("stc_code")
-                        .HasComment("Code du statut");
+                        .HasColumnName("dep_code")
+                        .HasComment("Code du département.");
 
                     b.Property<string>("Libelle")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("stc_libelle")
-                        .HasComment("Libellé du statut");
+                        .HasColumnName("dep_libelle")
+                        .HasComment("Libellé du département.");
+
+                    b.Property<string>("RegionCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("reg_code")
+                        .HasComment("Région associée.");
 
                     b.HasKey("Code");
 
-                    b.ToTable("statut_commande", t =>
+                    b.HasIndex("RegionCode");
+
+                    b.ToTable("departement", t =>
                         {
-                            t.HasComment("Statut d'une commande");
+                            t.HasComment("Département");
                         });
 
                     b.HasData(
                         new
                         {
-                            Code = "EN_ATT",
-                            Libelle = "restaurant.statutCommande.values.EnAttente"
+                            Code = "75",
+                            Libelle = "restaurant.departement.values.Paris",
+                            RegionCode = "IDF"
                         },
                         new
                         {
-                            Code = "EN_PREP",
-                            Libelle = "restaurant.statutCommande.values.EnPreparation"
+                            Code = "92",
+                            Libelle = "restaurant.departement.values.HautsDeSeine",
+                            RegionCode = "IDF"
                         },
                         new
                         {
-                            Code = "PRETE",
-                            Libelle = "restaurant.statutCommande.values.Prete"
+                            Code = "93",
+                            Libelle = "restaurant.departement.values.SeineSaintDenis",
+                            RegionCode = "IDF"
                         },
                         new
                         {
-                            Code = "SERVIE",
-                            Libelle = "restaurant.statutCommande.values.Servie"
-                        },
+                            Code = "94",
+                            Libelle = "restaurant.departement.values.SeineEtMarne",
+                            RegionCode = "IDF"
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Restaurant.Models.Region", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("reg_code")
+                        .HasComment("Code de la région.");
+
+                    b.Property<string>("Libelle")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("reg_libelle")
+                        .HasComment("Libellé de la région.");
+
+                    b.Property<string>("NomResponsable")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("reg_nom_responsable")
+                        .HasComment("Nom du responsable de la région.");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("region", t =>
+                        {
+                            t.HasComment("Région");
+                        });
+
+                    b.HasData(
                         new
                         {
-                            Code = "ANNULE",
-                            Libelle = "restaurant.statutCommande.values.Annulee"
+                            Code = "IDF",
+                            Libelle = "restaurant.region.values.Idf"
                         });
                 });
 
@@ -877,12 +937,6 @@ namespace TopModel.Sample.Api.Migrations
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TopModel.Sample.Restaurant.Models.StatutCommande", "StatutCommande")
-                        .WithMany()
-                        .HasForeignKey("StatutCommandeCode")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
                         .WithMany()
                         .HasForeignKey("TableId")
@@ -893,8 +947,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Reservation");
-
-                    b.Navigation("StatutCommande");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", b =>
@@ -914,12 +966,6 @@ namespace TopModel.Sample.Api.Migrations
                         .WithMany()
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TopModel.Sample.Restaurant.Models.StatutCommande", null)
-                        .WithMany()
-                        .HasForeignKey("StatutCommandeCode")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
                         .WithMany()
@@ -991,6 +1037,14 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Plat");
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Personne", b =>
+                {
+                    b.HasOne("TopModel.Sample.Restaurant.Models.Departement", null)
+                        .WithMany()
+                        .HasForeignKey("DepartementCode")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", b =>
                 {
                     b.HasOne("TopModel.Sample.Restaurant.Models.CategoriePlat", "CategoriePlat")
@@ -1057,6 +1111,15 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", null)
                         .WithMany()
                         .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Restaurant.Models.Departement", b =>
+                {
+                    b.HasOne("TopModel.Sample.Restaurant.Models.Region", null)
+                        .WithMany()
+                        .HasForeignKey("RegionCode")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

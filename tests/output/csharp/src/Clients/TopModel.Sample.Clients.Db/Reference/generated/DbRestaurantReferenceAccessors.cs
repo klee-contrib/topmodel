@@ -17,12 +17,18 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadCategoriePlats" />
     public ICollection<CategoriePlat> LoadCategoriePlats()
     {
-        return dbContext.CategoriePlats.OrderBy(row => row.Ordre).ToList();
+        return [CategoriePlat.Entree, CategoriePlat.Plat, CategoriePlat.Dessert, CategoriePlat.Boisson];
     }
 
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadDepartements" />
     public ICollection<Departement> LoadDepartements()
     {
-        return dbContext.Departements.OrderBy(row => row.Libelle).ToList();
+        return [Departement.Paris, Departement.HautsDeSeine, Departement.SeineSaintDenis, Departement.SeineEtMarne];
+    }
+
+    /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadRegions" />
+    public ICollection<Region> LoadRegions()
+    {
+        return dbContext.Regions.OrderBy(row => row.Libelle).ToList();
     }
 }

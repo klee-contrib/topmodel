@@ -14,11 +14,14 @@ INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('PLAT', 'res
 INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('DESSERT', 'restaurant.categoriePlat.values.Dessert', 4);
 INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('BOISSON', 'restaurant.categoriePlat.values.Boisson', 1);
 
+/**		Initialisation de la table REGION		**/
+INSERT INTO REGION(REG_CODE, REG_LIBELLE, REG_NOM_RESPONSABLE) VALUES('IDF', 'restaurant.region.values.Idf', null);
+
 /**		Initialisation de la table DEPARTEMENT		**/
-INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE) VALUES('75', 'restaurant.departement.values.Paris');
-INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE) VALUES('92', 'restaurant.departement.values.HautsDeSeine');
-INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE) VALUES('93', 'restaurant.departement.values.SeineSaintDenis');
-INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE) VALUES('94', 'restaurant.departement.values.SeineEtMarne');
+INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('75', 'restaurant.departement.values.Paris', 'IDF');
+INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('92', 'restaurant.departement.values.HautsDeSeine', 'IDF');
+INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('93', 'restaurant.departement.values.SeineSaintDenis', 'IDF');
+INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('94', 'restaurant.departement.values.SeineEtMarne', 'IDF');
 
 /**		Initialisation de la table STATUT_COMMANDE		**/
 INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('EN_ATT', 'restaurant.statutCommande.values.EnAttente');

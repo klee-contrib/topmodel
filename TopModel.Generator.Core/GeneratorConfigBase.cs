@@ -429,11 +429,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
 
         sb.Append(refName.ToPascalCase(strictIfUppercase: true));
-
-        if (property != property.Class.ReferenceKey)
-        {
-            sb.Append(property.NamePascal);
-        }
+        sb.Append(property.NamePascal);
 
         return sb.ToString();
     }

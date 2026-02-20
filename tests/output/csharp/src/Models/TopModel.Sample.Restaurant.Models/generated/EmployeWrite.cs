@@ -34,7 +34,7 @@ public partial record EmployeWrite
     [ReferencedType(typeof(Departement))]
     [Domain(Domains.Code)]
     [StringLength(10)]
-    public string? DepartementCode { get; set; } = Departement.Paris;
+    public string? DepartementCode { get; set; } = Departement.ParisCode;
 
     /// <summary>
     /// Numéro de téléphone de l'employé.

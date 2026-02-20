@@ -29,7 +29,11 @@ internal class CompositionProperty : IProperty
 
     public string Comment { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public Class Class { get; set; }
 

@@ -108,7 +108,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             GenerateFlags(w, item);
         }
 
+        GenerateReadonlyEnumClassInstances(w, item);
+
         GenerateProperties(w, item, tag);
+
+        GenerateReadonlyEnumKeyMapper(w, item);
 
         w.WriteLine("}");
     }
@@ -485,6 +489,81 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             w.WriteLine(1, $"{type} {property.NamePascal} {{ get;{(!property.Readonly ? " set;" : string.Empty)} }}");
         }
+    }
+
+    protected virtual void GenerateReadonlyEnumClassInstances(CSharpWriter w, Class item)
+    {
+        if (item.Enum != EnumMode.Class || !item.Readonly)
+        {
+            return;
+        }
+
+        foreach (
+            var refValue in item.Values.OrderBy(
+                x => x.Name.ToPascalCase(strictIfUppercase: true),
+                StringComparer.Ordinal
+            )
+        )
+        {
+            w.WriteSummary(1, refValue.GetLabel(item));
+            w.Write(
+                1,
+                $"public static {Config.GetTypeName(item)} {refValue.Name.ToPascalCase(strictIfUppercase: true)} {{ get; }} = new() {{"
+            );
+
+            foreach (var refProp in refValue.Value.ToList())
+            {
+                var value = Config
+                    .GetValue(refProp.Key, refProp.Value)
+                    .Replace($"{Config.GetTypeName(item)}.", string.Empty);
+
+                if (item.Reference && refProp.Key == item.DefaultProperty && Config.TranslateReferences == true)
+                {
+                    value = $"\"{refValue.ResourceKey}\"";
+                }
+
+                w.Write($" {refProp.Key.NamePascal} = {value}");
+                if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
+                {
+                    w.Write(",");
+                }
+            }
+
+            w.WriteLine(" };");
+            w.WriteLine();
+        }
+    }
+
+    protected virtual void GenerateReadonlyEnumKeyMapper(CSharpWriter w, Class item)
+    {
+        if (item.Enum != EnumMode.Class || !item.Readonly)
+        {
+            return;
+        }
+
+        w.WriteLine();
+
+        var key = item.EnumKey!;
+
+        w.WriteSummary(1, "Récupère l'instance correspondante à la clé primaire demandée.");
+        w.WriteParam(key.NameCamel, key.Comment);
+        w.WriteLine(
+            1,
+            $"public static {Config.GetTypeName(item)} GetValue({Config.GetType(key, nonNullable: true)} {key.NameCamel})"
+        );
+        w.WriteLine(1, "{");
+        w.WriteLine(2, $"return {key.NameCamel} switch");
+        w.WriteLine(2, "{");
+        foreach (var refValue in item.Values)
+        {
+            w.WriteLine(
+                3,
+                $"{Config.GetValue(key, refValue.Value[key]).Replace($"{Config.GetTypeName(item)}.", string.Empty)} => {refValue.Name.ToPascalCase(strictIfUppercase: true)},"
+            );
+        }
+        w.WriteLine(3, "_ => throw new InvalidOperationException()");
+        w.WriteLine(2, "};");
+        w.WriteLine(1, "}");
     }
 
     /// <summary>
