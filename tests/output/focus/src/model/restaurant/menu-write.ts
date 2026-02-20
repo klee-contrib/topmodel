@@ -3,7 +3,9 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "../../domains";
+
+import {CategoriePlatCode} from "./references";
 
 export type MenuWrite = EntityToType<MenuWriteEntityType>;
 export type MenuWriteEntityType = typeof MenuWriteEntity;
@@ -29,5 +31,8 @@ export const MenuWriteEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.menu.restaurantId")
+    ),
+    categoriesPlat: e.field(DO_LISTE, f => f.type<CategoriePlatCode[]>()
+        .label("restaurant.categoriePlat.code")
     )
 });

@@ -324,7 +324,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             w.WriteLine(
                 $"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
                 c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property)}" : string.Empty)}")))})"
+                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}")))})"
             );
 
             if (classe.Abstract)
@@ -466,7 +466,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             var missingRequiredProperties = mapper
                 .MissingRequiredProperties.Where(mrp =>
-                    mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
+                    (mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
+                    && Config.GetDefaultValue(mrp, tag) == "null"
                 )
                 .ToList();
 

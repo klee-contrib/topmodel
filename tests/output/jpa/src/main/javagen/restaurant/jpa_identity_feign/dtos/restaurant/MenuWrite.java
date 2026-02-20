@@ -8,6 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Menu;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
 /**
  * Détail d'un menu en écriture.
@@ -75,6 +77,13 @@ public class MenuWrite implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * Catégories de plat disponibles dans le menu.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.CategoriePlat#getCode() CategoriePlat#getCode()}
+	 */
+	@NotNull
+	private List<CategoriePlatCode> categoriesPlat;
 
 	/**
 	 * Getter for nom.
@@ -140,6 +149,15 @@ public class MenuWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for categoriesPlat.
+	 *
+	 * @return value of {@link #categoriesPlat categoriesPlat}.
+	 */
+	public List<CategoriePlatCode> getCategoriesPlat() {
+		return this.categoriesPlat;
+	}
+
+	/**
 	 * Set the value of {@link #nom nom}.
 	 * @param nom value to set.
 	 */
@@ -196,6 +214,14 @@ public class MenuWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #categoriesPlat categoriesPlat}.
+	 * @param categoriesPlat value to set.
+	 */
+	public void setCategoriesPlat(List<CategoriePlatCode> categoriesPlat) {
+		this.categoriesPlat = categoriesPlat;
+	}
+
+	/**
 	 * Mappe 'MenuWrite' vers 'Menu'.
 	 * @param target Instance pré-existante de 'Menu'. Une nouvelle instance sera créée si non spécifié.
 	 *
@@ -203,6 +229,16 @@ public class MenuWrite implements Serializable {
 	 */
 	public Menu toMenu(Menu target) {
 		return RestaurantMappers.toMenu(this, target);
+	}
+
+	/**
+	 * Mappe 'MenuWrite' vers 'MenuRead'.
+	 * @param target Instance pré-existante de 'MenuRead'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'MenuRead'.
+	 */
+	public MenuRead toMenuRead(MenuRead target) {
+		return RestaurantDTOMappers.toMenuRead(this, target);
 	}
 
 	/**
@@ -215,7 +251,8 @@ public class MenuWrite implements Serializable {
 		DISPONIBLE(Boolean.class),
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		CATEGORIES_PLAT(List.class);
 
 		private final Class<?> type;
 

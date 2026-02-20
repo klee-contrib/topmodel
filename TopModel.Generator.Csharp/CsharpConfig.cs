@@ -497,6 +497,56 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
+    protected virtual IDictionary<string, string> CollectionTypes { get; } =
+        new Dictionary<string, string>()
+        {
+            ["IEnumerable"] = "List",
+            ["ICollection"] = "List",
+            ["IList"] = "List",
+            ["List"] = "List",
+            ["HashSet"] = "HashSet",
+        };
+
+    public virtual string GetDefaultValue(IProperty property, string tag)
+    {
+        var defaultValue = property.UseClassForAssociation ? "null" : GetValue(property);
+        var type = GetType(property, nonNullable: true);
+
+        if (
+            property.EnumProperty != null
+            && (property.Class?.Properties.Any(p => p.NamePascal == defaultValue.Split(".")[0]) ?? false)
+        )
+        {
+            defaultValue =
+                $"{GetNamespace(
+                    property.EnumProperty!.Class,
+                    GetBestClassTag(property.EnumProperty!.Class, tag), GetNamespace(property.Class, tag)
+                )}.{defaultValue}";
+        }
+
+        if (
+            property.Composition != null && property.Required
+            || property.AssociationMultiple && property.UseClassForAssociation
+        )
+        {
+            var genericType = type.Split('<')[0];
+
+            if (type == GetTypeName(property.Composition))
+            {
+                if (!RequiredNonNullable(tag))
+                {
+                    defaultValue = $"new()";
+                }
+            }
+            else if (CollectionTypes.TryGetValue(genericType, out var collectionType))
+            {
+                defaultValue = DotnetVersion >= 8 ? "[]" : $"new {type.Replace(genericType, collectionType)}()";
+            }
+        }
+
+        return defaultValue;
+    }
+
     public virtual string GetReferenceInterfaceNamespace(Namespace ns, string tag)
     {
         return ResolveVariables(ReferenceAccessorsInterfacePath!, tag: tag, module: ns.Module).ToNamespace();

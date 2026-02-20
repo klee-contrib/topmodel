@@ -269,9 +269,9 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public virtual bool IsListComposition(IProperty property)
     {
-        var cp = property.Composition != null ? property : null;
-
-        return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
+        return property is { Composition: Class c, Domain: Domain d }
+            && !c.IsJSReference()
+            && (GetImplementation(d)?.GenericType?.EndsWith("[]") ?? false);
     }
 
     protected override string ResolveTagVariables(string value, string tag)

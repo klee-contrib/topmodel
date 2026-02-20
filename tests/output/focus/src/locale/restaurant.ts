@@ -92,6 +92,7 @@ export const restaurant = {
         restaurantId: "Restaurant"
     },
     menuRead: {
+        categoriesPlat: "CategoriesPlat",
         plats: "Plats"
     },
     personne: {

@@ -8,6 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -83,6 +84,14 @@ public class MenuWrite implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Catégories de plat disponibles dans le menu.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.CategoriePlat#getCode() CategoriePlat#getCode()}
+	 */
+	@NotNull
+	@Column("cat_code")
+	private List<String> categoriesPlat;
+
+	/**
 	 * Getter for nom.
 	 *
 	 * @return value of {@link #nom nom}.
@@ -146,6 +155,15 @@ public class MenuWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for categoriesPlat.
+	 *
+	 * @return value of {@link #categoriesPlat categoriesPlat}.
+	 */
+	public List<String> getCategoriesPlat() {
+		return this.categoriesPlat;
+	}
+
+	/**
 	 * Set the value of {@link #nom nom}.
 	 * @param nom value to set.
 	 */
@@ -199,5 +217,13 @@ public class MenuWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #categoriesPlat categoriesPlat}.
+	 * @param categoriesPlat value to set.
+	 */
+	public void setCategoriesPlat(List<String> categoriesPlat) {
+		this.categoriesPlat = categoriesPlat;
 	}
 }

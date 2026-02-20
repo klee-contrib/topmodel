@@ -35,6 +35,42 @@ public class RestaurantDTOMappers {
 	}
 
 	/**
+	 * Mappe 'MenuRead' vers une nouvelle instance de 'MenuWrite'.
+	 * @param source Instance de 'MenuWrite' à mapper.
+	 *
+	 * @return Nouvelle instance de 'MenuWrite' mappée depuis 'menuRead'.
+	 */
+	public static MenuRead toMenuRead(MenuWrite source) {
+		return toMenuRead(source, new MenuRead());
+	}
+
+	/**
+	 * Mappe 'MenuRead' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'MenuWrite' à mapper.
+	 * @param target Instance de 'MenuRead' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'menuRead'.
+	 */
+	public static MenuRead toMenuRead(MenuWrite source, MenuRead target) {
+		if (source == null) {
+			throw new IllegalArgumentException("source cannot be null");
+		}
+
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		target.setNom(source.getNom());
+		target.setDescription(source.getDescription());
+		target.setPrix(source.getPrix());
+		target.setDisponible(source.getDisponible());
+		target.setDateDebut(source.getDateDebut());
+		target.setDateFin(source.getDateFin());
+		target.setRestaurantId(source.getRestaurantId());
+		return target;
+	}
+
+	/**
 	 * Mappe 'PlatItem' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
 	 * @param source Instance de 'PlatItemReadonly' à mapper.
 	 * @param target Instance de 'PlatItem' sur laquelle mapper.

@@ -11,16 +11,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 {
     public override string Name => "CSharpClassGen";
 
-    protected virtual IDictionary<string, string> CollectionTypes { get; } =
-        new Dictionary<string, string>()
-        {
-            ["IEnumerable"] = "List",
-            ["ICollection"] = "List",
-            ["IList"] = "List",
-            ["List"] = "List",
-            ["HashSet"] = "HashSet",
-        };
-
     /// <summary>
     /// Génération de la déclaration de la classe.
     /// </summary>
@@ -391,7 +381,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
 
-            if (type?.TrimEnd('?') == "string" && property.Domain.Length != null)
+            if (type.TrimEnd('?') == "string" && property.Domain.Length != null)
             {
                 w.WriteAttribute(1, "StringLength", $"{property.Domain.Length}");
             }
@@ -430,44 +420,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            var defaultValue = property.UseClassForAssociation ? "null" : Config.GetValue(property);
-
-            if (
-                property.EnumProperty != null
-                && property.Class.Properties.Any(p => p.NamePascal == defaultValue.Split(".")[0])
-            )
-            {
-                defaultValue =
-                    $"{Config
-                    .GetNamespace(
-                        property.EnumProperty!.Class,
-                        Config.GetBestClassTag(property.EnumProperty!.Class, tag), Config.GetNamespace(property.Class, tag)
-                    )}.{defaultValue}";
-            }
-
-            if (
-                type != null
-                && (
-                    property.Composition != null && property.Required
-                    || property.AssociationMultiple && property.UseClassForAssociation
-                )
-            )
-            {
-                var genericType = type.Split('<')[0];
-
-                if (type == Config.GetTypeName(property.Composition))
-                {
-                    if (!Config.RequiredNonNullable(tag))
-                    {
-                        defaultValue = $"new()";
-                    }
-                }
-                else if (CollectionTypes.TryGetValue(genericType, out var collectionType))
-                {
-                    defaultValue =
-                        Config.DotnetVersion >= 8 ? "[]" : $"new {type.Replace(genericType, collectionType)}()";
-                }
-            }
+            var defaultValue = Config.GetDefaultValue(property, tag);
 
             w.Write(1, "public");
 

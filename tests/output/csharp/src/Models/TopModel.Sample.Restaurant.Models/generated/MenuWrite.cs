@@ -59,4 +59,11 @@ public partial record MenuWrite
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Catégories de plat disponibles dans le menu.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Liste)]
+    public ICollection<CategoriePlat.Codes>? CategoriesPlat { get; init; }
 }

@@ -27,6 +27,45 @@ public static class Mappers
     }
 
     /// <summary>
+    /// Mappe 'MenuWrite' vers 'MenuRead'.
+    /// </summary>
+    /// <param name="source">Instance de 'MenuWrite'.</param>
+    /// <param name="id">Identifiant du menu.</param>
+    /// <returns>Une nouvelle instance de 'MenuRead'.</returns>
+    public static MenuRead ToMenuRead(this MenuWrite source, int? id = null)
+    {
+        return new MenuRead
+        {
+            Nom = source.Nom,
+            Description = source.Description,
+            Prix = source.Prix,
+            Disponible = source.Disponible,
+            DateDebut = source.DateDebut,
+            DateFin = source.DateFin,
+            RestaurantId = source.RestaurantId,
+            Id = id
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'MenuWrite' vers 'MenuRead'.
+    /// </summary>
+    /// <param name="source">Instance de 'MenuWrite'.</param>
+    /// <param name="dest">Instance pré-existante de 'MenuRead'.</param>
+    /// <returns>L'instance pré-existante de 'MenuRead'.</returns>
+    public static MenuRead ToMenuRead(this MenuWrite source, MenuRead dest)
+    {
+        dest.Nom = source.Nom;
+        dest.Description = source.Description;
+        dest.Prix = source.Prix;
+        dest.Disponible = source.Disponible;
+        dest.DateDebut = source.DateDebut;
+        dest.DateFin = source.DateFin;
+        dest.RestaurantId = source.RestaurantId;
+        return dest;
+    }
+
+    /// <summary>
     /// Mappe 'IPlatItemReadonly' vers 'IPlatItem'.
     /// </summary>
     /// <param name="source">Instance de 'IPlatItemReadonly'.</param>

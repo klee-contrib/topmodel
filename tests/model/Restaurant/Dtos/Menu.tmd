@@ -5,6 +5,7 @@ tags:
   - back
 uses:
   - Restaurant/Entities/Menu
+  - Restaurant/References
 ---
 class:
   name: MenuRead
@@ -14,6 +15,11 @@ class:
     - alias:
         class: Menu
         exclude: Plats
+
+    - composition: CategoriePlat
+      name: CategoriesPlat
+      domain: DO_LISTE
+      comment: Catégories de plat dans le menu.
 
     - composition: PlatItem
       name: Plats
@@ -37,9 +43,17 @@ class:
           - Id
           - Plats
 
+    - alias:
+        class: CategoriePlat
+        include: Code
+      as: list
+      name: CategoriesPlat
+      comment: Catégories de plat disponibles dans le menu.
+
   mappers:
     to:
       - class: Menu
+      - class: MenuRead
 ---
 class:
   name: PlatItem
