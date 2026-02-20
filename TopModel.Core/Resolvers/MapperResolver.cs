@@ -488,14 +488,27 @@ internal class MapperResolver(
 
         // Mapping classe => propriété
         if (
-            targetProperty.MappingType.TryPickT0(out var mp, out _)
+            targetProperty.MappingType.TryPickT0(out var tt0cp, out _)
             && (
-                sourceProperty.MappingType.TryPickT1(out var cp1, out _)
-                    && CheckDomains(cp1.Property?.Domain, mp.Domain)
-                || sourceProperty.MappingType.TryPickT2(out var cp2, out _)
-                    && mp.ItemDomain != null
-                    && CheckDomains(cp2.Property?.Domain, mp.ItemDomain)
+                sourceProperty.MappingType.TryPickT1(out var st1cp, out _)
+                    && CheckDomains(st1cp.Property?.Domain, tt0cp.Domain)
+                || sourceProperty.MappingType.TryPickT2(out var st2cp, out _)
+                    && tt0cp.ItemDomain != null
+                    && CheckDomains(st2cp.Property?.Domain, tt0cp.ItemDomain)
             )
+        )
+        {
+            return true;
+        }
+
+        // Mapping propriété => classe enum readonly
+        if (
+            sourceProperty.MappingType.IsT0
+            && targetProperty.MappingType.TryPickT1(out var tt1pc, out _)
+            && tt1pc.Class.Enum == EnumMode.Class
+            && tt1pc.Class.Readonly
+            && sourceProperty.UniqueValuedProperty == tt1pc.Class.EnumKey
+            && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey!.Domain)
         )
         {
             return true;

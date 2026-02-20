@@ -185,6 +185,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 value = GetMappedValue(value, st1.Class, tt1.Class, nullCheck: true);
             }
+            else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
+            {
+                var mapped =
+                    $"{Config.GetTypeName(tt1rec.Class)}.GetValue({HandleConversion(value, source, tt1rec.Class.EnumKey!, rrnSource, rrnTarget: true, paramRequired)})";
+
+                value =
+                    !rrnSource || !source.Required && !target.Required ? $"{value} != null ? {mapped} : null" : mapped;
+            }
             else
             {
                 if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)

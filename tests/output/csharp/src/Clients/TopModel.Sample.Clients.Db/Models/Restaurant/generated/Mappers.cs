@@ -556,10 +556,9 @@ public static class Mappers
     /// Mappe 'IPlatItem' vers 'Plat'.
     /// </summary>
     /// <param name="source">Instance de 'IPlatItem'.</param>
-    /// <param name="categoriePlat">Catégorie du plat.</param>
     /// <param name="restaurant">Restaurant proposant ce plat.</param>
     /// <returns>Une nouvelle instance de 'Plat'.</returns>
-    public static Plat ToPlat(this IPlatItem source, CategoriePlat? categoriePlat = null, Restaurant? restaurant = null)
+    public static Plat ToPlat(this IPlatItem source, Restaurant? restaurant = null)
     {
         return new Plat
         {
@@ -567,7 +566,7 @@ public static class Mappers
             Nom = source.Nom,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlat = categoriePlat,
+            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
             Restaurant = restaurant
         };
     }
@@ -584,6 +583,7 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
+        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 
@@ -591,10 +591,9 @@ public static class Mappers
     /// Mappe 'PlatWrite' vers 'Plat'.
     /// </summary>
     /// <param name="source">Instance de 'PlatWrite'.</param>
-    /// <param name="categoriePlat">Catégorie du plat.</param>
     /// <param name="restaurant">Restaurant proposant ce plat.</param>
     /// <returns>Une nouvelle instance de 'Plat'.</returns>
-    public static Plat ToPlat(this PlatWrite source, CategoriePlat? categoriePlat = null, Restaurant? restaurant = null)
+    public static Plat ToPlat(this PlatWrite source, Restaurant? restaurant = null)
     {
         return new Plat
         {
@@ -602,7 +601,7 @@ public static class Mappers
             Description = source.Description,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlat = categoriePlat,
+            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
             Restaurant = restaurant
         };
     }
@@ -619,6 +618,7 @@ public static class Mappers
         dest.Description = source.Description;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
+        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 

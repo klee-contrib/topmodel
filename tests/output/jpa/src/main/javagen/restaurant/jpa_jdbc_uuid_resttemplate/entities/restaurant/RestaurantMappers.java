@@ -794,6 +794,7 @@ public class RestaurantMappers {
 		target.setNom(source.getNom());
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
+		target.setCategoriePlatCode(source.getCategoriePlatCode());
 		return target;
 	}
 
@@ -827,6 +828,7 @@ public class RestaurantMappers {
 		target.setDescription(source.getDescription());
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
+		target.setCategoriePlatCode(source.getCategoriePlatCode());
 		return target;
 	}
 

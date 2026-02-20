@@ -314,6 +314,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             checkSourceNull = true;
             getter = GetMappedValue(getter, st1.Class, tt1.Class, target);
         }
+        else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
+        {
+            checkSourceNull = true;
+            getter =
+                $"new {Config.GetTypeName(tt1rec.Class)}({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
+        }
         else
         {
             if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)
