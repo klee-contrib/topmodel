@@ -4,7 +4,12 @@
 
 package restaurant.jpa_identity_feign.dtos.restaurant;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import jakarta.annotation.Generated;
+
+import restaurant.jpa_identity_feign.entities.restaurant.CategoriePlat;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantDTOMappers {
@@ -67,6 +72,12 @@ public class RestaurantDTOMappers {
 		target.setDateDebut(source.getDateDebut());
 		target.setDateFin(source.getDateFin());
 		target.setRestaurantId(source.getRestaurantId());
+		if (source.getCategoriesPlat() != null) {
+			target.setCategoriesPlat(source.getCategoriesPlat().stream().filter(Objects::nonNull).map(CategoriePlat::new).collect(Collectors.toList()));
+		} else {
+			target.setCategoriesPlat(null);
+		}
+
 		return target;
 	}
 

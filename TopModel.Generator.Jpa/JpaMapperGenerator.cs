@@ -317,8 +317,24 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
         {
             checkSourceNull = true;
+            imports.Add(
+                $"{Config.GetPackageName(tt1rec.Class, Config.GetBestClassTag(tt1rec.Class, tag))}.{tt1rec.Class.NamePascal}"
+            );
+
             getter =
                 $"new {Config.GetTypeName(tt1rec.Class)}({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
+        }
+        else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
+        {
+            checkSourceNull = true;
+            imports.Add("java.util.stream.Collectors");
+            imports.Add("java.util.Objects");
+            imports.Add(
+                $"{Config.GetPackageName(tt2rec.Class, Config.GetBestClassTag(tt2rec.Class, tag))}.{tt2rec.Class.NamePascal}"
+            );
+
+            getter +=
+                $".stream().filter(Objects::nonNull).map({tt2rec.Class.NamePascal}::new).{Config.GetCollector(tt2rec.Domain)}";
         }
         else
         {

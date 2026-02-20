@@ -43,6 +43,7 @@ public static class Mappers
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
             RestaurantId = source.RestaurantId,
+            CategoriesPlat = source.CategoriesPlat?.Select(CategoriePlat.GetValue).ToList() ?? [],
             Id = id
         };
     }
@@ -62,6 +63,7 @@ public static class Mappers
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
         dest.RestaurantId = source.RestaurantId;
+        dest.CategoriesPlat = source.CategoriesPlat?.Select(CategoriePlat.GetValue).ToList() ?? [];
         return dest;
     }
 

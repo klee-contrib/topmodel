@@ -514,6 +514,20 @@ internal class MapperResolver(
             return true;
         }
 
+        // Mapping collection propriété => collection classe enum readonly
+        if (
+            sourceProperty.MappingType.TryPickT0(out var st1pc, out _)
+            && st1pc.ItemDomain != null
+            && targetProperty.MappingType.TryPickT2(out var tt2pc, out _)
+            && tt2pc.Class.Enum == EnumMode.Class
+            && tt2pc.Class.Readonly
+            && sourceProperty.UniqueValuedProperty == tt2pc.Class.EnumKey
+            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey!.Domain)
+        )
+        {
+            return true;
+        }
+
         return false;
     }
 

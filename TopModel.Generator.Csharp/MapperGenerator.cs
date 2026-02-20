@@ -193,6 +193,17 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 value =
                     !rrnSource || !source.Required && !target.Required ? $"{value} != null ? {mapped} : null" : mapped;
             }
+            else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
+            {
+                value +=
+                    $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({Config.GetTypeName(tt2rec.Class)}.GetValue).{Config.GetCollector(tt2rec.Domain)}";
+
+                var defaultTargetValue = Config.GetDefaultValue(target, tag);
+                if (defaultTargetValue != "null" && target.Required)
+                {
+                    value += $" ?? {defaultTargetValue}";
+                }
+            }
             else
             {
                 if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)
