@@ -54,7 +54,7 @@ public class CommandeController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Task.</returns>
     [HttpDelete("api/restaurants/commandes")]
-    public async Task DeleteCommandeWithBody([FromBody] CommandeItem commandeItem, CancellationToken ct = default)
+    public async Task DeleteCommandeWithBody([FromBody] ICommandeItem commandeItem, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -96,7 +96,7 @@ public class CommandeController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des commandes</returns>
     [HttpGet("api/restaurants/commandes")]
-    public async Task<ICollection<CommandeItem>> GetCommandes([Required] int? clientId = null, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetCommandes([Required] int? clientId = null, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -108,7 +108,7 @@ public class CommandeController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Commandes pour la date spécifiée</returns>
     [HttpGet("api/restaurants/commandes/by-date")]
-    public async Task<ICollection<CommandeItem>> GetCommandesByDate([Required] DateTime? dateCommande = null, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetCommandesByDate([Required] DateTime? dateCommande = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

@@ -7,17 +7,22 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'un plat en liste.
 /// </summary>
-public interface IPlatItem
+public interface IPlatItemReadonly
 {
     /// <summary>
     /// Identifiant du plat.
     /// </summary>
-    int? Id { get; set; }
+    int? Id { get; }
 
     /// <summary>
     /// Nom du plat.
     /// </summary>
-    string? Nom { get; set; }
+    string? Nom { get; }
+
+    /// <summary>
+    /// Catégorie du plat.
+    /// </summary>
+    CategoriePlat.Codes? CategoriePlatCode { get; }
 
     /// <summary>
     /// Prix du plat.
@@ -28,9 +33,4 @@ public interface IPlatItem
     /// Indique si le plat est disponible.
     /// </summary>
     bool? Disponible { get; set; }
-
-    /// <summary>
-    /// Catégorie du plat.
-    /// </summary>
-    CategoriePlat.Codes? CategoriePlatCode { get; set; }
 }

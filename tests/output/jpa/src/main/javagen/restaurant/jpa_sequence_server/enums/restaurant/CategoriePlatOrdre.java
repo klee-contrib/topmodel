@@ -28,4 +28,8 @@ public class CategoriePlatOrdre {
 	 * Plat principal.
 	 */
 	public static final Integer Plat = 3;
+
+	private CategoriePlatOrdre() {
+		// private constructor to hide implicite public one
+	}
 }

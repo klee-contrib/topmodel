@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
@@ -268,12 +269,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetClassFileName(Class classe, string tag)
     {
-        return Path.Combine(
-            OutputDirectory,
-            GetModelPath(classe, tag),
-            "generated",
-            (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs"
-        );
+        return Path.Combine(OutputDirectory, GetModelPath(classe, tag), "generated", GetTypeName(classe) + ".cs");
     }
 
     public virtual string GetCollector(Domain domain)
@@ -447,7 +443,7 @@ public class CsharpConfig : GeneratorConfigBase
         var containingNsSplit = containingNs.Split('.');
         var nsStack = new Stack<string>(ns.Split('.'));
 
-        var classes = AvailableClasses.Select(c => c.NamePascal).ToHashSet();
+        var classes = AvailableClasses.Select(GetTypeName).ToHashSet();
 
         var finalNs = string.Empty;
         while (nsStack.TryPop(out var item))
@@ -548,6 +544,17 @@ public class CsharpConfig : GeneratorConfigBase
         }
 
         return type;
+    }
+
+    [return: NotNullIfNotNull(nameof(classe))]
+    public override string? GetTypeName(Class? classe)
+    {
+        if (classe == null)
+        {
+            return null;
+        }
+
+        return $"{(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal}";
     }
 
     public override bool IsPersistent(Class classe, string tag)

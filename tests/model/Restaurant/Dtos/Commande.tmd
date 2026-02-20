@@ -99,6 +99,7 @@ class:
     - alias:
         endpoint: GetCommande
         include: Id
+      readonly: true
 ---
 class:
   name: LigneCommandeRead

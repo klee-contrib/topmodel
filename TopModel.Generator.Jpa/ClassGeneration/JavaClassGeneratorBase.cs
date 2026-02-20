@@ -163,11 +163,13 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             yield return method;
         }
+
         foreach (var method in GetSetters(classe, tag))
         {
             yield return method;
         }
-        if (Config.MappersInClass)
+
+        if (Config.MappersInClass && !classe.Abstract)
         {
             foreach (var method in GetToMappers(classe, tag))
             {

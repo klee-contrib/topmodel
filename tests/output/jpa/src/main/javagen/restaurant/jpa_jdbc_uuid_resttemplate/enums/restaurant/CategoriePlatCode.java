@@ -28,4 +28,8 @@ public class CategoriePlatCode {
 	 * Plat principal.
 	 */
 	public static final String Plat = "PLAT";
+
+	private CategoriePlatCode() {
+		// private constructor to hide implicite public one
+	}
 }

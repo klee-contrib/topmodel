@@ -28,7 +28,8 @@ public static class Mappers
             DateAvis = avisClient.DateAvis,
             Approuve = avisClient.Approuve,
             ClientId = avisClient.Client?.Id,
-            RestaurantId = avisClient.Restaurant?.Id
+            RestaurantId = avisClient.Restaurant?.Id,
+            NombreVues = avisClient.NombreVues
         };
     }
 
@@ -156,6 +157,26 @@ public static class Mappers
             DateDebut = menu.DateDebut,
             DateFin = menu.DateFin,
             RestaurantId = menu.Restaurant?.Id
+        };
+    }
+
+    /// <summary>
+    /// Crée une nouvelle instance de 'IPlatItem'.
+    /// </summary>
+    /// <param name="plat">Instance de 'Plat'.</param>
+    /// <returns>Une nouvelle instance de 'IPlatItem'.</returns>
+    public static IPlatItem CreatePlatItem<T>(Plat plat)
+        where T : IPlatItem, new()
+    {
+        ArgumentNullException.ThrowIfNull(plat);
+
+        return new T
+        {
+            Id = plat.Id,
+            Nom = plat.Nom,
+            Prix = plat.Prix,
+            Disponible = plat.Disponible,
+            CategoriePlatCode = plat.CategoriePlat?.Code
         };
     }
 
@@ -528,6 +549,41 @@ public static class Mappers
         dest.Disponible = source.Disponible;
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
+        return dest;
+    }
+
+    /// <summary>
+    /// Mappe 'IPlatItem' vers 'Plat'.
+    /// </summary>
+    /// <param name="source">Instance de 'IPlatItem'.</param>
+    /// <param name="categoriePlat">Catégorie du plat.</param>
+    /// <param name="restaurant">Restaurant proposant ce plat.</param>
+    /// <returns>Une nouvelle instance de 'Plat'.</returns>
+    public static Plat ToPlat(this IPlatItem source, CategoriePlat? categoriePlat = null, Restaurant? restaurant = null)
+    {
+        return new Plat
+        {
+            Id = source.Id,
+            Nom = source.Nom,
+            Prix = source.Prix,
+            Disponible = source.Disponible,
+            CategoriePlat = categoriePlat,
+            Restaurant = restaurant
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'IPlatItem' vers 'Plat'.
+    /// </summary>
+    /// <param name="source">Instance de 'IPlatItem'.</param>
+    /// <param name="dest">Instance pré-existante de 'Plat'.</param>
+    /// <returns>L'instance pré-existante de 'Plat'.</returns>
+    public static Plat ToPlat(this IPlatItem source, Plat dest)
+    {
+        dest.Id = source.Id;
+        dest.Nom = source.Nom;
+        dest.Prix = source.Prix;
+        dest.Disponible = source.Disponible;
         return dest;
     }
 

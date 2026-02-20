@@ -264,7 +264,7 @@ internal class MapperResolver(
                     {
                         foreach (
                             var currentProperty in classe.ExtendedProperties.Where(property =>
-                                !property.Readonly
+                                (!property.Readonly || !classe.Abstract)
                                 && !explicitAndAliasMappings.Exists(m => m.Key == property)
                                 && !param.MappingReferences.Any(m =>
                                     m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
@@ -365,7 +365,10 @@ internal class MapperResolver(
                     if (matchingProperties.Count() == 1)
                     {
                         var mappedProperty = matchingProperties.Single();
-                        if (!mappedProperty.Readonly && CheckPossibleMapping(currentProperty, mappedProperty))
+                        if (
+                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
+                            && CheckPossibleMapping(currentProperty, mappedProperty)
+                        )
                         {
                             mapper.Mappings.Add(currentProperty, mappedProperty);
                         }
@@ -386,7 +389,7 @@ internal class MapperResolver(
                     foreach (var mappedProperty in mapper.Class.ExtendedProperties)
                     {
                         if (
-                            !mappedProperty.Readonly
+                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
                             && mappedProperty.Name == currentProperty.Name
                             && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
@@ -508,12 +511,12 @@ internal class MapperResolver(
         Reference? propRef
     )
     {
-        if (targetProperty.Readonly)
+        if (targetProperty.Class.Abstract && targetProperty.Readonly)
         {
             yield return new ModelError(
                 ErrorType.TMD8008,
                 classe,
-                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
+                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est abstraite.",
                 propRef
             );
         }

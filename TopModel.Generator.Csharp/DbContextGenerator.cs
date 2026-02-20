@@ -170,7 +170,7 @@ public class DbContextGenerator(
             {
                 w.WriteLine();
             }
-            w.WriteSummary(1, "Accès à l'entité " + classe.NamePascal);
+            w.WriteSummary(1, "Accès à l'entité " + Config.GetTypeName(classe));
             w.WriteLine(
                 1,
                 "public DbSet<" + GetClassName(classe, tag) + "> " + classe.PluralNamePascal + " { get; set; }"
@@ -494,13 +494,13 @@ public class DbContextGenerator(
     private string GetClassName(Class classe, string tag)
     {
         var classNs = Config.GetNamespace(classe, tag);
-        if (classNs.Split(".").Contains(classe.NamePascal))
+        if (classNs.Split(".").Contains(Config.GetTypeName(classe)))
         {
-            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{classe.NamePascal}";
+            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{Config.GetTypeName(classe)}";
         }
         else
         {
-            return classe.NamePascal;
+            return Config.GetTypeName(classe);
         }
     }
 }

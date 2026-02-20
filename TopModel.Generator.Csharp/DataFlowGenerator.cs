@@ -67,7 +67,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
         w.WriteClassDeclaration(
             name,
-            $"DataFlow<{dataFlow.Class.NamePascal}>",
+            $"DataFlow<{Config.GetTypeName(dataFlow.Class)}>",
             isRecord: false,
             parameters: primaryConstructor ? parameters : null,
             baseParameters: primaryConstructor ? baseParameters : null
@@ -97,7 +97,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             w.WriteLine();
             w.WriteLine(
                 1,
-                $"protected override string ActiveProperty => nameof({dataFlow.Class.NamePascal}.{dataFlow.ActiveProperty.NamePascal});"
+                $"protected override string ActiveProperty => nameof({Config.GetTypeName(dataFlow.Class)}.{dataFlow.ActiveProperty.NamePascal});"
             );
         }
 
@@ -140,7 +140,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         w.WriteLine(1, "}");
 
         w.WriteLine();
-        w.WriteLine(1, $"protected override async Task<IEnumerable<{dataFlow.Class.NamePascal}>> GetData()");
+        w.WriteLine(1, $"protected override async Task<IEnumerable<{Config.GetTypeName(dataFlow.Class)}>> GetData()");
         w.WriteLine(1, "{");
 
         var firstSource = dataFlow.Sources.FirstOrDefault();
@@ -313,12 +313,12 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             w.WriteLine();
             w.WriteLine(
                 1,
-                $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}"
+                $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{Config.GetTypeName(source.Class)}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}"
             );
             if (source.Mode == DataFlowSourceMode.QueryAll)
             {
                 w.WriteLine(1, "{");
-                w.WriteLine(2, $"return await connection.QueryAllAsync<{source.Class.NamePascal}>();");
+                w.WriteLine(2, $"return await connection.QueryAllAsync<{Config.GetTypeName(source.Class)}>();");
                 w.WriteLine(1, "}");
             }
         }
@@ -386,7 +386,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
             w.WriteLine(
                 1,
-                $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.Where(s => s.Source == source.Source).OrderBy(s => s.Source).ToList().IndexOf(source) + 1}(IConnection connection)"
+                $"private static partial async Task<IEnumerable<{Config.GetTypeName(source.Class)}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.Where(s => s.Source == source.Source).OrderBy(s => s.Source).ToList().IndexOf(source) + 1}(IConnection connection)"
             );
             w.WriteLine(1, "{");
             w.WriteLine(1, "}");

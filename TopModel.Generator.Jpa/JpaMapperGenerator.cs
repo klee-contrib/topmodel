@@ -79,17 +79,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         fromMapperMethod.AddBodyLine();
 
-        var hydrate = string.Empty;
-        if (classe.Abstract)
-        {
-            hydrate = "target.hydrate(";
-        }
-
-        var isFirst = true;
-
         foreach (var param in mapper.ClassParams.Where(p => p.Mappings.Count > 0))
         {
-            if (param.Required && !classe.Abstract)
+            if (param.Required)
             {
                 fromMapperMethod.AddBodyLine($"if ({param.Name.ToCamelCase()} == null) {{");
                 fromMapperMethod.AddBodyLine(
@@ -103,7 +95,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var param in mapper.PropertyParams)
         {
-            if (param.Property.Required && !classe.Abstract)
+            if (param.Property.Required)
             {
                 if (param.TargetProperty is { Association.IsPersistent: true } && classe.IsPersistent)
                 {
@@ -141,54 +133,31 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     tag
                 );
                 fromMapperMethod.Imports.AddRange(imports);
-                if (classe.Abstract)
+
+                if (getter != string.Empty)
                 {
-                    if (!isFirst)
+                    if (checkSourceNull)
                     {
-                        hydrate += ", ";
+                        fromMapperMethod.AddBodyLine(
+                            indent,
+                            $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
+                        );
                     }
-                    else
-                    {
-                        isFirst = false;
-                    }
+
+                    fromMapperMethod.AddBodyLine(
+                        indent + (checkSourceNull ? 1 : 0),
+                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                    );
 
                     if (checkSourceNull)
                     {
-                        hydrate +=
-                            $"{param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}() != null ? {getter} : null";
-                    }
-                    else
-                    {
-                        hydrate += getter;
-                    }
-                }
-                else
-                {
-                    if (getter != string.Empty)
-                    {
-                        if (checkSourceNull)
-                        {
-                            fromMapperMethod.AddBodyLine(
-                                indent,
-                                $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
-                            );
-                        }
-
+                        fromMapperMethod.AddBodyLine(indent, $"}} else {{");
                         fromMapperMethod.AddBodyLine(
-                            indent + (checkSourceNull ? 1 : 0),
-                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                            indent + 1,
+                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
                         );
-
-                        if (checkSourceNull)
-                        {
-                            fromMapperMethod.AddBodyLine(indent, $"}} else {{");
-                            fromMapperMethod.AddBodyLine(
-                                indent + 1,
-                                $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
-                            );
-                            fromMapperMethod.AddBodyLine(indent, $"}}");
-                            fromMapperMethod.AddBodyLine();
-                        }
+                        fromMapperMethod.AddBodyLine(indent, $"}}");
+                        fromMapperMethod.AddBodyLine();
                     }
                 }
             }
@@ -207,31 +176,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 continue;
             }
 
-            if (classe.Abstract)
-            {
-                if (!isFirst)
-                {
-                    hydrate += ", ";
-                }
-                else
-                {
-                    isFirst = false;
-                }
-
-                hydrate += param.Property.NameCamel;
-            }
-            else
-            {
-                fromMapperMethod.AddBodyLine(
-                    $"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});"
-                );
-            }
-        }
-
-        if (classe.Abstract)
-        {
-            hydrate += ");";
-            fromMapperMethod.AddBodyLine(1, hydrate);
+            fromMapperMethod.AddBodyLine(
+                $"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});"
+            );
         }
 
         fromMapperMethod.AddBodyLine("return target;");
@@ -241,7 +188,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetFromMappers(Class classe, FromMapper mapper, string tag)
     {
-        yield return GetFromMapperNoTarget(classe, mapper, tag);
+        if (!classe.Abstract)
+        {
+            yield return GetFromMapperNoTarget(classe, mapper, tag);
+        }
+
         yield return GetFromMapperWithTarget(classe, mapper, tag);
     }
 
@@ -394,7 +345,6 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         );
 
         toMapperMethod.AddBodyLine(
-            1,
             $"return {mapper.Name.Value.ToCamelCase()}(source, new {mapper.Class.NamePascal}());"
         );
         return toMapperMethod;
@@ -423,13 +373,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         toMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"target cannot be null\");");
         toMapperMethod.AddBodyLine("}");
         toMapperMethod.AddBodyLine();
-        var hydrate = string.Empty;
-        if (mapper.Class.Abstract)
-        {
-            hydrate = "target.hydrate(";
-        }
 
-        var isFirst = true;
         foreach (
             var mapping in mapper
                 .Mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value))
@@ -440,61 +384,32 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             var propertySource = mapping.Key;
             var (getter, checkSourceNull, imports) = GetSourceGetter(propertySource, propertyTarget!, "source", tag);
             toMapperMethod.Imports.AddRange(imports);
-            if (mapper.Class.Abstract)
+
+            if (getter != string.Empty)
             {
-                if (!isFirst)
+                if (checkSourceNull)
                 {
-                    hydrate += ", ";
+                    toMapperMethod.AddBodyLine(
+                        $"if (source.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
+                    );
                 }
-                else
-                {
-                    isFirst = false;
-                }
+
+                toMapperMethod.AddBodyLine(
+                    checkSourceNull ? 1 : 0,
+                    $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                );
 
                 if (checkSourceNull)
                 {
-                    hydrate +=
-                        $"source.{JpaModelPropertyGenerator.GetGetterName(propertyTarget)}() != null ? {getter} : null";
-                }
-                else
-                {
-                    hydrate += getter;
-                }
-            }
-            else
-            {
-                if (getter != string.Empty)
-                {
-                    if (checkSourceNull)
-                    {
-                        toMapperMethod.AddBodyLine(
-                            $"if (source.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
-                        );
-                    }
-
+                    toMapperMethod.AddBodyLine($"}} else {{");
                     toMapperMethod.AddBodyLine(
-                        checkSourceNull ? 1 : 0,
-                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                        1,
+                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
                     );
-
-                    if (checkSourceNull)
-                    {
-                        toMapperMethod.AddBodyLine($"}} else {{");
-                        toMapperMethod.AddBodyLine(
-                            1,
-                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
-                        );
-                        toMapperMethod.AddBodyLine($"}}");
-                        toMapperMethod.AddBodyLine();
-                    }
+                    toMapperMethod.AddBodyLine($"}}");
+                    toMapperMethod.AddBodyLine();
                 }
             }
-        }
-
-        if (mapper.Class.Abstract)
-        {
-            hydrate += ");";
-            toMapperMethod.AddBodyLine(hydrate);
         }
 
         toMapperMethod.AddBodyLine("return target;");
@@ -503,7 +418,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, ClassMappings mapper, string tag)
     {
-        yield return GetToMapperMethodNoTarget(classe, mapper, tag);
+        if (!classe.Abstract)
+        {
+            yield return GetToMapperMethodNoTarget(classe, mapper, tag);
+        }
+
         yield return GetToMapperMethodWithTarget(classe, mapper, tag);
     }
 

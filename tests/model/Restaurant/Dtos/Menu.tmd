@@ -55,6 +55,42 @@ class:
           - Prix
           - Disponible
           - CategoriePlat
+
+  mappers:
+    from:
+      - params:
+          - class: Plat
+
+    to:
+      - class: Plat
+---
+class:
+  name: PlatItemReadonly
+  abstract: true
+  comment: Détail d'un plat en liste
+
+  properties:
+    - alias:
+        class: Plat
+        include:
+          - Id
+          - Nom
+          - CategoriePlat
+      readonly: true
+
+    - alias:
+        class: Plat
+        include:
+          - Prix
+          - Disponible
+
+  mappers:
+    from:
+      - params:
+          - class: PlatItem
+
+    to:
+      - class: PlatItem
 ---
 class:
   name: PlatRead

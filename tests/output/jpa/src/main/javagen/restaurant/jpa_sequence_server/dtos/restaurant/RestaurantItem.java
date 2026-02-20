@@ -33,11 +33,26 @@ public interface RestaurantItem {
 	String getTelephone();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant du restaurant.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Nom du restaurant.
 	 * @param nom value to set.
+	 */
+	void setNom(String nom);
+
+	/**
+	 * Adresse du restaurant.
 	 * @param adresse value to set.
+	 */
+	void setAdresse(String adresse);
+
+	/**
+	 * Numéro de téléphone.
 	 * @param telephone value to set.
 	 */
-	void hydrate(Integer id, String nom, String adresse, String telephone);
+	void setTelephone(String telephone);
 }

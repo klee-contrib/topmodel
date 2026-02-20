@@ -38,12 +38,32 @@ public interface TableItem {
 	Integer getRestaurantId();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant de la table.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Numéro de la table.
 	 * @param numero value to set.
+	 */
+	void setNumero(String numero);
+
+	/**
+	 * Capacité de la table (nombre de places).
 	 * @param capacite value to set.
+	 */
+	void setCapacite(Integer capacite);
+
+	/**
+	 * Indique si la table est disponible.
 	 * @param disponible value to set.
+	 */
+	void setDisponible(Boolean disponible);
+
+	/**
+	 * Restaurant auquel appartient la table.
 	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, String numero, Integer capacite, Boolean disponible, Integer restaurantId);
+	void setRestaurantId(Integer restaurantId);
 }

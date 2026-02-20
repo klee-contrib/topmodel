@@ -28,4 +28,8 @@ public class DepartementCode {
 	 * Seine Saint Denis.
 	 */
 	public static final String SeineSaintDenis = "93";
+
+	private DepartementCode() {
+		// private constructor to hide implicite public one
+	}
 }

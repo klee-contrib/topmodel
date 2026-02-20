@@ -62,5 +62,5 @@ public partial record RestaurantWrite
     /// Association réciproque de TableRestaurant.RestaurantId.
     /// </summary>
     [Required]
-    public ICollection<TableItem> Tables { get; set; } = [];
+    public ICollection<ITableItem> Tables { get; set; } = [];
 }

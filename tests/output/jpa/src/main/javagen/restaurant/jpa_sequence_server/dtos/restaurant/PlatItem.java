@@ -42,12 +42,32 @@ public interface PlatItem {
 	CategoriePlatCode getCategoriePlatCode();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant du plat.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Nom du plat.
 	 * @param nom value to set.
+	 */
+	void setNom(String nom);
+
+	/**
+	 * Prix du plat.
 	 * @param prix value to set.
+	 */
+	void setPrix(BigDecimal prix);
+
+	/**
+	 * Indique si le plat est disponible.
 	 * @param disponible value to set.
+	 */
+	void setDisponible(Boolean disponible);
+
+	/**
+	 * Catégorie du plat.
 	 * @param categoriePlatCode value to set.
 	 */
-	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, CategoriePlatCode categoriePlatCode);
+	void setCategoriePlatCode(CategoriePlatCode categoriePlatCode);
 }

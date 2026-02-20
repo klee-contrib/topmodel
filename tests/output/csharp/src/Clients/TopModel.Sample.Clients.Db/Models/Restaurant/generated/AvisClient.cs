@@ -61,7 +61,7 @@ public partial record AvisClient
     [Column("avi_nombre_vues")]
     [Required]
     [Domain(Domains.Quantite)]
-    public int? NombreVues { get; set; } = 0;
+    public int? NombreVues { get; init; } = 0;
 
     /// <summary>
     /// Client ayant donné l'avis.

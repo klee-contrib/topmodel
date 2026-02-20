@@ -177,7 +177,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             w.WriteLine(
                 1,
                 $"public {(Config.UseAsyncReferenceAccessors ? "async Task<" : string.Empty)}ICollection<"
-                    + classe.NamePascal
+                    + Config.GetTypeName(classe)
                     + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} "
                     + serviceName
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)})\r\n{{"
@@ -242,17 +242,17 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         foreach (var classe in classList)
         {
             count++;
-            w.WriteSummary(1, $"Accesseur de référence pour le type {classe.NamePascal}");
+            w.WriteSummary(1, $"Accesseur de référence pour le type {Config.GetTypeName(classe)}");
             if (Config.UseAsyncReferenceAccessors)
             {
                 w.WriteParam("ct", "CancellationToken");
             }
-            w.WriteReturns(1, $"Liste de {classe.NamePascal}");
+            w.WriteReturns(1, $"Liste de {Config.GetTypeName(classe)}");
             w.WriteLine(1, "[ReferenceAccessor]");
             w.WriteLine(
                 1,
                 $"{(Config.UseAsyncReferenceAccessors ? "Task<" : string.Empty)}ICollection<"
-                    + classe.NamePascal
+                    + Config.GetTypeName(classe)
                     + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} Load"
                     + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal)
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)});"
@@ -314,7 +314,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             w.WriteLine(
                 2,
-                $@"return new List<{classe.NamePascal}>
+                $@"return new List<{Config.GetTypeName(classe)}>
 {{
     {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
 }};"
@@ -354,7 +354,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     }
 
                     w.WriteLine(3, $"orderby row.{defaultProperty!.NamePascal}");
-                    w.WriteLine(3, $"select new {classe.NamePascal}");
+                    w.WriteLine(3, $"select new {Config.GetTypeName(classe)}");
                     w.WriteLine(3, "{");
 
                     foreach (var prop in classe.Properties)
@@ -394,12 +394,12 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             if (defaultProperty != null)
             {
                 queryParameter =
-                    $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
+                    $"new QueryParameter({Config.GetTypeName(classe)}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }
 
             w.WriteLine(
                 2,
-                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{Config.GetTypeName(classe)}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
             );
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.FileModel;
@@ -219,7 +220,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual string? GetClassExtends(Class classe, string tag)
     {
-        return classe.Extends?.NamePascal
+        return GetTypeName(classe.Extends)
             ?? classe
                 .Decorators.SelectMany(d =>
                     GetDecoratorImplementationValues(i => i.Extends, classe, d.Decorator, d.Parameters, tag)
@@ -371,7 +372,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             {
                 if (property.Association != null && property.UseClassForAssociation && !forceAssociationPropertyType)
                 {
-                    return property.Association!.NamePascal;
+                    return GetTypeName(property.Association!);
                 }
                 else if (
                     HasEnumSupport
@@ -399,12 +400,23 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         return property switch
         {
-            { Composition: not null, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
-                .Replace("{T}", "{composition.name}")
+            { Composition: Class c, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
+                .Replace("{T}", GetTypeName(c))
                 .ParseTemplate(property, this),
-            { Composition: Class c } => c.NamePascal,
+            { Composition: Class c } => GetTypeName(c),
             _ => GetType(property.DomainChain.Skip(skipChain)),
         };
+    }
+
+    /// <summary>
+    /// Récupère le nom du type pour une classe.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <returns>Le nom du type.</returns>
+    [return: NotNullIfNotNull(nameof(classe))]
+    public virtual string? GetTypeName(Class? classe)
+    {
+        return classe?.NamePascal;
     }
 
     public virtual string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)

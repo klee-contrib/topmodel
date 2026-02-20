@@ -299,33 +299,29 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                $"Crée une nouvelle instance de '{Config.GetTypeName(classe)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
             );
             foreach (var param in mapper.Params)
             {
                 w.WriteParam(param.GetNameCamel(), param.GetComment());
             }
 
-            w.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
+            w.WriteReturns(1, $"Une nouvelle instance de '{Config.GetTypeName(classe)}'");
 
-            if (classe.Abstract)
-            {
-                w.Write(1, $"public static T Create{classe.NamePascal}<T>");
-            }
-            else
-            {
-                w.Write(1, $"public static {classe.NamePascal} Create{classe.NamePascal}");
-            }
+            w.Write(
+                1,
+                $"public static {Config.GetTypeName(classe)} Create{classe.NamePascal}{(classe.Abstract ? "<T>" : string.Empty)}"
+            );
 
             w.WriteLine(
                 $"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
-                c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
+                c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
                 p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property)}" : string.Empty)}")))})"
             );
 
             if (classe.Abstract)
             {
-                w.WriteLine(2, $"where T : I{classe.NamePascal}");
+                w.WriteLine(2, $"where T : {Config.GetTypeName(classe)}, new()");
             }
 
             w.WriteLine(1, "{");
@@ -379,15 +375,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.WriteLine();
             }
 
-            if (classe.Abstract)
-            {
-                w.WriteLine(2, $"return (T)T.Create(");
-            }
-            else
-            {
-                w.WriteLine(2, $"return new {classe.NamePascal}");
-                w.WriteLine(2, "{");
-            }
+            w.WriteLine(2, $"return new {(classe.Abstract ? "T" : Config.GetTypeName(mapper.Class))}");
+            w.WriteLine(2, "{");
 
             foreach (var p in mapper.Params)
             {
@@ -408,14 +397,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                 rrnTarget
                             );
 
-                            if (classe.Abstract)
-                            {
-                                w.Write(3, $"{mapping.Key.NameCamel}: {value}");
-                            }
-                            else
-                            {
-                                w.Write(3, $"{mapping.Key.NamePascal} = {value}");
-                            }
+                            w.Write(3, $"{mapping.Key.NamePascal} = {value}");
 
                             if (
                                 mapper.Params.IndexOf(param) < mapper.Params.Count - 1
@@ -423,10 +405,6 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             )
                             {
                                 w.Write(",");
-                            }
-                            else if (classe.Abstract)
-                            {
-                                w.Write(");");
                             }
 
                             w.WriteLine();
@@ -443,22 +421,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             rrnTarget
                         );
 
-                        if (classe.Abstract)
-                        {
-                            w.Write(3, $"{param.TargetProperty.NameCamel}: {value}");
-                        }
-                        else
-                        {
-                            w.Write(3, $"{param.TargetProperty.NamePascal} = {value}");
-                        }
+                        w.Write(3, $"{param.TargetProperty.NamePascal} = {value}");
 
                         if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
                         {
                             w.Write(",");
-                        }
-                        else if (classe.Abstract)
-                        {
-                            w.Write(");");
                         }
 
                         w.WriteLine();
@@ -466,11 +433,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 );
             }
 
-            if (!classe.Abstract)
-            {
-                w.WriteLine(2, "};");
-            }
-
+            w.WriteLine(2, "};");
             w.WriteLine(1, "}");
 
             if (toMappers.Any() || fromMappers.IndexOf(fromMapper) < fromMappers.Count - 1)
@@ -489,9 +452,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
             );
-            w.WriteParam("source", $"Instance de '{classe.NamePascal}'");
+            w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
 
             var missingRequiredProperties = mapper
                 .MissingRequiredProperties.Where(mrp =>
@@ -504,7 +467,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.WriteParam(mrp.NameCamel, mrp.Comment);
             }
 
-            w.WriteReturns(1, $"Une nouvelle instance de '{mapper.Class.NamePascal}'");
+            w.WriteReturns(1, $"Une nouvelle instance de '{Config.GetTypeName(mapper.Class)}'");
 
             var extraParams = string.Empty;
             if (missingRequiredProperties.Count > 0)
@@ -513,17 +476,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
             }
 
+            w.WriteLine(
+                1,
+                $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}{(mapper.Class.Abstract ? "<T>" : string.Empty)}(this {Config.GetTypeName(classe)} source{extraParams})"
+            );
+
             if (mapper.Class.Abstract)
             {
-                w.WriteLine(1, $"public static T {mapper.Name}<T>(this {classe.NamePascal} source{extraParams})");
-                w.WriteLine(2, $"where T : I{mapper.Class.NamePascal}");
-            }
-            else
-            {
-                w.WriteLine(
-                    1,
-                    $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source{extraParams})"
-                );
+                w.WriteLine(2, $"where T : {Config.GetTypeName(mapper.Class)}, new()");
             }
 
             w.WriteLine(1, "{");
@@ -544,36 +504,18 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
             }
 
-            if (mapper.Class.Abstract)
-            {
-                w.WriteLine(2, $"return (T)T.Create(");
-            }
-            else
-            {
-                w.WriteLine(2, $"return new {mapper.Class.NamePascal}");
-                w.WriteLine(2, "{");
-            }
+            w.WriteLine(2, $"return new {(mapper.Class.Abstract ? "T" : Config.GetTypeName(mapper.Class))}");
+            w.WriteLine(2, "{");
 
             foreach (var mapping in mapper.Mappings)
             {
                 var value = GetValue("source", paramRequired: true, mapping.Key, mapping.Value, rrnSource, rrnTarget);
 
-                if (mapper.Class.Abstract)
-                {
-                    w.Write(3, $"{mapping.Value.NameCamel}: {value}");
-                }
-                else
-                {
-                    w.Write(3, $"{mapping.Value.NamePascal} = {value}");
-                }
+                w.Write(3, $"{mapping.Value.NamePascal} = {value}");
 
                 if (mappings.IndexOf(mapping) < mappings.Count - 1 || missingRequiredProperties.Count > 0)
                 {
                     w.WriteLine(",");
-                }
-                else if (mapper.Class.Abstract)
-                {
-                    w.WriteLine(");");
                 }
                 else
                 {
@@ -583,22 +525,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             foreach (var mrp in missingRequiredProperties)
             {
-                if (mapper.Class.Abstract)
-                {
-                    w.Write(3, $"{mrp.NameCamel}: {mrp.NameCamel.Verbatim()}");
-                }
-                else
-                {
-                    w.Write(3, $"{mrp.NamePascal} = {mrp.NameCamel.Verbatim()}");
-                }
+                w.Write(3, $"{mrp.NamePascal} = {mrp.NameCamel.Verbatim()}");
 
                 if (missingRequiredProperties.IndexOf(mrp) < missingRequiredProperties.Count - 1)
                 {
                     w.WriteLine(",");
-                }
-                else if (mapper.Class.Abstract)
-                {
-                    w.WriteLine(");");
                 }
                 else
                 {
@@ -606,11 +537,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
             }
 
-            if (!mapper.Class.Abstract)
-            {
-                w.WriteLine(2, "};");
-            }
-
+            w.WriteLine(2, "};");
             w.WriteLine(1, "}");
 
             if (!mapper.Class.Abstract)
@@ -618,14 +545,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.WriteLine();
                 w.WriteSummary(
                     1,
-                    $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                    $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
                 );
-                w.WriteParam("source", $"Instance de '{classe.NamePascal}'");
-                w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class.NamePascal}'.");
-                w.WriteReturns(1, $"L'instance pré-existante de '{mapper.Class.NamePascal}'");
+                w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
+                w.WriteParam("dest", $"Instance pré-existante de '{Config.GetTypeName(mapper.Class)}'.");
+                w.WriteReturns(1, $"L'instance pré-existante de '{Config.GetTypeName(mapper.Class)}'");
                 w.WriteLine(
                     1,
-                    $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest)"
+                    $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}(this {Config.GetTypeName(classe)} source, {Config.GetTypeName(mapper.Class)} dest)"
                 );
                 w.WriteLine(1, "{");
 
@@ -645,7 +572,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     }
                 }
 
-                foreach (var mapping in mapper.Mappings)
+                foreach (var mapping in mapper.Mappings.Where(m => !m.Value.Readonly))
                 {
                     var value = GetValue(
                         "source",

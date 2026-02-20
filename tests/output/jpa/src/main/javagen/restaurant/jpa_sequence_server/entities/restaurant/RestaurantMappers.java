@@ -23,6 +23,7 @@ import restaurant.jpa_sequence_server.dtos.restaurant.LigneCommandeRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.LigneCommandeWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.MenuRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.MenuWrite;
+import restaurant.jpa_sequence_server.dtos.restaurant.PlatItem;
 import restaurant.jpa_sequence_server.dtos.restaurant.PlatRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.PlatWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.PromotionRead;
@@ -87,6 +88,7 @@ public class RestaurantMappers {
 			target.setRestaurantId(null);
 		}
 
+		target.setNombreVues(avisClient.getNombreVues());
 		return target;
 	}
 
@@ -347,6 +349,35 @@ public class RestaurantMappers {
 			target.setRestaurantId(menu.getRestaurant().getId());
 		} else {
 			target.setRestaurantId(null);
+		}
+
+		return target;
+	}
+
+	/**
+	 * Mappe les champs sources sur l'instance de la classe 'PlatItem' passée en paramètre.
+	 * @param plat Instance de 'Plat' source.
+	 * @param target Instance de 'PlatItem' cible.
+	 *
+	 * @return L'instance de 'PlatItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 */
+	public static PlatItem mapPlatItem(Plat plat, PlatItem target) {
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		if (plat == null) {
+			throw new IllegalArgumentException("plat cannot be null");
+		}
+
+		target.setId(plat.getId());
+		target.setNom(plat.getNom());
+		target.setPrix(plat.getPrix());
+		target.setDisponible(plat.getDisponible());
+		if (plat.getCategoriePlat() != null) {
+			target.setCategoriePlatCode(plat.getCategoriePlat().getCode());
+		} else {
+			target.setCategoriePlatCode(null);
 		}
 
 		return target;
@@ -693,7 +724,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'AvisClientWrite' mappée depuis 'avisClient'.
 	 */
 	public static AvisClient toAvisClient(AvisClientWrite source) {
-			return toAvisClient(source, new AvisClient());
+		return toAvisClient(source, new AvisClient());
 	}
 
 	/**
@@ -725,7 +756,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'ClientWrite' mappée depuis 'client'.
 	 */
 	public static Client toClient(ClientWrite source) {
-			return toClient(source, new Client());
+		return toClient(source, new Client());
 	}
 
 	/**
@@ -758,7 +789,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'CommandeWrite' mappée depuis 'commande'.
 	 */
 	public static Commande toCommande(CommandeWrite source) {
-			return toCommande(source, new Commande());
+		return toCommande(source, new Commande());
 	}
 
 	/**
@@ -810,7 +841,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'EmployeWrite' mappée depuis 'employe'.
 	 */
 	public static Employe toEmploye(EmployeWrite source) {
-			return toEmploye(source, new Employe());
+		return toEmploye(source, new Employe());
 	}
 
 	/**
@@ -847,7 +878,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'LigneCommandeWrite' mappée depuis 'ligneCommande'.
 	 */
 	public static LigneCommande toLigneCommande(LigneCommandeWrite source) {
-			return toLigneCommande(source, new LigneCommande());
+		return toLigneCommande(source, new LigneCommande());
 	}
 
 	/**
@@ -879,7 +910,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'MenuWrite' mappée depuis 'menu'.
 	 */
 	public static Menu toMenu(MenuWrite source) {
-			return toMenu(source, new Menu());
+		return toMenu(source, new Menu());
 	}
 
 	/**
@@ -908,13 +939,36 @@ public class RestaurantMappers {
 	}
 
 	/**
+	 * Mappe 'Plat' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'PlatItem' à mapper.
+	 * @param target Instance de 'Plat' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'plat'.
+	 */
+	public static Plat toPlat(PlatItem source, Plat target) {
+		if (source == null) {
+			throw new IllegalArgumentException("source cannot be null");
+		}
+
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		target.setId(source.getId());
+		target.setNom(source.getNom());
+		target.setPrix(source.getPrix());
+		target.setDisponible(source.getDisponible());
+		return target;
+	}
+
+	/**
 	 * Mappe 'Plat' vers une nouvelle instance de 'PlatWrite'.
 	 * @param source Instance de 'PlatWrite' à mapper.
 	 *
 	 * @return Nouvelle instance de 'PlatWrite' mappée depuis 'plat'.
 	 */
 	public static Plat toPlat(PlatWrite source) {
-			return toPlat(source, new Plat());
+		return toPlat(source, new Plat());
 	}
 
 	/**
@@ -947,7 +1001,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'PromotionWrite' mappée depuis 'promotion'.
 	 */
 	public static Promotion toPromotion(PromotionWrite source) {
-			return toPromotion(source, new Promotion());
+		return toPromotion(source, new Promotion());
 	}
 
 	/**
@@ -981,7 +1035,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'ReservationWrite' mappée depuis 'reservation'.
 	 */
 	public static Reservation toReservation(ReservationWrite source) {
-			return toReservation(source, new Reservation());
+		return toReservation(source, new Reservation());
 	}
 
 	/**
@@ -1015,7 +1069,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'RestaurantWrite' mappée depuis 'restaurant'.
 	 */
 	public static Restaurant toRestaurant(RestaurantWrite source) {
-			return toRestaurant(source, new Restaurant());
+		return toRestaurant(source, new Restaurant());
 	}
 
 	/**
@@ -1053,7 +1107,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'TableWrite' mappée depuis 'tableRestaurant'.
 	 */
 	public static TableRestaurant toTableRestaurant(TableWrite source) {
-			return toTableRestaurant(source, new TableRestaurant());
+		return toTableRestaurant(source, new TableRestaurant());
 	}
 
 	/**

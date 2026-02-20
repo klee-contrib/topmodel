@@ -82,7 +82,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         if (item.Abstract)
         {
-            w.Write($"public interface I{item.NamePascal}");
+            w.Write($"public interface {Config.GetTypeName(item)}");
 
             if (implements.Any())
             {
@@ -94,7 +94,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         }
         else
         {
-            w.WriteClassDeclaration(item.NamePascal, extends, Config.UseRecords, implements.ToArray());
+            w.WriteClassDeclaration(Config.GetTypeName(item), extends, Config.UseRecords, implements.ToArray());
 
             GenerateConstProperties(w, item);
 
@@ -109,11 +109,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         }
 
         GenerateProperties(w, item, tag);
-
-        if (item.Abstract)
-        {
-            GenerateCreateMethod(w, item);
-        }
 
         w.WriteLine("}");
     }
@@ -173,27 +168,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         if (consts.Any())
         {
             w.WriteLine();
-        }
-    }
-
-    protected virtual void GenerateCreateMethod(CSharpWriter w, Class item)
-    {
-        var writeProperties = item.Properties.Where(p => !p.Readonly);
-
-        if (writeProperties.Any())
-        {
-            w.WriteLine();
-            w.WriteSummary(1, "Factory pour instancier la classe.");
-            foreach (var prop in writeProperties)
-            {
-                w.WriteParam(prop.NameCamel, prop.Comment);
-            }
-
-            w.WriteReturns(1, "Instance de la classe.");
-            w.WriteLine(
-                1,
-                $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});"
-            );
         }
     }
 
@@ -396,7 +370,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     && association.Reference
                 )
                 {
-                    w.WriteAttribute(1, "ReferencedType", $"typeof({association.NamePascal})");
+                    w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(association)})");
                 }
                 else if (
                     property is { ReferenceClass: Class refClass, PrimaryKeyish: false }
@@ -404,7 +378,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     && Config.AvailableClasses.Contains(refClass)
                 )
                 {
-                    w.WriteAttribute(1, "ReferencedType", $"typeof({refClass.NamePascal})");
+                    w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(refClass)})");
                 }
             }
 
@@ -477,7 +451,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 var genericType = type.Split('<')[0];
 
-                if (type == property.Composition?.NamePascal)
+                if (type == Config.GetTypeName(property.Composition))
                 {
                     if (!Config.RequiredNonNullable(tag))
                     {
@@ -504,12 +478,12 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             w.WriteLine(
-                $" {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}"
+                $" {type} {property.NamePascal} {{ get; {(property.Readonly ? "init" : "set")}; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}"
             );
         }
         else
         {
-            w.WriteLine(1, $"{type} {property.NamePascal} {{ get; }}");
+            w.WriteLine(1, $"{type} {property.NamePascal} {{ get;{(!property.Readonly ? " set;" : string.Empty)} }}");
         }
     }
 

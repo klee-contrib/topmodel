@@ -56,7 +56,7 @@ public class DbContextResourcesGenerator(
 
         foreach (var translationClass in Config.AvailableClasses.Where(c => c.Translation))
         {
-            cw.WriteLine(2, $"modelBuilder.Entity<{translationClass.NamePascal}>().HasData(");
+            cw.WriteLine(2, $"modelBuilder.Entity<{Config.GetTypeName(translationClass)}>().HasData(");
             var containers = properties.GroupBy(prop => prop.Parent);
 
             var orderedContainers = containers
@@ -86,7 +86,7 @@ public class DbContextResourcesGenerator(
                         {
                             cw.Write(
                                 3,
-                                $"new {translationClass.NamePascal} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{property.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(property, lang)}\" }}"
+                                $"new {Config.GetTypeName(translationClass)} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{property.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(property, lang)}\" }}"
                             );
 
                             if (property == orderedProperties[^1] && container == lastContainer && values.Count == 0)
@@ -105,7 +105,7 @@ public class DbContextResourcesGenerator(
                 {
                     cw.Write(
                         3,
-                        $"new {translationClass.NamePascal} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{value.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(value, lang)}\" }}"
+                        $"new {Config.GetTypeName(translationClass)} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{value.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(value, lang)}\" }}"
                     );
 
                     if (

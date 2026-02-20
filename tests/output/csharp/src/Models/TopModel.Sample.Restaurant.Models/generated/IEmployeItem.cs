@@ -12,36 +12,25 @@ public interface IEmployeItem
     /// <summary>
     /// Identifiant de l'employé.
     /// </summary>
-    int? Id { get; }
+    int? Id { get; set; }
 
     /// <summary>
     /// Nom de l'employé.
     /// </summary>
-    string? Nom { get; }
+    string? Nom { get; set; }
 
     /// <summary>
     /// Prénom de l'employé.
     /// </summary>
-    string? Prenom { get; }
+    string? Prenom { get; set; }
 
     /// <summary>
     /// Matricule de l'employé.
     /// </summary>
-    string? Matricule { get; }
+    string? Matricule { get; set; }
 
     /// <summary>
     /// Restaurant où travaille l'employé.
     /// </summary>
-    int? RestaurantId { get; }
-
-    /// <summary>
-    /// Factory pour instancier la classe.
-    /// </summary>
-    /// <param name="id">Identifiant de l'employé.</param>
-    /// <param name="nom">Nom de l'employé.</param>
-    /// <param name="prenom">Prénom de l'employé.</param>
-    /// <param name="matricule">Matricule de l'employé.</param>
-    /// <param name="restaurantId">Restaurant où travaille l'employé.</param>
-    /// <returns>Instance de la classe.</returns>
-    static abstract IEmployeItem Create(int? id = null, string? nom = null, string? prenom = null, string? matricule = null, int? restaurantId = null);
+    int? RestaurantId { get; set; }
 }

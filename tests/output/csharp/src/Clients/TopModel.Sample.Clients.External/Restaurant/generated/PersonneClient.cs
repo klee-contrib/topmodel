@@ -123,13 +123,13 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="perId">Identifiant de la personne.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des commandes du client.</returns>
-    public async Task<ICollection<CommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<CommandeItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<ICollection<ICommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>

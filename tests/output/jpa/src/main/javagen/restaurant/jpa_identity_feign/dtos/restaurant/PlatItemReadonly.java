@@ -14,7 +14,7 @@ import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
  * Détail d'un plat en liste.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public interface PlatItem {
+public interface PlatItemReadonly {
 
 	/**
 	 * Identifiant du plat.
@@ -27,6 +27,11 @@ public interface PlatItem {
 	String getNom();
 
 	/**
+	 * Catégorie du plat.
+	 */
+	CategoriePlatCode getCategoriePlatCode();
+
+	/**
 	 * Prix du plat.
 	 */
 	BigDecimal getPrix();
@@ -35,23 +40,6 @@ public interface PlatItem {
 	 * Indique si le plat est disponible.
 	 */
 	Boolean getDisponible();
-
-	/**
-	 * Catégorie du plat.
-	 */
-	CategoriePlatCode getCategoriePlatCode();
-
-	/**
-	 * Identifiant du plat.
-	 * @param id value to set.
-	 */
-	void setId(Integer id);
-
-	/**
-	 * Nom du plat.
-	 * @param nom value to set.
-	 */
-	void setNom(String nom);
 
 	/**
 	 * Prix du plat.
@@ -64,10 +52,4 @@ public interface PlatItem {
 	 * @param disponible value to set.
 	 */
 	void setDisponible(Boolean disponible);
-
-	/**
-	 * Catégorie du plat.
-	 * @param categoriePlatCode value to set.
-	 */
-	void setCategoriePlatCode(CategoriePlatCode categoriePlatCode);
 }

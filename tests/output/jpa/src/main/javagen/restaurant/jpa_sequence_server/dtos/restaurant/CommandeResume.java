@@ -16,10 +16,4 @@ public interface CommandeResume {
 	 * Identifiant de la commande.
 	 */
 	Integer getId();
-
-	/**
-	 * Hydrate values of instance.
-	 * @param id value to set.
-	 */
-	void hydrate(Integer id);
 }
