@@ -447,7 +447,7 @@ public class DbContextGenerator(
 
                         if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
                         {
-                            w.WriteLine(",");
+                            w.Write(",");
                         }
                     }
                 }

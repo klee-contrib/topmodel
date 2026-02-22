@@ -559,55 +559,45 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteLine(2, "};");
             w.WriteLine(1, "}");
+            w.WriteLine();
 
-            if (!mapper.Class.Abstract)
+            w.WriteSummary(
+                1,
+                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+            );
+            w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
+            w.WriteParam("dest", $"Instance pré-existante de '{Config.GetTypeName(mapper.Class)}'.");
+            w.WriteReturns(1, $"L'instance pré-existante de '{Config.GetTypeName(mapper.Class)}'");
+            w.WriteLine(
+                1,
+                $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}(this {Config.GetTypeName(classe)} source, {Config.GetTypeName(mapper.Class)} dest)"
+            );
+            w.WriteLine(1, "{");
+
+            if (rrnTarget)
             {
-                w.WriteLine();
-                w.WriteSummary(
-                    1,
-                    $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
-                );
-                w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
-                w.WriteParam("dest", $"Instance pré-existante de '{Config.GetTypeName(mapper.Class)}'.");
-                w.WriteReturns(1, $"L'instance pré-existante de '{Config.GetTypeName(mapper.Class)}'");
-                w.WriteLine(
-                    1,
-                    $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}(this {Config.GetTypeName(classe)} source, {Config.GetTypeName(mapper.Class)} dest)"
-                );
-                w.WriteLine(1, "{");
-
-                if (rrnTarget)
+                var requiredMappings = mapper
+                    .Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required)
+                    .ToList();
+                foreach (var mapping in requiredMappings)
                 {
-                    var requiredMappings = mapper
-                        .Mappings.Where(m => (!rrnSource || !m.Key.Required) && m.Value.Required)
-                        .ToList();
-                    foreach (var mapping in requiredMappings)
-                    {
-                        w.WriteLine(2, $"ArgumentNullException.ThrowIfNull(source.{GetSourceMapping(mapping.Key)});");
-                    }
-
-                    if (requiredMappings.Count > 0)
-                    {
-                        w.WriteLine();
-                    }
+                    w.WriteLine(2, $"ArgumentNullException.ThrowIfNull(source.{GetSourceMapping(mapping.Key)});");
                 }
 
-                foreach (var mapping in mapper.Mappings.Where(m => !m.Value.Readonly))
+                if (requiredMappings.Count > 0)
                 {
-                    var value = GetValue(
-                        "source",
-                        paramRequired: true,
-                        mapping.Key,
-                        mapping.Value,
-                        rrnSource,
-                        rrnTarget
-                    );
-                    w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
+                    w.WriteLine();
                 }
-
-                w.WriteLine(2, "return dest;");
-                w.WriteLine(1, "}");
             }
+
+            foreach (var mapping in mapper.Mappings.Where(m => !m.Value.Readonly))
+            {
+                var value = GetValue("source", paramRequired: true, mapping.Key, mapping.Value, rrnSource, rrnTarget);
+                w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
+            }
+
+            w.WriteLine(2, "return dest;");
+            w.WriteLine(1, "}");
 
             if (toMappers.IndexOf(toMapper) < toMappers.Count - 1)
             {

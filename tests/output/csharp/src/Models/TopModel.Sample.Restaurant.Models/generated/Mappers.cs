@@ -84,4 +84,20 @@ public static class Mappers
             Disponible = source.Disponible
         };
     }
+
+    /// <summary>
+    /// Mappe 'IPlatItemReadonly' vers 'IPlatItem'.
+    /// </summary>
+    /// <param name="source">Instance de 'IPlatItemReadonly'.</param>
+    /// <param name="dest">Instance pré-existante de 'IPlatItem'.</param>
+    /// <returns>L'instance pré-existante de 'IPlatItem'.</returns>
+    public static IPlatItem ToPlatItem(this IPlatItemReadonly source, IPlatItem dest)
+    {
+        dest.Id = source.Id;
+        dest.Nom = source.Nom;
+        dest.CategoriePlatCode = source.CategoriePlatCode;
+        dest.Prix = source.Prix;
+        dest.Disponible = source.Disponible;
+        return dest;
+    }
 }
