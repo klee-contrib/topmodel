@@ -633,6 +633,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType")
             .AddAttribute("cascade", @"CascadeType.ALL", "jakarta.persistence.CascadeType")
             .AddAttribute("optional", (!property.Required).ToString().ToLower());
+
+        if (property is { ReverseProperty: not null } && property is { IsReverseProperty: true })
+        {
+            association.AddAttribute("mappedBy", $@"""{property.ReverseProperty!.NameByClassCamel}""");
+        }
         yield return association;
 
         var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
