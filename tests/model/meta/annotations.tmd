@@ -11,8 +11,6 @@ annotation:
   description: Marque une propriété comme contenant des données sensibles
   target:
     - property
-    - regular-property
-
   java:
     - text: "@Sensitive"
       imports:

@@ -31,16 +31,16 @@ Le générateur JPA est compatible avec les options globales de TopModel :
 | JpaEnumEntityGen      | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées qui sont des enums                                                                                            | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA. Contient également des membres statiques représentant les entitées décrites dans les values                                                                    |
 | JpaEnumGen            | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées ou non qui sont des enums                                                                                     | Enumération des valeurs possible de la clé primaire de la classe                                                                                                                                                                                                           |
 | JavaEnumDtoGen        | `useJdbc: false` && `enumsAsEnums: false`                          | Classes non persistées qui sont des enums                                                                                        | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de validation. Contient également des membres statiques représentant les instances décrites dans les values                                                                           |
-| JpaEnumValuesGen      | `useJdbc: false` && `enumsAsEnums: true`                           | Enum contenant toutes les valeurs définies dans les values, dont la clé est la primaryKey ou la première propriété de la classe. |
+| JpaEnumValuesGen      | `useJdbc: false` && `enumsAsEnums: true`                           | Classes qui sont des enums                                                                                                       | Enum contenant toutes les valeurs définies dans les values, dont la clé est la primaryKey ou la première propriété de la classe.                                                                                                                                           |
 | JpaInterfaceGen       | Toujours                                                           | Classes qui ont `abstract: true`                                                                                                 | Interface ne contenant que des `getters` des propriétés définies dans le modèle. Peut également définir une méthode `hydrate`, s'apparentant à un constructeur                                                                                                             |
 | SpringDataFlowGen     | `dataFlowsPath` défini                                             | Dataflows                                                                                                                        | Définition d'un job par module, et d'un step par dataFlow. Peut également générer une interface à implémenter pour les source en mode`partial` et les `hook` ajoutés                                                                                                       |
 | FeignClientApiGen     | `apiGeneration: client` && `clientApiGeneration: feignClient`      | Endpoints                                                                                                                        | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente.                                                                                                                                                                             |
-| SpringApiClientGen    | `apiGeneration: client` && `clientApiGeneration: restClient`       | Endpoints                                                                                                                        |
+| SpringApiClientGen    | `apiGeneration: client` && `clientApiGeneration: restClient`       | Endpoints                                                                                                                        | Interface contenant les annotations `@XXXExchange` pour la génération d'un client API via `HttpServiceProxyFactory`. Les méthodes retournent `ResponseEntity<T>`.                                                                                                          |
 | SpringRestTemplateGen | `apiGeneration: client` && `clientApiGeneration: restTemplate`     | Endpoints                                                                                                                        | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un RestTemplate Spring.                                                                                                                                                          |
 | SpringApiServerGen    | `apiGeneration: server`                                            | Endpoints                                                                                                                        | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                                                                                                                                         |
 | JpaMapperGenerator    | Toujours                                                           | Mappers                                                                                                                          | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèle                                                                                                                                                                         |
 | JpaResourceGen        | `resourcesPath` défini                                             | Classes qui contiennent des labels ou des values qui ont des defaultProperty                                                     | Fichiers de resource `.properties` dans les différentes langues de l'application. Les clés sont les clés de traduction des labels des propriétés du modèle, et dont les valeurs sont les labels définis dans le modèle dans la langue de développement, ou leur traduction |
-| JpaMetaModelGenerator | `metaModel: true`                                                  | Entités persistées                                                                                                               | Classes représentant le métamodèle des entités persistées. Une classe par entité.                                                                                                                                                                                          |
+| JpaMetaModelGen       | `metaModel: true` && `useJdbc: false`                              | Entités persistées non abstraites                                                          | Classes représentant le métamodèle des entités persistées. Une classe par entité avec le suffixe `_`.                                                                                                                                                                      |
 
 ## Génération des classes
 
@@ -75,7 +75,9 @@ Sur la classe :
 | `@Entity`                                           | Automatique                                                                          |
 | `@Table("SQL_NAME")`                                | Automatique                                                                          |
 | `@UniqueConstraint`                                 | `unique` : pour chacune des contraintes d'unicité de la classe                       |
-| `Cache(usage = CacheConcurrencyStrategy.READ_ONLY)` | si la classe a `reference: true`. La stratégie dépend du `domain` de la clé primaire |
+| `@Immutable`                                         | si la classe a `reference: true` et que c'est une enum (clé primaire enum)                           |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)` | si la classe a `reference: true` et que c'est une enum (clé primaire enum)                           |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` | si la classe a `reference: true` et que ce n'est pas une enum                                        |
 
 Sur chacune des propriété :
 
@@ -610,13 +612,6 @@ Le générateur crée des interfaces similaires au mode `Server`, à la différe
 
 ## Dépendances
 
-```xml
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-openfeign</artifactId>
-</dependency>
-```
-
 ### Modèle
 
 Le modèle généré par TopModel dépend d'une api de persistence. Par défaut, c'est l'API de persistence `javax` qui est utilisée, mais le mode `jakarta` est aussi disponible.
@@ -675,6 +670,29 @@ Si l'option `openApiAnnotations` est activée, les annotations de cette librairi
 <dependency>
     <groupId>io.swagger.core.v3</groupId>
     <artifactId>swagger-annotations-jakarta</artifactId>
+</dependency>
+```
+
+### DataFlows
+
+Pour les DataFlows, les dépendances Spring Batch sont nécessaires :
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core -->
+<dependency>
+    <groupId>org.springframework.batch</groupId>
+    <artifactId>spring-batch-core</artifactId>
+</dependency>
+```
+
+Si vous utilisez le mode `dataFlowsWriter: bulk`, la librairie `spring-batch-bulk` est également nécessaire :
+
+```xml
+<!-- Source: https://mvnrepository.com/artifact/io.github.klee-contrib/spring-batch-bulk -->
+<dependency>
+    <groupId>io.github.klee-contrib</groupId>
+    <artifactId>spring-batch-bulk</artifactId>
+    <version>0.0.7</version>
 </dependency>
 ```
 
@@ -769,7 +787,7 @@ La génération s'appuie sur Spring Batch, mais aussi la librairie `spring-batch
 
 ```xml
   <dependency>
-    <groupId>io.github.klee-contrib</groupId>
+    <groupId>io.github.kleecontrib</groupId>
     <artifactId>spring-batch-bulk</artifactId>
     <version>0.0.3</version>
   </dependency>
@@ -783,9 +801,9 @@ Avec le mode `partial`, le reader n'est pas généré. Il faut donc fournir un `
 
 Il est par exemple possible de créer un `Reader` appelant une API.
 
-##### Replace
+##### Replace et HardReplace
 
-Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Cette approche est nettement plus performante qu'un `deleteAll` classique.
+Le truncate se fait avec la classe `QueryTasklet` de la librairie `spring-batch-bulk`. Cette approche est nettement plus performante qu'un `deleteAll` classique. Le mode `HardReplace` ajoute `CASCADE` à la commande `TRUNCATE`.
 
 #### Processor
 
@@ -814,13 +832,27 @@ jpa:
     dataFlowsBulkSize: 100000  # Taille des chunks pour le bulk insert (par défaut: 100000)
 ```
 
+Le générateur supporte plusieurs stratégies d'insertion selon le type de dataflow défini dans le modèle :
+
 ##### Insert
 
 Le writer copie directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
 
-##### Upsert
+##### Replace
+
+Le writer vide d'abord la table cible (`TRUNCATE`), puis copie les données. TopModel génère le mapping permettant de faire cette insertion.
+
+##### HardReplace
+
+Le writer vide d'abord la table cible avec un `TRUNCATE CASCADE`, puis copie les données. Cette option supprime également les données des tables liées par clé étrangère. TopModel génère le mapping permettant de faire cette insertion.
+
+##### Merge (Upsert)
 
 Le writer copie les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
+
+##### MergeDisable
+
+Le writer effectue une fusion des données comme pour `Merge`, puis désactive (bulk update) les données non matchées dans la table cible.
 
 #### Listeners
 
@@ -860,7 +892,10 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
 - `rootModule`
 
-  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions, etc.).
+  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions, noms de clients Feign, etc.). Cette propriété est utilisée notamment pour :
+  
+  - Déterminer le nom des fichiers de ressources générés (fichiers `.properties` de traduction)
+  - Définir l'attribut `name` de l'annotation `@FeignClient` lors de la génération de clients Feign
 
   _Templating_: `{module}`
 
@@ -1130,7 +1165,15 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
   Le métamodèle est une représentation typée et statique des entités, leurs attributs et relations. Il permet notamment de faciliter l'utilisation des Criteria Builder en évitant l'utilisation de chaînes de caractères pour spécifier des entités et leurs propriétés.
 
-  Lorsque cette option est activée, une classe de métamodèle est générée pour chaque entité persistée. Ces classes suivent la convention de nommage JPA : `[NomEntité]_` (avec un underscore suffixe).
+  Lorsque cette option est activée, une classe de métamodèle est générée pour chaque entité persistée (non abstraite, et non enum si `enumsAsEnums: true`). Ces classes suivent la convention de nommage JPA : `[NomEntité]_` (avec un underscore suffixe).
+
+  **Structure des classes générées :**
+
+  - Annotation `@StaticMetamodel([NomEntité].class)`
+  - Annotation `@Generated` (si `generatedHint: true`)
+  - Attributs statiques `volatile` de type `SingularAttribute`, `ListAttribute`, `SetAttribute`, `CollectionAttribute`, ou `MapAttribute` selon le type de propriété
+  - Constantes String pour les noms des propriétés (en CONSTANT_CASE)
+  - Support de l'héritage avec `extends` si l'entité hérite d'une autre
 
   **Exemple d'utilisation :**
 
@@ -1150,7 +1193,7 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   - Spec JPA (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
   - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
 
-  > **Note :** Le métamodèle est généré uniquement pour les entités persistées (pas pour les DTOs).
+  > **Note :** Le métamodèle est généré uniquement pour les entités persistées non abstraites (pas pour les DTOs).
 
 - `useJdbc`
 
