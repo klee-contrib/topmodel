@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 3.5.7
+
+- [`1e4be`](https://github.com/klee-contrib/topmodel/commit/1e4be6011aabe29a4ed8308206172dd11b496216) - [JPA] Suite de [#542](https://github.com/klee-contrib/topmodel/issues/542) : l'annotation JoinColumn ne doit pas être générée pour les oneToOne reverse
+
 ## 3.5.6
 
 - [`5ee5e5`](https://github.com/klee-contrib/topmodel/commit/ba4169efb0c0554246b5298197bf46fa4232d9f8) - [JPA] Ajout du mappedBy dans le cas reverse OneToOne (non recommandé)
