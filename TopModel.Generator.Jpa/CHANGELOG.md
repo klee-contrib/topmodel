@@ -1,8 +1,13 @@
 # Changelog JPA
 
+## 3.5.6
+
+- [`5ee5e5`](https://github.com/klee-contrib/topmodel/commit/ba4169efb0c0554246b5298197bf46fa4232d9f8) - [JPA] Ajout du mappedBy dans le cas reverse OneToOne (non recommandé)
+  Fix [#542](https://github.com/klee-contrib/topmodel/issues/542)
+
 ## 3.5.5
 
-- [`ba4169efb0`](https://github.com/klee-contrib/topmodel/commit/ba4169efb0c0554246b5298197bf46fa4232d9f8) - [JPA] Ajout annotations manquantes dans l cas MapsId
+- [`ba4169efb0`](https://github.com/klee-contrib/topmodel/commit/ba4169efb0c0554246b5298197bf46fa4232d9f8) - [JPA] Ajout annotations manquantes dans le cas MapsId
 
 ## 3.5.4
 
