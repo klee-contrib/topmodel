@@ -1,3 +1,7 @@
+## 3.6.2
+
+- [`6c9589e`](https://github.com/klee-contrib/topmodel/commit/6c9589e995a7e9568ee3965eacb7b1880990bdf2) - [SQL] Ne pas générer de colonne pour la reverse d'une oneToOne
+
 ## 3.6.1
 
 - [`5dcf17d`](https://github.com/klee-contrib/topmodel/commit/5dcf17d82fa0abe64af9c53b8e2304b76b529611) - [SQL] Fix génération associations one to one (indexes et séquences en trop)
