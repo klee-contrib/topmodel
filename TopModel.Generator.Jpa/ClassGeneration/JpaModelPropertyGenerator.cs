@@ -639,11 +639,13 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             association.AddAttribute("mappedBy", $@"""{property.ReverseProperty!.NameByClassCamel}""");
         }
         yield return association;
-
-        var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
-            .AddAttribute("name", $@"""{fk}""")
-            .AddAttribute("referencedColumnName", $@"""{apk}""")
-            .AddAttribute("unique", "true");
-        yield return joinColumn;
+        if (property is { IsReverseProperty: false })
+        {
+            var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
+                .AddAttribute("name", $@"""{fk}""")
+                .AddAttribute("referencedColumnName", $@"""{apk}""")
+                .AddAttribute("unique", "true");
+            yield return joinColumn;
+        }
     }
 }
