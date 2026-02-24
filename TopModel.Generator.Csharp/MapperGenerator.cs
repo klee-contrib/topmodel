@@ -156,17 +156,24 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 if (target.MappingType.IsT0 && st2.Property != null)
                 {
+                    value += $"{(rrnSource && !source.Required ? "?" : string.Empty)}";
+
                     var innerProp = st2.Property.NamePascal;
                     if (st2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
                     {
+                        if (Config.NullableEnable && st2.Property.Required)
+                        {
+                            value += $".Where(p => p.{innerProp} != null)";
+                        }
+
                         innerProp +=
                             $"{(Config.NullableEnable && st2.Property.Required ? "!" : string.Empty)}.{t1.Property.NamePascal}";
                     }
 
                     value +=
-                        $"{(rrnSource && !source.Required ? "?" : string.Empty)}.Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain)}";
+                        $".Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain)}";
                 }
-                else if (target.MappingType.TryPickT2(out var tt2, out _))
+                else if (target.MappingType.TryPickT2(out var tt2, out _) && st2.Class != tt2.Class)
                 {
                     var selector = $"p => {GetMappedValue("p", st2.Class, tt2.Class, nullCheck: false)}";
                     if (!selector.StartsWith("p => p."))

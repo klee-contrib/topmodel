@@ -198,7 +198,7 @@
   <data name="TMD9011" xml:space="preserve">
     <value>Cannot use domain '{0}' for property '{1}' because it is not non-generic (`type` must be defined on every implementation).</value>
   </data>
-  <data name="TMD9014" xml:space="preserve">
+  <data name="TMD9012" xml:space="preserve">
     <value>Cannot define alias on property '{0}' of class '{1}' because it is a multiple association and target class is persisted.</value>
   </data>
 </root>

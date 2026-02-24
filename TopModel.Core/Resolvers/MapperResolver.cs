@@ -226,7 +226,7 @@ internal class MapperResolver(
                             var currentProperty in classe
                                 .ExtendedProperties.OfType<AliasProperty>()
                                 .Where(property =>
-                                    !property.Readonly
+                                    (!property.Readonly || !classe.Abstract)
                                     && !explicitMappings.Exists(m => m.Key == property)
                                     && !param.MappingReferences.Any(m =>
                                         m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"

@@ -27,9 +27,9 @@ public static class Mappers
             Commentaire = avisClient.Commentaire,
             DateAvis = avisClient.DateAvis,
             Approuve = avisClient.Approuve,
+            NombreVues = avisClient.NombreVues,
             ClientId = avisClient.Client?.Id,
-            RestaurantId = avisClient.Restaurant?.Id,
-            NombreVues = avisClient.NombreVues
+            RestaurantId = avisClient.Restaurant?.Id
         };
     }
 
@@ -264,7 +264,7 @@ public static class Mappers
             Telephone = restaurant.Telephone,
             Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
             Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
-            Promotions = restaurant.Promotions.Select(p => p.Plat!.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Where(p => p.Plat != null).Select(p => p.Plat!.Id!.Value).ToList(),
             AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList(),
             TableIds = restaurant.TableIds,
             NombrePlats = nombrePlats,
@@ -290,7 +290,7 @@ public static class Mappers
             Telephone = restaurant.Telephone,
             Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
             Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
-            Promotions = restaurant.Promotions.Select(p => p.Plat!.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Where(p => p.Plat != null).Select(p => p.Plat!.Id!.Value).ToList(),
             AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }

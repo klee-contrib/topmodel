@@ -73,9 +73,9 @@ public class RestaurantMappers {
 		target.setCommentaire(avisClient.getCommentaire());
 		target.setDateAvis(avisClient.getDateAvis());
 		target.setApprouve(avisClient.getApprouve());
+		target.setNombreVues(avisClient.getNombreVues());
 		target.setClientId(avisClient.getClientId());
 		target.setRestaurantId(avisClient.getRestaurantId());
-		target.setNombreVues(avisClient.getNombreVues());
 		return target;
 	}
 

@@ -76,6 +76,7 @@ public class RestaurantMappers {
 		target.setCommentaire(avisClient.getCommentaire());
 		target.setDateAvis(avisClient.getDateAvis());
 		target.setApprouve(avisClient.getApprouve());
+		target.setNombreVues(avisClient.getNombreVues());
 		if (avisClient.getClient() != null) {
 			target.setClientId(avisClient.getClient().getId());
 		} else {
@@ -88,7 +89,6 @@ public class RestaurantMappers {
 			target.setRestaurantId(null);
 		}
 
-		target.setNombreVues(avisClient.getNombreVues());
 		return target;
 	}
 
@@ -571,7 +571,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(p -> p.getPlat().getId()).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}
@@ -632,7 +632,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(p -> p.getPlat().getId()).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}

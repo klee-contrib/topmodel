@@ -269,30 +269,36 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         if (source.MappingType.TryPickT2(out var st2, out _))
         {
-            checkSourceNull = true;
             if (target.MappingType.IsT0 && st2.Property != null)
             {
-                var innerProp = $"{JpaModelPropertyGenerator.GetGetterName(st2.Property)}()";
+                checkSourceNull = true;
+                getter += $".stream().filter(Objects::nonNull)";
+
+                var sourceProp = st2.Property;
                 if (st2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
                 {
-                    innerProp += $".{JpaModelPropertyGenerator.GetGetterName(t1.Property)}()";
+                    imports.Add(sourceProp.Class.GetImport(Config, tag));
+                    getter +=
+                        $".map({sourceProp.Class.NamePascal}::{JpaModelPropertyGenerator.GetGetterName(sourceProp)}).filter(Objects::nonNull)";
+                    sourceProp = t1.Property;
                 }
 
                 imports.Add("java.util.stream.Collectors");
                 imports.Add("java.util.Objects");
 
                 var selector =
-                    $"p -> {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, collection: true)}";
+                    $"p -> {HandleConversion($"p.{JpaModelPropertyGenerator.GetGetterName(sourceProp)}()", sourceProp, target, collection: true)}";
                 if (selector.StartsWith("p -> p") && selector.Count(c => c == '.') == 1)
                 {
-                    imports.Add(st2.Property.Class.GetImport(Config, tag));
-                    selector = $"{st2.Property.Class.NamePascal}::{selector[7..^2]}";
+                    imports.Add(sourceProp.Class.GetImport(Config, tag));
+                    selector = $"{sourceProp.Class.NamePascal}::{selector[7..^2]}";
                 }
 
-                getter += $".stream().filter(Objects::nonNull).map({selector}).{Config.GetCollector(st2.Domain)}";
+                getter += $".map({selector}).{Config.GetCollector(st2.Domain)}";
             }
-            else if (target.MappingType.TryPickT2(out var tt2, out _))
+            else if (target.MappingType.TryPickT2(out var tt2, out _) && st2.Class != tt2.Class)
             {
+                checkSourceNull = true;
                 imports.Add("java.util.stream.Collectors");
                 imports.Add("java.util.Objects");
 

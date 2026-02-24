@@ -448,7 +448,7 @@ internal class PropertyResolver(
             {
                 yield return new ModelError(
                     localizer,
-                    ErrorType.TMD9014,
+                    ErrorType.TMD9012,
                     [alp.OriginalProperty?.Name ?? string.Empty, alp.OriginalProperty?.Class.Name ?? string.Empty],
                     alp,
                     alp.PropertyReference ?? alp.Reference?.ContainerReference
