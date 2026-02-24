@@ -1,3 +1,7 @@
+## 3.6.3
+
+- [`1d7fce`](https://github.com/klee-contrib/topmodel/commit/1d7fce329b4045fcc74900812995c51ca3b803c3) - [SQL] Ne pas générer de contrainte d'unicité pour les associations oneToOne
+
 ## 3.6.2
 
 - [`6c9589e`](https://github.com/klee-contrib/topmodel/commit/6c9589e995a7e9568ee3965eacb7b1880990bdf2) - [SQL] Ne pas générer de colonne pour la reverse d'une oneToOne
