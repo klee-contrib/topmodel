@@ -1,4 +1,6 @@
-﻿namespace TopModel.Utils;
+﻿using Meziantou.Framework.Globbing;
+
+namespace TopModel.Utils;
 
 #nullable disable
 
@@ -21,6 +23,11 @@ public class ConfigBase
     /// Nom du lockfile.
     /// </summary>
     public string LockFileName { get; set; }
+
+    /// <summary>
+    /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.
+    /// </summary>
+    public GlobCollection ModelFilePaths { get; set; } = new(Glob.Parse("**/*.tmd", GlobOptions.IgnoreCase));
 
     /// <summary>
     /// Liste des fichiers à ignorer après première génération (relatif au fichier de config).

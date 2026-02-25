@@ -23,6 +23,13 @@
       "type": "string",
       "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
     },
+    "modelFilePaths": {
+      "type": "array",
+      "description": "Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `modelRoot`) seront chargés par TopModel.",
+      "items": {
+        "type": "string"
+      }
+    },
     "lockFileName": {
       "type": "string",
       "description": "Nom du fichier de lock",
@@ -89,7 +96,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "comment"],
+        "required": [ "path", "comment" ],
         "properties": {
           "path": {
             "type": "string",

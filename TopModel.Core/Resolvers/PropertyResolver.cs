@@ -409,7 +409,7 @@ internal class PropertyResolver(
                 yield return new ModelError(
                     localizer,
                     ErrorType.TMD9004,
-                    [ap.Class.PrimaryKey.FirstOrDefault()?.Domain.Name ?? string.Empty, ap.As],
+                    [ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.Name ?? string.Empty, ap.As],
                     ap,
                     ap.Reference
                 );

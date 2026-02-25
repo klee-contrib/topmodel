@@ -4,6 +4,7 @@
     <Description>Utilitaires TopModel.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Meziantou.Framework.Globbing" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="NuGet.Commands" />

@@ -7,6 +7,6 @@ public static class ModelConfigExtensions
 {
     public static TextDocumentSelector GetDocumentSelector(this ModelConfig config)
     {
-        return TextDocumentSelector.ForPattern($"{config.ModelRoot}/**/*.tmd");
+        return TextDocumentSelector.ForPattern(config.ModelFilePaths.Select(g => $"{config.ModelRoot}/{g}").ToArray());
     }
 }

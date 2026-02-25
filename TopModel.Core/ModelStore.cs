@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Meziantou.Framework.Globbing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -182,8 +183,8 @@ public class ModelStore(
 
         using (await _lockInit.LockAsync(ct))
         {
-            var files = await Directory
-                .EnumerateFiles(config.ModelRoot, "*.tmd", SearchOption.AllDirectories)
+            var files = await config
+                .ModelFilePaths.EnumerateFiles(config.ModelRoot)
                 .ToAsyncEnumerable()
                 .Select(
                     async (string fullPath, CancellationToken ct) =>
@@ -312,6 +313,11 @@ public class ModelStore(
 
                 if (hasError)
                 {
+                    foreach (var file in files)
+                    {
+                        _pendingUpdates.Enqueue(file);
+                    }
+
                     throw new ModelException("Erreur lors de la lecture du modèle.");
                 }
 
@@ -609,6 +615,11 @@ public class ModelStore(
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
+        if (!config.ModelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
+        {
+            return;
+        }
+
         fsCache.Set(
             $"{e.FullPath}:{e.ChangeType}",
             e,

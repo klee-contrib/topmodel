@@ -187,6 +187,12 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   > **Attention** : Tous les chemins de fichiers dans les `uses` sont relatifs au `modelRoot`, et tous les fichiers `.tmd` doivent être dedans.
 
+- **`modelFilePaths`**
+
+  Permet de spécifier une liste de patterns (globs) de fichiers de modèle à inclure dans la génération, relatif au `modelRoot`. Si non renseigné, tous les fichiers `.tmd` trouvés seront chargés (la propriété sera renseignée avec `**/*.tmd`).
+
+  _Remarque : Si vos patterns ne se terminent pas par `*.tmd`, alors TopModel rajoutera automatique `/*.tmd` à la fin._
+
 - **`lockFileName`**
 
   Permet de surcharger le lockfile (`topmodel.lock` par défaut).
