@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.9.0
+
+- [`0fd2352`](https://github.com/klee-contrib/topmodel/commit/0fd23529508f3f9ac165820bd9afd9c998f4de6d) - `modelFilePaths` dans la configuration, pour limiter les fichiers `.tmd` chargés par TopModel
+
+  Vous pouvez désormais renseigner `modelFilePaths`, une liste de globs, dans le fichier `topmodel.config` pour filtrer les fichiers de modèle chargés par TopModel (au lieu de charger tous les fichiers `.tmd` qu'il trouve sous sa racine).
+
 ## 3.8.7
 
 - [`72014`](https://github.com/klee-contrib/topmodel/commit/72014af5ba937e5b7cbdc2c659c324f4df54c9f5) - [Core] Fix mode watch perte d'annotations
@@ -213,7 +219,6 @@ Le seul _vrai_ **breaking change** qu'on a identifié est au niveau des alias qu
   Ces propriétés d'association réciproque seront ajoutées à la liste de propriétés de la classe cible de l'association, ce qui les rend donc disponibles dans les alias et les mappers comme des propriétés classiques.
 
   **/!\ breaking changes /!\\**
-
   - Il est nécessaire d'avoir les générateurs JPA (>= 3.2) et SQL (>= 3.1) à jour pour utiliser cette version.
   - Les associations `manyToOne` ne génèrent plus d'association réciproque par défaut : si vous l'utilisiez, il faudra ajouter `withReverse: true` sur la propriété (et ajouter l'import sur le fichier de la classe cible)
   - Les associations `oneToMany` ont bien toujours leur association réciproque, mais il faudra ajouter l'import sur le fichier de la classe cible (via le quick fix).
@@ -571,7 +576,6 @@ Cela n'a pas d'impact sur le code généré.
 - [`#450`](https://github.com/klee-contrib/topmodel/pull/450) - Nouvelles transformations et chaînage sur les variables
 
   On peut désormais utiliser, comme transformation de variable :
-
   - `:path` : pour remplacer les `.` par des `/`
   - `:flat` : pour remplacer les `.` et les `/` par rien
   - `:head` : pour récupérer la première section d'une variable avec des `.` ou des `/`
@@ -579,7 +583,6 @@ Cela n'a pas d'impact sur le code généré.
   - `:tail` : pour récupérer tout sauf la première section d'une variable avec des `.` ou des `/`
 
   Les transformations peuvent désormais être chaînées, ce qui permet de faire des choses comme :
-
   - `{variable:tail:path:upper}`, qui pour `My.Top.Module` donnera `TOP/MODULE`
   - `{variable:path:snake}`, qui pour `My.TopModule` donnera `my/top-module`
 
@@ -717,20 +720,17 @@ Correctifs suite à la version majeure pour faire fonctionner l'installation du 
 - [`999b8e60`](https://github.com/klee-contrib/topmodel/commit/999b8e607017e6a7bf8c80c7a629f3a493569d33) - [JS] `extendedCompositions`
 
   L'ensemble de ces fonctionnalités permet **d'unifier les propriétés de composition avec les autres types de propriétés**, pour arrêter de les considérer différemment dans TopModel. Cela implique que vous pouvez désormais utiliser des compositions à tous les endroits où vous pouviez auparavant ne pas en mettre, en particulier :
-
   - Vous pouvez désormais créer des **alias sur des compositions**
   - Vous pouvez désormais **persister une composition en base de données** (dans une colonne JSON)
   - Vous pouvez désormais mapper des compositions (de la même classe) dans les mappers
   - Les compositions peuvent donc avoir un libellé et un trigramme.
 
   **breaking changes** :
-
   - Les alias sans `include` explicite incluent désormais les compositions. Si vous en avez, il faudra donc soit retirer la composition que vous avez manuellement recopiée (ce qui est le cas le plus probable), soit ajouter la composition dans l'`exclude`
   - Les mappers généreront des mappings automatiques entre compositions de même nom, classe et domaine (à voir si vous voulez le garder ou le retirer manuellement).
   - Si vous développez des générateurs personnalisés, la suppression du type `IFieldProperty` (pour représenter une propriété qui n'est pas une composition) vous impactera probablement dans ce que vous faites.
 
   **impacts génération** :
-
   - Les libellés de compositions sont désormais générés dans tous les fichiers de traductions (si vous les voulez dans les définitions d'entité JS, il vous faudra utiliser la nouvelle option `extendedCompositions` et une librairie à jour pour les interpréter).
   - [JS] L'ordre de `defaultValue` et `isRequired` a été inversé dans la génération.
   - [C#] Les annotations `[Required]` sont désormais générées sur les compositions `required` (les compositions étant `required` par défaut, cela devrait donc concerner la grande majorité de vos compositions).
@@ -819,11 +819,9 @@ Correctifs suite à la version majeure pour faire fonctionner l'installation du 
   Cette release ajoute une option de génération pour le générateur C#. Il n'y a pas d'impact sur les autres générateurs.
 
   **Impacts génération** :
-
   - Les mappers `to` sont désormais générés avec 2 surcharges, une avec l'instance cible et une autre sans, au lieu de n'en générer qu'une seule qui gère les deux cas.
 
   **(tout petits) breaking changes** :
-
   - Les implémentations de converter ne doivent plus inclure de `?` pour les types valeurs (il sera rajouté automatiquement par le générateur si besoin).
   - L'option `nonNullableTypes` a été divisée en `valueTypes` (pour renseigner les types valeurs qu'il faudra wrapper dans un `Nullable` avec un `?`) et en `nullableEnable` pour activer l'option de même nom (à priori, personne n'utilisait cette option jusqu'à présent, car il manquait justement `requiredNonNullable` pour qu'elle soit vraiment utile 😉).
 
@@ -893,7 +891,6 @@ Correctifs suite à la version majeure pour faire fonctionner l'installation du 
 - [`#354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
 
   **Breaking changes** :
-
   - Pour les utilisateurs angular, les services d'api client sont déplacés dans un fichier `*.service.ts`. Pour retrouver le comportement initial, définir la propriété `apiClientFilePath` à `{module}/{fileName}`
 
 - [`a6c10f6`](https://github.com/klee-contrib/topmodel/commit/a6c10f6b4a44cc8c318c037bdfb5d38cb2b54d98) - Parallélisation de la génération de fichiers
@@ -974,7 +971,6 @@ Sur les générateurs qui le supportent (JPA, SQL, JS), il est maintenant possib
   Les clés primaires ne sont plus implicitement recopiées sur un alias de clé primaire, ce qui permet de pouvoir mettre un `required: false` dessus, où bien de pouvoir définir un alias comme clé primaire sur une classe persistée (avec `primaryKey: true`).
 
   **petits breaking changes**
-
   - Les `required: false` sur les PK sont désormais bien pris en compte.
   - Il y a maintenant `@NotNull` sur les alias de PK sur les DTOs en JPA (si pas de surcharge avec `required: false`).
   - Les DTOs ne peuvent plus avoir de PK (implicite), ce qui empêche de faire des associations dessus sans spécifier de propriété (...)
@@ -984,7 +980,6 @@ Sur les générateurs qui le supportent (JPA, SQL, JS), il est maintenant possib
   Vous pouvez désormais générer un fichier `index.ts` à la racine des traductions côté JS qui réexporte tous les modules dans un seul objet `all` (et `allComments` si vous avez activé la génération des commentaires).
 
   **minuscule breaking change**
-
   - Les objets exportés contenant les commentaires s'appellent désormais `{module}Comments` au lieu de `{module}`.
 
 ## 1.42.9
@@ -1061,7 +1056,6 @@ Sur les générateurs qui le supportent (JPA, SQL, JS), il est maintenant possib
 - [#328](https://github.com/klee-contrib/topmodel/pull/328) - Propriétés comme paramètres de mapper `from`
 
   **breaking changes**
-
   - Il n'est plus possible de spécifier `this` dans un mapping explicite de classe dans un mapper `from`, il faut utiliser une composition à la place.
 
     Par exemple :
@@ -1246,7 +1240,6 @@ Les `values` ajoutées dans la classe enfant viendront implicitement compléter 
 - [#297](https://github.com/klee-contrib/topmodel/pull/297) - Templates de valeurs par implémentation de domaine
 
   **Breaking changes**
-
   - **[C#]** Le générateur C# n'essaie plus de gérer Guid et DateOnly/DateTime tout seul, il faut spécifier les templates correspondants dans les domaines
   - **[JS]** Tous les imports JS renseignés dans topmodel (hors modèle), donc `domainPath`/`fetchPath` et les différents `imports` des domaines sont désormais toujours relatifs au répertoire de génération `outputDirectory` (c'était bien le cas pour les deux premiers déjà), et on considère que c'est un chemin relatif s'il commence par un `.` (au lieu de dire que ce n'en est pas un s'il commence par un `@`)
 

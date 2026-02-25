@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>3.8.7</Version>
+    <Version>3.9.0</Version>
     <Description>Générateur de modèle TopModel.</Description>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
