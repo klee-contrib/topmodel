@@ -99,7 +99,7 @@ public class FileChecker
                         seq.OfType<YamlScalarNode>()
                             .Select(n =>
                                 Glob.Parse(
-                                    n.Value!.EndsWith("*.tmd") ? n.Value : $"{n.Value}/*.tmd",
+                                    n.Value!.EndsWith(".tmd") ? n.Value : $"{n.Value}/*.tmd",
                                     GlobOptions.IgnoreCase
                                 )
                             )

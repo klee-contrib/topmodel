@@ -191,7 +191,7 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   Permet de spécifier une liste de patterns (globs) de fichiers de modèle à inclure dans la génération, relatif au `modelRoot`. Si non renseigné, tous les fichiers `.tmd` trouvés seront chargés (la propriété sera renseignée avec `**/*.tmd`).
 
-  _Remarque : Si vos patterns ne se terminent pas par `*.tmd`, alors TopModel rajoutera automatique `/*.tmd` à la fin._
+  _Remarque : Si vos patterns ne se terminent pas par `.tmd`, alors TopModel rajoutera automatiquement `/*.tmd` à la fin._
 
 - **`lockFileName`**
 
