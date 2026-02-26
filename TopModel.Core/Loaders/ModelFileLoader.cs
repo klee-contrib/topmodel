@@ -1,4 +1,8 @@
-﻿using TopModel.Core.FileModel;
+﻿using Meziantou.Framework.Globbing;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 using YamlDotNet.Core;
@@ -8,6 +12,7 @@ namespace TopModel.Core.Loaders;
 
 public class ModelFileLoader(
     ModelConfig config,
+    ILogger<ModelFileLoader> logger,
     AnnotationLoader annotationLoader,
     ClassLoader classLoader,
     DataFlowLoader dataFlowLoader,
@@ -18,7 +23,192 @@ public class ModelFileLoader(
     DomainLoader domainLoader
 )
 {
-    public async Task<ModelFile?> LoadModelFile(string filePath, string? content = null, CancellationToken ct = default)
+    private static Dictionary<
+        (string App, string ModelRoot, bool PluralizeTableNames, bool UseLegacyRoleNames),
+        Dictionary<string, (string? FileName, ModelFile? ModelFile)>
+    > GlobalCache { get; } = [];
+
+    private static Dictionary<
+        string,
+        (
+            FileSystemWatcher FileWatcher,
+            IMemoryCache Cache,
+            IList<(
+                GlobCollection ModelFilePaths,
+                Func<
+                    IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)>,
+                    CancellationToken,
+                    Task
+                > ApplyUpdates
+            )> Configs
+        )
+    > FileWatchers { get; } = [];
+
+    private Dictionary<string, (string? FileName, ModelFile? ModelFile)> Cache
+    {
+        get
+        {
+            var key = (config.App, config.ModelRoot, config.PluralizeTableNames, config.UseLegacyRoleNames);
+
+            if (!GlobalCache.TryGetValue(key, out var cache))
+            {
+                GlobalCache[key] = [];
+                cache = GlobalCache[key];
+            }
+
+            return cache;
+        }
+    }
+
+    public async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadModelFile(
+        string fullPath,
+        WatcherChangeTypes changeType,
+        string? content = null,
+        CancellationToken ct = default
+    )
+    {
+        if (content != null)
+        {
+            Cache.Remove(fullPath);
+        }
+        else if (Cache.TryGetValue(fullPath, out var file))
+        {
+            return (fullPath, file.FileName, file.ModelFile);
+        }
+
+        var fileName = config.GetFileName(fullPath);
+
+        try
+        {
+            if (changeType != WatcherChangeTypes.Deleted)
+            {
+                ModelFile? modelFile = null;
+                if (File.Exists(fullPath))
+                {
+                    modelFile = await ReadModelFile(fileName, fullPath, content, ct);
+                }
+
+                if (modelFile != null)
+                {
+                    Cache.Add(fullPath, (modelFile.Name, modelFile));
+                    return (fullPath, modelFile.Name, modelFile);
+                }
+            }
+
+            Cache.Add(fullPath, (fileName, null));
+            return (fullPath, fileName, null);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            Cache.Add(fullPath, (null, null));
+            return (fullPath, null, null);
+        }
+    }
+
+    public Action Watch(
+        Func<
+            IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)>,
+            CancellationToken,
+            Task
+        > applyUpdates
+    )
+    {
+        var watchConfig = (config.ModelFilePaths, applyUpdates);
+        if (!FileWatchers.TryGetValue(config.ModelRoot, out var fw))
+        {
+            var fileWatcher = new FileSystemWatcher(config.ModelRoot, "*.tmd")
+            {
+                IncludeSubdirectories = true,
+                EnableRaisingEvents = true,
+            };
+
+            FileWatchers[config.ModelRoot] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
+            fw = FileWatchers[config.ModelRoot];
+
+            fileWatcher.Changed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Created += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Deleted += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Renamed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+        }
+        else
+        {
+            fw.Configs.Add(watchConfig);
+        }
+
+        return () =>
+        {
+            fw.Configs.Remove(watchConfig);
+            if (fw.Configs.Count == 0)
+            {
+                fw.FileWatcher.Dispose();
+            }
+        };
+    }
+
+    private void OnFileChanged(string modelRoot, IMemoryCache cache, FileSystemEventArgs e)
+    {
+        cache.Set(
+            $"{e.FullPath}:{e.ChangeType}",
+            e,
+            new MemoryCacheEntryOptions()
+                .AddExpirationToken(
+                    new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(50)).Token)
+                )
+                .RegisterPostEvictionCallback(
+                    async (k, v, r, a) =>
+                    {
+                        if (r != EvictionReason.TokenExpired)
+                        {
+                            return;
+                        }
+
+                        e = (FileSystemEventArgs)v!;
+                        var type = e.ChangeType switch
+                        {
+                            WatcherChangeTypes.Created => "Créé",
+                            WatcherChangeTypes.Deleted => "Supprimé",
+                            WatcherChangeTypes.Renamed => "Renommé",
+                            _ => "Modifié",
+                        };
+
+                        logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
+
+                        var files = new List<(string, string?, ModelFile?)>();
+
+                        if (e is RenamedEventArgs re)
+                        {
+                            Cache.Remove(re.OldFullPath);
+                            Cache.Remove(re.FullPath);
+                            files.Add(await LoadModelFile(re.OldFullPath, WatcherChangeTypes.Deleted, ct: default));
+                            files.Add(await LoadModelFile(re.FullPath, WatcherChangeTypes.Created, ct: default));
+                        }
+                        else
+                        {
+                            Cache.Remove(e.FullPath);
+                            files.Add(await LoadModelFile(e.FullPath, e.ChangeType, ct: default));
+                        }
+
+                        foreach (var (modelFilePaths, applyUpdates) in FileWatchers[modelRoot].Configs)
+                        {
+                            if (!modelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
+                            {
+                                continue;
+                            }
+
+                            await applyUpdates(files, default);
+                        }
+                    }
+                )
+        );
+    }
+
+    private async Task<ModelFile?> ReadModelFile(
+        string fileName,
+        string filePath,
+        string? content = null,
+        CancellationToken ct = default
+    )
     {
         content ??= await File.ReadAllTextAsync(filePath, ct);
 
@@ -34,7 +224,7 @@ public class ModelFileLoader(
 
         parser.Consume<DocumentStart>();
 
-        var file = new ModelFile { Name = config.GetFileName(filePath), Path = filePath.ToRelative() };
+        var file = new ModelFile { Name = fileName, Path = filePath.ToRelative() };
 
         parser.ConsumeMapping(prop =>
         {

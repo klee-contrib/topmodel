@@ -75,12 +75,16 @@ public class LoggerProvider : ILoggerProvider
                     return;
                 }
 
+                var prefix = string.Empty;
                 if (_storeNumber != null && _storeColor != null)
                 {
-                    AnsiConsole.Markup($"[{_storeColor}]#{_storeNumber.Value} [/]");
+                    prefix = $"[{_storeColor}]#{_storeNumber.Value} [/]";
+                    AnsiConsole.Markup(prefix);
                 }
-
-                var name = ((_generatorName ?? categoryName) + " ").PadRight(22, '-');
+                var name = ((_generatorName ?? categoryName) + " ").PadRight(
+                    25 - (prefix.Length > 0 ? (prefix.Length - 3 - prefix.IndexOf('#')) : 0),
+                    '-'
+                );
                 var split = name.Split(" ");
                 var fColor = _generatorName != null ? "fuchsia" : "grey";
                 AnsiConsole.Markup($"[{fColor}]{split[0].EscapeMarkup()}[/]");
