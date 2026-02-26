@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.9.2
+
+- [`e258826`](https://github.com/klee-contrib/topmodel/commit/e258826fb35d5e0fdbdf9ee2f69f55e8b358602c) - Chargement des fichiers partagé entre plusieurs configs (si compatibles)
+
 ## 3.9.1
 
 - [`b884430`](https://github.com/klee-contrib/topmodel/commit/b8844307a596e1c4ef8bfa4a24f10b14e88c3fe5) - Fix append .tmd sur les globs de modelFilePaths
