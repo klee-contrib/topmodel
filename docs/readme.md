@@ -6,6 +6,7 @@
 
 - **Modélisation simple** : Représentation du modèle de données en YAML, facilement lisible et éditable
 - **Génération de code** : Génération automatique de code pour plusieurs langages (C#, Java/JPA, JavaScript/TypeScript, SQL)
+- **Non intrusif** : Pas de dépendance à une base de données ou à un framework particulier. Le code généré est standard dans le langage cible. Il correspond à ce qui aurait été écrit "à la main". Il peut être "débranché" du jour au lendemain.
 - **Multi-plateforme** : Support de plusieurs technologies et frameworks
 - **Intégration IDE** : Extension VSCode avec autocomplétion, validation et navigation
 - **Versioning** : Format texte compatible avec Git et les outils de merge
