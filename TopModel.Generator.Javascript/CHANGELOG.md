@@ -1,3 +1,7 @@
+## 4.0.0 (rc)
+
+Compatibilité avec TopModel 4.0, les impacts propres aux générateurs Javascript sont détaillés dans le changelog général de la version.
+
 ## 3.6.1
 
 - [`4cf51`](https://github.com/klee-contrib/topmodel/commit/4cf5171f36027b3f9cac860799bf4591d4b9753f) - [Angular] Fix requête delete avec body

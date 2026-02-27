@@ -8,6 +8,83 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.0.0 (rc.0)
+
+[#535](https://github.com/klee-contrib/topmodel/pull/535) - TopModel 4.0
+
+_Remarque : Etant une version majeure, l'ensemble des modules de générateurs doivent être aussi mis à jour. Leurs versions ont toutes été montées à 4.0 également, pour suivre la version majeure de TopModel._
+
+_Remarque 2 : Cette version est initialialement publiée comme une "release candidate", une version préliminaire, dans le but premier de donner une marge aux projets pour faire la mise à jour avant la version finale, qui arrivera ensuite par les canaux habituels de mises à jour automatiques. Cela n'indique pas que cette version est moins stable que d'habitude 😁_
+
+Le détail du contenu de la version et de ce qui change est décrit dans la PR. En quelques mots, il s'agit d'une version d'uniformisation, dont le but est de pouvoir unifier les pratiques propres aux générateurs C# et Java dans TopModel lui-même, afin que ça soit proprement supporté et disponible dans les autres générateurs.
+
+Concrètement, il y aura essentiellement des choses en plus à renseigner dans le modèle pour retrouver les comportements d'avant, beaucoup de corrections de bugs qui peuvent avoir un impact en génération (des choses mal générées avant...), et quelques vrais breaking changes qui correspondent à des choses qu'on ne pouvait plus garder telles quelles.
+
+Les breaking changes vont être catégorisés selon le fait que vous ayez un projet C# ou JPA, car ce ne sont globalement pas les mêmes.
+
+### Breaking changes pour tout le monde
+
+- `type` n'existe plus sur les associations. Si vous utilisez `manyToMany`, il vous faudra migrer vers une many to many explicite avec une classe de jointure dans le modèle. Pour le reste :
+  - `manyToOne` => rien
+  - `oneToOne` => ajouter une clé d'unicité sur la propriété dans la classe
+
+    _Remarque : Puisqu'il n'y a plus de `oneToOne`, un alias de `oneToOne` n'est plus une `oneToOne`, et vous aurez donc besoin de redéfinir la clé d'unicité sur la classe cible si vous en avez besoin._
+
+  - `oneToMany` => remplacer par `multiple: true`.
+
+- La résolution des mappings de mappers à été refondue, ce qui emmène certaines impacts sur les mappings générés par défaut automatiquement par TopModel :
+  - Si vous avez des mappings en plus : c'est normal, il s'agit de nouveaux cas que TopModel gère automatiquement maintenant, ou il s'agit de corrections de bugs où le mapping automatique n'était pas généré avant. Dans tous les cas, il faudra que vous estimiez si vous le gardez, où si vous voulez le retirer (en renseignant un mapping explicite à `false` dans le modèle)
+  - Si vous avez des mappings en moins, c'est qu'il manque une information dans le modèle pour créer ce mapping. En particulier, s'il s'agit d'un mapping impliquant une collection, il faut que le domaine correspondant ait `collection: true` comme propriété. Il se peut aussi que le mapping ait disparu parce qu'il manque un `converter` entre les domaines des propriétés (les mappings automatiques d'alias ne vérifiaient pas le domaine avant). Les autres cas sont spécifiques aux projets JPA et ne se produiront que si vous ne suivez pas les étapes de mise à jour.
+
+- TopModel vérifie désormais que tous les `type` et `genericType` des implémentations de domaines sont bien renseignés, selon le cas d'usage du domaine et dans quel générateur il est utilisé.
+
+- Les classes abstraites ne sont plus générées avec une méthode `Create` ou `hydrate`, mais des setters classiques.
+
+### Breaking changes/impacts pour les projets C#
+
+- `enumForStaticReferences` a été remplacé par `uniqueValueGeneration`. `true` (valeur par défaut) correspondant à `enum-or-const` et `false` à `const-only`
+
+- Les noms de tous les constantes générées (via l'option précédente) ont été uniformisés :
+  - **Les constantes de la clé primaire sont désormais toutes suffixées par le nom de la propriété**. Si vous génériez des constantes pour vos classes enum et que vous utilisez partout `TypeProfil.Admin` par exemple, ça sera `TypeProfil.AdminCode`.
+
+    _Remarque : Cette décision de faire un tel breaking change est pleinement assumée par l'équipe TopModel, vous pouvez donc parfaitement exiger d'elle qu'elle fasse la migration à votre place sur votre projet 🙄_
+
+  - La casse de certains noms de constantes était parfois incorrectement gérée, ce qui pourra également avoir le même type d'impact que précédemment (mais beaucoup moins systématique à priori).
+
+    _Remarque : Ce breaking change là relève plutôt d'une correction de bug / oubli que d'une vraie volonté de changer les choses. L'équipe TopModel assume donc moins les impacts de ce changement, mais reste tout de même à votre disposition pour assister à faire la mise à jour 😁_
+
+- L'intégralité des constantes possibles est désormais générée (il en manquait certaines avant), et elles seront bien utilisées partout où elles sont référencées (initialisation de la base de données dans le DbContext, valeurs par défaut).
+
+- Les mappers To vers une nouvelle instance ont toujours eu chaque propriété obligatoire manquante dans le mapper en paramètre supplémentaire. Avec cette mise à jour, il y en a qui vont disparaître soit :
+  - Parce que le mapping a été ajouté automatiquement suite aux évolutions (y compris s'il fallait utiliser un mapper pour faire la conversion, maintenant que TopModel peut le gérer tout seul)
+  - Parce que la propriété cible est une collection, qui est toujours initialisée avec une collection vide (et donc il n'est jamais nécessaire de la renseigner).
+
+- Les propriétés marquées `readonly: true` sont désormais générées avec un `init` au lieu d'un `set`.
+
+### Breaking changes/impacts pour les projets JPA
+
+- Vous devez spécifier `defaultAssociationUseClass: true` à la racine de votre fichier topmodel.config
+
+- Les références vers les propriétés d'association dans le modèle n'incluent plus le nom de la clé primaire dans leur nom (puisqu'on utilise `useClass: true` par défaut, pour correspondre à ce qui est généré en Java). Il vous faudra donc corriger les références dans les alias, les clés d'unicités (et les valeurs).
+
+- Si vous utilisiez `enumsAsEnums: true`, cette option n'existe plus, et il vous faudra renseigner `enum: true` sur toutes vos enums pour retrouver le même comportement (du coup, vous n'êtes plus obligés de le faire pour toutes les enums 😉)
+
+- Si vous n'utilisez **pas** `enumsAsEnums: true`, il vous faudra ajouter `readonly: true` sur toutes vos enums pour retrouver le même comportement (du coup, vous pouvez ne pas le mettre si vous ne voulez plus qu'elle soit en lecture seule, et vous pouvez aussi mettre `enum: true` si vous vouliez une vraie enum dans certains cas)
+
+- Les propriétés d'association vers des classes `enum: true` (anciennement `enumAsEnums: true` du coup) ne seront plus suffixées par le nom de la clé primaire (ce qui est vrai partout, y compris en Javascript).
+
+- En Javascript, le type de l'`enum: true` n'est lui non plus plus suffixé par le nom de la clé primaire. En revanche, le type de l'objet qui contient la liste des valeurs, qui avait avant le nom de la classe (désormais porté par le type de l'enum), est désormais suffixé par "Object".
+
+- Si vous utilisiez `enumValuesPath`, vous pouvez le retirer, toutes les enums sont générées dans `enumsPath`.
+
+- Par défaut, toutes les propriétés de classes avec des valeurs qui portent une clé d'unicité seront générées soit dans une enum (comportement actuel pour les enums sans `enumsAsEnums: true` pour la clé primaire), soit dans des classes statiques équivalentes avec des constantes. Vous pouvez désactiver la génération des constantes si vous n'en voulez pas en renseignant `uniqueValueGeneration: enum-only`
+
+- Les classes de clé primaires composites sont désormais générées de manière uniforme pour le calcul du equals et du hash. En particulier, en mode `enumsAsEnums: true` pour les associations, on comparait directement les classes au lieu de leurs clés primaires.
+
+- Puisque les références aux noms de propriété dans les commentaires (typiquement ceux des associations réciproques) utilisent le nom de la propriété dans le modèle, elles sont impactés par le retrait du suffixe par le nom de la clé primaire.
+
+- Des indentations en trop on était retirées dans les mappers générés.
+
 ## 3.9.4
 
 - [`4b3d7b8`](https://github.com/klee-contrib/topmodel/commit/4b3d7b80934e79011a44813da46f63dcab16e49d) - Retrait versions pré-release des auto updates

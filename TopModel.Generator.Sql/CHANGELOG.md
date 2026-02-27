@@ -1,3 +1,7 @@
+## 4.0.0 (rc)
+
+Compatibilité avec TopModel 4.0.
+
 ## 3.6.3
 
 - [`1d7fce`](https://github.com/klee-contrib/topmodel/commit/1d7fce329b4045fcc74900812995c51ca3b803c3) - [SQL] Ne pas générer de contrainte d'unicité pour les associations oneToOne
