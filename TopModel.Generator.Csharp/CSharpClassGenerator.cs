@@ -279,7 +279,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
         var sameColumnSet = new HashSet<string>(
-            item.Properties.Where(p => !p.AssociationMultiple)
+            item.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty)
                 .GroupBy(g => g.SqlName)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)

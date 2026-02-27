@@ -122,6 +122,7 @@ class:
   properties:
     - association: Plat
       primaryKey: true
+      withReverse: true
       comment: Plat concerné par la promotion.
 
     - name: Libelle

@@ -23,6 +23,7 @@ public class DbContextGenerator(
             .Where(p =>
                 p is { Association.IsPersistent: true }
                 && !p.AssociationMultiple
+                && !p.IsReverseProperty
                 && Config.AvailableClasses.Contains(p.Association)
                 && p.Association?.Enum != EnumMode.Enum
                 && Config.IsPersistent(p.Association!, Config.GetBestClassTag(p.Association!, tag))
@@ -71,7 +72,7 @@ public class DbContextGenerator(
                 $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
             );
 
-            foreach (var property in classe.Properties.Where(p => !p.AssociationMultiple))
+            foreach (var property in classe.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty))
             {
                 cw.WriteLine(
                     2,
@@ -220,26 +221,6 @@ public class DbContextGenerator(
             w.WriteLine();
         }
 
-        var hasPk = false;
-        foreach (
-            var classe in classes
-                .Distinct()
-                .Where(c => c.PrimaryKey.Count() > 1 || c.PrimaryKey.Any(p => p.UseClassForAssociation))
-                .OrderBy(c => c.NamePascal)
-        )
-        {
-            hasPk = true;
-            var expr = classe.PrimaryKey.Any(p => p.UseClassForAssociation)
-                ? string.Join(", ", classe.PrimaryKey.Select(p => $"\"{p.PropertyNamePascal}\""))
-                : $"p => new {{ {string.Join(", ", classe.PrimaryKey.Select(p => $"p.{p.NamePascal}"))} }}";
-            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey({expr});");
-        }
-
-        if (hasPk)
-        {
-            w.WriteLine();
-        }
-
         var hasJson = false;
         foreach (var cp in classes.Distinct().SelectMany(c => c.Properties.Where(p => p is { Composition: not null })))
         {
@@ -312,7 +293,30 @@ public class DbContextGenerator(
             {
                 w.WriteLine();
             }
+        }
 
+        var hasPk = false;
+        foreach (
+            var classe in classes
+                .Distinct()
+                .Where(c => c.PrimaryKey.Count() > 1 || c.PrimaryKey.Any(p => p.UseClassForAssociation))
+                .OrderBy(c => c.NamePascal)
+        )
+        {
+            hasPk = true;
+            var expr = classe.PrimaryKey.Any(p => p.UseClassForAssociation)
+                ? string.Join(", ", classe.PrimaryKey.Select(p => $"\"{p.PropertyNamePascal}\""))
+                : $"p => new {{ {string.Join(", ", classe.PrimaryKey.Select(p => $"p.{p.NamePascal}"))} }}";
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey({expr});");
+        }
+
+        if (hasPk)
+        {
+            w.WriteLine();
+        }
+
+        if (Config.UseEFMigrations)
+        {
             var hasUk = false;
             foreach (
                 var uk in classes
@@ -345,7 +349,11 @@ public class DbContextGenerator(
                 var sp in classes
                     .Distinct()
                     .OrderBy(c => c.NamePascal)
-                    .SelectMany(c => c.Properties.Where(p => !p.AssociationMultiple && p.UseClassForAssociation))
+                    .SelectMany(c =>
+                        c.Properties.Where(p =>
+                            !p.AssociationMultiple && !p.IsReverseProperty && p.UseClassForAssociation
+                        )
+                    )
             )
             {
                 hasSp = true;

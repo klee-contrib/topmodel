@@ -90,12 +90,12 @@ public class JpaConfig : GeneratorConfigBase
         };
 
     /// <summary>
-    /// Option pour générer des adders pour les associations oneToMany et ManyToMany
+    /// Option pour générer des adders pour les associations multiples
     /// </summary>
     public virtual bool AssociationAdders { get; set; } = false;
 
     /// <summary>
-    /// Option pour générer des removers pour les associations oneToMany et ManyToMany
+    /// Option pour générer des removers pour les associations multiples
     /// </summary>
     public virtual bool AssociationRemovers { get; set; } = false;
 

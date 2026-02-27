@@ -386,7 +386,7 @@ public enum ErrorType
     TMD9002,
 
     /// <summary>
-    /// 'as' manquant sur la propriété cible de l'association pour une xxxToMany.
+    /// 'as' manquant sur la propriété cible de l'association pour une multiple
     /// </summary>
     TMD9003,
 
@@ -401,7 +401,7 @@ public enum ErrorType
     TMD9005,
 
     /// <summary>
-    /// Associtation xxxToMany sur classe sans PK simple.
+    /// Associtation multiple sur classe sans PK simple.
     /// </summary>
     TMD9006,
 

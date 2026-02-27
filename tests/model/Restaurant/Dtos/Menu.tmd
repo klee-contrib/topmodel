@@ -14,7 +14,8 @@ class:
   properties:
     - alias:
         class: Menu
-        exclude: Plats
+        exclude:
+          - Plats
 
     - composition: CategoriePlat
       name: CategoriesPlat
@@ -113,6 +114,7 @@ class:
   properties:
     - alias:
         class: Plat
+        exclude: Promotion
 
   mappers:
     from:
@@ -128,6 +130,7 @@ class:
         class: Plat
         exclude:
           - Id
+          - Promotion
   mappers:
     to:
       - class: Plat

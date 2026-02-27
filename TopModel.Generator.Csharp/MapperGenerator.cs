@@ -59,7 +59,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         foreach (
             var property in fromMappers.SelectMany(fm =>
                 fm.Mapper.PropertyParams.Select(pp => pp.Property)
-                    .Concat(toMappers.SelectMany(tm => tm.Mapper.MissingRequiredProperties))
+                    .Concat(toMappers.SelectMany(tm => GetMissingRequiredProperties(tm.Mapper, tag)))
             )
         )
         {
@@ -482,12 +482,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             );
             w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
 
-            var missingRequiredProperties = mapper
-                .MissingRequiredProperties.Where(mrp =>
-                    (mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
-                    && Config.GetDefaultValue(mrp, tag) == "null"
-                )
-                .ToList();
+            var missingRequiredProperties = GetMissingRequiredProperties(mapper, tag);
 
             foreach (var mrp in missingRequiredProperties)
             {
@@ -613,6 +608,16 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
 
         w.WriteLine("}");
+    }
+
+    protected virtual IList<IProperty> GetMissingRequiredProperties(ClassMappings toMapper, string tag)
+    {
+        return toMapper
+            .MissingRequiredProperties.Where(mrp =>
+                (mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
+                && Config.GetDefaultValue(mrp, tag) == "null"
+            )
+            .ToList();
     }
 
     protected override bool IsPersistent(Class classe)

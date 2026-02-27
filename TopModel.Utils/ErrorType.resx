@@ -181,7 +181,7 @@
     <value>Domain '{0}' must define a 'as' domain for '{1}' to defined a '{1}' alias for property '{2}' of class '{3}'.</value>
   </data>
   <data name="TMD9006" xml:space="preserve">
-    <value>Cannot define a 'oneToMany' or 'manyToMany' association for a class without a simple primary key.</value>
+    <value>Cannot define a multiple association for a class without a simple primary key.</value>
   </data>
   <data name="TMD9007" xml:space="preserve">
     <value>Cannot define a reverse association in a class without a simple primary key.</value>

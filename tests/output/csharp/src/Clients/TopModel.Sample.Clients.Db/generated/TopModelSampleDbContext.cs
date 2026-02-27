@@ -116,9 +116,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasMaxLength(10);
         modelBuilder.Entity<Region>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
 
-        modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
-        modelBuilder.Entity<Promotion>().HasKey("PlatId");
-
         modelBuilder.Entity<AvisClient>().HasOne(p => p.Client).WithMany(p => p.AvisClients).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AvisClient>().HasOne(p => p.Restaurant).WithMany(p => p.AvisClients).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -141,12 +138,15 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Personne>().HasOne<Departement>().WithMany().HasForeignKey(p => p.DepartementCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.CategoriePlat).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.Restaurant).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Promotion>().HasOne(p => p.Plat).WithOne().HasForeignKey<Promotion>("PlatId").OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Promotion>().HasOne(p => p.Plat).WithOne(p => p.Promotion).HasForeignKey<Promotion>("PlatId").OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Promotion>().HasOne(p => p.Restaurant).WithMany(p => p.Promotions).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne(p => p.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne(p => p.Restaurant).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TableRestaurant>().HasOne<Models.Restaurant.Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
+        modelBuilder.Entity<Promotion>().HasKey("PlatId");
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();

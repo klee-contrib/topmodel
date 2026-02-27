@@ -335,7 +335,14 @@ public static class ModelExtensions
                 && prop.Association?.Enum != EnumMode.Enum
             )
             {
-                name.Append(pascalCase ? prop.AssociationProperty?.NamePascal : prop.AssociationProperty?.Name);
+                if (prop.AssociationProperty?.Association != null)
+                {
+                    name.Append(prop.AssociationProperty?.GetAssociationName(pascalCase, forcePropertyName: true));
+                }
+                else
+                {
+                    name.Append(pascalCase ? prop.AssociationProperty?.NamePascal : prop.AssociationProperty?.Name);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(prop.AssociationRole))

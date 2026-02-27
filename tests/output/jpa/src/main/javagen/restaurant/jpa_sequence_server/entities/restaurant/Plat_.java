@@ -28,6 +28,8 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<Plat, Promotion> promotion;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -41,4 +43,6 @@ public class Plat_ {
 	public static final String CATEGORIE_PLAT = "categoriePlat";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String PROMOTION = "promotion";
 }

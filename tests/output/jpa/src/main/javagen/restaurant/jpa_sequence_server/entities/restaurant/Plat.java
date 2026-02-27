@@ -7,6 +7,7 @@ package restaurant.jpa_sequence_server.entities.restaurant;
 import java.math.BigDecimal;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -72,6 +74,12 @@ public class Plat {
 	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
+
+	/**
+	 * Association réciproque de Promotion.Plat.
+	 */
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true, mappedBy = "plat")
+	private Promotion promotion;
 
 	/**
 	 * Getter for id.
@@ -137,6 +145,15 @@ public class Plat {
 	}
 
 	/**
+	 * Getter for promotion.
+	 *
+	 * @return value of {@link #promotion promotion}.
+	 */
+	public Promotion getPromotion() {
+		return this.promotion;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -193,6 +210,14 @@ public class Plat {
 	}
 
 	/**
+	 * Set the value of {@link #promotion promotion}.
+	 * @param promotion value to set.
+	 */
+	public void setPromotion(Promotion promotion) {
+		this.promotion = promotion;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.Plat Plat}.
 	 */
 	public enum Fields {
@@ -202,7 +227,8 @@ public class Plat {
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT(CategoriePlat.class),
-		RESTAURANT(Restaurant.class);
+		RESTAURANT(Restaurant.class),
+		PROMOTION(Promotion.class);
 
 		private final Class<?> type;
 

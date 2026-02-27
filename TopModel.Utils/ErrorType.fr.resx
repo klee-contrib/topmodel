@@ -181,7 +181,7 @@
     <value>Le domaine '{0}' doit définir un domaine 'as' pour '{1}' pour définir un alias '{1}' sur la propriété '{2}' de la classe '{3}'.</value>
   </data>
   <data name="TMD9006" xml:space="preserve">
-    <value>Il est impossible de définir une association 'oneToMany' ou 'manyToMany' sur classe sans clé primaire simple.</value>
+    <value>Il est impossible de définir une association multiple sur classe sans clé primaire simple.</value>
   </data>
   <data name="TMD9007" xml:space="preserve">
     <value>Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.</value>

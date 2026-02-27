@@ -1067,7 +1067,7 @@ namespace TopModel.Sample.Api.Migrations
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Promotion", b =>
                 {
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", "Plat")
-                        .WithOne()
+                        .WithOne("Promotion")
                         .HasForeignKey("TopModel.Sample.Clients.Db.Models.Restaurant.Promotion", "PlatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1158,6 +1158,11 @@ namespace TopModel.Sample.Api.Migrations
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Menu", b =>
                 {
                     b.Navigation("Plats");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", b =>
+                {
+                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", b =>

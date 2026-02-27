@@ -195,11 +195,11 @@
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany, peu importe la valeur de `withReverse`."
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple, peu importe la valeur de `withReverse`."
                 },
                 {
                   "type": "object",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany.",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple.",
                   "additionalProperties": false,
                   "properties": {
                     "className": {
@@ -830,7 +830,7 @@
             },
             "asDomains": {
               "type": "object",
-              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association `xxxToMany` (avec `as`).",
+              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association multiple (avec `as`).",
               "additionalProperties": {
                 "type": "string"
               }
@@ -872,7 +872,7 @@
               },
               "genericType": {
                 "type": "string",
-                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
+                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association multiple), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
               },
               "imports": {
                 "type": "array",

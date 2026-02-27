@@ -701,6 +701,7 @@
                 "JavaEnumClassPropGen",
                 "JavaEnumDtoGen",
                 "JavaEnumEnumGen",
+                "JavaUniqValPropGen",
                 "JdbcEntityGen",
                 "JpaDaoGen",
                 "JpaEntityGen",
@@ -895,12 +896,12 @@
           },
           "associationAdders": {
             "type": "boolean",
-            "description": "Option pour générer des méthodes d'ajouts pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets ajoutés",
+            "description": "Option pour générer des méthodes d'ajouts pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés",
             "default": "false"
           },
           "associationRemovers": {
             "type": "boolean",
-            "description": "Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés",
+            "description": "Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés",
             "default": "false"
           },
           "generatedHint": {

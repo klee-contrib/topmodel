@@ -15,7 +15,7 @@ internal class ReverseAssociationProperty : AssociationProperty
 
     public override string As => ReverseProperty.As;
 
-    public override bool Required => ReverseProperty.Required;
+    public override bool Required => !ReverseProperty.Unique && ReverseProperty.Required;
 
     public override string? ClassName => ReverseProperty.WithReverse?.ClassName;
 

@@ -68,4 +68,9 @@ public partial record Plat
     /// </summary>
     [Required]
     public Restaurant? Restaurant { get; set; }
+
+    /// <summary>
+    /// Association réciproque de Promotion.Plat.
+    /// </summary>
+    public Promotion? Promotion { get; set; }
 }
