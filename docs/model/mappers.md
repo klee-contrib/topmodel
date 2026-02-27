@@ -31,63 +31,11 @@ Chaque définition de mapping (qui correspond à un paramètre d'un `from` ou la
   - Pour un `from`, il s'agit du nom du paramètre, qui est par défaut renseigné par le nom de la classe en camelCase. Il devient nécessaire si la même classe est utilisée pour plusieurs paramètres.
   - Pour un `to`, il s'agit du nom du mapper, par défaut `To{{ClasseCible}}`. Il devient nécessaire si plusieurs mappers `to` sont définis vers la même classe.
 - Un paramètre de mapper `from` peut également définir le caractère obligatoire du paramètre via `required`. **Tous les paramètres sont obligatoires** par défaut, il conviendra donc de spécifier `required: false` dans le cas contraire.
-- Des correspondances de champs personnalisées, `mappings`, facultatifs tant qu'il n'y a pas d'ambiguïté dans les correspondances.
+- Des correspondances de champs personnalisées, `mappings`, facultatifs tant qu'il n'y a pas d'ambiguïté dans les correspondances (voir plus bas pour les mappings découverts automatiquement).
 
-## Mappings de champs entre classes
+## Mapping depuis une propriété unique (mapper `from` uniquement)
 
-TopModel va déterminer automatiquement les correspondances de champs entre classes via les règles suivantes :
-
-1. La propriété de la classe courante est un alias de la propriété de la classe cible (y compris s'il y a plusieurs niveaux d'alias entre les deux).
-2. La propriété de la classe courante a le même nom et le même domaine que la propriété de la classe cible (ou bien il existe un converter entre ces deux domaines).
-
-Il n'est **pas possible d'initialiser deux fois la même propriété dans un mapper** (quelque soit le sens). En revanche, il est bien possible d'initialiser deux propriétés à partir de la même propriété.
-
-Par conséquent, pour lever les ambiguïtés, ou pour ajouter des correspondances qu'il n'est pas possible de déterminer automatiquement, il est possible de définir des correspondances personnalisées :
-
-```yaml
-# La classe courante possède 2 propriétés "Propriete" et "Propriete1" qui sont toutes les deux des alias de "Propriete", il y a donc ambiguïté dans un mapper "to".
-- class: Classe1
-  mappings:
-    Propriete1: Propriete
-    Propriete: false
-```
-
-La propriété à gauche est toujours celle de la classe courante (pour un `from` comme un `to`), tandis que la propriété à droite est celle de la classe cible. Au lieu de renseigner un nom de propriété cible, il est possible de retirer la propriété du mapper en renseignant `false` à la place d'une propriété.
-
-```yaml
-# Les deux classes définissent toutes les deux une propriété "Propriete", il y a donc ambiguïté car TopModel ne peut pas savoir laquelle des deux il faut choisir.
-- params:
-    - class: Classe1
-    - class: Classe2
-      mappings:
-        Propriete: false
-```
-
-En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**. A moins qu'il existe un `converter` entre les deux domaines.
-
-## Mappings entre compositions et associations
-
-En plus de mapper des champs d'une classe sur des champs de même type de la classe cible, il est également possible de définir un mapping sur une composition de la classe qui définit le mapper avec une association, dans le cas où sa clé primaire est de même domaine que celle de la classe composée. Cela n'est possible qu'entre des associations `oneToOne`/`manyToOne` et des compositions sans domaines.
-
-Exemple :
-
-```yaml
-# classe "ContactDTO"
-to:
-  - class: Contact
-    mappings:
-      Adresse: AdresseId
-```
-
-Ce mapping est possible dans les deux sens :
-
-- En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
-- En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé.
-
-## Mapping d'une propriété unique
-
-Dans un mapper `from`, en plus de pouvoir spécifier une classe comme paramètre, il est également possible d'avoir une **propriété
-comme paramètre**.
+Dans un mapper `from`, en plus de pouvoir spécifier une classe comme paramètre, il est également possible d'avoir une **propriété comme paramètre**.
 
 Cela permet par exemple d'ajouter les champs supplémentaires d'un DTO par rapport à sa classe persistée dans le mapper qui le crée.
 Par exemple :
@@ -124,13 +72,71 @@ class:
 
 Le mapping se fera vers la propriété de la classe qui a le même nom. On vérifie que les deux propriétés ont le même domaine, et dans le cas d'une composition, que ce sont bien des compositions des deux côtés et de la même classe. Il est possible de surcharger la propriété cible en renseignant `target` (au même niveau que `property`), si jamais les noms ne peuvent pas correspondre pour une raison ou une autre.
 
-Les mappings renseignés via des propriétés comptent comme des mappings explicites sur les classes et obéissent donc aux mêmes règles (impossible d'initialiser 2 fois la même propriété, et ils ont la priorité sur les mappings implicites générés depuis les classes). De même, il n'est pas possible d'avoir deux paramètres de même nom.
-
 Le paramètre est obligatoire si la propriété est obligatoire (via `required`). La valeur par défaut de la propriété sera utilisée dans le mapper si elle est renseignée. Par conséquent, une propriété avec une valeur par défaut sera forcément non obligatoire.
+
+## Compatibilité d'un mapping
+
+### Considérations générales
+
+Pour réaliser des mappings, on distingue :
+
+- des propriétés dites "primitives", sont pas représentées par des classes, comme une association `useClass: true` ou une composition (sauf vers une classe `enum: true`, cela reste primitif)
+- des propriétés dites "classes", représentées par des classes
+- des propriétés de "collection", qui représentes une collection de primitives ou une collection de classes. Une propriété est dite de collection si son domaine est marqué `collection: true`.
+
+De plus, pour réaliser un mapping d'une propriété vers une autre, il est toujours nécessaire que **le domaine de la propriété cible soit le même** que celui de la propriété source, ou bien qu'**il existe une conversion entre les deux** dans le bon sens. Les `converters` sont décrits dans un paragraphe ultérieur. Pour les mappings impliquant des classes, cette condition ne s'appliquera que si au moins l'un des deux domaines est générique (puisqu'une composition peut ne pas avoir de domaine, il ne sera donc forcément pas générique).
+
+### Mappings possibles
+
+Un mapping entre deux propriétés est **possible** dans les cas suivants :
+
+- Les deux propriétés sont des primitives de domaines compatibles.
+- Les deux propriétés sont des classes de domaines compatibles, et au choix :
+  - Ce sont les mêmes classes.
+  - Un mapper existe depuis la classe source vers la classe cible (soit un mapper `to` sur la classe source, soit un mapper `from` sur la classe cible avec la classe source comme unique paramètre).
+- Les deux propriétés sont des collections de classes de domaines compatibles (avec les mêmes contraintes que la cas précédent).
+- La propriété source est une classe qui contient une clé primaire et la propriété cible une primitive : la clé primaire sera mappée vers la propriété cible si les domaines sont compatibles.
+- La propriété source est une collection de classes et la propriété cible une collection de primitives (même chose que le cas précédent).
+- La propriété source est une primitive et la classe cible une classe enum readonly, et la propriété source est une référence (alias ou association) vers la clé primaire de la classe cible. Le mapping récupèrera l'instance statique de la classe cible correspondant à la valeur de la clé primaire.
+- Une collection de primitives vers une collection de classes enum readonly (même chose que le cas précédent).
+
+## Réalisation des mappings
+
+Les mappings entre propriétés de classes peuvent être explicités dans la section `mappings` de la classe mappée en question. Un mapping ne sera accepté que s'il est possible, donc s'il correspond à un cas décrit dans le paragraphe précédent.
+
+Il n'est **pas possible d'initialiser deux fois la même propriété dans un mapper** (quelque soit le sens). En revanche, il est bien possible d'initialiser deux propriétés à partir de la même propriété.
+
+**Si une propriété n'est pas initialisée** dans la section `mappings`, TopModel va **essayer de trouver un mapping correspondant** selon les priorités suivantes :
+
+1. La propriété de la classe courante est un alias de la propriété de la classe cible (ou les deux propriétés sont des alias de la même propriété).
+2. La propriété de la classe courante a le même nom que la propriété de la classe cible.
+
+Le mapping sera ensuite ajouté s'il est possible. Puisqu'il n'est pas possible d'initialiser deux fois la même propriété, une erreur sera levée plusieurs mappings automatiques ont été trouvés vers la même propriété. Pour lever l'ambiguïté, ou si un mapping n'est pas souhaité, il est possible de le désactiver dans la section `mappings` en renseignant `MyProperty: false` à l'intérieur.
+
+Quelques exemples :
+
+```yaml
+# La classe courante possède 2 propriétés "Propriete" et "Propriete1" qui sont toutes les deux des alias de "Propriete", il y a donc ambiguïté dans un mapper "to".
+- class: Classe1
+  mappings:
+    Propriete1: Propriete
+    Propriete: false
+```
+
+La propriété à gauche est toujours celle de la classe courante (pour un `from` comme un `to`), tandis que la propriété à droite est celle de la classe cible.
+
+```yaml
+# Les deux classes définissent toutes les deux une propriété "Propriete", il y a donc ambiguïté car TopModel ne peut pas savoir laquelle des deux il faut choisir.
+- params:
+    - class: Classe1
+    - class: Classe2
+      mappings:
+        Propriete: false
+```
 
 ## Converters
 
-Pour mapper deux champs de domaine différent, il est possible de définir un `converter`. Si la conversion ne nécessite pas d'opération particulière (mapper un champ `email` vers `libelle` par exemple), alors la définition est simple :
+Pour mapper deux champs de domaine différents, il est possible de définir un `converter`. Si la conversion ne nécessite pas d'opération particulière (mapper un champ `email` vers `libelle` par exemple), alors la définition est simple :
 
 ```yaml
 converter:

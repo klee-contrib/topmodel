@@ -105,11 +105,12 @@ database:
 
 ## Connexion à la base de données
 
-Le générateur `database` supporte les bases des données : 
-  -  `postgresql`
-  -  `oracle`
-  -  `mysql`
-  -  `mssql` (SQL Server)
+Le générateur `database` supporte les bases des données :
+
+- `postgresql`
+- `oracle`
+- `mysql`
+- `mssql` (SQL Server)
 
 Pour s'y connecter, remplir les informations de la propriété `source` de la configuration. Vous pouvez remarquer que le `password` n'est pas obligatoire. En effet, vous pouvez utiliser la variable d'environnement `PGPASSWORD` pour `postgresql` par exemple.
 
@@ -152,7 +153,7 @@ Il les trie d'abord par poids (nombre de dépendances + nombre de références),
 
 Le générateur procède ainsi tant qu'il reste des classes avec plus de deux dépendances, sans module. En toute logique, il ne restera que des classes avec deux dépendances ou moins.
 
-Les classes possédant une ou deux dépendances sont regroupées dans le module `Join`, tandis que celles sans dépendance ni référence sont regroupées dans `Autres`. Le module `Join` est principalement constitué des classes de jointures entre deux classes de modules différents. L'on peut imaginer qu'il s'agisse d'associations `ManyToMany`, mais le générateur ne les écrira pas ainsi par soucis de simplicité.
+Les classes possédant une ou deux dépendances sont regroupées dans le module `Join`, tandis que celles sans dépendance ni référence sont regroupées dans `Autres`. Le module `Join` est principalement constitué des classes de jointures entre deux classes de modules différents.
 
 > Les modules sont numérotés, dans l'ordre de leur création. Ceci permet de mieux comprendre les regroupement effectués, et éventuellement d'adapter la configuration
 

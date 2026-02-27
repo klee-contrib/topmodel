@@ -2,7 +2,7 @@
 
 Les propriétés sont définies aussi bien dans des classes que pour des endpoints.
 
-Il y a au total 3 types de propriétés :
+Il y a au total 4 types de propriétés :
 
 ## Propriété "standard"
 
@@ -28,7 +28,11 @@ Une association peut être obligatoire (ou non) (`required`) et optionnellement 
 
 Une association peut être (ou faire partie de) la clé primaire de la classe (via `primaryKey`).
 
-Le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`.
+Une association est par défaut représentée par la **propriété** cible, mais dans une [classe persistée](/model/classes.md#classe-persistée), elle peut être aussi représentée par la **classe** ciblée. Ce comportement est déterminé par la valeur de `useClass` (`true` ou `false`), et sa valeur par défaut est configurée par la valeur de la propriété `defaultAssociationUseClass` (qui vaut `false` par défaut) dans la configuration globale de TopModel. Ce choix de représentation impactera :
+
+- Le type de la propriété d'association : soit c'est celui de la clé primaire de la classe, soit c'est la classe elle-même. Dans le code généré, vous pourriez avoir besoin de représenter votre association comme une classe pour que votre ORM se comporte comme attendu (en JPA, notamment).
+- Les [mappings](./mappers.md) possibles vers depuis et vers cette propriété.
+- Le nom de la propriété dans le modèle et dans le code généré. Dans le cas propriété, elle s'appellera `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`, tandis que dans le cas classe, ce sera simplement `{ClasseCible.Name}{Rôle}`.
 
 La classe référencée par l'association doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
@@ -49,15 +53,19 @@ comment: C'est une FK obligatoire
 role: Exemple
 ```
 
-Dans ce cas, la propriété qui en découlera sera `ClasseCibleIdExemple` (si la `primaryKey` de `ClasseCible` est `Id`). Il est possible de surcharger le nom de la classe cible dans la propriété (donc ici `ClasseCible`) via la propriété `className`.
+Dans ce cas, la propriété qui en découlera sera `ClasseCibleIdExemple` (si la `primaryKey` de `ClasseCible` est `Id`), ou simplement `ClasseCibleExemple` si `useClass` est `true`. Il est possible de surcharger le nom de la classe cible dans la propriété (donc ici `ClasseCible`) via la propriété `className`.
 
 Une association peut référencer une classe non persistée, dans ce cas il faut identifier la propriété de la classe cible à utiliser via `property` (puisqu'une telle classe ne peut pas avoir de clé primaire par définition).
 
-### Associations réciproques
+### Associations multiples et réciproques
 
-Via `withReverse`, il est possible de déclarer **l'association réciproque sur la classe cible de l'association**. Pour une association sans contrainte d'unicité (parce qu'il s'agit d'une clé primaire simple, où bien si une clé d'unicité simple est définie dessus), classiquement appelée "Many to One", l'association réciproque sera une "One to Many", représentée par une collection de la classe source de l'association. Pour une association avec contrainte d'unicité (une "One to One"), la réciproque sera également une "One to One".
+Via `withReverse`, il est possible de déclarer **l'association réciproque sur la classe cible de l'association**. Pour une association sans contrainte d'unicité (parce qu'il s'agit d'une clé primaire simple, où bien si une clé d'unicité simple est définie dessus), classiquement appelée "Many to One", l'association réciproque sera une "One to Many", représentée par une collection de la classe source (si `useClass: true` est renseigné sur l'association, sinon vous aurez une liste de la clé primaire de la classe source, ce qui est rarement exploitable...) de l'association. Pour une association avec contrainte d'unicité (une "One to One"), la réciproque sera du même type que la propriété originale (une "One to One" également).
 
-Cette propriété sera **ajoutée effectivement comme une propriété d'association sur la classe cible**. En particulier, cela imposera une **référence circulaire** entre les deux classes, et donc les fichiers qui les contiennent. Cette dépendance devra être déclarée explicitement (si elle ne l'est pas déjà par ailleurs, ou si les deux classes ne sont pas déjà dans le même fichier) sur le fichier de la classe cible. Les cycles de dépendances sont traités comme un seul gros fichier par TopModel, donc pour simplifier la résolution et éviter des effets de bord indésirables, il est conseillé de les réduire au minimum possible.
+Une association peut également être directement marquée comme **multiple**, ce qui permet de définir cette "One to Many" explicitement dans le modèle, et d'avoir son association "classique" comme réciproque. Dans ce cas-là, l'**association réciproque est automatiquement ajoutée au modèle**, puisque la propriété "réelle" d'association (typiquement, la clé étrangère en base de données) est celle de la réciproque.
+
+Puisqu'une **association multiple est une collection, il est nécessaire de changer son domaine**. Il sera égal au `asDomain` `list` (par défaut, surchargeable via `as` sur l'association) de la propriété d'association source. Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
+
+La propriété correspondant à l'association réciproque sera **ajoutée effectivement comme une propriété d'association sur la classe cible**. En particulier, cela imposera une **référence circulaire** entre les deux classes, et donc les fichiers qui les contiennent. Cette dépendance devra être déclarée explicitement (si elle ne l'est pas déjà par ailleurs, ou si les deux classes ne sont pas déjà dans le même fichier) sur le fichier de la classe cible. Les cycles de dépendances sont traités comme un seul gros fichier par TopModel, donc pour simplifier la résolution et éviter des effets de bord indésirables, il est conseillé de les réduire au minimum possible.
 
 Une association réciproque peut être déclarée via `withReverse: true`, ou par un objet qui peut paramétrer la propriété d'association réciproque :
 
@@ -70,13 +78,6 @@ withReverse:
 ```
 
 Les associations réciproques étant de vraies propriétés de classe dans le modèle, elles sont disponibles dans les alias et les mappers.
-
-Les associations réciproques de type "One to Many" sont des propriétés :
-
-- Dont le nom de la propriété sera déterminé automatiquement comme étant `{ClasseSource.PluralName}{Rôle}`
-- Dont le domaine sera égal au `asDomain` `list` (par défaut, surchargeable via `as` sur l'association) de la propriété d'association source. Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
-
-_Remarque : Vous pouvez aussi déclarer une association comme étant `multiple`, ce qui permet de créer une "One To Many" sans avoir à la définir comme une réciproque._
 
 ## Composition
 
@@ -217,6 +218,22 @@ Si vous voulez simplement récupérer le trigramme de la propriété référenc�
 
 La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL). Les générateurs utiliseront les [templates de valeurs](./domains.md#templates-de-valeurs) associés à leur implémentation pour la génération.
 
+## Propriété avec des valeurs et une clé d'unicité
+
+Une telle propriété, comme son nom l'indique, est définie par l'existence de **[valeurs sur la classe](/model/classes.md#valeurs-dune-classe)**, ainsi qu'une **clé d'unicité qui porte sur cette propriété** (comme une clé primaire simple par exemple).
+
+Ces valeurs étant uniques, elle pourront être **représentées dans le code généré** :
+
+- Soit par une **enum**, si la classe qui la contient est une [classe enum](/model/classes.md#classe-enum) (sans `enum: true`, puisque sinon la classe entière est une enum et les propriétés n'existent pas indépendamment). Dans ce cas, cela impactera le **type** de cette propriété qui **écrasera celui défini dans le domaine** par cette enum.
+- Soit par une liste de constantes.
+
+Le choix de réprésentation dépendra de si les valeurs peuvent bien constituer une enum dans le langage cible (les restrictions sur les noms de variables peuvent s'appliquer sur certains langages, comme C# ou Java, et il faut aussi que le langage puisse supporter des enums de manière générale). De plus, une option de génération commune à tous les générateurs (si implémentée), `uniqueValueGeneration`, peut adapter ce qui est effectivement généré :
+
+- `enum-or-const` (la valeur par défaut) génèrera des enums si possible, et des constantes pour le reste
+- `const-only` génèrera des constantes pour tout
+- `enum-only` ne génèrera que les enums possibles
+- `none` ne génèrera rien
+
 ## Annotations
 
 Une propriété peut recevoir des [annotations](/model/annotations.md), qui seront ajoutées au code généré s'il y a bien une implémentation correspondante au language générée, et que le type d'objet ciblé correspond. Toute annotation ciblant `property` ou `XXX-property` peut être posée sur une propriété (ou son domaine), mais elle ne sera effectivement générée que si le type de propriété correspond (ou qu'elle cible `property`).
@@ -238,5 +255,5 @@ Un alias hérite des annotations de la propriété source, ainsi que de son type
 
 ## Autres informations de propriétés
 
-- `readonly` : Une propriété readonly ne pourra jamais être la cible d'un [mapper](/model/mappers.md), et ne sera pas ajoutée dans le setter unique d'une [classe abstraite](/model/classes.md#classe-abstraite)
+- `readonly` : Une propriété readonly ne devrait être renseignable qu'à la création d'une classe (une notion qui n'est représentable qu'en C# malheureusement..), mais en revanche, dans une [classe abstraite](/model/classes.md#classe-abstraite), elle n'aura pas de setter.
 - `trigram` : toutes les propriétés non composées peuvent surcharger le trigramme de la classe (ou de la classe associée dans une association).
