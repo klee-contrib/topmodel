@@ -7,6 +7,8 @@ public static class ModelConfigExtensions
 {
     public static TextDocumentSelector GetDocumentSelector(this ModelConfig config)
     {
-        return TextDocumentSelector.ForPattern(config.ModelFilePaths.Select(g => $"{config.ModelRoot}/{g}").ToArray());
+        return TextDocumentSelector.ForPattern(
+            config.ModelFilePathsGlobs.Select(g => $"{config.ModelRoot}/{g}").ToArray()
+        );
     }
 }

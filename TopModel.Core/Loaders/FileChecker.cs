@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Text;
-using Meziantou.Framework.Globbing;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using NJsonSchema.Validation;
@@ -95,16 +94,9 @@ public class FileChecker
                     config.ModelRoot = value;
                     break;
                 case (YamlScalarNode { Value: "modelFilePaths" }, YamlSequenceNode seq):
-                    config.ModelFilePaths = new GlobCollection(
-                        seq.OfType<YamlScalarNode>()
-                            .Select(n =>
-                                Glob.Parse(
-                                    n.Value!.EndsWith(".tmd") ? n.Value : $"{n.Value}/*.tmd",
-                                    GlobOptions.IgnoreCase
-                                )
-                            )
-                            .ToArray()
-                    );
+                    config.ModelFilePathsGlobs = seq.OfType<YamlScalarNode>()
+                        .Select(n => n.Value!.EndsWith(".tmd") ? n.Value : $"{n.Value}/*.tmd")
+                        .ToList();
                     break;
                 case (YamlScalarNode { Value: "lockFileName" }, YamlScalarNode { Value: var value }):
                     config.LockFileName = value;

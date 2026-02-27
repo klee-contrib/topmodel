@@ -27,7 +27,13 @@ public class ConfigBase
     /// <summary>
     /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.
     /// </summary>
-    public GlobCollection ModelFilePaths { get; set; } = new(Glob.Parse("**/*.tmd", GlobOptions.IgnoreCase));
+    public GlobCollection ModelFilePaths =>
+        new(ModelFilePathsGlobs.Select(g => Glob.Parse(g, GlobOptions.IgnoreCase)).ToArray());
+
+    /// <summary>
+    /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.
+    /// </summary>
+    public IList<string> ModelFilePathsGlobs { get; set; } = ["**/*.tmd"];
 
     /// <summary>
     /// Liste des fichiers à ignorer après première génération (relatif au fichier de config).
