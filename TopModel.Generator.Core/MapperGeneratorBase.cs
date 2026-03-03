@@ -119,7 +119,9 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
             return mapper.Classe.Tags;
         }
 
-        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => IsPersistent(p.Class));
+        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p =>
+            IsPersistent(p.Class) && Config.Classes.Contains(p.Class)
+        );
         if (persistentParam != null)
         {
             return persistentParam.Class.Tags;
@@ -135,7 +137,7 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
             return mapper.Classe.Tags;
         }
 
-        if (IsPersistent(mapper.Mapper.Class))
+        if (IsPersistent(mapper.Mapper.Class) && Config.Classes.Contains(mapper.Mapper.Class))
         {
             return mapper.Mapper.Class.Tags;
         }
