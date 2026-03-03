@@ -1,6 +1,6 @@
 ![logo](./media/IconDark.svg)
 
-# TopModel <small>3.9.2</small>
+# TopModel <small>3.9.4</small>
 
 > Modélisez en toute simplicité.
 
