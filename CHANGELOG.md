@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.9.3
+
+- [`d4baf8c`](https://github.com/klee-contrib/topmodel/commit/d4baf8c4d0718bbe0491e01277df02f1f7f65221) - [Core] Fix génération mappers référençants des classes persistées avec `referencedTags`
+
 ## 3.9.2
 
 - [`e258826`](https://github.com/klee-contrib/topmodel/commit/e258826fb35d5e0fdbdf9ee2f69f55e8b358602c) - Chargement des fichiers partagé entre plusieurs configs (si compatibles)
