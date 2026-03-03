@@ -10,8 +10,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
-
 @StaticMetamodel(Plat.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Plat_ {
@@ -30,6 +28,8 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<Plat, Promotion> promotion;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -43,4 +43,6 @@ public class Plat_ {
 	public static final String CATEGORIE_PLAT = "categoriePlat";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String PROMOTION = "promotion";
 }

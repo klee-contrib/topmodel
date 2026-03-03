@@ -27,6 +27,7 @@ COMMENT ON COLUMN AVIS_CLIENT.RES_ID IS 'Restaurant concerné par l''avis';
 COMMENT ON TABLE CATEGORIE_PLAT IS 'Catégorie de plat';
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_CODE IS 'Code de la catégorie';
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_LIBELLE IS 'Libellé de la catégorie';
+COMMENT ON COLUMN CATEGORIE_PLAT.CAT_ORDRE IS 'Ordre d''affichage dans le menu.';
 
 /**
   * Commentaires pour la table CLIENT
@@ -62,6 +63,14 @@ COMMENT ON COLUMN COMMANDE_HISTORIQUE.TAB_ID IS 'Table associée à la commande'
 COMMENT ON COLUMN COMMANDE_HISTORIQUE.REV_ID IS 'Réservation associée à la commande';
 COMMENT ON COLUMN COMMANDE_HISTORIQUE.STC_CODE IS 'Statut de la commande';
 COMMENT ON COLUMN COMMANDE_HISTORIQUE.AVI_ID IS 'Avis laissé par le client sur la commande.';
+
+/**
+  * Commentaires pour la table DEPARTEMENT
+ **/
+COMMENT ON TABLE DEPARTEMENT IS 'Département';
+COMMENT ON COLUMN DEPARTEMENT.DEP_CODE IS 'Code du département.';
+COMMENT ON COLUMN DEPARTEMENT.DEP_LIBELLE IS 'Libellé du département.';
+COMMENT ON COLUMN DEPARTEMENT.REG_CODE IS 'Région associée.';
 
 /**
   * Commentaires pour la table EMPLOYE
@@ -125,6 +134,7 @@ COMMENT ON TABLE PERSONNE IS 'Classe de base représentant une personne';
 COMMENT ON COLUMN PERSONNE.PER_ID IS 'Identifiant de la personne';
 COMMENT ON COLUMN PERSONNE.PER_NOM IS 'Nom de la personne';
 COMMENT ON COLUMN PERSONNE.PER_PRENOM IS 'Prénom de la personne';
+COMMENT ON COLUMN PERSONNE.DEP_CODE IS 'Département de résidence de la personne.';
 
 /**
   * Commentaires pour la table PLAT
@@ -149,6 +159,14 @@ COMMENT ON COLUMN PROMOTION.PRO_DATE_DEBUT IS 'Date de début de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_DATE_FIN IS 'Date de fin de la promotion';
 COMMENT ON COLUMN PROMOTION.PRO_ACTIVE IS 'Indique si la promotion est active';
 COMMENT ON COLUMN PROMOTION.RES_ID IS 'Restaurant concerné par la promotion (null si globale)';
+
+/**
+  * Commentaires pour la table REGION
+ **/
+COMMENT ON TABLE REGION IS 'Région';
+COMMENT ON COLUMN REGION.REG_CODE IS 'Code de la région.';
+COMMENT ON COLUMN REGION.REG_LIBELLE IS 'Libellé de la région.';
+COMMENT ON COLUMN REGION.REG_NOM_RESPONSABLE IS 'Nom du responsable de la région.';
 
 /**
   * Commentaires pour la table RESERVATION

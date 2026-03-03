@@ -39,17 +39,7 @@ public class SqlUkGenerator(ILogger<SqlUkGenerator> logger, IFileWriterProvider 
     /// <param name="writer">Writer.</param>
     private void WriteUniqueKeys(Class classe, IFileWriter writer)
     {
-        foreach (
-            var uk in classe.UniqueKeys.Concat(
-                classe
-                    .Properties.Where(ap =>
-                        ap.AssociationType == AssociationType.OneToOne
-                        && !ap.PrimaryKey
-                        && ap is not ReverseAssociationProperty
-                    )
-                    .Select(ap => new List<IProperty> { ap })
-            )
-        )
+        foreach (var uk in classe.UniqueKeys)
         {
             string columnNames = string.Join('_', uk.Select(p => p.SqlName));
             string propertyNames = string.Join('_', uk.Select(p => GetPropertyName(p.SqlName)));

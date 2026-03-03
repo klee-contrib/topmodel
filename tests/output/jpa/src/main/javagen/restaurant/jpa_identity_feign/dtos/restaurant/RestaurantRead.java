@@ -11,6 +11,7 @@ import java.util.List;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
@@ -57,27 +58,27 @@ public class RestaurantRead implements Serializable {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
+	 * Association réciproque de Menu.Restaurant.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
 	 */
 	@NotNull
 	private List<Integer> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
+	 * Association réciproque de Plat.Restaurant.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
 	 */
 	@NotNull
 	private List<Integer> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
+	 * Association réciproque de Promotion.Restaurant.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
 	 */
 	private List<Integer> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
+	 * Association réciproque de AvisClient.Restaurant.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
 	 */
 	@NotNull
@@ -85,10 +86,11 @@ public class RestaurantRead implements Serializable {
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> tables;
+	private List<TableItem> tables;
 
 	/**
 	 * No arg constructor.
@@ -184,7 +186,7 @@ public class RestaurantRead implements Serializable {
 	 *
 	 * @return value of {@link #tables tables}.
 	 */
-	public List<Integer> getTables() {
+	public List<TableItem> getTables() {
 		return this.tables;
 	}
 
@@ -256,7 +258,7 @@ public class RestaurantRead implements Serializable {
 	 * Set the value of {@link #tables tables}.
 	 * @param tables value to set.
 	 */
-	public void setTables(List<Integer> tables) {
+	public void setTables(List<TableItem> tables) {
 		this.tables = tables;
 	}
 

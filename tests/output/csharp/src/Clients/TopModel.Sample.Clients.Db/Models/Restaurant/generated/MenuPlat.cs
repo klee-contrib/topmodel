@@ -18,18 +18,14 @@ public partial record MenuPlat
     /// <summary>
     /// Menu contenant ce plat.
     /// </summary>
-    [Column("men_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? MenuId { get; set; }
+    public Menu? Menu { get; set; }
 
     /// <summary>
     /// Plat du menu.
     /// </summary>
-    [Column("pla_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? PlatId { get; set; }
+    public Plat? Plat { get; set; }
 
     /// <summary>
     /// Ordre d'affichage du plat dans le menu.

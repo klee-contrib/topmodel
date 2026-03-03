@@ -35,7 +35,7 @@ public interface CommandeItem {
 	/**
 	 * Statut de la commande.
 	 */
-	StatutCommande getStatutCommandeCode();
+	StatutCommande getStatutCommande();
 
 	/**
 	 * Client ayant passé la commande.
@@ -43,12 +43,32 @@ public interface CommandeItem {
 	Integer getClientId();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant de la commande.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Date et heure de la commande.
 	 * @param dateCommande value to set.
+	 */
+	void setDateCommande(LocalDateTime dateCommande);
+
+	/**
+	 * Montant total de la commande.
 	 * @param montantTotal value to set.
-	 * @param statutCommandeCode value to set.
+	 */
+	void setMontantTotal(BigDecimal montantTotal);
+
+	/**
+	 * Statut de la commande.
+	 * @param statutCommande value to set.
+	 */
+	void setStatutCommande(StatutCommande statutCommande);
+
+	/**
+	 * Client ayant passé la commande.
 	 * @param clientId value to set.
 	 */
-	void hydrate(Integer id, LocalDateTime dateCommande, BigDecimal montantTotal, StatutCommande statutCommandeCode, Integer clientId);
+	void setClientId(Integer clientId);
 }

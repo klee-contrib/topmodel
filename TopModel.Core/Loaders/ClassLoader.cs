@@ -49,6 +49,9 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "reference":
                     classe.Reference = value!.Value == "true";
                     break;
+                case "readonly":
+                    classe.Readonly = value!.Value == "true";
+                    break;
                 case "enum":
                     classe.EnumOverride = new LocatedString(value!);
                     break;

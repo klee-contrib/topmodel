@@ -99,7 +99,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourceRootPath)];
 
-    protected override bool UseNamedEnums => false;
+    protected override bool UseValueNameForValues => false;
 
     protected override string NullValue => "undefined";
 
@@ -182,7 +182,7 @@ public class JavascriptConfig : GeneratorConfigBase
         string target;
         if (dep is { Source: IProperty and not { Composition: not null } })
         {
-            if (dep.Classe.EnumKey != null && AvailableClasses.Contains(dep.Classe))
+            if (dep.Classe.IsJSReference() && AvailableClasses.Contains(dep.Classe))
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }
@@ -269,19 +269,9 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public virtual bool IsListComposition(IProperty property)
     {
-        var cp = property.Composition != null ? property : null;
-
-        return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
-    }
-
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
-    {
-        return $"{className.ToPascalCase(strictIfUppercase: true)}{propName.ToPascalCase(strictIfUppercase: true)}";
-    }
-
-    protected override bool IsEnumNameValid(string name)
-    {
-        return true;
+        return property is { Composition: Class c, Domain: Domain d }
+            && !c.IsJSReference()
+            && (GetImplementation(d)?.GenericType?.EndsWith("[]") ?? false);
     }
 
     protected override string ResolveTagVariables(string value, string tag)

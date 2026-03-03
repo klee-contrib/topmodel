@@ -10,8 +10,7 @@ internal class MapperResolver(
     IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
-    IEnumerable<Converter> converters,
-    bool useLegacyAssociationCompositionMappers
+    IEnumerable<Converter> converters
 )
 {
     /// <summary>
@@ -37,7 +36,13 @@ internal class MapperResolver(
                 }
 
                 mappings.Class = mappedClass;
+            }
+        }
 
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
+        {
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
+            {
                 mappings.Mappings.Clear();
 
                 foreach (var mapping in mappings.MappingReferences)
@@ -61,15 +66,16 @@ internal class MapperResolver(
                         continue;
                     }
 
-                    var mappedProperty = mappedClass.ExtendedProperties.FirstOrDefault(p =>
+                    var mappedProperty = mappings.Class.ExtendedProperties.FirstOrDefault(p =>
                         p.Name == mapping.Value.ReferenceName
                     );
+
                     if (mappedProperty == null)
                     {
                         yield return new ModelError(
                             localizer,
                             ErrorType.TMD0004,
-                            [mapping.Value.ReferenceName, mappedClass.Name],
+                            [mapping.Value.ReferenceName, mappings.Class.Name],
                             classe,
                             mapping.Value
                         );
@@ -79,81 +85,16 @@ internal class MapperResolver(
                     {
                         mappings.Mappings.Add(currentProperty, mappedProperty);
 
-                        if (mappings.To && mappedProperty.Readonly)
-                        {
-                            yield return new ModelError(
-                                ErrorType.TMD8008,
+                        foreach (
+                            var error in CheckValidMapping(
                                 classe,
-                                $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
+                                mappings.To ? currentProperty : mappedProperty,
+                                mappings.To ? mappedProperty : currentProperty,
                                 mapping.Value
-                            );
-                        }
-                        else if (!mappings.To && currentProperty.Readonly)
-                        {
-                            yield return new ModelError(
-                                ErrorType.TMD8008,
-                                classe,
-                                $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.",
-                                mapping.Key
-                            );
-                        }
-
-                        if (
-                            (currentProperty.Composition == null || mappedProperty.Association == null)
-                            && currentProperty.Domain != mappedProperty.Domain
-                            && !converters.Any(c =>
-                                c.From.Any(cf => cf == (mappings.To ? currentProperty.Domain : mappedProperty.Domain))
-                                && c.To.Any(ct => ct == (mappings.To ? mappedProperty.Domain : currentProperty.Domain))
                             )
                         )
                         {
-                            yield return new ModelError(
-                                ErrorType.TMD8001,
-                                classe,
-                                $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.",
-                                mapping.Value
-                            );
-                        }
-
-                        if (currentProperty.Composition != null)
-                        {
-                            if (mappedProperty.Association == null)
-                            {
-                                yield return new ModelError(
-                                    ErrorType.TMD8004,
-                                    classe,
-                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.",
-                                    mapping.Value
-                                );
-                            }
-                            else if (
-                                !useLegacyAssociationCompositionMappers
-                                && (mappedProperty.AssociationToMany || currentProperty.Domain != null)
-                            )
-                            {
-                                yield return new ModelError(
-                                    ErrorType.TMD8005,
-                                    classe,
-                                    $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.",
-                                    mapping.Value
-                                );
-                            }
-                            else if (
-                                !useLegacyAssociationCompositionMappers
-                                && currentProperty.CompositionPrimaryKey?.Domain != mappedProperty.Domain
-                                && !converters.Any(c =>
-                                    c.From.Any(cf => cf == currentProperty.CompositionPrimaryKey?.Domain)
-                                    && c.To.Any(ct => ct == mappedProperty.Domain)
-                                )
-                            )
-                            {
-                                yield return new ModelError(
-                                    ErrorType.TMD8006,
-                                    classe,
-                                    $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{currentProperty.Composition!.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').",
-                                    mapping.Value
-                                );
-                            }
+                            yield return error;
                         }
                     }
                 }
@@ -202,43 +143,16 @@ internal class MapperResolver(
 
                     if (mapping.TargetProperty != null)
                     {
-                        var sourceCp = mapping.Property.Composition != null ? mapping.Property : null;
-                        var targetCp = mapping.TargetProperty.Composition != null ? mapping.TargetProperty : null;
-
-                        if (targetCp == null && sourceCp != null)
-                        {
-                            yield return new ModelError(
-                                ErrorType.TMD8011,
+                        foreach (
+                            var error in CheckValidMapping(
                                 classe,
-                                $"La propriété '{mapping.Property.Name}' ne peut pas être une composition pour définir un mapping vers '{mapping.TargetProperty.Name}'.",
+                                mapping.Property,
+                                mapping.TargetProperty,
                                 mapping.Property.GetLocation()
-                            );
-                        }
-
-                        if (targetCp != null && (sourceCp == null || targetCp.Composition != sourceCp.Composition))
-                        {
-                            yield return new ModelError(
-                                ErrorType.TMD8010,
-                                classe,
-                                $"La propriété '{mapping.Property.Name}' doit être une composition de la même classe que '{mapping.TargetProperty.Name}' pour définir un mapping entre les deux.",
-                                mapping.Property.GetLocation()
-                            );
-                        }
-
-                        if (
-                            mapping.Property.Domain != mapping.TargetProperty.Domain
-                            && !converters.Any(c =>
-                                c.From.Any(cf => cf == mapping.Property.Domain)
-                                && c.To.Any(ct => ct == mapping.TargetProperty.Domain)
                             )
                         )
                         {
-                            yield return new ModelError(
-                                ErrorType.TMD8001,
-                                classe,
-                                $"La propriété '{mapping.Property.Name}' ne peut pas être mappée à '{mapping.TargetProperty.Name}' car elle n'a pas le même domaine ('{mapping.Property.Domain?.Name}' au lieu de '{mapping.TargetProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.",
-                                mapping.Property.GetLocation()
-                            );
+                            yield return error;
                         }
                     }
                 }
@@ -309,11 +223,11 @@ internal class MapperResolver(
                     foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (
-                            var property in classe
+                            var currentProperty in classe
                                 .ExtendedProperties.OfType<AliasProperty>()
                                 .Where(property =>
-                                    !property.Readonly
-                                    && !explicitMappings.Any(m => m.Key == property)
+                                    (!property.Readonly || !classe.Abstract)
+                                    && !explicitMappings.Exists(m => m.Key == property)
                                     && !param.MappingReferences.Any(m =>
                                         m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
                                     )
@@ -321,28 +235,16 @@ internal class MapperResolver(
                         )
                         {
                             var matchingProperties = param.Class.ExtendedProperties.Where(p =>
-                                property.Property == p
-                                || p is AliasProperty alp && property == alp.Property
-                                || p is AliasProperty alp2 && property.Property == alp2.Property
+                                currentProperty.Property == p
+                                || p is AliasProperty alp && currentProperty == alp.Property
+                                || p is AliasProperty alp2 && currentProperty.Property == alp2.Property
                             );
                             if (matchingProperties.Count() == 1)
                             {
-                                var p = matchingProperties.First();
-                                if (
-                                    p.Domain != null
-                                    && (
-                                        p.Composition == null && property.Composition == null
-                                        || p.Composition != null && property.Composition != null
-                                    )
-                                    && (
-                                        p.Domain == property.Domain
-                                        || converters.Any(c =>
-                                            c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
-                                        )
-                                    )
-                                )
+                                var mappedProperty = matchingProperties.Single();
+                                if (CheckPossibleMapping(mappedProperty, currentProperty))
                                 {
-                                    param.Mappings.Add(property, p);
+                                    param.Mappings.Add(currentProperty, mappedProperty);
                                 }
                             }
                         }
@@ -361,34 +263,24 @@ internal class MapperResolver(
                     foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (
-                            var property in classe.ExtendedProperties.Where(property =>
-                                !property.Readonly
-                                && !explicitAndAliasMappings.Any(m => m.Key == property)
+                            var currentProperty in classe.ExtendedProperties.Where(property =>
+                                (!property.Readonly || !classe.Abstract)
+                                && !explicitAndAliasMappings.Exists(m => m.Key == property)
                                 && !param.MappingReferences.Any(m =>
                                     m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
                                 )
                             )
                         )
                         {
-                            foreach (var p in param.Class.ExtendedProperties)
+                            foreach (var mappedProperty in param.Class.ExtendedProperties)
                             {
                                 if (
-                                    !param.Mappings.ContainsKey(property)
-                                    && p.Name == property.Name
-                                    && p.Domain != null
-                                    && (
-                                        p.Composition == null && property.Composition == null
-                                        || p.Composition != null && property.Composition != null
-                                    )
-                                    && (
-                                        p.Domain == property.Domain
-                                        || converters.Any(c =>
-                                            c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
-                                        )
-                                    )
+                                    !param.Mappings.ContainsKey(currentProperty)
+                                    && mappedProperty.Name == currentProperty.Name
+                                    && CheckPossibleMapping(mappedProperty, currentProperty)
                                 )
                                 {
-                                    param.Mappings.Add(property, p);
+                                    param.Mappings.Add(currentProperty, mappedProperty);
                                 }
                             }
                         }
@@ -404,7 +296,7 @@ internal class MapperResolver(
                         )
                         .ToList();
 
-                    if (finalMappings.All(mapping => mapping.Key != null))
+                    if (finalMappings.TrueForAll(mapping => mapping.Key != null))
                     {
                         foreach (
                             var mapping in finalMappings.Where(
@@ -455,7 +347,7 @@ internal class MapperResolver(
                 var explicitMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
 
                 foreach (
-                    var property in classe
+                    var currentProperty in classe
                         .ExtendedProperties.OfType<AliasProperty>()
                         .Where(property =>
                             !explicitMappings.ContainsKey(property)
@@ -466,29 +358,19 @@ internal class MapperResolver(
                 )
                 {
                     var matchingProperties = mapper.Class.ExtendedProperties.Where(p =>
-                        property.Property == p
-                        || p is AliasProperty alp && property == alp.Property
-                        || p is AliasProperty alp2 && property.Property == alp2.Property
+                        currentProperty.Property == p
+                        || p is AliasProperty alp && currentProperty == alp.Property
+                        || p is AliasProperty alp2 && currentProperty.Property == alp2.Property
                     );
                     if (matchingProperties.Count() == 1)
                     {
-                        var p = matchingProperties.First();
+                        var mappedProperty = matchingProperties.Single();
                         if (
-                            !p.Readonly
-                            && p.Domain != null
-                            && (
-                                p.Composition == null && property.Composition == null
-                                || p.Composition != null && property.Composition != null
-                            )
-                            && (
-                                p.Domain == property.Domain
-                                || converters.Any(c =>
-                                    c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
-                                )
-                            )
+                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
+                            && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
-                            mapper.Mappings.Add(property, p);
+                            mapper.Mappings.Add(currentProperty, mappedProperty);
                         }
                     }
                 }
@@ -496,7 +378,7 @@ internal class MapperResolver(
                 var explicitAndAliasMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
 
                 foreach (
-                    var property in classe.ExtendedProperties.Where(property =>
+                    var currentProperty in classe.ExtendedProperties.Where(property =>
                         !explicitAndAliasMappings.ContainsKey(property)
                         && !mapper.MappingReferences.Any(m =>
                             m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
@@ -504,25 +386,15 @@ internal class MapperResolver(
                     )
                 )
                 {
-                    foreach (var p in mapper.Class.ExtendedProperties)
+                    foreach (var mappedProperty in mapper.Class.ExtendedProperties)
                     {
                         if (
-                            p.Name == property.Name
-                            && p.Domain != null
-                            && (
-                                p.Composition == null && property.Composition == null
-                                || p.Composition != null && property.Composition != null
-                            )
-                            && (
-                                p.Domain == property.Domain
-                                || converters.Any(c =>
-                                    c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain)
-                                )
-                            )
-                            && !p.Readonly
+                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
+                            && mappedProperty.Name == currentProperty.Name
+                            && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
-                            mapper.Mappings.Add(property, p);
+                            mapper.Mappings.Add(currentProperty, mappedProperty);
                         }
                     }
                 }
@@ -571,6 +443,119 @@ internal class MapperResolver(
                     );
                 }
             }
+        }
+    }
+
+    private bool CheckDomains(Domain? sourceDomain, Domain? targetDomain)
+    {
+        return sourceDomain == targetDomain
+            || converters.Any(c => c.From.Any(cf => cf == sourceDomain) && c.To.Any(ct => ct == targetDomain));
+    }
+
+    private bool CheckPossibleMapping(IProperty sourceProperty, IProperty targetProperty)
+    {
+        // Mapping primitif => primitif
+        if (
+            sourceProperty.MappingType.IsT0
+            && targetProperty.MappingType.IsT0
+            && CheckDomains(sourceProperty.Domain, targetProperty.Domain)
+        )
+        {
+            return true;
+        }
+
+        // Mapping classe => classe
+        if (
+            sourceProperty.MappingType.TryPickT1(out var st1, out _)
+            && targetProperty.MappingType.TryPickT1(out var tt1, out _)
+            && (st1.Class == tt1.Class || st1.Class.GetMapperTo(tt1.Class) != null)
+            && (CheckDomains(st1.Domain, tt1.Domain) || st1.Domain?.Generic != true && tt1.Domain?.Generic != true)
+        )
+        {
+            return true;
+        }
+
+        // Mapping collection classe => collection classe
+        if (
+            sourceProperty.MappingType.TryPickT2(out var st2, out _)
+            && targetProperty.MappingType.TryPickT2(out var tt2, out _)
+            && (st2.Class == tt2.Class || st2.Class.GetMapperTo(tt2.Class) != null)
+            && (CheckDomains(st2.Domain, tt2.Domain) || st2.Domain?.Generic != true && tt2.Domain?.Generic != true)
+        )
+        {
+            return true;
+        }
+
+        // Mapping classe => propriété
+        if (
+            targetProperty.MappingType.TryPickT0(out var tt0cp, out _)
+            && (
+                sourceProperty.MappingType.TryPickT1(out var st1cp, out _)
+                    && CheckDomains(st1cp.Property?.Domain, tt0cp.Domain)
+                || sourceProperty.MappingType.TryPickT2(out var st2cp, out _)
+                    && tt0cp.ItemDomain != null
+                    && CheckDomains(st2cp.Property?.Domain, tt0cp.ItemDomain)
+            )
+        )
+        {
+            return true;
+        }
+
+        // Mapping propriété => classe enum readonly
+        if (
+            sourceProperty.MappingType.IsT0
+            && targetProperty.MappingType.TryPickT1(out var tt1pc, out _)
+            && tt1pc.Class.Enum == EnumMode.Class
+            && tt1pc.Class.Readonly
+            && sourceProperty.UniqueValuedProperty == tt1pc.Class.EnumKey
+            && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey!.Domain)
+        )
+        {
+            return true;
+        }
+
+        // Mapping collection propriété => collection classe enum readonly
+        if (
+            sourceProperty.MappingType.TryPickT0(out var st1pc, out _)
+            && st1pc.ItemDomain != null
+            && targetProperty.MappingType.TryPickT2(out var tt2pc, out _)
+            && tt2pc.Class.Enum == EnumMode.Class
+            && tt2pc.Class.Readonly
+            && sourceProperty.UniqueValuedProperty == tt2pc.Class.EnumKey
+            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey!.Domain)
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private IEnumerable<ModelError> CheckValidMapping(
+        Class classe,
+        IProperty sourceProperty,
+        IProperty targetProperty,
+        Reference? propRef
+    )
+    {
+        if (targetProperty.Class.Abstract && targetProperty.Readonly)
+        {
+            yield return new ModelError(
+                ErrorType.TMD8008,
+                classe,
+                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est abstraite.",
+                propRef
+            );
+        }
+
+        if (!CheckPossibleMapping(sourceProperty, targetProperty))
+        {
+            yield return new ModelError(
+                ErrorType.TMD8001,
+                classe,
+                $"La propriété '{sourceProperty.Name}' ne peut pas être mappée à '{targetProperty.Name}'.",
+                propRef
+            );
         }
     }
 }

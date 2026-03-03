@@ -31,8 +31,7 @@ import restaurant.jpa_sequence_server.dtos.restaurant.CommandeRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.CommandeWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.ReservationRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.ReservationWrite;
-import restaurant.jpa_sequence_server.entities.restaurant.StatutCommande;
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
 
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -101,14 +100,14 @@ public interface CommandeController {
 	/**
 	 * Liste toutes les commandes.
 	 * @param clientId Client ayant passé la commande.
-	 * @param statutCommandeCode Statut de la commande.
+	 * @param statutCommande Statut de la commande.
 	 * @param tableId Table associée à la commande.
 	 *
 	 * @return Liste des commandes.
 	 */
 	@GetMapping(path = "commandes")
 	@Operation(description = "Liste toutes les commandes")
-	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommandeCode", required = true) StatutCommandeCode statutCommandeCode, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
+	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
 
 	/**
 	 * Récupère les commandes par date.
@@ -154,11 +153,11 @@ public interface CommandeController {
 	/**
 	 * Met à jour uniquement le statut d'une commande.
 	 * @param comId Identifiant de la commande.
-	 * @param statutCommandeCode Statut de la commande.
+	 * @param statutCommande Statut de la commande.
 	 *
 	 * @return Commande avec le statut mis à jour.
 	 */
 	@PatchMapping(path = "commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
-	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommandeCode", required = true) StatutCommandeCode statutCommandeCode);
+	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande);
 }

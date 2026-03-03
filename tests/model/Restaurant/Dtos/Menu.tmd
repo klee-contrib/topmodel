@@ -5,6 +5,7 @@ tags:
   - back
 uses:
   - Restaurant/Entities/Menu
+  - Restaurant/References
 ---
 class:
   name: MenuRead
@@ -13,7 +14,13 @@ class:
   properties:
     - alias:
         class: Menu
-        exclude: Plats
+        exclude:
+          - Plats
+
+    - composition: CategoriePlat
+      name: CategoriesPlat
+      domain: DO_LISTE
+      comment: Catégories de plat dans le menu.
 
     - composition: PlatItem
       name: Plats
@@ -25,8 +32,6 @@ class:
     from:
       - params:
           - class: Menu
-            mappings:
-              Plats: false
 ---
 class:
   name: MenuWrite
@@ -39,9 +44,17 @@ class:
           - Id
           - Plats
 
+    - alias:
+        class: CategoriePlat
+        include: Code
+      as: list
+      name: CategoriesPlat
+      comment: Catégories de plat disponibles dans le menu.
+
   mappers:
     to:
       - class: Menu
+      - class: MenuRead
 ---
 class:
   name: PlatItem
@@ -56,7 +69,43 @@ class:
           - Nom
           - Prix
           - Disponible
-          - CategoriePlatCode
+          - CategoriePlat
+
+  mappers:
+    from:
+      - params:
+          - class: Plat
+
+    to:
+      - class: Plat
+---
+class:
+  name: PlatItemReadonly
+  abstract: true
+  comment: Détail d'un plat en liste
+
+  properties:
+    - alias:
+        class: Plat
+        include:
+          - Id
+          - Nom
+          - CategoriePlat
+      readonly: true
+
+    - alias:
+        class: Plat
+        include:
+          - Prix
+          - Disponible
+
+  mappers:
+    from:
+      - params:
+          - class: PlatItem
+
+    to:
+      - class: PlatItem
 ---
 class:
   name: PlatRead
@@ -65,6 +114,7 @@ class:
   properties:
     - alias:
         class: Plat
+        exclude: Promotion
 
   mappers:
     from:
@@ -80,6 +130,7 @@ class:
         class: Plat
         exclude:
           - Id
+          - Promotion
   mappers:
     to:
       - class: Plat
@@ -105,7 +156,7 @@ class:
     - alias:
         class: Promotion
         exclude:
-          - PlatId
+          - Plat
 
   mappers:
     to:

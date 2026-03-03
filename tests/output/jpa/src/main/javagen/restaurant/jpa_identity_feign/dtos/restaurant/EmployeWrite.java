@@ -45,6 +45,13 @@ public class EmployeWrite implements Serializable {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	private String departementCode = "75";
+
+	/**
 	 * Numéro de téléphone de l'employé.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Employe#getTelephone() Employe#getTelephone()}
 	 */
@@ -101,6 +108,15 @@ public class EmployeWrite implements Serializable {
 	 */
 	public String getPrenom() {
 		return this.prenom;
+	}
+
+	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
 	}
 
 	/**
@@ -174,6 +190,14 @@ public class EmployeWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
+	}
+
+	/**
 	 * Set the value of {@link #telephone telephone}.
 	 * @param telephone value to set.
 	 */
@@ -237,6 +261,7 @@ public class EmployeWrite implements Serializable {
 	public enum Fields {
 		NOM(String.class),
 		PRENOM(String.class),
+		DEPARTEMENT_CODE(String.class),
 		TELEPHONE(String.class),
 		DATE_NAISSANCE(LocalDateTime.class),
 		MATRICULE(String.class),

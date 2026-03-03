@@ -611,7 +611,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         foreach (
             var property in dataFlow.Class.ExtendedProperties.Where(p =>
-                !p.AssociationToMany
+                !p.AssociationMultiple
                 && (
                     mapper == null
                     || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)

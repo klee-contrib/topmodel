@@ -40,7 +40,7 @@ public static class MappingExtensions
                 p.Property.Required
                 && p.Property
                     is ({ Composition: not null } or { DefaultValue: null })
-                        and not { AssociationType: AssociationType.OneToMany or AssociationType.ManyToMany }
+                        and { AssociationMultiple: false }
         );
     }
 }

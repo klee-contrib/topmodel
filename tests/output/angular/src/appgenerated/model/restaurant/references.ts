@@ -3,36 +3,86 @@
 ////
 
 export type CategoriePlatCode = "BOISSON" | "DESSERT" | "ENTREE" | "PLAT";
+export type CategoriePlatOrdre = 1 | 2 | 3 | 4;
 export interface CategoriePlat {
     code: CategoriePlatCode;
     libelle: string;
+    ordre: CategoriePlatOrdre;
 }
 export const categoriePlatList: CategoriePlat[] = [
     {
         code: "ENTREE",
-        libelle: "restaurant.categoriePlat.values.Entree"
+        libelle: "restaurant.categoriePlat.values.Entree",
+        ordre: 2
     },
     {
         code: "PLAT",
-        libelle: "restaurant.categoriePlat.values.Plat"
+        libelle: "restaurant.categoriePlat.values.Plat",
+        ordre: 3
     },
     {
         code: "DESSERT",
-        libelle: "restaurant.categoriePlat.values.Dessert"
+        libelle: "restaurant.categoriePlat.values.Dessert",
+        ordre: 4
     },
     {
         code: "BOISSON",
-        libelle: "restaurant.categoriePlat.values.Boisson"
+        libelle: "restaurant.categoriePlat.values.Boisson",
+        ordre: 1
     },
 ];
 
 
-export type StatutCommandeCode = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
-export interface StatutCommande {
-    code: StatutCommandeCode;
+export type DepartementCode = "75" | "92" | "93" | "94";
+export interface Departement {
+    code: DepartementCode;
+    libelle: string;
+    regionCode: RegionCode;
+}
+export const departementList: Departement[] = [
+    {
+        code: "75",
+        libelle: "restaurant.departement.values.Paris",
+        regionCode: "IDF"
+    },
+    {
+        code: "92",
+        libelle: "restaurant.departement.values.HautsDeSeine",
+        regionCode: "IDF"
+    },
+    {
+        code: "93",
+        libelle: "restaurant.departement.values.SeineSaintDenis",
+        regionCode: "IDF"
+    },
+    {
+        code: "94",
+        libelle: "restaurant.departement.values.SeineEtMarne",
+        regionCode: "IDF"
+    },
+];
+
+
+export type RegionCode = "IDF";
+export interface Region {
+    code: RegionCode;
+    libelle: string;
+    nomResponsable?: string;
+}
+export const regionList: Region[] = [
+    {
+        code: "IDF",
+        libelle: "restaurant.region.values.Idf"
+    },
+];
+
+
+export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
+export interface StatutCommandeObject {
+    code: StatutCommande;
     libelle: string;
 }
-export const statutCommandeList: StatutCommande[] = [
+export const statutCommandeList: StatutCommandeObject[] = [
     {
         code: "EN_ATT",
         libelle: "restaurant.statutCommande.values.EnAttente"

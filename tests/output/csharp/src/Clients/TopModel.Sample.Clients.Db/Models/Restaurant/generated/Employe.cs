@@ -57,8 +57,6 @@ public partial record Employe : Personne
     /// <summary>
     /// Restaurant où travaille l'employé.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

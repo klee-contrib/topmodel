@@ -27,8 +27,9 @@ public static class Mappers
             Commentaire = avisClient.Commentaire,
             DateAvis = avisClient.DateAvis,
             Approuve = avisClient.Approuve,
-            ClientId = avisClient.ClientId,
-            RestaurantId = avisClient.RestaurantId
+            NombreVues = avisClient.NombreVues,
+            ClientId = avisClient.Client?.Id,
+            RestaurantId = avisClient.Restaurant?.Id
         };
     }
 
@@ -63,8 +64,9 @@ public static class Mappers
             Id = client.Id,
             Nom = client.Nom,
             Prenom = client.Prenom,
+            DepartementCode = client.DepartementCode,
             Email = client.Email,
-            AvisClients = client.AvisClients
+            AvisClients = client.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -79,14 +81,16 @@ public static class Mappers
 
         return new CommandeRead
         {
-            Reservation = new() { Id = commande.ReservationId },
             Id = commande.Id,
             DateCommande = commande.DateCommande,
             DateLivraison = commande.DateLivraison,
             MontantTotal = commande.MontantTotal,
             TableId = commande.TableId,
-            StatutCommandeCode = commande.StatutCommandeCode,
-            AvisClientId = commande.AvisClientId
+            StatutCommande = commande.StatutCommande,
+            AvisClientId = commande.AvisClient?.Id,
+            Client = commande.Client != null ? CreateClientRead(commande.Client) : new(),
+            Lignes = commande.Lignes.Select(CreateLigneCommandeRead).ToList(),
+            Reservation = commande.Reservation != null ? CreateReservationRead(commande.Reservation) : null
         };
     }
 
@@ -104,12 +108,13 @@ public static class Mappers
             Id = employe.Id,
             Nom = employe.Nom,
             Prenom = employe.Prenom,
+            DepartementCode = employe.DepartementCode,
             Telephone = employe.Telephone,
             DateNaissance = employe.DateNaissance,
             Matricule = employe.Matricule,
             DateEmbauche = employe.DateEmbauche,
             Salaire = employe.Salaire,
-            RestaurantId = employe.RestaurantId
+            RestaurantId = employe.Restaurant?.Id
         };
     }
 
@@ -128,8 +133,8 @@ public static class Mappers
             Quantite = ligneCommande.Quantite,
             PrixUnitaire = ligneCommande.PrixUnitaire,
             PrixTotal = ligneCommande.PrixTotal,
-            CommandeId = ligneCommande.CommandeId,
-            PlatId = ligneCommande.PlatId
+            CommandeId = ligneCommande.Commande?.Id,
+            PlatId = ligneCommande.Plat?.Id
         };
     }
 
@@ -151,7 +156,27 @@ public static class Mappers
             Disponible = menu.Disponible,
             DateDebut = menu.DateDebut,
             DateFin = menu.DateFin,
-            RestaurantId = menu.RestaurantId
+            RestaurantId = menu.Restaurant?.Id
+        };
+    }
+
+    /// <summary>
+    /// Crée une nouvelle instance de 'IPlatItem'.
+    /// </summary>
+    /// <param name="plat">Instance de 'Plat'.</param>
+    /// <returns>Une nouvelle instance de 'IPlatItem'.</returns>
+    public static IPlatItem CreatePlatItem<T>(Plat plat)
+        where T : IPlatItem, new()
+    {
+        ArgumentNullException.ThrowIfNull(plat);
+
+        return new T
+        {
+            Id = plat.Id,
+            Nom = plat.Nom,
+            Prix = plat.Prix,
+            Disponible = plat.Disponible,
+            CategoriePlatCode = plat.CategoriePlat?.Code
         };
     }
 
@@ -171,8 +196,8 @@ public static class Mappers
             Description = plat.Description,
             Prix = plat.Prix,
             Disponible = plat.Disponible,
-            CategoriePlatCode = plat.CategoriePlatCode,
-            RestaurantId = plat.RestaurantId
+            CategoriePlatCode = plat.CategoriePlat?.Code,
+            RestaurantId = plat.Restaurant?.Id
         };
     }
 
@@ -187,13 +212,13 @@ public static class Mappers
 
         return new PromotionRead
         {
-            PlatId = promotion.PlatId,
+            PlatId = promotion.Plat?.Id,
             Libelle = promotion.Libelle,
             PourcentageReduction = promotion.PourcentageReduction,
             DateDebut = promotion.DateDebut,
             DateFin = promotion.DateFin,
             Active = promotion.Active,
-            RestaurantId = promotion.RestaurantId
+            RestaurantId = promotion.Restaurant?.Id
         };
     }
 
@@ -213,9 +238,9 @@ public static class Mappers
             NombrePersonnes = reservation.NombrePersonnes,
             Commentaire = reservation.Commentaire,
             Confirmee = reservation.Confirmee,
-            ClientId = reservation.ClientId,
+            ClientId = reservation.Client?.Id,
             TableId = reservation.TableId,
-            RestaurantId = reservation.RestaurantId
+            RestaurantId = reservation.Restaurant?.Id
         };
     }
 
@@ -237,11 +262,11 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            Menus = restaurant.Menus,
-            Plats = restaurant.Plats,
-            Promotions = restaurant.Promotions,
-            AvisClients = restaurant.AvisClients,
-            Tables = restaurant.Tables,
+            Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
+            Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Where(p => p.Plat != null).Select(p => p.Plat!.Id!.Value).ToList(),
+            AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList(),
+            TableIds = restaurant.TableIds,
             NombrePlats = nombrePlats,
             NombreTables = nombreTables,
             NoteMoyenne = noteMoyenne
@@ -263,11 +288,10 @@ public static class Mappers
             Nom = restaurant.Nom,
             Adresse = restaurant.Adresse,
             Telephone = restaurant.Telephone,
-            Menus = restaurant.Menus,
-            Plats = restaurant.Plats,
-            Promotions = restaurant.Promotions,
-            AvisClients = restaurant.AvisClients,
-            Tables = restaurant.Tables
+            Menus = restaurant.Menus.Select(p => p.Id!.Value).ToList(),
+            Plats = restaurant.Plats.Select(p => p.Id!.Value).ToList(),
+            Promotions = restaurant.Promotions.Where(p => p.Plat != null).Select(p => p.Plat!.Id!.Value).ToList(),
+            AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -317,17 +341,19 @@ public static class Mappers
     /// </summary>
     /// <param name="source">Instance de 'AvisClientWrite'.</param>
     /// <param name="dateAvis">Date de l'avis.</param>
+    /// <param name="client">Client ayant donné l'avis.</param>
+    /// <param name="restaurant">Restaurant concerné par l'avis.</param>
     /// <returns>Une nouvelle instance de 'AvisClient'.</returns>
-    public static AvisClient ToAvisClient(this AvisClientWrite source, DateTime? dateAvis = null)
+    public static AvisClient ToAvisClient(this AvisClientWrite source, DateTime? dateAvis = null, Client? client = null, Restaurant? restaurant = null)
     {
         return new AvisClient
         {
             Note = source.Note,
             Commentaire = source.Commentaire,
             Approuve = source.Approuve,
-            ClientId = source.ClientId,
-            RestaurantId = source.RestaurantId,
-            DateAvis = dateAvis
+            DateAvis = dateAvis,
+            Client = client,
+            Restaurant = restaurant
         };
     }
 
@@ -342,8 +368,6 @@ public static class Mappers
         dest.Note = source.Note;
         dest.Commentaire = source.Commentaire;
         dest.Approuve = source.Approuve;
-        dest.ClientId = source.ClientId;
-        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -358,8 +382,8 @@ public static class Mappers
         {
             Nom = source.Nom,
             Prenom = source.Prenom,
-            Email = source.Email,
-            AvisClients = source.AvisClients
+            DepartementCode = source.DepartementCode,
+            Email = source.Email
         };
     }
 
@@ -373,8 +397,8 @@ public static class Mappers
     {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
+        dest.DepartementCode = source.DepartementCode;
         dest.Email = source.Email;
-        dest.AvisClients = source.AvisClients;
         return dest;
     }
 
@@ -390,11 +414,11 @@ public static class Mappers
             DateCommande = source.DateCommande,
             DateLivraison = source.DateLivraison,
             MontantTotal = source.MontantTotal,
-            ClientId = source.ClientId,
             TableId = source.TableId,
-            ReservationId = source.ReservationId,
-            StatutCommandeCode = source.StatutCommandeCode,
-            AvisClientId = source.AvisClientId
+            StatutCommande = source.StatutCommande,
+            Client = source.Client?.ToClient(),
+            Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList(),
+            Reservation = source.Reservation?.ToReservation()
         };
     }
 
@@ -409,11 +433,11 @@ public static class Mappers
         dest.DateCommande = source.DateCommande;
         dest.DateLivraison = source.DateLivraison;
         dest.MontantTotal = source.MontantTotal;
-        dest.ClientId = source.ClientId;
         dest.TableId = source.TableId;
-        dest.ReservationId = source.ReservationId;
-        dest.StatutCommandeCode = source.StatutCommandeCode;
-        dest.AvisClientId = source.AvisClientId;
+        dest.StatutCommande = source.StatutCommande;
+        dest.Client = source.Client?.ToClient();
+        dest.Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList();
+        dest.Reservation = source.Reservation?.ToReservation();
         return dest;
     }
 
@@ -421,19 +445,21 @@ public static class Mappers
     /// Mappe 'EmployeWrite' vers 'Employe'.
     /// </summary>
     /// <param name="source">Instance de 'EmployeWrite'.</param>
+    /// <param name="restaurant">Restaurant où travaille l'employé.</param>
     /// <returns>Une nouvelle instance de 'Employe'.</returns>
-    public static Employe ToEmploye(this EmployeWrite source)
+    public static Employe ToEmploye(this EmployeWrite source, Restaurant? restaurant = null)
     {
         return new Employe
         {
             Nom = source.Nom,
             Prenom = source.Prenom,
+            DepartementCode = source.DepartementCode,
             Telephone = source.Telephone,
             DateNaissance = source.DateNaissance,
             Matricule = source.Matricule,
             DateEmbauche = source.DateEmbauche,
             Salaire = source.Salaire,
-            RestaurantId = source.RestaurantId
+            Restaurant = restaurant
         };
     }
 
@@ -447,12 +473,12 @@ public static class Mappers
     {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
+        dest.DepartementCode = source.DepartementCode;
         dest.Telephone = source.Telephone;
         dest.DateNaissance = source.DateNaissance;
         dest.Matricule = source.Matricule;
         dest.DateEmbauche = source.DateEmbauche;
         dest.Salaire = source.Salaire;
-        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -460,16 +486,18 @@ public static class Mappers
     /// Mappe 'LigneCommandeWrite' vers 'LigneCommande'.
     /// </summary>
     /// <param name="source">Instance de 'LigneCommandeWrite'.</param>
+    /// <param name="commande">Commande à laquelle appartient la ligne.</param>
+    /// <param name="plat">Plat commandé.</param>
     /// <returns>Une nouvelle instance de 'LigneCommande'.</returns>
-    public static LigneCommande ToLigneCommande(this LigneCommandeWrite source)
+    public static LigneCommande ToLigneCommande(this LigneCommandeWrite source, Commande? commande = null, Plat? plat = null)
     {
         return new LigneCommande
         {
             Quantite = source.Quantite,
             PrixUnitaire = source.PrixUnitaire,
             PrixTotal = source.PrixTotal,
-            CommandeId = source.CommandeId,
-            PlatId = source.PlatId
+            Commande = commande,
+            Plat = plat
         };
     }
 
@@ -484,8 +512,6 @@ public static class Mappers
         dest.Quantite = source.Quantite;
         dest.PrixUnitaire = source.PrixUnitaire;
         dest.PrixTotal = source.PrixTotal;
-        dest.CommandeId = source.CommandeId;
-        dest.PlatId = source.PlatId;
         return dest;
     }
 
@@ -493,8 +519,9 @@ public static class Mappers
     /// Mappe 'MenuWrite' vers 'Menu'.
     /// </summary>
     /// <param name="source">Instance de 'MenuWrite'.</param>
+    /// <param name="restaurant">Restaurant proposant ce menu.</param>
     /// <returns>Une nouvelle instance de 'Menu'.</returns>
-    public static Menu ToMenu(this MenuWrite source)
+    public static Menu ToMenu(this MenuWrite source, Restaurant? restaurant = null)
     {
         return new Menu
         {
@@ -504,7 +531,7 @@ public static class Mappers
             Disponible = source.Disponible,
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
-            RestaurantId = source.RestaurantId
+            Restaurant = restaurant
         };
     }
 
@@ -522,7 +549,41 @@ public static class Mappers
         dest.Disponible = source.Disponible;
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
-        dest.RestaurantId = source.RestaurantId;
+        return dest;
+    }
+
+    /// <summary>
+    /// Mappe 'IPlatItem' vers 'Plat'.
+    /// </summary>
+    /// <param name="source">Instance de 'IPlatItem'.</param>
+    /// <param name="restaurant">Restaurant proposant ce plat.</param>
+    /// <returns>Une nouvelle instance de 'Plat'.</returns>
+    public static Plat ToPlat(this IPlatItem source, Restaurant? restaurant = null)
+    {
+        return new Plat
+        {
+            Id = source.Id,
+            Nom = source.Nom,
+            Prix = source.Prix,
+            Disponible = source.Disponible,
+            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
+            Restaurant = restaurant
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'IPlatItem' vers 'Plat'.
+    /// </summary>
+    /// <param name="source">Instance de 'IPlatItem'.</param>
+    /// <param name="dest">Instance pré-existante de 'Plat'.</param>
+    /// <returns>L'instance pré-existante de 'Plat'.</returns>
+    public static Plat ToPlat(this IPlatItem source, Plat dest)
+    {
+        dest.Id = source.Id;
+        dest.Nom = source.Nom;
+        dest.Prix = source.Prix;
+        dest.Disponible = source.Disponible;
+        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 
@@ -530,8 +591,9 @@ public static class Mappers
     /// Mappe 'PlatWrite' vers 'Plat'.
     /// </summary>
     /// <param name="source">Instance de 'PlatWrite'.</param>
+    /// <param name="restaurant">Restaurant proposant ce plat.</param>
     /// <returns>Une nouvelle instance de 'Plat'.</returns>
-    public static Plat ToPlat(this PlatWrite source)
+    public static Plat ToPlat(this PlatWrite source, Restaurant? restaurant = null)
     {
         return new Plat
         {
@@ -539,8 +601,8 @@ public static class Mappers
             Description = source.Description,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlatCode = source.CategoriePlatCode,
-            RestaurantId = source.RestaurantId
+            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
+            Restaurant = restaurant
         };
     }
 
@@ -556,8 +618,7 @@ public static class Mappers
         dest.Description = source.Description;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
-        dest.CategoriePlatCode = source.CategoriePlatCode;
-        dest.RestaurantId = source.RestaurantId;
+        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 
@@ -574,8 +635,7 @@ public static class Mappers
             PourcentageReduction = source.PourcentageReduction,
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
-            Active = source.Active,
-            RestaurantId = source.RestaurantId
+            Active = source.Active
         };
     }
 
@@ -592,7 +652,6 @@ public static class Mappers
         dest.DateDebut = source.DateDebut;
         dest.DateFin = source.DateFin;
         dest.Active = source.Active;
-        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -600,8 +659,10 @@ public static class Mappers
     /// Mappe 'ReservationWrite' vers 'Reservation'.
     /// </summary>
     /// <param name="source">Instance de 'ReservationWrite'.</param>
+    /// <param name="client">Client ayant fait la réservation.</param>
+    /// <param name="restaurant">Restaurant concerné par la réservation.</param>
     /// <returns>Une nouvelle instance de 'Reservation'.</returns>
-    public static Reservation ToReservation(this ReservationWrite source)
+    public static Reservation ToReservation(this ReservationWrite source, Client? client = null, Restaurant? restaurant = null)
     {
         return new Reservation
         {
@@ -609,9 +670,9 @@ public static class Mappers
             NombrePersonnes = source.NombrePersonnes,
             Commentaire = source.Commentaire,
             Confirmee = source.Confirmee,
-            ClientId = source.ClientId,
             TableId = source.TableId,
-            RestaurantId = source.RestaurantId
+            Client = client,
+            Restaurant = restaurant
         };
     }
 
@@ -627,9 +688,7 @@ public static class Mappers
         dest.NombrePersonnes = source.NombrePersonnes;
         dest.Commentaire = source.Commentaire;
         dest.Confirmee = source.Confirmee;
-        dest.ClientId = source.ClientId;
         dest.TableId = source.TableId;
-        dest.RestaurantId = source.RestaurantId;
         return dest;
     }
 
@@ -645,11 +704,7 @@ public static class Mappers
             Nom = source.Nom,
             Adresse = source.Adresse,
             Telephone = source.Telephone,
-            Menus = source.Menus,
-            Plats = source.Plats,
-            Promotions = source.Promotions,
-            AvisClients = source.AvisClients,
-            Tables = source.Tables
+            TableIds = source.Tables.Select(p => p.Id!.Value).ToList()
         };
     }
 
@@ -664,11 +719,7 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Adresse = source.Adresse;
         dest.Telephone = source.Telephone;
-        dest.Menus = source.Menus;
-        dest.Plats = source.Plats;
-        dest.Promotions = source.Promotions;
-        dest.AvisClients = source.AvisClients;
-        dest.Tables = source.Tables;
+        dest.TableIds = source.Tables.Select(p => p.Id!.Value).ToList();
         return dest;
     }
 

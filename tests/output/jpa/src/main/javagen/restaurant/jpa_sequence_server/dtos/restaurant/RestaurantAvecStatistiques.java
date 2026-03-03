@@ -55,27 +55,27 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
+	 * Association réciproque de Menu.Restaurant.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
 	 */
 	@NotNull
 	private List<Integer> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
+	 * Association réciproque de Plat.Restaurant.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
 	 */
 	@NotNull
 	private List<Integer> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
+	 * Association réciproque de Promotion.Restaurant.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
 	 */
 	private List<Integer> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
+	 * Association réciproque de AvisClient.Restaurant.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
 	 */
 	@NotNull
@@ -83,10 +83,10 @@ public class RestaurantAvecStatistiques implements Serializable {
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
 	@NotNull
-	private List<Integer> tables;
+	private List<Integer> tableIds;
 
 	/**
 	 * Nombre de plats du restaurant.
@@ -178,12 +178,12 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
-	 * Getter for tables.
+	 * Getter for tableIds.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<Integer> getTables() {
-		return this.tables;
+	public List<Integer> getTableIds() {
+		return this.tableIds;
 	}
 
 	/**
@@ -278,11 +278,11 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Set the value of {@link #tableIds tableIds}.
+	 * @param tableIds value to set.
 	 */
-	public void setTables(List<Integer> tables) {
-		this.tables = tables;
+	public void setTableIds(List<Integer> tableIds) {
+		this.tableIds = tableIds;
 	}
 
 	/**

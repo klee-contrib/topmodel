@@ -209,6 +209,10 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   Permet de renseigner le `sqlName` des classes par défaut avec leur `pluralName`, au lieu d'utiliser le `name`.
 
+- **`defaultAssociationUseClass`**
+
+  Valeur par défaut de `useClass` sur les propriétés d'[association](./model/properties.md#association).
+
 - **`generators`**
 
   Liste de chemins vers des projets C# contenant des générateurs personnalisés. Ces projets doivent implémenter un module de générateurs personnalisé (voir la [page dédiée aux générateurs personnalisés](./generator.md#générateurs-personnalisés) pour plus de détails).

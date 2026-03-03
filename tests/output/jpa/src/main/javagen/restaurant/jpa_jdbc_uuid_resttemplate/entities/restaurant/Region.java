@@ -9,28 +9,37 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Statut d'une commande.
+ * Région.
  */
-@Table(name = "statut_commande")
+@Table(name = "region")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class StatutCommande {
+public class Region {
 
 	/**
-	 * Code du statut.
+	 * Code de la région.
 	 */
 	@Id
-	@Column("stc_code")
+	@Column("reg_code")
+	@Enumerated(EnumType.STRING)
 	private String code;
 
 	/**
-	 * Libellé du statut.
+	 * Libellé de la région.
 	 */
 	@NotNull
-	@Column("stc_libelle")
+	@Column("reg_libelle")
 	private String libelle;
+
+	/**
+	 * Nom du responsable de la région.
+	 */
+	@Column("reg_nom_responsable")
+	private String nomResponsable;
 
 	/**
 	 * Getter for code.
@@ -51,18 +60,11 @@ public class StatutCommande {
 	}
 
 	/**
-	 * Set the value of {@link #code code}.
-	 * @param code value to set.
+	 * Getter for nomResponsable.
+	 *
+	 * @return value of {@link #nomResponsable nomResponsable}.
 	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	/**
-	 * Set the value of {@link #libelle libelle}.
-	 * @param libelle value to set.
-	 */
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public String getNomResponsable() {
+		return this.nomResponsable;
 	}
 }

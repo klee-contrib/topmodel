@@ -39,7 +39,7 @@ Un domaine peut recevoir des [annotations](/model/annotations.md), qui seront po
 
 Il est possible de définir le `mediaType` du domaine. Cette information pourra être prise en compte par certains générateurs (notamment les générateurs d'API).
 
-Un domaine peut également définir des `asDomains`, qui sont des domaines à utiliser lorsque l'on a besoin de transformer le domaine d'une propriété que l'on référence. Il peut être utilisé dans un alias via `as`, et les associations `oneToMany` et `manyToMany` ont besoin d'avoir un `asDomain` `list` défini sur le domaine de la clé primaire pour être utilisées (puisqu'il y a une transformation de son type a réaliser).
+Un domaine peut également définir des `asDomains`, qui sont des domaines à utiliser lorsque l'on a besoin de transformer le domaine d'une propriété que l'on référence. Il peut être utilisé dans un alias via `as`, et les [associations multiples](/model/properties.md#associations-multiples-et-réciproques) ont besoin d'avoir un `asDomain` `list` défini sur le domaine de la clé primaire pour être utilisées (puisqu'il y a une transformation de son type a réaliser).
 
 Exemple :
 
@@ -64,7 +64,7 @@ Une implémentation de langage peut définir, en plus du `type`, un **`genericTy
 
 - Lorsque le domaine est utilisé pour une **composition**, et la variable **`{T}` est égal au nom de la classe**. Si `genericType` n'est pas renseigné pour l'implémentation du domaine, il vaudra `"{T}"`. Un domaine utilisé pour une composition peut toujours être utilisé pour un autre type de propriété, il ne faudra pas oublier de renseigner la valeur de `type` (non générique).
 - Lorsque la propriété utilisant la propriété est considérée comme une **enum** par la configuration du générateur. Elle vaut également `"{T}"` par défaut, **`{T}` correspondant à la représentation de l'enum dans le langage cible**.
-- Lorsque le domaine est utilisé dans une **transformation de domaine** (via `as`, donc les cas décrits dans le premier point de cette PR). Si `genericType` n'est pas renseigné dans ce cas, elle vaudra par défaut la valeur de `type`, ce qui veut dire qu'il faut nécessairement spécifier la transformation pour qu'elle soit réalisée. Auparavant, cela n'existait que pour `asList: true` (et les associations `toMany`), et chaque générateur implémentait en dur la transformation à réaliser sur le type original (impossible à débrancher, et souvent en ajoutant `"[]"` à la fin ou en mettant `List<>` autour). **`{T}` référencera ici le type original** (qui peut être une enum ou une association par exemple).
+- Lorsque le domaine est utilisé dans une **transformation de domaine** (via `as`, donc les cas décrits dans le premier point de cette PR). Si `genericType` n'est pas renseigné dans ce cas, elle vaudra par défaut la valeur de `type`, ce qui veut dire qu'il faut nécessairement spécifier la transformation pour qu'elle soit réalisée. Auparavant, cela n'existait que pour `asList: true` (et les associations multiples), et chaque générateur implémentait en dur la transformation à réaliser sur le type original (impossible à débrancher, et souvent en ajoutant `"[]"` à la fin ou en mettant `List<>` autour). **`{T}` référencera ici le type original** (qui peut être une enum ou une association par exemple).
 
 Par exemple, le domaine `DO_ID_LIST` référencé dans l'exemple précédent comme `asDomain` de `DO_ID` devrait être défini ainsi :
 

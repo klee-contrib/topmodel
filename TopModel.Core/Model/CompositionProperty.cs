@@ -1,12 +1,10 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class CompositionProperty : IProperty
+internal class CompositionProperty : IProperty
 {
 #nullable disable
     public Class Composition { get; set; }
@@ -19,9 +17,9 @@ public class CompositionProperty : IProperty
     public string NameCamel =>
         ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
 
-    public string NameByClassPascal => NamePascal;
+    public string PropertyNamePascal => NamePascal;
 
-    public string NameByClassCamel => NameCamel;
+    public string PropertyNameCamel => NameCamel;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -31,7 +29,11 @@ public class CompositionProperty : IProperty
 
     public string Comment { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public Class Class { get; set; }
 
@@ -66,11 +68,6 @@ public class CompositionProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
-    [Obsolete("Utiliser IProperty.CompositionPrimaryKey à la place.")]
-    public IProperty? CompositionPrimaryKey => ModelExtensions.get_CompositionPrimaryKey(this);
-
-    public bool UseLegacyRoleName { get; init; }
-
     public Decorator? SourceDecorator { get; set; }
 
     public DomainReference? DomainReference { get; set; }
@@ -101,7 +98,6 @@ public class CompositionProperty : IProperty
             CustomProperties = CustomProperties,
             Readonly = Readonly,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             Annotations = Annotations,
         };
     }

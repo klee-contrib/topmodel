@@ -76,13 +76,15 @@
         "type": "string",
         "enum": [
           "JavaDtoGen",
+          "JavaEnumClassPropGen",
           "JavaEnumDtoGen",
+          "JavaEnumEnumGen",
+          "JavaUniqValPropGen",
           "JdbcEntityGen",
           "JpaDaoGen",
           "JpaEntityGen",
           "JpaEnumEntityGen",
-          "JpaEnumGen",
-          "JpaEnumValuesGen",
+          "JpaMetaModelGen",
           "JpaInterfaceGen",
           "SpringDataFlowGen",
           "FeignClientApiGen",
@@ -111,6 +113,16 @@
     "ignoreDefaultValues": {
       "type": "boolean",
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
+    "uniqueValueGeneration": {
+      "type": "string",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
+      "enum": [
+        "none",
+        "const-only",
+        "enum-only",
+        "enum-or-const"
+      ]
     },
     "rootModule": {
       "type": "string",
@@ -141,16 +153,6 @@
       "type": "string",
       "description": "Localisation des enums du modèle, relative au répertoire de génération.",
       "default": "javagen:{app:path}/enums/{module:path}"
-    },
-    "enumsValuesPath": {
-      "type": "string",
-      "description": "Localisation des enums de valeur du modèle, relative au répertoire de génération. Prend la valeur de enumsPath si non défini",
-      "default": "javagen:{app:path}/enums/{module:path}"
-    },
-    "enumsAsEnums": {
-      "type": "boolean",
-      "description": "Transforme les classes contenant des values en enum",
-      "default": "false"
     },
     "metaModel": {
       "type": "boolean",
@@ -272,12 +274,12 @@
     },
     "associationAdders": {
       "type": "boolean",
-      "description": "Option pour générer des méthodes d'ajouts pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets ajoutés",
+      "description": "Option pour générer des méthodes d'ajouts pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés",
       "default": "false"
     },
     "associationRemovers": {
       "type": "boolean",
-      "description": "Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés",
+      "description": "Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés",
       "default": "false"
     },
     "generatedHint": {

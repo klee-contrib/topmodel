@@ -33,23 +33,10 @@ public partial record CommandeWrite
     public decimal? MontantTotal { get; set; }
 
     /// <summary>
-    /// Client ayant passé la commande.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
-
-    /// <summary>
     /// Table associée à la commande.
     /// </summary>
     [Domain(Domains.Id)]
     public int? TableId { get; set; }
-
-    /// <summary>
-    /// Réservation associée à la commande.
-    /// </summary>
-    [Domain(Domains.Id)]
-    public int? ReservationId { get; set; }
 
     /// <summary>
     /// Statut de la commande.
@@ -57,7 +44,7 @@ public partial record CommandeWrite
     [Required]
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Code)]
-    public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
+    public StatutCommande? StatutCommande { get; set; } = Models.StatutCommande.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
@@ -66,7 +53,18 @@ public partial record CommandeWrite
     public int? AvisClientId { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Client ayant passé la commande.
+    /// </summary>
+    [Required]
+    public ClientWrite Client { get; set; } = new();
+
+    /// <summary>
+    /// Réservation.
+    /// </summary>
+    public ReservationWrite? Reservation { get; set; }
+
+    /// <summary>
+    /// Association réciproque de LigneCommande.Commande.
     /// </summary>
     [Required]
     public ICollection<LigneCommandeWrite> Lignes { get; set; } = [];

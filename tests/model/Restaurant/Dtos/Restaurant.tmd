@@ -27,6 +27,13 @@ class:
   properties:
     - alias:
         class: Restaurant
+        exclude: TableIds
+
+    - alias:
+        class: Restaurant
+        include: TableIds
+      composition: TableItem
+      name: Tables
 
   mappers:
     from:
@@ -39,7 +46,7 @@ class:
 
   properties:
     - alias:
-        class: Restaurant
+        class: RestaurantRead
         exclude:
           - Id
 

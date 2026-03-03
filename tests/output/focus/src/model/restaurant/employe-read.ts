@@ -5,6 +5,8 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX, DO_TELEPHONE} from "../../domains";
 
+import {DepartementCode} from "./references";
+
 export type EmployeRead = EntityToType<EmployeReadEntityType>;
 export type EmployeReadEntityType = typeof EmployeReadEntity;
 
@@ -17,6 +19,9 @@ export const EmployeReadEntity = entity({
     ),
     prenom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personne.prenom")
+    ),
+    departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
+        .label("restaurant.personne.departementCode")
     ),
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.employe.telephone")

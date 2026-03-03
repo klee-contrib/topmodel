@@ -95,11 +95,11 @@
             },
             "required": {
               "type": "boolean",
-              "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+              "description": "Précise si la propriété est obligatoire. Cette information pourra être utilisée pour exclure les valeurs nulles de son type, ou bien pour de la validation. Une primary key est forcément required."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+              "description": "Précise si la propriété doit être en lecture seule, qui ne pourra être définie qu'à l'initialisation de sa classe. Pour une classe abstraite, aucun setter ne sera géré. `readonly: true` sur la classe parente forcera `readonly: true` sur chaque propriété."
             },
             "domain": {
               "$ref": "#/definitions/domain"
@@ -164,19 +164,17 @@
               "type": "string",
               "description": "Suffixe de l'association, utile pour distinguer deux associations vers une même classe par exemple."
             },
-            "type": {
-              "type": "string",
-              "description": "[Déprécié] Type de l'association.",
-              "enum": [
-                "oneToOne",
-                "oneToMany",
-                "manyToOne",
-                "manyToMany"
-              ]
+            "multiple": {
+              "type": "boolean",
+              "description": "Précise si l'association doit être multiple (pour faire une oneToMany)."
             },
             "as": {
               "type": "string",
-              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association `toMany`. Par défaut : 'list'."
+              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association multiple. Par défaut : 'list'."
+            },
+            "useClass": {
+              "type": "boolean",
+              "description": "Représente l'association avec sa classe cible au lieu de sa propriété cible dans une classe persistée. Sa valeur par défaut est égale à la valeur de `defaultAssociationUseClass` dans la configuration TopModel globale."
             },
             "required": {
               "type": "boolean",
@@ -197,11 +195,11 @@
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany, peu importe la valeur de `withReverse`."
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple, peu importe la valeur de `withReverse`."
                 },
                 {
                   "type": "object",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association oneToMany.",
+                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple.",
                   "additionalProperties": false,
                   "properties": {
                     "className": {
@@ -475,6 +473,10 @@
             "as": {
               "type": "string",
               "description": "Utilise le domaine correspondant dans `asDomains` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
+            },
+            "useClass": {
+              "type": "boolean",
+              "description": "Surcharge la valeur de `useClass` pour un alias d'association (cela n'a toujours d'effet que si la classe qui contient l'alias est persistée)."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
@@ -822,9 +824,13 @@
               "type": "boolean",
               "description": "Passe un champ de ce domaine comme body param dans un endpoint."
             },
+            "collection": {
+              "type": "boolean",
+              "description": "Définit ce domaine comme étant un domaine de collection, pour pouvoir définir des mappings entre éléments de collection."
+            },
             "asDomains": {
               "type": "object",
-              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association `xxxToMany` (avec `as`).",
+              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association multiple (avec `as`).",
               "additionalProperties": {
                 "type": "string"
               }
@@ -866,7 +872,7 @@
               },
               "genericType": {
                 "type": "string",
-                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
+                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association multiple), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
               },
               "imports": {
                 "type": "array",
@@ -875,6 +881,10 @@
                   "type": "string",
                   "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
                 }
+              },
+              "collector": {
+                "type": "string",
+                "description": "Pour un domaine de collection, le collecteur utilisé pour matérialiser la collection cible. Par défaut : 'to{genericType}' (sans la partie générique)."
               },
               "values": {
                 "type": "object",
@@ -1137,13 +1147,23 @@
               "type": "boolean",
               "description": "Permet de marquer la classe comme abstraite, pour laquelle aucune implémentation ne sera générée."
             },
+            "readonly": {
+              "type": "boolean",
+              "description": "Permet de marquer la classe et toutes ses propriétés comme étant en lecture seule."
+            },
             "comment": {
               "type": "string",
               "description": "Description de la classe."
             },
             "enum": {
-              "type": "boolean",
-              "description": "Force la catégorisation de la classe comme enum (ou non). Une enum doit avoir au moins une `value` et ne peut pas avoir de clé primaire multiple. Si non renseigné, une classe sera une enum en plus de ces contraintes si le domaine de sa clé primaire n'a pas de valeur auto-générée."
+              "oneOf": [
+                { "type": "boolean" },
+                {
+                  "type": "string",
+                  "enum": [ "class" ]
+                }
+              ],
+              "description": "Force la catégorisation de cette classe en tant qu'enum et détermine comment elle doit être considérée dans le modèle.\n\nUne classe doit avoir au moins une `value`, au moins une propriété, et ne peut pas avoir de clé primaire multiple pour être une enum.\n\nCette propriété peut valoir `class` pour représenter l'enum comme une classe (avec des enums pour la clé primaire et les clés d'unicité), ou `true` pour la représenter intégralement comme une enum.\n\nSi la classe peut être une enum et que le domaine de sa clé primaire est auto-généré, alors elle sera par défaut une enum de type `class`."
             },
             "decorators": {
               "type": "array",

@@ -36,6 +36,14 @@ public partial record ClientRead
     public string? Prenom { get; set; }
 
     /// <summary>
+    /// Département de résidence de la personne.
+    /// </summary>
+    [ReferencedType(typeof(Departement))]
+    [Domain(Domains.Code)]
+    [StringLength(10)]
+    public string? DepartementCode { get; set; }
+
+    /// <summary>
     /// Adresse email du client.
     /// </summary>
     [Domain(Domains.Libelle)]
@@ -43,7 +51,7 @@ public partial record ClientRead
     public string? Email { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.ClientId.
+    /// Association réciproque de AvisClient.Client.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? AvisClients { get; set; }

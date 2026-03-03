@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 import jakarta.annotation.Generated;
 
-import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlat;
+import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
 /**
  * Détail d'un plat en liste.
@@ -39,15 +39,35 @@ public interface PlatItem {
 	/**
 	 * Catégorie du plat.
 	 */
-	CategoriePlat getCategoriePlatCode();
+	CategoriePlatCode getCategoriePlatCode();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant du plat.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Nom du plat.
 	 * @param nom value to set.
+	 */
+	void setNom(String nom);
+
+	/**
+	 * Prix du plat.
 	 * @param prix value to set.
+	 */
+	void setPrix(BigDecimal prix);
+
+	/**
+	 * Indique si le plat est disponible.
 	 * @param disponible value to set.
+	 */
+	void setDisponible(Boolean disponible);
+
+	/**
+	 * Catégorie du plat.
 	 * @param categoriePlatCode value to set.
 	 */
-	void hydrate(Integer id, String nom, BigDecimal prix, Boolean disponible, CategoriePlat categoriePlatCode);
+	void setCategoriePlatCode(CategoriePlatCode categoriePlatCode);
 }

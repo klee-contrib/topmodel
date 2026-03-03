@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
+import restaurant.jpa_identity_feign.entities.restaurant.CategoriePlat;
 import restaurant.jpa_identity_feign.entities.restaurant.Menu;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
 
@@ -84,6 +85,13 @@ public class MenuRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * Catégories de plat dans le menu.
+	 */
+	@Valid
+	@NotNull
+	private List<CategoriePlat> categoriesPlat;
 
 	/**
 	 * Liste des plats du menu.
@@ -182,6 +190,15 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Getter for categoriesPlat.
+	 *
+	 * @return value of {@link #categoriesPlat categoriesPlat}.
+	 */
+	public List<CategoriePlat> getCategoriesPlat() {
+		return this.categoriesPlat;
+	}
+
+	/**
 	 * Getter for plats.
 	 *
 	 * @return value of {@link #plats plats}.
@@ -255,6 +272,14 @@ public class MenuRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #categoriesPlat categoriesPlat}.
+	 * @param categoriesPlat value to set.
+	 */
+	public void setCategoriesPlat(List<CategoriePlat> categoriesPlat) {
+		this.categoriesPlat = categoriesPlat;
+	}
+
+	/**
 	 * Set the value of {@link #plats plats}.
 	 * @param plats value to set.
 	 */
@@ -274,6 +299,7 @@ public class MenuRead implements Serializable {
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		RESTAURANT_ID(Integer.class),
+		CATEGORIES_PLAT(List.class),
 		PLATS(List.class);
 
 		private final Class<?> type;

@@ -10,7 +10,7 @@ internal static class DependenciesExtensions
     )
     {
         return properties
-            .Where(p => p.Association != null && p.Association != currentClass)
+            .Where(p => p.Association != null && p.Association != currentClass && p.UseClassForAssociation)
             .Select(p => new ClassDependency(p.Association!, p))
             .Concat(
                 properties
@@ -19,18 +19,12 @@ internal static class DependenciesExtensions
             )
             .Concat(
                 properties
-                    .OfType<AliasProperty>()
-                    .Select(p =>
-                        p.Property.Class != null
-                        && (
-                            p.Property == p.Property.Class.EnumKey
-                            || p.Property.Class.UniqueKeys.Where(uk => uk.Count == 1)
-                                .Select(uk => uk.Single())
-                                .Contains(p.Property)
-                        )
-                            ? new ClassDependency(p.Property.Class, p)
-                            : null
+                    .Where(p =>
+                        p.EnumLikeProperty != null
+                        && p.EnumLikeProperty!.Class != currentClass
+                        && !p.UseClassForAssociation
                     )
+                    .Select(p => new ClassDependency(p.EnumLikeProperty!.Class, p))
             )
             .Where(d => d != null)!;
     }

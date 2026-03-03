@@ -2,10 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
+import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
-import {StatutCommandeCode} from "./references";
+import {DepartementCode, StatutCommande} from "./references";
 
 export type ClientAvecCommandes = EntityToType<ClientAvecCommandesEntityType>;
 export type ClientAvecCommandesEntityType = typeof ClientAvecCommandesEntity;
@@ -19,6 +19,9 @@ export const ClientAvecCommandesEntity = entity({
     ),
     prenom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personne.prenom")
+    ),
+    departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
+        .label("restaurant.personne.departementCode")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
@@ -47,8 +50,8 @@ export const ClientAvecCommandesEntity = entity({
     commandeReservationId: e.field(DO_LISTE, f => f.type<number[]>().optional()
         .label("restaurant.commande.reservationId")
     ),
-    commandeStatutCommandeCode: e.field(DO_LISTE, f => f.type<StatutCommandeCode[]>()
-        .label("restaurant.commande.statutCommandeCode")
+    commandeStatutCommande: e.field(DO_LISTE, f => f.type<StatutCommande[]>()
+        .label("restaurant.commande.statutCommande")
     ),
     commandeAvisClientId: e.field(DO_LISTE, f => f.type<number[]>().optional()
         .label("restaurant.commande.avisClientId")

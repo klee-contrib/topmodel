@@ -117,7 +117,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteLine("[RegisterImpl]");
 
-        if (Config.DbContextPath != null)
+        if (classList.All(c => !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly))
+        {
+            w.WriteClassDeclaration(implementationName, inheritedClass: null, isRecord: false, [interfaceName]);
+        }
+        else if (Config.DbContextPath != null)
         {
             var dbContextName = Config.GetDbContextName(tag);
             var parameters = $"{dbContextName} dbContext";
@@ -177,7 +181,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             w.WriteLine(
                 1,
                 $"public {(Config.UseAsyncReferenceAccessors ? "async Task<" : string.Empty)}ICollection<"
-                    + classe.NamePascal
+                    + Config.GetTypeName(classe)
                     + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} "
                     + serviceName
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)})\r\n{{"
@@ -242,17 +246,17 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         foreach (var classe in classList)
         {
             count++;
-            w.WriteSummary(1, $"Accesseur de référence pour le type {classe.NamePascal}");
+            w.WriteSummary(1, $"Accesseur de référence pour le type {Config.GetTypeName(classe)}");
             if (Config.UseAsyncReferenceAccessors)
             {
                 w.WriteParam("ct", "CancellationToken");
             }
-            w.WriteReturns(1, $"Liste de {classe.NamePascal}");
+            w.WriteReturns(1, $"Liste de {Config.GetTypeName(classe)}");
             w.WriteLine(1, "[ReferenceAccessor]");
             w.WriteLine(
                 1,
                 $"{(Config.UseAsyncReferenceAccessors ? "Task<" : string.Empty)}ICollection<"
-                    + classe.NamePascal
+                    + Config.GetTypeName(classe)
                     + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} Load"
                     + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal)
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)});"
@@ -269,7 +273,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.Reference)
+        if (classe.Reference && classe.Enum != EnumMode.Enum)
         {
             if (!Config.NoPersistence(tag) && (classe.IsPersistent || classe.Values.Count > 0))
             {
@@ -310,11 +314,43 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <returns>Code généré.</returns>
     protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
     {
-        if (!classe.IsPersistent)
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            if (Config.DotnetVersion >= 8)
+            {
+                w.Write(2, "return [");
+            }
+            else
+            {
+                w.Write(2, $"return new List<{Config.GetTypeName(classe)}>() {{ ");
+            }
+
+            foreach (var refValue in classe.Values)
+            {
+                w.Write($"{Config.GetTypeName(classe)}.{refValue.Name.ToPascalCase(strictIfUppercase: true)}");
+
+                if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
+                {
+                    w.Write(", ");
+                }
+            }
+
+            if (Config.DotnetVersion >= 8)
+            {
+                w.WriteLine("];");
+            }
+            else
+            {
+                w.WriteLine(" };");
+            }
+
+            return;
+        }
+        else if (!classe.IsPersistent)
         {
             w.WriteLine(
                 2,
-                $@"return new List<{classe.NamePascal}>
+                $@"return new List<{Config.GetTypeName(classe)}>
 {{
     {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
 }};"
@@ -354,7 +390,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     }
 
                     w.WriteLine(3, $"orderby row.{defaultProperty!.NamePascal}");
-                    w.WriteLine(3, $"select new {classe.NamePascal}");
+                    w.WriteLine(3, $"select new {Config.GetTypeName(classe)}");
                     w.WriteLine(3, "{");
 
                     foreach (var prop in classe.Properties)
@@ -394,12 +430,12 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             if (defaultProperty != null)
             {
                 queryParameter =
-                    $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
+                    $"new QueryParameter({Config.GetTypeName(classe)}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }
 
             w.WriteLine(
                 2,
-                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{Config.GetTypeName(classe)}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
             );
         }
     }

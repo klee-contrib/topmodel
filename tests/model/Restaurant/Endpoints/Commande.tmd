@@ -38,10 +38,10 @@ endpoint:
   params:
     - alias:
         class: Commande
-        property: ClientId
+        property: Client
     - alias:
         class: Commande
-        property: StatutCommandeCode
+        property: StatutCommande
     - alias:
         class: Commande
         property: TableId
@@ -129,7 +129,7 @@ endpoint:
         property: Id
     - alias:
         class: Commande
-        property: StatutCommandeCode
+        property: StatutCommande
 
   returns:
     composition: CommandeRead
@@ -143,9 +143,10 @@ endpoint:
   description: Liste tous les statuts de commande
 
   returns:
-    composition: StatutCommande
-    name: statuts
-    domain: DO_LISTE
+    alias:
+      class: StatutCommande
+      property: Code
+    as: list
     comment: Liste des statuts de commande
 ---
 endpoint:

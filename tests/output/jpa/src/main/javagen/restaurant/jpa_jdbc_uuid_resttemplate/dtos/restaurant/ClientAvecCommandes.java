@@ -16,6 +16,8 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
+
 /**
  * Client avec la liste de ses commandes.
  */
@@ -55,6 +57,14 @@ public class ClientAvecCommandes implements Serializable {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	@Column("dep_code")
+	private String departementCode;
+
+	/**
 	 * Adresse email du client.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
@@ -63,11 +73,10 @@ public class ClientAvecCommandes implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
-	@Column("avi_id")
 	private List<Integer> avisClients;
 
 	/**
@@ -125,11 +134,11 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
 	@Column("stc_code")
-	private List<String> commandeStatutCommandeCode;
+	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
@@ -143,7 +152,6 @@ public class ClientAvecCommandes implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@NotNull
-	@Column("lig_id")
 	private List<List<Integer>> commandeLignes;
 
 	/**
@@ -171,6 +179,15 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getPrenom() {
 		return this.prenom;
+	}
+
+	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
 	}
 
 	/**
@@ -255,12 +272,12 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeStatutCommandeCode.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public List<String> getCommandeStatutCommandeCode() {
-		return this.commandeStatutCommandeCode;
+	public List<StatutCommande> getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
@@ -303,6 +320,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
 	}
 
 	/**
@@ -378,11 +403,11 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
-	 * @param commandeStatutCommandeCode value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setCommandeStatutCommandeCode(List<String> commandeStatutCommandeCode) {
-		this.commandeStatutCommandeCode = commandeStatutCommandeCode;
+	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**

@@ -81,7 +81,7 @@ public class MenuController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats</returns>
     [HttpGet("api/restaurants/plats")]
-    public async Task<ICollection<PlatItem>> GetPlats(bool disponible = true, [Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats(bool disponible = true, [Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -123,7 +123,7 @@ public class MenuController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Plats correspondant aux critères de recherche</returns>
     [HttpGet("api/restaurants/plats/search")]
-    public async Task<ICollection<PlatItem>> SearchPlats([Required] string? nom = null, [Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> SearchPlats([Required] string? nom = null, [Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

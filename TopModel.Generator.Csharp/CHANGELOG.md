@@ -1,16 +1,18 @@
+## 4.0.0 (rc)
+
+Compatibilité avec TopModel 4.0, les impacts propres aux générateurs C# sont détaillés dans le changelog général de la version.
+
 ## 3.7.0
 
 - [`02e9ea7`](https://github.com/klee-contrib/topmodel/commit/02e9ea73e8b0bb11cbe8721dcb2a6b7854d90217) - [C#] `usePrimaryConstructors` => `dotnetVersion`, et utilisation d'initialiseurs de collections
 
   **impacts** :
-
   - L'option `usePrimaryConstructors` (qui était déjà par défaut à `true`) a été remplacée par une option `dotnetVersion`, qui vaut `10` par défaut. Avoir `dotnetVersion` >= 8 est équivalent à avoir l'ancienne option à `true`. De plus, les DataFlows sont désormais également générés avec des constructeurs principaux.
   - Dans les classes, les initialisations de compositions simples sont désormais toujours générées avec un `new()` (qui existe depuis .NET 5...), et les initialisations de composition avec collection sont générées avec un `[]` si `dotnetVersion` > 8.
 
 - [`a4dde22`](https://github.com/klee-contrib/topmodel/commit/a4dde22dbed87a927e64d30552859b5a82970e47) - [C#] ClientApi : Fixes génération query string
 
   **impacts** :
-
   - Les query params ne sont désormais générés avec des `.ToString(CurrentCulture.InvariantCulture)` que pour `decimal`, `double` et `float`. Ce n'était en particulier par nécessaire pour `int`, `bool` et les enums.
   - Les dates sont désormais correctement sérialisées en ISO String (avec un `ToString("o")` au lieu de la culture invariante, qui ne génèrerait pas un format standard)
   - En `nullableEnable`/`requiredNonNullable`, la nullabilité des différents paramètres et objets créés dans l'appel est désormais correctement respectée.
@@ -136,7 +138,6 @@ Suite à la gestion de la transformation `:path` dans TopModel 2.5, le générat
 - [`50c3f6b`](https://github.com/klee-contrib/topmodel/commit/50c3f6b86a71da1e76ca1a63d4372120c788732e) - [C#] Mise au propre de la génération des accesseurs de liste de références
 
   **breaking changes** :
-
   - Les interfaces d'accesseurs de liste de références sont désormais séparés en 2, entre ceux qui sont sur des classes persistés et ceux sur des classes non-persistés. Cela permet d'arrêter d'avoir à implémenter un `partial` sur l'implémentation générée (qui n'a elle pas changé) avec les autres listes de références, vous pouvez donc simplement implémenter la deuxième interface directement, ou vous voulez.
   - Les interfaces et implémentations persistées sont générées avec un nom préfixé par `Db` (en plus du `referenceAccessorName`).
   - `referenceAccessorsInterfacePath` n'a plus de valeur par défaut et doit être renseigné pour que les accesseurs soit générés (puisqu'on ne veut plus du tout la générer à côté de l'implémentation 😉)

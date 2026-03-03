@@ -34,6 +34,7 @@ create sequence SEQ_AVIS_CLIENT as INT start 1000 increment 50 owned by AVIS_CLI
 create table CATEGORIE_PLAT (
 	CAT_CODE varchar(10) not null,
 	CAT_LIBELLE varchar(100) not null,
+	CAT_ORDRE int not null,
 	constraint PK_CATEGORIE_PLAT primary key (CAT_CODE)
 );
 
@@ -81,6 +82,16 @@ create table COMMANDE_HISTORIQUE (
 	STC_CODE varchar(10) not null,
 	AVI_ID int,
 	constraint PK_COMMANDE_HISTORIQUE primary key (COM_ID)
+);
+
+/**
+  * Création de la table DEPARTEMENT
+ **/
+create table DEPARTEMENT (
+	DEP_CODE varchar(10) not null,
+	DEP_LIBELLE varchar(100) not null,
+	REG_CODE varchar(10) not null,
+	constraint PK_DEPARTEMENT primary key (DEP_CODE)
 );
 
 /**
@@ -165,6 +176,7 @@ create table PERSONNE (
 	PER_ID int not null,
 	PER_NOM varchar(100) not null,
 	PER_PRENOM varchar(100) not null,
+	DEP_CODE varchar(10),
 	constraint PK_PERSONNE primary key (PER_ID)
 );
 
@@ -204,6 +216,16 @@ create table PROMOTION (
 	PRO_ACTIVE boolean not null,
 	RES_ID int,
 	constraint PK_PROMOTION primary key (PLA_ID)
+);
+
+/**
+  * Création de la table REGION
+ **/
+create table REGION (
+	REG_CODE varchar(10) not null,
+	REG_LIBELLE varchar(100) not null,
+	REG_NOM_RESPONSABLE varchar(100),
+	constraint PK_REGION primary key (REG_CODE)
 );
 
 /**

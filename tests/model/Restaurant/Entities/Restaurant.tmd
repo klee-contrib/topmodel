@@ -60,8 +60,9 @@ class:
 
     - association: Restaurant
       required: true
+      useClass: false
       withReverse:
-        className: Tables
+        className: TableIds
       comment: Restaurant auquel appartient la table
 
   unique:

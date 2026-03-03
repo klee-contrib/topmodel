@@ -7,7 +7,7 @@ import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "../../domains";
 
 import {ClientReadEntity} from "./client-read";
 import {LigneCommandeReadEntity} from "./ligne-commande-read";
-import {StatutCommandeCode} from "./references";
+import {StatutCommande} from "./references";
 import {ReservationReadEntity} from "./reservation-read";
 
 export type CommandeRead = EntityToType<CommandeReadEntityType>;
@@ -29,8 +29,8 @@ export const CommandeReadEntity = entity({
     tableId: e.field(DO_ID, f => f.optional()
         .label("restaurant.commande.tableId")
     ),
-    statutCommandeCode: e.field(DO_CODE, f => f.type<StatutCommandeCode>().defaultValue("EN_ATT")
-        .label("restaurant.commande.statutCommandeCode")
+    statutCommande: e.field(DO_CODE, f => f.type<StatutCommande>().defaultValue("EN_ATT")
+        .label("restaurant.commande.statutCommande")
     ),
     avisClientId: e.field(DO_ID, f => f.optional()
         .label("restaurant.commande.avisClientId")

@@ -68,8 +68,14 @@ public partial record MenuRead
     public int? RestaurantId { get; set; }
 
     /// <summary>
+    /// Catégories de plat dans le menu.
+    /// </summary>
+    [Required]
+    public ICollection<CategoriePlat> CategoriesPlat { get; set; } = [];
+
+    /// <summary>
     /// Liste des plats du menu.
     /// </summary>
     [Required]
-    public ICollection<PlatItem> Plats { get; set; } = [];
+    public ICollection<IPlatItem> Plats { get; set; } = [];
 }

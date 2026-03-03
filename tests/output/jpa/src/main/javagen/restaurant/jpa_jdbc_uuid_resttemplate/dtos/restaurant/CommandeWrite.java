@@ -14,8 +14,9 @@ import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
+
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en écriture.
@@ -53,14 +54,6 @@ public class CommandeWrite implements Serializable {
 	private BigDecimal montantTotal;
 
 	/**
-	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClientId() Commande#getClientId()}
-	 */
-	@NotNull
-	@Column("per_id")
-	private Integer clientId;
-
-	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
@@ -68,20 +61,12 @@ public class CommandeWrite implements Serializable {
 	private Integer tableId;
 
 	/**
-	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getReservationId() Commande#getReservationId()}
-	 */
-	@Column("rev_id")
-	private Integer reservationId;
-
-	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommandeCode() Commande#getStatutCommandeCode()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	@Size(max = 10)
 	@Column("stc_code")
-	private String statutCommandeCode = "EnAttente";
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
@@ -91,7 +76,22 @@ public class CommandeWrite implements Serializable {
 	private Integer avisClientId;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Client ayant passé la commande.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.CommandeRead#getClient() CommandeRead#getClient()}
+	 */
+	@Valid
+	@NotNull
+	private ClientWrite client;
+
+	/**
+	 * Réservation.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.CommandeRead#getReservation() CommandeRead#getReservation()}
+	 */
+	@Valid
+	private ReservationWrite reservation;
+
+	/**
+	 * Association réciproque de LigneCommande.Commande.
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
 	@Valid
@@ -126,15 +126,6 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for clientId.
-	 *
-	 * @return value of {@link #clientId clientId}.
-	 */
-	public Integer getClientId() {
-		return this.clientId;
-	}
-
-	/**
 	 * Getter for tableId.
 	 *
 	 * @return value of {@link #tableId tableId}.
@@ -144,21 +135,12 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Getter for reservationId.
+	 * Getter for statutCommande.
 	 *
-	 * @return value of {@link #reservationId reservationId}.
+	 * @return value of {@link #statutCommande statutCommande}.
 	 */
-	public Integer getReservationId() {
-		return this.reservationId;
-	}
-
-	/**
-	 * Getter for statutCommandeCode.
-	 *
-	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
-	 */
-	public String getStatutCommandeCode() {
-		return this.statutCommandeCode;
+	public StatutCommande getStatutCommande() {
+		return this.statutCommande;
 	}
 
 	/**
@@ -168,6 +150,24 @@ public class CommandeWrite implements Serializable {
 	 */
 	public Integer getAvisClientId() {
 		return this.avisClientId;
+	}
+
+	/**
+	 * Getter for client.
+	 *
+	 * @return value of {@link #client client}.
+	 */
+	public ClientWrite getClient() {
+		return this.client;
+	}
+
+	/**
+	 * Getter for reservation.
+	 *
+	 * @return value of {@link #reservation reservation}.
+	 */
+	public ReservationWrite getReservation() {
+		return this.reservation;
 	}
 
 	/**
@@ -204,14 +204,6 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
-	 */
-	public void setClientId(Integer clientId) {
-		this.clientId = clientId;
-	}
-
-	/**
 	 * Set the value of {@link #tableId tableId}.
 	 * @param tableId value to set.
 	 */
@@ -220,19 +212,11 @@ public class CommandeWrite implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #reservationId reservationId}.
-	 * @param reservationId value to set.
+	 * Set the value of {@link #statutCommande statutCommande}.
+	 * @param statutCommande value to set.
 	 */
-	public void setReservationId(Integer reservationId) {
-		this.reservationId = reservationId;
-	}
-
-	/**
-	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
-	 * @param statutCommandeCode value to set.
-	 */
-	public void setStatutCommandeCode(String statutCommandeCode) {
-		this.statutCommandeCode = statutCommandeCode;
+	public void setStatutCommande(StatutCommande statutCommande) {
+		this.statutCommande = statutCommande;
 	}
 
 	/**
@@ -241,6 +225,22 @@ public class CommandeWrite implements Serializable {
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
+	}
+
+	/**
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
+	 */
+	public void setClient(ClientWrite client) {
+		this.client = client;
+	}
+
+	/**
+	 * Set the value of {@link #reservation reservation}.
+	 * @param reservation value to set.
+	 */
+	public void setReservation(ReservationWrite reservation) {
+		this.reservation = reservation;
 	}
 
 	/**

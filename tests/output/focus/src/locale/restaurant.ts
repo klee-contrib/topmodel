@@ -5,17 +5,18 @@
 export const restaurant = {
     avisClient: {
         approuve: "Approuve",
-        clientId: "ClientId",
+        clientId: "Client",
         commentaire: "Commentaire",
         dateAvis: "DateAvis",
         id: "Id",
         nombreVues: "NombreVues",
         note: "Note",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     categoriePlat: {
         code: "Code",
         libelle: "Libelle",
+        ordre: "Ordre",
         values: {
             Entree: "Entrée",
             Plat: "Plat principal",
@@ -34,25 +35,36 @@ export const restaurant = {
         prenom: "Informations client"
     },
     commande: {
-        avisClientId: "AvisClientId",
-        clientId: "ClientId",
+        avisClientId: "AvisClient",
+        clientId: "Client",
         dateCommande: "DateCommande",
         dateLivraison: "DateLivraison",
         id: "Id",
         lignes: "Lignes",
         montantTotal: "MontantTotal",
-        reservationId: "ReservationId",
-        statutCommandeCode: "StatutCommandeCode",
+        reservationId: "Reservation",
+        statutCommande: "StatutCommande",
         tableId: "TableId"
     },
     commandeRead: {
         reservation: "Reservation"
     },
+    departement: {
+        code: "Code",
+        libelle: "Libelle",
+        regionCode: "RegionCode",
+        values: {
+            Paris: "Paris",
+            HautsDeSeine: "Hauts de Seine",
+            SeineSaintDenis: "Seine Saint Denis",
+            SeineEtMarne: "Seine et Marne"
+        }
+    },
     employe: {
         dateEmbauche: "DateEmbauche",
         dateNaissance: "DateNaissance",
         matricule: "Matricule",
-        restaurantId: "RestaurantId",
+        restaurantId: "Restaurant",
         salaire: "Salaire",
         telephone: "Telephone"
     },
@@ -62,9 +74,9 @@ export const restaurant = {
         prenom: "Prenom"
     },
     ligneCommande: {
-        commandeId: "CommandeId",
+        commandeId: "Commande",
         id: "Id",
-        platId: "PlatId",
+        platId: "Plat",
         prixTotal: "PrixTotal",
         prixUnitaire: "PrixUnitaire",
         quantite: "Quantite"
@@ -77,42 +89,52 @@ export const restaurant = {
         id: "Id",
         nom: "Nom",
         prix: "Prix",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     menuRead: {
+        categoriesPlat: "CategoriesPlat",
         plats: "Plats"
     },
     personne: {
+        departementCode: "DepartementCode",
         id: "Id",
         nom: "Nom",
         prenom: "Prenom"
     },
     plat: {
-        categoriePlatCode: "CategoriePlatCode",
+        categoriePlatCode: "CategoriePlat",
         description: "Description",
         disponible: "Disponible",
         id: "Id",
         nom: "Nom",
         prix: "Prix",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
     },
     promotion: {
         active: "Active",
         dateDebut: "DateDebut",
         dateFin: "DateFin",
         libelle: "Libelle",
-        platId: "PlatId",
+        platId: "Plat",
         pourcentageReduction: "PourcentageReduction",
-        restaurantId: "RestaurantId"
+        restaurantId: "Restaurant"
+    },
+    region: {
+        code: "Code",
+        libelle: "Libelle",
+        nomResponsable: "NomResponsable",
+        values: {
+            Idf: "Île de France"
+        }
     },
     reservation: {
-        clientId: "ClientId",
+        clientId: "Client",
         commentaire: "Commentaire",
         confirmee: "Confirmee",
         dateReservation: "DateReservation",
         id: "Id",
         nombrePersonnes: "NombrePersonnes",
-        restaurantId: "RestaurantId",
+        restaurantId: "Restaurant",
         tableId: "TableId"
     },
     restaurant: {
@@ -123,7 +145,7 @@ export const restaurant = {
         nom: "Nom",
         plats: "Plats",
         promotions: "Promotions",
-        tables: "Tables",
+        tableIds: "TableIds",
         telephone: "Telephone"
     },
     restaurantAvecStatistiques: {

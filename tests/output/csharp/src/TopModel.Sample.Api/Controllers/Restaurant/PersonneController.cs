@@ -96,7 +96,7 @@ public class PersonneController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des commandes du client</returns>
     [HttpGet("api/restaurants/clients/{perId:int}/commandes")]
-    public async Task<ICollection<CommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

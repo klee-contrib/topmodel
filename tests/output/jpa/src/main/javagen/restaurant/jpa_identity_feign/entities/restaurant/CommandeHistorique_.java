@@ -6,10 +6,8 @@ package restaurant.jpa_identity_feign.entities.restaurant;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
@@ -27,17 +25,15 @@ public class CommandeHistorique_ {
 
 	public static volatile SingularAttribute<CommandeHistorique, BigDecimal> montantTotal;
 
-	public static volatile SingularAttribute<CommandeHistorique, Client> client;
+	public static volatile SingularAttribute<CommandeHistorique, Integer> clientId;
 
-	public static volatile SingularAttribute<CommandeHistorique, TableRestaurant> table;
+	public static volatile SingularAttribute<CommandeHistorique, Integer> tableId;
 
-	public static volatile SingularAttribute<CommandeHistorique, Reservation> reservation;
+	public static volatile SingularAttribute<CommandeHistorique, Integer> reservationId;
 
 	public static volatile SingularAttribute<CommandeHistorique, StatutCommande> statutCommande;
 
-	public static volatile SingularAttribute<CommandeHistorique, AvisClient> avisClient;
-
-	public static volatile ListAttribute<CommandeHistorique, LigneCommandeHistorique> lignes;
+	public static volatile SingularAttribute<CommandeHistorique, Integer> avisClientId;
 
 	public static final String ID = "id";
 
@@ -47,15 +43,13 @@ public class CommandeHistorique_ {
 
 	public static final String MONTANT_TOTAL = "montantTotal";
 
-	public static final String CLIENT = "client";
+	public static final String CLIENT_ID = "clientId";
 
-	public static final String TABLE = "table";
+	public static final String TABLE_ID = "tableId";
 
-	public static final String RESERVATION = "reservation";
+	public static final String RESERVATION_ID = "reservationId";
 
 	public static final String STATUT_COMMANDE = "statutCommande";
 
-	public static final String AVIS_CLIENT = "avisClient";
-
-	public static final String LIGNES = "lignes";
+	public static final String AVIS_CLIENT_ID = "avisClientId";
 }

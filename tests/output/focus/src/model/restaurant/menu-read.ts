@@ -3,9 +3,10 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "../../domains";
 
 import {PlatItemEntity} from "./plat-item";
+import {CategoriePlat} from "./references";
 
 export type MenuRead = EntityToType<MenuReadEntityType>;
 export type MenuReadEntityType = typeof MenuReadEntity;
@@ -34,6 +35,9 @@ export const MenuReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.menu.restaurantId")
+    ),
+    categoriesPlat: e.field(DO_LISTE, f => f.type<CategoriePlat[]>()
+        .label("restaurant.menuRead.categoriesPlat")
     ),
     plats: e.list(PlatItemEntity, f => f
         .label("restaurant.menuRead.plats")

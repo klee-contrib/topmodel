@@ -10,6 +10,8 @@ public class DomainImplementation
 
     public IList<StringWithVariables> Imports { get; set; } = [];
 
+    public string? Collector { get; set; }
+
     public IDictionary<string, ValueTemplate> ValueTemplates { get; set; } = new Dictionary<string, ValueTemplate>();
 
     public ValueTemplate? GetValueTemplate(string value)

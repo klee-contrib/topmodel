@@ -12,7 +12,11 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
+
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Commande d'un client.
@@ -72,7 +76,8 @@ public class Commande {
 	 */
 	@NotNull
 	@Column("stc_code")
-	private String statutCommandeCode = "EnAttente";
+	@Enumerated(EnumType.STRING)
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
@@ -144,12 +149,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for statutCommandeCode.
+	 * Getter for statutCommande.
 	 *
-	 * @return value of {@link #statutCommandeCode statutCommandeCode}.
+	 * @return value of {@link #statutCommande statutCommande}.
 	 */
-	public String getStatutCommandeCode() {
-		return this.statutCommandeCode;
+	public StatutCommande getStatutCommande() {
+		return this.statutCommande;
 	}
 
 	/**
@@ -218,11 +223,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #statutCommandeCode statutCommandeCode}.
-	 * @param statutCommandeCode value to set.
+	 * Set the value of {@link #statutCommande statutCommande}.
+	 * @param statutCommande value to set.
 	 */
-	public void setStatutCommandeCode(String statutCommandeCode) {
-		this.statutCommandeCode = statutCommandeCode;
+	public void setStatutCommande(StatutCommande statutCommande) {
+		this.statutCommande = statutCommande;
 	}
 
 	/**

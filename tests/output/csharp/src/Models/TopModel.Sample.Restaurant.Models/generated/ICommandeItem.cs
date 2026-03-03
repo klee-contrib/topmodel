@@ -12,36 +12,25 @@ public interface ICommandeItem
     /// <summary>
     /// Identifiant de la commande.
     /// </summary>
-    int? Id { get; }
+    int? Id { get; set; }
 
     /// <summary>
     /// Date et heure de la commande.
     /// </summary>
-    DateTime? DateCommande { get; }
+    DateTime? DateCommande { get; set; }
 
     /// <summary>
     /// Montant total de la commande.
     /// </summary>
-    decimal? MontantTotal { get; }
+    decimal? MontantTotal { get; set; }
 
     /// <summary>
     /// Statut de la commande.
     /// </summary>
-    StatutCommande.Codes? StatutCommandeCode { get; }
+    StatutCommande? StatutCommande { get; set; }
 
     /// <summary>
     /// Client ayant passé la commande.
     /// </summary>
-    int? ClientId { get; }
-
-    /// <summary>
-    /// Factory pour instancier la classe.
-    /// </summary>
-    /// <param name="id">Identifiant de la commande.</param>
-    /// <param name="dateCommande">Date et heure de la commande.</param>
-    /// <param name="montantTotal">Montant total de la commande.</param>
-    /// <param name="statutCommandeCode">Statut de la commande.</param>
-    /// <param name="clientId">Client ayant passé la commande.</param>
-    /// <returns>Instance de la classe.</returns>
-    static abstract ICommandeItem Create(int? id = null, DateTime? dateCommande = null, decimal? montantTotal = null, StatutCommande.Codes? statutCommandeCode = null, int? clientId = null);
+    int? ClientId { get; set; }
 }

@@ -58,10 +58,8 @@ public partial record Reservation
     /// <summary>
     /// Client ayant fait la réservation.
     /// </summary>
-    [Column("per_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
+    public Client? Client { get; set; }
 
     /// <summary>
     /// Table réservée.
@@ -73,8 +71,6 @@ public partial record Reservation
     /// <summary>
     /// Restaurant concerné par la réservation.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

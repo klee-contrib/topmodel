@@ -7,10 +7,10 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFileWriterProvider writerProvider)
+public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileWriterProvider writerProvider)
     : JavaClassGeneratorBase(logger, writerProvider)
 {
-    public override string Name => "JpaEnumValuesGen";
+    public override string Name => "JavaEnumEnumGen";
 
     public override IEnumerable<string> GeneratedFiles =>
         Config
@@ -22,19 +22,17 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract
-            && (Config.CanClassUseEnums(classe) || Config.EnumsAsEnums && classe.Enum)
-            && classe.Enum;
+        return !classe.Abstract && classe.Enum == EnumMode.Enum;
     }
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Config.GetEnumValueFileName(classe, tag);
+        return Config.GetEnumFileName(classe, tag);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        var packageName = Config.GetEnumValuePackageName(classe, tag);
+        var packageName = Config.GetEnumPackageName(classe, tag);
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.WriteLine();
         fw.WriteDocStart(0, $"Enumération des valeurs possibles de la classe {classe.NamePascal}");
@@ -87,12 +85,15 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                     )
                     {
                         fw.AddImport(
-                            $"{Config.GetEnumValuePackageName(association.EnumKey!.Class, tag)}.{association.NamePascal}"
+                            $"{Config.GetEnumPackageName(association.EnumKey!.Class, tag)}.{association.NamePascal}"
                         );
-                        value = association.NamePascal + "." + value;
+                        if (value != "null")
+                        {
+                            value = association.NamePascal + "." + value;
+                        }
                         isString = false;
                     }
-                    else if (Config.CanClassUseEnums(classe, prop))
+                    else if (prop.EnumProperty != null && value != "null")
                     {
                         value = Config.GetType(prop) + "." + value;
                     }
@@ -100,7 +101,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                     if (
                         Config.TranslateReferences == true
                         && classe.DefaultProperty == prop
-                        && !Config.CanClassUseEnums(classe, prop)
+                        && prop.EnumProperty == null
                     )
                     {
                         value = refValue.ResourceKey;
@@ -125,12 +126,12 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         foreach (var prop in notPkProperties)
         {
             fw.WriteLine();
-            fw.WriteDocStart(1, $@"{prop.NameByClassPascal}");
+            fw.WriteDocStart(1, $@"{prop.NamePascal}");
             fw.WriteDocEnd(1);
-            var fieldName = prop.NameByClassCamel;
+            var fieldName = prop.NameCamel;
             if (prop is { Association: Class association })
             {
-                fieldName = $"{prop.NameByClassCamel}";
+                fieldName = $"{prop.NameCamel}";
                 fw.WriteLine(1, $@"private final {association.NamePascal} {fieldName};");
             }
             else
@@ -146,11 +147,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
 
         foreach (var prop in notPkProperties)
         {
-            var fieldName = prop.NameByClassCamel;
+            var fieldName = prop.NameCamel;
             var fieldType = Config.GetType(prop);
-            if (prop is { Association: Class association } && Config.CanClassUseEnums(association))
+            if (prop is { Association: Class { Enum: EnumMode.Enum } association })
             {
-                fieldName = $"{prop.NameByClassCamel}";
+                fieldName = $"{prop.NameCamel}";
                 fieldType = $"{association.NamePascal}";
             }
 
@@ -166,27 +167,9 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         fw.WriteLine("}");
     }
 
-    private List<IProperty> GetEnumProperties(Class classe)
+    private static IEnumerable<IProperty> GetEnumProperties(Class classe)
     {
-        List<IProperty> result = [];
-        if (
-            classe.EnumKey != null
-            && Config.CanClassUseEnums(classe, prop: classe.EnumKey)
-            && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
-        )
-        {
-            result.Add(classe.EnumKey);
-        }
-
-        var uks = classe
-            .UniqueKeys.Where(uk =>
-                uk.Count == 1
-                && Config.CanClassUseEnums(classe, uk.Single())
-                && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
-            )
-            .Select(uk => uk.Single());
-        result.AddRange(uks);
-        return result;
+        return classe.Properties.Where(e => e.EnumProperty == e);
     }
 
     private void WriteAnnotations(JavaWriter fw, Class classe, string tag)
@@ -203,11 +186,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         var methodParams = properties.Select(
             (prop, index) =>
             {
-                var fieldName = prop.NameByClassCamel;
+                var fieldName = prop.NameCamel;
                 var fieldType = Config.GetType(prop);
                 if (prop is { Association: Class association })
                 {
-                    fieldName = $"{prop.NameByClassCamel}";
+                    fieldName = $"{prop.NameCamel}";
                     fieldType = $"{association.NamePascal}";
                 }
 

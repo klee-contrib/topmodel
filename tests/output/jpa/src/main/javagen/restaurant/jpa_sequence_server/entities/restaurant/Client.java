@@ -30,7 +30,7 @@ public class Client extends Personne {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
 	private List<AvisClient> avisClients;

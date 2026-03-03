@@ -152,11 +152,6 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
-    /// Les associations d'une clé primaire composite doivent être de type 'manyToOne'.
-    /// </summary>
-    TMD3007,
-
-    /// <summary>
     /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
     /// </summary>
     TMD3008,
@@ -211,6 +206,16 @@ public enum ErrorType
     /// </summary>
     TMD3018,
 
+    /// <summary>
+    /// La classe {classe} doit avoir une clé primaire convertible en enum pour être marquée avec `enum: true`.
+    /// </summary>
+    TMD3019,
+
+    /// <summary>
+    /// La classe enum '{classe}' ne peut pas avoir de propriété de composition, ni d'association si la classe cible n'est pas une enum elle-aussi.
+    /// </summary>
+    TMD3020,
+
     #endregion
 
     #region Erreurs de dataflows (4)
@@ -249,19 +254,24 @@ public enum ErrorType
     #region Erreurs de domaines (6)
 
     /// <summary>
-    /// Le domaine '{domain}' est déjà défini.
+    /// Domaine en doublon.
     /// </summary>
     TMD6001,
 
     /// <summary>
-    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter.
+    /// Conversion déjà définie.
     /// </summary>
     TMD6002,
 
     /// <summary>
-    /// La configuration '{Name}' requiert que le domaine '{domain}' ait une implémentation pour le language '{Language}'.
+    /// Implémentation manquante.
     /// </summary>
     TMD6003,
+
+    /// <summary>
+    /// Domaine de collection non générique.
+    /// </summary>
+    TMD6004,
 
     #endregion
 
@@ -376,7 +386,7 @@ public enum ErrorType
     TMD9002,
 
     /// <summary>
-    /// 'as' manquant sur la propriété cible de l'association pour une xxxToMany.
+    /// 'as' manquant sur la propriété cible de l'association pour une multiple
     /// </summary>
     TMD9003,
 
@@ -391,7 +401,7 @@ public enum ErrorType
     TMD9005,
 
     /// <summary>
-    /// Associtation xxxToMany sur classe sans PK simple.
+    /// Associtation multiple sur classe sans PK simple.
     /// </summary>
     TMD9006,
 
@@ -411,29 +421,19 @@ public enum ErrorType
     TMD9009,
 
     /// <summary>
-    /// 'type' déprécié 'manyToOne'.
+    /// Composition sur une enum: true.
     /// </summary>
     TMD9010,
 
     /// <summary>
-    /// 'type' déprécié 'oneToOne'.
+    /// Propriété simple sans domaine non générique.
     /// </summary>
     TMD9011,
 
     /// <summary>
-    /// 'type' déprécié 'oneToMany'.
-    /// </summary>
-    TMD9012,
-
-    /// <summary>
-    /// 'type' déprécié 'manyToMany'.
-    /// </summary>
-    TMD9013,
-
-    /// <summary>
     /// Alias association multiple impossible.
     /// </summary>
-    TMD9014,
+    TMD9012,
 
     #endregion
 }

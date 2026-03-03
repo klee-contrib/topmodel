@@ -1,6 +1,8 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Generator.Core;
+using TopModel.Utils;
 
-namespace TopModel.Generator.Jpa.ClassGeneration;
+namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
@@ -20,6 +22,27 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
         {
             Comment = "Code dont on veut obtenir l'instance.",
         };
+
+        if (Config.UniqueValueGeneration.CanConst)
+        {
+            foreach (
+                var uvp in classe
+                    .Properties.Where(p =>
+                        p.UniqueValuedProperty != null
+                        && (
+                            p.EnumProperty == null
+                            || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly
+                        )
+                    )
+                    .Select(p => p.UniqueValuedProperty!)
+            )
+            {
+                parameter.Imports.Add(
+                    $"{Config.GetEnumPackageName(uvp.Class, tag)}.{uvp.Class.NamePascal}{uvp.NamePascal}"
+                );
+            }
+        }
+
         constructor.AddParameter(parameter);
 
         if (Config.GetClassExtends(classe, tag) != null)
@@ -34,45 +57,38 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
-                constructor.AddBodyLine(1, $@"case {code}:");
+                constructor.AddBodyLine(1, $@"case {Config.GetValue(codeProperty, code)}:");
+
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
-                    var isString = Config.GetType(prop) == "String";
+                    var isString =
+                        Config.GetType(prop) == "String"
+                        && (prop.UniqueValuedProperty == null || !Config.UniqueValueGeneration.CanConst);
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
                     if (value == "null")
                     {
                         isString = false;
                     }
-                    else if (
-                        prop is { Association: Class association, AssociationProperty: IProperty ap }
-                        && Config.CanClassUseEnums(association, prop: ap)
-                        && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
-                    )
-                    {
-                        value = association.NamePascal + "." + value;
-                        isString = false;
-                        constructor.Imports.Add(association.GetImport(Config, tag));
-                    }
-                    else if (
-                        prop is { EnumProperty: IProperty ep }
-                        && Config.CanClassUseEnums(ep.Class, ep)
-                        && ep.Class != prop.Class
-                    )
-                    {
-                        value = Config.GetType(ep) + "." + value;
-                    }
-                    else if (
-                        Config.TranslateReferences == true
-                        && classe.DefaultProperty == prop
-                        && !Config.CanClassUseEnums(classe, prop)
-                    )
+                    else if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
                     {
                         value = refValue.ResourceKey;
+                    }
+                    else if (
+                        prop.UseClassForAssociation
+                        && prop.Association?.Enum == EnumMode.Class
+                        && prop.Association?.Readonly == true
+                    )
+                    {
+                        value = $"{prop.Association!.NamePascal}.{refValue.Name.ToConstantCase()}";
+                    }
+                    else
+                    {
+                        value = Config.GetValue(prop, value);
                     }
 
                     var quote = isString ? "\"" : string.Empty;
                     var val = quote + value + quote;
-                    constructor.AddBodyLine(2, $@"this.{prop.NameByClassCamel} = {val};");
+                    constructor.AddBodyLine(2, $@"this.{prop.NameCamel} = {val};");
                 }
 
                 constructor.AddBodyLine(2, $@"break;");

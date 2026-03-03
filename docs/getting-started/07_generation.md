@@ -33,7 +33,7 @@ Exemple (à ne pas reproduire) dans le fichier `"Utilisateur.tmd"` :
 module: Users
 uses:
   - References
-tags: 
+tags:
   - entity
 ---
 ```
@@ -70,7 +70,7 @@ Afin d'être sûr que vous ayez les mêmes éléments que ce tutoriel et éviter
 ---
 app: Hello World # Nom de l'application
 jpa:
-  - tags :
+  - tags:
       - back
       - dto
     outputDirectory: ./jpaOutput
@@ -80,10 +80,8 @@ javascript:
       - front
     outputDirectory: ./javascriptOutput
     modelRootPath: model
-    apiMode: vanilla
     entityMode: untyped
     apiClientRootPath: api
-
 ```
 
 `"Utilisateur.tmd"` :
@@ -94,12 +92,12 @@ javascript:
 module: Users
 uses:
   - References
-tags: 
+tags:
   - back
 ---
 class:
   name: Utilisateur
-  trigram : UTI
+  trigram: UTI
   comment: Utilisateur de l'application
   properties:
     - name: Id
@@ -111,13 +109,13 @@ class:
       comment: Adresse mail de l'utilisateur
       domain: DO_EMAIL
       required: true
-      label: Adresse mail 
+      label: Adresse mail
 
     - name: Nom
       comment: Nom de l'utilisateur
       domain: DO_LIBELLE
-      label: Nom 
-      
+      label: Nom
+
     - name: DateInscription
       comment: Date d'inscription
       domain: DO_DATE
@@ -127,13 +125,6 @@ class:
       comment: Type de l'utilisateur
       required: true
       label: Type
-      type: manyToOne # Précision facultative, ce paramétrage étant celui par défaut
-
-    - association: Profil
-      comment: Profil de l'utilisateur
-      required: false
-      type: manyToMany
-
 ---
 class:
   name: Profil
@@ -150,7 +141,6 @@ class:
       comment: Nom du profil
       label: Profil
       domain: DO_LIBELLE
-
 ```
 
 `"References.tmd"` :
@@ -158,8 +148,8 @@ class:
 ```yaml
 # References.tmd
 ---
-module : References
-tags : 
+module: References
+tags:
   - back
 ---
 class:
@@ -183,7 +173,6 @@ class:
     ADM: { Code: ADM, Libelle: Administrateur }
     GES: { Code: GES, Libelle: Gestionnaire }
     CLI: { Code: CLI, Libelle: Client }
-
 ```
 
 `"Dto.tmd"` :
@@ -211,10 +200,10 @@ class:
   properties:
     - alias:
         class: Utilisateur
-    - composition: ProfilDto 
-      name: Profil 
-      comment: Profil de l'utilisateur 
-      domain: DO_PAGE 
+    - composition: ProfilDto
+      name: Profil
+      comment: Profil de l'utilisateur
+      domain: DO_PAGE
 ---
 class:
   name: UtilisateurCreateDto
@@ -225,9 +214,9 @@ class:
         exclude:
           - Id
       prefix: true
-  mappers: 
-    to: 
-      - class: Utilisateur 
+  mappers:
+    to:
+      - class: Utilisateur
 ---
 class:
   name: UtilisateurDetailDto
@@ -245,8 +234,8 @@ class:
   mappers:
     from:
       - params:
-        - class: Utilisateur
-        - class: Profil
+          - class: Utilisateur
+          - class: Profil
 ---
 class:
   name: UtilisateurUpdateDto
@@ -259,7 +248,6 @@ class:
   mappers:
     to:
       - class: Utilisateur
-
 ```
 
 `"Domains.tmd"` :
@@ -304,7 +292,7 @@ domain:
   java:
     type: String
     annotations: # Ensemble des annotations à ajouter au dessus de la propriété
-      - text: "@Email" 
+      - text: "@Email"
         imports:
           - "javax.validation.constraints.Email" # Imports nécessaires au bon fonctionnement de l'annotation
   sql:
@@ -353,7 +341,7 @@ domain:
     type: List<{T}>
     imports:
       - java.util.list
-  sql: 
+  sql:
     type: varchar
 ```
 
@@ -370,58 +358,57 @@ uses:
   - Utilisateur
   - Dto
 ---
-endpoint: 
-  name: DeleteUtilisateur 
-  method: DELETE 
-  route: Utilisateur/Id 
-  description: Supprime un Utilisateur 
-  params: 
-    - alias: 
+endpoint:
+  name: DeleteUtilisateur
+  method: DELETE
+  route: Utilisateur/Id
+  description: Supprime un Utilisateur
+  params:
+    - alias:
         class: Utilisateur
-        property: Id 
+        property: Id
 ---
-endpoint: 
-  name: GetUtilisateur 
-  method: GET 
+endpoint:
+  name: GetUtilisateur
+  method: GET
   route: Utilisateur/Id
   description: Charge le détail d'un Utilisateur
-  params: 
-    - alias: 
+  params:
+    - alias:
         class: Utilisateur
-        property: Id 
-  returns: 
+        property: Id
+  returns:
     composition: UtilisateurDetailDto
     name: detail
     comment: Le détail d'un Utilisateur
 ---
-endpoint: 
-  name: CreateUtilisateur 
-  method: POST 
-  route: Utilisateur 
+endpoint:
+  name: CreateUtilisateur
+  method: POST
+  route: Utilisateur
   description: Créé un nouvel Utilisateur
-  params: 
-    - composition : UtilisateurCreateDto
+  params:
+    - composition: UtilisateurCreateDto
       name: detail
       comment: Le détail de l'utilisateur à créer
-  returns: 
+  returns:
     composition: UtilisateurDetailDto
     name: detail
     comment: Le détail de l'utilisateur créé
 ---
-endpoint: 
-  name: UpdateUtilisateur 
-  method: PATCH 
-  route: Utilisateur/Id 
-  description: Modifie un Utilisateur 
-  params: 
-    - composition : UtilisateurUpdateDto
+endpoint:
+  name: UpdateUtilisateur
+  method: PATCH
+  route: Utilisateur/Id
+  description: Modifie un Utilisateur
+  params:
+    - composition: UtilisateurUpdateDto
       name: detail
       comment: Le détail de l'utilisateur à modifier
   returns:
     composition: UtilisateurDetailDto
     name: detail
     comment: Le détail de l'utilisateur modifié
-
 ```
 
 ### Résultat de la génération
@@ -432,38 +419,38 @@ Dans les logs, vous pouvez observer :
 - Le numéro de la version TopModel utilisé
 - La liste des Watchers enregistrés
 - L'ensemble des fichiers créés, modifiés ou supprimés
-Des logs d'informations s'affichent sur le terminal, notamment les fichier créés suite à la génération.  
+  Des logs d'informations s'affichent sur le terminal, notamment les fichier créés suite à la génération.
 
-Dans votre répertoire projet, vous devriez voir la structure suivante apparaître :  
+Dans votre répertoire projet, vous devriez voir la structure suivante apparaître :
 
-``javascriptOutput``/  
+`javascriptOutput`/  
 ├─ api/  
-│  ├─ utilisateur-endpoint/  
-│  │  ├─ endpoint.ts  
+│ ├─ utilisateur-endpoint/  
+│ │ ├─ endpoint.ts  
 ├─ model/  
-│  ├─ user-dto/  
-│  │  ├─ profil-dto.ts  
-│  │  ├─ utilisateur-create-dto.ts  
-│  │  ├─ utilisateur-detail-dto.ts  
-│  │  ├─ utilisateur-dto.ts  
-│  │  ├─ utilisateur-update-dto.ts  
-``jpaOutput``/  
+│ ├─ user-dto/  
+│ │ ├─ profil-dto.ts  
+│ │ ├─ utilisateur-create-dto.ts  
+│ │ ├─ utilisateur-detail-dto.ts  
+│ │ ├─ utilisateur-dto.ts  
+│ │ ├─ utilisateur-update-dto.ts  
+`jpaOutput`/  
 ├─ javagen/  
-│  ├─ hello world/  
-│  │  ├─ dtos/  
-│  │  │  ├─ userdto/  
-│  │  │  │  ├─ ProfilDto.java  
-│  │  │  │  ├─ UtilisateurCreateDto.java  
-│  │  │  │  ├─ UtilisateurDetail.java  
-│  │  │  │  ├─ UtilisateurDto.java  
-│  │  │  │  ├─ UtilisateurupdateDto.java  
-│  │  ├─ entities/  
-│  │  │  ├─ references/  
-│  │  │  │  ├─ TypeUtilisateur.java  
-│  │  │  ├─ users/  
-│  │  │  │  ├─ Profil.java  
-│  │  │  │  ├─ UserMappers.java  
-│  │  │  │  ├─ Utilisateur.java  
+│ ├─ hello world/  
+│ │ ├─ dtos/  
+│ │ │ ├─ userdto/  
+│ │ │ │ ├─ ProfilDto.java  
+│ │ │ │ ├─ UtilisateurCreateDto.java  
+│ │ │ │ ├─ UtilisateurDetail.java  
+│ │ │ │ ├─ UtilisateurDto.java  
+│ │ │ │ ├─ UtilisateurupdateDto.java  
+│ │ ├─ entities/  
+│ │ │ ├─ references/  
+│ │ │ │ ├─ TypeUtilisateur.java  
+│ │ │ ├─ users/  
+│ │ │ │ ├─ Profil.java  
+│ │ │ │ ├─ UserMappers.java  
+│ │ │ │ ├─ Utilisateur.java
 
 ## Générer du 'SQL' (postgresql)
 
@@ -479,7 +466,6 @@ sql: # Nom du générateur
   - tags: # Liste des tags des fichiers à filtrer pour ce paramétrage
       - back # Tag des fichiers contenant des classes persistées
     outputDirectory: ./sqlOutput/model/
-
 ```
 
 ### Scripts de créations des tables
@@ -543,42 +529,42 @@ Nous avons donc ajouté un générateur à notre modèle, puis généré le code
 
 ### Résultat de la génération
 
-Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre répertoire final :  
+Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre répertoire final :
 
-``javascriptOutput``/  
+`javascriptOutput`/  
 ├─ api/  
-│  ├─ utilisateur-endpoint/  
-│  │  ├─ endpoint.ts  
+│ ├─ utilisateur-endpoint/  
+│ │ ├─ endpoint.ts  
 ├─ model/  
-│  ├─ user-dto/  
-│  │  ├─ profil-dto.ts  
-│  │  ├─ utilisateur-create-dto.ts  
-│  │  ├─ utilisateur-detail-dto.ts  
-│  │  ├─ utilisateur-dto.ts  
-│  │  ├─ utilisateur-update-dto.ts  
-``jpaOutput``/  
+│ ├─ user-dto/  
+│ │ ├─ profil-dto.ts  
+│ │ ├─ utilisateur-create-dto.ts  
+│ │ ├─ utilisateur-detail-dto.ts  
+│ │ ├─ utilisateur-dto.ts  
+│ │ ├─ utilisateur-update-dto.ts  
+`jpaOutput`/  
 ├─ javagen/  
-│  ├─ hello world/  
-│  │  ├─ dtos/  
-│  │  │  ├─ userdto/  
-│  │  │  │  ├─ ProfilDto.java  
-│  │  │  │  ├─ UtilisateurCreateDto.java  
-│  │  │  │  ├─ UtilisateurDetail.java  
-│  │  │  │  ├─ UtilisateurDto.java  
-│  │  │  │  ├─ UtilisateurupdateDto.java  
-│  │  ├─ entities/  
-│  │  │  ├─ references/  
-│  │  │  │  ├─ TypeUtilisateur.java  
-│  │  │  ├─ users/  
-│  │  │  │  ├─ Profil.java  
-│  │  │  │  ├─ UserMappers.java  
-│  │  │  │  ├─ Utilisateur.java  
-``sqlOutput``/  
+│ ├─ hello world/  
+│ │ ├─ dtos/  
+│ │ │ ├─ userdto/  
+│ │ │ │ ├─ ProfilDto.java  
+│ │ │ │ ├─ UtilisateurCreateDto.java  
+│ │ │ │ ├─ UtilisateurDetail.java  
+│ │ │ │ ├─ UtilisateurDto.java  
+│ │ │ │ ├─ UtilisateurupdateDto.java  
+│ │ ├─ entities/  
+│ │ │ ├─ references/  
+│ │ │ │ ├─ TypeUtilisateur.java  
+│ │ │ ├─ users/  
+│ │ │ │ ├─ Profil.java  
+│ │ │ │ ├─ UserMappers.java  
+│ │ │ │ ├─ Utilisateur.java  
+`sqlOutput`/  
 ├─ model/  
-│  ├─ 01_crebas.sql  
-│  ├─ 02_index.sql  
-│  ├─ 03_uniq.sql  
-│  ├─ 04_references.sql  
+│ ├─ 01_crebas.sql  
+│ ├─ 02_index.sql  
+│ ├─ 03_uniq.sql  
+│ ├─ 04_references.sql
 
 ## Génération en continu
 

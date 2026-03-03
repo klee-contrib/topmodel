@@ -1,6 +1,6 @@
 ﻿using TopModel.Core.Model;
 
-namespace TopModel.Generator.Jpa.ClassGeneration;
+namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
@@ -13,7 +13,7 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
     public override IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
         return classe.Properties.Where(p =>
-            (!p.AssociationToMany || !classe.IsPersistent)
+            (!p.AssociationMultiple && !p.IsReverseProperty || !classe.IsPersistent)
             && (p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
         );
     }
@@ -24,16 +24,6 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
             "Column",
             imports: "org.springframework.data.relational.core.mapping.Column"
         ).AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
-    }
-
-    public override string GetPropertyName(IProperty property)
-    {
-        return property.NameCamel;
-    }
-
-    public override string GetPropertyType(IProperty property)
-    {
-        return Config.GetType(property, useClassForAssociation: false);
     }
 
     protected override string GetDefaultValue(IProperty property)

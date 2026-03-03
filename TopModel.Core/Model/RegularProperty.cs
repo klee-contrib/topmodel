@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class RegularProperty : IProperty
+internal class RegularProperty : IProperty
 {
 #nullable disable
     public string Name { get; set; }
@@ -15,9 +15,9 @@ public class RegularProperty : IProperty
     public string NameCamel =>
         ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
 
-    public string NameByClassPascal => NamePascal;
+    public string PropertyNamePascal => NamePascal;
 
-    public string NameByClassCamel => NameCamel;
+    public string PropertyNameCamel => NameCamel;
 
 #nullable enable
 
@@ -29,7 +29,11 @@ public class RegularProperty : IProperty
 
     public bool Required { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public LocatedString? Trigram { get; set; }
 
@@ -66,8 +70,6 @@ public class RegularProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public bool UseLegacyRoleName { get; init; }
-
     public Decorator? SourceDecorator { get; set; }
 
 #nullable disable
@@ -94,7 +96,6 @@ public class RegularProperty : IProperty
             Required = Required,
             Readonly = Readonly,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
             Annotations = Annotations,
         };

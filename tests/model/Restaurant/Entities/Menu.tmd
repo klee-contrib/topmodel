@@ -112,7 +112,7 @@ class:
       comment: Ordre d'affichage du plat dans le menu
 
   unique:
-    - [MenuId, Ordre]
+    - [Menu, Ordre]
 ---
 class:
   name: Promotion
@@ -122,6 +122,7 @@ class:
   properties:
     - association: Plat
       primaryKey: true
+      withReverse: true
       comment: Plat concerné par la promotion.
 
     - name: Libelle

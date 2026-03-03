@@ -153,6 +153,18 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
+  <data name="TMD6001" xml:space="preserve">
+    <value>Le domaine '{0}' est déjà défini.</value>
+  </data>
+  <data name="TMD6002" xml:space="preserve">
+    <value>La conversion entre '{0}' et '{1}' est déjà définie dans un autre convertisseur.</value>
+  </data>
+  <data name="TMD6003" xml:space="preserve">
+    <value>La configuration '{0}' requiert que le domaine '{1}' ait une implémentation pour l'un des langages suivants : {2}.</value>
+  </data>
+  <data name="TMD6004" xml:space="preserve">
+    <value>Le domaine doit être générique pour être défini comme un domaine de collection (`genericType` doit être défini sur toutes les implémentations).</value>
+  </data>
   <data name="TMD9001" xml:space="preserve">
     <value>La propriété '{0}' est déjà référencée dans la définition de l'alias.</value>
   </data>
@@ -160,7 +172,7 @@
     <value>La classe '{0}' n'a pas de clé primaire simple, vous devez renseigner une propriété cible pour l'utiliser dans une association.</value>
   </data>
   <data name="TMD9003" xml:space="preserve">
-    <value>Cette association ne peut pas avoir le type '{0}' car le domaine '{1}' ne contient pas de définition de domaine 'as' pour '{2}'.</value>
+    <value>Cette association ne peut pas être multiple car le domaine '{0}' ne contient pas de définition de domaine 'as' pour '{1}'.</value>
   </data>
   <data name="TMD9004" xml:space="preserve">
     <value>Cette association ne peut pas définir d'association réciproque car le domaine {0} ne contient pas de définition de domaine 'as' pour '{1}'.</value>
@@ -169,7 +181,7 @@
     <value>Le domaine '{0}' doit définir un domaine 'as' pour '{1}' pour définir un alias '{1}' sur la propriété '{2}' de la classe '{3}'.</value>
   </data>
   <data name="TMD9006" xml:space="preserve">
-    <value>Il est impossible de définir une association 'oneToMany' ou 'manyToMany' sur classe sans clé primaire simple.</value>
+    <value>Il est impossible de définir une association multiple sur classe sans clé primaire simple.</value>
   </data>
   <data name="TMD9007" xml:space="preserve">
     <value>Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.</value>
@@ -181,18 +193,12 @@
     <value>Il est impossible de surcharger la composition sur un alias d'une propriété standard (ni association, ni composition).</value>
   </data>
   <data name="TMD9010" xml:space="preserve">
-    <value>La propriété 'type' est dépréciée et sera retirée en 4.0. 'manyToOne' est la valeur par défaut, vous pouvez la retirer.</value>
+    <value>Il est impossible de définir une composition sur la classe '{0}', car il s'agit d'une classe `enum: true`.</value>
   </data>
   <data name="TMD9011" xml:space="preserve">
-    <value>La propriété 'type' est dépréciée et sera retirée en 4.0. Vous pouvez définir une 'oneToOne' en retirant la définition de 'type' et en ajoutant une contrainte d'unicité sur la propriété.</value>
+    <value>Il est impossible d'utiliser le domaine '{0}' pour la propriété '{1}' car il n'est pas non générique (`type` doit être défini sur toutes les implémentations).</value>
   </data>
   <data name="TMD9012" xml:space="preserve">
-    <value>La propriété 'type' est dépréciée et sera retirée en 4.0. Vous devez définir l'association réciproque sur la classe cible pour définir une 'oneToMany'.</value>
-  </data>
-  <data name="TMD9013" xml:space="preserve">
-    <value>La propriété 'type' est dépréciée et sera retirée en 4.0. Vous devez définir une classe d'association explicite pour votre 'manyToMany'.</value>
-  </data>
-  <data name="TMD9014" xml:space="preserve">
     <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>
   </data>
 </root>

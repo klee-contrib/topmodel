@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -15,7 +16,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && !Config.CanClassUseEnums(classe);
+        return !classe.Abstract && classe.IsPersistent && !classe.Readonly;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
@@ -39,16 +40,21 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             "name",
             $@"""{classe.SqlName}"""
         );
-        if (classe.UniqueKeys.Count > 0)
+
+        var uks = classe.UniqueKeys.Where(uk =>
+            uk.Count > 1 || !classe.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
+        );
+        if (uks.Any())
         {
-            var uks = classe.UniqueKeys.Select(uk =>
-                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint").AddAttribute(
-                    "columnNames",
-                    uk.Select(u => $@"""{u.SqlName}""").ToArray()
+            tableAnnotation.AddAttribute(
+                "uniqueConstraints",
+                uks.Select(uk =>
+                    new JavaAnnotation(
+                        "UniqueConstraint",
+                        imports: "jakarta.persistence.UniqueConstraint"
+                    ).AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
                 )
             );
-
-            tableAnnotation.AddAttribute("uniqueConstraints", uks);
         }
 
         yield return tableAnnotation;
@@ -63,7 +69,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (classe.Reference)
         {
             var cacheAnnotation = new JavaAnnotation("Cache", imports: "org.hibernate.annotations.Cache");
-            if (Config.CanClassUseEnums(classe))
+            if (classe.Readonly)
             {
                 yield return new JavaAnnotation("Immutable", imports: "org.hibernate.annotations.Immutable");
                 cacheAnnotation.AddAttribute(
@@ -92,10 +98,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var annotations = new List<JavaAnnotation>();
             annotations.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(pk, tag));
-            if (
-                pk is { Association: Class association }
-                && !(Config.CanClassUseEnums(association) && Config.EnumsAsEnums)
-            )
+            if (pk is { Association: Class { Enum: not EnumMode.Enum } })
             {
                 annotations.AddRange(JpaModelPropertyGenerator.GetJpaAssociationAnnotations(pk, tag));
             }
@@ -108,10 +111,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     annotations.Add(JpaModelPropertyGenerator.EnumAnnotation);
                 }
             }
-            var field = new JavaField(
-                JpaModelPropertyGenerator.GetPropertyType(pk),
-                JpaModelPropertyGenerator.GetPropertyName(pk)
-            ).AddRange(annotations);
+            var field = new JavaField(Config.GetType(pk), pk.NameCamel).AddRange(annotations);
             javaClass.Add(field);
         }
 
@@ -143,7 +143,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             equalsMethod.AddBodyLine();
             equalsMethod.AddBodyLine(
-                @$"if ({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{"
+                @$"if ({string.Join(" || ", associations.Select(pk => pk.NameCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{"
             );
             equalsMethod.AddBodyLine(1, "return false;");
             equalsMethod.AddBodyLine("}");
@@ -151,7 +151,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         equalsMethod.AddBodyLine();
         equalsMethod.AddBodyLine(
-            $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)})"))};"
+            $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)})"))};"
         );
 
         javaClass.Add(equalsMethod);
@@ -160,7 +160,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             new JavaAnnotation("Override")
         );
         hashCodeMethod.AddBodyLine(
-            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameByClassCamel} == null ? null : " : string.Empty)}{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}"))});"
+            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}"))});"
         );
         hashCodeMethod.Imports.Add("java.util.Objects");
         javaClass.Add(hashCodeMethod);
@@ -174,7 +174,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && classe.PrimaryKey.First() is { Association: Class association, AssociationProperty: IProperty ap } pk
         )
         {
-            var javaField = new JavaField(JpaModelPropertyGenerator.GetPropertyType(ap), pk.NameCamel)
+            var javaField = new JavaField(Config.GetType(ap, forceAssociationPropertyType: true), pk.PropertyNameCamel)
             {
                 Comment =
                 {
@@ -240,12 +240,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (
             classe.PrimaryKey.Count() == 1
-            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap }
+            && classe.PrimaryKey.FirstOrDefault() is { AssociationProperty: IProperty ap, UseClassForAssociation: true }
         )
         {
-            var propertyName = classe.PrimaryKey.First().NameCamel;
-            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap);
-            string setterName = $"set{classe.PrimaryKey.First().NamePascal}";
+            var propertyName = classe.PrimaryKey.First().PropertyNameCamel;
+            var propertyType = Config.GetType(ap);
+            string setterName = $"set{classe.PrimaryKey.First().PropertyNamePascal}";
             var method = new JavaMethod("void", setterName)
             {
                 Visibility = "public",
@@ -302,7 +302,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
     {
-        if (pk is { AssociationProperty: IProperty ap } && !Config.EnumsAsEnums)
+        if (pk is { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum })
         {
             return $".{JpaModelPropertyGenerator.GetGetterName(ap)}()";
         }
@@ -322,11 +322,11 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.AssociationToMany))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {
-                var propertyName = ap.NameByClassCamel;
+                var propertyName = ap.NameCamel;
                 var adder = new JavaMethod("void", $"add{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
                     Comment = $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
@@ -334,21 +334,17 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     .AddParameter(
                         new JavaMethodParameter(ap.Association!.NamePascal, ap.Association!.NameCamel)
                         {
-                            Comment = $"value to add to {ap.ReverseProperty!.NameByClassCamel}",
+                            Comment = $"value to add to {ap.ReverseProperty!.NameCamel}",
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.add({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.AssociationToMany)
+                if (ap.ReverseProperty!.AssociationMultiple)
                 {
-                    adder.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().add(this);"
-                    );
+                    adder.AddBodyLine(@$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NamePascal}().add(this);");
                 }
                 else
                 {
-                    adder.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NameByClassPascal}(this);"
-                    );
+                    adder.AddBodyLine(@$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NamePascal}(this);");
                 }
 
                 yield return adder;
@@ -358,11 +354,11 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(t => t.AssociationToMany))
+        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {
-                var propertyName = ap.NameByClassCamel;
+                var propertyName = ap.NameCamel;
                 var remover = new JavaMethod("void", $"remove{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
                     Comment =
@@ -375,17 +371,15 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.remove({ap.Association!.NameCamel});");
-                if (ap.ReverseProperty!.AssociationToMany)
+                if (ap.ReverseProperty!.AssociationMultiple)
                 {
                     remover.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NameByClassPascal}().remove(this);"
+                        @$"{ap.Association!.NameCamel}.get{ap.ReverseProperty!.NamePascal}().remove(this);"
                     );
                 }
                 else
                 {
-                    remover.AddBodyLine(
-                        @$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NameByClassPascal}(null);"
-                    );
+                    remover.AddBodyLine(@$"{ap.Association!.NameCamel}.set{ap.ReverseProperty!.NamePascal}(null);");
                 }
                 yield return remover;
             }

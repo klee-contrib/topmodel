@@ -53,25 +53,25 @@ public class Restaurant {
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
+	 * Association réciproque de Menu.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Menu> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
+	 * Association réciproque de Plat.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Plat> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
+	 * Association réciproque de Promotion.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<Promotion> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
+	 * Association réciproque de AvisClient.Restaurant.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
 	private List<AvisClient> avisClients;
@@ -79,8 +79,7 @@ public class Restaurant {
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurant")
-	private List<TableRestaurant> tables;
+	private List<Integer> tableIds;
 
 	/**
 	 * Getter for id.
@@ -167,15 +166,15 @@ public class Restaurant {
 	}
 
 	/**
-	 * Getter for tables.
+	 * Getter for tableIds.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return value of {@link #tableIds tableIds}.
 	 */
-	public List<TableRestaurant> getTables() {
-		if (this.tables == null) {
-			this.tables = new ArrayList<>();
+	public List<Integer> getTableIds() {
+		if (this.tableIds == null) {
+			this.tableIds = new ArrayList<>();
 		}
-		return this.tables;
+		return this.tableIds;
 	}
 
 	/**
@@ -243,11 +242,11 @@ public class Restaurant {
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Set the value of {@link #tableIds tableIds}.
+	 * @param tableIds value to set.
 	 */
-	public void setTables(List<TableRestaurant> tables) {
-		this.tables = tables;
+	public void setTableIds(List<Integer> tableIds) {
+		this.tableIds = tableIds;
 	}
 
 	/**
@@ -287,15 +286,6 @@ public class Restaurant {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#tables tables}.
-	 * @param tableRestaurant value to add to restaurant.
-	 */
-	void addTableRestaurant(TableRestaurant tableRestaurant) {
-		this.tables.add(tableRestaurant);
-		tableRestaurant.setRestaurant(this);
-	}
-
-	/**
 	 * Remove a value from {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#menus menus}.
 	 * @param menu menu value to remove.
 	 */
@@ -332,15 +322,6 @@ public class Restaurant {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#tables tables}.
-	 * @param tableRestaurant tableRestaurant value to remove.
-	 */
-	void removeTableRestaurant(TableRestaurant tableRestaurant) {
-		this.tables.remove(tableRestaurant);
-		tableRestaurant.setRestaurant(null);
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant Restaurant}.
 	 */
 	public enum Fields {
@@ -352,7 +333,7 @@ public class Restaurant {
 		PLATS(List.class),
 		PROMOTIONS(List.class),
 		AVIS_CLIENTS(List.class),
-		TABLES(List.class);
+		TABLE_IDS(List.class);
 
 		private final Class<?> type;
 

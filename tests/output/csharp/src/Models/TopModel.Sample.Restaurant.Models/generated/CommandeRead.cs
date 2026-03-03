@@ -51,7 +51,7 @@ public partial record CommandeRead
     [Required]
     [ReferencedType(typeof(StatutCommande))]
     [Domain(Domains.Code)]
-    public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
+    public StatutCommande? StatutCommande { get; set; } = Models.StatutCommande.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
@@ -71,7 +71,7 @@ public partial record CommandeRead
     public ReservationRead? Reservation { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Association réciproque de LigneCommande.Commande.
     /// </summary>
     [Required]
     public ICollection<LigneCommandeRead> Lignes { get; set; } = [];

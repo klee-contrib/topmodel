@@ -97,7 +97,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="categoriePlatCode">Catégorie du plat.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats.</returns>
-    public async Task<ICollection<PlatItem>> GetPlats(bool disponible = true, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats(bool disponible = true, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -109,7 +109,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<ICollection<IPlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Plats correspondant aux critères de recherche.</returns>
-    public async Task<ICollection<PlatItem>> SearchPlats(string? nom = null, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> SearchPlats(string? nom = null, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -166,7 +166,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<PlatItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<ICollection<IPlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>

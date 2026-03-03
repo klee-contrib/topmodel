@@ -11,6 +11,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -59,6 +61,7 @@ public class Plat {
 	 */
 	@NotNull
 	@Column("cat_code")
+	@Enumerated(EnumType.STRING)
 	private String categoriePlatCode;
 
 	/**

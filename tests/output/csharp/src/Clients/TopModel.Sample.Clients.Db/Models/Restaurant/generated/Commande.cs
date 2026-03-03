@@ -49,10 +49,8 @@ public partial record Commande
     /// <summary>
     /// Client ayant passé la commande.
     /// </summary>
-    [Column("per_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
+    public Client? Client { get; set; }
 
     /// <summary>
     /// Table associée à la commande.
@@ -64,30 +62,22 @@ public partial record Commande
     /// <summary>
     /// Réservation associée à la commande.
     /// </summary>
-    [Column("rev_id")]
-    [Domain(Domains.Id)]
-    public int? ReservationId { get; set; }
+    public Reservation? Reservation { get; set; }
 
     /// <summary>
     /// Statut de la commande.
     /// </summary>
-    [Column("stc_code")]
     [Required]
     [ReferencedType(typeof(StatutCommande))]
-    [Domain(Domains.Code)]
-    public StatutCommande.Codes? StatutCommandeCode { get; set; } = StatutCommande.Codes.EN_ATT;
+    public StatutCommande? StatutCommande { get; set; }
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
     /// </summary>
-    [Column("avi_id")]
-    [Domain(Domains.Id)]
-    public int? AvisClientId { get; set; }
+    public AvisClient? AvisClient { get; set; }
 
     /// <summary>
-    /// Association réciproque de LigneCommande.CommandeId.
+    /// Association réciproque de LigneCommande.Commande.
     /// </summary>
-    [Domain(Domains.Liste)]
-    [NotMapped]
-    public ICollection<int>? Lignes { get; set; }
+    public ICollection<LigneCommande> Lignes { get; set; } = [];
 }

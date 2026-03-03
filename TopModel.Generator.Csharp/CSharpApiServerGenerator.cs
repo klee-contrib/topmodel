@@ -30,11 +30,11 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
         );
     }
 
-    protected virtual string GetParam(IProperty param)
+    protected virtual string GetParam(IProperty param, string tag)
     {
         var sb = new StringBuilder();
 
-        string defaultValue = Config.GetValue(param);
+        var defaultValue = Config.GetDefaultValue(param, tag);
 
         var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam();
 
@@ -189,7 +189,7 @@ public class {className} : Controller
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
+                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();

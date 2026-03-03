@@ -71,9 +71,8 @@ public class Commande {
 	/**
 	 * Table associée à la commande.
 	 */
-	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
-	private TableRestaurant table;
+	@Column(name = "TAB_ID", columnDefinition = "int")
+	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
@@ -97,7 +96,7 @@ public class Commande {
 	private AvisClient avisClient;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Association réciproque de LigneCommande.Commande.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
 	private List<LigneCommande> lignes;
@@ -148,12 +147,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for table.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #table table}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public TableRestaurant getTable() {
-		return this.table;
+	public Integer getTableId() {
+		return this.tableId;
 	}
 
 	/**
@@ -236,11 +235,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #table table}.
-	 * @param table value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTable(TableRestaurant table) {
-		this.table = table;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
 	}
 
 	/**
@@ -302,7 +301,7 @@ public class Commande {
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT(Client.class),
-		TABLE(TableRestaurant.class),
+		TABLE_ID(Integer.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		AVIS_CLIENT(AvisClient.class),

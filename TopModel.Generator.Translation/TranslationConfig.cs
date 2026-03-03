@@ -17,9 +17,4 @@ public class TranslationConfig : GeneratorConfigBase
     public override string[] PropertiesWithTagVariableSupport => [nameof(RootPath)];
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(RootPath)];
-
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
-    {
-        throw new NotSupportedException();
-    }
 }

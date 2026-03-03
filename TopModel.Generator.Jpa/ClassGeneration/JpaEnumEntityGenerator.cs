@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -25,7 +26,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && Config.CanClassUseEnums(classe) && classe.IsPersistent;
+        return !classe.Abstract && classe.IsPersistent && classe.Enum == EnumMode.Class && classe.Readonly;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
@@ -40,13 +41,15 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             var code = refValue.Value[codeProperty];
-            yield return new JavaField(classe.NamePascal, code)
+            var field = new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
             {
                 Visibility = "public",
                 Static = true,
                 Final = true,
-                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code})",
+                DefaultValue = $"new {classe.NamePascal}({Config.GetValue(codeProperty, code)})",
             }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
+
+            yield return field;
         }
         foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))
         {

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#pragma warning disable KTA1200
+
+using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
 
 namespace TopModel.Generator.Core;
@@ -29,5 +31,12 @@ public static class GeneratorUtils
             generator.Number = number;
             return generator;
         });
+    }
+
+    extension(UniqueValueGenerationMode mode)
+    {
+        public bool CanEnum => (mode & UniqueValueGenerationMode.EnumOnly) > 0;
+
+        public bool CanConst => (mode & UniqueValueGenerationMode.ConstOnly) > 0;
     }
 }

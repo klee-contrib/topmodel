@@ -11,9 +11,9 @@ public class ModelConfig : ConfigBase
 
     public bool PluralizeTableNames { get; set; }
 
-    public bool UseLegacyRoleNames { get; set; }
+    public bool DefaultAssociationUseClass { get; set; }
 
-    public bool UseLegacyAssociationCompositionMappers { get; set; }
+    public bool UseLegacyRoleNames { get; set; }
 
     public I18nConfig I18n { get; set; } = new();
 

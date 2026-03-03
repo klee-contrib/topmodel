@@ -40,5 +40,5 @@ public partial record ClientItem
     /// </summary>
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    public string? NomComplet { get; set; }
+    public string? NomComplet { get; init; }
 }

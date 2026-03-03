@@ -9,6 +9,7 @@ class:
   name: StatutCommande
   trigram: STC
   reference: true
+  enum: true
   comment: Statut d'une commande
 
   properties:
@@ -33,6 +34,8 @@ class:
   name: CategoriePlat
   trigram: CAT
   reference: true
+  enum: class
+  readonly: true
   comment: Catégorie de plat
 
   properties:
@@ -46,8 +49,69 @@ class:
       required: true
       comment: Libellé de la catégorie
 
+    - name: Ordre
+      domain: DO_QUANTITE
+      required: true
+      comment: Ordre d'affichage dans le menu.
+
+  unique:
+    - [Ordre]
+
   values:
-    Entree: { Code: ENTREE, Libelle: Entrée }
-    Plat: { Code: PLAT, Libelle: Plat principal }
-    Dessert: { Code: DESSERT, Libelle: Dessert }
-    Boisson: { Code: BOISSON, Libelle: Boisson }
+    Entree: { Code: ENTREE, Libelle: Entrée, Ordre: 2 }
+    Plat: { Code: PLAT, Libelle: Plat principal, Ordre: 3 }
+    Dessert: { Code: DESSERT, Libelle: Dessert, Ordre: 4 }
+    Boisson: { Code: BOISSON, Libelle: Boisson, Ordre: 1 }
+---
+class:
+  name: Departement
+  trigram: DEP
+  reference: true
+  readonly: true
+  comment: Département
+
+  properties:
+    - name: Code
+      domain: DO_CODE
+      primaryKey: true
+      comment: Code du département.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé du département.
+
+    - association: Region
+      required: true
+      useClass: false
+      comment: Région associée.
+
+  values:
+    Paris: { Code: 75, Libelle: Paris, RegionCode: IDF }
+    HautsDeSeine: { Code: 92, Libelle: Hauts de Seine, RegionCode: IDF }
+    SeineSaintDenis: { Code: 93, Libelle: Seine Saint Denis, RegionCode: IDF }
+    SeineEtMarne: { Code: 94, Libelle: Seine et Marne, RegionCode: IDF }
+---
+class:
+  name: Region
+  trigram: REG
+  reference: true
+  comment: Région
+
+  properties:
+    - name: Code
+      domain: DO_CODE
+      primaryKey: true
+      comment: Code de la région.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé de la région.
+
+    - name: NomResponsable
+      domain: DO_LIBELLE
+      comment: Nom du responsable de la région.
+
+  values:
+    Idf: { Code: IDF, Libelle: Île de France }

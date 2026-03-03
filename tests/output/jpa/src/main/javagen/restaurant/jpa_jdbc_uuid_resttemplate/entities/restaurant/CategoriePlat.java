@@ -9,7 +9,13 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
+
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
@@ -18,11 +24,24 @@ import jakarta.validation.constraints.NotNull;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlat {
 
+	@Transient
+	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson);
+
+	@Transient
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert);
+
+	@Transient
+	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree);
+
+	@Transient
+	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat);
+
 	/**
 	 * Code de la catégorie.
 	 */
 	@Id
 	@Column("cat_code")
+	@Enumerated(EnumType.STRING)
 	private String code;
 
 	/**
@@ -31,6 +50,39 @@ public class CategoriePlat {
 	@NotNull
 	@Column("cat_libelle")
 	private String libelle;
+
+	/**
+	 * Ordre d'affichage dans le menu.
+	 */
+	@NotNull
+	@Column("cat_ordre")
+	private Integer ordre;
+
+	/**
+	 * Enum constructor.
+	 * @param code Code dont on veut obtenir l'instance.
+	 */
+	public CategoriePlat(String code) {
+		this.code = code;
+		switch(code) {
+			case CategoriePlatCode.Boisson:
+				this.libelle = "restaurant.categoriePlat.values.Boisson";
+				this.ordre = CategoriePlatOrdre.Boisson;
+				break;
+			case CategoriePlatCode.Dessert:
+				this.libelle = "restaurant.categoriePlat.values.Dessert";
+				this.ordre = CategoriePlatOrdre.Dessert;
+				break;
+			case CategoriePlatCode.Entree:
+				this.libelle = "restaurant.categoriePlat.values.Entree";
+				this.ordre = CategoriePlatOrdre.Entree;
+				break;
+			case CategoriePlatCode.Plat:
+				this.libelle = "restaurant.categoriePlat.values.Plat";
+				this.ordre = CategoriePlatOrdre.Plat;
+				break;
+		}
+	}
 
 	/**
 	 * Getter for code.
@@ -51,18 +103,11 @@ public class CategoriePlat {
 	}
 
 	/**
-	 * Set the value of {@link #code code}.
-	 * @param code value to set.
+	 * Getter for ordre.
+	 *
+	 * @return value of {@link #ordre ordre}.
 	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	/**
-	 * Set the value of {@link #libelle libelle}.
-	 * @param libelle value to set.
-	 */
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public Integer getOrdre() {
+		return this.ordre;
 	}
 }

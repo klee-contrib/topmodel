@@ -21,9 +21,16 @@ public partial interface IDbRestaurantReferenceAccessors
     ICollection<CategoriePlat> LoadCategoriePlats();
 
     /// <summary>
-    /// Accesseur de référence pour le type StatutCommande.
+    /// Accesseur de référence pour le type Departement.
     /// </summary>
-    /// <returns>Liste de StatutCommande.</returns>
+    /// <returns>Liste de Departement.</returns>
     [ReferenceAccessor]
-    ICollection<StatutCommande> LoadStatutCommandes();
+    ICollection<Departement> LoadDepartements();
+
+    /// <summary>
+    /// Accesseur de référence pour le type Region.
+    /// </summary>
+    /// <returns>Liste de Region.</returns>
+    [ReferenceAccessor]
+    ICollection<Region> LoadRegions();
 }

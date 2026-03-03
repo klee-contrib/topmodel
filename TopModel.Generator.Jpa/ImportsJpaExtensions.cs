@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.Model;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa;
 
@@ -6,9 +7,9 @@ public static class ImportsJpaExtensions
 {
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        if (config.EnumsAsEnums && config.CanClassUseEnums(classe))
+        if (classe.Enum == EnumMode.Enum)
         {
-            return $"{config.GetEnumValuePackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
+            return $"{config.GetEnumPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
         }
 
         return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
@@ -18,7 +19,7 @@ public static class ImportsJpaExtensions
         this IProperty p,
         JpaConfig config,
         string tag,
-        bool forcePropertyType = false
+        bool forceAssociationPropertyType = false
     )
     {
         foreach (var di in config.GetDomainImports(p, tag))
@@ -33,38 +34,46 @@ public static class ImportsJpaExtensions
 
         if (
             p is { EnumProperty: IProperty ep, Association: null }
-            && ep.Class != null
-            && config.CanClassUseEnums(ep.Class, ep)
+            && config.AvailableClasses.Contains(ep.Class)
+            && (config.UniqueValueGeneration.CanEnum || ep.Class.Enum == EnumMode.Enum)
         )
         {
-            if (config.EnumsAsEnums)
-            {
-                yield return $"{config.GetEnumValuePackageName(ep.Class.EnumKey!.Class, config.GetBestClassTag(ep.Class.EnumKey!.Class, tag))}.{ep.Class.NamePascal}";
-            }
-            else
-            {
-                yield return $"{config.GetEnumPackageName(ep.Class, config.GetBestClassTag(ep.Class, tag))}.{config.GetEnumName(ep, ep.Class)}";
-            }
+            yield return $"{config.GetEnumPackageName(ep.Class, config.GetBestClassTag(ep.Class, tag))}.{config.GetEnumType(ep)}";
         }
 
-        if (p is { Association: Class association, AssociationProperty: IProperty ap } && !forcePropertyType)
+        if (
+            p is { Association: Class association, AssociationProperty: IProperty ap }
+            && config.AvailableClasses.Contains(association)
+        )
         {
-            if (config.CanClassUseEnums(association, ap))
+            if (association.Enum != null)
             {
-                if (config.EnumsAsEnums)
+                if (
+                    association.Enum == EnumMode.Enum
+                    || ap.EnumProperty != null
+                        && (!p.UseClassForAssociation || config.UseJdbc)
+                        && config.UniqueValueGeneration.CanEnum
+                )
                 {
-                    yield return $"{config.GetEnumValuePackageName(association.EnumKey!.Class, config.GetBestClassTag(association.EnumKey!.Class, tag))}.{association.NamePascal}";
+                    yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";
                 }
-                else if (p.Class?.IsPersistent != true)
-                {
-                    yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumName(ap, association)}";
-                }
-                else if (!config.UseJdbc && p.Class != null && association.IsPersistent && p.Class.IsPersistent)
+                else if (
+                    p.Class != null
+                    && association.IsPersistent
+                    && p.Class.IsPersistent
+                    && !forceAssociationPropertyType
+                )
                 {
                     yield return association.GetImport(config, config.GetBestClassTag(association, tag));
                 }
             }
-            else if (!config.UseJdbc && p.Class != null && association.IsPersistent && p.Class.IsPersistent)
+            else if (
+                !config.UseJdbc
+                && p.Class != null
+                && association.IsPersistent
+                && p.Class.IsPersistent
+                && !forceAssociationPropertyType
+            )
             {
                 yield return association.GetImport(config, config.GetBestClassTag(association, tag));
             }

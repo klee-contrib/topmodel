@@ -50,24 +50,21 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
 
                 string cardLeft;
                 string cardRight;
-                switch (property.AssociationType)
+
+                if (property.AssociationMultiple)
                 {
-                    case AssociationType.OneToOne:
-                        cardLeft = property.Required ? "1" : "0..1";
-                        cardRight = "1";
-                        break;
-                    case AssociationType.OneToMany:
-                        cardLeft = property.Required ? "1..*" : "0..*";
-                        cardRight = property.Required ? "1" : "0..1";
-                        break;
-                    case AssociationType.ManyToOne:
-                        cardLeft = property.Required ? "1" : "0..1";
-                        cardRight = "0..*";
-                        break;
-                    default:
-                        cardLeft = property.Required ? "1..*" : "0..*";
-                        cardRight = "0..*";
-                        break;
+                    cardLeft = property.Required ? "1..*" : "0..*";
+                    cardRight = property.Required ? "1" : "0..1";
+                }
+                else if (property.Unique)
+                {
+                    cardLeft = property.Required ? "1" : "0..1";
+                    cardRight = "1";
+                }
+                else
+                {
+                    cardLeft = property.Required ? "1" : "0..1";
+                    cardRight = "0..*";
                 }
 
                 diagram +=

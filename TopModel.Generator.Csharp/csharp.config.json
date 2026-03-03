@@ -116,6 +116,16 @@
       "type": "boolean",
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
     },
+    "uniqueValueGeneration": {
+      "type": "string",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
+      "enum": [
+        "none",
+        "const-only",
+        "enum-only",
+        "enum-or-const"
+      ]
+    },
     "persistentModelPath": {
       "type": "string",
       "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
@@ -260,10 +270,6 @@
         "persisted",
         "non-persisted"
       ]
-    },
-    "enumsForStaticReferences": {
-      "type": "boolean",
-      "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'."
     },
     "useEFComments": {
       "type": "boolean",

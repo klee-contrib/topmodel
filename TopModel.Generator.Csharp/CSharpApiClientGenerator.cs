@@ -105,10 +105,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             switch (property)
             {
-                case { Association: Class a } when Config.CanClassUseEnums(a):
-                    usings.Add(GetNamespace(a, tag));
-                    break;
-                case { EnumProperty: IProperty ep } when Config.CanClassUseEnums(ep.Class, ep):
+                case { EnumProperty: IProperty ep } when Config.UniqueValueGeneration.CanEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { Composition: Class cpc }:
@@ -233,13 +230,14 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             foreach (var param in endpoint.Params)
             {
+                var defaultValue = Config.GetDefaultValue(param, tag);
                 fw.Write(
-                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param) != "null")} {param.GetParamName().Verbatim()}"
+                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && defaultValue != "null")} {param.GetParamName().Verbatim()}"
                 );
 
                 if (param.IsQueryParam())
                 {
-                    fw.Write($" = {Config.GetValue(param)}");
+                    fw.Write($" = {defaultValue}");
                 }
 
                 if (endpoint.Params[^1] != param || Config.UseCancellationTokens)
@@ -272,7 +270,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
                 foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
-                    var type = Config.GetType(qp, nonNullable: Config.GetValue(qp) != "null");
+                    var type = Config.GetType(qp, nonNullable: Config.GetDefaultValue(qp, tag) != "null");
                     var nullable = type.EndsWith('?');
                     var toString = type.TrimEnd("?") switch
                     {

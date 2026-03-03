@@ -52,6 +52,13 @@ public class ClientAvecCommandes implements Serializable {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	private String departementCode;
+
+	/**
 	 * Adresse email du client.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
@@ -59,7 +66,7 @@ public class ClientAvecCommandes implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
@@ -101,7 +108,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTable() Commande#getTable()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private List<Integer> commandeTableId;
 
@@ -116,7 +123,7 @@ public class ClientAvecCommandes implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	private List<StatutCommande> commandeStatutCommandeCode;
+	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
@@ -156,6 +163,15 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getPrenom() {
 		return this.prenom;
+	}
+
+	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
 	}
 
 	/**
@@ -240,12 +256,12 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Getter for commandeStatutCommandeCode.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public List<StatutCommande> getCommandeStatutCommandeCode() {
-		return this.commandeStatutCommandeCode;
+	public List<StatutCommande> getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
@@ -288,6 +304,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
+	}
+
+	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
 	}
 
 	/**
@@ -363,11 +387,11 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommandeCode commandeStatutCommandeCode}.
-	 * @param commandeStatutCommandeCode value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setCommandeStatutCommandeCode(List<StatutCommande> commandeStatutCommandeCode) {
-		this.commandeStatutCommandeCode = commandeStatutCommandeCode;
+	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**
@@ -393,6 +417,7 @@ public class ClientAvecCommandes implements Serializable {
 		ID(Integer.class),
 		NOM(String.class),
 		PRENOM(String.class),
+		DEPARTEMENT_CODE(String.class),
 		EMAIL(String.class),
 		AVIS_CLIENTS(List.class),
 		COMMANDE_ID(List.class),
@@ -402,7 +427,7 @@ public class ClientAvecCommandes implements Serializable {
 		COMMANDE_CLIENT_ID(List.class),
 		COMMANDE_TABLE_ID(List.class),
 		COMMANDE_RESERVATION_ID(List.class),
-		COMMANDE_STATUT_COMMANDE_CODE(List.class),
+		COMMANDE_STATUT_COMMANDE(List.class),
 		COMMANDE_AVIS_CLIENT_ID(List.class),
 		COMMANDE_LIGNES(List.class);
 

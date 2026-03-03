@@ -93,7 +93,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats du restaurant</returns>
     [HttpGet("api/restaurants/{resId:int}/plats")]
-    public async Task<ICollection<PlatItem>> GetRestaurantPlats(int resId, bool disponible = true, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, bool disponible = true, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -121,7 +121,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des tables du restaurant</returns>
     [HttpGet("api/restaurants/{resId:int}/tables")]
-    public async Task<ICollection<TableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<ITableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -132,7 +132,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des restaurants</returns>
     [HttpGet("api/restaurants")]
-    public async Task<ICollection<RestaurantItem>> GetRestaurants(CancellationToken ct = default)
+    public async Task<ICollection<IRestaurantItem>> GetRestaurants(CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -157,7 +157,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des tables</returns>
     [HttpGet("api/restaurants/tables")]
-    public async Task<ICollection<TableItem>> GetTables([Required] int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<ITableItem>> GetTables([Required] int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

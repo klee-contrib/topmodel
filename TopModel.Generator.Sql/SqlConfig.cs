@@ -1,5 +1,4 @@
 ﻿using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
@@ -32,6 +31,11 @@ public class SqlConfig : GeneratorConfigBase
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
     /// </summary>
     public override bool IgnoreDefaultValues { get; set; } = true;
+
+    /// <summary>
+    /// Si le langage cible de la configuration supporte les enums.
+    /// </summary>
+    public override bool HasEnumSupport => false;
 
     /// <summary>
     /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).
@@ -82,7 +86,7 @@ public class SqlConfig : GeneratorConfigBase
 
     protected override bool PersistentOnly => true;
 
-    protected override bool UseNamedEnums => false;
+    protected override bool UseValueNameForValues => false;
 
     public static bool IsBoolean(IProperty property)
     {
@@ -93,11 +97,6 @@ public class SqlConfig : GeneratorConfigBase
             || domain.Implementations.Values.Any(di =>
                 di.Type?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false
             );
-    }
-
-    public override bool CanClassUseEnums(Class classe, IProperty? prop = null)
-    {
-        return false;
     }
 
     /// <summary>
@@ -112,15 +111,6 @@ public class SqlConfig : GeneratorConfigBase
                 $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
             )
             : identifier;
-    }
-
-    public override IEnumerable<Class> GetExtraClasses(ModelFile file)
-    {
-        return file
-            .Classes.Where(c => c.IsPersistent && !c.Abstract)
-            .SelectMany(cl => cl.Properties)
-            .Select(p => p.ManyToManyClass!)
-            .Where(c => c != null);
     }
 
     public virtual string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)
@@ -149,6 +139,11 @@ public class SqlConfig : GeneratorConfigBase
             TargetDBMS.Postgre => $"SEQ_{classe.SqlName}",
             var t => throw new NotSupportedException($"Sequence declaration is not implemented with {t}"),
         };
+    }
+
+    public string GetType(IProperty property)
+    {
+        return GetType(property, forceAssociationPropertyType: true);
     }
 
     public virtual string GetUniqueConstraintName(string tableName, string columnNames, string propertyNames)
@@ -187,7 +182,7 @@ public class SqlConfig : GeneratorConfigBase
 
     public override bool ShouldQuoteValue(IProperty property)
     {
-        var type = GetType(property);
+        var type = GetImplementation(property.Domain)?.Type?.ToLower();
         return (type ?? string.Empty).Contains("varchar")
             || type == "text"
             || type == "uniqueidentifier"
@@ -195,11 +190,6 @@ public class SqlConfig : GeneratorConfigBase
             || type == "bit"
             || (type ?? string.Empty).Contains("date")
             || (type ?? string.Empty).Contains("time");
-    }
-
-    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
-    {
-        throw new NotSupportedException();
     }
 
     protected override string QuoteValue(string value)

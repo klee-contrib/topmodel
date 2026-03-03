@@ -1,3 +1,7 @@
+## 4.0.0 (rc)
+
+Compatibilité avec TopModel 4.0.
+
 ## 3.2.2
 
 - [`cf3fda4`](https://github.com/klee-contrib/topmodel/commit/cf3fda48310f7b7197bce8fe143941c8b9f2e63c) - [Translation] Restreindre la génération des traductions des valeurs aux seules classes avec reference: true

@@ -29,6 +29,14 @@ public partial record EmployeWrite
     public string? Prenom { get; set; }
 
     /// <summary>
+    /// Département de résidence de la personne.
+    /// </summary>
+    [ReferencedType(typeof(Departement))]
+    [Domain(Domains.Code)]
+    [StringLength(10)]
+    public string? DepartementCode { get; set; } = Departement.ParisCode;
+
+    /// <summary>
     /// Numéro de téléphone de l'employé.
     /// </summary>
     [Domain(Domains.Telephone)]

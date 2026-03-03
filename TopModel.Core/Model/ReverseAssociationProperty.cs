@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-public class ReverseAssociationProperty : AssociationProperty
+internal class ReverseAssociationProperty : AssociationProperty
 {
 #nullable disable
     public override required AssociationProperty ReverseProperty { get; set; }
@@ -11,15 +11,11 @@ public class ReverseAssociationProperty : AssociationProperty
 
     public override Class Association => ReverseProperty.Class;
 
-    public override AssociationType Type =>
-        ReverseProperty.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-        : ReverseProperty.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-        : ReverseProperty.Type == AssociationType.OneToOne ? AssociationType.OneToOne
-        : AssociationType.ManyToMany;
+    public override bool Multiple => !ReverseProperty.Multiple && !ReverseProperty.Unique;
 
     public override string As => ReverseProperty.As;
 
-    public override bool Required => ReverseProperty.Required;
+    public override bool Required => !ReverseProperty.Unique && ReverseProperty.Required;
 
     public override string? ClassName => ReverseProperty.WithReverse?.ClassName;
 
@@ -44,4 +40,10 @@ public class ReverseAssociationProperty : AssociationProperty
 
     public override IList<AnnotationReference> ExcludedAnnotationReferences =>
         ReverseProperty.WithReverse?.ExcludedAnnotationReferences ?? [];
+
+    public override bool UseClass => ReverseProperty.UseClass;
+
+    internal override bool UseLegacyRoleName => ReverseProperty.UseLegacyRoleName;
+
+    internal override bool DefaultAssociationUseClass => ReverseProperty.DefaultAssociationUseClass;
 }

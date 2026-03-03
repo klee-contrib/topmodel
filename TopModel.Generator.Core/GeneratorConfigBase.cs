@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.FileModel;
@@ -36,35 +37,23 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// </summary>
     public virtual IList<string>? Disable { get; set; }
 
-    protected virtual bool UseNamedEnums => true;
-
-    protected virtual string NullValue => "null";
+    /// <summary>
+    /// Si le langage cible de la configuration supporte les enums.
+    /// </summary>
+    public virtual bool HasEnumSupport => true;
 
     /// <summary>
-    /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
+    /// Mode de génération des valeurs de propriétés avec clé d'unicité.
     /// </summary>
-    /// <param name="classe">Classe.</param>
-    /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
-    /// <returns>Oui/non.</returns>
-    public virtual bool CanClassUseEnums(Class classe, IProperty? prop = null)
-    {
-        if (!AvailableClasses.Contains(classe))
-        {
-            return false;
-        }
+    public virtual UniqueValueGenerationMode UniqueValueGeneration { get; set; } =
+        UniqueValueGenerationMode.EnumOrConst;
 
-        prop ??= classe.EnumKey;
+    /// <summary>
+    /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
+    /// </summary>
+    protected virtual bool UseValueNameForValues => true;
 
-        bool CheckProperty(IProperty fp)
-        {
-            return (
-                    fp == classe.EnumKey
-                    || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop)
-                ) && classe.Values.All(r => r.Value.ContainsKey(fp) && IsEnumNameValid(r.Value[fp]));
-        }
-
-        return classe.Enum && CheckProperty(prop!);
-    }
+    protected virtual string NullValue => "null";
 
     public virtual IEnumerable<ClassValue> GetAllValues(Class classe)
     {
@@ -231,7 +220,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual string? GetClassExtends(Class classe, string tag)
     {
-        return classe.Extends?.NamePascal
+        return GetTypeName(classe.Extends)
             ?? classe
                 .Decorators.SelectMany(d =>
                     GetDecoratorImplementationValues(i => i.Extends, classe, d.Decorator, d.Parameters, tag)
@@ -330,13 +319,28 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
     }
 
-    public virtual string GetEnumType(IProperty fp, bool isPrimaryKeyDef = false)
+    /// <summary>
+    /// Récupère le nom du type d'enum associé à la propriété demandée.
+    /// </summary>
+    /// <param name="prop">La propriété.</param>
+    /// <param name="internalReference">S'il s'agit d'une référence à la propriété depuis sa classe.</param>
+    /// <returns>Le nom du type.</returns>
+    public virtual string GetEnumType(IProperty prop, bool internalReference = false)
     {
-        return GetEnumType(
-            fp.EnumProperty?.Class?.Name ?? string.Empty,
-            fp.EnumProperty?.Name ?? string.Empty,
-            isPrimaryKeyDef
-        );
+        if (prop.EnumLikeProperty == null)
+        {
+            return string.Empty;
+        }
+
+        var className = prop.EnumLikeProperty?.Class?.NamePascal ?? string.Empty;
+        var propName = prop.EnumLikeProperty?.NamePascal ?? string.Empty;
+
+        if (prop.EnumLikeProperty?.Class?.Enum == EnumMode.Enum)
+        {
+            return className;
+        }
+
+        return GetEnumInEnumClassType(className, propName, internalReference);
     }
 
     /// <summary>
@@ -353,9 +357,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>
-    /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
+    /// <param name="forceAssociationPropertyType">Pour une association, retourne toujours le type de la propriété cible.</param>
+    /// <param name="skipChain">Récupère le type à l'index demandé dans la hiérarchie de domaine.</param>
     /// <returns>Le type.</returns>
-    public virtual string GetType(IProperty property, bool useClassForAssociation = false)
+    public virtual string GetType(IProperty property, bool forceAssociationPropertyType = false, int skipChain = 0)
     {
         string GetType(IEnumerable<(Domain Domain, bool Generic)> domainChain)
         {
@@ -365,18 +370,20 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
             if (queue.Count == 0)
             {
-                if (property is { Association: Class ac } && useClassForAssociation)
+                if (property.Association != null && property.UseClassForAssociation && !forceAssociationPropertyType)
                 {
-                    return ac.NamePascal;
+                    return GetTypeName(property.Association!);
                 }
                 else if (
-                    property is { EnumProperty: IProperty ep }
-                    && property.EnumProperty != null
-                    && CanClassUseEnums(ep.Class, ep)
+                    HasEnumSupport
+                    && property is { EnumLikeProperty: IProperty elp }
+                    && AvailableClasses.Contains(elp.Class)
+                    && (UniqueValueGeneration.CanEnum || elp.Class.Enum == EnumMode.Enum)
+                    && (!UseValueNameForValues || elp == property.EnumProperty)
                 )
                 {
-                    return (GetImplementation(ep.Domain)?.GenericType ?? "{T}")
-                        .Replace("{T}", GetEnumType(ep, ep.Class == property.Class))
+                    return (GetImplementation(elp.Domain)?.GenericType ?? "{T}")
+                        .Replace("{T}", GetEnumType(elp, elp.Class == property.Class))
                         .ParseTemplate(property, this);
                 }
             }
@@ -393,12 +400,38 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         return property switch
         {
-            { Composition: not null, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
-                .Replace("{T}", "{composition.name}")
+            { Composition: Class c, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
+                .Replace("{T}", GetTypeName(c))
                 .ParseTemplate(property, this),
-            { Composition: Class c } => c.NamePascal,
-            _ => GetType(property.DomainChain),
+            { Composition: Class c } => GetTypeName(c),
+            _ => GetType(property.DomainChain.Skip(skipChain)),
         };
+    }
+
+    /// <summary>
+    /// Récupère le nom du type pour une classe.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <returns>Le nom du type.</returns>
+    [return: NotNullIfNotNull(nameof(classe))]
+    public virtual string? GetTypeName(Class? classe)
+    {
+        return classe?.NamePascal;
+    }
+
+    public virtual string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
+    {
+        var sb = new StringBuilder();
+
+        if (!internalReference)
+        {
+            sb.Append($"{property.Class.NamePascal}.");
+        }
+
+        sb.Append(refName.ToPascalCase(strictIfUppercase: true));
+        sb.Append(property.NamePascal);
+
+        return sb.ToString();
     }
 
     /// <summary>
@@ -425,22 +458,31 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             return template.Value.Replace("{value}", value).ParseTemplate(property, this);
         }
 
-        var enumProp = property.EnumProperty;
-        var enumClass = enumProp?.Class;
-
-        if (UseNamedEnums && enumClass != null && enumClass.Enum && AvailableClasses.Contains(enumClass))
+        if (
+            HasEnumSupport
+            && UseValueNameForValues
+            && property.EnumProperty != null
+            && AvailableClasses.Contains(property.EnumProperty!.Class)
+            && (UniqueValueGeneration.CanEnum || property.EnumProperty?.Class.Enum == EnumMode.Enum)
+        )
         {
-            if (CanClassUseEnums(enumClass, enumProp))
+            return $"{GetEnumType(property.EnumProperty!).TrimEnd('?')}.{value}";
+        }
+        else if (
+            UseValueNameForValues
+            && UniqueValueGeneration.CanConst
+            && property.UniqueValuedProperty != null
+            && AvailableClasses.Contains(property.UniqueValuedProperty!.Class)
+        )
+        {
+            var refName = property
+                .UniqueValuedProperty!.Class.Values.SingleOrDefault(rv =>
+                    rv.Value[property.UniqueValuedProperty] == value
+                )
+                ?.Name;
+            if (refName != null)
             {
-                return $"{GetEnumType(enumProp!).TrimEnd('?')}.{value}";
-            }
-            else if (enumClass.EnumKey == enumProp)
-            {
-                var refName = enumClass.Values.SingleOrDefault(rv => rv.Value[enumProp] == value)?.Name;
-                if (refName != null)
-                {
-                    return GetConstEnumName(enumClass.Name, refName);
-                }
+                return GetUniqueValuedName(property.UniqueValuedProperty!, refName);
             }
         }
 
@@ -485,16 +527,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return GetImplementation(property.Domain)?.Type?.ToLower() == "string";
     }
 
-    protected virtual string GetConstEnumName(string className, string refName)
+    protected virtual string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)
     {
-        return $"{className.ToPascalCase(strictIfUppercase: true)}.{refName.ToPascalCase(strictIfUppercase: true)}";
-    }
-
-    protected abstract string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false);
-
-    protected virtual bool IsEnumNameValid(string name)
-    {
-        return !Regex.IsMatch(name ?? string.Empty, "^\\d");
+        return $"{className}{propName}";
     }
 
     protected virtual string QuoteValue(string value)

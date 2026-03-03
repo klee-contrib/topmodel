@@ -13,6 +13,8 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-import restaurant.jpa_sequence_server.enums.restaurant.StatutCommandeCode;
+import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
 
 /**
  * Commande d'un client.
@@ -71,9 +73,8 @@ public class Commande {
 	/**
 	 * Table associée à la commande.
 	 */
-	@JoinColumn(name = "TAB_ID", referencedColumnName = "TAB_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TableRestaurant.class)
-	private TableRestaurant table;
+	@Column(name = "TAB_ID", columnDefinition = "int")
+	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
@@ -85,9 +86,9 @@ public class Commande {
 	/**
 	 * Statut de la commande.
 	 */
-	@JoinColumn(name = "STC_CODE", referencedColumnName = "STC_CODE")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = StatutCommande.class)
-	private StatutCommande statutCommande = new StatutCommande(StatutCommandeCode.EN_ATT);
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
@@ -97,7 +98,7 @@ public class Commande {
 	private AvisClient avisClient;
 
 	/**
-	 * Association réciproque de LigneCommande.CommandeId.
+	 * Association réciproque de LigneCommande.Commande.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
 	private List<LigneCommande> lignes;
@@ -148,12 +149,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for table.
+	 * Getter for tableId.
 	 *
-	 * @return value of {@link #table table}.
+	 * @return value of {@link #tableId tableId}.
 	 */
-	public TableRestaurant getTable() {
-		return this.table;
+	public Integer getTableId() {
+		return this.tableId;
 	}
 
 	/**
@@ -236,11 +237,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #table table}.
-	 * @param table value to set.
+	 * Set the value of {@link #tableId tableId}.
+	 * @param tableId value to set.
 	 */
-	public void setTable(TableRestaurant table) {
-		this.table = table;
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
 	}
 
 	/**
@@ -284,7 +285,7 @@ public class Commande {
 		DATE_LIVRAISON(LocalDateTime.class),
 		MONTANT_TOTAL(BigDecimal.class),
 		CLIENT(Client.class),
-		TABLE(TableRestaurant.class),
+		TABLE_ID(Integer.class),
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		AVIS_CLIENT(AvisClient.class),

@@ -11,6 +11,7 @@ import java.util.List;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
@@ -29,7 +30,7 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Nom du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getNom() Restaurant#getNom()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getNom() RestaurantRead#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -37,51 +38,52 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Adresse du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAdresse() Restaurant#getAdresse()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getAdresse() RestaurantRead#getAdresse()}
 	 */
 	@Size(max = 100)
 	private String adresse;
 
 	/**
 	 * Numéro de téléphone.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTelephone() Restaurant#getTelephone()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getTelephone() RestaurantRead#getTelephone()}
 	 */
 	@Size(max = 20)
 	private String telephone;
 
 	/**
-	 * Association réciproque de Menu.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getMenus() Restaurant#getMenus()}
+	 * Association réciproque de Menu.Restaurant.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getMenus() RestaurantRead#getMenus()}
 	 */
 	@NotNull
 	private List<Integer> menus;
 
 	/**
-	 * Association réciproque de Plat.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPlats() Restaurant#getPlats()}
+	 * Association réciproque de Plat.Restaurant.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getPlats() RestaurantRead#getPlats()}
 	 */
 	@NotNull
 	private List<Integer> plats;
 
 	/**
-	 * Association réciproque de Promotion.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getPromotions() Restaurant#getPromotions()}
+	 * Association réciproque de Promotion.Restaurant.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getPromotions() RestaurantRead#getPromotions()}
 	 */
 	private List<Integer> promotions;
 
 	/**
-	 * Association réciproque de AvisClient.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAvisClients() Restaurant#getAvisClients()}
+	 * Association réciproque de AvisClient.Restaurant.
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getAvisClients() RestaurantRead#getAvisClients()}
 	 */
 	@NotNull
 	private List<Integer> avisClients;
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getTables() Restaurant#getTables()}
+	 * Alias of {@link restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead#getTables() RestaurantRead#getTables()}
 	 */
+	@Valid
 	@NotNull
-	private List<Integer> tables;
+	private List<TableItem> tables;
 
 	/**
 	 * Getter for nom.
@@ -151,7 +153,7 @@ public class RestaurantWrite implements Serializable {
 	 *
 	 * @return value of {@link #tables tables}.
 	 */
-	public List<Integer> getTables() {
+	public List<TableItem> getTables() {
 		return this.tables;
 	}
 
@@ -215,7 +217,7 @@ public class RestaurantWrite implements Serializable {
 	 * Set the value of {@link #tables tables}.
 	 * @param tables value to set.
 	 */
-	public void setTables(List<Integer> tables) {
+	public void setTables(List<TableItem> tables) {
 		this.tables = tables;
 	}
 

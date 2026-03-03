@@ -23,6 +23,7 @@ import restaurant.jpa_sequence_server.dtos.restaurant.LigneCommandeRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.LigneCommandeWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.MenuRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.MenuWrite;
+import restaurant.jpa_sequence_server.dtos.restaurant.PlatItem;
 import restaurant.jpa_sequence_server.dtos.restaurant.PlatRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.PlatWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.PromotionRead;
@@ -33,6 +34,7 @@ import restaurant.jpa_sequence_server.dtos.restaurant.RestaurantAvecStatistiques
 import restaurant.jpa_sequence_server.dtos.restaurant.RestaurantRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.RestaurantWrite;
 import restaurant.jpa_sequence_server.dtos.restaurant.StatistiquesRestaurant;
+import restaurant.jpa_sequence_server.dtos.restaurant.TableItem;
 import restaurant.jpa_sequence_server.dtos.restaurant.TableRead;
 import restaurant.jpa_sequence_server.dtos.restaurant.TableWrite;
 
@@ -74,6 +76,7 @@ public class RestaurantMappers {
 		target.setCommentaire(avisClient.getCommentaire());
 		target.setDateAvis(avisClient.getDateAvis());
 		target.setApprouve(avisClient.getApprouve());
+		target.setNombreVues(avisClient.getNombreVues());
 		if (avisClient.getClient() != null) {
 			target.setClientId(avisClient.getClient().getId());
 		} else {
@@ -150,6 +153,7 @@ public class RestaurantMappers {
 		target.setId(client.getId());
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
+		target.setDepartementCode(client.getDepartementCode());
 		target.setEmail(client.getEmail());
 		if (client.getAvisClients() != null) {
 			target.setAvisClients(client.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
@@ -186,32 +190,34 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("commande cannot be null");
 		}
 
-		if (commande.getReservation() != null) {
-			target.setReservation(target.getReservation() != null ? RestaurantMappers.mapReservationRead(commande.getReservation(), target.getReservation()) : RestaurantMappers.createReservationRead(commande.getReservation()));
-		} else {
-			target.setReservation(null);
-		}
-
 		target.setId(commande.getId());
 		target.setDateCommande(commande.getDateCommande());
 		target.setDateLivraison(commande.getDateLivraison());
 		target.setMontantTotal(commande.getMontantTotal());
-		if (commande.getTable() != null) {
-			target.setTableId(commande.getTable().getId());
-		} else {
-			target.setTableId(null);
-		}
-
-		if (commande.getStatutCommande() != null) {
-			target.setStatutCommandeCode(commande.getStatutCommande().getCode());
-		} else {
-			target.setStatutCommandeCode(null);
-		}
-
+		target.setTableId(commande.getTableId());
+		target.setStatutCommande(commande.getStatutCommande());
 		if (commande.getAvisClient() != null) {
 			target.setAvisClientId(commande.getAvisClient().getId());
 		} else {
 			target.setAvisClientId(null);
+		}
+
+		if (commande.getClient() != null) {
+			target.setClient(target.getClient() != null ? RestaurantMappers.mapClientRead(commande.getClient(), target.getClient()) : RestaurantMappers.createClientRead(commande.getClient()));
+		} else {
+			target.setClient(null);
+		}
+
+		if (commande.getLignes() != null) {
+			target.setLignes(commande.getLignes().stream().filter(Objects::nonNull).map(RestaurantMappers::createLigneCommandeRead).collect(Collectors.toList()));
+		} else {
+			target.setLignes(null);
+		}
+
+		if (commande.getReservation() != null) {
+			target.setReservation(target.getReservation() != null ? RestaurantMappers.mapReservationRead(commande.getReservation(), target.getReservation()) : RestaurantMappers.createReservationRead(commande.getReservation()));
+		} else {
+			target.setReservation(null);
 		}
 
 		return target;
@@ -246,6 +252,7 @@ public class RestaurantMappers {
 		target.setId(employe.getId());
 		target.setNom(employe.getNom());
 		target.setPrenom(employe.getPrenom());
+		target.setDepartementCode(employe.getDepartementCode());
 		target.setTelephone(employe.getTelephone());
 		target.setDateNaissance(employe.getDateNaissance());
 		target.setMatricule(employe.getMatricule());
@@ -342,6 +349,35 @@ public class RestaurantMappers {
 			target.setRestaurantId(menu.getRestaurant().getId());
 		} else {
 			target.setRestaurantId(null);
+		}
+
+		return target;
+	}
+
+	/**
+	 * Mappe les champs sources sur l'instance de la classe 'PlatItem' passée en paramètre.
+	 * @param plat Instance de 'Plat' source.
+	 * @param target Instance de 'PlatItem' cible.
+	 *
+	 * @return L'instance de 'PlatItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 */
+	public static PlatItem mapPlatItem(Plat plat, PlatItem target) {
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		if (plat == null) {
+			throw new IllegalArgumentException("plat cannot be null");
+		}
+
+		target.setId(plat.getId());
+		target.setNom(plat.getNom());
+		target.setPrix(plat.getPrix());
+		target.setDisponible(plat.getDisponible());
+		if (plat.getCategoriePlat() != null) {
+			target.setCategoriePlatCode(plat.getCategoriePlat().getCode());
+		} else {
+			target.setCategoriePlatCode(null);
 		}
 
 		return target;
@@ -476,12 +512,7 @@ public class RestaurantMappers {
 			target.setClientId(null);
 		}
 
-		if (reservation.getTable() != null) {
-			target.setTableId(reservation.getTable().getId());
-		} else {
-			target.setTableId(null);
-		}
-
+		target.setTableId(reservation.getTableId());
 		if (reservation.getRestaurant() != null) {
 			target.setRestaurantId(reservation.getRestaurant().getId());
 		} else {
@@ -540,7 +571,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}
@@ -551,12 +582,7 @@ public class RestaurantMappers {
 			target.setAvisClients(null);
 		}
 
-		if (restaurant.getTables() != null) {
-			target.setTables(restaurant.getTables().stream().filter(Objects::nonNull).map(TableRestaurant::getId).collect(Collectors.toList()));
-		} else {
-			target.setTables(null);
-		}
-
+		target.setTableIds(restaurant.getTableIds());
 		target.setNombrePlats(nombrePlats);
 		target.setNombreTables(nombreTables);
 		target.setNoteMoyenne(noteMoyenne);
@@ -606,7 +632,7 @@ public class RestaurantMappers {
 		}
 
 		if (restaurant.getPromotions() != null) {
-			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlatId).collect(Collectors.toList()));
+			target.setPromotions(restaurant.getPromotions().stream().filter(Objects::nonNull).map(Promotion::getPlat).filter(Objects::nonNull).map(Plat::getId).collect(Collectors.toList()));
 		} else {
 			target.setPromotions(null);
 		}
@@ -615,12 +641,6 @@ public class RestaurantMappers {
 			target.setAvisClients(restaurant.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
 		} else {
 			target.setAvisClients(null);
-		}
-
-		if (restaurant.getTables() != null) {
-			target.setTables(restaurant.getTables().stream().filter(Objects::nonNull).map(TableRestaurant::getId).collect(Collectors.toList()));
-		} else {
-			target.setTables(null);
 		}
 
 		return target;
@@ -693,12 +713,7 @@ public class RestaurantMappers {
 		target.setNumero(table.getNumero());
 		target.setCapacite(table.getCapacite());
 		target.setDisponible(table.getDisponible());
-		if (table.getRestaurant() != null) {
-			target.setRestaurantId(table.getRestaurant().getId());
-		} else {
-			target.setRestaurantId(null);
-		}
-
+		target.setRestaurantId(table.getRestaurantId());
 		return target;
 	}
 
@@ -709,7 +724,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'AvisClientWrite' mappée depuis 'avisClient'.
 	 */
 	public static AvisClient toAvisClient(AvisClientWrite source) {
-			return toAvisClient(source, new AvisClient());
+		return toAvisClient(source, new AvisClient());
 	}
 
 	/**
@@ -741,7 +756,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'ClientWrite' mappée depuis 'client'.
 	 */
 	public static Client toClient(ClientWrite source) {
-			return toClient(source, new Client());
+		return toClient(source, new Client());
 	}
 
 	/**
@@ -762,6 +777,7 @@ public class RestaurantMappers {
 
 		target.setNom(source.getNom());
 		target.setPrenom(source.getPrenom());
+		target.setDepartementCode(source.getDepartementCode());
 		target.setEmail(source.getEmail());
 		return target;
 	}
@@ -773,7 +789,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'CommandeWrite' mappée depuis 'commande'.
 	 */
 	public static Commande toCommande(CommandeWrite source) {
-			return toCommande(source, new Commande());
+		return toCommande(source, new Commande());
 	}
 
 	/**
@@ -795,10 +811,24 @@ public class RestaurantMappers {
 		target.setDateCommande(source.getDateCommande());
 		target.setDateLivraison(source.getDateLivraison());
 		target.setMontantTotal(source.getMontantTotal());
-		if (source.getStatutCommandeCode() != null) {
-			target.setStatutCommande(new StatutCommande(source.getStatutCommandeCode()));
+		target.setTableId(source.getTableId());
+		target.setStatutCommande(source.getStatutCommande());
+		if (source.getClient() != null) {
+			target.setClient(target.getClient() != null ? RestaurantMappers.toClient(source.getClient(), target.getClient()) : RestaurantMappers.toClient(source.getClient()));
 		} else {
-			target.setStatutCommande(null);
+			target.setClient(null);
+		}
+
+		if (source.getReservation() != null) {
+			target.setReservation(target.getReservation() != null ? RestaurantMappers.toReservation(source.getReservation(), target.getReservation()) : RestaurantMappers.toReservation(source.getReservation()));
+		} else {
+			target.setReservation(null);
+		}
+
+		if (source.getLignes() != null) {
+			target.setLignes(source.getLignes().stream().filter(Objects::nonNull).map(RestaurantMappers::toLigneCommande).collect(Collectors.toList()));
+		} else {
+			target.setLignes(null);
 		}
 
 		return target;
@@ -811,7 +841,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'EmployeWrite' mappée depuis 'employe'.
 	 */
 	public static Employe toEmploye(EmployeWrite source) {
-			return toEmploye(source, new Employe());
+		return toEmploye(source, new Employe());
 	}
 
 	/**
@@ -832,6 +862,7 @@ public class RestaurantMappers {
 
 		target.setNom(source.getNom());
 		target.setPrenom(source.getPrenom());
+		target.setDepartementCode(source.getDepartementCode());
 		target.setTelephone(source.getTelephone());
 		target.setDateNaissance(source.getDateNaissance());
 		target.setMatricule(source.getMatricule());
@@ -847,7 +878,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'LigneCommandeWrite' mappée depuis 'ligneCommande'.
 	 */
 	public static LigneCommande toLigneCommande(LigneCommandeWrite source) {
-			return toLigneCommande(source, new LigneCommande());
+		return toLigneCommande(source, new LigneCommande());
 	}
 
 	/**
@@ -879,7 +910,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'MenuWrite' mappée depuis 'menu'.
 	 */
 	public static Menu toMenu(MenuWrite source) {
-			return toMenu(source, new Menu());
+		return toMenu(source, new Menu());
 	}
 
 	/**
@@ -908,13 +939,42 @@ public class RestaurantMappers {
 	}
 
 	/**
+	 * Mappe 'Plat' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'PlatItem' à mapper.
+	 * @param target Instance de 'Plat' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'plat'.
+	 */
+	public static Plat toPlat(PlatItem source, Plat target) {
+		if (source == null) {
+			throw new IllegalArgumentException("source cannot be null");
+		}
+
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		target.setId(source.getId());
+		target.setNom(source.getNom());
+		target.setPrix(source.getPrix());
+		target.setDisponible(source.getDisponible());
+		if (source.getCategoriePlatCode() != null) {
+			target.setCategoriePlat(new CategoriePlat(source.getCategoriePlatCode()));
+		} else {
+			target.setCategoriePlat(null);
+		}
+
+		return target;
+	}
+
+	/**
 	 * Mappe 'Plat' vers une nouvelle instance de 'PlatWrite'.
 	 * @param source Instance de 'PlatWrite' à mapper.
 	 *
 	 * @return Nouvelle instance de 'PlatWrite' mappée depuis 'plat'.
 	 */
 	public static Plat toPlat(PlatWrite source) {
-			return toPlat(source, new Plat());
+		return toPlat(source, new Plat());
 	}
 
 	/**
@@ -953,7 +1013,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'PromotionWrite' mappée depuis 'promotion'.
 	 */
 	public static Promotion toPromotion(PromotionWrite source) {
-			return toPromotion(source, new Promotion());
+		return toPromotion(source, new Promotion());
 	}
 
 	/**
@@ -987,7 +1047,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'ReservationWrite' mappée depuis 'reservation'.
 	 */
 	public static Reservation toReservation(ReservationWrite source) {
-			return toReservation(source, new Reservation());
+		return toReservation(source, new Reservation());
 	}
 
 	/**
@@ -1010,6 +1070,7 @@ public class RestaurantMappers {
 		target.setNombrePersonnes(source.getNombrePersonnes());
 		target.setCommentaire(source.getCommentaire());
 		target.setConfirmee(source.getConfirmee());
+		target.setTableId(source.getTableId());
 		return target;
 	}
 
@@ -1020,7 +1081,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'RestaurantWrite' mappée depuis 'restaurant'.
 	 */
 	public static Restaurant toRestaurant(RestaurantWrite source) {
-			return toRestaurant(source, new Restaurant());
+		return toRestaurant(source, new Restaurant());
 	}
 
 	/**
@@ -1042,6 +1103,12 @@ public class RestaurantMappers {
 		target.setNom(source.getNom());
 		target.setAdresse(source.getAdresse());
 		target.setTelephone(source.getTelephone());
+		if (source.getTables() != null) {
+			target.setTableIds(source.getTables().stream().filter(Objects::nonNull).map(TableItem::getId).collect(Collectors.toList()));
+		} else {
+			target.setTableIds(null);
+		}
+
 		return target;
 	}
 
@@ -1052,7 +1119,7 @@ public class RestaurantMappers {
 	 * @return Nouvelle instance de 'TableWrite' mappée depuis 'tableRestaurant'.
 	 */
 	public static TableRestaurant toTableRestaurant(TableWrite source) {
-			return toTableRestaurant(source, new TableRestaurant());
+		return toTableRestaurant(source, new TableRestaurant());
 	}
 
 	/**
@@ -1074,6 +1141,7 @@ public class RestaurantMappers {
 		target.setNumero(source.getNumero());
 		target.setCapacite(source.getCapacite());
 		target.setDisponible(source.getDisponible());
+		target.setRestaurantId(source.getRestaurantId());
 		return target;
 	}
 }

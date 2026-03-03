@@ -38,6 +38,9 @@ public class DomainLoader(FileChecker fileChecker) : ILoader
                 case "bodyParam":
                     domain.BodyParam = value!.Value == "true";
                     break;
+                case "collection":
+                    domain.Collection = value!.Value == "true";
+                    break;
                 case "asDomains":
                     parser.ConsumeMapping(prop =>
                     {
@@ -96,6 +99,9 @@ public class DomainLoader(FileChecker fileChecker) : ILoader
                                 break;
                             case "genericType":
                                 implementation.GenericType = new(parser.Consume<Scalar>());
+                                break;
+                            case "collector":
+                                implementation.Collector = parser.Consume<Scalar>().Value;
                                 break;
                             case "imports":
                                 implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);

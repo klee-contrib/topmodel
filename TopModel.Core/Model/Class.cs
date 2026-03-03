@@ -42,6 +42,8 @@ public class Class : IPropertyContainer
 
     public bool Abstract { get; set; }
 
+    public bool Readonly { get; set; }
+
     public IProperty? OrderProperty { get; set; }
 
     public IProperty? DefaultProperty { get; set; }
@@ -66,9 +68,9 @@ public class Class : IPropertyContainer
             ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.FirstOrDefault()
             : null;
 
-    public IProperty? EnumKey => Enum ? ReferenceKey : null;
+    public IProperty? EnumKey => Enum != null ? ReferenceKey : null;
 
-    public bool Enum { get; set; }
+    public EnumMode? Enum { get; set; }
 
     public bool Translation { get; set; }
 

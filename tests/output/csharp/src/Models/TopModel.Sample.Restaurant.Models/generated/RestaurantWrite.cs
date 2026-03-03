@@ -35,25 +35,25 @@ public partial record RestaurantWrite
     public string? Telephone { get; set; }
 
     /// <summary>
-    /// Association réciproque de Menu.RestaurantId.
+    /// Association réciproque de Menu.Restaurant.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? Menus { get; set; }
 
     /// <summary>
-    /// Association réciproque de Plat.RestaurantId.
+    /// Association réciproque de Plat.Restaurant.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? Plats { get; set; }
 
     /// <summary>
-    /// Association réciproque de Promotion.RestaurantId.
+    /// Association réciproque de Promotion.Restaurant.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? Promotions { get; set; }
 
     /// <summary>
-    /// Association réciproque de AvisClient.RestaurantId.
+    /// Association réciproque de AvisClient.Restaurant.
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<int>? AvisClients { get; set; }
@@ -61,6 +61,6 @@ public partial record RestaurantWrite
     /// <summary>
     /// Association réciproque de TableRestaurant.RestaurantId.
     /// </summary>
-    [Domain(Domains.Liste)]
-    public ICollection<int>? Tables { get; set; }
+    [Required]
+    public ICollection<ITableItem> Tables { get; set; } = [];
 }

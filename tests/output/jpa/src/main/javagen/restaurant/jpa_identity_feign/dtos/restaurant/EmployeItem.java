@@ -38,12 +38,32 @@ public interface EmployeItem {
 	Integer getRestaurantId();
 
 	/**
-	 * Hydrate values of instance.
+	 * Identifiant de l'employé.
 	 * @param id value to set.
+	 */
+	void setId(Integer id);
+
+	/**
+	 * Nom de l'employé.
 	 * @param nom value to set.
+	 */
+	void setNom(String nom);
+
+	/**
+	 * Prénom de l'employé.
 	 * @param prenom value to set.
+	 */
+	void setPrenom(String prenom);
+
+	/**
+	 * Matricule de l'employé.
 	 * @param matricule value to set.
+	 */
+	void setMatricule(String matricule);
+
+	/**
+	 * Restaurant où travaille l'employé.
 	 * @param restaurantId value to set.
 	 */
-	void hydrate(Integer id, String nom, String prenom, String matricule, Integer restaurantId);
+	void setRestaurantId(Integer restaurantId);
 }

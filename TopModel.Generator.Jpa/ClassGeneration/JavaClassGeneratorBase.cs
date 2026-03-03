@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -126,8 +127,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             .GetAvailableProperties(classe)
             .Select(prop =>
             {
-                string name = JpaModelPropertyGenerator.GetPropertyName(prop).ToConstantCase();
-                var javaType = JpaModelPropertyGenerator.GetPropertyType(prop);
+                string name = prop.NameCamel.ToConstantCase();
+                var javaType = Config.GetType(prop);
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)
                 {
@@ -162,11 +163,13 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             yield return method;
         }
+
         foreach (var method in GetSetters(classe, tag))
         {
             yield return method;
         }
-        if (Config.MappersInClass)
+
+        if (Config.MappersInClass && !classe.Abstract)
         {
             foreach (var method in GetToMappers(classe, tag))
             {

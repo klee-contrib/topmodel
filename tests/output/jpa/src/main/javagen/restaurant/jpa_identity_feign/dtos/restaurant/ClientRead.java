@@ -51,6 +51,13 @@ public class ClientRead implements Serializable {
 	private String prenom;
 
 	/**
+	 * Département de résidence de la personne.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 */
+	@Size(max = 10)
+	private String departementCode;
+
+	/**
 	 * Adresse email du client.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
@@ -58,7 +65,7 @@ public class ClientRead implements Serializable {
 	private String email;
 
 	/**
-	 * Association réciproque de AvisClient.ClientId.
+	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
@@ -109,6 +116,15 @@ public class ClientRead implements Serializable {
 	}
 
 	/**
+	 * Getter for departementCode.
+	 *
+	 * @return value of {@link #departementCode departementCode}.
+	 */
+	public String getDepartementCode() {
+		return this.departementCode;
+	}
+
+	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -151,6 +167,14 @@ public class ClientRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #departementCode departementCode}.
+	 * @param departementCode value to set.
+	 */
+	public void setDepartementCode(String departementCode) {
+		this.departementCode = departementCode;
+	}
+
+	/**
 	 * Set the value of {@link #email email}.
 	 * @param email value to set.
 	 */
@@ -173,6 +197,7 @@ public class ClientRead implements Serializable {
 		ID(Integer.class),
 		NOM(String.class),
 		PRENOM(String.class),
+		DEPARTEMENT_CODE(String.class),
 		EMAIL(String.class),
 		AVIS_CLIENTS(List.class);
 

@@ -64,7 +64,7 @@ public class ReservationWrite implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Reservation#getTable() Reservation#getTable()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Reservation#getTableId() Reservation#getTableId()}
 	 */
 	private Integer tableId;
 

@@ -17,6 +17,11 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         return classe.Abstract;
     }
 
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        return [];
+    }
+
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
         return [];
@@ -40,38 +45,16 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         }
     }
 
-    protected virtual JavaMethod? GetHydrate(Class classe, string tag)
+    protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        var properties = classe.Properties.Where(p => !p.Readonly);
-
-        if (!properties.Any())
+        foreach (var property in classe.Properties.Where(p => !p.Readonly))
         {
-            return null;
-        }
-        var hydrate = new JavaMethod("void", "hydrate") { Comment = "Hydrate values of instance" };
-        foreach (var property in properties)
-        {
-            var parameter = new JavaMethodParameter(Config.GetType(property), property.NameByClassCamel)
-            {
-                Comment = $"value to set",
-            };
-            parameter.Imports.AddRange(property.GetTypeImports(Config, tag));
-            hydrate.AddParameter(parameter);
-        }
-
-        return hydrate;
-    }
-
-    protected override IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
-    {
-        foreach (var method in GetGetters(classe, tag))
-        {
-            yield return method;
-        }
-        var hydrate = GetHydrate(classe, tag);
-        if (hydrate != null)
-        {
-            yield return hydrate;
+            var getter = JpaModelPropertyGenerator.GetSetter(tag, property);
+            getter.Body.Clear();
+            getter.ReturnComment = string.Empty;
+            getter.Comment = property.Comment;
+            getter.Visibility = string.Empty;
+            yield return getter;
         }
     }
 

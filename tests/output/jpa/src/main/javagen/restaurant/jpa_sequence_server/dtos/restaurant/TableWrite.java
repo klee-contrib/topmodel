@@ -47,7 +47,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.TableRestaurant#getRestaurant() TableRestaurant#getRestaurant()}
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
 	 */
 	@NotNull
 	private Integer restaurantId;

@@ -20,7 +20,7 @@ public class TableRestaurant_ {
 
 	public static volatile SingularAttribute<TableRestaurant, Boolean> disponible;
 
-	public static volatile SingularAttribute<TableRestaurant, Restaurant> restaurant;
+	public static volatile SingularAttribute<TableRestaurant, Integer> restaurantId;
 
 	public static final String ID = "id";
 
@@ -30,5 +30,5 @@ public class TableRestaurant_ {
 
 	public static final String DISPONIBLE = "disponible";
 
-	public static final String RESTAURANT = "restaurant";
+	public static final String RESTAURANT_ID = "restaurantId";
 }

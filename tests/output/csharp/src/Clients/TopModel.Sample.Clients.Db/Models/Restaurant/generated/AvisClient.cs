@@ -61,21 +61,17 @@ public partial record AvisClient
     [Column("avi_nombre_vues")]
     [Required]
     [Domain(Domains.Quantite)]
-    public int? NombreVues { get; set; } = 0;
+    public int? NombreVues { get; init; } = 0;
 
     /// <summary>
     /// Client ayant donné l'avis.
     /// </summary>
-    [Column("per_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? ClientId { get; set; }
+    public Client? Client { get; set; }
 
     /// <summary>
     /// Restaurant concerné par l'avis.
     /// </summary>
-    [Column("res_id")]
     [Required]
-    [Domain(Domains.Id)]
-    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

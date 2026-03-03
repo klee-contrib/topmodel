@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -11,6 +12,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
     private JpaModelPropertyGenerator? _jpaModelConstructorGenerator;
 
     public override string Name => "JpaMetaModelGen";
+
     protected virtual JpaModelPropertyGenerator jpaModelPropertyGenerator
     {
         get
@@ -22,7 +24,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract && !(Config.EnumsAsEnums && Config.CanClassUseEnums(classe));
+        return classe.IsPersistent && !classe.Abstract && classe.Enum != EnumMode.Enum;
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -54,7 +56,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
-            var javaType = jpaModelPropertyGenerator.GetPropertyType(property);
+            var javaType = Config.GetType(property);
             var genericType = javaType.Split("<")[0];
             var attributeType = genericType switch
             {
@@ -65,17 +67,14 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
                 _ => "SingularAttribute",
             };
 
-            var propertyType = jpaModelPropertyGenerator.GetPropertyType(property);
+            var propertyType = Config.GetType(property);
 
             if (javaType != genericType)
             {
                 propertyType = javaType.Split('<')[1].Split('>')[0];
             }
 
-            var javaField = new JavaField(
-                $"{attributeType}<{classe.NamePascal}, {propertyType}>",
-                jpaModelPropertyGenerator.GetPropertyName(property)
-            )
+            var javaField = new JavaField($"{attributeType}<{classe.NamePascal}, {propertyType}>", property.NameCamel)
             {
                 Static = true,
                 Visibility = "public",
@@ -93,12 +92,12 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
         foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
         {
             javaClass.Add(
-                new JavaField("String", jpaModelPropertyGenerator.GetPropertyName(property).ToConstantCase())
+                new JavaField("String", property.NameCamel.ToConstantCase())
                 {
                     Static = true,
                     Final = true,
                     Visibility = "public",
-                    DefaultValue = $"\"{jpaModelPropertyGenerator.GetPropertyName(property)}\"",
+                    DefaultValue = $"\"{property.NameCamel}\"",
                 }
             );
         }

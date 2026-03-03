@@ -1,13 +1,14 @@
-﻿using System.Text;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class AssociationProperty : IProperty
+internal class AssociationProperty : IProperty
 {
     private IProperty? _property;
+
+    private bool? _useClass;
 
     public LocatedString? Trigram { get; set; }
 
@@ -60,15 +61,17 @@ public class AssociationProperty : IProperty
 
     public virtual string? Role { get; set; }
 
-    public virtual AssociationType Type { get; set; }
-
-    public Reference? ExplicitType { get; set; }
+    public virtual bool Multiple { get; set; }
 
     public virtual string As { get; set; } = "list";
 
     public virtual bool Required { get; set; }
 
-    public bool Readonly { get; set; }
+    public bool Readonly
+    {
+        get => Class?.Readonly == true || field;
+        set;
+    }
 
     public string? DefaultValue { get; set; }
 
@@ -86,110 +89,33 @@ public class AssociationProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
 
-    public string Name
-    {
-        get
-        {
-            if (Association == null)
-            {
-                return string.Empty;
-            }
+    public string Name => this.GetAssociationName();
 
-            var name = new StringBuilder();
+    public string NamePascal =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : this.GetAssociationName(pascalCase: true);
 
-            if (ClassName != null)
-            {
-                name.Append(ClassName);
-            }
-            else if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
-            {
-                name.Append(Association.PluralName);
-            }
-            else if (Association.Extends == null || !Association.PrimaryKey.Any())
-            {
-                name.Append(Association.Name);
-            }
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NamePascal.ToFirstLower();
 
-            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
-            {
-                name.Append(Property?.Name);
-            }
+    public string PropertyNamePascal =>
+        ((IProperty)this).Parent.PreservePropertyCasing
+            ? Name
+            : this.GetAssociationName(pascalCase: true, forcePropertyName: true);
 
-            if (!string.IsNullOrWhiteSpace(Role))
-            {
-                name.Append(Role?.Replace(" ", string.Empty));
-            }
-
-            return name.ToString();
-        }
-    }
-
-    public string NameCamel
-    {
-        get
-        {
-            if (((IProperty)this).Parent.PreservePropertyCasing)
-            {
-                return Name;
-            }
-
-            if (Association == null)
-            {
-                return string.Empty;
-            }
-
-            var name = new StringBuilder();
-
-            if (ClassName != null)
-            {
-                name.Append(ClassName.ToCamelCase(strictIfUppercase: true));
-            }
-            else if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
-            {
-                name.Append(Association.PluralNameCamel);
-            }
-            else if (Association.Extends == null || !Association.PrimaryKey.Any())
-            {
-                name.Append(Association.NameCamel);
-            }
-
-            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
-            {
-                if (name.Length != 0)
-                {
-                    name.Append(Property?.NameCamel.ToFirstUpper());
-                }
-                else
-                {
-                    name.Append(Property?.NameCamel);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(Role))
-            {
-                name.Append(Role?.Replace(" ", string.Empty).ToPascalCase(strictIfUppercase: true));
-            }
-
-            return name.ToString();
-        }
-    }
-
-    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
-
-    public string NameByClassPascal =>
-        Type.ToMany
-            ? $"{NamePascal}"
-            : $"{ClassName?.ToPascalCase(strictIfUppercase: true) ?? Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
-
-    public string NameByClassCamel =>
-        Type.ToMany
-            ? $"{NameCamel}"
-            : $"{ClassName?.ToCamelCase(strictIfUppercase: true) ?? Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
+    public string PropertyNameCamel =>
+        ((IProperty)this).Parent.PreservePropertyCasing ? Name : PropertyNamePascal.ToFirstLower();
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
+    public virtual bool UseClass
+    {
+        get =>
+            Property?.Class.Enum == EnumMode.Enum
+            || Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass);
+        set => _useClass = value;
+    }
+
     public Domain Domain =>
-        Type.ToMany && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
+        Multiple && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
     public IDictionary<string, string> DomainParameters =>
         Property?.DomainParameters ?? new Dictionary<string, string>();
@@ -204,8 +130,6 @@ public class AssociationProperty : IProperty
 
 #nullable disable
     public ClassReference Reference { get; set; }
-
-    public bool UseLegacyRoleName { get; init; }
 
     internal Reference Location { get; set; }
 
@@ -223,10 +147,14 @@ public class AssociationProperty : IProperty
         }
     }
 
+    internal virtual bool DefaultAssociationUseClass { get; init; }
+
+    internal virtual bool UseLegacyRoleName { get; init; }
+
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {
-        return new AssociationProperty
+        var ap = new AssociationProperty
         {
             SourceDecorator = SourceDecorator ?? Decorator,
             Association = Association,
@@ -239,16 +167,24 @@ public class AssociationProperty : IProperty
             Location = Location,
             Required = Required,
             Role = Role,
-            Type = Type,
+            Multiple = Multiple,
             Readonly = Readonly,
             PrimaryKey = PrimaryKey,
             WithReverse = WithReverse,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             CustomProperties = CustomProperties,
             Annotations = Annotations,
             ClassName = ClassName,
+            DefaultAssociationUseClass = DefaultAssociationUseClass,
+            UseLegacyRoleName = UseLegacyRoleName,
         };
+
+        if (_useClass.HasValue)
+        {
+            ap.UseClass = _useClass.Value;
+        }
+
+        return ap;
     }
 
     public override string ToString()

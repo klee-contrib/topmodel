@@ -42,7 +42,7 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
         if (Config.TranslateReferences == true && Config.AvailableClasses.Any(c => c.Translation))
         {
             var resourceProperties = classes
-                .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum)
+                .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum != null)
                 .OrderBy(c => c.SqlName)
                 .Select(c => c.DefaultProperty!);
             foreach (var fkProperty in resourceProperties)

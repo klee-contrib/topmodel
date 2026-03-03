@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.0.0 (rc)
+
+Compatibilité avec TopModel 4.0, les impacts propres aux générateurs JPA sont détaillés dans le changelog général de la version.
+
 ## 3.5.7
 
 - [`1e4be`](https://github.com/klee-contrib/topmodel/commit/1e4be6011aabe29a4ed8308206172dd11b496216) - [JPA] Suite de [#542](https://github.com/klee-contrib/topmodel/issues/542) : l'annotation JoinColumn ne doit pas être générée pour les oneToOne reverse
@@ -16,7 +20,7 @@
 ## 3.5.4
 
 - [`88dda9c`](https://github.com/klee-contrib/topmodel/commit/88dda9cf83d6d158e34f0f29f587c1f62147219f) - [JPA] Include type type imports in MapId property
-Fix [#538](https://github.com/klee-contrib/topmodel/issues/538)
+  Fix [#538](https://github.com/klee-contrib/topmodel/issues/538)
 
 ## 3.5.3
 
@@ -70,7 +74,6 @@ Compatibilité avec TopModel 3.8
 ## 3.4.1
 
 - [`543a7a`](https://github.com/klee-contrib/topmodel/commit/543a7a953f359c524142d45b0b351bb974cc69a7) - [JPA]
-
   - Dans le cas d'une enum, correction du nom référencé dans le cas où celui-ci n'est pas en constant Case
   - Correction du nom du getter dans le cas `preservePropertyCasing`
   - Ajout d'une erreur dans le cas d'alias vers oneToMany d'association reverse de classe avec pk composite
@@ -88,7 +91,6 @@ Compatibilité avec TopModel 3.8
   Le metamodèle devant respecter des règles de nommage et de localisation dans les fichiers sources (entre autres), des solutions existent pour le générer automatiquement (voir hibernate-jpamodelgen). La génération de code étant le coeur de topmodel, nous avons fait le choix d'inclure aussi les métamodèles afin de réduire les dépendances des projets à des librairies.
 
   Documentation:
-
   - Spec (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
   - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
 
@@ -178,7 +180,6 @@ La propriété `fieldsEnum` est désormais une liste, dont les éléments peuven
 - [`42c8290`](https://github.com/klee-contrib/topmodel/commit/42c8290e904853149a80dfc3010582830988ccfe) - [JPA] Mapper "from" sources/target en public, nommé "mapXXX"
 
   La méthode `mapXXX` remplace la méthode `createXXX` avec target qui existait déjà.
-
   - Avec `mapperInClass: false`, elle était privée, donc aucun breaking change
   - Avec `mapperInClass: true`, elle était publique, donc c'est un **petit breaking change** puisqu'elle change de nom.
 

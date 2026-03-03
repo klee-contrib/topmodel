@@ -9,10 +9,12 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvider writerProvider)
-    : GeneratorBase<JpaConfig>(logger, writerProvider)
+public class JavaEnumClassPropertyGenerator(
+    ILogger<JavaEnumClassPropertyGenerator> logger,
+    IFileWriterProvider writerProvider
+) : GeneratorBase<JpaConfig>(logger, writerProvider)
 {
-    public override string Name => "JpaEnumGen";
+    public override string Name => "JavaEnumClassPropGen";
 
     public override IEnumerable<string> GeneratedFiles =>
         Config
@@ -24,37 +26,19 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
             )
             .Distinct();
 
-    protected bool FilterClass(Class classe)
+    protected virtual bool FilterClass(Class classe)
     {
-        return !classe.Abstract && Config.CanClassUseEnums(classe);
+        return !classe.Abstract && classe.Enum == EnumMode.Class && Config.UniqueValueGeneration.CanEnum;
     }
 
-    protected IEnumerable<IProperty> GetEnumProperties(Class classe)
+    protected virtual IEnumerable<IProperty> GetEnumProperties(Class classe)
     {
-        List<IProperty> result = [];
-        if (
-            classe.EnumKey != null
-            && Config.CanClassUseEnums(classe, prop: classe.EnumKey)
-            && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
-        )
-        {
-            result.Add(classe.EnumKey);
-        }
-
-        var uks = classe
-            .UniqueKeys.Where(uk =>
-                uk.Count == 1
-                && Config.CanClassUseEnums(classe, uk.Single())
-                && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, prop: classe.EnumKey))
-            )
-            .Select(uk => uk.Single());
-        result.AddRange(uks);
-        return result;
+        return classe.Properties.Where(e => e.EnumProperty == e);
     }
 
     protected string GetFileName(IProperty property, Class classe, string tag)
     {
-        return Config.GetEnumFileName(property, classe, tag);
+        return Config.GetEnumFileName(classe, tag, property);
     }
 
     protected void HandleClass(Class classe, string tag)
@@ -82,14 +66,14 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
     protected virtual void WriteEnum(IProperty property, Class classe, string tag)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(Config.GetEnumFileName(property, classe, tag), packageName, codePage: null);
+        using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName, codePage: null);
         var javaEnum = GetJavaEnum(property, classe);
         fw.Write(0, javaEnum);
     }
 
     private JavaEnum GetJavaEnum(IProperty property, Class classe)
     {
-        var javaEnum = new JavaEnum(Config.GetEnumName(property, classe))
+        var javaEnum = new JavaEnum(Config.GetEnumType(property))
         {
             ClassType = "enum",
             Comment =

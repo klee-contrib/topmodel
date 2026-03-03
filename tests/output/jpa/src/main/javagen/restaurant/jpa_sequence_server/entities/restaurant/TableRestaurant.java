@@ -7,12 +7,9 @@ package restaurant.jpa_sequence_server.entities.restaurant;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -55,9 +52,8 @@ public class TableRestaurant {
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
-	private Restaurant restaurant;
+	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	private Integer restaurantId;
 
 	/**
 	 * Getter for id.
@@ -96,12 +92,12 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Getter for restaurant.
+	 * Getter for restaurantId.
 	 *
-	 * @return value of {@link #restaurant restaurant}.
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	public Restaurant getRestaurant() {
-		return this.restaurant;
+	public Integer getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	/**
@@ -137,11 +133,11 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Set the value of {@link #restaurant restaurant}.
-	 * @param restaurant value to set.
+	 * Set the value of {@link #restaurantId restaurantId}.
+	 * @param restaurantId value to set.
 	 */
-	public void setRestaurant(Restaurant restaurant) {
-		this.restaurant = restaurant;
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	/**
@@ -152,7 +148,7 @@ public class TableRestaurant {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),
 		DISPONIBLE(Boolean.class),
-		RESTAURANT(Restaurant.class);
+		RESTAURANT_ID(Integer.class);
 
 		private final Class<?> type;
 
