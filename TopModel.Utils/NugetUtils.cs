@@ -99,7 +99,7 @@ public static class NugetUtils
                 return null;
             }
 
-            var nugetVersion = moduleVersions.Last().Version;
+            var nugetVersion = moduleVersions.Last(m => !m.IsPrerelease).Version;
             var version = new TopModelLockModule
             {
                 Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}",

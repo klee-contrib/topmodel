@@ -31,7 +31,7 @@ export class TmdTool {
     }
 
     get latestVersion() {
-        if (this.versions.length == 0) {
+        if (this.versions.length === 0) {
             return undefined;
         }
 
@@ -68,7 +68,7 @@ export class TmdTool {
     }
 
     public async init(context: ExtensionContext) {
-        await Promise.all([this.checkInstall(), this.loadLatestVersion()]);
+        await Promise.all([this.checkInstall(), this.loadVersions()]);
         if (this.installed) {
             await this.loadCurrentVersion();
             this.registerCommands(context);
@@ -78,7 +78,7 @@ export class TmdTool {
         }
     }
 
-    private async loadLatestVersion() {
+    private async loadVersions() {
         const options = {
             hostname: "api.nuget.org",
             port: 443,
@@ -97,7 +97,7 @@ export class TmdTool {
                 res.on("end", () => resolve(totalBuffer));
             }).then(async (response: any) => {
                 const { versions }: { versions: string[] } = JSON.parse(response);
-                this.versions = versions;
+                this.versions = versions.filter(v => !v.includes("-"));
             });
         });
 
