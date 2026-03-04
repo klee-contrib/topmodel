@@ -97,8 +97,11 @@ if (!configs.Any())
     return 1;
 }
 
-var fullVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
-var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
+var version = Assembly
+    .GetEntryAssembly()!
+    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+    .InformationalVersion;
+
 var colors = new[] { "teal", "olive", "yellow", "aqua" };
 
 AnsiConsole.MarkupLine($"========= TopModel.ModelGenerator v{version} =========");

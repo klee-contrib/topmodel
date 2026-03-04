@@ -155,8 +155,12 @@ if (configs.Count == 0)
     return 1;
 }
 
-var fullVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
-var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
+var version = Assembly
+    .GetEntryAssembly()!
+    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+    .InformationalVersion;
+var majorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Major;
+var minorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Minor;
 
 var colors = new[] { "teal", "olive", "yellow", "aqua" };
 
@@ -366,12 +370,12 @@ for (var i = 0; i < configs.Count; i++)
             var dep in lockFile
                 .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= dotnetMajor)
                 ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
-            ?? []
+                ?? []
         )
         {
             if (dep.Name == "TopModel.Generator.Core")
             {
-                if (dep.Version?.Major != fullVersion.Major)
+                if (dep.Version?.Major != majorVersion)
                 {
                     logger.LogError(
                         $"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version})."
@@ -379,7 +383,7 @@ for (var i = 0; i < configs.Count; i++)
                     returnCode = 1;
                     continue;
                 }
-                else if (dep.Version?.Minor > fullVersion.Minor)
+                else if (dep.Version?.Minor > minorVersion)
                 {
                     logger.LogError(
                         $"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Version} > {version})."
@@ -577,7 +581,7 @@ for (var i = 0; i < configs.Count; i++)
 
             var minVersionText = await File.ReadAllTextAsync(Path.Combine(moduleFolder, "min-version"));
             var minVersion = minVersionText.Split('.').Select(int.Parse).ToArray();
-            if (minVersion[0] != fullVersion.Major)
+            if (minVersion[0] != majorVersion)
             {
                 logger.LogError(
                     $"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({depVersion} < {version})."
@@ -585,7 +589,7 @@ for (var i = 0; i < configs.Count; i++)
                 returnCode = 1;
                 continue;
             }
-            else if (minVersion[1] > fullVersion.Minor)
+            else if (minVersion[1] > minorVersion)
             {
                 logger.LogError(
                     $"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({minVersionText} > {version})."

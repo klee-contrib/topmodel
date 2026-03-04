@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 3.9.4
+version: 4.0.0-rc.0
 custom:
   ../../TopModel.Generator.Jpa: 774738d52335c0a6857c3d5744a2a9d2
   ../../TopModel.Generator.Csharp: 5eb1b2a1c8a89c6c25a53604ca7696d2
