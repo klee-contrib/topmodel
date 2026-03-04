@@ -63,9 +63,13 @@ public static class NugetUtils
         return new PackageArchiveReader(packageStream);
     }
 
-    public static async Task<TopModelLockModule?> GetLatestVersionAsync(string id, bool forceCheck = false)
+    public static async Task<TopModelLockModule?> GetLatestVersionAsync(
+        string id,
+        bool forceCheck = false,
+        bool prerelease = false
+    )
     {
-        if (Versions.TryGetValue(id, out var cachedVersion))
+        if (Versions.TryGetValue(prerelease ? $"{id}-prerelease" : id, out var cachedVersion))
         {
             if (cachedVersion.CheckDate.AddHours(6) < DateTime.UtcNow)
             {
@@ -99,10 +103,9 @@ public static class NugetUtils
                 return null;
             }
 
-            var nugetVersion = moduleVersions.Last(m => !m.IsPrerelease).Version;
             var version = new TopModelLockModule
             {
-                Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}",
+                Version = moduleVersions.Last(m => prerelease || !m.IsPrerelease).ToFullString(),
             };
 
             Versions[id] = new(version.Version, DateTime.UtcNow);

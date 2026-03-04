@@ -161,13 +161,14 @@ var version = Assembly
     .InformationalVersion;
 var majorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Major;
 var minorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Minor;
+var prerelease = version.Contains('-');
 
 var colors = new[] { "teal", "olive", "yellow", "aqua" };
 
 AnsiConsole.MarkupLine($"========= TopModel.Generator v{version} =========");
 AnsiConsole.WriteLine();
 
-var latestVersion = await NugetUtils.GetLatestVersionAsync("TopModel.Generator");
+var latestVersion = await NugetUtils.GetLatestVersionAsync("TopModel.Generator", prerelease: prerelease);
 if (latestVersion != null && latestVersion.Version != version)
 {
     AnsiConsole.MarkupLine($"[yellow]Nouvelle version disponible : {latestVersion.Version}[/]");
@@ -455,7 +456,7 @@ for (var i = 0; i < configs.Count; i++)
 
         if (!topModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
         {
-            moduleVersion = await NugetUtils.GetLatestVersionAsync(fullModuleName, forceCheck: true);
+            moduleVersion = await NugetUtils.GetLatestVersionAsync(fullModuleName, forceCheck: true, prerelease);
 
             if (moduleVersion == null)
             {
@@ -580,7 +581,7 @@ for (var i = 0; i < configs.Count; i++)
             }
 
             var minVersionText = await File.ReadAllTextAsync(Path.Combine(moduleFolder, "min-version"));
-            var minVersion = minVersionText.Split('.').Select(int.Parse).ToArray();
+            var minVersion = minVersionText.Split('.').Take(2).Select(int.Parse).ToArray();
             if (minVersion[0] != majorVersion)
             {
                 logger.LogError(
@@ -616,7 +617,7 @@ for (var i = 0; i < configs.Count; i++)
 
     foreach (var dep in deps)
     {
-        dep.LatestVersion = (await NugetUtils.GetLatestVersionAsync(dep.FullName))?.Version;
+        dep.LatestVersion = (await NugetUtils.GetLatestVersionAsync(dep.FullName, prerelease: prerelease))?.Version;
     }
 
     logger.LogInformation(
