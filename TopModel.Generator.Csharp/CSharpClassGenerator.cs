@@ -155,7 +155,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteSummary(1, @const.Label);
             w.WriteLine(
                 1,
-                $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};"
+                $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name} = {Config.FormatValue(@const.Prop, @const.Code)};"
             );
         }
 

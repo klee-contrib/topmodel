@@ -91,14 +91,13 @@ public class JavaUniqueValuedPropertyGenerator(
         foreach (var value in refs)
         {
             i++;
+
             var staticField = new JavaField(Config.GetType(property), value.Name.ToPascalCase(strictIfUppercase: true))
             {
                 Visibility = "public",
                 Static = true,
                 Final = true,
-                DefaultValue = Config.ShouldQuoteValue(property)
-                    ? $"\"{value.Value[property]}\""
-                    : value.Value[property],
+                DefaultValue = Config.FormatValue(property, value.Value[property]),
             };
             if (classe.DefaultProperty != null)
             {

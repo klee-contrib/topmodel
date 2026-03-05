@@ -55,6 +55,28 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     protected virtual string NullValue => "null";
 
+    /// <summary>
+    /// Formatte une valeur de propriété.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <param name="value">Valeur.</param>
+    /// <returns>La valeur de la propriété.</returns>
+    public string FormatValue(IProperty property, string value)
+    {
+        var template = GetImplementation(property.Domain)?.GetValueTemplate(value);
+        if (template != null)
+        {
+            return template.Value.Replace("{value}", value).ParseTemplate(property, this);
+        }
+
+        if (ShouldQuoteValue(property))
+        {
+            return QuoteValue(value);
+        }
+
+        return value;
+    }
+
     public virtual IEnumerable<ClassValue> GetAllValues(Class classe)
     {
         foreach (var value in classe.Values)
@@ -212,9 +234,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Tags.Contains(tag)
             ? tag
-            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
-                    .Tags.Intersect(ReferencedTagConfigs.Keys)
-                    .FirstOrDefault()
+            : classe.Tags.Intersect(Tags).FirstOrDefault()
+                ?? classe.Tags.Intersect(ReferencedTagConfigs.Keys).FirstOrDefault()
                 ?? tag;
     }
 
@@ -327,15 +348,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>Le nom du type.</returns>
     public virtual string GetEnumType(IProperty prop, bool internalReference = false)
     {
-        if (prop.EnumLikeProperty == null)
+        if (prop.UniqueValuedProperty == null)
         {
             return string.Empty;
         }
 
-        var className = prop.EnumLikeProperty?.Class?.NamePascal ?? string.Empty;
-        var propName = prop.EnumLikeProperty?.NamePascal ?? string.Empty;
+        var className = prop.UniqueValuedProperty?.Class?.NamePascal ?? string.Empty;
+        var propName = prop.UniqueValuedProperty?.NamePascal ?? string.Empty;
 
-        if (prop.EnumLikeProperty?.Class?.Enum == EnumMode.Enum)
+        if (prop.UniqueValuedProperty?.Class?.Enum == EnumMode.Enum)
         {
             return className;
         }
@@ -452,12 +473,6 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             return NullValue;
         }
 
-        var template = GetImplementation(property.Domain)?.GetValueTemplate(value);
-        if (template != null)
-        {
-            return template.Value.Replace("{value}", value).ParseTemplate(property, this);
-        }
-
         if (
             HasEnumSupport
             && UseValueNameForValues
@@ -486,12 +501,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             }
         }
 
-        if (ShouldQuoteValue(property))
-        {
-            return QuoteValue(value);
-        }
-
-        return value;
+        return FormatValue(property, value);
     }
 
     public virtual IEnumerable<string> GetValueImports(IProperty property, string? value = null)

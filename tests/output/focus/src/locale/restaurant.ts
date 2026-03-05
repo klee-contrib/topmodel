@@ -17,6 +17,7 @@ export const restaurant = {
         code: "Code",
         libelle: "Libelle",
         ordre: "Ordre",
+        prixMoyen: "PrixMoyen",
         values: {
             Entree: "Entrée",
             Plat: "Plat principal",

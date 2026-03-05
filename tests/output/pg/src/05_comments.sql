@@ -28,6 +28,7 @@ COMMENT ON TABLE CATEGORIE_PLAT IS 'Catégorie de plat';
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_CODE IS 'Code de la catégorie';
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_LIBELLE IS 'Libellé de la catégorie';
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_ORDRE IS 'Ordre d''affichage dans le menu.';
+COMMENT ON COLUMN CATEGORIE_PLAT.CAT_PRIX_MOYEN IS 'Prix moyen de la catégorie, à titre indicatif.';
 
 /**
   * Commentaires pour la table CLIENT

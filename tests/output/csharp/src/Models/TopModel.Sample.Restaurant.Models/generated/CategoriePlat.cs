@@ -66,7 +66,7 @@ public partial record CategoriePlat
     /// <summary>
     /// Boisson.
     /// </summary>
-    public static CategoriePlat Boisson { get; } = new() { Code = Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson", Ordre = BoissonOrdre };
+    public static CategoriePlat Boisson { get; } = new() { Code = Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson", Ordre = BoissonOrdre, PrixMoyen = 2 };
 
     /// <summary>
     /// Dessert.
@@ -81,7 +81,7 @@ public partial record CategoriePlat
     /// <summary>
     /// Plat principal.
     /// </summary>
-    public static CategoriePlat Plat { get; } = new() { Code = Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = PlatOrdre };
+    public static CategoriePlat Plat { get; } = new() { Code = Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = PlatOrdre, PrixMoyen = 10 };
 
     /// <summary>
     /// Code de la catégorie.
@@ -107,6 +107,13 @@ public partial record CategoriePlat
     [Required]
     [Domain(Domains.Quantite)]
     public int? Ordre { get; init; }
+
+    /// <summary>
+    /// Prix moyen de la catégorie, à titre indicatif.
+    /// </summary>
+    [Column("cat_prix_moyen")]
+    [Domain(Domains.Prix)]
+    public decimal? PrixMoyen { get; init; }
 
     /// <summary>
     /// Récupère l'instance correspondante à la clé primaire demandée.

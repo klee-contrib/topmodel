@@ -9,10 +9,10 @@
 -- ===========================================================================================
 
 /**		Initialisation de la table CATEGORIE_PLAT		**/
-INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('ENTREE', 'restaurant.categoriePlat.values.Entree', 2);
-INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('PLAT', 'restaurant.categoriePlat.values.Plat', 3);
-INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('DESSERT', 'restaurant.categoriePlat.values.Dessert', 4);
-INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE) VALUES('BOISSON', 'restaurant.categoriePlat.values.Boisson', 1);
+INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE, CAT_PRIX_MOYEN) VALUES('ENTREE', 'restaurant.categoriePlat.values.Entree', 2, null);
+INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE, CAT_PRIX_MOYEN) VALUES('PLAT', 'restaurant.categoriePlat.values.Plat', 3, 10);
+INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE, CAT_PRIX_MOYEN) VALUES('DESSERT', 'restaurant.categoriePlat.values.Dessert', 4, null);
+INSERT INTO CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE, CAT_PRIX_MOYEN) VALUES('BOISSON', 'restaurant.categoriePlat.values.Boisson', 1, 2);
 
 /**		Initialisation de la table REGION		**/
 INSERT INTO REGION(REG_CODE, REG_LIBELLE, REG_NOM_RESPONSABLE) VALUES('IDF', 'restaurant.region.values.Idf', null);

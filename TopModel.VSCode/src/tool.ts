@@ -68,12 +68,14 @@ export class TmdTool {
     }
 
     public async init(context: ExtensionContext) {
-        await Promise.all([this.checkInstall(), this.loadVersions()]);
+        await this.checkInstall();
         if (this.installed) {
             await this.loadCurrentVersion();
+            await this.loadVersions();
             this.registerCommands(context);
             this.status = "READY";
         } else {
+            await this.loadVersions();
             this.status = "ERROR";
         }
     }
@@ -97,7 +99,7 @@ export class TmdTool {
                 res.on("end", () => resolve(totalBuffer));
             }).then(async (response: any) => {
                 const { versions }: { versions: string[] } = JSON.parse(response);
-                this.versions = versions.filter(v => !v.includes("-"));
+                this.versions = versions.filter((v) => !v.includes("-") || this.currentVersion?.includes("-"));
             });
         });
 

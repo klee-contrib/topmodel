@@ -4,6 +4,8 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.math.BigDecimal;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
@@ -20,9 +22,13 @@ public class CategoriePlat_ {
 
 	public static volatile SingularAttribute<CategoriePlat, Integer> ordre;
 
+	public static volatile SingularAttribute<CategoriePlat, BigDecimal> prixMoyen;
+
 	public static final String CODE = "code";
 
 	public static final String LIBELLE = "libelle";
 
 	public static final String ORDRE = "ordre";
+
+	public static final String PRIX_MOYEN = "prixMoyen";
 }

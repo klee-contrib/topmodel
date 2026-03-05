@@ -8,6 +8,7 @@ export interface CategoriePlat {
     code: CategoriePlatCode;
     libelle: string;
     ordre: CategoriePlatOrdre;
+    prixMoyen?: number;
 }
 export const categoriePlatList: CategoriePlat[] = [
     {
@@ -18,7 +19,8 @@ export const categoriePlatList: CategoriePlat[] = [
     {
         code: "PLAT",
         libelle: "restaurant.categoriePlat.values.Plat",
-        ordre: 3
+        ordre: 3,
+        prixMoyen: 10
     },
     {
         code: "DESSERT",
@@ -28,7 +30,8 @@ export const categoriePlatList: CategoriePlat[] = [
     {
         code: "BOISSON",
         libelle: "restaurant.categoriePlat.values.Boisson",
-        ordre: 1
+        ordre: 1,
+        prixMoyen: 2
     },
 ];
 

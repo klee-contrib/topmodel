@@ -54,14 +54,18 @@ class:
       required: true
       comment: Ordre d'affichage dans le menu.
 
+    - name: PrixMoyen
+      domain: DO_PRIX
+      comment: Prix moyen de la catégorie, à titre indicatif.
+
   unique:
     - [Ordre]
 
   values:
     Entree: { Code: ENTREE, Libelle: Entrée, Ordre: 2 }
-    Plat: { Code: PLAT, Libelle: Plat principal, Ordre: 3 }
+    Plat: { Code: PLAT, Libelle: Plat principal, Ordre: 3, PrixMoyen: 10 }
     Dessert: { Code: DESSERT, Libelle: Dessert, Ordre: 4 }
-    Boisson: { Code: BOISSON, Libelle: Boisson, Ordre: 1 }
+    Boisson: { Code: BOISSON, Libelle: Boisson, Ordre: 1, PrixMoyen: 2 }
 ---
 class:
   name: Departement

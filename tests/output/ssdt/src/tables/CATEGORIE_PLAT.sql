@@ -10,6 +10,7 @@ create table [dbo].[CATEGORIE_PLAT] (
 	[CAT_CODE] varchar,
 	[CAT_LIBELLE] varchar not null,
 	[CAT_ORDRE] int not null,
+	[CAT_PRIX_MOYEN] decimal,
 	constraint [PK_CATEGORIE_PLAT] primary key clustered ([CAT_CODE] ASC),
 	constraint [UK_CATEGORIE_PLAT_CAT_ORDRE] unique nonclustered ([CAT_ORDRE] ASC))
 go
@@ -24,4 +25,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé de la catégorie', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_LIBELLE'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Ordre d''affichage dans le menu.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_ORDRE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Prix moyen de la catégorie, à titre indicatif.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_PRIX_MOYEN'
 go

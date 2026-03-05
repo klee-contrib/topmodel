@@ -31,6 +31,7 @@ public partial class TopModelSampleDbContext : DbContext
         categoriePlat.Property(p => p.Code).HasComment("Code de la catégorie");
         categoriePlat.Property(p => p.Libelle).HasComment("Libellé de la catégorie");
         categoriePlat.Property(p => p.Ordre).HasComment("Ordre d'affichage dans le menu.");
+        categoriePlat.Property(p => p.PrixMoyen).HasComment("Prix moyen de la catégorie, à titre indicatif.");
 
         var client = modelBuilder.Entity<Client>();
         client.ToTable(t => t.HasComment("Client du restaurant"));

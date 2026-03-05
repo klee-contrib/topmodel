@@ -35,6 +35,7 @@ create table CATEGORIE_PLAT (
 	CAT_CODE varchar(10) not null,
 	CAT_LIBELLE varchar(100) not null,
 	CAT_ORDRE int not null,
+	CAT_PRIX_MOYEN decimal,
 	constraint PK_CATEGORIE_PLAT primary key (CAT_CODE)
 );
 

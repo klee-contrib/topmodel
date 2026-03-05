@@ -4,6 +4,8 @@
 
 package restaurant.jpa_sequence_server.entities.restaurant;
 
+import java.math.BigDecimal;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -64,6 +66,12 @@ public class CategoriePlat {
 	private Integer ordre;
 
 	/**
+	 * Prix moyen de la catégorie, à titre indicatif.
+	 */
+	@Column(name = "CAT_PRIX_MOYEN", scale = 2, columnDefinition = "decimal")
+	private BigDecimal prixMoyen;
+
+	/**
 	 * No arg constructor.
 	 */
 	public CategoriePlat() {
@@ -80,18 +88,22 @@ public class CategoriePlat {
 			case CategoriePlatCode.BOISSON:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
 				this.ordre = CategoriePlatOrdre.Boisson;
+				this.prixMoyen = new BigDecimal(2);
 				break;
 			case CategoriePlatCode.DESSERT:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
 				this.ordre = CategoriePlatOrdre.Dessert;
+				this.prixMoyen = null;
 				break;
 			case CategoriePlatCode.ENTREE:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
 				this.ordre = CategoriePlatOrdre.Entree;
+				this.prixMoyen = null;
 				break;
 			case CategoriePlatCode.PLAT:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
 				this.ordre = CategoriePlatOrdre.Plat;
+				this.prixMoyen = new BigDecimal(10);
 				break;
 		}
 	}
@@ -124,12 +136,22 @@ public class CategoriePlat {
 	}
 
 	/**
+	 * Getter for prixMoyen.
+	 *
+	 * @return value of {@link #prixMoyen prixMoyen}.
+	 */
+	public BigDecimal getPrixMoyen() {
+		return this.prixMoyen;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.CategoriePlat CategoriePlat}.
 	 */
 	public enum Fields {
 		CODE(CategoriePlatCode.class),
 		LIBELLE(String.class),
-		ORDRE(Integer.class);
+		ORDRE(Integer.class),
+		PRIX_MOYEN(BigDecimal.class);
 
 		private final Class<?> type;
 

@@ -8,6 +8,7 @@ export interface CategoriePlat {
     code: CategoriePlatCode;
     libelle: string;
     ordre: CategoriePlatOrdre;
+    prixMoyen?: number;
 }
 export const categoriePlat = {type: {} as CategoriePlat, valueKey: "code", labelKey: "libelle"} as const;
 

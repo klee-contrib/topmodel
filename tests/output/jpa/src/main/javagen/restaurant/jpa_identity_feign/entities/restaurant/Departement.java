@@ -76,19 +76,19 @@ public class Departement {
 		this.code = code;
 		switch(code) {
 			case "92":
-				this.libelle = "restaurant.departement.values.HautsDeSeine";
+				this.libelle = "Hauts de Seine";
 				this.regionCode = RegionCode.IDF;
 				break;
 			case "75":
-				this.libelle = "restaurant.departement.values.Paris";
+				this.libelle = "Paris";
 				this.regionCode = RegionCode.IDF;
 				break;
 			case "94":
-				this.libelle = "restaurant.departement.values.SeineEtMarne";
+				this.libelle = "Seine et Marne";
 				this.regionCode = RegionCode.IDF;
 				break;
 			case "93":
-				this.libelle = "restaurant.departement.values.SeineSaintDenis";
+				this.libelle = "Seine Saint Denis";
 				this.regionCode = RegionCode.IDF;
 				break;
 		}

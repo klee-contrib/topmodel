@@ -4,6 +4,8 @@
 
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -59,6 +61,12 @@ public class CategoriePlat {
 	private Integer ordre;
 
 	/**
+	 * Prix moyen de la catégorie, à titre indicatif.
+	 */
+	@Column("cat_prix_moyen")
+	private BigDecimal prixMoyen;
+
+	/**
 	 * Enum constructor.
 	 * @param code Code dont on veut obtenir l'instance.
 	 */
@@ -68,18 +76,22 @@ public class CategoriePlat {
 			case CategoriePlatCode.Boisson:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
 				this.ordre = CategoriePlatOrdre.Boisson;
+				this.prixMoyen = new BigDecimal(2);
 				break;
 			case CategoriePlatCode.Dessert:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
 				this.ordre = CategoriePlatOrdre.Dessert;
+				this.prixMoyen = null;
 				break;
 			case CategoriePlatCode.Entree:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
 				this.ordre = CategoriePlatOrdre.Entree;
+				this.prixMoyen = null;
 				break;
 			case CategoriePlatCode.Plat:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
 				this.ordre = CategoriePlatOrdre.Plat;
+				this.prixMoyen = new BigDecimal(10);
 				break;
 		}
 	}
@@ -109,5 +121,14 @@ public class CategoriePlat {
 	 */
 	public Integer getOrdre() {
 		return this.ordre;
+	}
+
+	/**
+	 * Getter for prixMoyen.
+	 *
+	 * @return value of {@link #prixMoyen prixMoyen}.
+	 */
+	public BigDecimal getPrixMoyen() {
+		return this.prixMoyen;
 	}
 }

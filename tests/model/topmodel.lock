@@ -4,8 +4,8 @@
 
 version: 4.0.0-rc.1
 custom:
-  ../../TopModel.Generator.Jpa: 774738d52335c0a6857c3d5744a2a9d2
-  ../../TopModel.Generator.Csharp: 5eb1b2a1c8a89c6c25a53604ca7696d2
+  ../../TopModel.Generator.Jpa: 346b69e1d52a546ce5d1426bd6120142
+  ../../TopModel.Generator.Csharp: c29a4c52b8d3525cb4b821540fd9d847
   ../../TopModel.Generator.Javascript: d845ea32743e4a5ef1a51e2fb49dc369
   ../../TopModel.Generator.Sql: f94f6bcc7f4d218424edd090d4c0df14
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
@@ -171,6 +171,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PlatDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PromotionDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/ReservationDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/RestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/TableRestaurantDAO.java
@@ -263,6 +264,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PlatDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PromotionDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/ReservationDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/RestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/TableRestaurantDAO.java
@@ -340,6 +342,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PlatDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PromotionDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/ReservationDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/RestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/TableRestaurantDAO.java
@@ -419,7 +422,6 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/DepartementCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/StatutCommande.java
-  - ../output/jpa/src/main/resources/jpa-identity-feign/i18n/model/restaurant.properties
   - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/restaurant.properties
   - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/restaurant.properties
   - ../output/pg/src/01_tables.sql

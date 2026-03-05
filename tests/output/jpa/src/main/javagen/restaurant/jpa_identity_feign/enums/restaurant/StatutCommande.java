@@ -14,27 +14,27 @@ public enum StatutCommande {
 	/**
 	 * En attente.
 	 */
-	EN_ATT("restaurant.statutCommande.values.EnAttente"),
+	EN_ATT("En attente"),
 
 	/**
 	 * En préparation.
 	 */
-	EN_PREP("restaurant.statutCommande.values.EnPreparation"),
+	EN_PREP("En préparation"),
 
 	/**
 	 * Prête.
 	 */
-	PRETE("restaurant.statutCommande.values.Prete"),
+	PRETE("Prête"),
 
 	/**
 	 * Servie.
 	 */
-	SERVIE("restaurant.statutCommande.values.Servie"),
+	SERVIE("Servie"),
 
 	/**
 	 * Annulée.
 	 */
-	ANNULE("restaurant.statutCommande.values.Annulee"),
+	ANNULE("Annulée"),
 
 	;
 

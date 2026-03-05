@@ -61,17 +61,11 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
 
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {
-                    var isString =
-                        Config.GetType(prop) == "String"
-                        && (prop.UniqueValuedProperty == null || !Config.UniqueValueGeneration.CanConst);
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
-                    if (value == "null")
+
+                    if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
                     {
-                        isString = false;
-                    }
-                    else if (Config.TranslateReferences == true && classe.DefaultProperty == prop)
-                    {
-                        value = refValue.ResourceKey;
+                        value = $"\"{refValue.ResourceKey}\"";
                     }
                     else if (
                         prop.UseClassForAssociation
@@ -86,9 +80,7 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
                         value = Config.GetValue(prop, value);
                     }
 
-                    var quote = isString ? "\"" : string.Empty;
-                    var val = quote + value + quote;
-                    constructor.AddBodyLine(2, $@"this.{prop.NameCamel} = {val};");
+                    constructor.AddBodyLine(2, $@"this.{prop.NameCamel} = {value};");
                 }
 
                 constructor.AddBodyLine(2, $@"break;");
