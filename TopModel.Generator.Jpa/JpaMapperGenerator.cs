@@ -446,7 +446,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, ClassMappings mapper, string tag)
     {
-        if (!classe.Abstract)
+        if (!mapper.Class.Abstract)
         {
             yield return GetToMapperMethodNoTarget(classe, mapper, tag);
         }
