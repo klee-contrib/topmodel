@@ -57,10 +57,13 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
                 var code = refValue.Value[codeProperty];
-                constructor.AddBodyLine(
-                    1,
-                    $@"case {Config.GetValue(codeProperty, code).Replace($"{Config.GetEnumType(codeProperty)}.", string.Empty)}:"
-                );
+                var codeValue = Config.GetValue(codeProperty, code);
+                if (codeProperty.EnumProperty != null && Config.UniqueValueGeneration.CanEnum)
+                {
+                    codeValue = codeValue.Replace($"{Config.GetEnumType(codeProperty)}.", string.Empty);
+                }
+
+                constructor.AddBodyLine(1, $@"case {codeValue}:");
 
                 foreach (var prop in classe.Properties.Where(p => p != codeProperty))
                 {

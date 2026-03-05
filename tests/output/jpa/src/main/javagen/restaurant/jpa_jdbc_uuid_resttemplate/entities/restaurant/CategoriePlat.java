@@ -73,22 +73,22 @@ public class CategoriePlat {
 	public CategoriePlat(String code) {
 		this.code = code;
 		switch(code) {
-			case Boisson:
+			case CategoriePlatCode.Boisson:
 				this.libelle = "restaurant.categoriePlat.values.Boisson";
 				this.ordre = CategoriePlatOrdre.Boisson;
 				this.prixMoyen = new BigDecimal(2);
 				break;
-			case Dessert:
+			case CategoriePlatCode.Dessert:
 				this.libelle = "restaurant.categoriePlat.values.Dessert";
 				this.ordre = CategoriePlatOrdre.Dessert;
 				this.prixMoyen = null;
 				break;
-			case Entree:
+			case CategoriePlatCode.Entree:
 				this.libelle = "restaurant.categoriePlat.values.Entree";
 				this.ordre = CategoriePlatOrdre.Entree;
 				this.prixMoyen = null;
 				break;
-			case Plat:
+			case CategoriePlatCode.Plat:
 				this.libelle = "restaurant.categoriePlat.values.Plat";
 				this.ordre = CategoriePlatOrdre.Plat;
 				this.prixMoyen = new BigDecimal(10);

@@ -76,19 +76,19 @@ public class Departement {
 	public Departement(String code) {
 		this.code = code;
 		switch(code) {
-			case HautsDeSeine:
+			case DepartementCode.HautsDeSeine:
 				this.libelle = "restaurant.departement.values.HautsDeSeine";
 				this.regionCode = RegionCode.IDF;
 				break;
-			case Paris:
+			case DepartementCode.Paris:
 				this.libelle = "restaurant.departement.values.Paris";
 				this.regionCode = RegionCode.IDF;
 				break;
-			case SeineEtMarne:
+			case DepartementCode.SeineEtMarne:
 				this.libelle = "restaurant.departement.values.SeineEtMarne";
 				this.regionCode = RegionCode.IDF;
 				break;
-			case SeineSaintDenis:
+			case DepartementCode.SeineSaintDenis:
 				this.libelle = "restaurant.departement.values.SeineSaintDenis";
 				this.regionCode = RegionCode.IDF;
 				break;
