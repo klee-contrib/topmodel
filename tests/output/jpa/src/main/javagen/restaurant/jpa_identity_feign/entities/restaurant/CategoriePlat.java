@@ -84,22 +84,22 @@ public class CategoriePlat {
 	public CategoriePlat(CategoriePlatCode code) {
 		this.code = code;
 		switch(code) {
-			case CategoriePlatCode.BOISSON:
+			case BOISSON:
 				this.libelle = "Boisson";
 				this.ordre = 1;
 				this.prixMoyen = new BigDecimal(2);
 				break;
-			case CategoriePlatCode.DESSERT:
+			case DESSERT:
 				this.libelle = "Dessert";
 				this.ordre = 4;
 				this.prixMoyen = null;
 				break;
-			case CategoriePlatCode.ENTREE:
+			case ENTREE:
 				this.libelle = "Entrée";
 				this.ordre = 2;
 				this.prixMoyen = null;
 				break;
-			case CategoriePlatCode.PLAT:
+			case PLAT:
 				this.libelle = "Plat principal";
 				this.ordre = 3;
 				this.prixMoyen = new BigDecimal(10);

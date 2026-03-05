@@ -939,6 +939,16 @@ public class RestaurantMappers {
 	}
 
 	/**
+	 * Mappe 'Plat' vers une nouvelle instance de 'PlatItem'.
+	 * @param source Instance de 'PlatItem' à mapper.
+	 *
+	 * @return Nouvelle instance de 'PlatItem' mappée depuis 'plat'.
+	 */
+	public static Plat toPlat(PlatItem source) {
+		return toPlat(source, new Plat());
+	}
+
+	/**
 	 * Mappe 'Plat' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
 	 * @param source Instance de 'PlatItem' à mapper.
 	 * @param target Instance de 'Plat' sur laquelle mapper.
