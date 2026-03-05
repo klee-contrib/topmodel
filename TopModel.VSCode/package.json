@@ -117,17 +117,6 @@
                         "media": {
                             "markdown": "dotnet.md"
                         }
-                    },
-                    {
-                        "id": "install.modgen",
-                        "title": "Install TopModel.Generator",
-                        "description": "Click here to run the TopModel installation command.\n[Install TopModel](command:topmodel.modgen.install)",
-                        "media": {
-                            "markdown": "modgen.md"
-                        },
-                        "completionEvents": [
-                            "onCommand:topmodel.modgen.install"
-                        ]
                     }
                 ]
             }
