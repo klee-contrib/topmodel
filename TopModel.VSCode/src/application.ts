@@ -28,7 +28,7 @@ export class Application {
         public readonly _configPath: string,
         public readonly config: TopModelConfig,
         public readonly extensionContext: ExtensionContext,
-        configs: { config: TopModelConfig; file: Uri }[]
+        configs: { config: TopModelConfig; file: Uri }[],
     ) {
         makeAutoObservable(this);
         this.status = "LOADING";
@@ -43,7 +43,7 @@ export class Application {
             configs.find(
                 (c) =>
                     path.resolve(this.extensionContext.asAbsolutePath(c.file.path), c.config.modelRoot ?? "./") ===
-                    modelRoot
+                    modelRoot,
             )?.config === config;
         this.start(shouldStartLanguageServer);
 
@@ -87,15 +87,19 @@ export class Application {
             const schemaUrl = path.join(
                 this.workspaceFolder?.uri.fsPath ?? "",
                 this.configFolder,
-                schemaLine.substring(schemaLinePrefix.length).trim().replace("\r", "")
+                schemaLine.substring(schemaLinePrefix.length).trim().replace("\r", ""),
             );
 
             try {
                 const schemaFile = await readFile(schemaUrl, "utf8");
                 const ajv = new Ajv({ allErrors: true, strict: true });
                 const validate = ajv.compile(JSON.parse(schemaFile));
-                const config = load(configFile);
-                return validate(config);
+                try {
+                    const config = load(configFile);
+                    return validate(config);
+                } catch {
+                    return false;
+                }
             } catch {
                 return true;
             }
@@ -130,7 +134,7 @@ export class Application {
             `TopModel - ${this.config.app}`,
             `TopModel - ${this.config.app}`,
             serverOptions,
-            { workspaceFolder: this.workspaceFolder }
+            { workspaceFolder: this.workspaceFolder },
         );
         await this.client.start();
         this.status = "STARTED";
