@@ -192,12 +192,12 @@ export class TmdTool {
         const oldVersion = this.currentVersion;
         try {
             await execute(`dotnet nuget locals http-cache --clear`);
-            await execute(`dotnet tool update --global ${this.name}`);
+            await execute(
+                `dotnet tool update --global ${this.name}${this.latestVersion ? ` --version ${this.latestVersion}` : ""}`,
+            );
             await this.loadCurrentVersion();
             this.status = "READY";
-            if (this.latestVersion) {
-                this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
-            }
+            this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.currentVersion}`);
         } catch (error) {
             this.status = "ERROR";
             this.error = "Erreur pendant la mise à jour de l'outil " + this.name;
