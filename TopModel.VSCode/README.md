@@ -2,29 +2,29 @@
 
 ![Features demo](https://raw.githubusercontent.com/klee-contrib/topmodel/develop/TopModel.VSCode/demo.gif "Features demonstration")
 
-## Fonctionnalités disponibles
+## Available features
 
-Cette extension enrichit considérablement l'expérience de développement de projets TopModel (fichiers avec extensions `*.tmd`).
+This extension greatly enhances the development experience for TopModel projects (files with `*.tmd` extensions).
 
-Fonctionnalités principales :
+Main features:
 
-- Coloration sémantique (références de classes, propriétés et domaines, imports)
-- Auto-complétion des domaines, classes et propriétés d'alias
-- Validation et affichages des erreurs et warnings
-- Commandes `TopModel : Start model generation` et `TopModel : Start model generation (watch mode)` avec détection automatique du ou des fichiers de configuration
-- Imports automatiques
-- Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
-- Listing des références de classes et domaines (via `Maj + F12` et CodeLens)
-- Mise en forme :
-  - Tri des imports
-- Aides à la saisie :
-  - Ajout de l'import manquant
-  - Ajout de la classe manquante au fichier courant
-  - Ajout du domaine manquant au fichier des domaines
-  - Renommage des classes et des domaines (`F2`)
-- Prévisualisation diagram UML
-- Panneau `outline`
+- Semantic highlighting (class references, properties and domains, imports)
+- Auto-completion for domains, classes and alias properties
+- Validation and display of errors and warnings
+- Commands `TopModel: Start model generation` and `TopModel: Start model generation (watch mode)` with automatic detection of configuration file(s)
+- Automatic imports
+- Symbol search (classes, domains and endpoints) with `Ctrl + T`
+- List references for classes and domains (via `Shift + F12` and CodeLens)
+- Formatting:
+  - Oranize imports (`Alt + Shift + O`)
+- Input assistance:
+  - Add missing import
+  - Add missing class to current file
+  - Add missing domain to domains file
+  - Rename classes and domains (`F2`)
+- UML diagram preview
+- `Outline` panel
 - Warnings
-  - Imports inutiles
-  - Trigrams en doublon
-  - Propriétés d'alias en doublon
+  - Unused imports
+  - Duplicate trigrams
+  - Duplicate alias properties
