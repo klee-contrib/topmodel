@@ -15,7 +15,7 @@ export class TmdTool {
     private _terminal?: Terminal;
     constructor(
         public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator",
-        public readonly command: "modgen" | "tmdgen"
+        public readonly command: "modgen" | "tmdgen",
     ) {
         makeAutoObservable(this);
         if (this.name === "TopModel.Generator") {
@@ -167,17 +167,17 @@ export class TmdTool {
         if (this.updateAvailable && this.installed) {
             const extensionConfiguration = workspace.getConfiguration("topmodel");
             if (extensionConfiguration.autoUpdate) {
-                this.update();
+                await this.update();
             } else {
                 const shouldUpdate = `Mettre à jour ${this.name}`;
                 const showChangelog = "Voir la release note";
                 const selection = await window.showInformationMessage(
                     `L'outil ${this.name} peut être mis à jour (${this.currentVersion} > ${this.latestVersion})`,
                     shouldUpdate,
-                    showChangelog
+                    showChangelog,
                 );
                 if (selection === shouldUpdate) {
-                    this.update();
+                    await this.update();
                 } else if (selection === showChangelog) {
                     await commands.executeCommand(COMMANDS.releaseNote);
                 }
@@ -188,12 +188,18 @@ export class TmdTool {
     public async update() {
         this.status = "INSTALLING";
         const oldVersion = this.currentVersion;
-        await execute(`dotnet nuget locals http-cache --clear`);
-        await execute(`dotnet tool update --global ${this.name}`);
-        await this.loadCurrentVersion();
-        this.status = "READY";
-        if (this.latestVersion) {
-            this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
+        try {
+            await execute(`dotnet nuget locals http-cache --clear`);
+            await execute(`dotnet tool update --global ${this.name}`);
+            await this.loadCurrentVersion();
+            this.status = "READY";
+            if (this.latestVersion) {
+                this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
+            }
+        } catch (error) {
+            this.status = "ERROR";
+            this.error = "Erreur pendant la mise à jour de l'outil " + this.name;
+            await window.showInformationMessage("Erreur pendant la mise à jour de l'outil " + this.name + ": " + error);
         }
     }
 
@@ -216,7 +222,7 @@ export class TmdTool {
 
     private registerUpdateCommand(context: ExtensionContext) {
         const updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () =>
-            this.update()
+            this.update(),
         );
         COMMANDS_OPTIONS[`topmodel.${this.command}.update`] = {
             title: `${this.command} - ${t("updateTool", [this.command])}`,
