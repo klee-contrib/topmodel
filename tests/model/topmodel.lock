@@ -2,10 +2,10 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.0.0-rc.2
+version: 4.0.0-rc.3
 custom:
-  ../../TopModel.Generator.Jpa: c9bc033ca148b7f3d8de2c64001d96d9
-  ../../TopModel.Generator.Csharp: c29a4c52b8d3525cb4b821540fd9d847
+  ../../TopModel.Generator.Jpa: e92108f92823d92ab4fa0dab90cc717d
+  ../../TopModel.Generator.Csharp: a9709ce801dc2e4d8161087b4d90781c
   ../../TopModel.Generator.Javascript: d845ea32743e4a5ef1a51e2fb49dc369
   ../../TopModel.Generator.Sql: f94f6bcc7f4d218424edd090d4c0df14
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f

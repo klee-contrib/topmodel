@@ -69,11 +69,11 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
             List<string> enumAsString = [];
             if (!notPkProperties.Any())
             {
-                enumAsString.Add($"{refValue.Value[classe.EnumKey!].ToConstantCase()}");
+                enumAsString.Add($"{refValue.Value[classe.EnumKey!]}");
             }
             else
             {
-                enumAsString.Add($"{refValue.Value[classe.EnumKey!].ToConstantCase()}(");
+                enumAsString.Add($"{refValue.Value[classe.EnumKey!]}(");
                 foreach (var prop in notPkProperties)
                 {
                     var isString = Config.GetType(prop) == "String";

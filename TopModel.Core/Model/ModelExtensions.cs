@@ -401,7 +401,6 @@ public static class ModelExtensions
     {
         return !Regex.IsMatch(name, "^\\d")
             && !name.Contains('-')
-            && name.FirstOrDefault() != name.ToLower().FirstOrDefault()
             && !Regex.IsMatch(
                 name ?? string.Empty,
                 "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"

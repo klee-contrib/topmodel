@@ -107,9 +107,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 return mapper.Match(
                     fromMapper =>
                     {
-                        var targetTag = Config.GetBestClassTag(sourceClass, tag);
+                        var targetTag = Config.GetBestClassTag(targetClass, tag);
                         var (targetMapperName, targetMapperNs, _) = Config.GetMapperInfo(
-                            (sourceClass, fromMapper),
+                            (targetClass, fromMapper),
                             targetTag
                         );
 

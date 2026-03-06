@@ -232,7 +232,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             return mapper.Match(
                 fromMapper =>
                 {
-                    var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((sourceClass, fromMapper));
+                    var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
                     imports.Add(Config.GetMapperImport(targetMapperNs, targetMapperModelPath, tag)!);
 
                     var createMapper =
