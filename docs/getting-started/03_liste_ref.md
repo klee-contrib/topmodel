@@ -2,7 +2,6 @@
 
 Dans notre modèle de données, nous souhaitons définir des **listes de références**. Ce sont des classes dont les instances changent peu ou pas du tout, et qui peuvent donc être mises en cache.
 
-
 Ainsi, dans un nouveau fichier `"References.tmd"` on défini la classe `TypeUtilisateur` dans le module `Ref`. Pour indiquer qu'il s'agit d'une liste de référence, il suffit de préciser l'attribut `reference`. :
 
 ```yaml
@@ -68,19 +67,24 @@ class:
     GES: { Code: GES, Libelle: Gestionnaire }
     CLI: { Code: CLI, Libelle: Client }
 ```
+
+> Il existe plusieurs mode de génération pour ce type de classe. Plus d'informations dans la documentation des [classes](/model/classes.md)
+
 ## Répertoire Projet
+
 A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:
+
 - Projet
   - topmodel.config
   - Utilisateur.tmd
   - Domains.tmd
   - References.tmd
 
-
 ## Exemple de code généré
 
 <!-- tabs:start -->
 #### **Java**
+
 ```java
 package tuto.enums.refs;
 
@@ -88,18 +92,18 @@ package tuto.enums.refs;
  * Enumération des valeurs possibles de la propriété Code de la classe TypeUtilisateur.
  */
 public enum TypeUtilisateurCode {
-	/**
-	 * Administrateur.
-	 */
-	ADM,
-	/**
-	 * Client.
-	 */
-	CLI,
-	/**
-	 * Gestionnaire.
-	 */
-	GES
+ /**
+  * Administrateur.
+  */
+ ADM,
+ /**
+  * Client.
+  */
+ CLI,
+ /**
+  * Gestionnaire.
+  */
+ GES
 }
 
 ```
@@ -119,17 +123,17 @@ package tuto.entities.refs;
 public class TypeUtilisateur {
 
   // [...]
-	/**
-	 * Code du type d'utilisateur.
-	 */
-	@Id
-	@Column(name = "CODE", nullable = false, length = 10, columnDefinition = "varchar")
-	@Enumerated(EnumType.STRING)
-	private TypeUtilisateurCode code;
+ /**
+  * Code du type d'utilisateur.
+  */
+ @Id
+ @Column(name = "CODE", nullable = false, length = 10, columnDefinition = "varchar")
+ @Enumerated(EnumType.STRING)
+ private TypeUtilisateurCode code;
 
-	// Libellé du type d'utilisateur.
-	@Column(name = "LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
-	private String libelle;
+ // Libellé du type d'utilisateur.
+ @Column(name = "LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+ private String libelle;
 
   // ...
 }
@@ -137,7 +141,6 @@ public class TypeUtilisateur {
 ```
 
 #### **C#**
-
 
 ```csharp
 namespace Tuto.Refs.Models;
@@ -176,14 +179,13 @@ public partial record TypeUtilisateur
 
 ```
 
-
 #### **SQL**
 
 ```sql
 create table TYPE_UTILISATEUR (
-	CODE varchar(10) not null,
-	LIBELLE varchar(100) not null,
-	constraint PK_TYPE_UTILISATEUR primary key (CODE)
+ CODE varchar(10) not null,
+ LIBELLE varchar(100) not null,
+ constraint PK_TYPE_UTILISATEUR primary key (CODE)
 );
 
 INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');

@@ -6,28 +6,28 @@ Pour communiquer entre les différentes couches d'une application, il est géné
 
 Dans TopModel, il est possible de définir un objet non persisté exactement de la même manière qu'un objet persisté. La seule différence étant l'absence de **clé primaire**, dans un objet de transfert.
 
-Exemple avec la classe `ProfilDto` (à ne pas reproduire. Dans ce chapitre, ne reproduisez les exemples sur votre environnement projet que lorsque vous y serez conviés) :
+Exemple avec la classe `UtilisateurDto` (à ne pas reproduire. Dans ce chapitre, ne reproduisez les exemples sur votre environnement projet que lorsque vous y serez conviés) :
 
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - name: Nom
-      comment: Nom du profil
-      label: Profil
+      comment: Nom du Utilisateur
+      label: Utilisateur
       domain: DO_LIBELLE
       required: true
 ```
 
-La classe `ProfilDto` ne contient qu'un libellé, pas de clé primaire, et sera donc considérée comme une classe non persistée.
+La classe `UtilisateurDto` ne contient qu'un libellé, pas de clé primaire, et sera donc considérée comme une classe non persistée.
 
-Remarque : Il est préférable de créer les objets non persistés dans un fichier à part comme dans l'exemple précédent.
+> Remarque : Il est préférable de créer les objets non persistés dans un fichier à part comme dans l'exemple précédent.
 
 ## Alias
 
-Evidemment, il est extrêmement laborieux de définir `ProfilDto` de cette manière. Il serait préférable de matérialiser le lien fort entre la propriété `Nom` de la classe `Profil` et la propriété `Nom` de `ProfilDto`.
+Evidemment, il est extrêmement laborieux de définir `UtilisateurDto` de cette manière. Il serait préférable de matérialiser le lien fort entre la propriété `Nom` de la classe `Utilisateur` et la propriété `Nom` de `UtilisateurDto`.
 
 Pour cela, TopModel permet de définir des propriétés d'`Alias`. L'objectif est de référencer une propriété ou un ensemble de propriétés définies dans une autre classe.
 
@@ -39,17 +39,17 @@ Dans la liste des propriétés d'une classe non persistée, cela se traduit de c
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil # Classe cible de l'alias
+        class: Utilisateur # Classe cible de l'alias
         property: Nom # Propriété cible de l'alias
 ```
 
 > La classe en question doit être accessible depuis le fichier sur lequel nous travaillons. Si elle n'est pas définie dans le fichier courant, alors le fichier qui la contient doit être importé dans les `uses`.
 
-Ainsi, la classe `ProfilDto` contiendra une propriété `Nom`, qui aura exactement les mêmes caractéristiques que la propriété `Nom` dans la classe `Profil`, à savoir :
+Ainsi, la classe `UtilisateurDto` contiendra une propriété `Nom`, qui aura exactement les mêmes caractéristiques que la propriété `Nom` dans la classe `Utilisateur`, à savoir :
 
 - Son domaine
 - Son libelle
@@ -57,7 +57,7 @@ Ainsi, la classe `ProfilDto` contiendra une propriété `Nom`, qui aura exacteme
 - Le fait qu'elle soit requise
 - etc
 
-**Néanmoins** si la propriété en question est une clé primaire, elle ne fera pas de la classe `ProfilDto` une classe persistée.
+**Néanmoins** si la propriété en question est une clé primaire dans `Utilisateur`, elle ne fera pas de la classe `UtilisateurDto` une classe persistée.
 
 #### Préfix/Suffix
 
@@ -66,16 +66,16 @@ Dans l'éventualité ou l'on créerait une classe contenant des alias vers plusi
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
         property: Nom
       suffix: true
 ```
 
-Ici, `ProfilDto` contiendra une propriété `NomProfil`, ayant les mêmes attributs que la propriété `Nom` de la classe `Profil`.
+Ici, `UtilisateurDto` contiendra une propriété `NomUtilisateur`, ayant les mêmes attributs que la propriété `Nom` de la classe `Utilisateur`.
 
 #### Surcharger les attributs
 
@@ -84,11 +84,11 @@ En dehors du **nom** et du domaine, il est possible de surcharger tous les attri
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
         property: Nom
       required: false # Surcharge de la valeur du champ required. 
 ```
@@ -104,11 +104,11 @@ Exemple :
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
 ```
 
 > Les surchages évoquées au paragraphes précédent s'appliqueront à toutes les propriétés aliasées
@@ -122,11 +122,11 @@ Exemple avec `include`
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
         include:
           - Nom # La liste des propriétés à inclure. Toutes les autres seront ignorées
 ```
@@ -136,16 +136,16 @@ Exemple avec `exclude`
 ```yaml
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
         exclude:
-          - Id # La liste des propriétés à exclure. Toutes les autres seront ajoutées à la classe ProfilDto
+          - Id # La liste des propriétés à exclure. Toutes les autres seront ajoutées à la classe UtilisateurDto
 ```
 
-Les deux exemples ci-dessus produisent exactement le même résultat que le premier exemple proposé : `ProfilDto` contiendra une propriété `Nom`, ayant les mêmes attributs que la propriété `Nom` de la classe `Profil`.
+Les deux exemples ci-dessus produisent exactement le même résultat que le premier exemple proposé : `UtilisateurDto` contiendra une propriété `Nom`, ayant les mêmes attributs que la propriété `Nom` de la classe `Utilisateur`.
 
 > **Astuce** : il est tout à fait possible d'ajouter deux alias vers la même classe. Cette pratique permet notamment de surcharger différemment des ensembles de propriétés.
 
@@ -160,18 +160,18 @@ uses:
 tags: []
 ---
 class:
-  name: ProfilDto
-  comment: Objet de transfert pour la classe Profil
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
   properties:
     - alias:
-        class: Profil
+        class: Utilisateur
 ```
 
 ## Composition
 
 Dans certains cas, il est nécessaire de définir des propriétés dont le type est une classe définie dans le modèle. Nous pourrions éventuellement passer par un domaine, mais il vaut mieux utiliser des propriétés de type `composition`.
 
-Supposons que l'on veuille créer un Dto `UtilisateurDto` en faisant une composition avec la classe `ProfilDto`, on aurait :
+Supposons que l'on veuille créer un Dto `UtilisateurDto` en faisant une composition avec la classe `AdresseDto`, on aurait :
 
 ```yaml
 ---
@@ -181,26 +181,14 @@ class:
   properties:
     - alias:
         class: Utilisateur
-    - composition: ProfilDto # Nom de la classe
-      name: Profil # Nom de la propriété
-      comment: Profil de l'utilisateur # Commentaire obligatoire
+    - composition: AdresseDto # Nom de la classe
+      name: Adresse # Nom de la propriété
+      comment: Adresse de l'utilisateur # Commentaire obligatoire
 ```
 
-### Type de composition (kind)
+### Domaine
 
-Il existe trois valeurs possibles pour l'attribut `kind`
-
-#### Object
-
-C'est la composition de base. La classe composée est contenue simplement dans la classe mère.
-
-#### List
-
-La classe composée est contenue sous forme de collection dans la classe mère.
-
-#### Domaine
-
-Si un domaine est renseigné dans l'attribut `kind`, alors il doit être générique dans les langages où il est décliné. La composition sera alors du type du domaine, générique de la classe composée.
+Si un domaine est renseigné dans l'attribut `domain` de la composition, alors il doit être générique dans les langages où il est décliné. La composition sera alors du type du domaine, générique de la classe composée.
 
 Exemple avec le domaine `DO_PAGE` que vous pouvez ajouter dans votre fichier "`Domains.tmd`" :
 
@@ -231,13 +219,13 @@ class:
   properties:
     - alias:
         class: Utilisateur
-    - composition: ProfilDto # Nom de la classe
-      name: Profil # Nom de la propriété
-      comment: Profil de l'utilisateur # Commentaire obligatoire
+    - composition: AdresseDto # Nom de la classe
+      name: Adresse # Nom de la propriété
+      comment: Adresse de l'utilisateur # Commentaire obligatoire
       domain: DO_PAGE # Type de composition
 ```
 
-Le type de composition donnera le type générique `Page<ProfilDto>`.
+Le type de composition donnera le type générique `Page<UtilisateurDto>`.
 
 ## Mappers
 
@@ -270,7 +258,7 @@ Il serait en théorie possible de créer soit :
 - Un mapper `from` sur la classe `Utilisateur` qui prend comme paramètre un `UtilisateurCreateDto`
 - Un mapper `to` sur la classe `UtilisateurCreateDto` qui prend comme classe destination un `Utilisateur`
 
-Mais, le plus souvent, les classes persistées et non persistées sont définis dans des fichiers différents. Ainsi le fichier dans lequel est déclaré `UtilisateurCreateDto` a une dépendance au fichier dans lequel est défini `Utilisateur`. Pour éviter d'introduire une dépendance circulaire, nous sommes obligés de choisir la deuxième option, **créer un mapper `to` sur la classe `UtilisateurCreateDto`**.
+Ici, nous préfèrerons **créer un mapper `to` sur la classe `UtilisateurCreateDto`**.
 
 Voici comment l'ajouter à notre définition de classe. Ajoutez les lignes suivantes à votre fichier `"Dto.tmd"` :
 
@@ -308,15 +296,15 @@ class:
         exclude: 
           - Id
     - alias:
-        class: Profil
+        class: TypeUtilisateur
         include:
-          - Nom
+          - Libelle
       suffix: true
 ```
 
-Ici, notre résultat de recherche devra renvoyer tous les champs de la classe `Utilisateur` (hormis son Id), ainsi que le nom de son `Profil`.
+Ici, notre résultat de recherche devra renvoyer tous les champs de la classe `Utilisateur` (hormis son Id), ainsi que le label de son `TypeUtilisateur`.
 
-Nous aurions donc besoin d'un `mapper` pour construire ces objets `UtilisateurSearchResultDto`. Idéalement, ce `mapper` doit pouvoir prendre en paramètres une instance de la classe `Utilisateur`, et une instance de la classe `Profil` correspondante.
+Nous aurions donc besoin d'un `mapper` pour construire ces objets `UtilisateurSearchResultDto`. Idéalement, ce `mapper` doit pouvoir prendre en paramètres une instance de la classe `Utilisateur`, et une instance de la classe `Utilisateur` correspondante.
 
 Un tel mapper s'écrit de la façon suivante :
 
@@ -329,20 +317,20 @@ class:
     - alias:
         class: Utilisateur
         exclude:
-          - ID
+          - Id
     - alias:
-        class: Profil
+        class: TypeUtilisateur
         include:
-          - Nom
+          - Libelle
       suffix: true
   mappers:
     from: # Liste des mappers From
       - params: # Liste des paramètres du mapper
         - class: Utilisateur # Premier paramètre, une instance de la classe Utilisateur
-        - class: Profil # Deuxième paramètre, une instance de la classe Profil
+        - class: TypeUtilisateur # Deuxième paramètre, une instance de la classe TypeUtilisateur
 ```
 
-Nous avons donc défini un mapper `from`, prenant deux paramètres, `Utilisateur` et `Profil`, permettant de créer une instance de la classe `UtilisateurSearchResultDto`.
+Nous avons donc défini un mapper `from`, prenant deux paramètres, `Utilisateur` et `TypeUtilisateur`, permettant de créer une instance de la classe `UtilisateurSearchResultDto`.
 
 Pour plus de détails sur les cas d'usage avancés (exclusion de propriétés, cas de mappings ambigus, héritage, nommage des paramètres et des mappers...), se rapporter à la section [Mappers](/model/mappers).
 
@@ -366,66 +354,63 @@ Nous venons de couvrir beaucoup de notions essentielles. Au début du chapitre, 
 
 ```java
 
-package tuto.dtos.users;
+package hello world.dtos.users;
 
 /**
  * Objet de transfert pour la classe Utilisateur, dans le cas d'une recherche.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurSearchResultDto implements Serializable {
- /** Serial ID */
+
+ /**
+  * Serial ID.
+  */
+ @Serial
  private static final long serialVersionUID = 1L;
 
  /**
   * Adresse mail de l'utilisateur.
-  * Alias of {@link tuto.entities.users.Utilisateur#getEmail() Utilisateur#getEmail()} 
+  * Alias of {@link hello world.entities.users.Utilisateur#getEmail() Utilisateur#getEmail()}
   */
- @Email
- @Size(max = 50)
  @NotNull
+ @Size(max = 50)
  private String email;
 
  /**
   * Nom de l'utilisateur.
-  * Alias of {@link tuto.entities.users.Utilisateur#getNom() Utilisateur#getNom()} 
+  * Alias of {@link hello world.entities.users.Utilisateur#getNom() Utilisateur#getNom()}
   */
- @Size(max = 100)
+ @Size(max = 15)
  private String nom;
 
  /**
   * Date d'inscription.
-  * Alias of {@link tuto.entities.users.Utilisateur#getDateInscription() Utilisateur#getDateInscription()} 
+  * Alias of {@link hello world.entities.users.Utilisateur#getDateInscription() Utilisateur#getDateInscription()}
   */
  private LocalDate dateInscription;
 
  /**
   * Type de l'utilisateur.
-  * Alias of {@link tuto.entities.users.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
+  * Alias of {@link hello world.entities.users.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()}
   */
- @NotNull
  private TypeUtilisateurCode typeUtilisateurCode;
 
  /**
-  * Profil de l'utilisateur.
-  * Alias of {@link tuto.entities.users.Utilisateur#getProfils() Utilisateur#getProfils()} 
+  * Libellé du type d'utilisateur.
+  * Alias of {@link hello world.entities.refs.TypeUtilisateur#getLibelle() TypeUtilisateur#getLibelle()}
   */
- private  profils;
-
- /**
-  * Nom du profil.
-  * Alias of {@link tuto.entities.users.Profil#getNom() Profil#getNom()} 
-  */
- @Size(max = 100)
- private String nomProfil;
+ @NotNull
+ @Size(max = 15)
+ private String libelleTypeUtilisateur;
   // ...
-}
 
 ```
 
 #### **C#**
 
 ```csharp
-namespace Tuto.Users.Models;
+
+namespace Hello World.Users.Models;
 
 /// <summary>
 /// Objet de transfert pour la classe Utilisateur, dans le cas d'une recherche.
@@ -444,35 +429,29 @@ public partial record UtilisateurSearchResultDto
     /// Nom de l'utilisateur.
     /// </summary>
     [Domain(Domains.Libelle)]
-    [StringLength(100)]
+    [StringLength(15)]
     public string Nom { get; set; }
 
     /// <summary>
     /// Date d'inscription.
     /// </summary>
     [Domain(Domains.Date)]
-    public DateOnly? DateInscription { get; set; }
+    public DateTime? DateInscription { get; set; }
 
     /// <summary>
     /// Type de l'utilisateur.
     /// </summary>
-    [Required]
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; }
 
     /// <summary>
-    /// Profil de l'utilisateur.
+    /// Libellé du type d'utilisateur.
     /// </summary>
-    [Domain(Domains.Liste)]
-    public  Profils { get; set; }
-
-    /// <summary>
-    /// Nom du profil.
-    /// </summary>
+    [Required]
     [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string NomProfil { get; set; }
+    [StringLength(15)]
+    public string LibelleTypeUtilisateur { get; set; }
 }
 
 ```
@@ -485,40 +464,85 @@ public partial record UtilisateurSearchResultDto
 ### **Java**
 
 ```java
-package tuto.entities.users;
+package hello world.entities.users;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UsersMappers {
 
+ private UsersMappers() {
+  // private constructor to hide implicite public one
+ }
+
  /**
-  * Map les champs des classes passées en paramètre dans l'objet target'.
-  * @param target Instance de 'UtilisateurSearchResultDto' (ou null pour créer une nouvelle instance).
-  * @param utilisateur Instance de 'Utilisateur'.
-  * @param profil Instance de 'Profil'.
+  * Crée une nouvelle instance de la classe 'UtilisateurSearchResultDto' en mappant les champs sources.
+  * @param utilisateur Instance de 'Utilisateur' source.
+  * @param typeUtilisateur Instance de 'TypeUtilisateur' source.
   *
-  * @return Une nouvelle instance de 'UtilisateurSearchResultDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+  * @return Une nouvelle instance de 'UtilisateurSearchResultDto' sur laquelle les champs sources ont été mappés.
   */
- public static UtilisateurSearchResultDto createUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil, UtilisateurSearchResultDto target) {
+ public static UtilisateurSearchResultDto createUtilisateurSearchResultDto(Utilisateur utilisateur, TypeUtilisateur typeUtilisateur) {
+  return mapUtilisateurSearchResultDto(utilisateur, typeUtilisateur, new UtilisateurSearchResultDto());
+ }
+
+ /**
+  * Mappe les champs sources sur l'instance de la classe 'UtilisateurSearchResultDto' passée en paramètre.
+  * @param utilisateur Instance de 'Utilisateur' source.
+  * @param typeUtilisateur Instance de 'TypeUtilisateur' source.
+  * @param target Instance de 'UtilisateurSearchResultDto' cible.
+  *
+  * @return L'instance de 'UtilisateurSearchResultDto' passée en paramètres sur lesquels les champs sources ont été mappés.
+  */
+ public static UtilisateurSearchResultDto mapUtilisateurSearchResultDto(Utilisateur utilisateur, TypeUtilisateur typeUtilisateur, UtilisateurSearchResultDto target) {
   if (target == null) {
-   target = new UtilisateurSearchResultDto();
+   throw new IllegalArgumentException("target cannot be null");
   }
 
   if (utilisateur == null) {
    throw new IllegalArgumentException("utilisateur cannot be null");
   }
 
-  if (profil == null) {
-   throw new IllegalArgumentException("profil cannot be null");
+  if (typeUtilisateur == null) {
+   throw new IllegalArgumentException("typeUtilisateur cannot be null");
   }
 
   target.setEmail(utilisateur.getEmail());
   target.setNom(utilisateur.getNom());
   target.setDateInscription(utilisateur.getDateInscription());
-  if (utilisateur.getTypeUtilisateur() != null) {
-   target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+  target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateurCode());
+  target.setLibelleTypeUtilisateur(typeUtilisateur.getLibelle());
+  return target;
+ }
+
+ /**
+  * Mappe 'Utilisateur' vers une nouvelle instance de 'UtilisateurCreateDto'.
+  * @param source Instance de 'UtilisateurCreateDto' à mapper.
+  *
+  * @return Nouvelle instance de 'UtilisateurCreateDto' mappée depuis 'utilisateur'.
+  */
+ public static Utilisateur toUtilisateur(UtilisateurCreateDto source) {
+  return toUtilisateur(source, new Utilisateur());
+ }
+
+ /**
+  * Mappe 'Utilisateur' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+  * @param source Instance de 'UtilisateurCreateDto' à mapper.
+  * @param target Instance de 'Utilisateur' sur laquelle mapper.
+  *
+  * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'utilisateur'.
+  */
+ public static Utilisateur toUtilisateur(UtilisateurCreateDto source, Utilisateur target) {
+  if (source == null) {
+   throw new IllegalArgumentException("source cannot be null");
   }
 
-  target.setNomProfil(profil.getNom());
+  if (target == null) {
+   throw new IllegalArgumentException("target cannot be null");
+  }
+
+  target.setEmail(source.getUtilisateurEmail());
+  target.setNom(source.getUtilisateurNom());
+  target.setDateInscription(source.getUtilisateurDateInscription());
+  target.setTypeUtilisateurCode(source.getUtilisateurTypeUtilisateurCode());
   return target;
  }
 }
@@ -528,20 +552,23 @@ public class UsersMappers {
 ### **C#**
 
 ```csharp
-namespace Tuto.Clients.Db.Models.Users;
+namespace Hello World.Users.Models;
 
-public static class Mappers
+/// <summary>
+/// Mappers pour le module 'Users'.
+/// </summary>
+public static class UsersMappers
 {
     /// <summary>
     /// Crée une nouvelle instance de 'UtilisateurSearchResultDto'.
     /// </summary>
     /// <param name="utilisateur">Instance de 'Utilisateur'.</param>
-    /// <param name="profil">Instance de 'Profil'.</param>
+    /// <param name="typeUtilisateur">Instance de 'TypeUtilisateur'.</param>
     /// <returns>Une nouvelle instance de 'UtilisateurSearchResultDto'.</returns>
-    public static UtilisateurSearchResultDto CreateUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil)
+    public static UtilisateurSearchResultDto CreateUtilisateurSearchResultDto(Utilisateur utilisateur, TypeUtilisateur typeUtilisateur)
     {
         ArgumentNullException.ThrowIfNull(utilisateur);
-        ArgumentNullException.ThrowIfNull(profil);
+        ArgumentNullException.ThrowIfNull(typeUtilisateur);
 
         return new UtilisateurSearchResultDto
         {
@@ -549,11 +576,44 @@ public static class Mappers
             Nom = utilisateur.Nom,
             DateInscription = utilisateur.DateInscription,
             TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
-            Profils = utilisateur.Profils,
-            NomProfil = profil.Nom
+            LibelleTypeUtilisateur = typeUtilisateur.Libelle
         };
     }
+
+    /// <summary>
+    /// Mappe 'UtilisateurCreateDto' vers 'Utilisateur'.
+    /// </summary>
+    /// <param name="source">Instance de 'UtilisateurCreateDto'.</param>
+    /// <param name="id">Identifiant unique de l'utilisateur.</param>
+    /// <returns>Une nouvelle instance de 'Utilisateur'.</returns>
+    public static Utilisateur ToUtilisateur(this UtilisateurCreateDto source, long? id = null)
+    {
+        return new Utilisateur
+        {
+            Email = source.UtilisateurEmail,
+            Nom = source.UtilisateurNom,
+            DateInscription = source.UtilisateurDateInscription,
+            TypeUtilisateurCode = source.UtilisateurTypeUtilisateurCode,
+            Id = id
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'UtilisateurCreateDto' vers 'Utilisateur'.
+    /// </summary>
+    /// <param name="source">Instance de 'UtilisateurCreateDto'.</param>
+    /// <param name="dest">Instance pré-existante de 'Utilisateur'.</param>
+    /// <returns>L'instance pré-existante de 'Utilisateur'.</returns>
+    public static Utilisateur ToUtilisateur(this UtilisateurCreateDto source, Utilisateur dest)
+    {
+        dest.Email = source.UtilisateurEmail;
+        dest.Nom = source.UtilisateurNom;
+        dest.DateInscription = source.UtilisateurDateInscription;
+        dest.TypeUtilisateurCode = source.UtilisateurTypeUtilisateurCode;
+        return dest;
+    }
 }
+
 ```
 
 <!-- tabs:end -->

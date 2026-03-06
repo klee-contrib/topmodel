@@ -18,8 +18,7 @@ class:
 Nous avons donc déclaré notre classe `Utilisateur`, dans le module `Users`, et nous lui avons associé un commentaire.
 
 > Si vous utilisez l'extension TopModel, vous devriez avoir une erreur due à l'absence de l'attribut `tags` dans les en-têtes. Nous n'évoquerons les `tags` que dans la partie [`Générer du code`](/getting-started/07_generation.md) de ce tutoriel. En attendant, vous pouvez ajouter `tags: []` dans toutes les en-têtes des fichiers que nous allons créer.
-
->De plus, vous devriez avoir une erreur sur le champ "class". Cela est dû à l'absence du champ propriété qui est obligatoire pour toute classe que l'on crée. Ce point est traité dans la section suivante.
+> De plus, vous devriez avoir une erreur sur le champ "class". Cela est dû à l'absence du champ propriété qui est obligatoire pour toute classe que l'on crée. Ce point est traité dans la section suivante.
 
 ## Déclaration des propriétés
 
@@ -97,10 +96,6 @@ domain:
     type: string
   java:
     type: String
-    annotations: # Ensemble des annotations à ajouter au dessus de la propriété
-      - text: "@Email" 
-        imports:
-          - "javax.validation.constraints.Email" # Imports nécessaires au bon fonctionnement de l'annotation
   sql:
     type: varchar
 ---

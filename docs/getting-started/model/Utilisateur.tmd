@@ -1,0 +1,33 @@
+uses:
+  - References
+module: Users # Module commun de toutes classes du fichier
+tags: [back]
+---
+class:
+  name: Utilisateur
+  comment: Utilisateur de l'application
+  properties:
+    - name: Id
+      comment: Identifiant unique de l'utilisateur
+      primaryKey: true
+      domain: DO_ID
+
+    - name: Email
+      comment: Adresse mail de l'utilisateur
+      domain: DO_EMAIL
+      required: true # Indique que la propriété Email est obligatoire dans le modèle de données
+      label: Adresse mail # Libelle d'affichage de la propriété
+
+    - name: Nom
+      comment: Nom de l'utilisateur
+      domain: DO_LIBELLE
+      label: Nom # Libelle d'affichage de la propriété
+
+    - name: DateInscription
+      comment: Date d'inscription
+      domain: DO_DATE
+      label: Inscrit depuis le # Libelle d'affichage de la propriété
+
+    - association: TypeUtilisateur
+      comment: Type de l'utilisateur
+      label: Type

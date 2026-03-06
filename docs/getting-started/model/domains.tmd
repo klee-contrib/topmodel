@@ -1,0 +1,85 @@
+---
+module: Users # Module obligatoire, bien qu'inutile dans le cas des domaines
+tags: # tags obligatoires, bien qu'inutiles dans le cas des domaines
+  - ""
+---
+domain:
+  name: DO_ID # Nom du domaine utilisé dans la définition des propriétés
+  label: ID technique # Description du domaine
+  ts:
+    type: number # Type TS à utiliser pour ce domaine
+  java:
+    type: long # Type Java à utiliser pour ce domaine
+  sql:
+    type: int8
+  csharp:
+    type: long
+---
+domain:
+  name: DO_DATE
+  label: Date
+  ts:
+    type: string
+  java:
+    type: LocalDate
+    imports:
+      - java.time.LocalDate # Imports nécessaires au bon fonctionnement de la classe Java
+  sql:
+    type: timestamp
+  csharp:
+    type: DateTime
+---
+domain:
+  name: DO_EMAIL
+  label: Email
+  length: 50 # Taille maximum de la chaine de caractères représentée par ce domaine
+  ts:
+    type: string
+  java:
+    type: String
+  sql:
+    type: varchar
+  csharp:
+    type: string
+---
+domain:
+  name: DO_CODE
+  label: Code
+  length: 3
+  ts:
+    type: string
+  java:
+    type: String
+  sql:
+    type: varchar
+  csharp:
+    type: string
+---
+domain:
+  name: DO_LIBELLE
+  label: Libellé
+  length: 15
+  ts:
+    type: string
+  java:
+    type: String
+  sql:
+    type: varchar
+  csharp:
+    type: string
+---
+domain:
+  name: DO_PAGE
+  label: Date
+  ts:
+    genericType: Page<{T}>
+    imports:
+      - "@/services/api-types" # Imports nécessaires au bon fonctionnement
+  java:
+    genericType: Page<{T}>
+    imports:
+      - "org.springframework.data.domain.Page" # Imports nécessaires au bon fonctionnement de la classe Java
+  csharp:
+    genericType: Page<{T}>
+    imports:
+      - "MyProject.Common.Page" # Imports nécessaires au bon fonctionnement de la classe C#

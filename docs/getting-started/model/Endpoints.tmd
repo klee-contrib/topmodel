@@ -1,0 +1,61 @@
+---
+module: Users # Module commun de toutes classes du fichier
+uses:
+  - Utilisateur
+  - Dto
+tags: [back, front]
+---
+endpoint: # Description du EndPoint
+  name: DeleteUtilisateur # Nom du endpoint
+  method: DELETE # Méthode Http utilisée
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  description: Supprime un Utilisateur # Description du endpoint
+  params: # Paramètres, se décrivent comme des propriétés
+    - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine...) gratuitement
+        class: Utilisateur
+        property: Id
+---
+endpoint: # Description du EndPoint
+  name: GetUtilisateur # Nom du endpoint
+  method: GET # Méthode Http utilisée
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  description: Charge le détail d'un Utilisateur # Description du endpoint
+  params: # Paramètres, se décrivent comme une liste de propriétés
+    - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine) gratuitement
+        class: Utilisateur
+        property: Id
+  returns: # Retour du endpoint. Se décrit comme une composition
+    composition: UtilisateurDetailDto
+    name: detail
+    comment: Le détail d'un Utilisateur
+---
+endpoint: # Description du EndPoint
+  name: CreateUtilisateur # Nom du endpoint
+  method: POST # Méthode Http utilisée
+  route: Utilisateur # Route pour accéder à ce endpoint
+  description: Créé un nouvel Utilisateur # Description du endpoint
+  params: # Paramètres, se décrivent comme des propriétés
+    - composition: UtilisateurCreateDto
+      name: detail
+      comment: Le détail de l'utilisateur à créer
+  returns: # Retour du endpoint. Se décrit comme une composition
+    composition: UtilisateurDetailDto
+    name: detail
+    comment: Le détail de l'utilisateur créé
+---
+endpoint: # Description du EndPoint
+  name: UpdateUtilisateur # Nom du endpoint
+  method: PATCH # Méthode Http utilisée
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  description: Modifie un Utilisateur # Description du endpoint
+  params: # Paramètres, se décrivent comme des propriétés
+    - composition: UtilisateurUpdateDto
+      name: detail
+      comment: Le détail de l'utilisateur à modifier
+    - alias:
+        class: Utilisateur
+        property: Id
+  returns: # Retour du endpoint. Se décrit comme une composition
+    composition: UtilisateurDetailDto
+    name: detail
+    comment: Le détail de l'utilisateur modifié

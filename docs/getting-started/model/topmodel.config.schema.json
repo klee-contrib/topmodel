@@ -1,0 +1,1165 @@
+{
+  "$id": "topmodel.config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Fichier de config du générateur",
+  "required": [
+    "app"
+  ],
+  "properties": {
+    "app": {
+      "type": "string",
+      "description": "Nom de l'application."
+    },
+    "noWarn": {
+      "type": "array",
+      "description": "Liste des warnings à ignorer.",
+      "items": {
+        "type": "string",
+        "description": "Code du warning (TMDXXXX) à ignorer "
+      }
+    },
+    "modelRoot": {
+      "type": "string",
+      "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
+    },
+    "modelFilePaths": {
+      "type": "array",
+      "description": "Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `modelRoot`) seront chargés par TopModel.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lockFileName": {
+      "type": "string",
+      "description": "Nom du fichier de lock",
+      "default": "topmodel.lock"
+    },
+    "pluralizeTableNames": {
+      "type": "boolean",
+      "description": "Utilise le nom au pluriel des classes pour générer leur noms de table SQL."
+    },
+    "defaultAssociationUseClass": {
+      "type": "boolean",
+      "description": "Détermine la valeur par défaut de `useClass` sur les propriétés d'association du modèle.",
+      "default": "false"
+    },
+    "useLegacyRoleNames": {
+      "type": "boolean",
+      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés",
+      "default": "false"
+    },
+    "i18n": {
+      "type": "object",
+      "description": "Configuration de la localisation de l'application.",
+      "additionalProperties": false,
+      "properties": {
+        "rootPath": {
+          "type": "string",
+          "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}",
+          "default": "{lang}"
+        },
+        "defaultLang": {
+          "type": "string",
+          "description": "Langue par défaut de l'application."
+        },
+        "langs": {
+          "type": "array",
+          "description": "Liste des langues de l'application (autre que la langue par défaut).",
+          "items": {
+            "type": "string",
+            "description": "Code du langage"
+          }
+        },
+        "translateReferences": {
+          "type": "boolean",
+          "description": "Si les libellés des listes de références doivent être traduits.",
+          "default": "true"
+        },
+        "translateProperties": {
+          "type": "boolean",
+          "description": "Si les libellés des propriétés doivent être traduits.",
+          "default": "true"
+        }
+      }
+    },
+    "generators": {
+      "type": "array",
+      "description": "Chemins vers des projets C# contenant des générateurs personnalisés",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ignoredFiles": {
+      "type": "array",
+      "description": "Liste des fichiers à ignorer après première génération (relatif au fichier de config).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "comment"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Chemin du fichier à ignorer, relatif au fichier de config."
+          },
+          "comment": {
+            "type": "string",
+            "description": "Motif."
+          }
+        }
+      }
+    },
+    "jpa": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Jpa.",
+        "additionalProperties": false,
+        "required": [
+          "tags",
+          "outputDirectory"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de cette configuration."
+          },
+          "language": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+                "default": "java"
+              },
+              {
+                "type": "array",
+                "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+                "default": "java",
+                "items": {
+                  "type": "string",
+                  "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+                  "default": "java"
+                }
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "referencedTags": {
+            "type": "object",
+            "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Le nom de la config dans laquelle aller chercher le tag."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [
+                "JavaDtoGen",
+                "JavaEnumClassPropGen",
+                "JavaEnumDtoGen",
+                "JavaEnumEnumGen",
+                "JavaUniqValPropGen",
+                "JdbcEntityGen",
+                "JpaDaoGen",
+                "JpaEntityGen",
+                "JpaEnumEntityGen",
+                "JpaMetaModelGen",
+                "JpaInterfaceGen",
+                "SpringDataFlowGen",
+                "FeignClientApiGen",
+                "SpringApiClientGen",
+                "SpringRestTemplateGen",
+                "SpringApiServerGen",
+                "JpaMapperGenerator",
+                "JpaResourceGen"
+              ]
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
+          "translateProperties": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
+            "default": "true"
+          },
+          "ignoreDefaultValues": {
+            "type": "boolean",
+            "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+          },
+          "uniqueValueGeneration": {
+            "type": "string",
+            "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
+            "enum": [
+              "none",
+              "const-only",
+              "enum-only",
+              "enum-or-const"
+            ]
+          },
+          "rootModule": {
+            "type": "string",
+            "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).",
+            "default": "{module:head}"
+          },
+          "entitiesPath": {
+            "type": "string",
+            "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/entities/{module:path}'."
+          },
+          "daosPath": {
+            "type": "string",
+            "description": "Localisation des DAOs, relative au répertoire de génération."
+          },
+          "daosName": {
+            "type": "string",
+            "description": "Template du nom des DAOs. Par défaut, '{class}DAO' si l'option daosAbstract est désactivée, sinon 'Abstract{class}DAO'."
+          },
+          "apisName": {
+            "type": "string",
+            "description": " Nom des classes d'apis générées. La valeur par défaut dépend du type d'api générée."
+          },
+          "dtosPath": {
+            "type": "string",
+            "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/dtos/{module:path}'."
+          },
+          "enumsPath": {
+            "type": "string",
+            "description": "Localisation des enums du modèle, relative au répertoire de génération.",
+            "default": "javagen:{app:path}/enums/{module:path}"
+          },
+          "metaModel": {
+            "type": "boolean",
+            "description": "Si le meta model jpa doit être généré",
+            "default": "false"
+          },
+          "apiPath": {
+            "type": "string",
+            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app:path}/api/{module:path}'.",
+            "default": "javagen:{app:path}/api/{module:path}"
+          },
+          "compositionConverterCanonicalName": {
+            "type": "string",
+            "description": "Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd. Supporte le template {package} et {class}",
+            "default": "{package}.{class}Converter"
+          },
+          "apiGeneration": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [
+                  "Client",
+                  "Server"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
+          "clientApiGeneration": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API Client",
+                "default": "RestClient",
+                "enum": [
+                  "RestTemplate",
+                  "RestClient",
+                  "FeignClient"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('RestTemplate' ou 'RestClient')",
+                "default": "restClient",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
+          "resourcesPath": {
+            "type": "string",
+            "description": "Localisation des ressources, relative au répertoire de génération."
+          },
+          "openApiAnnotations": {
+            "type": "boolean",
+            "description": "Si les annotation swagger-annotation-jakarta doivent être ajoutées aux interface",
+            "default": "false"
+          },
+          "resourcesEncoding": {
+            "type": "string",
+            "description": "Encodage des fichiers de resource.",
+            "default": "Latin1",
+            "enum": [
+              "Latin1",
+              "UTF8"
+            ]
+          },
+          "useJdbc": {
+            "type": "boolean",
+            "description": "Générer les entités en mode JDBC",
+            "default": "false"
+          },
+          "daosAbstract": {
+            "type": "boolean",
+            "description": " Génération d'interface Abstract avec @NoRepositoryBean permettant de mettre à jour le code généré",
+            "default": "false"
+          },
+          "daosInterface": {
+            "type": "string",
+            "description": "Précise l'interface des Daos générés.",
+            "default": "false"
+          },
+          "mappersInClass": {
+            "type": "boolean",
+            "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
+          },
+          "dataFlowsPath": {
+            "type": "string",
+            "description": "Localisation des flux de données générés."
+          },
+          "dataFlowsWriter": {
+            "type": "string",
+            "description": "Writer à utiliser pour les flux de données.",
+            "default": "jpa",
+            "enum": [
+              "bulk",
+              "jpa"
+            ]
+          },
+          "dataFlowsBulkSize": {
+            "type": "number",
+            "description": "Taille des chunks à extraire et insérer"
+          },
+          "dataFlowsListeners": {
+            "type": "array",
+            "description": "Listeners à ajouter à tous les dataflows",
+            "items": {
+              "type": "string",
+              "description": "Listener à ajouter à tous les dataflows"
+            }
+          },
+          "dbSchema": {
+            "type": "string",
+            "description": "Nom du schéma sur lequel les entités sont sauvegardées"
+          },
+          "associationAdders": {
+            "type": "boolean",
+            "description": "Option pour générer des méthodes d'ajouts pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés",
+            "default": "false"
+          },
+          "associationRemovers": {
+            "type": "boolean",
+            "description": "Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés",
+            "default": "false"
+          },
+          "generatedHint": {
+            "type": "boolean",
+            "description": "Option pour générer l'annotation @Generated('TopModel : https://github.com/klee-contrib/topmodel')",
+            "default": "true"
+          },
+          "fieldsEnum": {
+            "type": "array",
+            "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
+            "items": {
+              "type": "string",
+              "enum": [
+                "non-persisted",
+                "persisted"
+              ]
+            }
+          },
+          "fieldsEnumInterface": {
+            "type": "string",
+            "description": "Précise l'interface des fields enum générés."
+          },
+          "identity": {
+            "type": "object",
+            "description": "Options de génération de la séquence",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "description": "Mode de génération des séquences.",
+                "enum": [
+                  "none",
+                  "sequence",
+                  "identity",
+                  "uuid"
+                ],
+                "default": "identity"
+              },
+              "increment": {
+                "type": "number",
+                "description": "Incrément de la séquence générée."
+              },
+              "start": {
+                "type": "number",
+                "description": "Début de la séquence générée."
+              }
+            }
+          }
+        }
+      }
+    },
+    "csharp": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de C#.",
+        "additionalProperties": false,
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de cette configuration."
+          },
+          "language": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+                "default": "csharp"
+              },
+              {
+                "type": "array",
+                "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+                "default": "csharp",
+                "items": {
+                  "type": "string",
+                  "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'csharp'.",
+                  "default": "csharp"
+                }
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "referencedTags": {
+            "type": "object",
+            "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Le nom de la config dans laquelle aller chercher le tag."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CSharpClassGen",
+                "CSharpMapperGen",
+                "CSharpDbContextGen",
+                "CSharpRefAccessGen",
+                "CSharpApiServerGen",
+                "CSharpApiClientGen"
+              ]
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
+          "translateProperties": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
+            "default": "true"
+          },
+          "ignoreDefaultValues": {
+            "type": "boolean",
+            "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+          },
+          "uniqueValueGeneration": {
+            "type": "string",
+            "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
+            "enum": [
+              "none",
+              "const-only",
+              "enum-only",
+              "enum-or-const"
+            ]
+          },
+          "persistentModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
+          },
+          "referencesModelPath": {
+            "type": "string",
+            "description": "Localisation des classes de références, relative au répertoire de génération. Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non)."
+          },
+          "nonPersistentModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto."
+          },
+          "apiRootPath": {
+            "type": "string",
+            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : {app}.Web."
+          },
+          "apiFilePath": {
+            "type": "string",
+            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : {module:path}."
+          },
+          "apiGeneration": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [
+                  "Client",
+                  "Server"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
+          "dataFlowsPath": {
+            "type": "string",
+            "description": "Localisation des flux de données générés."
+          },
+          "useEFMigrations": {
+            "type": "boolean",
+            "description": "Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'."
+          },
+          "dbContextPath": {
+            "type": "string",
+            "description": "Localisation du DbContext, relative au répertoire de génération."
+          },
+          "dbContextName": {
+            "type": "string",
+            "description": "Nom du DbContext. Par défaut : {app}DbContext."
+          },
+          "referenceAccessorsInterfacePath": {
+            "type": "string",
+            "description": "Chemin vers lequel générer les interfaces d'accesseurs de référence."
+          },
+          "referenceAccessorsImplementationPath": {
+            "type": "string",
+            "description": "Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference."
+          },
+          "referenceAccessorsName": {
+            "type": "string",
+            "description": "Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). Par défaut : {module}ReferenceAccessors. (La variable `{module}` aura toujours la transformation `flat` ajoutée)."
+          },
+          "mappersName": {
+            "type": "string",
+            "description": "Nom des mappers. Par défaut : {module}Mappers. (La variable `{module}` aura toujours la transformation `flat` ajoutée)."
+          },
+          "noAsyncControllers": {
+            "type": "boolean",
+            "description": "Génère des contrôleurs d'API synchrones."
+          },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'."
+          },
+          "dbSchema": {
+            "type": "string",
+            "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
+          },
+          "kinetix": {
+            "type": "boolean",
+            "description": "Si on génère avec Kinetix."
+          },
+          "domainNamespace": {
+            "type": "string",
+            "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
+          },
+          "valueTypes": {
+            "type": "array",
+            "description": "Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "nullableEnable": {
+            "type": "boolean",
+            "description": "Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables)."
+          },
+          "requiredNonNullable": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Génère des types non-nullables pour les propriétés obligatoires."
+              },
+              {
+                "type": "string",
+                "description": "Génère des types non-nullables pour les propriétés obligatoires.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
+          "noColumnOnAlias": {
+            "type": "boolean",
+            "description": "Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. Par défaut : 'true'."
+          },
+          "noPersistence": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+              },
+              {
+                "type": "string",
+                "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
+          "mapperTagsOverrides": {
+            "type": "array",
+            "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mapperLocationPriority": {
+            "type": "string",
+            "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : 'persisted'",
+            "enum": [
+              "persisted",
+              "non-persisted"
+            ]
+          },
+          "useEFComments": {
+            "type": "boolean",
+            "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
+          },
+          "useRecords": {
+            "type": "boolean",
+            "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'."
+          },
+          "dotnetVersion": {
+            "type": "number",
+            "description": "Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération. Par défaut : 10."
+          },
+          "useCancellationTokens": {
+            "type": "boolean",
+            "description": "Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur)."
+          },
+          "useAsyncReferenceAccessors": {
+            "type": "boolean",
+            "description": "Génère des accesseurs de référence asynchrones (pour Kinetix 10+)."
+          },
+          "resourcesResxPath": {
+            "type": "string",
+            "description": "Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références."
+          },
+          "resourcesInResx": {
+            "type": "string",
+            "description": "Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.",
+            "enum": [
+              "all",
+              "properties",
+              "references"
+            ]
+          }
+        }
+      }
+    },
+    "sql": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de SQL.",
+        "additionalProperties": false,
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de cette configuration."
+          },
+          "language": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+                "default": "sql"
+              },
+              {
+                "type": "array",
+                "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+                "default": "sql",
+                "items": {
+                  "type": "string",
+                  "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+                  "default": "sql"
+                }
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "referencedTags": {
+            "type": "object",
+            "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Le nom de la config dans laquelle aller chercher le tag."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SsdtGen",
+                "ProceduralSqlGen"
+              ]
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
+          "translateProperties": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
+            "default": "true"
+          },
+          "tableTablespace": {
+            "type": "string",
+            "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
+          },
+          "indexTablespace": {
+            "type": "string",
+            "description": "Nom du tablespace pour les index (Postgres ou Oracle)."
+          },
+          "foreignKeyConstraintNamePattern": {
+            "type": "string",
+            "description": "Pattern pour le nom des contraintes de clé étrangère. Supporte les variables tableName, trigram, columnName. Valeur par défaut : \"FK_{tableName}_{columnName}\".",
+            "default": "\"FK_{tableName}_{columnName}\""
+          },
+          "uniqueConstraintNamePattern": {
+            "type": "string",
+            "description": "Pattern pour le nom des contraintes d'unicité. Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme). Valeur par défaut : \"UK_{tableName}_{columnNames}\".",
+            "default": "\"UK_{tableName}_{columnNames}\""
+          },
+          "ignoreDefaultValues": {
+            "type": "boolean",
+            "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+          },
+          "targetDBMS": {
+            "type": "string",
+            "description": "SGBD cible ('postgre' ou 'sqlserver' ou 'oracle').",
+            "enum": [
+              "sqlserver",
+              "postgre",
+              "oracle"
+            ]
+          },
+          "procedural": {
+            "type": "object",
+            "description": "Config pour la génération de SQL 'procédurale'.",
+            "additionalProperties": false,
+            "properties": {
+              "crebasFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création de base."
+              },
+              "uniqueKeysFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des index uniques."
+              },
+              "indexFKFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des clés étrangères."
+              },
+              "typeFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des types."
+              },
+              "commentFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des commentaires."
+              },
+              "resourceFile": {
+                "type": "string",
+                "description": "Emplacement du fichier d'insertion des resources (libellés traduits)."
+              },
+              "initListFile": {
+                "type": "string",
+                "description": "Emplacement du script d'insertion des données des listes de référence."
+              },
+              "identity": {
+                "type": "object",
+                "description": "Options de génération de la séquence",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "description": "Mode de génération des séquences.",
+                    "enum": [
+                      "none",
+                      "sequence",
+                      "identity"
+                    ],
+                    "default": "identity"
+                  },
+                  "increment": {
+                    "type": "number",
+                    "description": "Incrément de la séquence générée."
+                  },
+                  "start": {
+                    "type": "number",
+                    "description": "Début de la séquence générée."
+                  }
+                }
+              }
+            }
+          },
+          "ssdt": {
+            "type": "object",
+            "description": "Config pour la génération SSDT",
+            "additionalProperties": false,
+            "properties": {
+              "tableScriptFolder": {
+                "type": "string",
+                "description": "Dossier du projet pour les scripts de déclaration de table."
+              },
+              "tableTypeScriptFolder": {
+                "type": "string",
+                "description": " Dossier du projet pour les scripts de déclaration de type table."
+              },
+              "initListScriptFolder": {
+                "type": "string",
+                "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
+              },
+              "initListMainScriptName": {
+                "type": "string",
+                "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
+              },
+              "disableIdentity": {
+                "type": "boolean",
+                "description": "Désactive les colonnes d'identité."
+              },
+              "generateComments": {
+                "type": "boolean",
+                "description": "Génère les commentaires SQL sur les tables et les colonnes."
+              }
+            }
+          }
+        }
+      }
+    },
+    "javascript": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Javascript.",
+        "additionalProperties": false,
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de cette configuration."
+          },
+          "language": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+                "default": "javascript"
+              },
+              {
+                "type": "array",
+                "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+                "default": "javascript",
+                "items": {
+                  "type": "string",
+                  "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+                  "default": "javascript"
+                }
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "referencedTags": {
+            "type": "object",
+            "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Le nom de la config dans laquelle aller chercher le tag."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [
+                "JSDefinitionGen",
+                "JSReferenceGen",
+                "JSNGApiClientGen",
+                "JSApiClientGen",
+                "JSResourceGen"
+              ]
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "ignoreDefaultValues": {
+            "type": "boolean",
+            "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+          },
+          "rootModule": {
+            "type": "string",
+            "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).",
+            "default": "{module:head}"
+          },
+          "modelRootPath": {
+            "type": "string",
+            "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si '{module}' n'est pas présent dans le chemin, alors il sera ajouté à la fin."
+          },
+          "resourceRootPath": {
+            "type": "string",
+            "description": "Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si '{lang}' n'est pas présent dans le chemin, alors il sera ajouté à la fin."
+          },
+          "apiClientRootPath": {
+            "type": "string",
+            "description": "Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré."
+          },
+          "apiClientFilePath": {
+            "type": "string",
+            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. En mode Angular, la valeur par défaut est `{module}/{fileName}.service`",
+            "default": "{module}/{fileName}"
+          },
+          "fetchPath": {
+            "type": "string",
+            "description": "Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'."
+          },
+          "domainPath": {
+            "type": "string",
+            "description": "Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.",
+            "default": "../domains"
+          },
+          "apiMode": {
+            "type": "string",
+            "description": "Framework cible pour la génération.",
+            "default": "focus",
+            "enum": [
+              "fetch",
+              "angular",
+              "angular_promise",
+              "nuxt",
+              "legacy"
+            ]
+          },
+          "entityMode": {
+            "type": "string",
+            "description": "Framework cible pour la génération.",
+            "default": "typed",
+            "enum": [
+              "untyped",
+              "typed",
+              "none",
+              "focus"
+            ]
+          },
+          "extendedCompositions": {
+            "type": "boolean",
+            "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées."
+          },
+          "entityTypesPath": {
+            "type": "string",
+            "description": "Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération."
+          },
+          "resourceMode": {
+            "type": "string",
+            "description": "Mode de génération (JS, JSON ou JSON Schema).",
+            "enum": [
+              "js",
+              "json"
+            ]
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les listes de référence doivent être traduites",
+            "default": "true"
+          },
+          "translateProperties": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits",
+            "default": "true"
+          },
+          "generateComments": {
+            "type": "boolean",
+            "description": "Ajoute les commentaires dans les entités JS générées."
+          },
+          "generateMainResourceFiles": {
+            "type": "boolean",
+            "description": "Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`."
+          },
+          "referenceMode": {
+            "type": "string",
+            "description": "Mode de génération des listes de références (définitions ou valeurs).",
+            "enum": [
+              "definition",
+              "values"
+            ],
+            "default": "definition"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

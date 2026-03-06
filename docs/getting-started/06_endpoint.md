@@ -36,7 +36,7 @@ tags: []
 endpoint: # Description du EndPoint
   name: DeleteUtilisateur # Nom du endpoint
   method: DELETE # Méthode Http utilisée
-  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
   description: Supprime un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine...) gratuitement
@@ -51,8 +51,7 @@ endpoint: # Description du EndPoint
 Nous souhaitons ajouter à notre modèle un `endpoint` pour récupérer des instances de la classe `Utilisateur`. Créons d'abord le Dto correspondant dans `"Dto.tmd"` :
 
 ```yaml
-# Dto.tmd
----
+# Dto.tmd---
 class:
   name: UtilisateurDetailDto
   comment: Objet de transfert pour la classe Utilisateur, dans le cas de la consultation de la page de détail
@@ -62,15 +61,15 @@ class:
         exclude:
           - Id
     - alias:
-        class: Profil
+        class: TypeUtilisateur
         include:
-          - Nom
+          - Libelle
       suffix: true
   mappers:
     from:
       - params:
-        - class: Utilisateur
-        - class: Profil
+          - class: Utilisateur
+          - class: TypeUtilisateur
 ```
 
 > **N.B.** : Vous remarquerez que la facilité de création d'une nouvelle classe non persistée nous pousse à en créer une par usage. Cette pratique permet une meilleure maîtrise des données qui transitent à chaque appel serveur.
@@ -83,7 +82,7 @@ Notre `endpoint` pourra donc s'écrire de la manière suivante (Ajoutez ces lign
 endpoint: # Description du EndPoint
   name: GetUtilisateur # Nom du endpoint
   method: GET # Méthode Http utilisée
-  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
   description: Charge le détail d'un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme une liste de propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine) gratuitement
@@ -160,7 +159,7 @@ Il ne nous reste plus qu'à ajouter le endpoint dans notre fichier `"Endpoints.t
 endpoint: # Description du EndPoint
   name: UpdateUtilisateur # Nom du endpoint
   method: PATCH # Méthode Http utilisée
-  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
   description: Modifie un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - composition : UtilisateurUpdateDto
@@ -199,18 +198,46 @@ Nous venons de couvrir beaucoup de notions essentielles. Au début du chapitre, 
 
 ```java
 package tuto.api.server.users;
+
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface EndpointsController {
 
  /**
+  * Créé un nouvel Utilisateur.
+  * @param detail Le détail de l'utilisateur à créer.
+  *
+  * @return Le détail de l'utilisateur créé.
+  */
+ @PostMapping(path = "Utilisateur")
+ UtilisateurDetailDto createUtilisateur(@RequestBody @Valid UtilisateurCreateDto detail);
+
+ /**
+  * Supprime un Utilisateur.
+  * @param utilisateurId Identifiant unique de l'utilisateur.
+  */
+ @ResponseStatus(HttpStatus.NO_CONTENT)
+ @DeleteMapping(path = "Utilisateur/{utilisateurId}")
+ void deleteUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
+
+ /**
   * Charge le détail d'un Utilisateur.
-  * @param utilisateurId Identifiant unique de l'utilisateur
-  * @return Le détail d'un Utilisateur
+  * @param utilisateurId Identifiant unique de l'utilisateur.
+  *
+  * @return Le détail d'un Utilisateur.
   */
  @GetMapping(path = "Utilisateur/{utilisateurId}")
- UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") Integer utilisateurId);
-}
+ UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
 
+ /**
+  * Modifie un Utilisateur.
+  * @param detail Le détail de l'utilisateur à modifier.
+  * @param utilisateurId Identifiant unique de l'utilisateur.
+  *
+  * @return Le détail de l'utilisateur modifié.
+  */
+ @PatchMapping(path = "Utilisateur/{utilisateurId}")
+ UtilisateurDetailDto updateUtilisateur(@RequestBody @Valid UtilisateurUpdateDto detail, @PathVariable("utilisateurId") long utilisateurId);
+}
 ```
 
 ### **C#**
@@ -219,12 +246,46 @@ public interface EndpointsController {
 public class EndpointsController : Controller
 {
     /// <summary>
+    /// Créé un nouvel Utilisateur
+    /// </summary>
+    /// <param name="detail">Le détail de l'utilisateur à créer</param>
+    /// <returns>Le détail de l'utilisateur créé</returns>
+    [HttpPost("Utilisateur")]
+    public async Task<UtilisateurDetailDto> CreateUtilisateur([FromBody] UtilisateurCreateDto detail)
+    {
+
+    }
+
+    /// <summary>
+    /// Supprime un Utilisateur
+    /// </summary>
+    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <returns>Task.</returns>
+    [HttpDelete("Utilisateur/{utilisateurId}")]
+    public async Task DeleteUtilisateur(long utilisateurId)
+    {
+
+    }
+
+    /// <summary>
     /// Charge le détail d'un Utilisateur
     /// </summary>
     /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
     /// <returns>Le détail d'un Utilisateur</returns>
-    [HttpGet("Utilisateur/{utilisateurId:int}")]
-    public async Task<UtilisateurDetailDto> GetUtilisateur(int utilisateurId)
+    [HttpGet("Utilisateur/{utilisateurId}")]
+    public async Task<UtilisateurDetailDto> GetUtilisateur(long utilisateurId)
+    {
+
+    }
+
+    /// <summary>
+    /// Modifie un Utilisateur
+    /// </summary>
+    /// <param name="detail">Le détail de l'utilisateur à modifier</param>
+    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <returns>Le détail de l'utilisateur modifié</returns>
+    [HttpPatch("Utilisateur/{utilisateurId}")]
+    public async Task<UtilisateurDetailDto> UpdateUtilisateur([FromBody] UtilisateurUpdateDto detail, long utilisateurId)
     {
 
     }
@@ -244,6 +305,23 @@ export class EndpointsService {
     private readonly http = inject(HttpClient);
 
     /**
+     * @description Créé un nouvel Utilisateur
+     * @param detail Le détail de l'utilisateur à créer
+     * @returns Le détail de l'utilisateur créé
+     */
+    createUtilisateur(detail: UtilisateurCreateDto, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.post<UtilisateurDetailDto>(`/Utilisateur`, detail, {observe: 'body', ...options});
+    }
+
+    /**
+     * @description Supprime un Utilisateur
+     * @param utilisateurId Identifiant unique de l'utilisateur
+     */
+    deleteUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
+        return this.http.delete<void>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    }
+
+    /**
      * @description Charge le détail d'un Utilisateur
      * @param utilisateurId Identifiant unique de l'utilisateur
      * @returns Le détail d'un Utilisateur
@@ -251,7 +329,18 @@ export class EndpointsService {
     getUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
         return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
     }
+
+    /**
+     * @description Modifie un Utilisateur
+     * @param detail Le détail de l'utilisateur à modifier
+     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @returns Le détail de l'utilisateur modifié
+     */
+    updateUtilisateur(detail: UtilisateurUpdateDto, utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.patch<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, detail, {observe: 'body', ...options});
+    }
 }
+
 
 ```
 

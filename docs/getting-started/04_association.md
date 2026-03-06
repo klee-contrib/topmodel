@@ -59,6 +59,8 @@ tags: []
 
 Si vous utilisez l'extension `TopModel` de VsCode, une action rapide vous sera proposée pour ajouter automatiquement tous les imports manquants.
 
+> Comme il existe plusieurs modes de génération pour les classes contenant des valeurs, les associations avec ces classes aussi sont impactées en conséquences. Plus d'informations dans la documentation des [classes](/model/classes.md)
+
 ## Répertoire Projet
 
 A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:

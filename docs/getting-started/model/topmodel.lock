@@ -1,0 +1,52 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 4.0.0-rc.3
+modules:
+  jpa:
+    version: 4.0.0-rc.4
+    hash: c9484996db0054c4723abb21515b1f84
+  csharp:
+    version: 4.0.0-rc.2
+    hash: dda4c1ead6404d5f70c11a62a2909078
+  sql:
+    version: 4.0.0-rc.0
+    hash: 6dd3b416f7747ccaaf05a34dd127a95b
+  javascript:
+    version: 4.0.0-rc.0
+    hash: 0ae94ff05942e33896fa14f2c68b33d5
+generatedFiles:
+  - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/UtilisateurCreateDto.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/UtilisateurDetailDto.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/UtilisateurDto.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/UtilisateurSearchResultDto.cs
+  - ./output/csharp/Hello World.Users.Models/Dto/generated/UtilisateurUpdateDto.cs
+  - ./output/csharp/Hello World.Users.Models/generated/UsersMappers.cs
+  - ./output/csharp/Hello World.Users.Models/generated/Utilisateur.cs
+  - ./output/csharp/Hello World.Web/Controllers/Users/EndpointsController.cs
+  - ./output/java/javagen/hello world/api/users/EndpointsController.java
+  - ./output/java/javagen/hello world/dtos/users/AdresseDto.java
+  - ./output/java/javagen/hello world/dtos/users/UtilisateurCreateDto.java
+  - ./output/java/javagen/hello world/dtos/users/UtilisateurDetailDto.java
+  - ./output/java/javagen/hello world/dtos/users/UtilisateurDto.java
+  - ./output/java/javagen/hello world/dtos/users/UtilisateurSearchResultDto.java
+  - ./output/java/javagen/hello world/dtos/users/UtilisateurUpdateDto.java
+  - ./output/java/javagen/hello world/entities/refs/TypeUtilisateur.java
+  - ./output/java/javagen/hello world/entities/users/UsersMappers.java
+  - ./output/java/javagen/hello world/entities/users/Utilisateur.java
+  - ./output/java/javagen/hello world/enums/refs/TypeUtilisateurCode.java
+  - ./output/javascript/api/users/endpoints.service.ts
+  - ./output/javascript/model/refs/references.ts
+  - ./output/javascript/model/users/adresse-dto.ts
+  - ./output/javascript/model/users/utilisateur-create-dto.ts
+  - ./output/javascript/model/users/utilisateur-detail-dto.ts
+  - ./output/javascript/model/users/utilisateur-dto.ts
+  - ./output/javascript/model/users/utilisateur-search-result-dto.ts
+  - ./output/javascript/model/users/utilisateur-update-dto.ts
+  - ./output/sql/01_tables.sql
+  - ./output/sql/02_fk_indexes.sql
+  - ./output/sql/03_unique_keys.sql
+  - ./output/sql/04_references.sql

@@ -1,0 +1,86 @@
+uses:
+  - Utilisateur
+  - References
+module: Users # Module commun de toutes classes du fichier
+tags: [back, front]
+---
+class:
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
+  properties:
+    - alias:
+        class: Utilisateur
+        property: Nom
+      suffix: true
+    - composition: AdresseDto # Nom de la classe
+      name: Adresse # Nom de la propriété
+      comment: Adresse de l'utilisateur # Commentaire obligatoire
+      domain: DO_PAGE # Type de composition
+---
+class:
+  name: AdresseDto
+  comment: Adresse
+  properties: []
+---
+class:
+  name: UtilisateurSearchResultDto
+  comment: Objet de transfert pour la classe Utilisateur, dans le cas d'une recherche
+  properties:
+    - alias:
+        class: Utilisateur
+        exclude:
+          - Id
+    - alias:
+        class: TypeUtilisateur
+        include:
+          - Libelle
+      suffix: true
+  mappers:
+    from: # Liste des mappers From
+      - params: # Liste des paramètres du mapper
+          - class: Utilisateur # Premier paramètre, une instance de la classe Utilisateur
+          - class: TypeUtilisateur # Deuxième paramètre, une instance de la classe TypeUtilisateur
+---
+class:
+  name: UtilisateurCreateDto
+  comment: Objet de transfert pour la classe Utilisateur dans le cas d'une création
+  properties:
+    - alias:
+        class: Utilisateur
+        exclude:
+          - Id
+      prefix: true
+  mappers: # Définition des mappers
+    to: # Mappers to ou from
+      - class: Utilisateur # Définition de notre premier mapper, vers la classe Utilisateur
+---
+class:
+  name: UtilisateurDetailDto
+  comment: Objet de transfert pour la classe Utilisateur, dans le cas de la consultation de la page de détail
+  properties:
+    - alias:
+        class: Utilisateur
+        exclude:
+          - Id
+    - alias:
+        class: TypeUtilisateur
+        include:
+          - Libelle
+      suffix: true
+  mappers:
+    from:
+      - params:
+          - class: Utilisateur
+          - class: TypeUtilisateur
+---
+class:
+  name: UtilisateurUpdateDto
+  comment: Objet de transfert pour la classe Utilisateur, dans le cas de la modification de celui-ci
+  properties:
+    - alias:
+        class: Utilisateur
+        include:
+          - Nom
+  mappers:
+    to:
+      - class: Utilisateur
