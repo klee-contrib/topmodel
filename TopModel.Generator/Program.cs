@@ -371,7 +371,7 @@ for (var i = 0; i < configs.Count; i++)
             var dep in lockFile
                 .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= dotnetMajor)
                 ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
-                ?? []
+            ?? []
         )
         {
             if (dep.Name == "TopModel.Generator.Core")
@@ -422,7 +422,6 @@ for (var i = 0; i < configs.Count; i++)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
             loadedAssemblies.UnionWith(assemblies.Select(a => a.ManifestModule.Name));
-
             generators.AddRange(
                 assemblies
                     .Where(a =>
@@ -604,6 +603,7 @@ for (var i = 0; i < configs.Count; i++)
                     .GetFiles(moduleFolder, "*.dll")
                     .SelectMany(a => Assembly.LoadFrom(a).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null))
             );
+            loadedAssemblies.UnionWith(Directory.GetFiles(moduleFolder, "*.dll").Select(a => new FileInfo(a).Name));
             resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
         }
     }
