@@ -17,7 +17,10 @@ internal class AssociationProperty : IProperty
     public virtual string? ClassName { get; set; }
 
 #nullable disable
+
     public virtual Class Association { get; set; }
+
+#nullable enable
 
     public IProperty Property
     {
@@ -37,16 +40,15 @@ internal class AssociationProperty : IProperty
                 ass = ass.Extends;
             }
 
-            return prop;
+            return prop!;
         }
         set => _property = value;
     }
 
-#nullable enable
-
     public virtual string? Label { get; set; }
 
 #nullable disable
+
     public virtual string Comment { get; set; }
 
     public Class Class { get; set; }
@@ -91,19 +93,6 @@ internal class AssociationProperty : IProperty
 
     public string Name => this.GetAssociationName();
 
-    public string NamePascal =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : this.GetAssociationName(pascalCase: true);
-
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NamePascal.ToFirstLower();
-
-    public string PropertyNamePascal =>
-        ((IProperty)this).Parent.PreservePropertyCasing
-            ? Name
-            : this.GetAssociationName(pascalCase: true, forcePropertyName: true);
-
-    public string PropertyNameCamel =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : PropertyNamePascal.ToFirstLower();
-
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
     public virtual bool UseClass
@@ -129,11 +118,13 @@ internal class AssociationProperty : IProperty
     public DomainReference? DomainReference => null;
 
 #nullable disable
+
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }
 
 #nullable enable
+
     internal string RawSqlName
     {
         get
@@ -150,6 +141,10 @@ internal class AssociationProperty : IProperty
     internal virtual bool DefaultAssociationUseClass { get; init; }
 
     internal virtual bool UseLegacyRoleName { get; init; }
+
+    string IProperty.TrueNamePascal => this.GetAssociationName(pascalCase: true);
+
+    string IProperty.TruePropertyNamePascal => this.GetAssociationName(pascalCase: true, forcePropertyName: true);
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)

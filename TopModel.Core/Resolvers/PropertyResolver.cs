@@ -432,8 +432,10 @@ internal class PropertyResolver(
                         ap.PropertyReference
                     );
                 }
-
-                ap.Property = referencedProperty;
+                else
+                {
+                    ap.Property = referencedProperty;
+                }
             }
         }
 

@@ -18,6 +18,7 @@ internal class AliasProperty : IProperty
     private bool? _primaryKey;
 #nullable disable
     private IProperty _property;
+#nullable enable
     private bool? _readonly;
     private bool? _required;
     private bool? _useClass;
@@ -36,6 +37,8 @@ internal class AliasProperty : IProperty
         }
         set => _property = value;
     }
+
+#nullable disable
 
     public Class Class { get; set; }
 
@@ -98,87 +101,6 @@ internal class AliasProperty : IProperty
         set => _name = value;
     }
 
-    public string NamePascal
-    {
-        get
-        {
-            if (((IProperty)this).Parent.PreservePropertyCasing)
-            {
-                return Name;
-            }
-
-            var name = new StringBuilder();
-
-            if (Prefix != null)
-            {
-                name.Append(Prefix.ToFirstUpper());
-            }
-
-            if (_name != null)
-            {
-                name.Append(_name.ToPascalCase(strictIfUppercase: true));
-            }
-            else if (_property is AssociationProperty && Composition == null)
-            {
-                name.Append(this.GetAssociationName(pascalCase: true));
-            }
-            else
-            {
-                name.Append(_property?.NamePascal);
-            }
-
-            if (Suffix != null)
-            {
-                name.Append(Suffix);
-            }
-
-            return name.ToString();
-        }
-    }
-
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NamePascal.ToFirstLower();
-
-    public string PropertyNamePascal
-    {
-        get
-        {
-            if (((IProperty)this).Parent.PreservePropertyCasing)
-            {
-                return Name;
-            }
-
-            var name = new StringBuilder();
-
-            if (Prefix != null)
-            {
-                name.Append(Prefix.ToFirstUpper());
-            }
-
-            if (_name != null)
-            {
-                name.Append(_name.ToPascalCase(strictIfUppercase: true));
-            }
-            else if (_property is AssociationProperty && Composition == null)
-            {
-                name.Append(this.GetAssociationName(pascalCase: true, forcePropertyName: true));
-            }
-            else
-            {
-                name.Append(_property?.NamePascal);
-            }
-
-            if (Suffix != null)
-            {
-                name.Append(Suffix);
-            }
-
-            return name.ToString();
-        }
-    }
-
-    public string PropertyNameCamel =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : PropertyNamePascal.ToFirstLower();
-
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(PersistentProperty ?? this);
 
     public bool UseClass
@@ -215,7 +137,6 @@ internal class AliasProperty : IProperty
 
     public bool PreserveTrigram { get; set; }
 
-#nullable disable
     public Domain Domain
     {
         get
@@ -224,13 +145,12 @@ internal class AliasProperty : IProperty
             return As != null
                 ? domain != null && domain.AsDomains.TryGetValue(As, out var asDomain)
                     ? asDomain
-                    : null
-                : domain;
+                    : null!
+                : domain!;
         }
         set => _domain = value;
     }
 
-#nullable enable
     public Domain? DomainOverride => _domain;
 
     public Class? Composition
@@ -270,7 +190,8 @@ internal class AliasProperty : IProperty
             .. OriginalProperty?.Annotations.Where(ann =>
                 !OriginalProperty.ExcludedAnnotations.Any(ann2 => ann.Annotation == ann2.Annotation)
                 && !OwnAnnotations.Any(ann2 => ann.Annotation == ann2.Annotation)
-            ) ?? [],
+            )
+                ?? [],
             .. OwnAnnotations,
         ];
 
@@ -315,12 +236,75 @@ internal class AliasProperty : IProperty
 
     public string? Suffix { get; set; }
 
-#nullable disable
-    internal Reference Location { get; set; }
-
-#nullable enable
+    internal required Reference Location { get; set; }
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
+
+    string IProperty.TrueNamePascal
+    {
+        get
+        {
+            var name = new StringBuilder();
+
+            if (Prefix != null)
+            {
+                name.Append(Prefix.ToFirstUpper());
+            }
+
+            if (_name != null)
+            {
+                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+            }
+            else if (_property is AssociationProperty && Composition == null)
+            {
+                name.Append(this.GetAssociationName(pascalCase: true));
+            }
+            else
+            {
+                name.Append(_property?.TrueNamePascal);
+            }
+
+            if (Suffix != null)
+            {
+                name.Append(Suffix);
+            }
+
+            return name.ToString();
+        }
+    }
+
+    string IProperty.TruePropertyNamePascal
+    {
+        get
+        {
+            var name = new StringBuilder();
+
+            if (Prefix != null)
+            {
+                name.Append(Prefix.ToFirstUpper());
+            }
+
+            if (_name != null)
+            {
+                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+            }
+            else if (_property is AssociationProperty && Composition == null)
+            {
+                name.Append(this.GetAssociationName(pascalCase: true, forcePropertyName: true));
+            }
+            else
+            {
+                name.Append(_property?.TrueNamePascal);
+            }
+
+            if (Suffix != null)
+            {
+                name.Append(Suffix);
+            }
+
+            return name.ToString();
+        }
+    }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)

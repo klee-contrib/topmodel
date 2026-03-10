@@ -7,19 +7,10 @@ namespace TopModel.Core.Model;
 internal class CompositionProperty : IProperty
 {
 #nullable disable
+
     public Class Composition { get; set; }
 
     public string Name { get; set; }
-
-    public string NamePascal =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
-
-    public string NameCamel =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
-
-    public string PropertyNamePascal => NamePascal;
-
-    public string PropertyNameCamel => NameCamel;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -43,9 +34,10 @@ internal class CompositionProperty : IProperty
 
     public PropertyMapping PropertyMapping { get; set; }
 
-    public string Label { get; set; }
-
 #nullable enable
+
+    public string? Label { get; set; }
+
     public bool IsMultipart => Composition.Properties.Any(cpp => cpp.Domain?.IsMultipart ?? false);
 
     public bool PrimaryKey => false;
@@ -73,11 +65,16 @@ internal class CompositionProperty : IProperty
     public DomainReference? DomainReference { get; set; }
 
 #nullable disable
+
     public ClassReference Reference { get; set; }
 
-    internal Reference Location { get; set; }
 #nullable enable
-#pragma warning disable KTA1600
+
+    internal required Reference Location { get; set; }
+
+    string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
+
+    string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)

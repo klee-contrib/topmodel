@@ -7,17 +7,8 @@ namespace TopModel.Core.Model;
 internal class RegularProperty : IProperty
 {
 #nullable disable
+
     public string Name { get; set; }
-
-    public string NamePascal =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase(strictIfUppercase: true);
-
-    public string NameCamel =>
-        ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase(strictIfUppercase: true);
-
-    public string PropertyNamePascal => NamePascal;
-
-    public string PropertyNameCamel => NameCamel;
 
 #nullable enable
 
@@ -40,6 +31,7 @@ internal class RegularProperty : IProperty
     public string? FinalTrigram => Trigram ?? Class?.Trigram;
 
 #nullable disable
+
     public Domain Domain { get; set; }
 
     public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
@@ -73,9 +65,15 @@ internal class RegularProperty : IProperty
     public Decorator? SourceDecorator { get; set; }
 
 #nullable disable
+
     internal Reference Location { get; set; }
+
 #nullable enable
-#pragma warning disable KTA1600
+
+    string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
+
+    string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
+
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {

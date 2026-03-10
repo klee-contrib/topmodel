@@ -341,7 +341,7 @@ public static class ModelExtensions
                 }
                 else
                 {
-                    name.Append(pascalCase ? prop.AssociationProperty?.NamePascal : prop.AssociationProperty?.Name);
+                    name.Append(pascalCase ? prop.AssociationProperty?.TrueNamePascal : prop.AssociationProperty?.Name);
                 }
             }
 

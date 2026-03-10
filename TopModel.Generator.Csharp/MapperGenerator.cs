@@ -21,6 +21,16 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         return Config.GetMapperFilePath(mapper, tag);
     }
 
+    protected virtual IList<IProperty> GetMissingRequiredProperties(ClassMappings toMapper, string tag)
+    {
+        return toMapper
+            .MissingRequiredProperties.Where(mrp =>
+                (mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
+                && Config.GetDefaultValue(mrp, tag) == "null"
+            )
+            .ToList();
+    }
+
     protected virtual string GetSourceMapping(IProperty property)
     {
         if (property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
@@ -608,16 +618,6 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
 
         w.WriteLine("}");
-    }
-
-    protected virtual IList<IProperty> GetMissingRequiredProperties(ClassMappings toMapper, string tag)
-    {
-        return toMapper
-            .MissingRequiredProperties.Where(mrp =>
-                (mrp is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
-                && Config.GetDefaultValue(mrp, tag) == "null"
-            )
-            .ToList();
     }
 
     protected override bool IsPersistent(Class classe)
