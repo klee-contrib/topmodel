@@ -3,23 +3,10 @@
 #
 
 version: 4.0.0-rc.3
-modules:
-  javascript:
-    version: 4.0.0-rc.0
-    hash: 0ae94ff05942e33896fa14f2c68b33d5
-  sql:
-    version: 4.0.0-rc.0
-    hash: 6dd3b416f7747ccaaf05a34dd127a95b
-  csharp:
-    version: 4.0.0-rc.2
-    hash: dda4c1ead6404d5f70c11a62a2909078
-  jpa:
-    version: 4.0.0-rc.4
-    hash: c9484996db0054c4723abb21515b1f84
 custom:
-  ../../TopModel.Generator.Jpa: e92108f92823d92ab4fa0dab90cc717d
   ../../TopModel.Generator.Csharp: a9709ce801dc2e4d8161087b4d90781c
   ../../TopModel.Generator.Javascript: d845ea32743e4a5ef1a51e2fb49dc369
+  ../../TopModel.Generator.Jpa: e92108f92823d92ab4fa0dab90cc717d
   ../../TopModel.Generator.Sql: f94f6bcc7f4d218424edd090d4c0df14
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
 generatedFiles:
