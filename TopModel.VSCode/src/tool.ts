@@ -1,15 +1,14 @@
-import { request } from "https";
 import { autorun, makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { t } from "./i18n";
 import { Status } from "./types";
 import { execute, isWindows } from "./utils";
-import { t } from "./i18n";
 
 export class TmdTool {
     currentVersion?: string;
     versions: string[] = [];
-    error?: string;
+    error?: unknown;
     installed?: boolean;
     status?: Status;
     private _terminal?: Terminal;
@@ -22,7 +21,6 @@ export class TmdTool {
             autorun(() => this.onInstalledChanged());
         }
 
-        autorun(() => this.checkUpdate());
         window.onDidCloseTerminal((terminal) => {
             if (terminal.name === this._terminal?.name) {
                 this._terminal = undefined;
@@ -38,12 +36,13 @@ export class TmdTool {
         return this.versions[this.versions.length - 1];
     }
 
-    get statusText(): string {
-        let text: string = `${this.command}${this.currentVersion ? " v" + this.currentVersion : ""}`;
-        let icon: string | undefined;
+    get statusText() {
+        const { currentVersion, latestVersion } = this;
+
+        let text = `${this.command}${currentVersion ? " v" + currentVersion : ""}`;
+
         switch (this.status) {
             case "ERROR":
-                icon = "diff-review-close";
                 if (this.installed) {
                     text += " en erreur";
                 } else {
@@ -51,20 +50,14 @@ export class TmdTool {
                 }
                 break;
             case "INSTALLING":
-                text += `-> v${this.latestVersion}`;
+                text += ` -> v${latestVersion}`;
                 break;
             case "LOADING":
-                icon = "loading~spin";
                 text += `chargement`;
                 break;
-            case "READY":
-                return text;
         }
-        if (icon) {
-            return `$(${icon}) ${text}`;
-        } else {
-            return text;
-        }
+
+        return text;
     }
 
     public async init(context: ExtensionContext) {
@@ -73,7 +66,7 @@ export class TmdTool {
             await this.loadCurrentVersion();
             await this.loadVersions();
             this.registerCommands(context);
-            this.status = "READY";
+            await this.tryUpdate();
         } else {
             await this.loadVersions();
             this.status = "ERROR";
@@ -81,35 +74,15 @@ export class TmdTool {
     }
 
     private async loadVersions() {
-        const options = {
-            hostname: "api.nuget.org",
-            port: 443,
-            path: `/v3-flatcontainer/${this.name.toLowerCase()}/index.json`,
-            method: "GET",
-        };
-
-        const req = request(options, (res) => {
-            new Promise((resolve) => {
-                let totalBuffer = "";
-
-                res.on("data", (buffer) => {
-                    totalBuffer += buffer.toString("utf8");
-                });
-
-                res.on("end", () => resolve(totalBuffer));
-            }).then(async (response: any) => {
-                const { versions }: { versions: string[] } = JSON.parse(response);
-                this.versions = versions.filter((v) => !v.includes("-") || this.currentVersion?.includes("-"));
-            });
-        });
-
-        req.on("error", (error: any) => {
+        try {
+            const res = await fetch(`https://api.nuget.org/v3-flatcontainer/${this.name.toLowerCase()}/index.json`);
+            const { versions } = (await res.json()) as { versions: string[] };
+            this.versions = versions.filter((v) => !v.includes("-") || this.currentVersion?.includes("-"));
+        } catch (error) {
             this.error = error;
             this.status = "ERROR";
             console.error(error);
-        });
-
-        req.end();
+        }
     }
 
     private async showReleaseNote(text: string) {
@@ -165,12 +138,13 @@ export class TmdTool {
         );
     }
 
-    public async checkUpdate() {
-        if (this.updateAvailable && this.installed) {
+    public async tryUpdate() {
+        if (this.updateAvailable) {
             const extensionConfiguration = workspace.getConfiguration("topmodel");
             if (extensionConfiguration.autoUpdate) {
                 await this.update();
             } else {
+                this.status = "READY";
                 const shouldUpdate = `Mettre à jour ${this.name}`;
                 const showChangelog = "Voir la release note";
                 const selection = await window.showInformationMessage(
@@ -184,10 +158,16 @@ export class TmdTool {
                     await commands.executeCommand(COMMANDS.releaseNote);
                 }
             }
+        } else {
+            this.status = "READY";
         }
     }
 
-    public async update() {
+    public async update(reloadVersions = false) {
+        if (reloadVersions) {
+            await this.loadVersions();
+        }
+
         this.status = "INSTALLING";
         const oldVersion = this.currentVersion;
         try {
@@ -210,21 +190,19 @@ export class TmdTool {
             const option = `Installer ${this.name}`;
             const selection = await window.showInformationMessage(`${this.name} n'est pas installé`, option);
             if (selection === option) {
-                this.install();
+                await this.install();
             }
         }
     }
     public registerCommands(context: ExtensionContext) {
-        if (this.installed) {
-            this.registerUpdateCommand(context);
-            this.registerStartCommand(false, context);
-            this.registerStartCommand(true, context);
-        }
+        this.registerUpdateCommand(context);
+        this.registerStartCommand(false, context);
+        this.registerStartCommand(true, context);
     }
 
     private registerUpdateCommand(context: ExtensionContext) {
         const updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () =>
-            this.update(),
+            this.update(true),
         );
         COMMANDS_OPTIONS[`topmodel.${this.command}.update`] = {
             title: `${this.command} - ${t("updateTool", [this.command])}`,

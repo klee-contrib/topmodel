@@ -1,11 +1,11 @@
 import { autorun, makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
 import { Application } from "./application";
+import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
-import { COMMANDS, COMMANDS_OPTIONS } from "./const";
-import { t } from "./i18n";
 
 const open = require("open");
 
@@ -20,11 +20,11 @@ export class State {
     preview?: TopModelPreviewPanel;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
-        this.initTools();
-        this.registerCommands();
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
         this.context.subscriptions.push(this.topModelStatusBar);
         autorun(() => this.updateStatusBar());
+        this.initTools();
+        this.registerCommands();
     }
 
     get status(): Status {
@@ -72,53 +72,48 @@ export class State {
         }
     }
 
-    get statusText(): string {
+    get statusText() {
         let text = "";
-        if (this.appStatus === "LOADING" || this.toolsStatus === "INSTALLING" || this.toolsStatus === "LOADING") {
+
+        const { appStatus, toolsStatus } = this;
+        const { statusText: stModgen } = this.tools.modgen;
+        const { installed: stInstalled, statusText: stTmdgen } = this.tools.tmdgen;
+
+        if (appStatus === "LOADING" || toolsStatus === "INSTALLING" || toolsStatus === "LOADING") {
             text += "$(loading~spin) ";
-        } else if (this.toolsStatus === "WARNING") {
+        } else if (toolsStatus === "WARNING") {
             text += "$(warning) ";
         } else {
             text += "$(check-all) ";
         }
 
-        text += this.tools.modgen.statusText;
-        if (this.tools.tmdgen.installed) {
-            text += " | " + this.tools.tmdgen.statusText;
+        text += stModgen;
+        if (stInstalled) {
+            text += " | " + stTmdgen;
         }
 
         return text;
     }
 
     get appStatus(): Status {
-        let status: Status = this.applications.length === 0 ? "LOADING" : "READY";
-        this.applications.forEach((a) => {
-            if (status !== "ERROR" && a.status === "LOADING") {
-                status = "LOADING";
-            } else if (a.status === "ERROR") {
-                status = "ERROR";
-            }
-        });
-        return status;
+        return this.applications.some((a) => a.status === "ERROR")
+            ? "ERROR"
+            : this.applications.some((a) => a.status === "LOADING")
+              ? "LOADING"
+              : "READY";
     }
 
     get toolsStatus(): Status {
-        if (this.tools.tmdgen.status === "INSTALLING" || this.tools.modgen.status === "INSTALLING") {
+        const { status: mStatus, updateAvailable: mUpdate } = this.tools.modgen;
+        const { installed: tInstalled, status: tStatus, updateAvailable: tUpdate } = this.tools.tmdgen;
+
+        if (tStatus === "INSTALLING" || mStatus === "INSTALLING") {
             return "INSTALLING";
-        } else if (
-            (this.tools.tmdgen.installed && this.tools.tmdgen.status === "ERROR") ||
-            this.tools.modgen.status === "ERROR"
-        ) {
+        } else if ((tInstalled && tStatus === "ERROR") || mStatus === "ERROR") {
             return "ERROR";
-        } else if (
-            (this.tools.tmdgen.installed && this.tools.tmdgen.status === "LOADING") ||
-            this.tools.modgen.status === "LOADING"
-        ) {
+        } else if ((tInstalled && tStatus === "LOADING") || mStatus === "LOADING") {
             return "LOADING";
-        } else if (
-            (this.tools.tmdgen.installed && this.tools.tmdgen.updateAvailable) ||
-            this.tools.modgen.updateAvailable
-        ) {
+        } else if ((tInstalled && tUpdate) || mUpdate) {
             return "WARNING";
         }
 
@@ -126,8 +121,8 @@ export class State {
     }
 
     private async initTools() {
-        await this.tools.modgen.init(this.context);
-        await this.tools.tmdgen.init(this.context);
+        this.tools.modgen.init(this.context);
+        this.tools.tmdgen.init(this.context);
     }
 
     private updateStatusBar() {
@@ -151,7 +146,7 @@ export class State {
                 this.preview.panel.onDidDispose(
                     () => (this.preview = undefined),
                     undefined,
-                    this.context.subscriptions
+                    this.context.subscriptions,
                 );
             }
 
@@ -166,10 +161,10 @@ export class State {
                     "editor.action.goToLocations",
                     window.activeTextEditor!.document.uri,
                     new Position(line, 0),
-                    []
+                    [],
                 );
                 await commands.executeCommand("editor.action.goToReferences");
-            })
+            }),
         );
     }
 
@@ -177,7 +172,7 @@ export class State {
         this.context.subscriptions.push(
             commands.registerCommand(COMMANDS.releaseNote, async () => {
                 open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-            })
+            }),
         );
     }
 
@@ -199,7 +194,7 @@ export class State {
                 });
                 quickPick.onDidHide(() => quickPick.dispose());
                 quickPick.show();
-            })
+            }),
         );
     }
 }
