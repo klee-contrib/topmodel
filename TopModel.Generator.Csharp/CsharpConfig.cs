@@ -634,7 +634,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     protected override string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)
     {
-        return $"{(internalReference ? string.Empty : $"{className}.")}{propName}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
+        return $"{(internalReference ? string.Empty : $"{className}.")}{propName}{(!propName.EndsWith('s') ? "s" : "es")}";
     }
 
     protected virtual (Namespace Namespace, string ModelPath) GetMapperLocation(
