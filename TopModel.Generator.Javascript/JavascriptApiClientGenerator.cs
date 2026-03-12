@@ -82,9 +82,12 @@ public class JavascriptApiClientGenerator(
 
             fw.WriteLine($" * @param {options} Options pour 'fetch'.");
 
-            if (endpoint.Returns != null)
+            var returnType = endpoint.Returns != null ? Config.GetType(endpoint.Returns) : "void";
+            var hasReturns = returnType != "undefined" && returnType != "void";
+
+            if (hasReturns)
             {
-                fw.WriteLine($" * @returns {endpoint.Returns.Comment}");
+                fw.WriteLine($" * @returns {endpoint.Returns!.Comment}");
             }
 
             fw.WriteLine(" */");
@@ -98,18 +101,11 @@ public class JavascriptApiClientGenerator(
                 );
             }
 
-            fw.Write($"{options}: RequestInit = {{}}): Promise<");
-            if (endpoint.Returns == null)
+            fw.Write($"{options}: RequestInit = {{}}): Promise<{returnType}");
+
+            if (hasReturns && !endpoint.Returns!.Required)
             {
-                fw.Write("void");
-            }
-            else
-            {
-                fw.Write(Config.GetType(endpoint.Returns));
-                if (!endpoint.Returns.Required)
-                {
-                    fw.Write(" | undefined");
-                }
+                fw.Write(" | undefined");
             }
 
             fw.WriteLine("> {");
@@ -181,7 +177,7 @@ public class JavascriptApiClientGenerator(
 
             fw.WriteLine(
                 1,
-                $@"{(endpoint.Returns != null ? $"const {response} = " : string.Empty)}await fetch(`./{endpoint.FullRoute.Replace("{", "${")}{(endpoint.GetQueryParams().Any() ? $"?${{{query}}}" : string.Empty)}`, {{"
+                $@"{(hasReturns ? $"const {response} = " : string.Empty)}await fetch(`./{endpoint.FullRoute.Replace("{", "${")}{(endpoint.GetQueryParams().Any() ? $"?${{{query}}}" : string.Empty)}`, {{"
             );
             fw.WriteLine(2, $"...{options},");
             fw.Write(2, $"method: \"{endpoint.Method}\"");
@@ -203,32 +199,32 @@ public class JavascriptApiClientGenerator(
             }
 
             fw.WriteLine(1, "});");
-            if (endpoint.Returns != null)
+            if (hasReturns)
             {
-                if (!endpoint.Returns.Required)
+                if (!endpoint.Returns!.Required)
                 {
                     fw.WriteLine(1, $"if ({response}.status === 204) {{");
                     fw.WriteLine(2, $"return undefined;");
                     fw.WriteLine(1, "}");
                 }
 
-                if (Config.GetType(endpoint.Returns) == "Response")
+                if (returnType == "Response")
                 {
                     fw.WriteLine(1, $"return {response};");
                 }
                 else
                 {
                     var type =
-                        Config.GetType(endpoint.Returns) == "Blob" ? "blob"
+                        returnType == "Blob" ? "blob"
                         : endpoint.Returns is { Composition: not null } or { Domain.BodyParam: true }
-                        || Config.GetType(endpoint.Returns).EndsWith("[]")
+                        || returnType.EndsWith("[]")
                             ? "json"
                         : "text";
 
                     var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
                     fw.WriteLine(
                         1,
-                        $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : string.Empty)};"
+                        $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : type == "text" && returnType != "string" && returnType != "number" && returnType != "boolean" ? $" as {returnType}" : string.Empty)};"
                     );
                 }
             }
