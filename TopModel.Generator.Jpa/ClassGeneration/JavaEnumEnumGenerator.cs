@@ -76,9 +76,8 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
                 enumAsString.Add($"{refValue.Value[classe.EnumKey!]}(");
                 foreach (var prop in notPkProperties)
                 {
-                    var isString = Config.GetType(prop) == "String";
                     var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
-
+                    value = Config.GetValue(prop, value);
                     if (
                         prop is { Association: Class association, AssociationProperty: IProperty ap }
                         && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
@@ -91,7 +90,6 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
                         {
                             value = association.NamePascal + "." + value;
                         }
-                        isString = false;
                     }
                     else if (prop.EnumProperty != null && value != "null")
                     {
@@ -104,12 +102,10 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
                         && prop.EnumProperty == null
                     )
                     {
-                        value = refValue.ResourceKey;
+                        value = @$"""{refValue.ResourceKey}""";
                     }
 
-                    var quote = isString ? "\"" : string.Empty;
-                    var val = quote + value + quote;
-                    enumAsString.Add($@"{val}{(prop == notPkProperties.Last() ? string.Empty : ", ")}");
+                    enumAsString.Add($@"{value}{(prop == notPkProperties.Last() ? string.Empty : ", ")}");
                 }
 
                 enumAsString.Add($")");
