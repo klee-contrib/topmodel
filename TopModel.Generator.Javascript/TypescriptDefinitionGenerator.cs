@@ -88,7 +88,17 @@ public class TypescriptDefinitionGenerator(
                     )!
                 )
             )
-            .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)))
+            .Concat(
+                classe
+                    .Properties.Where(p =>
+                        Config.EntityMode != EntityMode.FOCUS
+                        || p.Composition == null && Config.GetType(p) != Config.GetImplementation(p.Domain)?.Type
+                        || p.Composition != null
+                            && Config.GetType(p) != p.Composition!.NamePascal
+                            && !Config.IsListComposition(p)
+                    )
+                    .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
+            )
             .Concat(classe.Properties.SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
             .Where(p => p.Path != null && p.Path != entityTypesPath)
             .GroupAndSort();

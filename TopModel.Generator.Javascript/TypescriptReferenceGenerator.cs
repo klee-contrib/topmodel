@@ -61,6 +61,16 @@ public class TypescriptReferenceGenerator(
                     .SelectMany(r => r.Properties)
                     .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
             )
+            .Concat(
+                references
+                    .Where(r => Config.ReferenceMode == ReferenceMode.VALUES || r.Enum == EnumMode.Enum)
+                    .SelectMany(r =>
+                        r.Properties.SelectMany(dep =>
+                            r.Values.Where(v => v.Value.ContainsKey(dep))
+                                .SelectMany(v => Config.GetValueImportPaths(fileName, dep, v.Value[dep]))
+                        )
+                    )
+            )
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
@@ -198,7 +208,7 @@ public class TypescriptReferenceGenerator(
         foreach (var refValue in reference.Values)
         {
             fw.Write(
-                $"    {refValue.Value[reference.EnumKey]}: \"{(Config.TranslateReferences == true ? refValue.ResourceKey : refValue.Value[reference.DefaultProperty])}\""
+                $"    {refValue.Value[reference.EnumKey]}: {(Config.TranslateReferences == true ? $"\"{refValue.ResourceKey}\"" : Config.GetValue(reference.DefaultProperty, refValue.Value[reference.DefaultProperty]))}"
             );
             fw.WriteLine(reference.Values[^1] != refValue ? "," : string.Empty);
         }
@@ -223,7 +233,7 @@ public class TypescriptReferenceGenerator(
                     refValue
                         .Value.Where(p => p.Value != "null")
                         .Select(property =>
-                            $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)?.Type == "string" ? @$"""{(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}"
+                            $"{property.Key.NameCamel}: {(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? $"\"{refValue.ResourceKey}\"" : Config.GetValue(property.Key, property.Value))}"
                         )
                 )
             );
