@@ -25,15 +25,23 @@ endpoint:
     comment: Le détail et la liste des impacts.
 ```
 
-Le type de paramètre (body, query, route) est automatiquement déterminé :
+Si un paramètre d'endpoint est un **alias d'une clé primaire**, alors son **nom de paramètre sera préfixé par le trigramme** de cette propriété si elle en a un, ou le nom de sa classe à défaut. Ce préfixe est surchargeable en renseigant `trigram` sur la propriété (y compris avec `""` pour le retirer).
 
-- Si le paramètre est référencé dans la route, alors il est dans la route.
-  - Et si c'est un alias de clé primaire et que la classe défini un trigramme, alors le nom du paramètre sera `{trigramme}{propriété}` au lieu de `{classe}{propriété}`
-  - Il sera forcément obligatoire, quelque soit la valeur de `required` pour la propriété.
-- Si le paramètre est une composition, ou si le domaine de la propriété spécifie `bodyParam: true`, alors il sera dans le body.
-  - Il ne peut y avoir qu'un seul paramètre dans le body.
-- Sinon, il sera dans la query
-  - Il sera forcément facultatif, quelque soit la valeur de `required` pour la propriété.
+Le type de chaque paramètre (body, query, route) est automatiquement déterminé :
+
+1. Si le paramètre est référencé dans la route, alors il est dans la route.
+
+   > Il faudra bien le référencer avec son nom de paramètre dans la route (potentiellement préfixé, du coup).
+
+   > Il sera forcément obligatoire, quelque soit la valeur de `required` pour la propriété.
+
+2. Si le paramètre est une composition, ou si le domaine de la propriété spécifie `bodyParam: true`, alors il sera dans le body.
+
+   > Il ne peut y avoir qu'un seul paramètre dans le body.
+
+3. Sinon, il sera dans la query
+
+   > Il sera forcément facultatif, quelque soit la valeur de `required` pour la propriété.
 
 Tous les générateurs vont générer **un fichier client ou serveur par fichier de modèle qui contient des endpoints**, qui reflétera le chemin et le nom du fichier de modèle en question. A l'inverse des générateurs de classes qui vont utiliser le module, ici il n'est pas important.
 

@@ -30,9 +30,19 @@ public static class EndpointExtensions
             return string.Empty;
         }
 
-        return property is not AliasProperty alp || !alp.Property.PrimaryKey
-            ? property.NameCamel
-            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.NameCamel}{property.NameCamel.ToFirstUpper()}";
+        if (property is not AliasProperty alp || !alp.Property.PrimaryKey)
+        {
+            return property.NameCamel;
+        }
+
+        var trigram = alp.Trigram?.ToLower() ?? alp.FinalTrigram?.ToLower() ?? alp.Property.Class.NameCamel;
+
+        if (string.IsNullOrWhiteSpace(trigram))
+        {
+            return property.NameCamel;
+        }
+
+        return $"{trigram}{property.NameCamel.ToFirstUpper()}";
     }
 
     public static IEnumerable<IProperty> GetQueryAndMultipartParams(this Endpoint endpoint)
