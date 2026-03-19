@@ -28,7 +28,10 @@ export class TopModelPreviewPanel {
     public currentFsPath: string = "";
     public currentScope: "file" | "module" | "model" = "file";
 
-    constructor(context: ExtensionContext, private readonly applications: Application[]) {
+    constructor(
+        context: ExtensionContext,
+        private readonly applications: Application[],
+    ) {
         makeAutoObservable(this);
         autorun(() => this.refresh());
         this.context = context;
@@ -36,7 +39,7 @@ export class TopModelPreviewPanel {
             "preview", // Identifies the type of the webview. Used internally
             "Top Model Preview", // Title of the panel displayed to the user
             { viewColumn: ViewColumn.Beside, preserveFocus: true }, // Editor column to show the new webview panel in.
-            { enableScripts: true } // Webview options. More on these later.
+            { enableScripts: true }, // Webview options. More on these later.
         );
 
         this.matrix = {
@@ -45,10 +48,10 @@ export class TopModelPreviewPanel {
             scale: 1,
         };
         this.mermaidSrcUri = this.panel.webview.asWebviewUri(
-            Uri.file(path.join(this.context.extensionPath, "out", "mermaid.js"))
+            Uri.file(path.join(this.context.extensionPath, "out", "mermaid.js")),
         );
         this.previewSrcUri = this.panel.webview.asWebviewUri(
-            Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js"))
+            Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js")),
         );
 
         this.initSubscriptions();
@@ -77,7 +80,7 @@ export class TopModelPreviewPanel {
             }),
             this.panel.webview.onDidReceiveMessage((message) => {
                 this.handleMessage(message);
-            })
+            }),
         );
     }
 
@@ -85,7 +88,7 @@ export class TopModelPreviewPanel {
         if (this.currentFsPath) {
             return (
                 this.applications.find((c) => {
-                    if (this.currentFsPath.indexOf(c.modelRoot || "") >= 0) {
+                    if (this.currentFsPath.includes(c.modelRootFolder || "")) {
                         return c;
                     }
                 }) ?? this.applications[0]

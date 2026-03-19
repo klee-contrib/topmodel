@@ -37,13 +37,11 @@ export class Application {
                 this._terminal = undefined;
             }
         });
-        const cp = this.extensionContext.asAbsolutePath(_configPath);
-        const modelRoot = path.resolve(cp, config.modelRoot ?? "./");
         const shouldStartLanguageServer =
             configs.find(
                 (c) =>
                     path.resolve(this.extensionContext.asAbsolutePath(c.file.path), c.config.modelRoot ?? "./") ===
-                    modelRoot,
+                    this.modelRootPath,
             )?.config === config;
         this.start(shouldStartLanguageServer);
 
@@ -60,15 +58,21 @@ export class Application {
         }
     }
 
+    public get modelRootPath() {
+        const cp = this.extensionContext.asAbsolutePath(this._configPath);
+        return path.resolve(cp, this.config.modelRoot ?? "./");
+    }
+
+    public get modelRootFolder() {
+        return path.dirname(path.resolve(this._configPath, this.config.modelRoot ?? "./"));
+    }
+
     public get configPath() {
         return this._configPath;
     }
 
     public get configFolder() {
-        let configRelativePath = workspace.asRelativePath(this._configPath);
-        let configFolderA = configRelativePath.split("/");
-        configFolderA.pop();
-        return configFolderA.join("/");
+        return workspace.asRelativePath(path.dirname(this._configPath));
     }
 
     public get workspaceFolder() {
@@ -84,9 +88,8 @@ export class Application {
         const schemaLine = configFile.split("\n").find((line) => line.startsWith(schemaLinePrefix));
 
         if (schemaLine) {
-            const schemaUrl = path.join(
-                this.workspaceFolder?.uri.fsPath ?? "",
-                this.configFolder,
+            const schemaUrl = path.resolve(
+                path.dirname(this._configPath),
                 schemaLine.substring(schemaLinePrefix.length).trim().replace("\r", ""),
             );
 
@@ -123,7 +126,9 @@ export class Application {
     }
 
     private async startLanguageServer() {
-        const args = [this.extensionContext.asAbsolutePath(`./language-server/TopModel.LanguageServer.dll`)];
+        const args = [
+            this.extensionContext.asAbsolutePath(path.join(`./language-server`, `TopModel.LanguageServer.dll`)),
+        ];
         args.push(this._configPath);
         let serverOptions: ServerOptions = {
             run: { command: SERVER_EXE, args },
