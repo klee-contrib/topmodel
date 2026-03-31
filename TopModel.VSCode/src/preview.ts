@@ -81,6 +81,11 @@ export class TopModelPreviewPanel {
             this.panel.webview.onDidReceiveMessage((message) => {
                 this.handleMessage(message);
             }),
+            workspace.onDidSaveTextDocument((e) => {
+                if (e.uri.fsPath === this.currentFsPath) {
+                    this.refresh();
+                }
+            }),
         );
     }
 
@@ -285,7 +290,7 @@ export class TopModelPreviewPanel {
             this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n"
         ) {
             return `<pre class="mermaid">
-            %%{init: {'securityLevel': 'loose', 'theme': 'base', 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
+            %%{init: {'securityLevel': 'loose', 'theme': 'base', 'hideEmptyMembersBox': true, 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}
             </pre>`;
         } else {
