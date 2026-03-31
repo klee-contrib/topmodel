@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import { configure } from "mobx";
-import { commands, ExtensionContext, Uri, window, workspace } from "vscode";
+import { ExtensionContext, Uri, window, workspace } from "vscode";
 
 import { Application } from "./application";
+import { t } from "./i18n";
 import { State } from "./state";
 import { TopModelConfig, TopModelException } from "./types";
 import { execute } from "./utils";
-import { t } from "./i18n";
 
 const open = require("open");
 const yaml = require("js-yaml");
@@ -27,6 +27,10 @@ export async function activate(ctx: ExtensionContext) {
     } catch (error: any) {
         handleError(error);
     }
+}
+
+export function deactivate() {
+    state.preview?.panel.dispose();
 }
 
 /********************************************************* */

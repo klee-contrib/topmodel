@@ -201,11 +201,24 @@ export class TopModelPreviewPanel {
                     position: relative;
                 }
                 .copy-button {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background-color: transparent;
-                    cursor: pointer;
+                    width: 5rem;
+                    height: 3rem;
+                    display: block;
+                    position: relative;
+                    top: 5rem;
+                    left: 85%;
+                    z-index: 1;
+                    margin: 0;
+                    padding: 2px 8px;
+
+                    background-color: rgba(60,60,60,0.8);
+                    transition: opacity 0.15s ease;
+                }
+
+                .menu {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
                 }
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
@@ -226,21 +239,27 @@ export class TopModelPreviewPanel {
                     ? `/ <span class="clickable" onclick="scope('file')">${this.fileTitle}</span>`
                     : ""
             }
-            </h1>
-        <div>
-            <button onclick="zoomClick(false)">-</button>
-            <button onclick="zoomClick(true)">+</button>
+        </h1>
+        <div class="content">
+            <nav class="menu">
+                <button onclick="displayCodeClick()">${t("displayHideCode")}</button>
+                <button style="display: block;" class="uml-element" onclick="zoomClick(false)">-</button>
+                <button style="display: block;" class="uml-element" onclick="zoomClick(true)">+</button>
+            </nav>
+            <div class="cadre uml-element">
+                <div id="draggable" class="dragme" style="display: block;">
+                    ${this.mermaidContent}
+                </div>
             </div>
-            <div class="cadre">
-            <div id="draggable" class="dragme">
-            ${this.mermaidContent}
+            <div class="code-element" style="display: none;">
+            <button style="display: none;" class="copy-button code-element" onclick="copyCode(currentDiagram)">
+                Copier
+            </button>
+            <code id="sourceCode" style="display: none; overflow: auto;" class="code-element">
+                    ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
+                </code>
             </div>
-            </div>
-            <button onclick="displayCodeClick()">${t("displayHideCode")}</button>
-            <code id="sourceCode" style="display: none; overflow: auto;">
-            <button class="copy-button" onclick="copyCode(currentDiagram)">Copier</button>
-            ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
-        </code>
+        </div>
     </body>
     <script>
         const currentDiagram = \`${this.diagramMap[this.currentFsPath].diagram}\`;

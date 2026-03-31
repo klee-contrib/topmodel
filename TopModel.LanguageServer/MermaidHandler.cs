@@ -24,9 +24,18 @@ public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
                 if (classe.EnumKey != null)
                 {
                     diagram += "&lt;&lt;Enum&gt;&gt;\n";
-                    foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+                    foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal).Take(10))
                     {
-                        diagram += refValue.Value[classe.EnumKey] + '\n';
+                        diagram += refValue.Value[classe.EnumKey];
+                        if (classe.DefaultProperty != null)
+                        {
+                            diagram += $" {refValue.Value[classe.DefaultProperty]}";
+                        }
+                        diagram += "\n";
+                    }
+                    if (classe.Values.Count > 10)
+                    {
+                        diagram += "...\n";
                     }
 
                     diagram += "}\n";

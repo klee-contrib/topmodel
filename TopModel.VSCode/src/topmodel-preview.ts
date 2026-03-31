@@ -13,8 +13,14 @@ function scope(scope: "file" | "module" | "model") {
 }
 
 function displayCodeClick() {
-    const sourceCode = document.getElementById("sourceCode");
-    sourceCode!.style.display = sourceCode!.style.display === "none" ? "block" : "none";
+    const codeElements = document.getElementsByClassName("code-element") as any;
+    for (const element of codeElements) {
+        element.style.display = element.style.display === "none" ? "block" : "none";
+    }
+    const umlElements = document.getElementsByClassName("uml-element") as any;
+    for (const element of umlElements) {
+        element.style.display = element.style.display === "none" ? "block" : "none";
+    }
 }
 
 function copyCode(diagram: string) {
