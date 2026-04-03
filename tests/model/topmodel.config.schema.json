@@ -873,6 +873,65 @@
               "type": "string"
             }
           },
+          "cascadeTypes": {
+            "type": "object",
+            "description": "Types de cascade à ajouter aux associations générées.",
+            "default": {
+              "oneToOne": [
+                "all"
+              ],
+              "oneToMany": [
+                "all"
+              ]
+            },
+            "properties": {
+              "oneToOne": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              },
+              "oneToMany": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              },
+              "manyToOne": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              }
+            }
+          },
           "dataFlowsPath": {
             "type": "string",
             "description": "Localisation des flux de données générés."
