@@ -2,10 +2,7 @@
   "type": "object",
   "description": "Config pour la génération de Jpa.",
   "additionalProperties": false,
-  "required": [
-    "tags",
-    "outputDirectory"
-  ],
+  "required": ["tags", "outputDirectory"],
   "properties": {
     "name": {
       "type": "string",
@@ -117,12 +114,7 @@
     "uniqueValueGeneration": {
       "type": "string",
       "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
-      "enum": [
-        "none",
-        "const-only",
-        "enum-only",
-        "enum-or-const"
-      ]
+      "enum": ["none", "const-only", "enum-only", "enum-or-const"]
     },
     "rootModule": {
       "type": "string",
@@ -174,10 +166,7 @@
         {
           "type": "string",
           "description": "Mode de génération de l'API ('Client' ou 'Server')",
-          "enum": [
-            "Client",
-            "Server"
-          ]
+          "enum": ["Client", "Server"]
         },
         {
           "type": "string",
@@ -192,11 +181,7 @@
           "type": "string",
           "description": "Mode de génération de l'API Client",
           "default": "RestClient",
-          "enum": [
-            "RestTemplate",
-            "RestClient",
-            "FeignClient"
-          ]
+          "enum": ["RestTemplate", "RestClient", "FeignClient"]
         },
         {
           "type": "string",
@@ -219,10 +204,7 @@
       "type": "string",
       "description": "Encodage des fichiers de resource.",
       "default": "Latin1",
-      "enum": [
-        "Latin1",
-        "UTF8"
-      ]
+      "enum": ["Latin1", "UTF8"]
     },
     "useJdbc": {
       "type": "boolean",
@@ -241,7 +223,15 @@
     },
     "mappersInClass": {
       "type": "boolean",
-      "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
+      "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent",
+      "default": "false"
+    },
+    "mapperTagsOverrides": {
+      "type": "array",
+      "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).",
+      "items": {
+        "type": "string"
+      }
     },
     "dataFlowsPath": {
       "type": "string",
@@ -251,10 +241,7 @@
       "type": "string",
       "description": "Writer à utiliser pour les flux de données.",
       "default": "jpa",
-      "enum": [
-        "bulk",
-        "jpa"
-      ]
+      "enum": ["bulk", "jpa"]
     },
     "dataFlowsBulkSize": {
       "type": "number",
@@ -292,10 +279,7 @@
       "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
       "items": {
         "type": "string",
-        "enum": [
-          "non-persisted",
-          "persisted"
-        ]
+        "enum": ["non-persisted", "persisted"]
       }
     },
     "fieldsEnumInterface": {
@@ -309,12 +293,7 @@
         "mode": {
           "type": "string",
           "description": "Mode de génération des séquences.",
-          "enum": [
-            "none",
-            "sequence",
-            "identity",
-            "uuid"
-          ],
+          "enum": ["none", "sequence", "identity", "uuid"],
           "default": "identity"
         },
         "increment": {

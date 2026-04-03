@@ -556,4 +556,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         return mapperClass;
     }
+
+    protected override bool IsPersistent(Class classe)
+    {
+        return classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
+    }
 }

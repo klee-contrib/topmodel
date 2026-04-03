@@ -157,7 +157,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent.
     /// </summary>
-    public virtual bool MappersInClass { get; set; } = true;
+    public virtual bool MappersInClass { get; set; } = false;
 
     /// <summary>
     /// Taille des chunks à extraire et insérer
@@ -172,6 +172,11 @@ public class JpaConfig : GeneratorConfigBase
     public override string? DefaultLanguage => "java";
 
     public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesPath)];
+
+    /// <summary>
+    /// Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+    /// </summary>
+    public virtual string[] MapperTagsOverrides { get; set; } = [];
 
     public override string[] PropertiesWithTagVariableSupport =>
         [
