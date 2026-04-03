@@ -4,6 +4,9 @@
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs JPA sont détaillés dans le changelog général de la version.
 
+- La valeur par défaut de mappersInClass est maintenant `false`
+- Nouvelle propriété `mapperTagsOverrides` : Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+
 ## 3.5.7
 
 - [`1e4be`](https://github.com/klee-contrib/topmodel/commit/1e4be6011aabe29a4ed8308206172dd11b496216) - [JPA] Suite de [#542](https://github.com/klee-contrib/topmodel/issues/542) : l'annotation JoinColumn ne doit pas être générée pour les oneToOne reverse
