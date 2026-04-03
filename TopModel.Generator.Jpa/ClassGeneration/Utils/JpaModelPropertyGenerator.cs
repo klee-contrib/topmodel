@@ -512,6 +512,15 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 $"{property.Association!.NamePascal}.class",
                 property.Association!.GetImport(Config, Config.GetBestClassTag(property.Association!, tag))
             );
+        Config.CascadeTypes.TryGetValue(AssociationType.ManyToOne, out var cascadeTypes);
+        if (cascadeTypes != null && cascadeTypes.Any())
+        {
+            association.AddAttribute(
+                "cascade",
+                $@"{(cascadeTypes.Count() > 1 ? "{ " : string.Empty)}{string.Join(", ", cascadeTypes?.Select(ct => $"CascadeType.{ct.ToString().ToUpper()}") ?? [])}{(cascadeTypes!.Count() > 1 ? " }" : string.Empty)}",
+                "jakarta.persistence.CascadeType"
+            );
+        }
         yield return association;
 
         var fk = property.SqlName;
@@ -525,9 +534,16 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual IEnumerable<JavaAnnotation> GetOneToManyAnnotations(IProperty property)
     {
         var association = new JavaAnnotation("OneToMany", imports: "jakarta.persistence.OneToMany");
-        association
-            .AddAttribute("cascade", "CascadeType.ALL", "jakarta.persistence.CascadeType")
-            .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType");
+        Config.CascadeTypes.TryGetValue(AssociationType.OneToMany, out var cascadeTypes);
+        if (cascadeTypes != null && cascadeTypes.Any())
+        {
+            association.AddAttribute(
+                "cascade",
+                $@"{(cascadeTypes.Count() > 1 ? "{ " : string.Empty)}{string.Join(", ", cascadeTypes?.Select(ct => $"CascadeType.{ct.ToString().ToUpper()}") ?? [])}{(cascadeTypes!.Count() > 1 ? " }" : string.Empty)}",
+                "jakarta.persistence.CascadeType"
+            );
+        }
+        association.AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType");
 
         if (property.ReverseProperty != null)
         {
@@ -551,9 +567,17 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var apk = property.AssociationProperty!.SqlName;
         var association = new JavaAnnotation("OneToOne", imports: $"jakarta.persistence.OneToOne")
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType")
-            .AddAttribute("cascade", @"CascadeType.ALL", "jakarta.persistence.CascadeType")
             .AddAttribute("optional", (!property.Required).ToString().ToLower());
 
+        Config.CascadeTypes.TryGetValue(AssociationType.OneToOne, out var cascadeTypes);
+        if (cascadeTypes != null && cascadeTypes.Any())
+        {
+            association.AddAttribute(
+                "cascade",
+                $@"{(cascadeTypes.Count() > 1 ? "{ " : string.Empty)}{string.Join(", ", cascadeTypes?.Select(ct => $"CascadeType.{ct.ToString().ToUpper()}") ?? [])}{(cascadeTypes!.Count() > 1 ? " }" : string.Empty)}",
+                "jakarta.persistence.CascadeType"
+            );
+        }
         if (property is { ReverseProperty: not null } && property is { IsReverseProperty: true })
         {
             association.AddAttribute("mappedBy", $@"""{property.ReverseProperty!.NameCamel}""");

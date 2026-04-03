@@ -4,8 +4,10 @@
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs JPA sont détaillés dans le changelog général de la version.
 
+- Les attributs des annotations sont maintenant triés par ordre alphabatique
 - La valeur par défaut de mappersInClass est maintenant `false`
-- Nouvelle propriété `mapperTagsOverrides` : Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+- Nouvelle configuration `mapperTagsOverrides` : Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+- Nouvelle configuration `cascadeTypes` : Permet de configurer les types de cascade JPA à ajouter par type d'association (`oneToOne`, `oneToMany`, `manyToOne`). Les valeurs possibles sont `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, et `lock`.
 
 ## 3.5.7
 

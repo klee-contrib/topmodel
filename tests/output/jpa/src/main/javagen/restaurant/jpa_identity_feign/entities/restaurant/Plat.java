@@ -76,7 +76,7 @@ public class Plat {
 	/**
 	 * Association réciproque de Promotion.Plat.
 	 */
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true, mappedBy = "plat")
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, mappedBy = "plat")
 	private Promotion promotion;
 
 	/**

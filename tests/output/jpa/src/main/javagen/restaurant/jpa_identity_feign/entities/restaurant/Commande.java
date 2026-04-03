@@ -92,7 +92,7 @@ public class Commande {
 	 * Avis laissé par le client sur la commande.
 	 */
 	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	private AvisClient avisClient;
 
 	/**

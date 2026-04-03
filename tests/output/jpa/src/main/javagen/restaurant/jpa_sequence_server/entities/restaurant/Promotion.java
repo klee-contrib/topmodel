@@ -37,7 +37,7 @@ public class Promotion {
 	 */
 	@MapsId
 	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID", unique = true)
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
 	private Plat plat;
 
 	/**

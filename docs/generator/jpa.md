@@ -100,7 +100,7 @@ Sur chacune des propriété :
 Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
 
 - `fetch = FetchType.LAZY` pour tous les types d'associations, pour optimisation des performances
-- `cascade = { CascadeType.ALL }` pour les associations `OneToMany` et leur association réciproque `ManyToOne`
+- `cascade = { CascadeType.ALL }` pour les associations `OneToMany`
 - `cascade = { CascadeType.ALL }` pour les associations `OneToOne`
 
 Par ailleurs, dès lors qu'une association est faite entre deux classes, si :
@@ -1122,6 +1122,57 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
   Pour une association `OneToMany` entre `Utilisateur` et `Commande`, si `associationRemovers: true`, une méthode `removeCommande(Commande commande)` sera générée dans la classe `Utilisateur`. Cette méthode retirera la commande de la liste et mettra à jour la référence réciproque (`commande.setUtilisateur(null)`).
 
+- `cascadeTypes`
+
+  Types de cascade à ajouter sur les associations JPA générées, par type d'association.
+
+  Les clés configurables sont :
+
+  - `oneToOne` : cascade(s) à ajouter sur les associations `@OneToOne`
+  - `oneToMany` : cascade(s) à ajouter sur les associations `@OneToMany`
+  - `manyToOne` : cascade(s) à ajouter sur les associations `@ManyToOne`
+
+  Les valeurs possibles pour chaque clé sont : `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, `lock`.
+
+  _Valeur par défaut_: `
+  {
+    oneToOne: [all],
+    oneToMany: [all]
+  }`
+
+  **Exemple de configuration :**
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+      cascadeTypes:
+        oneToMany:
+          - all
+        manyToOne:
+          - persist
+          - merge
+        oneToOne:
+          - all
+  ```
+
+  **Code Java généré :**
+
+  Avec la configuration ci-dessus, une association `@OneToMany` produira :
+
+  ```java
+  @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "commande")
+  private List<LigneCommande> lignes;
+  ```
+
+  Et une association `@OneToOne` avec `oneToOne: [all, detach]` produira :
+
+  ```java
+  @JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
+  @OneToOne(cascade = { CascadeType.ALL, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
+  private AvisClient avisClient;
+  ```
+
 - `generatedHint`
 
   Option pour générer l'annotation @Generated("TopModel : <https://github.com/klee-contrib/topmodel>")
@@ -1132,7 +1183,28 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
   Indique s'il faut ajouter les mappers en tant que méthode (`to...`) ou constructeur dans les classes qui les déclarent. Si `true`, les mappers `from` sont générés comme constructeurs et les mappers `to` comme méthodes dans les classes concernées.
 
-  _Valeur par défaut_: `true`
+  _Valeur par défaut_: `false`
+
+- `mapperTagsOverrides`
+
+  Si un mapper contient au moins une classe dont le tag est listé ici, alors ce mapper sera généré avec les tags de cette classe, au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper.
+
+  Ceci permet de forcer la localisation de la génération des mappers pour certains tags particuliers, indépendamment du caractère persisté des classes impliquées.
+
+  _Valeur par défaut_: `[]`
+
+  _Variables par tag_: **non**
+
+  **Exemple :**
+
+  ```yaml
+  jpa:
+    - tags:
+        - entity
+      mapperTagsOverrides:
+        - feign
+        - dto-special
+  ```
 
 - `identity`
 

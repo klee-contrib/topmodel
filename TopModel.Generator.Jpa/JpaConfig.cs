@@ -145,6 +145,16 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? DaosName { get; set; }
 
     /// <summary>
+    /// Types de cascade à ajouter sur les associations, par type d'association. Par défaut, aucune cascade n'est ajoutée.
+    /// </summary>
+    public virtual IDictionary<AssociationType, IEnumerable<CascadeType>> CascadeTypes { get; set; } =
+        new Dictionary<AssociationType, IEnumerable<CascadeType>>()
+        {
+            [AssociationType.OneToOne] = [CascadeType.All],
+            [AssociationType.OneToMany] = [CascadeType.All],
+        };
+
+    /// <summary>
     /// Nom des classes d'apis générées. La valeur par défaut dépend du type d'api générée.
     /// </summary>
     public virtual string? ApisName { get; set; }

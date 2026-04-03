@@ -471,6 +471,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         fw.Write(0, mapperClass);
     }
 
+    protected override bool IsPersistent(Class classe)
+    {
+        return classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
+    }
+
     private bool FilterMapping(IProperty propertySource, IProperty propertyTarget)
     {
         return !(
@@ -555,10 +560,5 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         }
 
         return mapperClass;
-    }
-
-    protected override bool IsPersistent(Class classe)
-    {
-        return classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
     }
 }
