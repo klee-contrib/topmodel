@@ -30,27 +30,27 @@ public class Personne {
 	 * Identifiant de la personne.
 	 */
 	@Id
-	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PERSONNE")
-	@SequenceGenerator(sequenceName = "SEQ_PERSONNE", name = "SEQ_PERSONNE", initialValue = 1000, allocationSize = 50)
+	@Column(columnDefinition = "int", name = "PER_ID", nullable = false)
+	@GeneratedValue(generator = "SEQ_PERSONNE", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_PERSONNE", sequenceName = "SEQ_PERSONNE")
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
 	 */
-	@Column(name = "PER_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "PER_NOM", nullable = false)
 	private String nom;
 
 	/**
 	 * Prénom de la personne.
 	 */
-	@Column(name = "PER_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "PER_PRENOM", nullable = false)
 	private String prenom;
 
 	/**
 	 * Département de résidence de la personne.
 	 */
-	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "DEP_CODE")
 	private String departementCode = DepartementCode.Paris;
 
 	/**

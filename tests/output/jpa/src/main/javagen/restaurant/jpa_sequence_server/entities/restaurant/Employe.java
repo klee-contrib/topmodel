@@ -27,31 +27,31 @@ public class Employe extends Personne {
 	/**
 	 * Numéro de téléphone de l'employé.
 	 */
-	@Column(name = "EMP_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 20, name = "EMP_TELEPHONE")
 	private String telephone;
 
 	/**
 	 * Date de naissance.
 	 */
-	@Column(name = "EMP_DATE_NAISSANCE", columnDefinition = "timestamp")
+	@Column(columnDefinition = "timestamp", name = "EMP_DATE_NAISSANCE")
 	private LocalDateTime dateNaissance;
 
 	/**
 	 * Matricule de l'employé.
 	 */
-	@Column(name = "EMP_MATRICULE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "EMP_MATRICULE", nullable = false)
 	private String matricule;
 
 	/**
 	 * Date d'embauche.
 	 */
-	@Column(name = "EMP_DATE_EMBAUCHE", nullable = false, columnDefinition = "timestamp")
+	@Column(columnDefinition = "timestamp", name = "EMP_DATE_EMBAUCHE", nullable = false)
 	private LocalDateTime dateEmbauche;
 
 	/**
 	 * Salaire de l'employé.
 	 */
-	@Column(name = "EMP_SALAIRE", scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "EMP_SALAIRE", scale = 2)
 	private BigDecimal salaire;
 
 	/**

@@ -31,19 +31,19 @@ public class Region {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "REG_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "REG_CODE", nullable = false)
 	private RegionCode code;
 
 	/**
 	 * Libellé de la région.
 	 */
-	@Column(name = "REG_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "REG_LIBELLE", nullable = false)
 	private String libelle;
 
 	/**
 	 * Nom du responsable de la région.
 	 */
-	@Column(name = "REG_NOM_RESPONSABLE", length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "REG_NOM_RESPONSABLE")
 	private String nomResponsable;
 
 	/**

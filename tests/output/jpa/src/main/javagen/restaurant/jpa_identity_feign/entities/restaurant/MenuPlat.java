@@ -41,7 +41,7 @@ public class MenuPlat {
 	/**
 	 * Ordre d'affichage du plat dans le menu.
 	 */
-	@Column(name = "MPL_ORDRE", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "MPL_ORDRE", nullable = false)
 	private Integer ordre;
 
 	/**

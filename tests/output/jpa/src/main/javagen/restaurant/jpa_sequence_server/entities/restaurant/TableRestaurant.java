@@ -26,33 +26,33 @@ public class TableRestaurant {
 	 * Identifiant de la table.
 	 */
 	@Id
-	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TABLE")
-	@SequenceGenerator(sequenceName = "SEQ_TABLE", name = "SEQ_TABLE", initialValue = 1000, allocationSize = 50)
+	@Column(columnDefinition = "int", name = "TAB_ID", nullable = false)
+	@GeneratedValue(generator = "SEQ_TABLE", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_TABLE", sequenceName = "SEQ_TABLE")
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
 	 */
-	@Column(name = "TAB_NUMERO", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "TAB_NUMERO", nullable = false)
 	private String numero;
 
 	/**
 	 * Capacité de la table (nombre de places).
 	 */
-	@Column(name = "TAB_CAPACITE", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "TAB_CAPACITE", nullable = false)
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
 	 */
-	@Column(name = "TAB_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(columnDefinition = "boolean", name = "TAB_DISPONIBLE", nullable = false)
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "RES_ID", nullable = false)
 	private Integer restaurantId;
 
 	/**

@@ -26,7 +26,7 @@ public class Client extends Personne {
 	/**
 	 * Adresse email du client.
 	 */
-	@Column(name = "CLI_EMAIL", length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "CLI_EMAIL")
 	private String email;
 
 	/**

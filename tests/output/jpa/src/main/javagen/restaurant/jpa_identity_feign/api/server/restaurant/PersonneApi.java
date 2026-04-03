@@ -35,7 +35,7 @@ import restaurant.jpa_identity_feign.dtos.restaurant.CommandeItem;
 import restaurant.jpa_identity_feign.dtos.restaurant.EmployeRead;
 import restaurant.jpa_identity_feign.dtos.restaurant.EmployeWrite;
 
-@FeignClient(name = "Restaurant", contextId = "PersonneApi")
+@FeignClient(contextId = "PersonneApi", name = "Restaurant")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface PersonneApi {
 
@@ -81,7 +81,7 @@ public interface PersonneApi {
 	 */
 	@GetMapping(path = "api/restaurants/avis")
 	@Operation(description = "Liste les avis clients avec filtres")
-	List<AvisClientRead> getAvisClients(@Parameter(description = "Identifiant du restaurant") @RequestParam(value = "resRestaurantId", required = true) Integer resRestaurantId, @Parameter(description = "Note sur 5") @RequestParam(value = "noteMin", required = true) Integer noteMin, @Parameter(description = "Indique si l'avis est approuvé par le restaurant") @RequestParam(value = "approuve", required = true) Boolean approuve, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	List<AvisClientRead> getAvisClients(@Parameter(description = "Identifiant du restaurant") @RequestParam(required = true, value = "resRestaurantId") Integer resRestaurantId, @Parameter(description = "Note sur 5") @RequestParam(required = true, value = "noteMin") Integer noteMin, @Parameter(description = "Indique si l'avis est approuvé par le restaurant") @RequestParam(required = true, value = "approuve") Boolean approuve, @Parameter(description = "Date de l'avis") @RequestParam(required = true, value = "dateDebut") LocalDateTime dateDebut, @Parameter(description = "Date de l'avis") @RequestParam(required = true, value = "dateFin") LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'un client.
@@ -122,7 +122,7 @@ public interface PersonneApi {
 	 */
 	@GetMapping(path = "api/restaurants/clients")
 	@Operation(description = "Liste tous les clients")
-	List<ClientItem> getClients(@Parameter(description = "Nom de la personne") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Adresse email du client") @RequestParam(value = "email", required = false) String email);
+	List<ClientItem> getClients(@Parameter(description = "Nom de la personne") @RequestParam(required = true, value = "nom") String nom, @Parameter(description = "Adresse email du client") @RequestParam(required = false, value = "email") String email);
 
 	/**
 	 * Met à jour partiellement un client.

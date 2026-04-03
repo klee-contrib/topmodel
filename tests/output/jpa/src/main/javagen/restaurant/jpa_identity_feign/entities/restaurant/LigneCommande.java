@@ -31,25 +31,25 @@ public class LigneCommande {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "LIG_ID", nullable = false)
 	private Integer id;
 
 	/**
 	 * Quantité commandée.
 	 */
-	@Column(name = "LIG_QUANTITE", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "LIG_QUANTITE", nullable = false)
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
 	 */
-	@Column(name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2)
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
 	 */
-	@Column(name = "LIG_PRIX_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "LIG_PRIX_TOTAL", nullable = false, scale = 2)
 	private BigDecimal prixTotal;
 
 	/**

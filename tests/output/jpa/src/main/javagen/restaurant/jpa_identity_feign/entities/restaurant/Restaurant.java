@@ -31,25 +31,25 @@ public class Restaurant {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "RES_ID", nullable = false)
 	private Integer id;
 
 	/**
 	 * Nom du restaurant.
 	 */
-	@Column(name = "RES_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "RES_NOM", nullable = false)
 	private String nom;
 
 	/**
 	 * Adresse du restaurant.
 	 */
-	@Column(name = "RES_ADRESSE", length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "RES_ADRESSE")
 	private String adresse;
 
 	/**
 	 * Numéro de téléphone.
 	 */
-	@Column(name = "RES_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 20, name = "RES_TELEPHONE")
 	private String telephone;
 
 	/**

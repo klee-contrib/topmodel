@@ -49,25 +49,25 @@ public class CategoriePlat {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CAT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "CAT_CODE", nullable = false)
 	private CategoriePlatCode code;
 
 	/**
 	 * Libellé de la catégorie.
 	 */
-	@Column(name = "CAT_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "CAT_LIBELLE", nullable = false)
 	private String libelle;
 
 	/**
 	 * Ordre d'affichage dans le menu.
 	 */
-	@Column(name = "CAT_ORDRE", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "CAT_ORDRE", nullable = false)
 	private Integer ordre;
 
 	/**
 	 * Prix moyen de la catégorie, à titre indicatif.
 	 */
-	@Column(name = "CAT_PRIX_MOYEN", scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "CAT_PRIX_MOYEN", scale = 2)
 	private BigDecimal prixMoyen;
 
 	/**

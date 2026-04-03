@@ -37,7 +37,7 @@ import restaurant.jpa_identity_feign.dtos.restaurant.TableRead;
 import restaurant.jpa_identity_feign.dtos.restaurant.TableWrite;
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
-@FeignClient(name = "Restaurant", contextId = "RestaurantApi")
+@FeignClient(contextId = "RestaurantApi", name = "Restaurant")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface RestaurantApi {
 
@@ -110,7 +110,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/{resId}/plats")
 	@Operation(description = "Liste les plats d'un restaurant")
-	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si le plat est disponible") @RequestParam(required = true, value = "disponible") Boolean disponible, @Parameter(description = "Catégorie du plat") @RequestParam(required = true, value = "categoriePlatCode") CategoriePlatCode categoriePlatCode);
 
 	/**
 	 * Récupère les statistiques d'un restaurant.
@@ -123,7 +123,7 @@ public interface RestaurantApi {
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping(path = "api/restaurants/{resId}/statistiques")
 	@Operation(description = "Récupère les statistiques d'un restaurant")
-	StatistiquesRestaurant getRestaurantStatistiques(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Date de début pour le calcul des statistiques") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date de fin pour le calcul des statistiques") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	StatistiquesRestaurant getRestaurantStatistiques(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Date de début pour le calcul des statistiques") @RequestParam(required = true, value = "dateDebut") LocalDateTime dateDebut, @Parameter(description = "Date de fin pour le calcul des statistiques") @RequestParam(required = true, value = "dateFin") LocalDateTime dateFin);
 
 	/**
 	 * Liste les tables d'un restaurant.
@@ -134,7 +134,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/{resId}/tables")
 	@Operation(description = "Liste les tables d'un restaurant")
-	List<TableItem> getRestaurantTables(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<TableItem> getRestaurantTables(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si la table est disponible") @RequestParam(required = true, value = "disponible") Boolean disponible);
 
 	/**
 	 * Liste tous les restaurants.
@@ -164,7 +164,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/tables")
 	@Operation(description = "Liste toutes les tables")
-	List<TableItem> getTables(@Parameter(description = "Restaurant auquel appartient la table") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<TableItem> getTables(@Parameter(description = "Restaurant auquel appartient la table") @RequestParam(required = true, value = "restaurantId") Integer restaurantId, @Parameter(description = "Indique si la table est disponible") @RequestParam(required = true, value = "disponible") Boolean disponible);
 
 	/**
 	 * Recherche avancée de restaurants.
@@ -176,7 +176,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/search")
 	@Operation(description = "Recherche avancée de restaurants")
-	List<RestaurantAvecStatistiques> searchRestaurants(@Parameter(description = "Nom du restaurant (recherche partielle)") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Adresse du restaurant (recherche partielle)") @RequestParam(value = "adresse", required = false) String adresse, @Parameter(description = "Note minimum requise") @RequestParam(value = "noteMin", required = true) Integer noteMin);
+	List<RestaurantAvecStatistiques> searchRestaurants(@Parameter(description = "Nom du restaurant (recherche partielle)") @RequestParam(required = true, value = "nom") String nom, @Parameter(description = "Adresse du restaurant (recherche partielle)") @RequestParam(required = false, value = "adresse") String adresse, @Parameter(description = "Note minimum requise") @RequestParam(required = true, value = "noteMin") Integer noteMin);
 
 	/**
 	 * Met à jour un restaurant.

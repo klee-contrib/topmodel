@@ -26,31 +26,31 @@ public class TableRestaurant {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "TAB_ID", nullable = false)
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
 	 */
-	@Column(name = "TAB_NUMERO", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 10, name = "TAB_NUMERO", nullable = false)
 	private String numero;
 
 	/**
 	 * Capacité de la table (nombre de places).
 	 */
-	@Column(name = "TAB_CAPACITE", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "TAB_CAPACITE", nullable = false)
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
 	 */
-	@Column(name = "TAB_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(columnDefinition = "boolean", name = "TAB_DISPONIBLE", nullable = false)
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "RES_ID", nullable = false)
 	private Integer restaurantId;
 
 	/**

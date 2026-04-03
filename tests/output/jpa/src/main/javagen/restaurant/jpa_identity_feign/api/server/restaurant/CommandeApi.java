@@ -33,7 +33,7 @@ import restaurant.jpa_identity_feign.dtos.restaurant.ReservationRead;
 import restaurant.jpa_identity_feign.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_identity_feign.enums.restaurant.StatutCommande;
 
-@FeignClient(name = "Restaurant", contextId = "CommandeApi")
+@FeignClient(contextId = "CommandeApi", name = "Restaurant")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface CommandeApi {
 
@@ -85,7 +85,7 @@ public interface CommandeApi {
 	@PreAuthorize("isAuthenticated()")
 	@Operation(description = "Exporte les commandes au format CSV")
 	@GetMapping(path = "api/restaurants/commandes/export", produces = "application/octet-stream")
-	byte[] exportCommandes(@Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	byte[] exportCommandes(@Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateDebut") LocalDateTime dateDebut, @Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateFin") LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'une commande.
@@ -107,7 +107,7 @@ public interface CommandeApi {
 	 */
 	@GetMapping(path = "api/restaurants/commandes")
 	@Operation(description = "Liste toutes les commandes")
-	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
+	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(required = true, value = "clientId") Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(required = true, value = "statutCommande") StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(required = false, value = "tableId") Integer tableId);
 
 	/**
 	 * Récupère les commandes par date.
@@ -117,7 +117,7 @@ public interface CommandeApi {
 	 */
 	@GetMapping(path = "api/restaurants/commandes/by-date")
 	@Operation(description = "Récupère les commandes par date")
-	List<CommandeItem> getCommandesByDate(@Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateCommande", required = true) LocalDateTime dateCommande);
+	List<CommandeItem> getCommandesByDate(@Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateCommande") LocalDateTime dateCommande);
 
 	/**
 	 * Liste tous les statuts de commande.
@@ -159,5 +159,5 @@ public interface CommandeApi {
 	 */
 	@PatchMapping(path = "api/restaurants/commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
-	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande);
+	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(required = true, value = "statutCommande") StatutCommande statutCommande);
 }

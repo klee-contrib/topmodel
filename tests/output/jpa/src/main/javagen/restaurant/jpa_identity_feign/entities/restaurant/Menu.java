@@ -36,43 +36,43 @@ public class Menu {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "MEN_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "MEN_ID", nullable = false)
 	private Integer id;
 
 	/**
 	 * Nom du menu.
 	 */
-	@Column(name = "MEN_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "MEN_NOM", nullable = false)
 	private String nom;
 
 	/**
 	 * Description du menu.
 	 */
-	@Column(name = "MEN_DESCRIPTION", length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "MEN_DESCRIPTION")
 	private String description;
 
 	/**
 	 * Prix du menu.
 	 */
-	@Column(name = "MEN_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "MEN_PRIX", nullable = false, scale = 2)
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le menu est disponible.
 	 */
-	@Column(name = "MEN_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(columnDefinition = "boolean", name = "MEN_DISPONIBLE", nullable = false)
 	private Boolean disponible = true;
 
 	/**
 	 * Date de début de validité du menu.
 	 */
-	@Column(name = "MEN_DATE_DEBUT", columnDefinition = "timestamp")
+	@Column(columnDefinition = "timestamp", name = "MEN_DATE_DEBUT")
 	private LocalDateTime dateDebut;
 
 	/**
 	 * Date de fin de validité du menu.
 	 */
-	@Column(name = "MEN_DATE_FIN", columnDefinition = "timestamp")
+	@Column(columnDefinition = "timestamp", name = "MEN_DATE_FIN")
 	private LocalDateTime dateFin;
 
 	/**

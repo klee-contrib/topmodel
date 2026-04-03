@@ -32,31 +32,31 @@ public class Plat {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	@Column(columnDefinition = "int", name = "PLA_ID", nullable = false)
 	private Integer id;
 
 	/**
 	 * Nom du plat.
 	 */
-	@Column(name = "PLA_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "PLA_NOM", nullable = false)
 	private String nom;
 
 	/**
 	 * Description du plat.
 	 */
-	@Column(name = "PLA_DESCRIPTION", length = 100, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 100, name = "PLA_DESCRIPTION")
 	private String description;
 
 	/**
 	 * Prix du plat.
 	 */
-	@Column(name = "PLA_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(columnDefinition = "decimal", name = "PLA_PRIX", nullable = false, scale = 2)
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le plat est disponible.
 	 */
-	@Column(name = "PLA_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(columnDefinition = "boolean", name = "PLA_DISPONIBLE", nullable = false)
 	private Boolean disponible = true;
 
 	/**
@@ -76,7 +76,7 @@ public class Plat {
 	/**
 	 * Association réciproque de Promotion.Plat.
 	 */
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, mappedBy = "plat")
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat", optional = true)
 	private Promotion promotion;
 
 	/**
