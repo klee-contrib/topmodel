@@ -7,9 +7,6 @@ package hello world.dtos.users;
 import java.io.Serial;
 import java.io.Serializable;
 
-import hello world.entities.users.UsersMappers;
-import hello world.entities.users.Utilisateur;
-
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Size;
 
@@ -47,15 +44,5 @@ public class UtilisateurUpdateDto implements Serializable {
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
-	}
-
-	/**
-	 * Mappe 'UtilisateurUpdateDto' vers 'Utilisateur'.
-	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Utilisateur'.
-	 */
-	public Utilisateur toUtilisateur(Utilisateur target) {
-		return UsersMappers.toUtilisateur(this, target);
 	}
 }

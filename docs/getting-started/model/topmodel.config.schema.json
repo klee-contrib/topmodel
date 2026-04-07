@@ -357,7 +357,74 @@
           },
           "mappersInClass": {
             "type": "boolean",
-            "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
+            "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent",
+            "default": "false"
+          },
+          "mapperTagsOverrides": {
+            "type": "array",
+            "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cascadeTypes": {
+            "type": "object",
+            "description": "Types de cascade à ajouter aux associations générées.",
+            "default": {
+              "oneToOne": [
+                "all"
+              ],
+              "oneToMany": [
+                "all"
+              ]
+            },
+            "properties": {
+              "oneToOne": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              },
+              "oneToMany": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              },
+              "manyToOne": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "persist",
+                    "merge",
+                    "remove",
+                    "refresh",
+                    "detach",
+                    "lock"
+                  ]
+                }
+              }
+            }
           },
           "dataFlowsPath": {
             "type": "string",

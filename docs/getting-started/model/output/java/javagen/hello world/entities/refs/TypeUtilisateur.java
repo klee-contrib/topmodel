@@ -31,13 +31,13 @@ public class TypeUtilisateur {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CODE", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 3, name = "CODE", nullable = false)
 	private TypeUtilisateurCode code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "LIBELLE", nullable = false, length = 15, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 15, name = "LIBELLE", nullable = false)
 	private String libelle;
 
 	/**

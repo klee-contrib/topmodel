@@ -28,32 +28,32 @@ public class Utilisateur {
 	 * Identifiant unique de l'utilisateur.
 	 */
 	@Id
-	@Column(name = "ID", nullable = false, columnDefinition = "int8")
+	@Column(columnDefinition = "int8", name = "ID", nullable = false)
 	private long id;
 
 	/**
 	 * Adresse mail de l'utilisateur.
 	 */
-	@Column(name = "EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 50, name = "EMAIL", nullable = false)
 	private String email;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "NOM", length = 15, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 15, name = "NOM")
 	private String nom;
 
 	/**
 	 * Date d'inscription.
 	 */
-	@Column(name = "DATE_INSCRIPTION", columnDefinition = "timestamp")
+	@Column(columnDefinition = "timestamp", name = "DATE_INSCRIPTION")
 	private LocalDate dateInscription;
 
 	/**
 	 * Type de l'utilisateur.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CODE", length = 3, columnDefinition = "varchar")
+	@Column(columnDefinition = "varchar", length = 3, name = "CODE")
 	private TypeUtilisateurCode typeUtilisateurCode;
 
 	/**

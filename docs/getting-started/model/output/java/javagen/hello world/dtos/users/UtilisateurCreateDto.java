@@ -8,8 +8,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import hello world.entities.users.UsersMappers;
-import hello world.entities.users.Utilisateur;
 import hello world.enums.refs.TypeUtilisateurCode;
 
 import jakarta.annotation.Generated;
@@ -121,15 +119,5 @@ public class UtilisateurCreateDto implements Serializable {
 	 */
 	public void setUtilisateurTypeUtilisateurCode(TypeUtilisateurCode utilisateurTypeUtilisateurCode) {
 		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
-	}
-
-	/**
-	 * Mappe 'UtilisateurCreateDto' vers 'Utilisateur'.
-	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Utilisateur'.
-	 */
-	public Utilisateur toUtilisateur(Utilisateur target) {
-		return UsersMappers.toUtilisateur(this, target);
 	}
 }

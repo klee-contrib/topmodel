@@ -8,9 +8,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import hello world.entities.refs.TypeUtilisateur;
-import hello world.entities.users.UsersMappers;
-import hello world.entities.users.Utilisateur;
 import hello world.enums.refs.TypeUtilisateurCode;
 
 import jakarta.annotation.Generated;
@@ -63,24 +60,6 @@ public class UtilisateurSearchResultDto implements Serializable {
 	@NotNull
 	@Size(max = 15)
 	private String libelleTypeUtilisateur;
-
-	/**
-	 * No arg constructor.
-	 */
-	public UtilisateurSearchResultDto() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'UtilisateurSearchResultDto'.
-	 * @param utilisateur Instance de 'Utilisateur'.
-	 * @param typeUtilisateur Instance de 'TypeUtilisateur'.
-	 *
-	 * @return Une nouvelle instance de 'UtilisateurSearchResultDto'.
-	 */
-	public UtilisateurSearchResultDto(Utilisateur utilisateur, TypeUtilisateur typeUtilisateur) {
-		UsersMappers.mapUtilisateurSearchResultDto(utilisateur, typeUtilisateur, this);
-	}
 
 	/**
 	 * Getter for email.
