@@ -35,11 +35,9 @@ jobs:
           pat: ${{secrets.VS_MARKETPLACE_API_KEY}}
           registryUrl: https://marketplace.visualstudio.com
           packagePath: TopModel.VSCode
-          preRelease: true
 
       - name: Publish to OpenVSX Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{secrets.OPEN_VSX_API_KEY}}
           packagePath: TopModel.VSCode
-          preRelease: true

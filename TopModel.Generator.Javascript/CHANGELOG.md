@@ -1,4 +1,4 @@
-## 4.0.0 (rc)
+## 4.0.0
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs Javascript sont détaillés dans le changelog général de la version.
 

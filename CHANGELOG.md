@@ -8,13 +8,11 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
-## 4.0.0 (rc.0)
+## 4.0.0
 
 [#535](https://github.com/klee-contrib/topmodel/pull/535) - TopModel 4.0
 
 _Remarque : Etant une version majeure, l'ensemble des modules de générateurs doivent être aussi mis à jour. Leurs versions ont toutes été montées à 4.0 également, pour suivre la version majeure de TopModel._
-
-_Remarque 2 : Cette version est initialialement publiée comme une "release candidate", une version préliminaire, dans le but premier de donner une marge aux projets pour faire la mise à jour avant la version finale, qui arrivera ensuite par les canaux habituels de mises à jour automatiques. Cela n'indique pas que cette version est moins stable que d'habitude 😁_
 
 Le détail du contenu de la version et de ce qui change est décrit dans la PR. En quelques mots, il s'agit d'une version d'uniformisation, dont le but est de pouvoir unifier les pratiques propres aux générateurs C# et Java dans TopModel lui-même, afin que ça soit proprement supporté et disponible dans les autres générateurs.
 

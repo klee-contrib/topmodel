@@ -2,19 +2,19 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.0.0-rc.4
+version: 4.0.0
 modules:
   jpa:
-    version: 4.0.0-rc.4
+    version: 4.0.0
     hash: c9484996db0054c4723abb21515b1f84
   csharp:
-    version: 4.0.0-rc.2
+    version: 4.0.0
     hash: dda4c1ead6404d5f70c11a62a2909078
   sql:
-    version: 4.0.0-rc.0
+    version: 4.0.0
     hash: 6dd3b416f7747ccaaf05a34dd127a95b
   javascript:
-    version: 4.0.0-rc.0
+    version: 4.0.0
     hash: 0ae94ff05942e33896fa14f2c68b33d5
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
