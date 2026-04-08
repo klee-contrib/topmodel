@@ -846,6 +846,11 @@ public class ModelStore(
                 genConfig.Files[fileName] = modelFile;
                 genConfig.OnFileChanged();
             }
+            else if (genConfig.Files.ContainsKey(fileName))
+            {
+                genConfig.OnFileChanged();
+                genConfig.Files.Remove(fileName);
+            }
         }
     }
 }
