@@ -19,7 +19,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
     protected override bool FilterTag(string tag)
     {
-        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
+        return Config.GetApiGenerationMode(tag) == ApiGenerationMode.Server;
     }
 
     protected override string GetFilePath(ModelFile file, string tag)

@@ -41,12 +41,12 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 
         if (config.ApiGeneration != null)
         {
-            if (config.ApiGeneration != ApiGeneration.Client)
+            if (config.ApiGeneration != nameof(ApiGenerationMode.Client))
             {
                 services.AddGenerator<CSharpApiServerGenerator, CsharpConfig>(config, number);
             }
 
-            if (config.ApiGeneration != ApiGeneration.Server)
+            if (config.ApiGeneration != nameof(ApiGenerationMode.Server))
             {
                 services.AddGenerator<CSharpApiClientGenerator, CsharpConfig>(config, number);
             }

@@ -61,12 +61,12 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
 
         if (config.ApiGeneration != null)
         {
-            if (config.ApiGeneration != ApiGeneration.Client)
+            if (config.ApiGeneration != nameof(ApiGenerationMode.Client))
             {
                 services.AddGenerator<SpringServerApiGenerator, JpaConfig>(config, number);
             }
 
-            if (config.ApiGeneration != ApiGeneration.Server)
+            if (config.ApiGeneration != nameof(ApiGenerationMode.Server))
             {
                 switch (config.ClientApiGeneration)
                 {

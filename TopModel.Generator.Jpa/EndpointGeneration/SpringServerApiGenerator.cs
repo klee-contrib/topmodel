@@ -24,7 +24,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     protected override bool FilterTag(string tag)
     {
-        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
+        return Config.GetApiGenerationMode(tag) == ApiGenerationMode.Server;
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file, string tag)

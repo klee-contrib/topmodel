@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -55,7 +54,6 @@ public interface MenuApi {
 	 *
 	 * @return Menu créé avec ses plats.
 	 */
-	@PreAuthorize("isAuthenticated()")
 	@PostMapping(path = "api/restaurants/menus")
 	@Operation(description = "Crée un menu avec ses plats")
 	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @RequestBody @Valid MenuWrite menu);
@@ -118,7 +116,6 @@ public interface MenuApi {
 	 *
 	 * @return Promotion mise à jour.
 	 */
-	@PreAuthorize("isAuthenticated()")
 	@PatchMapping(path = "api/restaurants/plats/{plaId}/promotion")
 	@Operation(description = "Met à jour partiellement une promotion")
 	PromotionRead patchPromotion(@Parameter(description = "Identifiant du plat") @PathVariable("plaId") Integer plaId, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Données partielles de la promotion") @RequestBody @Valid PromotionWrite promotion);

@@ -49,6 +49,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         UniqueValueGenerationMode.EnumOrConst;
 
     /// <summary>
+    /// Mode de génération de l'API ("Client" ou "Server").
+    /// </summary>
+    public virtual string? ApiGeneration { get; set; }
+
+    /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
     /// </summary>
     protected virtual bool UseValueNameForValues => true;
@@ -228,6 +233,26 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Récupère le mode de génération des endpoints pour un tag donné.
+    /// </summary>
+    /// <param name="tag">Le tag.</param>
+    /// <returns>Le mode de génération.</returns>
+    public ApiGenerationMode GetApiGenerationMode(string tag)
+    {
+        if (ApiGeneration == null)
+        {
+            return ApiGenerationMode.None;
+        }
+
+        return ResolveVariables(ApiGeneration, tag) switch
+        {
+            nameof(ApiGenerationMode.Client) => ApiGenerationMode.Client,
+            nameof(ApiGenerationMode.Server) => ApiGenerationMode.Server,
+            _ => ApiGenerationMode.None,
+        };
     }
 
     public virtual string GetBestClassTag(Class classe, string tag)
@@ -561,6 +586,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     {
                         Target.Class => container is Class,
                         Target.Endpoint => container is Endpoint,
+                        Target.ClientEndpoint => container is Endpoint
+                            && GetApiGenerationMode(tag) == ApiGenerationMode.Client,
+                        Target.ServerEndpoint => container is Endpoint
+                            && GetApiGenerationMode(tag) == ApiGenerationMode.Server,
                         Target.Property => container is IProperty,
                         Target.AssociationProperty => container is IProperty { Association: not null },
                         Target.CompositionProperty => container is IProperty { Composition: not null },

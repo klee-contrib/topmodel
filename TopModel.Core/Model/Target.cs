@@ -17,6 +17,18 @@ public enum Target
     Endpoint,
 
     /// <summary>
+    /// Endpoint.
+    /// </summary>
+    [EnumMember(Value = "client-endpoint")]
+    ClientEndpoint,
+
+    /// <summary>
+    /// Endpoint.
+    /// </summary>
+    [EnumMember(Value = "server-endpoint")]
+    ServerEndpoint,
+
+    /// <summary>
     /// Propriété.
     /// </summary>
     [EnumMember(Value = "property")]

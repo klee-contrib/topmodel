@@ -44,11 +44,6 @@ public class JpaConfig : GeneratorConfigBase
     public virtual bool OpenApiAnnotations { get; set; } = false;
 
     /// <summary>
-    /// Mode de génération de l'API ("Client" ou "Server").
-    /// </summary>
-    public virtual string? ApiGeneration { get; set; }
-
-    /// <summary>
     /// Mode de génération de l'API Client (RestClient, RestTemplate ou FeignClient).
     /// </summary>
     public virtual string? ClientApiGeneration { get; set; } = ClientApiMode.RestClient;

@@ -44,7 +44,12 @@ public class AnnotationResolver(
                     varName.ReferenceName.TryGetClassVariable(config, annotation.TemplateParameters, out variable);
                 }
 
-                if (annotation.Target.Count == 0 || annotation.Target.Contains(Target.Endpoint))
+                if (
+                    annotation.Target.Count == 0
+                    || annotation.Target.Contains(Target.Endpoint)
+                    || annotation.Target.Contains(Target.ClientEndpoint)
+                    || annotation.Target.Contains(Target.ServerEndpoint)
+                )
                 {
                     varName.ReferenceName.TryGetEndpointVariable(config, annotation.TemplateParameters, out variable);
                 }
@@ -168,7 +173,12 @@ public class AnnotationResolver(
                             && container is not Domain
                             && container is not AliasProperty
                         || container is Class && annotation.Target.Contains(Target.Class)
-                        || container is Endpoint && annotation.Target.Contains(Target.Endpoint)
+                        || container is Endpoint
+                            && (
+                                annotation.Target.Contains(Target.Endpoint)
+                                || annotation.Target.Contains(Target.ClientEndpoint)
+                                || annotation.Target.Contains(Target.ServerEndpoint)
+                            )
                         || container is AssociationProperty or ReverseAssociationDefinition
                             && (
                                 annotation.Target.Contains(Target.Property)
@@ -292,7 +302,11 @@ public class AnnotationResolver(
                         annotation.Target.Any()
                         && (
                             container is Class && !annotation.Target.Contains(Target.Class) && !isProperty
-                            || container is Endpoint && !annotation.Target.Contains(Target.Endpoint) && !isProperty
+                            || container is Endpoint
+                                && !annotation.Target.Contains(Target.Endpoint)
+                                && !annotation.Target.Contains(Target.ClientEndpoint)
+                                && !annotation.Target.Contains(Target.ServerEndpoint)
+                                && !isProperty
                             || container is Decorator { Target: Target dt }
                                 && !annotation.Target.Contains(dt)
                                 && !isProperty

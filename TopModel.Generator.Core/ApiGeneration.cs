@@ -1,8 +1,11 @@
-﻿namespace TopModel.Generator.Core;
+﻿#pragma warning disable S1133
+
+namespace TopModel.Generator.Core;
 
 /// <summary>
-/// Version de Kinetix.
+/// Mode de génération de des endpoints.
 /// </summary>
+[Obsolete("Utiliser Config.GetApiGenerationMode(tag)")]
 public static class ApiGeneration
 {
     /// <summary>

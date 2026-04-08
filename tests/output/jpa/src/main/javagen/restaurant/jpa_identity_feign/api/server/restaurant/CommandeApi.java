@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -82,7 +81,6 @@ public interface CommandeApi {
 	 *
 	 * @return Fichier CSV des commandes.
 	 */
-	@PreAuthorize("isAuthenticated()")
 	@Operation(description = "Exporte les commandes au format CSV")
 	@GetMapping(path = "api/restaurants/commandes/export", produces = "application/octet-stream")
 	byte[] exportCommandes(@Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateDebut") LocalDateTime dateDebut, @Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateFin") LocalDateTime dateFin);

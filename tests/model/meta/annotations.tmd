@@ -44,7 +44,7 @@ annotation:
   name: Authenticated
   description: Marque un endpoint comme nécessitant une authentification
   target:
-    - endpoint
+    - server-endpoint
 
   java:
     - text: '@PreAuthorize("isAuthenticated()")'
@@ -61,7 +61,7 @@ annotation:
   name: RoleRequired
   description: Marque un endpoint comme nécessitant un rôle spécifique
   target:
-    - endpoint
+    - server-endpoint
   parameters:
     - name: role
       comment: Nom du rôle requis

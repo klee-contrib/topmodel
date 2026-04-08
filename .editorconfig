@@ -57,7 +57,7 @@ dotnet_sort_system_directives_first = true
 
 # Diagnostics
 
-dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0005.severity = none
 dotnet_diagnostic.IDE0028.severity = warning
 dotnet_diagnostic.IDE0090.severity = warning
 dotnet_diagnostic.IDE0251.severity = none

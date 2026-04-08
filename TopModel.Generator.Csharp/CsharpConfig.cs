@@ -60,11 +60,6 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string ApiFilePath { get; set; } = "{module:path}";
 
     /// <summary>
-    /// Mode de génération de l'API ("Client" ou "Server").
-    /// </summary>
-    public virtual string? ApiGeneration { get; set; }
-
-    /// <summary>
     /// Génère des contrôleurs d'API synchrones.
     /// </summary>
     public virtual bool NoAsyncControllers { get; set; }

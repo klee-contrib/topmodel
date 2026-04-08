@@ -20,7 +20,7 @@ public class SpringRestTemplateApiGenerator(
 
     protected override bool FilterTag(string tag)
     {
-        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
+        return Config.GetApiGenerationMode(tag) == ApiGenerationMode.Client;
     }
 
     protected string GetClassName(string fileName, string tag)

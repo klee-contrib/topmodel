@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -55,7 +54,6 @@ public interface PersonneApi {
 	 *
 	 * @return Employé créé.
 	 */
-	@PreAuthorize("isAuthenticated()")
 	@PostMapping(path = "api/restaurants/employes")
 	@Operation(description = "Ajoute un employé (nécessite le rôle ADMIN)")
 	EmployeRead addEmploye(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Employé à créer") @RequestBody @Valid EmployeWrite employe);

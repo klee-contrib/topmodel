@@ -722,6 +722,8 @@
                 "enum": [
                   "class",
                   "endpoint",
+                  "client-endpoint",
+                  "server-endpoint",
                   "property",
                   "regular-property",
                   "association-property",
