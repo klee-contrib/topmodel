@@ -301,14 +301,13 @@ public class AnnotationResolver(
                     if (
                         annotation.Target.Any()
                         && (
-                            container is Class && !annotation.Target.Contains(Target.Class) && !isProperty
-                            || container is Endpoint
+                            container is Class or Decorator { Target: Target.Class }
+                                && !annotation.Target.Contains(Target.Class)
+                                && !isProperty
+                            || container is Endpoint or Decorator { Target: Target.Endpoint }
                                 && !annotation.Target.Contains(Target.Endpoint)
                                 && !annotation.Target.Contains(Target.ClientEndpoint)
                                 && !annotation.Target.Contains(Target.ServerEndpoint)
-                                && !isProperty
-                            || container is Decorator { Target: Target dt }
-                                && !annotation.Target.Contains(dt)
                                 && !isProperty
                             || (container is Domain or IProperty or ReverseAssociationDefinition || isProperty)
                                 && !annotation.Target.Contains(Target.Property)

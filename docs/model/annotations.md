@@ -177,12 +177,14 @@ Via la propriété `target` (qui est une liste) sur l'annotation, il est possibl
 
 - `class`
 - `endpoint`
+- `client-endpoint`
+- `server-endpoint`
 - `property`
 - `association-property`
 - `composition-property`
 - `regular-property`
 
-L'objet cible devra être de l'un des types listés pour que l'annotation puisse être posée (les différents types de propriétés sont en revanche posables sur toutes les propriétés, mais la génération ne sera quand même faite que pour le bon type), avec `class` et `endpoint` possibles pour un décorateur et les `properties` pour un domaine.
+L'objet cible devra être de l'un des types listés pour que l'annotation puisse être posée (les différents types de propriétés sont en revanche posables sur toutes les propriétés, mais la génération ne sera quand même faite que pour le bon type), avec `class` et les `endpoints` possibles pour un décorateur et les `properties` pour un domaine.
 
 ### `when`
 
