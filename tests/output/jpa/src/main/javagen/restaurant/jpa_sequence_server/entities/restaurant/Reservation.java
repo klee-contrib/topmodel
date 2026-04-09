@@ -24,7 +24,12 @@ import jakarta.persistence.UniqueConstraint;
  */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "RESERVATION", uniqueConstraints = {@UniqueConstraint(columnNames = {"TAB_ID", "REV_DATE_RESERVATION"})})
+@Table(
+	name = "RESERVATION",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"TAB_ID", "REV_DATE_RESERVATION"})
+	}
+)
 public class Reservation {
 
 	/**

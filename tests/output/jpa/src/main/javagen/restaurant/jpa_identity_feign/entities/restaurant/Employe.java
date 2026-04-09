@@ -11,6 +11,7 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -21,7 +22,15 @@ import jakarta.persistence.UniqueConstraint;
  */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "EMPLOYE", uniqueConstraints = {@UniqueConstraint(columnNames = {"EMP_MATRICULE"})})
+@Table(
+	name = "EMPLOYE",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"EMP_MATRICULE"})
+	},
+	indexes = {
+		@Index(columnList = "EMP_TELEPHONE", name = "IDX_EMP_EMP_TELEPHONE")
+	}
+)
 public class Employe extends Personne {
 
 	/**

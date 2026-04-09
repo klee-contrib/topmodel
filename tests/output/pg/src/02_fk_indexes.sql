@@ -448,3 +448,10 @@ create index IDX_TAB_RES_ID_FK on TABLE (
 alter table TABLE
 	add constraint FK_TABLE_RES_ID foreign key (RES_ID)
 		references RESTAURANT (RES_ID);
+
+/**
+  * Création de l'index IDX_EMP_EMP_TELEPHONE sur EMPLOYE.
+ **/
+create index IDX_EMP_EMP_TELEPHONE on EMPLOYE (
+	EMP_TELEPHONE ASC
+);

@@ -65,8 +65,10 @@ class:
       withReverse: false
       comment: Restaurant où travaille l'employé
 
-  unique:
-    - [Matricule]
+  indexes:
+    - [Telephone]
+    - properties: [Matricule]
+      unique: true
 ---
 class:
   name: Client

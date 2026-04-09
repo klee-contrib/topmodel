@@ -39,6 +39,14 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
             GenerateConstraintForeignKey(fkProperty, writer);
         }
 
+        foreach (var classe in classes.Where(c => c.Indexes.Count > 0).OrderBy(c => c.SqlName))
+        {
+            foreach (var index in classe.Indexes.Where(i => !i.Unique))
+            {
+                GenerateCustomIndex(classe, index, writer);
+            }
+        }
+
         if (Config.TranslateReferences == true && Config.AvailableClasses.Any(c => c.Translation))
         {
             var resourceProperties = classes
@@ -91,6 +99,36 @@ public class SqlIndexFkGenerator(ILogger<SqlIndexFkGenerator> logger, IFileWrite
     private void GenerateConstraintForeignKey(IProperty property, IFileWriter writer)
     {
         GenerateConstraintForeignKey(property, property.AssociationProperty!, property.Association!, writer);
+    }
+
+    /// <summary>
+    /// Génère un index personnalisé défini dans le modèle.
+    /// </summary>
+    private void GenerateCustomIndex(Class classe, IndexDefinition index, IFileWriter writer)
+    {
+        var tableName = classe.SqlName;
+        var trigram = classe.Trigram ?? classe.SqlName;
+        var columnNames = index.Properties.Select(c => c.SqlName).ToList();
+        var columnList = string.Join('_', columnNames);
+        var indexName = (index.Unique ? "UK_" : "IDX_") + trigram + '_' + columnList;
+
+        writer.WriteLine();
+        writer.WriteLine("/**");
+        writer.WriteLine($"  * Création de l'index {indexName} sur {tableName}.");
+        writer.WriteLine(" **/");
+
+        if (index.Unique)
+        {
+            writer.WriteLine(
+                $"alter table {tableName} add constraint {indexName} unique ({string.Join(", ", columnNames)}){Config.BatchSeparator}"
+            );
+        }
+        else
+        {
+            writer.WriteLine($"create index {indexName} on {tableName} (");
+            writer.WriteLine($"\t{string.Join(", ", columnNames.Select(c => c + " ASC"))}");
+            writer.WriteLine($"){GetIndexTablespaceDeclaration()}{Config.BatchSeparator}");
+        }
     }
 
     /// <summary>

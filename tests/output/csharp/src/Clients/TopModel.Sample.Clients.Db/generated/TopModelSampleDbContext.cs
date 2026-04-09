@@ -150,6 +150,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();
+        modelBuilder.Entity<Employe>().HasIndex(p => p.Telephone);
         modelBuilder.Entity<Employe>().HasIndex(p => p.Matricule).IsUnique();
         modelBuilder.Entity<LigneCommande>().HasIndex("CommandeId", "PlatId").IsUnique();
         modelBuilder.Entity<MenuPlat>().HasIndex("MenuId", "Ordre").IsUnique();

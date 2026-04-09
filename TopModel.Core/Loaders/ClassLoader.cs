@@ -171,6 +171,50 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                         });
                     });
                     break;
+                case "indexes":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is SequenceStart)
+                        {
+                            var index = new IndexDefinition { Unique = false };
+                            parser.ConsumeSequence(() =>
+                            {
+                                index.PropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
+                            });
+                            classe.Indexes.Add(index);
+                        }
+                        else
+                        {
+                            bool indexUnique = false;
+                            var propertyRefs = new List<Reference>();
+
+                            parser.ConsumeMapping(prop =>
+                            {
+                                switch (prop.Value)
+                                {
+                                    case "unique":
+                                        indexUnique = parser.Consume<Scalar>().Value == "true";
+                                        break;
+                                    case "properties":
+                                        parser.ConsumeSequence(() =>
+                                        {
+                                            propertyRefs.Add(new Reference(parser.Consume<Scalar>()));
+                                        });
+                                        break;
+                                    default:
+                                        throw new ModelException(classe, $"Propriété ${prop} inconnue pour un index");
+                                }
+                            });
+
+                            var idx = new IndexDefinition { Unique = indexUnique };
+                            foreach (var r in propertyRefs)
+                            {
+                                idx.PropertyReferences.Add(r);
+                            }
+                            classe.Indexes.Add(idx);
+                        }
+                    });
+                    break;
                 case "values":
                     parser.ConsumeMapping(prop =>
                     {
