@@ -163,12 +163,11 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "unique":
                     parser.ConsumeSequence(() =>
                     {
-                        var uniqueKeyRef = new List<Reference>();
-                        classe.UniqueKeyReferences.Add(uniqueKeyRef);
-
+                        var index = new IndexDefinition { Unique = true };
+                        classe.Indexes.Add(index);
                         parser.ConsumeSequence(() =>
                         {
-                            uniqueKeyRef.Add(new Reference(parser.Consume<Scalar>()));
+                            index.PropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
                         });
                     });
                     break;

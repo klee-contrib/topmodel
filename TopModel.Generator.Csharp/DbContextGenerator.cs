@@ -317,29 +317,37 @@ public class DbContextGenerator(
 
         if (Config.UseEFMigrations)
         {
-            var hasUk = false;
+            var hasIndex = false;
             foreach (
-                var uk in classes
+                var idx in classes
                     .Distinct()
                     .OrderBy(c => c.NamePascal)
                     .SelectMany(c =>
-                        c.UniqueKeys.Where(uk =>
-                            uk.Count > 1
-                            || !c.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
+                        c.Indexes.Where(idx =>
+                            idx.Properties.Count > 1
+                            || !(
+                                idx.Unique
+                                && c.Properties.Any(p =>
+                                    p.Association != null && p.Unique && p == idx.Properties.Single()
+                                )
+                            )
                         )
                     )
             )
             {
-                hasUk = true;
+                hasIndex = true;
                 var expr =
-                    uk.Any(p => p.UseClassForAssociation)
-                        ? string.Join(", ", uk.Select(p => $"\"{p.PropertyNamePascal}\""))
-                    : uk.Count == 1 ? $"p => p.{uk.Single().NamePascal}"
-                    : $"p => new {{ {string.Join(", ", uk.Select(p => $"p.{p.NamePascal}"))} }}";
-                w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(uk[0].Class, tag)}>().HasIndex({expr}).IsUnique();");
+                    idx.Properties.Any(p => p.UseClassForAssociation)
+                        ? string.Join(", ", idx.Properties.Select(p => $"\"{p.PropertyNamePascal}\""))
+                    : idx.Properties.Count == 1 ? $"p => p.{idx.Properties.Single().NamePascal}"
+                    : $"p => new {{ {string.Join(", ", idx.Properties.Select(p => $"p.{p.NamePascal}"))} }}";
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.Entity<{GetClassName(idx.Properties[0].Class, tag)}>().HasIndex({expr}){(idx.Unique ? ".IsUnique()" : string.Empty)};"
+                );
             }
 
-            if (hasUk)
+            if (hasIndex)
             {
                 w.WriteLine();
             }

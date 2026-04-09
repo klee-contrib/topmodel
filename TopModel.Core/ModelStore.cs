@@ -773,7 +773,7 @@ public class ModelStore(
             yield return error;
         }
 
-        foreach (var error in classResolver.ResolveUniqueKeys())
+        foreach (var error in classResolver.ResolveIndexes())
         {
             yield return error;
         }

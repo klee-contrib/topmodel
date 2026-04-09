@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿#pragma warning disable S1133
+
+using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
@@ -76,7 +78,11 @@ public class Class : IPropertyContainer
 
     public IList<ClassValue> Values { get; } = [];
 
-    public IList<IList<IProperty>> UniqueKeys { get; } = [];
+    public IList<IndexDefinition> Indexes { get; } = [];
+
+    [Obsolete("Utiliser `Indexes` à la place.")]
+    public IList<IList<IProperty>> UniqueKeys =>
+        Indexes.Where(idx => idx.Unique).Select(idx => idx.Properties).ToList();
 
     public IList<FromMapper> FromMappers { get; } = [];
 
@@ -116,8 +122,6 @@ public class Class : IPropertyContainer
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
-
-    public IList<IList<Reference>> UniqueKeyReferences { get; } = [];
 
     public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; } =
         new Dictionary<Reference, IDictionary<Reference, string>>();

@@ -84,11 +84,11 @@ internal class ClassResolver(
         foreach (
             var classe in modelFiles
                 .SelectMany(mf => mf.Classes)
-                .Where(c => c.Values.Count > 0 && (c.IsPersistent || c.UniqueKeys.Count > 0))
+                .Where(c => c.Values.Count > 0 && (c.IsPersistent || c.Indexes.Any(idx => idx.Unique)))
         )
         {
             var uks = new List<IEnumerable<IProperty>>();
-            uks.AddRange(classe.UniqueKeys);
+            uks.AddRange(classe.Indexes.Where(idx => idx.Unique).Select(idx => idx.Properties));
             if (classe.IsPersistent)
             {
                 uks.Add(classe.PrimaryKey.Any() ? classe.PrimaryKey : (classe.Extends?.PrimaryKey ?? []));
@@ -246,6 +246,41 @@ internal class ClassResolver(
             }
 
             classe.Extends = extends;
+        }
+    }
+
+    /// <summary>
+    /// Résout les clés d'unicité.
+    /// </summary>
+    /// <returns>Erreurs.</returns>
+    public IEnumerable<ModelError> ResolveIndexes()
+    {
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.Indexes.Count > 0))
+        {
+            foreach (var index in classe.Indexes)
+            {
+                index.Properties.Clear();
+
+                foreach (var propRef in index.PropertyReferences)
+                {
+                    var property = classe.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName);
+
+                    if (property == null)
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD0004,
+                            [propRef.ReferenceName, classe.Name],
+                            classe,
+                            propRef
+                        );
+                    }
+                    else
+                    {
+                        index.Properties.Add(property);
+                    }
+                }
+            }
         }
     }
 
@@ -434,45 +469,6 @@ internal class ClassResolver(
                         translationStore.Translations[defaultLang][r.ResourceKey] = labelProperty;
                     }
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Résout les clés d'unicité.
-    /// </summary>
-    /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveUniqueKeys()
-    {
-        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.UniqueKeyReferences.Count > 0))
-        {
-            classe.UniqueKeys.Clear();
-
-            foreach (var ukRef in classe.UniqueKeyReferences)
-            {
-                var uk = new List<IProperty>();
-
-                foreach (var ukPropRef in ukRef)
-                {
-                    var property = classe.Properties.FirstOrDefault(p => p.Name == ukPropRef.ReferenceName);
-
-                    if (property == null)
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0004,
-                            [ukPropRef.ReferenceName, classe.Name],
-                            classe,
-                            ukPropRef
-                        );
-                    }
-                    else
-                    {
-                        uk.Add(property);
-                    }
-                }
-
-                classe.UniqueKeys.Add(uk);
             }
         }
     }

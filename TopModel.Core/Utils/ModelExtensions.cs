@@ -434,9 +434,9 @@ public static class ModelExtensions
 
         if (property.Class != null)
         {
-            foreach (var uk in property.Class.UniqueKeyReferences)
+            foreach (var index in property.Class.Indexes)
             {
-                foreach (var prop in uk)
+                foreach (var prop in index.PropertyReferences)
                 {
                     if (prop.ReferenceName == property.Name)
                     {

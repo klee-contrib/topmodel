@@ -205,7 +205,8 @@ public class ModelFile
                     .SelectMany(p =>
                         p.DomainReference?.ParameterReferences.Keys.Select(
                             (pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)
-                        ) ?? []
+                        )
+                        ?? []
                     )
             )
             .Concat(
@@ -228,7 +229,8 @@ public class ModelFile
                     .SelectMany(p =>
                         p.DomainReference?.ParameterReferences.Keys.Select(
                             (pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)
-                        ) ?? []
+                        )
+                        ?? []
                     )
             )
             .Concat(
@@ -257,7 +259,8 @@ public class ModelFile
                                     p?.Name == er?.ReferenceName
                                 ) as object
                             )
-                        ) ?? new List<(Reference, object)>()
+                        )
+                        ?? new List<(Reference, object)>()
                     )
             )
             .Concat(
@@ -266,7 +269,8 @@ public class ModelFile
                     .SelectMany(p =>
                         p.DomainReference?.ParameterReferences.Keys.Select(
                             (pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)
-                        ) ?? []
+                        )
+                        ?? []
                     )
             )
             .Concat(
@@ -282,7 +286,7 @@ public class ModelFile
             )
             .Concat(
                 Classes.SelectMany(c =>
-                    c.UniqueKeyReferences.SelectMany(uk => uk)
+                    c.Indexes.SelectMany(uk => uk.PropertyReferences)
                         .Select(propRef =>
                             (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName))
                         )

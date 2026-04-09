@@ -82,7 +82,9 @@ public static class ModelExtensions
                 && !prop.AssociationMultiple
                 && (
                     prop.Class.PrimaryKey.Count() == 1 && prop.Class.PrimaryKey.First() == prop
-                    || prop.Class.UniqueKeys.Any(uk => uk.Count == 1 && uk.Single() == prop)
+                    || prop.Class.Indexes.Any(idx =>
+                        idx.Unique && idx.Properties.Count == 1 && idx.Properties.Single() == prop
+                    )
                 );
 #pragma warning restore S2190
 
@@ -184,8 +186,8 @@ public static class ModelExtensions
                     && (
                         sourceProp == sourceClass.ReferenceKey
                         || sourceClass
-                            .UniqueKeys.Where(uk => uk.Count == 1)
-                            .Select(uk => uk.Single())
+                            .Indexes.Where(idx => idx.Unique && idx.Properties.Count == 1)
+                            .Select(idx => idx.Properties.Single())
                             .Contains(sourceProp)
                     )
                 )
