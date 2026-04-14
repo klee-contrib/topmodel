@@ -314,7 +314,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <returns>Code généré.</returns>
     protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
     {
-        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
         {
             if (Config.DotnetVersion >= 8)
             {

@@ -17,13 +17,34 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadCategoriePlats" />
     public ICollection<CategoriePlat> LoadCategoriePlats()
     {
-        return [CategoriePlat.Entree, CategoriePlat.Plat, CategoriePlat.Dessert, CategoriePlat.Boisson];
+        return (
+            from row in dbContext.CategoriePlats
+            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            orderby row.Ordre
+            select new CategoriePlat
+            {
+                Code = row.Code,
+                Libelle = tra.Value,
+                Ordre = row.Ordre,
+                PrixMoyen = row.PrixMoyen
+            }
+        ).ToList();
     }
 
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadDepartements" />
     public ICollection<Departement> LoadDepartements()
     {
-        return [Departement.Paris, Departement.HautsDeSeine, Departement.SeineSaintDenis, Departement.SeineEtMarne];
+        return (
+            from row in dbContext.Departements
+            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            orderby row.Libelle
+            select new Departement
+            {
+                Code = row.Code,
+                Libelle = tra.Value,
+                RegionCode = row.RegionCode
+            }
+        ).ToList();
     }
 
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadRegions" />
