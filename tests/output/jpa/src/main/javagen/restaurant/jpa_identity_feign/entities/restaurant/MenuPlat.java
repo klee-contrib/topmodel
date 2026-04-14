@@ -23,7 +23,12 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @IdClass(MenuPlat.MenuPlatId.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "MENU_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"MEN_ID", "MPL_ORDRE"})})
+@Table(
+	name = "MENU_PLAT",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"MEN_ID", "MPL_ORDRE"})
+	}
+)
 public class MenuPlat {
 
 	/**

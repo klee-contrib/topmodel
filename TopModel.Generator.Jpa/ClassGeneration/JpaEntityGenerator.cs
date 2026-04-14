@@ -44,16 +44,33 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         var uks = classe.UniqueKeys.Where(uk =>
             uk.Count > 1 || !classe.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
         );
-        if (uks.Any())
+        var trigram = classe.Trigram ?? classe.SqlName;
+
+        var ukAnnotations = uks
+            .Select(uk =>
+                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint")
+                    .AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
+            )
+            .ToList();
+
+        if (ukAnnotations.Count > 0)
+        {
+            tableAnnotation.AddAttribute("uniqueConstraints", ukAnnotations);
+        }
+
+        var nonUniqueIndexes = classe.Indexes.Where(i => !i.Unique).ToList();
+        if (nonUniqueIndexes.Count > 0)
         {
             tableAnnotation.AddAttribute(
-                "uniqueConstraints",
-                uks.Select(uk =>
-                    new JavaAnnotation(
-                        "UniqueConstraint",
-                        imports: "jakarta.persistence.UniqueConstraint"
-                    ).AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
-                )
+                "indexes",
+                nonUniqueIndexes.Select(idx =>
+                {
+                    var columnList = string.Join(", ", idx.Properties.Select(c => c.SqlName));
+                    var name = "IDX_" + trigram + '_' + string.Join('_', idx.Properties.Select(c => c.SqlName));
+                    return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
+                        .AddAttribute("name", $@"""{name}""")
+                        .AddAttribute("columnList", $@"""{columnList}""");
+                })
             );
         }
 

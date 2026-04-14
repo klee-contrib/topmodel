@@ -29,7 +29,12 @@ import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "CATEGORIE_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"CAT_ORDRE"})})
+@Table(
+	name = "CATEGORIE_PLAT",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"CAT_ORDRE"})
+	}
+)
 public class CategoriePlat {
 
 	@Transient

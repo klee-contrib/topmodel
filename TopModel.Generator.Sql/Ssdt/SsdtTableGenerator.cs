@@ -288,7 +288,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             definitions.Add(sb.ToString());
         }
 
-        // Unique constraints
+        // Unique constraints (clés unique déclarées via "unique:" et index uniques via "indexes:")
         definitions.AddRange(WriteUniqueConstraints(table));
 
         // Ecriture de la liste concaténée.
@@ -349,12 +349,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
     private List<string> WriteUniqueConstraints(Class classe)
     {
-        return classe
+        var constraints = classe
             .UniqueKeys.Select(uk =>
                 Config.TargetDBMS == TargetDBMS.Sqlserver
                     ? $"constraint [UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})"
                     : $"constraint UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))} unique ({string.Join(", ", uk.Select(p => $"{p.SqlName}"))})"
             )
             .ToList();
+
+        return constraints;
     }
 }

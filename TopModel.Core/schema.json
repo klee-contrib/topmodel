@@ -1,4 +1,4 @@
-{
+﻿{
   "$id": "topmodel.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
@@ -1211,6 +1211,41 @@
                   "description": "Nom de la propriété.",
                   "type": "string"
                 }
+              }
+            },
+            "indexes": {
+              "type": "array",
+              "description": "Liste des index à créer sur la table. Génère des CREATE INDEX en SQL et des annotations @Index dans @Table en JPA. Ne peut pas être défini en même temps que 'unique'.",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "description": "Forme raccourcie : liste directe des propriétés pour un index non-unique.",
+                    "items": {
+                      "type": "string",
+                      "description": "Nom de la propriété."
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["properties"],
+                    "properties": {
+                      "unique": {
+                        "type": "boolean",
+                        "description": "Si true, génère une contrainte d'unicité. Les clés d'unicité ainsi définies sont également exposées comme si elles avaient été définies dans 'unique'."
+                      },
+                      "properties": {
+                        "type": "array",
+                        "description": "Liste des propriétés de la classe incluses dans l'index.",
+                        "items": {
+                          "type": "string",
+                          "description": "Nom de la propriété."
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             },
             "values": {

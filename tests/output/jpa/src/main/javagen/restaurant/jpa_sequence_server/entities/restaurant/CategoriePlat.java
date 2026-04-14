@@ -30,7 +30,12 @@ import restaurant.jpa_sequence_server.enums.restaurant.CategoriePlatOrdre;
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(name = "CATEGORIE_PLAT", uniqueConstraints = {@UniqueConstraint(columnNames = {"CAT_ORDRE"})})
+@Table(
+	name = "CATEGORIE_PLAT",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"CAT_ORDRE"})
+	}
+)
 public class CategoriePlat {
 
 	@Transient
