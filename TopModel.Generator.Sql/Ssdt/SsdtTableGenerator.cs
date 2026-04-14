@@ -48,7 +48,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         WriteCreateTableClosing(writer, classe, useCompression);
 
         // Indexes sur les clés étrangères.
-        GenerateIndexForeignKey(writer, classe.SqlName, properties);
+        WriteIndexes(writer, classe, properties);
 
         // Définition
         if (Config.Ssdt!.GenerateComments)
@@ -58,65 +58,11 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     }
 
     /// <summary>
-    /// Ecrit l'entête du fichier.
-    /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="tableName">Nom de la table.</param>
-    private static void WriteHeader(IFileWriter writer, string tableName)
-    {
-        writer.WriteSqlFileHeader(description: $"Création de la table {tableName}.");
-        writer.WriteLine();
-    }
-
-    /// <summary>
-    /// Génère les indexes portant sur les FK.
-    /// </summary>
-    /// <param name="writer">Flux d'écriture.</param>
-    /// <param name="tableName">Nom de la table.</param>
-    /// <param name="properties">Champs.</param>
-    private void GenerateIndexForeignKey(IFileWriter writer, string tableName, IEnumerable<IProperty> properties)
-    {
-        foreach (
-            var property in properties.Where(p =>
-                p.Association != null && (p.Class.PrimaryKey.Count() != 1 || p.Class.PrimaryKey.Single() != p)
-            )
-        )
-        {
-            var propertyName = property.SqlName;
-            var indexName = "IDX_" + tableName + "_" + propertyName + "_FK";
-
-            writer.WriteLine("/* Index on foreign key column for " + tableName + "." + propertyName + " */");
-
-            if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-            {
-                writer.WriteLine("create nonclustered index [" + indexName + "]");
-                writer.Write("\ton [dbo].[" + tableName + "] (");
-                var propertyConcat = "[" + propertyName + "] ASC";
-
-                writer.Write(propertyConcat);
-                writer.Write(")");
-
-                writer.WriteLine();
-                writer.WriteLine("go");
-            }
-            else
-            {
-                writer.WriteLine($"create index {indexName}");
-                writer.Write($"\ton {tableName} (");
-                writer.Write(propertyName);
-                writer.WriteLine(" asc);");
-            }
-
-            writer.WriteLine();
-        }
-    }
-
-    /// <summary>
     /// Ecrit le SQL pour une colonne.
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IProperty property)
+    protected virtual void WriteColumn(StringBuilder sb, IProperty property)
     {
         var persistentType =
             property is { Composition: null } ? Config.GetType(property)
@@ -172,42 +118,9 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="writer">Writer.</param>
     /// <param name="classe">Classe de la table.</param>
-    private void WriteComments(IFileWriter writer, Class classe)
+    protected virtual void WriteComments(IFileWriter writer, Class classe)
     {
         writer.WriteComments(classe, Config);
-    }
-
-    /// <summary>
-    /// Génère la contrainte de clef étrangère.
-    /// </summary>
-    /// <param name="sb">Flux d'écriture.</param>
-    /// <param name="property">Propriété portant la clef étrangère.</param>
-    private void WriteConstraintForeignKey(StringBuilder sb, IProperty property)
-    {
-        var tableName = property.Class.SqlName;
-
-        var propertyName = property.SqlName;
-        var referenceClass = property.Association!;
-
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            var constraintName = "FK_" + tableName + "_" + referenceClass.SqlName + "_" + propertyName;
-            var propertyConcat = "[" + propertyName + "]";
-            sb.Append("constraint [")
-                .Append(constraintName)
-                .Append("] foreign key (")
-                .Append(propertyConcat)
-                .Append(") ");
-            sb.Append("references [dbo].[").Append(referenceClass.SqlName).Append("] (");
-            sb.Append('[').Append(property.AssociationProperty!.SqlName).Append(']');
-            sb.Append(')');
-        }
-        else
-        {
-            sb.Append(
-                $"constraint FK_{tableName}_{referenceClass.SqlName}_{propertyName} foreign key ({propertyName}) references {referenceClass.SqlName} ({property.AssociationProperty!.SqlName})"
-            );
-        }
     }
 
     /// <summary>
@@ -216,7 +129,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="writer">Flux.</param>
     /// <param name="classe">Classe de la table.</param>
     /// <param name="useCompression">Indique si on utilise la compression.</param>
-    private void WriteCreateTableClosing(IFileWriter writer, Class classe, bool useCompression)
+    protected virtual void WriteCreateTableClosing(IFileWriter writer, Class classe, bool useCompression)
     {
         ArgumentNullException.ThrowIfNull(writer);
         ArgumentNullException.ThrowIfNull(classe);
@@ -237,7 +150,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private void WriteCreateTableOpening(IFileWriter writer, Class table)
+    protected virtual void WriteCreateTableOpening(IFileWriter writer, Class table)
     {
         if (Config.TargetDBMS == TargetDBMS.Sqlserver)
         {
@@ -250,11 +163,103 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     }
 
     /// <summary>
+    /// Génère la contrainte de clef étrangère.
+    /// </summary>
+    /// <param name="sb">Flux d'écriture.</param>
+    /// <param name="property">Propriété portant la clef étrangère.</param>
+    protected virtual void WriteForeignKeyConstraint(StringBuilder sb, IProperty property)
+    {
+        var referenceClass = property.Association!;
+
+        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
+        {
+            var propertyConcat = "[" + property.SqlName + "]";
+            sb.Append("constraint [")
+                .Append(property.ForeignKeyName)
+                .Append("] foreign key (")
+                .Append(propertyConcat)
+                .Append(") ");
+            sb.Append("references [dbo].[").Append(referenceClass.SqlName).Append("] (");
+            sb.Append('[').Append(property.AssociationProperty!.SqlName).Append(']');
+            sb.Append(')');
+        }
+        else
+        {
+            sb.Append(
+                $"constraint FK_{property.ForeignKeyName} foreign key ({property.SqlName}) references {referenceClass.SqlName} ({property.AssociationProperty!.SqlName})"
+            );
+        }
+    }
+
+    /// <summary>
+    /// Ecrit l'entête du fichier.
+    /// </summary>
+    /// <param name="writer">Flux.</param>
+    /// <param name="tableName">Nom de la table.</param>
+    protected virtual void WriteHeader(IFileWriter writer, string tableName)
+    {
+        writer.WriteSqlFileHeader(description: $"Création de la table {tableName}.");
+        writer.WriteLine();
+    }
+
+    protected virtual void WriteIndex(
+        IFileWriter writer,
+        string indexName,
+        string tableName,
+        params IEnumerable<string> propertyNames
+    )
+    {
+        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
+        {
+            writer.WriteLine($"create nonclustered index [{indexName}]");
+            writer.Write("\ton [dbo].[" + tableName + "] (");
+            writer.Write(string.Join(", ", propertyNames.Select(n => $"[{n}] ASC")));
+            writer.Write(")");
+            writer.WriteLine();
+            writer.WriteLine("go");
+        }
+        else
+        {
+            writer.WriteLine($"create index {indexName}");
+            writer.Write($"\ton {tableName} (");
+            writer.Write(string.Join(", ", propertyNames.Select(n => $"{n} asc")));
+            writer.WriteLine(");");
+        }
+
+        writer.WriteLine();
+    }
+
+    /// <summary>
+    /// Génère les indexes portant sur les FK.
+    /// </summary>
+    /// <param name="writer">Flux d'écriture.</param>
+    /// <param name="tableName">Nom de la table.</param>
+    /// <param name="properties">Champs.</param>
+    protected virtual void WriteIndexes(IFileWriter writer, Class classe, IEnumerable<IProperty> properties)
+    {
+        foreach (
+            var property in properties.Where(p =>
+                p.Association != null && (p.Class.PrimaryKey.Count() != 1 || p.Class.PrimaryKey.Single() != p)
+            )
+        )
+        {
+            writer.WriteLine($"/* Index on foreign key column for {classe.SqlName}.{property.SqlName} */");
+            WriteIndex(writer, property.IndexForeignKeyName!, classe.SqlName, property.SqlName);
+        }
+
+        foreach (var index in classe.Indexes.Where(idx => !idx.Unique))
+        {
+            writer.WriteLine($"/* Index {index.SqlName} on {classe.SqlName} */");
+            WriteIndex(writer, index.SqlName, classe.SqlName, index.Properties.Select(p => p.SqlName));
+        }
+    }
+
+    /// <summary>
     /// Ecrit les instructions à l'intérieur du create table.
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private IEnumerable<IProperty> WriteInsideInstructions(IFileWriter writer, Class table)
+    protected virtual IEnumerable<IProperty> WriteInsideInstructions(IFileWriter writer, Class table)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
@@ -284,12 +289,12 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         )
         {
             sb.Clear();
-            WriteConstraintForeignKey(sb, property);
+            WriteForeignKeyConstraint(sb, property);
             definitions.Add(sb.ToString());
         }
 
         // Unique constraints (clés unique déclarées via "unique:" et index uniques via "indexes:")
-        definitions.AddRange(WriteUniqueConstraints(table));
+        definitions.AddRange(WriteUniqueKeyConstraints(table));
 
         // Ecriture de la liste concaténée.
         var separator = "," + Environment.NewLine;
@@ -303,7 +308,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePkLine(StringBuilder sb, Class classe, IEnumerable<IProperty> properties)
+    protected virtual void WritePkLine(StringBuilder sb, Class classe, IEnumerable<IProperty> properties)
     {
         var pkCount = 0;
 
@@ -347,13 +352,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="classe">Classe de la table.</param>
     /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
-    private List<string> WriteUniqueConstraints(Class classe)
+    protected virtual IList<string> WriteUniqueKeyConstraints(Class classe)
     {
         var constraints = classe
-            .UniqueKeys.Select(uk =>
+            .Indexes.Where(idx => idx.Unique)
+            .Select(idx =>
                 Config.TargetDBMS == TargetDBMS.Sqlserver
-                    ? $"constraint [UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})"
-                    : $"constraint UK_{classe.SqlName}_{string.Join('_', uk.Select(p => p.SqlName))} unique ({string.Join(", ", uk.Select(p => $"{p.SqlName}"))})"
+                    ? $"constraint [{idx.SqlName}] unique nonclustered ({string.Join(", ", idx.Properties.Select(p => $"[{p.SqlName}] ASC"))})"
+                    : $"constraint {idx.SqlName} unique ({string.Join(", ", idx.Properties.Select(p => $"{p.SqlName}"))})"
             )
             .ToList();
 

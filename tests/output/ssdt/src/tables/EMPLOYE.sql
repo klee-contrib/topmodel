@@ -15,19 +15,24 @@ create table [dbo].[EMPLOYE] (
 	[RES_ID] int not null,
 	[PER_ID] int,
 	constraint [PK_EMPLOYE] primary key clustered ([PER_ID] ASC),
-	constraint [FK_EMPLOYE_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
-	constraint [FK_EMPLOYE_PERSONNE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]),
+	constraint [FK_EMPLOYE_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_EMPLOYE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]),
 	constraint [UK_EMPLOYE_EMP_MATRICULE] unique nonclustered ([EMP_MATRICULE] ASC))
 go
 
 /* Index on foreign key column for EMPLOYE.RES_ID */
-create nonclustered index [IDX_EMPLOYE_RES_ID_FK]
+create nonclustered index [IDX_EMP_RES_ID_FK]
 	on [dbo].[EMPLOYE] ([RES_ID] ASC)
 go
 
 /* Index on foreign key column for EMPLOYE.PER_ID */
-create nonclustered index [IDX_EMPLOYE_PER_ID_FK]
+create nonclustered index [IDX_EMP_PER_ID_FK]
 	on [dbo].[EMPLOYE] ([PER_ID] ASC)
+go
+
+/* Index IDX_EMP_EMP_TELEPHONE on EMPLOYE */
+create nonclustered index [IDX_EMP_EMP_TELEPHONE]
+	on [dbo].[EMPLOYE] ([EMP_TELEPHONE] ASC)
 go
 
 /**

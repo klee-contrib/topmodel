@@ -98,6 +98,11 @@ public class LocatedString(Scalar value) : IComparable
         return Value.ToCamelCase();
     }
 
+    public string ToConstantCase()
+    {
+        return Value.ToConstantCase();
+    }
+
     public string ToKebabCase()
     {
         return Value.ToKebabCase();

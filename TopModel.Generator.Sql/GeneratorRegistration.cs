@@ -43,76 +43,38 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 
         if (config.Procedural != null)
         {
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.CrebasFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.IndexFKFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.InitListFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.TypeFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.UniqueKeysFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.CommentFile);
-            CombinePath(config.OutputDirectory, config.Procedural, c => c.ResourceFile);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.TablesFileName);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.IndexesAndKeysFileName);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.ValuesFileName);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.ResourcesFileName);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.TypesFileName);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.ResourcesFileName);
 
             if (config.TargetDBMS == TargetDBMS.Oracle)
             {
-                if (config.Procedural.CrebasFile != null)
-                {
-                    services.AddGenerator<OracleCrebasGenerator, SqlConfig>(config, number);
-                }
-
-                if (config.Procedural.InitListFile != null)
-                {
-                    services.AddGenerator<OracleReferenceListGenerator, SqlConfig>(config, number);
-                }
+                services.AddGenerator<OracleTablesGenerator, SqlConfig>(config, number);
+                services.AddGenerator<OracleValuesGenerator, SqlConfig>(config, number);
             }
 
             if (config.TargetDBMS == TargetDBMS.Postgre)
             {
-                if (config.Procedural.CrebasFile != null)
-                {
-                    services.AddGenerator<PostgresCrebasGenerator, SqlConfig>(config, number);
-                }
-
-                if (config.Procedural.InitListFile != null)
-                {
-                    services.AddGenerator<PostgresReferenceListGenerator, SqlConfig>(config, number);
-                }
+                services.AddGenerator<PostgresTablesGenerator, SqlConfig>(config, number);
+                services.AddGenerator<PostgresValuesGenerator, SqlConfig>(config, number);
             }
 
             if (config.TargetDBMS == TargetDBMS.Sqlserver)
             {
-                if (config.Procedural.CrebasFile != null)
-                {
-                    services.AddGenerator<SqlServerCrebasGenerator, SqlConfig>(config, number);
-                }
-
-                if (config.Procedural.TypeFile != null)
-                {
-                    services.AddGenerator<SqlServerTypeGenerator, SqlConfig>(config, number);
-                }
-
-                if (config.Procedural.InitListFile != null)
-                {
-                    services.AddGenerator<SqlServerReferenceListGenerator, SqlConfig>(config, number);
-                }
+                services.AddGenerator<SqlServerTablesGenerator, SqlConfig>(config, number);
+                services.AddGenerator<SqlServerTypesGenerator, SqlConfig>(config, number);
+                services.AddGenerator<SqlServerValuesGenerator, SqlConfig>(config, number);
             }
 
-            if (config.Procedural.CommentFile != null)
-            {
-                services.AddGenerator<SqlCommentGenerator, SqlConfig>(config, number);
-            }
+            services.AddGenerator<SqlIndexesKeysGenerator, SqlConfig>(config, number);
+            services.AddGenerator<SqlResourcesGenerator, SqlConfig>(config, number);
 
-            if (config.Procedural.IndexFKFile != null)
+            if (config.Procedural.CommentsFileName != null)
             {
-                services.AddGenerator<SqlIndexFkGenerator, SqlConfig>(config, number);
-            }
-
-            if (config.Procedural.ResourceFile != null)
-            {
-                services.AddGenerator<SqlResourceGenerator, SqlConfig>(config, number);
-            }
-
-            if (config.Procedural.UniqueKeysFile != null)
-            {
-                services.AddGenerator<SqlUkGenerator, SqlConfig>(config, number);
+                services.AddGenerator<SqlCommentsGenerator, SqlConfig>(config, number);
             }
         }
     }

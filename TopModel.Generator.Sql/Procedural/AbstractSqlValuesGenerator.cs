@@ -7,11 +7,13 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public abstract class AbstractReferenceListGenerator(
+public abstract class AbstractSqlValuesGenerator(
     ILogger<ClassGroupGeneratorBase<SqlConfig>> logger,
     IFileWriterProvider writerProvider
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
+    public override string Name => "SqlValuesGen";
+
     /// <summary>
     /// Indique si pour une insertion dans une table avec une identité en mode séquence la colonne de PK doit être explicitement initialisée via la séquence.
     /// </summary>
@@ -48,7 +50,7 @@ public abstract class AbstractReferenceListGenerator(
     {
         if (classe.IsPersistent && !classe.Abstract && classe.Values.Count > 0)
         {
-            yield return ("references", Config.Procedural!.InitListFile!);
+            yield return ("values", Config.Procedural!.ValuesFileName);
         }
     }
 
@@ -67,7 +69,7 @@ public abstract class AbstractReferenceListGenerator(
         writerInsert.WriteSqlFileHeader(
             classes.First().Namespace.App,
             fileName.Split('/')[^1],
-            "Script d'insertion des données de références."
+            "Script d'insertion des valeurs initiales."
         );
 
         WriteInsertStart(writerInsert);

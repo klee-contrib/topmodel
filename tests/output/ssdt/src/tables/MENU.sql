@@ -16,11 +16,11 @@ create table [dbo].[MENU] (
 	[MEN_DATE_FIN] timestamp,
 	[RES_ID] int not null,
 	constraint [PK_MENU] primary key clustered ([MEN_ID] ASC),
-	constraint [FK_MENU_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_MENU_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
 /* Index on foreign key column for MENU.RES_ID */
-create nonclustered index [IDX_MENU_RES_ID_FK]
+create nonclustered index [IDX_MEN_RES_ID_FK]
 	on [dbo].[MENU] ([RES_ID] ASC)
 go
 

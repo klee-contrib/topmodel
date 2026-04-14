@@ -4,8 +4,8 @@
 
 -- ===========================================================================================
 --   Application Name	:	Restaurant 
---   Script Name		:	04_references.sql
---   Description		:	Script d'insertion des données de références.
+--   Script Name		:	03_values.sql
+--   Description		:	Script d'insertion des valeurs initiales.
 -- ===========================================================================================
 
 /**		Initialisation de la table CATEGORIE_PLAT		**/

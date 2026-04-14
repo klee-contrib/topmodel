@@ -290,3 +290,12 @@ create table TABLE (
   * Création de la séquence pour la clé primaire de la table TABLE
  **/
 create sequence SEQ_TABLE as INT start 1000 increment 50 owned by TABLE.TAB_ID;
+
+/**
+  * Création de la table TRANSLATION
+ **/
+create table TRANSLATION (
+	TRA_RESOURCE_KEY varchar(100) not null,
+	TRA_VALUE varchar(100) not null,
+	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY)
+);

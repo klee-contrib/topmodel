@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
@@ -41,15 +42,19 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             $@"""{classe.SqlName}"""
         );
 
-        var uks = classe.UniqueKeys.Where(uk =>
-            uk.Count > 1 || !classe.Properties.Any(p => p.Association != null && p.Unique && p == uk.Single())
+        var uks = classe.Indexes.Where(idx =>
+            idx.Unique
+            && (
+                idx.Properties.Count > 1
+                || !classe.Properties.Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
+            )
         );
-        var trigram = classe.Trigram ?? classe.SqlName;
 
-        var ukAnnotations = uks
-            .Select(uk =>
-                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint")
-                    .AddAttribute("columnNames", uk.Select(u => $@"""{u.SqlName}""").ToArray())
+        var ukAnnotations = uks.Select(uk =>
+                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint").AddAttribute(
+                    "columnNames",
+                    uk.Properties.Select(u => $@"""{u.SqlName}""").ToArray()
+                )
             )
             .ToList();
 
@@ -65,16 +70,15 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 "indexes",
                 nonUniqueIndexes.Select(idx =>
                 {
-                    var columnList = string.Join(", ", idx.Properties.Select(c => c.SqlName));
-                    var name = "IDX_" + trigram + '_' + string.Join('_', idx.Properties.Select(c => c.SqlName));
                     return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
-                        .AddAttribute("name", $@"""{name}""")
-                        .AddAttribute("columnList", $@"""{columnList}""");
+                        .AddAttribute("name", $@"""{idx.SqlName}""")
+                        .AddAttribute("columnList", $@"""{string.Join(", ", idx.Properties.Select(c => c.SqlName))}""");
                 })
             );
         }
 
         yield return tableAnnotation;
+
         if (classe.PrimaryKey.Count() > 1)
         {
             yield return new JavaAnnotation("IdClass", imports: "jakarta.persistence.IdClass").AddAttribute(

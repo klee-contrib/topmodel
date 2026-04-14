@@ -4,11 +4,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Oracle;
 
-public class OracleCrebasGenerator(ILogger<OracleCrebasGenerator> logger, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, writerProvider)
+public class OracleTablesGenerator(ILogger<OracleTablesGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractSqlTablesGenerator(logger, writerProvider)
 {
-    public override string Name => "OracleCrebasGen";
-
     protected override bool SupportsClusteredKey => false;
 
     protected override void WriteBooleanCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties)

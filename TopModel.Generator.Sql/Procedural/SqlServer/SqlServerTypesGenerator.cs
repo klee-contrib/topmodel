@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.SqlServer;
 
-public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFileWriterProvider writerProvider)
+public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     /// <summary>
@@ -18,13 +18,13 @@ public class SqlServerTypeGenerator(ILogger<SqlServerTypeGenerator> logger, IFil
     /// </summary>
     private const string JsonType = "json";
 
-    public override string Name => "SqlServerTypeGen";
+    public override string Name => "SqlTypesGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("type", Config.Procedural!.TypeFile!);
+            yield return ("type", Config.Procedural!.TypesFileName!);
         }
     }
 

@@ -17,11 +17,11 @@ create table [dbo].[COMMANDE_HISTORIQUE] (
 	[STC_CODE] varchar not null default N'EN_ATT',
 	[AVI_ID] int,
 	constraint [PK_COMMANDE_HISTORIQUE] primary key clustered ([COM_ID] ASC),
-	constraint [FK_COMMANDE_HISTORIQUE_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_COMMANDE_HISTORIQUE_TABLE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
-	constraint [FK_COMMANDE_HISTORIQUE_RESERVATION_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
-	constraint [FK_COMMANDE_HISTORIQUE_STATUT_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]),
-	constraint [FK_COMMANDE_HISTORIQUE_AVIS_CLIENT_AVI_ID] foreign key ([AVI_ID]) references [dbo].[AVIS_CLIENT] ([AVI_ID]),
+	constraint [FK_COMMANDE_HISTORIQUE_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_COMMANDE_HISTORIQUE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_COMMANDE_HISTORIQUE_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
+	constraint [FK_COMMANDE_HISTORIQUE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]),
+	constraint [FK_COMMANDE_HISTORIQUE_AVI_ID] foreign key ([AVI_ID]) references [dbo].[AVIS_CLIENT] ([AVI_ID]),
 	constraint [UK_COMMANDE_HISTORIQUE_AVI_ID] unique nonclustered ([AVI_ID] ASC))
 go
 

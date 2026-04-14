@@ -3,13 +3,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Oracle;
 
-public class OracleReferenceListGenerator(
-    ILogger<OracleReferenceListGenerator> logger,
-    IFileWriterProvider writerProvider
-) : AbstractReferenceListGenerator(logger, writerProvider)
+public class OracleValuesGenerator(ILogger<OracleValuesGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractSqlValuesGenerator(logger, writerProvider)
 {
-    public override string Name => "OracleRefListGen";
-
     protected override bool ExplicitSequenceNextVal => true;
 
     protected override string GetNextValCall(string sequenceName)

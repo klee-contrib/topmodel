@@ -5,16 +5,16 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWriterProvider writerProvider)
+public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    public override string Name => "SqlCommentGen";
+    public override string Name => "SqlCommentsGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("comment", Config.Procedural!.CommentFile!);
+            yield return ("comments", Config.Procedural!.CommentsFileName!);
         }
     }
 
@@ -24,7 +24,11 @@ public class SqlCommentGenerator(ILogger<SqlCommentGenerator> logger, IFileWrite
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des commentaires.");
+        writer.WriteSqlFileHeader(
+            appName,
+            fileName.Split('/')[^1],
+            "Script de création de commentaires sur les tables et les colonnes."
+        );
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {

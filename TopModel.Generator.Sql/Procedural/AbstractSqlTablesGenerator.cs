@@ -5,11 +5,13 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public abstract class AbstractCrebasGenerator(
-    ILogger<AbstractCrebasGenerator> logger,
+public abstract class AbstractSqlTablesGenerator(
+    ILogger<AbstractSqlTablesGenerator> logger,
     IFileWriterProvider writerProvider
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
+    public override string Name => "SqlTablesGen";
+
     /// <summary>
     /// Type json pour les compositions.
     /// </summary>
@@ -24,7 +26,7 @@ public abstract class AbstractCrebasGenerator(
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("crebas", Config.Procedural!.CrebasFile!);
+            yield return ("tables", Config.Procedural!.TablesFileName);
         }
     }
 

@@ -12,11 +12,11 @@ create table [dbo].[PERSONNE] (
 	[PER_PRENOM] varchar not null,
 	[DEP_CODE] varchar default N'75',
 	constraint [PK_PERSONNE] primary key clustered ([PER_ID] ASC),
-	constraint [FK_PERSONNE_DEPARTEMENT_DEP_CODE] foreign key ([DEP_CODE]) references [dbo].[DEPARTEMENT] ([DEP_CODE]))
+	constraint [FK_PERSONNE_DEP_CODE] foreign key ([DEP_CODE]) references [dbo].[DEPARTEMENT] ([DEP_CODE]))
 go
 
 /* Index on foreign key column for PERSONNE.DEP_CODE */
-create nonclustered index [IDX_PERSONNE_DEP_CODE_FK]
+create nonclustered index [IDX_PER_DEP_CODE_FK]
 	on [dbo].[PERSONNE] ([DEP_CODE] ASC)
 go
 

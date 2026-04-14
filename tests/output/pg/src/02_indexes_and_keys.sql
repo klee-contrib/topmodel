@@ -4,8 +4,8 @@
 
 -- ===========================================================================================
 --   Application Name	:	Restaurant 
---   Script Name		:	02_fk_indexes.sql
---   Description		:	Script de création des indexes et des clef étrangères.
+--   Script Name		:	02_indexes_and_keys.sql
+--   Description		:	Script de création des indexes et des clés étrangères et uniques.
 -- ===========================================================================================
 
 /**
@@ -450,8 +450,81 @@ alter table TABLE
 		references RESTAURANT (RES_ID);
 
 /**
+  * Création de l'index UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS sur AVIS_CLIENT.
+ **/
+alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS unique (PER_ID, RES_ID, AVI_DATE_AVIS);
+
+/**
+  * Création de l'index UK_CATEGORIE_PLAT_CAT_ORDRE sur CATEGORIE_PLAT.
+ **/
+alter table CATEGORIE_PLAT add constraint UK_CATEGORIE_PLAT_CAT_ORDRE unique (CAT_ORDRE);
+
+/**
+  * Création de l'index UK_COMMANDE_AVI_ID sur COMMANDE.
+ **/
+alter table COMMANDE add constraint UK_COMMANDE_AVI_ID unique (AVI_ID);
+
+/**
+  * Création de l'index UK_COMMANDE_HISTORIQUE_AVI_ID sur COMMANDE_HISTORIQUE.
+ **/
+alter table COMMANDE_HISTORIQUE add constraint UK_COMMANDE_HISTORIQUE_AVI_ID unique (AVI_ID);
+
+/**
   * Création de l'index IDX_EMP_EMP_TELEPHONE sur EMPLOYE.
  **/
 create index IDX_EMP_EMP_TELEPHONE on EMPLOYE (
 	EMP_TELEPHONE ASC
+);
+
+/**
+  * Création de l'index UK_EMPLOYE_EMP_MATRICULE sur EMPLOYE.
+ **/
+alter table EMPLOYE add constraint UK_EMPLOYE_EMP_MATRICULE unique (EMP_MATRICULE);
+
+/**
+  * Création de l'index UK_LIGNE_COMMANDE_COM_ID_PLA_ID sur LIGNE_COMMANDE.
+ **/
+alter table LIGNE_COMMANDE add constraint UK_LIGNE_COMMANDE_COM_ID_PLA_ID unique (COM_ID, PLA_ID);
+
+/**
+  * Création de l'index UK_MENU_PLAT_MEN_ID_MPL_ORDRE sur MENU_PLAT.
+ **/
+alter table MENU_PLAT add constraint UK_MENU_PLAT_MEN_ID_MPL_ORDRE unique (MEN_ID, MPL_ORDRE);
+
+/**
+  * Création de l'index UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION sur RESERVATION.
+ **/
+alter table RESERVATION add constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION unique (TAB_ID, REV_DATE_RESERVATION);
+
+/**
+  * Création de l'index UK_TABLE_RES_ID_TAB_NUMERO sur TABLE.
+ **/
+alter table TABLE add constraint UK_TABLE_RES_ID_TAB_NUMERO unique (RES_ID, TAB_NUMERO);
+
+/**
+  * Création de l'index de clef étrangère pour CATEGORIE_PLAT.CAT_LIBELLE
+ **/
+create index  on CATEGORIE_PLAT (
+	CAT_LIBELLE ASC
+);
+
+/**
+  * Création de l'index de clef étrangère pour DEPARTEMENT.DEP_LIBELLE
+ **/
+create index  on DEPARTEMENT (
+	DEP_LIBELLE ASC
+);
+
+/**
+  * Création de l'index de clef étrangère pour REGION.REG_LIBELLE
+ **/
+create index  on REGION (
+	REG_LIBELLE ASC
+);
+
+/**
+  * Création de l'index de clef étrangère pour STATUT_COMMANDE.STC_LIBELLE
+ **/
+create index  on STATUT_COMMANDE (
+	STC_LIBELLE ASC
 );

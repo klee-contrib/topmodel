@@ -15,12 +15,12 @@ create table [dbo].[PROMOTION] (
 	[PRO_ACTIVE] boolean not null default true,
 	[RES_ID] int,
 	constraint [PK_PROMOTION] primary key clustered ([PLA_ID] ASC),
-	constraint [FK_PROMOTION_PLAT_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
-	constraint [FK_PROMOTION_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_PROMOTION_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
+	constraint [FK_PROMOTION_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
 /* Index on foreign key column for PROMOTION.RES_ID */
-create nonclustered index [IDX_PROMOTION_RES_ID_FK]
+create nonclustered index [IDX_PRO_RES_ID_FK]
 	on [dbo].[PROMOTION] ([RES_ID] ASC)
 go
 

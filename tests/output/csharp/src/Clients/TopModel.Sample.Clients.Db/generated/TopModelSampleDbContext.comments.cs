@@ -3,6 +3,7 @@
 ////
 
 using Microsoft.EntityFrameworkCore;
+using TopModel.Sample.Clients.Db.Models.Common;
 using TopModel.Sample.Clients.Db.Models.Restaurant;
 using TopModel.Sample.Restaurant.Models;
 
@@ -169,5 +170,10 @@ public partial class TopModelSampleDbContext : DbContext
         tableRestaurant.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
         tableRestaurant.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
         tableRestaurant.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
+
+        var translation = modelBuilder.Entity<Translation>();
+        translation.ToTable(t => t.HasComment("Table pour stocker les traductions en SQL."));
+        translation.Property(p => p.ResourceKey).HasComment("Clé de traduction.");
+        translation.Property(p => p.Value).HasComment("Valeur de la clé de traduction.");
     }
 }

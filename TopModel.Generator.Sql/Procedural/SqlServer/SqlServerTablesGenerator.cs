@@ -3,11 +3,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.SqlServer;
 
-public class SqlServerCrebasGenerator(ILogger<SqlServerCrebasGenerator> logger, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, writerProvider)
+public class SqlServerTablesGenerator(ILogger<SqlServerTablesGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractSqlTablesGenerator(logger, writerProvider)
 {
-    public override string Name => "SqlServerCrebasGen";
-
     protected override bool SupportsClusteredKey => true;
 
     /// <summary>

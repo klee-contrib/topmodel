@@ -20,13 +20,6 @@ public class SqlConfig : GeneratorConfigBase
 
     public override string? DefaultLanguage => "sql";
 
-    public override Dictionary<string, List<string>> TemplateAttributes =>
-        new()
-        {
-            { nameof(ForeignKeyConstraintNamePattern), ["tableName", "trigram", "columnName"] },
-            { nameof(UniqueConstraintNamePattern), ["tableName", "columnNames", "propertyNames"] },
-        };
-
     /// <summary>
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
     /// </summary>
@@ -46,20 +39,6 @@ public class SqlConfig : GeneratorConfigBase
     /// Retourne ou définit le nom du tablespace pour les index (Postgres ou Oracle).
     /// </summary>
     public virtual string? IndexTablespace { get; set; }
-
-    /// <summary>
-    /// Retourne ou définit le pattern pour le nom des contraintes de clé étrangère.
-    /// Supporte les variables tableName, trigram, columnName.
-    /// Valeur par défaut : "FK_{tableName}_{columnName}".
-    /// </summary>
-    public virtual string ForeignKeyConstraintNamePattern { get; set; } = "FK_{tableName}_{columnName}";
-
-    /// <summary>
-    /// Retourne ou définit le pattern pour le nom des contraintes d'unicité.
-    /// Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme).
-    /// Valeur par défaut : "UK_{tableName}_{columnNames}".
-    /// </summary>
-    public virtual string UniqueConstraintNamePattern { get; set; } = "UK_{tableName}_{columnNames}";
 
     /// <summary>
     /// SGBD cible ("sqlserver" ou "postgres" ou "oracle").
@@ -113,19 +92,6 @@ public class SqlConfig : GeneratorConfigBase
             : identifier;
     }
 
-    public virtual string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)
-    {
-        return ReplaceCustomVariables(
-            ForeignKeyConstraintNamePattern,
-            new Dictionary<string, string?>
-            {
-                [nameof(tableName)] = tableName,
-                [nameof(trigram)] = trigram,
-                [nameof(columnName)] = columnName,
-            }
-        );
-    }
-
     /// <summary>
     /// Calcule le nom de la séquence associée à une table.
     /// </summary>
@@ -144,19 +110,6 @@ public class SqlConfig : GeneratorConfigBase
     public string GetType(IProperty property)
     {
         return GetType(property, forceAssociationPropertyType: true);
-    }
-
-    public virtual string GetUniqueConstraintName(string tableName, string columnNames, string propertyNames)
-    {
-        return ReplaceCustomVariables(
-            UniqueConstraintNamePattern,
-            new Dictionary<string, string?>
-            {
-                [nameof(tableName)] = tableName,
-                [nameof(columnNames)] = columnNames,
-                [nameof(propertyNames)] = propertyNames,
-            }
-        );
     }
 
     public override string GetValue(IProperty property, string? value = null)
@@ -195,22 +148,5 @@ public class SqlConfig : GeneratorConfigBase
     protected override string QuoteValue(string value)
     {
         return $@"{(TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{value.Replace("'", "''")}'";
-    }
-
-    /// <summary>
-    /// Remplace des variables dans une chaîne.
-    /// </summary>
-    /// <param name="value">Chaîne templatisé sous la forme de {paramName}.</param>
-    /// <param name="variables">Association entre paramName et paramValue.</param>
-    /// <returns>Résultat.</returns>
-    private static string ReplaceCustomVariables(string value, Dictionary<string, string?> variables)
-    {
-        var buffer = value;
-        foreach (var paramName in variables.Keys)
-        {
-            buffer = buffer.Replace($"{{{paramName}}}", variables[paramName]);
-        }
-
-        return buffer;
     }
 }

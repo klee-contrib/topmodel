@@ -4,11 +4,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural.Postgres;
 
-public class PostgresCrebasGenerator(ILogger<PostgresCrebasGenerator> logger, IFileWriterProvider writerProvider)
-    : AbstractCrebasGenerator(logger, writerProvider)
+public class PostgresTablesGenerator(ILogger<PostgresTablesGenerator> logger, IFileWriterProvider writerProvider)
+    : AbstractSqlTablesGenerator(logger, writerProvider)
 {
-    public override string Name => "PostgresCrebasGen";
-
     protected override string JsonType => "jsonb";
 
     protected override bool SupportsClusteredKey => false;

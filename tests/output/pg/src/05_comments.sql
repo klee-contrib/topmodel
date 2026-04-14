@@ -5,7 +5,7 @@
 -- ===========================================================================================
 --   Application Name	:	Restaurant 
 --   Script Name		:	05_comments.sql
---   Description		:	Script de création des commentaires.
+--   Description		:	Script de création de commentaires sur les tables et les colonnes.
 -- ===========================================================================================
 
 /**
@@ -207,3 +207,10 @@ COMMENT ON COLUMN TABLE.TAB_NUMERO IS 'Numéro de la table';
 COMMENT ON COLUMN TABLE.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
 COMMENT ON COLUMN TABLE.TAB_DISPONIBLE IS 'Indique si la table est disponible';
 COMMENT ON COLUMN TABLE.RES_ID IS 'Restaurant auquel appartient la table';
+
+/**
+  * Commentaires pour la table TRANSLATION
+ **/
+COMMENT ON TABLE TRANSLATION IS 'Table pour stocker les traductions en SQL.';
+COMMENT ON COLUMN TRANSLATION.TRA_RESOURCE_KEY IS 'Clé de traduction.';
+COMMENT ON COLUMN TRANSLATION.TRA_VALUE IS 'Valeur de la clé de traduction.';

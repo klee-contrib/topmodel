@@ -16,18 +16,18 @@ create table [dbo].[AVIS_CLIENT] (
 	[PER_ID] int not null,
 	[RES_ID] int not null,
 	constraint [PK_AVIS_CLIENT] primary key clustered ([AVI_ID] ASC),
-	constraint [FK_AVIS_CLIENT_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_AVIS_CLIENT_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_AVIS_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_AVIS_CLIENT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
 	constraint [UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS] unique nonclustered ([PER_ID] ASC, [RES_ID] ASC, [AVI_DATE_AVIS] ASC))
 go
 
 /* Index on foreign key column for AVIS_CLIENT.PER_ID */
-create nonclustered index [IDX_AVIS_CLIENT_PER_ID_FK]
+create nonclustered index [IDX_AVI_PER_ID_FK]
 	on [dbo].[AVIS_CLIENT] ([PER_ID] ASC)
 go
 
 /* Index on foreign key column for AVIS_CLIENT.RES_ID */
-create nonclustered index [IDX_AVIS_CLIENT_RES_ID_FK]
+create nonclustered index [IDX_AVI_RES_ID_FK]
 	on [dbo].[AVIS_CLIENT] ([RES_ID] ASC)
 go
 

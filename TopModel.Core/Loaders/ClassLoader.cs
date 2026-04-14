@@ -163,7 +163,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "unique":
                     parser.ConsumeSequence(() =>
                     {
-                        var index = new IndexDefinition { Unique = true };
+                        var index = new IndexDefinition { Unique = true, Class = classe };
                         classe.Indexes.Add(index);
                         parser.ConsumeSequence(() =>
                         {
@@ -176,7 +176,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                     {
                         if (parser.Current is SequenceStart)
                         {
-                            var index = new IndexDefinition { Unique = false };
+                            var index = new IndexDefinition { Unique = false, Class = classe };
                             parser.ConsumeSequence(() =>
                             {
                                 index.PropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
@@ -206,7 +206,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                 }
                             });
 
-                            var idx = new IndexDefinition { Unique = indexUnique };
+                            var idx = new IndexDefinition { Unique = indexUnique, Class = classe };
                             foreach (var r in propertyRefs)
                             {
                                 idx.PropertyReferences.Add(r);

@@ -14,18 +14,18 @@ create table [dbo].[LIGNE_COMMANDE] (
 	[COM_ID] int not null,
 	[PLA_ID] int not null,
 	constraint [PK_LIGNE_COMMANDE] primary key clustered ([LIG_ID] ASC),
-	constraint [FK_LIGNE_COMMANDE_COMMANDE_COM_ID] foreign key ([COM_ID]) references [dbo].[COMMANDE] ([COM_ID]),
-	constraint [FK_LIGNE_COMMANDE_PLAT_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
+	constraint [FK_LIGNE_COMMANDE_COM_ID] foreign key ([COM_ID]) references [dbo].[COMMANDE] ([COM_ID]),
+	constraint [FK_LIGNE_COMMANDE_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
 	constraint [UK_LIGNE_COMMANDE_COM_ID_PLA_ID] unique nonclustered ([COM_ID] ASC, [PLA_ID] ASC))
 go
 
 /* Index on foreign key column for LIGNE_COMMANDE.COM_ID */
-create nonclustered index [IDX_LIGNE_COMMANDE_COM_ID_FK]
+create nonclustered index [IDX_LIG_COM_ID_FK]
 	on [dbo].[LIGNE_COMMANDE] ([COM_ID] ASC)
 go
 
 /* Index on foreign key column for LIGNE_COMMANDE.PLA_ID */
-create nonclustered index [IDX_LIGNE_COMMANDE_PLA_ID_FK]
+create nonclustered index [IDX_LIG_PLA_ID_FK]
 	on [dbo].[LIGNE_COMMANDE] ([PLA_ID] ASC)
 go
 

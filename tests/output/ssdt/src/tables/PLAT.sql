@@ -15,17 +15,17 @@ create table [dbo].[PLAT] (
 	[CAT_CODE] varchar not null,
 	[RES_ID] int not null,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
-	constraint [FK_PLAT_CATEGORIE_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
+	constraint [FK_PLAT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */
-create nonclustered index [IDX_PLAT_CAT_CODE_FK]
+create nonclustered index [IDX_PLA_CAT_CODE_FK]
 	on [dbo].[PLAT] ([CAT_CODE] ASC)
 go
 
 /* Index on foreign key column for PLAT.RES_ID */
-create nonclustered index [IDX_PLAT_RES_ID_FK]
+create nonclustered index [IDX_PLA_RES_ID_FK]
 	on [dbo].[PLAT] ([RES_ID] ASC)
 go
 

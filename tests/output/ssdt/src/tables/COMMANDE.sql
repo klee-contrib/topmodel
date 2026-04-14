@@ -17,36 +17,36 @@ create table [dbo].[COMMANDE] (
 	[STC_CODE] varchar not null default N'EN_ATT',
 	[AVI_ID] int,
 	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),
-	constraint [FK_COMMANDE_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_COMMANDE_TABLE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
-	constraint [FK_COMMANDE_RESERVATION_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
-	constraint [FK_COMMANDE_STATUT_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]),
-	constraint [FK_COMMANDE_AVIS_CLIENT_AVI_ID] foreign key ([AVI_ID]) references [dbo].[AVIS_CLIENT] ([AVI_ID]),
+	constraint [FK_COMMANDE_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_COMMANDE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_COMMANDE_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
+	constraint [FK_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]),
+	constraint [FK_COMMANDE_AVI_ID] foreign key ([AVI_ID]) references [dbo].[AVIS_CLIENT] ([AVI_ID]),
 	constraint [UK_COMMANDE_AVI_ID] unique nonclustered ([AVI_ID] ASC))
 go
 
 /* Index on foreign key column for COMMANDE.PER_ID */
-create nonclustered index [IDX_COMMANDE_PER_ID_FK]
+create nonclustered index [IDX_COM_PER_ID_FK]
 	on [dbo].[COMMANDE] ([PER_ID] ASC)
 go
 
 /* Index on foreign key column for COMMANDE.TAB_ID */
-create nonclustered index [IDX_COMMANDE_TAB_ID_FK]
+create nonclustered index [IDX_COM_TAB_ID_FK]
 	on [dbo].[COMMANDE] ([TAB_ID] ASC)
 go
 
 /* Index on foreign key column for COMMANDE.REV_ID */
-create nonclustered index [IDX_COMMANDE_REV_ID_FK]
+create nonclustered index [IDX_COM_REV_ID_FK]
 	on [dbo].[COMMANDE] ([REV_ID] ASC)
 go
 
 /* Index on foreign key column for COMMANDE.STC_CODE */
-create nonclustered index [IDX_COMMANDE_STC_CODE_FK]
+create nonclustered index [IDX_COM_STC_CODE_FK]
 	on [dbo].[COMMANDE] ([STC_CODE] ASC)
 go
 
 /* Index on foreign key column for COMMANDE.AVI_ID */
-create nonclustered index [IDX_COMMANDE_AVI_ID_FK]
+create nonclustered index [IDX_COM_AVI_ID_FK]
 	on [dbo].[COMMANDE] ([AVI_ID] ASC)
 go
 

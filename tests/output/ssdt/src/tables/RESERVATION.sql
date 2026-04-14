@@ -16,24 +16,24 @@ create table [dbo].[RESERVATION] (
 	[TAB_ID] int,
 	[RES_ID] int not null,
 	constraint [PK_RESERVATION] primary key clustered ([REV_ID] ASC),
-	constraint [FK_RESERVATION_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_RESERVATION_TABLE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
-	constraint [FK_RESERVATION_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_RESERVATION_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
+	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_RESERVATION_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
 	constraint [UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION] unique nonclustered ([TAB_ID] ASC, [REV_DATE_RESERVATION] ASC))
 go
 
 /* Index on foreign key column for RESERVATION.PER_ID */
-create nonclustered index [IDX_RESERVATION_PER_ID_FK]
+create nonclustered index [IDX_REV_PER_ID_FK]
 	on [dbo].[RESERVATION] ([PER_ID] ASC)
 go
 
 /* Index on foreign key column for RESERVATION.TAB_ID */
-create nonclustered index [IDX_RESERVATION_TAB_ID_FK]
+create nonclustered index [IDX_REV_TAB_ID_FK]
 	on [dbo].[RESERVATION] ([TAB_ID] ASC)
 go
 
 /* Index on foreign key column for RESERVATION.RES_ID */
-create nonclustered index [IDX_RESERVATION_RES_ID_FK]
+create nonclustered index [IDX_REV_RES_ID_FK]
 	on [dbo].[RESERVATION] ([RES_ID] ASC)
 go
 

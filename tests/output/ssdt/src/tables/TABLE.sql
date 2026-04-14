@@ -13,12 +13,12 @@ create table [dbo].[TABLE] (
 	[TAB_DISPONIBLE] boolean not null default true,
 	[RES_ID] int not null,
 	constraint [PK_TABLE] primary key clustered ([TAB_ID] ASC),
-	constraint [FK_TABLE_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_TABLE_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
 	constraint [UK_TABLE_RES_ID_TAB_NUMERO] unique nonclustered ([RES_ID] ASC, [TAB_NUMERO] ASC))
 go
 
 /* Index on foreign key column for TABLE.RES_ID */
-create nonclustered index [IDX_TABLE_RES_ID_FK]
+create nonclustered index [IDX_TAB_RES_ID_FK]
 	on [dbo].[TABLE] ([RES_ID] ASC)
 go
 

@@ -29,6 +29,16 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     /// <inheritdoc cref="IDbRestaurantReferenceAccessors.LoadRegions" />
     public ICollection<Region> LoadRegions()
     {
-        return dbContext.Regions.OrderBy(row => row.Libelle).ToList();
+        return (
+            from row in dbContext.Regions
+            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            orderby row.Libelle
+            select new Region
+            {
+                Code = row.Code,
+                Libelle = tra.Value,
+                NomResponsable = row.NomResponsable
+            }
+        ).ToList();
     }
 }

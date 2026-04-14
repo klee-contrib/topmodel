@@ -3,6 +3,7 @@
 ////
 
 using Microsoft.EntityFrameworkCore;
+using TopModel.Sample.Clients.Db.Models.Common;
 using TopModel.Sample.Clients.Db.Models.Restaurant;
 using TopModel.Sample.Restaurant.Models;
 
@@ -104,6 +105,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<TableRestaurant> TableRestaurants { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Translation.
+    /// </summary>
+    public DbSet<Translation> Translations { get; set; }
+
+    /// <summary>
     /// Personalisation du modèle.
     /// </summary>
     /// <param name="modelBuilder">L'objet de construction du modèle.</param>
@@ -176,16 +182,23 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Reservation>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("res_id");
 
+        modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Libelle);
+        modelBuilder.Entity<Departement>().HasIndex(p => p.Libelle);
+        modelBuilder.Entity<Region>().HasIndex(p => p.Libelle);
+
         modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Entree, CategoriePlat.Plat, CategoriePlat.Dessert, CategoriePlat.Boisson);
         modelBuilder.Entity<Departement>().HasData(Departement.Paris, Departement.HautsDeSeine, Departement.SeineSaintDenis, Departement.SeineEtMarne);
         modelBuilder.Entity<Region>().HasData(
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
 
         AddComments(modelBuilder);
+        AddResources(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void AddComments(ModelBuilder modelBuilder);
+
+    partial void AddResources(ModelBuilder modelBuilder);
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

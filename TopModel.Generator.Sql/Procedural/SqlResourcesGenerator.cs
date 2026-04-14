@@ -6,19 +6,27 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public class SqlResourceGenerator(
-    ILogger<SqlResourceGenerator> logger,
+public class SqlResourcesGenerator(
+    ILogger<SqlResourcesGenerator> logger,
     TranslationStore translationStore,
     IFileWriterProvider writerProvider
 ) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    public override string Name => "SqlResourceGen";
+    public override string Name => "SqlResourcesGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract)
+        if (
+            Config.AvailableClasses.Any(c => c.Translation)
+            && classe.IsPersistent
+            && !classe.Abstract
+            && (
+                Config.TranslateReferences == true && classe.DefaultProperty != null && classe.Values.Any()
+                || Config.TranslateProperties == true && classe.Properties.Any(c => c.Label != null)
+            )
+        )
         {
-            yield return ("resource", Config.Procedural!.ResourceFile!);
+            yield return ("resources", Config.Procedural!.ResourcesFileName);
         }
     }
 
@@ -31,32 +39,22 @@ public class SqlResourceGenerator(
         writer.WriteSqlFileHeader(
             appName,
             fileName.Split('/')[^1],
-            "Script de création des resources (libellés traduits)."
+            "Scripts d'insertion des ressources (libellés traduits)."
         );
 
-        var propertiesMap = classes
-            .Where(c => c != null && c.Properties != null)
-            .OrderBy(c => c.SqlName)
-            .SelectMany(c => c.Properties)
-            .Where(p =>
-                p.ResourceProperty.Parent.Namespace.Module != null
-                && p.Label != null
-                && p.ResourceProperty != null
-                && p.Class != null
-            )
-            .DistinctBy(property => property.ResourceKey)
-            .GroupBy(property => property.Class)
-            .ToDictionary(g => g.Key, g => g.Select(t => t));
-
-        foreach (var modelClass in propertiesMap.Keys)
+        if (Config.TranslateProperties != null)
         {
-            if (propertiesMap.TryGetValue(modelClass, out var properties))
+            var propertiesMap = classes
+                .OrderBy(c => c.SqlName)
+                .SelectMany(c => c.Properties)
+                .Where(p => p.Label != null)
+                .DistinctBy(property => property.ResourceKey)
+                .GroupBy(property => property.Class)
+                .ToDictionary(g => g.Key);
+
+            foreach (var modelClass in propertiesMap.Keys)
             {
-                if (
-                    Config.TranslateProperties == true
-                    && properties.Any(p => p.Label != null)
-                    && modelClass.ModelFile != null
-                )
+                if (propertiesMap.TryGetValue(modelClass, out var properties))
                 {
                     writer.WriteLine();
                     writer.WriteLine(
@@ -82,29 +80,30 @@ public class SqlResourceGenerator(
                         }
                     }
                 }
+            }
+        }
 
-                if (
-                    modelClass.DefaultProperty != null
-                    && modelClass.Values.Count > 0
-                    && Config.TranslateReferences == true
+        if (Config.TranslateReferences == true)
+        {
+            foreach (
+                var modelClass in classes.Where(modelClass =>
+                    modelClass.DefaultProperty != null && modelClass.Values.Count > 0
                 )
+            )
+            {
+                writer.WriteLine();
+                writer.WriteLine(
+                    "/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/"
+                );
+                foreach (var lang in translationStore.Translations.Keys)
                 {
-                    writer.WriteLine();
-                    writer.WriteLine(
-                        "/**\t\tInitialisation des traductions des valeurs de la table "
-                            + modelClass.SqlName
-                            + "\t\t**/"
-                    );
-                    foreach (var lang in translationStore.Translations.Keys)
+                    foreach (var val in modelClass.Values)
                     {
-                        foreach (var val in modelClass.Values)
+                        foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                         {
-                            foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
-                            {
-                                writer.WriteLine(
-                                    $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
-                                );
-                            }
+                            writer.WriteLine(
+                                $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
+                            );
                         }
                     }
                 }

@@ -7,12 +7,13 @@
 Le générateur SQL en mode `procedural` peut générer les fichiers suivants :
 
 - Un fichier de définition des tables pour toutes les classes persistées du modèle.
-- Un fichier de définition des contraintes de clé étrangère (et des indexes) des associations du modèle.
-- Un fichier de définition des contraintes d'unicité du modèle.
+- Un fichier de définition des contraintes de clés étrangères, d'unicité, et les indexes du modèles.
 - Un fichier d'insertion des valeurs pour toutes les classes persistées du modèle qui ont des `values`.
-- Un fichier d'insertion des commentaires pour toutes les classes persistées du modèle, ainsi que pour leurs colonnes (`postgresql` uniquement).
+- Un fichier d'insertion des traductions dans les tables de [traduction](/model/classes.md#classe-de-traductions) (si `translateProperties` ou `translateReferences` sont à `true`).
 - Un fichier de définition des types toutes les classes persistées du modèle, ainsi que pour leurs colonnes (`sqlserver` uniquement).
-- Un fichier d'insertion des traductions dans la table définie par le paramètre `resourcesTableName`.
+- Un fichier d'insertion des commentaires pour toutes les classes persistées du modèle, ainsi que pour leurs colonnes (`postgresql` uniquement).
+
+Les 5 premiers fichiers seront générés automatiquement selon les besoins du modèle et de la configuration (les fichiers ont des noms par défaut), tandis que le fichier de commentaire ne sera généré que si son nom est renseigné dans la configuration.
 
 ### SSDT
 
@@ -33,19 +34,16 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 - `procedural`
 
   Options de génération sql
-
-  - `crebasFile` : Nom du fichier de création des tables.
-  - `indexFKFile` : Nom du fichier de création des contraintes de clés étrangères et des indexes.
-  - `uniqueKeysFile` : Nom du fichier de création des contraintes d'unicité.
-  - `initListFile` : Nom du fichier d'insertion des listes de références.
-  - `commentFile` : Nom du fichier d'insertion des commentaires.
-  - `typeFile` : Nom du fichier de création des types.
-  - `resourceFile` : Nom du fichier d'insertion des traductions.
+  - `tablesFileName` : Nom du fichier contenant le script de création de tables. Par défaut : `01_tables.sql`.
+  - `indexesAndKeysFileName` : Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : `02_indexes_and_keys.sql`.
+  - `valuesFileName` : Nom du fichier contenant le script d'insertion des valeurs initiales. Par défaut : `03_values.sql`.
+  - `resourcesFileName` : Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : `04_resources.sql`.
+  - `typesFileName` : Nom du fichier contenant le script de création de types (pour SQL Server). Par défaut : `05_types.sql`.
+  - `commentsFileName` : Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes. Pas de valeur par défaut.
 
 - `ssdt`
 
   Options de génération ssdt
-
   - `tableScriptFolder` : Dossier du projet pour les scripts de déclaration de table.
   - `tableTypeScriptFolder` : Dossier du projet pour les scripts de déclaration de type table
   - `initListScriptFolder` : Dossier du projet pour les scripts d'initialisation des listes de références.
@@ -56,7 +54,6 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 - `identity`
 
   Options de génération de la séquence
-
   - `mode`
 
     Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).

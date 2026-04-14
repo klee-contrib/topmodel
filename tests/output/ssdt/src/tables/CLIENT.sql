@@ -10,11 +10,11 @@ create table [dbo].[CLIENT] (
 	[CLI_EMAIL] varchar,
 	[PER_ID] int,
 	constraint [PK_CLIENT] primary key clustered ([PER_ID] ASC),
-	constraint [FK_CLIENT_PERSONNE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]))
+	constraint [FK_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]))
 go
 
 /* Index on foreign key column for CLIENT.PER_ID */
-create nonclustered index [IDX_CLIENT_PER_ID_FK]
+create nonclustered index [IDX_CLI_PER_ID_FK]
 	on [dbo].[CLIENT] ([PER_ID] ASC)
 go
 

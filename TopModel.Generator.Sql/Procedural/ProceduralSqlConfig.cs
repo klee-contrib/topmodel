@@ -8,39 +8,34 @@ namespace TopModel.Generator.Sql.Procedural;
 public class ProceduralSqlConfig
 {
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création de base (SQL).
+    /// Nom du fichier contenant les scripts de création de tables. Par défaut : '01_tables.sql'.
     /// </summary>
-    public string? CrebasFile { get; set; }
+    public string TablesFileName { get; set; } = "01_tables.sql";
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des contraintes d'unicité (SQL).
+    /// Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : '02_indexes_and_keys.sql'.
     /// </summary>
-    public string? UniqueKeysFile { get; set; }
+    public string IndexesAndKeysFileName { get; set; } = "02_indexes_and_keys.sql";
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des clés étrangères (SQL).
+    /// Nom du fichier contenant les scripts d'insertion des valeurs initiales. Par défaut : '03_values.sql'.
     /// </summary>
-    public string? IndexFKFile { get; set; }
+    public string ValuesFileName { get; set; } = "03_values.sql";
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des types (SQL).
+    /// Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : '04_resources.sql'.
     /// </summary>
-    public string? TypeFile { get; set; }
+    public string ResourcesFileName { get; set; } = "04_resources.sql";
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des commentaires (SQL).
+    /// Nom du fichier contenant les scripts de création de types (pour SQL Server). Par défaut : '05_types.sql'.
     /// </summary>
-    public string? CommentFile { get; set; }
+    public string TypesFileName { get; set; } = "05_types.sql";
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des commentaires (SQL).
+    /// Nom du fichier contenant les scripts de création de commentaires sur les tables et les colonnes.
     /// </summary>
-    public string? ResourceFile { get; set; }
-
-    /// <summary>
-    /// Retourne ou définit l'emplacement du script d'insertion des données des listes de référence (SQL).
-    /// </summary>
-    public string? InitListFile { get; set; }
+    public string? CommentsFileName { get; set; }
 
     /// <summary>
     /// Mode de génération des séquences.
