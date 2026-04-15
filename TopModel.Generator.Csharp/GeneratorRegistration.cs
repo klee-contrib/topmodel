@@ -21,6 +21,11 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
 
+        if (config.Kinetix && config.DbContextPath == null)
+        {
+            config.EnumCols = true;
+        }
+
         services.AddGenerator<CSharpClassGenerator, CsharpConfig>(config, number);
         services.AddGenerator<MapperGenerator, CsharpConfig>(config, number);
 

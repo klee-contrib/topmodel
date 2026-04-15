@@ -205,6 +205,11 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public ResxResource ResourcesInResx { get; set; } = ResxResource.All;
 
+    /// <summary>
+    /// Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `DbContextPath` est null et si `Kinetix` est `true`.
+    /// </summary>
+    public virtual bool EnumCols { get; set; }
+
     public bool PersistedReferencesResources =>
         TranslateReferences == true
         && (string.IsNullOrWhiteSpace(ResourcesResxPath) || ResourcesInResx == ResxResource.Properties);

@@ -299,6 +299,10 @@
       "type": "string",
       "description": "Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.",
       "enum": [ "all", "properties", "references" ]
+    },
+    "enumCols": {
+      "type": "boolean",
+      "description": "Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `dbContextPath` est vide et si `kinetix` est `true`."
     }
   }
 }

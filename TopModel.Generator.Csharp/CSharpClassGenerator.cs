@@ -88,7 +88,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             GenerateConstProperties(w, item);
 
-            if (Config.DbContextPath == null && Config.Kinetix && Config.IsPersistent(item, tag))
+            if (Config.EnumCols && Config.IsPersistent(item, tag))
             {
                 GenerateEnumCols(w, item);
             }
