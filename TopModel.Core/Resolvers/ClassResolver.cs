@@ -156,7 +156,7 @@ internal class ClassResolver(
                 yield return new ModelError(
                     ErrorType.TMD3002,
                     classe,
-                    $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`."
+                    $"La classe '{classe}' doit avoir une clé primaire simple (ou à défaut, au moins une propriété avec clé d'unicité simple) pour être définie comme `reference`."
                 );
             }
 
@@ -167,7 +167,7 @@ internal class ClassResolver(
                     yield return new ModelError(
                         ErrorType.TMD3003,
                         classe,
-                        $"La classe '{classe}' doit avoir au moins une propriété (dont au plus une clé primaire) et au moins une `value` pour être définie comme `enum`.",
+                        $"La classe '{classe}' doit avoir une clé primaire simple (ou à défaut, au moins une propriété avec clé d'unicité simple) et au moins une `value` pour être définie comme `enum`.",
                         classe.EnumOverride.Location
                     );
                 }

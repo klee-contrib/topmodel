@@ -13,7 +13,7 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
 - `label` : Libellé de la classe, largement inutilisé.
 - `trigram` : Code, à priori de 3 lettres, qui préfixera si renseigné tous les noms de propriétés de la classe en SQL (hors associations, qui utiliseront le trigramme de la classe ciblée).
 - `extends` : Référence vers une autre classe pour indiquer que la classe en cours hérite de celle-ci. Il s'agit d'un héritage "classique" qui n'a pas d'impact particulier dans la modélisation.
-- `reference` : Indique que la classe peut être considérée comme une classe de référence, pour laquelle on suppose que l'ensemble des valeurs ne change pas souvent (voir jamais), et donc qu'il est souhaitable de mettre en cache. Cet attribut est généralement associé à l'ajout d'informations pour la mise en cache et la récupération des éléments depuis ce cache dans les divers générateurs.
+- `reference` : Indique que la classe peut être considérée comme une classe de référence, pour laquelle on suppose que l'ensemble des valeurs ne change pas souvent (voir jamais), et donc qu'il est souhaitable de mettre en cache. Cet attribut est généralement associé à l'ajout d'informations pour la mise en cache et la récupération des éléments depuis ce cache dans les divers générateurs. Pour être définie comme une classe de référence, une classe doit avoir une clé primaire simple (ou à défaut, au moins une propriété avec une clé d'unicité simple).
 
 ## Propriétés d'une classe
 
@@ -59,7 +59,7 @@ Les différents générateurs utiliseront ces valeurs pour des scripts d'initial
 
 ## Classe enum
 
-Si la classe définit une clé primaire simple (une seule propriété marquée comme `primaryKey`) et au moins une `value`, alors cette classe pourra être considérée comme une **enum**, qui est une classe dont **l'ensemble des valeurs possibles est défini dans les `values`**
+Si la classe définit une clé primaire simple (une seule propriété marquée comme `primaryKey`, ou à défaut au moins une propriété avec une clé d'unicité simple) et au moins une `value`, alors cette classe pourra être considérée comme une **enum**, qui est une classe dont **l'ensemble des valeurs possibles est défini dans les `values`**
 
 Une classe enum peut être représentée de **2 façons** :
 

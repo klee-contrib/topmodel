@@ -67,7 +67,9 @@ public class Class : IPropertyContainer
 
     public IProperty? ReferenceKey =>
         PrimaryKey.Count() <= 1
-            ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.FirstOrDefault()
+            ? PrimaryKey.SingleOrDefault()
+                ?? Extends?.PrimaryKey.SingleOrDefault()
+                ?? Properties.FirstOrDefault(p => p.Unique)
             : null;
 
     public IProperty? EnumKey => Enum != null ? ReferenceKey : null;
