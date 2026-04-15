@@ -216,6 +216,11 @@ public enum ErrorType
     /// </summary>
     TMD3020,
 
+    /// <summary>
+    /// Index déjà défini.
+    /// </summary>
+    TMD3021,
+
     #endregion
 
     #region Erreurs de dataflows (4)

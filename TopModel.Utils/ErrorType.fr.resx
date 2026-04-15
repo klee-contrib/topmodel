@@ -153,6 +153,9 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
+  <data name="TMD3021" xml:space="preserve">
+    <value>Un index a déjà été défini sur la classe '{0}' pour les propriétés suivantes : '{1}'.</value>
+  </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>
   </data>

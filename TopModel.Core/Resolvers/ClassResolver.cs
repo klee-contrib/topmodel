@@ -78,6 +78,29 @@ internal class ClassResolver(
                         );
                     }
                 }
+
+                foreach (
+                    var index in classe.Indexes.Where(
+                        (idx1, i) =>
+                            classe
+                                .Indexes.Where(
+                                    (idx2, j) =>
+                                        idx2.Properties.OrderBy(p => p.Name)
+                                            .SequenceEqual(idx1.Properties.OrderBy(p => p.Name))
+                                        && j < i
+                                )
+                                .Any()
+                    )
+                )
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD3021,
+                        [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
+                        modelFile,
+                        index.PropertyReferences.ElementAtOrDefault(0) ?? classe.GetLocation()
+                    );
+                }
             }
         }
 

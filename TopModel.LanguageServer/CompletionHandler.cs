@@ -678,18 +678,24 @@ public class CompletionHandler(
             {
                 var includeExtends = false;
 
-                var selfClassropertyKeyWords = new List<string>()
+                var selfClassPropertyKeyWords = new List<string>()
                 {
                     "defaultProperty",
                     "flagProperty",
                     "orderProperty",
                     "target",
                     "unique",
+                    "indexes",
                 };
+
+                if (GetParentKey(text, currentKey.Line, currentKey.End).Key == "indexes")
+                {
+                    selfClassPropertyKeyWords.Add("properties");
+                }
 
                 var isValues = false;
                 var isMappings = false;
-                if (!selfClassropertyKeyWords.Contains(currentKey.Key))
+                if (!selfClassPropertyKeyWords.Contains(currentKey.Key))
                 {
                     var parentKey = currentKey;
                     while (
@@ -746,7 +752,10 @@ public class CompletionHandler(
                     }
                 }
 
-                if (searchText != null && (isValues || isMappings || selfClassropertyKeyWords.Contains(currentKey.Key)))
+                if (
+                    searchText != null
+                    && (isValues || isMappings || selfClassPropertyKeyWords.Contains(currentKey.Key))
+                )
                 {
                     return CompleteProperty(request, classe, includeExtends);
                 }

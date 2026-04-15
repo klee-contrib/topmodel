@@ -1,4 +1,4 @@
-﻿{
+{
   "$id": "topmodel.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
@@ -1159,10 +1159,14 @@
             },
             "enum": {
               "oneOf": [
-                { "type": "boolean" },
+                {
+                  "type": "boolean"
+                },
                 {
                   "type": "string",
-                  "enum": [ "class" ]
+                  "enum": [
+                    "class"
+                  ]
                 }
               ],
               "description": "Force la catégorisation de cette classe en tant qu'enum et détermine comment elle doit être considérée dans le modèle.\n\nUne classe doit avoir au moins une `value`, au moins une propriété, et ne peut pas avoir de clé primaire multiple pour être une enum.\n\nCette propriété peut valoir `class` pour représenter l'enum comme une classe (avec des enums pour la clé primaire et les clés d'unicité), ou `true` pour la représenter intégralement comme une enum.\n\nSi la classe peut être une enum et que le domaine de sa clé primaire est auto-généré, alors elle sera par défaut une enum de type `class`."
@@ -1204,9 +1208,10 @@
             },
             "unique": {
               "type": "array",
-              "description": "Liste des clés d'unicité sur la classe. Chaque clé est un array des propriétés concernées (même s'il n'y en a qu'une).",
+              "description": "Forme raccourcie de `indexes` pour définir des indexes uniques sur un ensemble de propriétés.",
               "items": {
                 "type": "array",
+                "description": "Liste des propriétés constituant l'index unique.",
                 "items": {
                   "description": "Nom de la propriété.",
                   "type": "string"
@@ -1215,12 +1220,12 @@
             },
             "indexes": {
               "type": "array",
-              "description": "Liste des index à créer sur la table. Génère des CREATE INDEX en SQL et des annotations @Index dans @Table en JPA. Ne peut pas être défini en même temps que 'unique'.",
+              "description": "Liste des indexes de la classe. Un index peut être utilisé pour définir une constrainte d'unicité.",
               "items": {
                 "oneOf": [
                   {
                     "type": "array",
-                    "description": "Forme raccourcie : liste directe des propriétés pour un index non-unique.",
+                    "description": "Forme raccourcie : liste des propriétés pour un index non-unique.",
                     "items": {
                       "type": "string",
                       "description": "Nom de la propriété."
@@ -1229,12 +1234,10 @@
                   {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": ["properties"],
+                    "required": [
+                      "properties"
+                    ],
                     "properties": {
-                      "unique": {
-                        "type": "boolean",
-                        "description": "Si true, génère une contrainte d'unicité. Les clés d'unicité ainsi définies sont également exposées comme si elles avaient été définies dans 'unique'."
-                      },
                       "properties": {
                         "type": "array",
                         "description": "Liste des propriétés de la classe incluses dans l'index.",
@@ -1242,6 +1245,10 @@
                           "type": "string",
                           "description": "Nom de la propriété."
                         }
+                      },
+                      "unique": {
+                        "type": "boolean",
+                        "description": "Si true, rend cet index unique et crée une contrainte d'unicité dessus."
                       }
                     }
                   }

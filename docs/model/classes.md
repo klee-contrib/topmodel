@@ -22,15 +22,28 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
 - `orderProperty` : Propriété de tri de la classe, remplace `defaultProperty` pour cet usage. Si non renseignée et qu'il existe une propriété nommée `Order` ou `Ordre`, elle sera automatiquement ajoutée comme `orderProperty`.
 - `flagProperty` : Propriété de la classe à utiliser comme flag binaire (ayant des valeurs comme 1, 10, 100, 1000...). Si non renseignée et qu'il existe une propriété nommée `Flag`, elle sera automatiquement ajoutée comme `flagProperty`.
 - `localeProperty` : Propriété de la classe à utiliser pour indiquer la locale. Si non renseignée et qu'il existe une propriété nommée `Locale`, elle sera automatiquement ajoutée comme `localeProperty`.
-- `unique` : Clés d'unicité de la classe. Une clé d'unicité est définie comme la liste des propriétés qui la compose (il peut bien évidemment y en avoir qu'une seule). Cela se présente donc comme une liste de liste de propriétés, qu'il vaut mieux représenter de la façon suivante pour que l'autocomplétion fonctionne correctement :
-
-  ```yaml
-  unique:
-    - [Code]
-    - [TypeProfilCode, TypeDroitCode]
-  ```
-
 - `preservePropertyCasing` : Par défaut, TopModel converti les noms de propriétés dans la casse du langage cible. Cela veut dire par exemple qu'en C#, tous les noms de propriétés vont être convertis en `PascalCase`, même si la propriété a été déclarée en `camelCase` dans TopModel, et inversement en Java (ce qui était déjà le cas en revanche). De même, si vous avez des noms avec des `_` dans votre modèle (une classe `Profil_utilisateur` ou une propriété `utilisateur_id`), ils seront également convertis de la même façon (en Java par exemple, ça donnerait `ProfilUtilisateur` et `utilisateurId`). Cette propriété, si renseignée à `true`, permet de désactiver ce comportement s'il est important de garder la casse telle qu'elle a été définie dans le modèle (par exemple pour s'interfacer avec une API externe qui n'a pas les mêmes conventions de nommage).
+
+## Indexes et clés d'unicité
+
+TopModel permet de définir des indexes sur une classe via les propriétés `indexes` et/ou `unique` :
+
+```yaml
+indexes:
+  - properties: [MyProperty] # Définit un index sur la propriété `MyProperty`.
+
+  - [MyProperty2, MyProperty3] # Définit un index sur le couple `MyProperty2` / `MyProperty3`, force raccourcie équivalente à la définition précédente.
+
+  - properties: [MyProperty4]
+    unique: true # Définit un index unique sur la propriété `MyProperty4`.
+
+unique:
+  - [MyProperty5, MyProperty6] # Définit un index unique sur le couple `MyProperty5` / `MyProperty6`, force raccourcie équivalente à la définition précédente.
+```
+
+Toutes ces façons différentes de créer des indexes et des contraintes d'unicité sont équivalentes, les mêmes objets seront crées dans dans le modèle et le même code sera généré derrière.
+
+Si les indexes simples ne sont en général qu'un détail d'implémentation, les indexes uniques quand à eux seront utilisés dans le modèle pour déterminer certains comportements et certaines vérifications.
 
 ## Valeurs d'une classe
 

@@ -207,10 +207,12 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                             });
 
                             var idx = new IndexDefinition { Unique = indexUnique, Class = classe };
+
                             foreach (var r in propertyRefs)
                             {
                                 idx.PropertyReferences.Add(r);
                             }
+
                             classe.Indexes.Add(idx);
                         }
                     });
