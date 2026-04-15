@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.1.0
+
+Compatibilité avec TopModel 4.1 (annotations d'endpoint client ou serveur, indexes non uniques et des enums sans PK)
+
 ## 4.0.0
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs JPA sont détaillés dans le changelog général de la version.

@@ -1,3 +1,10 @@
+## 4.1.0
+
+Compatibilité avec TopModel 4.1 (annotations d'endpoint client ou serveur, indexes non uniques et des enums sans PK)
+
+- [`2b8dfe4`](https://github.com/klee-contrib/topmodel/commit/2b8dfe41bb1ac80bf162ccea38dfaeda3cbdbaa5) - [C#] N'utilise pas les instances readonly si les libellés sont traduits en base de données dans les accesseurs de liste de référence.
+- [`ca1dae4`](https://github.com/klee-contrib/topmodel/commit/ca1dae4845322186b1aab8423ef131820e8a2c26) - [C#] Override de `enumCols` dans la config.
+
 ## 4.0.0
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs C# sont détaillés dans le changelog général de la version.

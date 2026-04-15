@@ -1,3 +1,7 @@
+## 4.1.0
+
+Compatibilité avec TopModel 4.1 (enums sans PK)
+
 ## 4.0.0
 
 Compatibilité avec TopModel 4.0, les impacts propres aux générateurs Javascript sont détaillés dans le changelog général de la version.

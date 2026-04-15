@@ -8,6 +8,49 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.1.0
+
+- [#547](https://github.com/klee-contrib/topmodel/issues/547) - Support des index dans la définition des entités
+
+  Il est désormais possible de spécifier des indexes via `indexes` dans le modèle, en plus des indexes uniques qui peuvent déjà être définis dans `unique`.
+
+  Vous pouvez définir des indexes de la façon suivante :
+
+  ```yaml
+  indexes:
+    - [MyColumn1, MyColumn2] # Forme courte
+    - properties: [MyColumn] # Forme complète
+      unique: true
+  ```
+
+  Définir un index unique dans `indexes` est strictement équivalent à définir une clé d'unicité dans `unique`. Les deux façons de le décrire vont continuer à exister dans TopModel dans le futur.
+
+  Les indexes seront valorisés par les générateurs qui utilisent aujourd'hui les clés d'unicité (donc SQL, JPA et C#). Le générateur SQL contient des breaking changes associés à cette évolution qu'il convient de prendre en compte également 😉.
+
+  _Remarque : Vous aurez besoin de générateurs à jour pour générer les indexes non unique, puisque les indexes uniques sont déjà gérés par le support de `unique`._
+
+- [`37006dc`](https://github.com/klee-contrib/topmodel/commit/37006dce9ccdc46f886fa2cf2c0bb11ccfbb9390) - `client-endpoint `et `server-endpoint` dans les targets d'annotations
+
+  Une annotation peut désormais cibler plus précisément `server-endpoint` ou `client-endpoint` à la place d'un `endpoint` plus générique.
+
+  _Remarque : Vous aurez besoin de générateurs à jour pour gérer ces cibles, sinon elles seront ignorées._
+
+- [`c9525d2`](https://github.com/klee-contrib/topmodel/commit/c9525d2c4811d40ccd904dc39df9b3969db6e650) - [Core] reference: true et enum != false sans PK requièrent désormais une clé d'unicité sur la """PK""" de remplacement
+
+  Ceci est un **breaking change** pour vos enums et classes de références non persistées : Auparavant, TopModel décidait arbitrairement que la première propriété de la classe devait être considérée comme la "clé primaire" s'il n'y en a pas. Désormais, il est **nécessaire de définir une clé d'unicité sur cette propriété** pour qu'elle soit acceptée comme référence et pour autoriser `enum: class` ou `enum: true` dessus (vous aurez une erreur suite à la mise à jour, ce sera facile à identifier). En revanche, une régression plus discrète pourrait se glisser sur vos **classes implicitement déclarées comme `enum: class`**, puisque ces classes ne seront plus des enums sans la clé d'unicité, ce qui ne se verra qu'à la génération.
+
+  Si vous génénériez des enums avec tmdgen, vous aurez aussi besoin de mettre à jour tmdgen pour qu'il génère aussi la clé d'unicité sur les enums (qui sont d'ailleurs aujourd'hui toujours des `enum: class`, on devrait probablement migrer vers `enum: true` dans une version majeure future de l'outil...)
+
+- [`af59f7f`](https://github.com/klee-contrib/topmodel/commit/af59f7f0973f20f31aedd84906d2af571067658c) - [Core] Classes enum sans PK
+
+  Il est désormais possible de créer des classes `enum: class` sur des classes sans clé primaire simple (ou une clé d'unicité équivalente). Si ces classes n'ont pas de propriétés uniques à générer commes des enums ou des constantes, elles ont en revanche des values que l'on peut vouloir générer dans le code applicatif (cela s'utilisera donc conjointement avec `readonly: true`).
+
+  _Remarque : Puisque ces classes n'ont pas de clé primaire, il ne sera pas possible de créer des mappings classe <> clé primaire comme avec les autres classes enum readonly._
+
+  _Remarque 2 : Il sera nécessaire de mettre à jour vos générateurs pour qu'ils se comportent correctement avec ces enums sans clé primaire._
+
+- [`1f8befa`](https://github.com/klee-contrib/topmodel/commit/1f8befa2c3cf9560f7172adf6eda3e730c7317c9) - [Core] Fix #548 (prise en compte des tags supprimés en watch)
+
 ## 4.0.0
 
 [#535](https://github.com/klee-contrib/topmodel/pull/535) - TopModel 4.0
@@ -1426,23 +1469,20 @@ Breaking change :
   targetFramework: angular
   ```
 
-````
+  devient :
 
-devient :
+  ```yaml
+  entityMode: untyped # ou "typed" pour retrouver les types d'entités type "focus" (valeur par défaut)
+  apiMode: angular # ou "vanilla" pour avoir des clients en JS purs (valeur par défaut)
+  ```
 
-```yaml
-entityMode: untyped # ou "typed" pour retrouver les types d'entités type "focus" (valeur par défaut)
-apiMode: angular # ou "vanilla" pour avoir des clients en JS purs (valeur par défaut)
-```
-
-De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
+  De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
 
 - [#262](https://github.com/klee-contrib/topmodel/pull/262) - [JPA] Suppression des constructeur par recopie et des constructeurs tous arguments
 
   **Breaking changes (JPA) :**
 
   Les constructeurs **tous arguments** et **recopie** ont été supprimés. Pour retrouver un comportement similaire aux précédentes versions :
-
   - Créer un mapper `from` ayant pour unique paramètre la classe courante. Cela permettra de générer un constructeur par recopie
 
     ```yaml
@@ -1478,7 +1518,6 @@ De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécif
   **Le générateur C# ne génère plus aucun constructeur** (ainsi que les méthodes partielles `OnCreated`). Si vous utilisiez `OnCreated` pour une initialisation personnalisée dans un constructeur, vous pouvez toujours définir un constructeur dans la classe partielle à la place.
 
   Si vous utilisez le constructeur de copie, vous pouvez :
-
   - Recopier les anciens constructeurs dans une classe partielle (en retirant `OnCreated`) -> solution sans changer l'utilisation des classes
   - Définir un mapper `from` depuis la classe elle-même sur la classe, et l'utiliser à la place (puis assigner les propriétés à changer).
   - Passer la génération des classes en mode `record` (via le nouveau paramètre `useRecords`) et bénéficier du constructeur de copie auto-généré par le compilateur C# (qui s'utilise avec `with`, par exemple : `var instance2 = instance1 with { Property1 = "test" }`))
@@ -1538,7 +1577,6 @@ De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécif
 - [#255](https://github.com/klee-contrib/topmodel/pull/255) - Domaines de composition et transformations de domaines explicites
 
   **breaking changes**
-
   - Dans un domaine, remplacer `listDomain` par `asDomains: list:`
   - Dans un alias, remplacer `asList: true` par `as: list`
   - Dans une composition, retirer `kind: object`, remplacer `kind: list` par `domain: DO_LIST` (par exemple, vous pouvez utiliser n'importe quel domaine), et remplacer `kind` par `domain` pour les compositions qui utilisaient déjà des domaines
@@ -1551,7 +1589,6 @@ De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécif
   La PR est une excellente lecture pour accompagner ces changements...
 
   **impacts génération (C#)**
-
   - Les propriétés dans les constructeurs de copie des classes sont maintenant toutes dans l'ordre de déclaration des propriétés dans le modèle, au lieu de mettre les compositions en premier.
 
 ## 1.30.2
@@ -1592,7 +1629,6 @@ Cette release contient également du refactoring interne ([`d44a8f69`](https://g
 - [#243](https://github.com/klee-contrib/topmodel/pull/243) - Déspécialisation des domaines/décorateurs/convertisseurs
 
   **breaking changes**: les implémentations de domaines (et décorateurs/convertisseurs) sont désormais toutes définies selon le même schéma, au lieu d'avoir un schéma spécifique par langage (`csharp`, `java`, `ts` et `sql`). Concrètement :
-
   - `java` : aucun changement
   - `csharp` : remplacer `usings` par `imports`.
   - `ts` : remplacer `import` par `imports`, qui est une liste (ce n'est pas vraiment possible d'avoir plusieurs imports en JS tout de même)
@@ -1692,7 +1728,6 @@ Cette release contient principalement du refactoring interne pour préparer des 
   ```
 
 - `jpa` :
-
   - `modelRootPath` + `entitiesPackageName` ont été remplacés par `entitiesPath`
   - `modelRootPath` + `daosPackageName` ont été remplacés par `daosPath`
   - `modelRootPath` + `dtosPackageName` ont été remplacés par `dtosPath`
@@ -1774,7 +1809,6 @@ Cette release contient principalement du refactoring interne pour préparer des 
 - [#225](https://github.com/klee-contrib/topmodel/pull/225) - Génération de classes C#/Java par tag + variables app/module/lang propres + plein de nettoyage
 
   **breaking changes (JPA uniquement)**
-
   - Les mappers sont générés par module complet et non par module racine (ex : les mappers du module `Securite.Utilisateur` sont désormais dans `SecuriteUtilisateurMappers` au lieu de `SecuriteMappers`)
   - Le répertoire cible de génération des fichiers de ressources ne supporte plus la variable `{module}` (qui n'était pas le module mais le module racine). On génère toujours un fichier par module racine et par langue, mais tous dans le même répertoire cible.
 
@@ -1793,24 +1827,20 @@ Cette release contient principalement du refactoring interne pour préparer des 
 ## 1.24.0
 
 - Classes abstraites et propriétés readonly :
-
   - [#190](https://github.com/klee-contrib/topmodel/pull/190) - Core + C#
   - [#218](https://github.com/klee-contrib/topmodel/pull/218) - JPA
 
   **Breaking change (JPA)** : Pour générer une interface, l'option `generateInterface` sur les décorateurs a été retirée. Il est possible de faire la même chose via une classe abstraite (`abstract: true` dans la classe, et ajouter l'attribut `readonly: true` sur toutes les propriétés).
 
 - Évolutions sur `values` et `enum`s explicites :
-
   - [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites
   - [#219](https://github.com/klee-contrib/topmodel/pull/219) - [C#/JS] Values pour clés uniques simples
 
   **Breaking changes (C#)** :
-
   - Les constantes générées pour les values avec une clé d'unicité sont désormais suffixées du nom de la propriété.
   - Avec `enumForStaticReferences: true`, on génère désormais une vraie enum pour les propriétés de classe enum qui ont une clé d'unicité simple.
 
   **Autres impacts génération** (qui ne sont normalement pas des breaking changes)
-
   - [C#]
     - On génère des constantes pour toutes les clés d'unicité simple d'une classe si elle a des values et qu'on ne peut pas générer d'enum dessus (le cas enum est décrit dans le breaking change juste au-dessus)
     - L'annotation `DefaultProperty` n'est désormais placée que sur les classes `reference`.
@@ -1852,7 +1882,6 @@ Cette release contient principalement du refactoring interne pour préparer des 
 - [#204](https://github.com/klee-contrib/topmodel/pull/204) - Gestion de clés primaires composites pour de vrai
 
   **breaking changes** :
-
   - `allowCompositePrimaryKeys` n'existe plus dans la config globale (il est toujours à `true` maintenant).
   - topmodel ne considère plus une classe avec que des associations comme une n-n persistée : il faut explicitement marquer les propriétés comme `primaryKey: true` désormais
 
@@ -2428,7 +2457,6 @@ Un nouveau warning a été ajouté pour détecter les doublons de trigramme. Les
 ## 1.2.5
 
 - [`3c83c59`](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
-
   - OneToOne : ajout du paramètre `optional` dépendant de la propriété `required`
   - OneToOne : ajout de la contrainte d'unicité sur la colonne qui fait l'objet de la oneToOne
   - Listes de références : les colonnes ont `updatables = false`
@@ -2492,4 +2520,7 @@ Un nouveau warning a été ajouté pour détecter les doublons de trigramme. Les
 ## 1.0.0
 
 Version initiale.
-````
+
+```
+
+```

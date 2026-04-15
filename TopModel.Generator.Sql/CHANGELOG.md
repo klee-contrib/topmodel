@@ -1,3 +1,27 @@
+## 4.1.0
+
+Compatibilité avec TopModel 4.1 (indexes non uniques)
+
+- [`c1b8174`](https://github.com/klee-contrib/topmodel/commit/c1b8174454cad97351184000532731621aa29190) - Unification des noms d'indexes et de clés en SQL + Réorganisation fichiers générés en SQL
+
+  **breaking changes** :
+  - La configuration des noms de fichiers du générateur `procedural` a été revue pour :
+    - Donner des noms plus clairs aux fichiers
+    - Fusionner le fichier de contraintes d'unicités avec le fichier qui contenaient les FK
+    - Donner des valeurs par défaut à tous les fichiers, pour qu'ils soient générés même sans être explicitement configurés (sauf le fichier de commentaires qui doit toujours être explicité, car il est facultatif)
+
+    Les paramètres sont donc maintenant :
+    - `tablesFileName` : Nom du fichier contenant le script de création de tables. Par défaut : `01_tables.sql`.
+    - `indexesAndKeysFileName` : Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : `02_indexes_and_keys.sql`.
+    - `valuesFileName` : Nom du fichier contenant le script d'insertion des valeurs initiales. Par défaut : `03_values.sql`.
+    - `resourcesFileName` : Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : `04_resources.sql`.
+    - `typesFileName` : Nom du fichier contenant le script de création de types (pour SQL Server). Par défaut : `05_types.sql`.
+    - `commentsFileName` : Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes. Pas de valeur par défaut.
+
+  - Dans le générateur `ssdt`, les noms des clés étrangères, des indexes et des contraintes d'unicités ont été alignés sur les noms utilisés dans le générateur `procedural` (désolé 🥺).
+
+    _Remarque : Ils ont été également normalisés avec tous les autres générateurs qui peuvent les utiliser, ce n'était pas que pour la beauté du geste._
+
 ## 4.0.0
 
 Compatibilité avec TopModel 4.0.
