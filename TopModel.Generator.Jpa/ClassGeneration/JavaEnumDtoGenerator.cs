@@ -32,22 +32,27 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
         yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
-        yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
+        if (classe.EnumKey != null)
+        {
+            yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
+        }
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        var codeProperty = classe.EnumKey!;
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        if (classe.EnumKey != null)
         {
-            var code = refValue.Value[codeProperty];
-            yield return new JavaField(classe.NamePascal, code)
+            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
-                Static = true,
-                Final = true,
-                Visibility = "public",
-                DefaultValue = $"new {classe.NamePascal}({Config.GetEnumType(codeProperty)}.{code})",
-            };
+                var code = refValue.Value[classe.EnumKey];
+                yield return new JavaField(classe.NamePascal, code)
+                {
+                    Static = true,
+                    Final = true,
+                    Visibility = "public",
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetEnumType(classe.EnumKey)}.{code})",
+                };
+            }
         }
 
         foreach (var property in base.GetFields(classe, tag))

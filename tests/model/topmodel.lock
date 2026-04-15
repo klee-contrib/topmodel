@@ -4,9 +4,9 @@
 
 version: 4.0.0
 custom:
-  ../../TopModel.Generator.Csharp: 8ef6fc67d4208d698f4b959229979b67
-  ../../TopModel.Generator.Javascript: 82f6aabb59014ae5afab72b03279d389
-  ../../TopModel.Generator.Jpa: e3acf9eaec1768d71ac17461e665ad4b
+  ../../TopModel.Generator.Csharp: 4bf7cc99c5c1719222403600561b6789
+  ../../TopModel.Generator.Javascript: b7843660e763f26468e6c25a1cd4614c
+  ../../TopModel.Generator.Jpa: d46a06dd5b3fce98717235e7e6c988ca
   ../../TopModel.Generator.Sql: e76e3bc69a71a0314c98bcc4a8d6741e
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
 generatedFiles:
@@ -79,6 +79,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlat.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlatRegion.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientAvecCommandes.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientRead.cs
@@ -181,6 +182,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/TableRestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/AvisClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/AvisClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/CategoriePlatRegion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/ClientAvecCommandes.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/dtos/restaurant/ClientRead.java
@@ -277,6 +279,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/TableRestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/AvisClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/AvisClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/CategoriePlatRegion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/ClientAvecCommandes.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/dtos/restaurant/ClientRead.java
@@ -357,6 +360,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/TableRestaurantDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/AvisClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/AvisClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/CategoriePlatRegion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/ClientAvecCommandes.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/dtos/restaurant/ClientRead.java

@@ -162,12 +162,12 @@ internal class ClassResolver(
 
             if (classe.EnumOverride != null)
             {
-                if (classe.EnumOverride != "false" && (classe.Values.Count == 0 || classe.ReferenceKey == null))
+                if (classe.EnumOverride != "false" && classe.Values.Count == 0)
                 {
                     yield return new ModelError(
                         ErrorType.TMD3003,
                         classe,
-                        $"La classe '{classe}' doit avoir une clé primaire simple (ou à défaut, au moins une propriété avec clé d'unicité simple) et au moins une `value` pour être définie comme `enum`.",
+                        $"La classe '{classe}' doit avoir au moins une `value` pour être définie comme `enum`.",
                         classe.EnumOverride.Location
                     );
                 }
@@ -204,7 +204,7 @@ internal class ClassResolver(
                 yield return new ModelError(
                     ErrorType.TMD3019,
                     classe,
-                    $"La classe {classe} doit avoir une clé primaire convertible en enum pour être marquée avec `enum: true`."
+                    $"La classe {classe} doit avoir une clé primaire (ou à défaut, au moins une propriété avec clé d'unicité simple) convertible en enum pour être marquée avec `enum: true`."
                 );
             }
 

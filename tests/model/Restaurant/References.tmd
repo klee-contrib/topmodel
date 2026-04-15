@@ -119,3 +119,21 @@ class:
 
   values:
     Idf: { Code: IDF, Libelle: Île de France }
+---
+class:
+  name: CategoriePlatRegion
+  comment: Catégories de plats disponibles par région
+  enum: class
+  readonly: true
+  properties:
+    - association: Region
+      required: true
+      comment: Région
+
+    - association: CategoriePlat
+      required: true
+      comment: Catégorie de plat
+
+  values:
+    IdfEntree: { RegionCode: IDF, CategoriePlatCode: ENTREE }
+    IdfDessert: { RegionCode: IDF, CategoriePlatCode: DESSERT }

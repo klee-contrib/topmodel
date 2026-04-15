@@ -489,14 +489,14 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
     protected virtual void GenerateReadonlyEnumKeyMapper(CSharpWriter w, Class item)
     {
-        if (item.Enum != EnumMode.Class || !item.Readonly)
+        if (item.Enum != EnumMode.Class || !item.Readonly || item.EnumKey == null)
         {
             return;
         }
 
         w.WriteLine();
 
-        var key = item.EnumKey!;
+        var key = item.EnumKey;
 
         w.WriteSummary(1, "Récupère l'instance correspondante à la clé primaire demandée.");
         w.WriteParam(key.NameCamel, key.Comment);

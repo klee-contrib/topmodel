@@ -35,6 +35,20 @@ export const categoriePlatList: CategoriePlat[] = [
     },
 ];
 
+export interface CategoriePlatRegion {
+    regionCode: RegionCode;
+    categoriePlatCode: CategoriePlatCode;
+}
+export const categoriePlatRegionList: CategoriePlatRegion[] = [
+    {
+        regionCode: "IDF",
+        categoriePlatCode: "ENTREE"
+    },
+    {
+        regionCode: "IDF",
+        categoriePlatCode: "DESSERT"
+    },
+];
 
 export type DepartementCode = "75" | "92" | "93" | "94";
 export interface Departement {
@@ -65,7 +79,6 @@ export const departementList: Departement[] = [
     },
 ];
 
-
 export type RegionCode = "IDF";
 export interface Region {
     code: RegionCode;
@@ -78,7 +91,6 @@ export const regionList: Region[] = [
         libelle: "restaurant.region.values.Idf"
     },
 ];
-
 
 export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
 export interface StatutCommandeObject {
@@ -107,4 +119,3 @@ export const statutCommandeList: StatutCommandeObject[] = [
         libelle: "restaurant.statutCommande.values.Annulee"
     },
 ];
-

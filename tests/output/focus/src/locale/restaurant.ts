@@ -25,6 +25,10 @@ export const restaurant = {
             Boisson: "Boisson"
         }
     },
+    categoriePlatRegion: {
+        categoriePlatCode: "CategoriePlatCode",
+        regionCode: "RegionCode"
+    },
     client: {
         avisClients: "AvisClients",
         email: "Email"

@@ -12,6 +12,11 @@ export interface CategoriePlat {
 }
 export const categoriePlat = {type: {} as CategoriePlat, valueKey: "code", labelKey: "libelle"} as const;
 
+export interface CategoriePlatRegion {
+    regionCode: RegionCode;
+    categoriePlatCode: CategoriePlatCode;
+}
+
 export type DepartementCode = "75" | "92" | "93" | "94";
 export interface Departement {
     code: DepartementCode;
@@ -36,4 +41,3 @@ export const statutCommandeLabels = {
     SERVIE: "restaurant.statutCommande.values.Servie",
     ANNULE: "restaurant.statutCommande.values.Annulee"
 };
-

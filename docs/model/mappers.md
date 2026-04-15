@@ -97,8 +97,8 @@ Un mapping entre deux propriétés est **possible** dans les cas suivants :
 - Les deux propriétés sont des collections de classes de domaines compatibles (avec les mêmes contraintes que la cas précédent).
 - La propriété source est une classe qui contient une clé primaire et la propriété cible une primitive : la clé primaire sera mappée vers la propriété cible si les domaines sont compatibles.
 - La propriété source est une collection de classes et la propriété cible une collection de primitives (même chose que le cas précédent).
-- La propriété source est une primitive et la classe cible une classe enum readonly, et la propriété source est une référence (alias ou association) vers la clé primaire de la classe cible. Le mapping récupèrera l'instance statique de la classe cible correspondant à la valeur de la clé primaire.
-- Une collection de primitives vers une collection de classes enum readonly (même chose que le cas précédent).
+- La propriété source est une primitive et la classe cible une classe enum avec une clé primaire, et la propriété source est une référence (alias ou association) vers la clé primaire de la classe cible. Le mapping récupèrera l'instance statique de la classe cible correspondant à la valeur de la clé primaire.
+- Une collection de primitives vers une collection de classes enum readonly avec une clé primaire (même chose que le cas précédent).
 
 ## Réalisation des mappings
 

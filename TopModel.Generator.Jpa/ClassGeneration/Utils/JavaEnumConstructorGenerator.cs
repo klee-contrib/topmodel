@@ -100,10 +100,4 @@ public class JavaEnumConstructorGenerator(JpaConfig config) : JavaConstructorGen
 
         return constructor;
     }
-
-    public void WriteEnumConstructor(JavaWriter fw, Class classe, string tag)
-    {
-        var constructor = GetEnumConstructor(classe, tag);
-        fw.Write(1, constructor);
-    }
 }

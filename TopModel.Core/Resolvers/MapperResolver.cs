@@ -507,6 +507,7 @@ internal class MapperResolver(
             && targetProperty.MappingType.TryPickT1(out var tt1pc, out _)
             && tt1pc.Class.Enum == EnumMode.Class
             && tt1pc.Class.Readonly
+            && tt1pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt1pc.Class.EnumKey
             && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey!.Domain)
         )
@@ -521,6 +522,7 @@ internal class MapperResolver(
             && targetProperty.MappingType.TryPickT2(out var tt2pc, out _)
             && tt2pc.Class.Enum == EnumMode.Class
             && tt2pc.Class.Readonly
+            && tt2pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt2pc.Class.EnumKey
             && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey!.Domain)
         )

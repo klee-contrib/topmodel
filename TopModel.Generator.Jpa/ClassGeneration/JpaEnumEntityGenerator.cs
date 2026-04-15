@@ -32,25 +32,31 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
     {
         yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
-        yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
+        if (classe.EnumKey != null)
+        {
+            yield return ConstructorGenerator.GetEnumConstructor(classe, tag);
+        }
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        var codeProperty = classe.EnumKey!;
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        if (classe.EnumKey != null)
         {
-            var code = refValue.Value[codeProperty];
-            var field = new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
+            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
-                Visibility = "public",
-                Static = true,
-                Final = true,
-                DefaultValue = $"new {classe.NamePascal}({Config.GetValue(codeProperty, code)})",
-            }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
+                var code = refValue.Value[classe.EnumKey];
+                var field = new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
+                {
+                    Visibility = "public",
+                    Static = true,
+                    Final = true,
+                    DefaultValue = $"new {classe.NamePascal}({Config.GetValue(classe.EnumKey, code)})",
+                }.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
 
-            yield return field;
+                yield return field;
+            }
         }
+
         foreach (var field in JpaModelPropertyGenerator.GetFields(classe, tag))
         {
             yield return field;

@@ -146,50 +146,47 @@ public class TypescriptReferenceGenerator(
                 fw.WriteLine("\r\n}");
             }
 
-            if (reference.Reference)
+            if (Config.ReferenceMode == ReferenceMode.VALUES || reference.Enum != EnumMode.Enum)
             {
-                if (Config.ReferenceMode == ReferenceMode.VALUES || reference.Enum != EnumMode.Enum)
+                fw.Write("export interface ");
+                fw.Write(reference.NamePascal);
+
+                if (reference.Enum == EnumMode.Enum)
                 {
-                    fw.Write("export interface ");
-                    fw.Write(reference.NamePascal);
-
-                    if (reference.Enum == EnumMode.Enum)
-                    {
-                        fw.Write("Object");
-                    }
-
-                    if (reference.Extends != null)
-                    {
-                        fw.Write($" extends {reference.Extends.NamePascal}");
-                    }
-
-                    fw.Write(" {\r\n");
-
-                    foreach (var property in reference.Properties)
-                    {
-                        fw.Write("    ");
-                        fw.Write(property.NameCamel);
-                        fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
-                        fw.Write(": ");
-                        fw.Write(Config.GetType(property));
-                        fw.Write(";\r\n");
-                    }
-
-                    fw.Write("}\r\n");
+                    fw.Write("Object");
                 }
 
-                if (Config.ReferenceMode == ReferenceMode.VALUES)
+                if (reference.Extends != null)
                 {
-                    WriteReferenceValues(fw, reference);
+                    fw.Write($" extends {reference.Extends.NamePascal}");
                 }
-                else if (reference.Enum != EnumMode.Enum)
+
+                fw.Write(" {\r\n");
+
+                foreach (var property in reference.Properties)
                 {
-                    WriteReferenceDefinition(fw, reference);
+                    fw.Write("    ");
+                    fw.Write(property.NameCamel);
+                    fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
+                    fw.Write(": ");
+                    fw.Write(Config.GetType(property));
+                    fw.Write(";\r\n");
                 }
-                else
-                {
-                    WriteReferenceMap(fw, reference);
-                }
+
+                fw.Write("}\r\n");
+            }
+
+            if (Config.ReferenceMode == ReferenceMode.VALUES)
+            {
+                WriteReferenceValues(fw, reference);
+            }
+            else if (reference.Enum != EnumMode.Enum && reference.Reference)
+            {
+                WriteReferenceDefinition(fw, reference);
+            }
+            else if (reference.Enum == EnumMode.Enum)
+            {
+                WriteReferenceMap(fw, reference);
             }
         }
     }
@@ -214,7 +211,6 @@ public class TypescriptReferenceGenerator(
         }
 
         fw.WriteLine("};");
-        fw.WriteLine();
     }
 
     private void WriteReferenceValues(IFileWriter fw, Class reference)
@@ -242,6 +238,5 @@ public class TypescriptReferenceGenerator(
         }
 
         fw.WriteLine("];");
-        fw.WriteLine();
     }
 }
