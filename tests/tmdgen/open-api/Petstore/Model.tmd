@@ -46,6 +46,9 @@ class:
       domain: DO_LIBELLE
       comment: Non documenté
 
+  unique:
+    - [Value]
+
   values:
     Value0: {Value: "available"}
     Value1: {Value: "pending"}
@@ -97,6 +100,9 @@ class:
       domain: DO_LIBELLE
       comment: Order Status
 
+  unique:
+    - [Value]
+
   values:
     Value0: {Value: "placed"}
     Value1: {Value: "approved"}
@@ -146,6 +152,9 @@ class:
     - name: Value
       domain: DO_LIBELLE
       comment: pet status in the store
+
+  unique:
+    - [Value]
 
   values:
     Value0: {Value: "available"}

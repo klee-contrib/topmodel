@@ -419,6 +419,10 @@
               "properties",
               "references"
             ]
+          },
+          "enumCols": {
+            "type": "boolean",
+            "description": "Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `dbContextPath` est vide et si `kinetix` est `true`."
           }
         }
       }
