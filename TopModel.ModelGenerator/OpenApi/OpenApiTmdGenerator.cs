@@ -83,7 +83,8 @@ public class OpenApiTmdGenerator : TmdGenerator
             .Paths.SelectMany(p =>
                 p.Value.Operations?.Where(o =>
                     o.Value.Tags?.Any(t => t.Name != null || t.Reference.Id != null) ?? false
-                ) ?? []
+                )
+                ?? []
             )
             .GroupBy(o => (o.Value.Tags?.First().Name ?? o.Value.Tags?.First().Reference.Id ?? "Null").ToPascalCase())
             .Where(m =>
@@ -139,6 +140,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                 p.Class = enumClass;
                 enumClass.Properties.Add(p);
                 AddValues(enumClass, schema.Value);
+                enumClass.Unique.Add(["Value"]);
             }
             else
             {
@@ -200,6 +202,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                             p.Class = enumClass;
                             enumClass.Properties.Add(p);
                             AddValues(enumClass, property.Value);
+                            enumClass.Unique.Add(["Value"]);
                         }
 
                         classeProperties.Add(
@@ -318,6 +321,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                                 p.Class = enumClass;
                                 enumClass.Properties.Add(p);
                                 AddValues(enumClass, param.Schema!);
+                                enumClass.Unique.Add(["Value"]);
                             }
 
                             property = new TmdAliasProperty()
@@ -407,7 +411,8 @@ public class OpenApiTmdGenerator : TmdGenerator
             foreach (
                 var response in operation
                     .Value.Responses?.Where(r => r.Key == "200" || r.Key == "201")
-                    .Select(r => r.Value) ?? []
+                    .Select(r => r.Value)
+                    ?? []
             )
             {
                 if (response != null && (response.Content?.Any() ?? false))
