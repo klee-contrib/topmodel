@@ -1,3 +1,7 @@
+## 4.1.1
+
+- [`99f8bf8`](https://github.com/klee-contrib/topmodel/commit/99f8bf8a2da4468b3f3c3124d7a3e3596cd571bd) - [JS Client] Fix gestion des réponses primitives dans les retours d'API
+
 ## 4.1.0
 
 Compatibilité avec TopModel 4.1 (enums sans PK)
