@@ -214,18 +214,19 @@ public class JavascriptApiClientGenerator(
                 }
                 else
                 {
-                    var type =
-                        returnType == "Blob" ? "blob"
-                        : endpoint.Returns is { Composition: not null } or { Domain.BodyParam: true }
-                        || returnType.EndsWith("[]")
-                            ? "json"
-                        : "text";
-
                     var domainType = Config.GetImplementation(endpoint.Returns.Domain)?.Type;
-                    fw.WriteLine(
-                        1,
-                        $"return {(domainType == "number" ? "+" : string.Empty)}await {response}.{type}(){(domainType == "boolean" ? " === \"true\"" : type == "text" && returnType != "string" && returnType != "number" && returnType != "boolean" ? $" as {returnType}" : string.Empty)};"
-                    );
+
+                    if (domainType == "string")
+                    {
+                        fw.WriteLine(1, $"if ({response}.headers.get(\"Content-Type\")?.includes(\"text/plain\")) {{");
+                        fw.WriteLine(
+                            2,
+                            $"return await {response}.text(){(returnType != domainType ? $" as {returnType}" : string.Empty)};"
+                        );
+                        fw.WriteLine(1, "}");
+                    }
+
+                    fw.WriteLine(1, $"return await {response}.{(returnType == "Blob" ? "blob" : "json")}();");
                 }
             }
             fw.WriteLine("}");
