@@ -820,6 +820,10 @@
               "properties",
               "references"
             ]
+          },
+          "enumCols": {
+            "type": "boolean",
+            "description": "Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `dbContextPath` est vide et si `kinetix` est `true`."
           }
         }
       }
@@ -889,8 +893,16 @@
             "items": {
               "type": "string",
               "enum": [
-                "SsdtGen",
-                "ProceduralSqlGen"
+                "SqlTablesGen",
+                "SqlIndexesKeysGen",
+                "SqlValuesGen",
+                "SqlResourcesGen",
+                "SqlTypesGen",
+                "SqlCommentsGen",
+                "SsdtTableGen",
+                "SsdtTableTypeGen",
+                "SsdtRefListGen",
+                "SsdtMainRefListGen"
               ]
             }
           },
@@ -916,16 +928,6 @@
             "type": "string",
             "description": "Nom du tablespace pour les index (Postgres ou Oracle)."
           },
-          "foreignKeyConstraintNamePattern": {
-            "type": "string",
-            "description": "Pattern pour le nom des contraintes de clé étrangère. Supporte les variables tableName, trigram, columnName. Valeur par défaut : \"FK_{tableName}_{columnName}\".",
-            "default": "\"FK_{tableName}_{columnName}\""
-          },
-          "uniqueConstraintNamePattern": {
-            "type": "string",
-            "description": "Pattern pour le nom des contraintes d'unicité. Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme). Valeur par défaut : \"UK_{tableName}_{columnNames}\".",
-            "default": "\"UK_{tableName}_{columnNames}\""
-          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -944,33 +946,29 @@
             "description": "Config pour la génération de SQL 'procédurale'.",
             "additionalProperties": false,
             "properties": {
-              "crebasFile": {
+              "tablesFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier de création de base."
+                "description": "Nom du fichier contenant le script de création de tables. Par défaut : '01_tables.sql'."
               },
-              "uniqueKeysFile": {
+              "indexesAndKeysFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier de création des index uniques."
+                "description": "Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : '02_indexes_and_keys.sql'."
               },
-              "indexFKFile": {
+              "valuesFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier de création des clés étrangères."
+                "description": "Nom du fichier contenant le script d'insertion des valeurs initiales. Par défaut : '03_values.sql'."
               },
-              "typeFile": {
+              "resourcesFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier de création des types."
+                "description": "Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : '04_resources.sql'."
               },
-              "commentFile": {
+              "typesFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier de création des commentaires."
+                "description": "Nom du fichier contenant le script de création de types (pour SQL Server). Par défaut : '05_types.sql'."
               },
-              "resourceFile": {
+              "commentsFileName": {
                 "type": "string",
-                "description": "Emplacement du fichier d'insertion des resources (libellés traduits)."
-              },
-              "initListFile": {
-                "type": "string",
-                "description": "Emplacement du script d'insertion des données des listes de référence."
+                "description": "Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes."
               },
               "identity": {
                 "type": "object",
@@ -1005,19 +1003,19 @@
             "properties": {
               "tableScriptFolder": {
                 "type": "string",
-                "description": "Dossier du projet pour les scripts de déclaration de table."
+                "description": "Dossier du projet pour le script de déclaration de table."
               },
               "tableTypeScriptFolder": {
                 "type": "string",
-                "description": " Dossier du projet pour les scripts de déclaration de type table."
+                "description": " Dossier du projet pour le script de déclaration de type table."
               },
               "initListScriptFolder": {
                 "type": "string",
-                "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
+                "description": "Dossier du projet pour le script d'initialisation des listes de références."
               },
               "initListMainScriptName": {
                 "type": "string",
-                "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
+                "description": "Fichier du projet référençant le script d'initialisation des listes de références."
               },
               "disableIdentity": {
                 "type": "boolean",

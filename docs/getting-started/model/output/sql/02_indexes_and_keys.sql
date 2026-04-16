@@ -4,8 +4,8 @@
 
 -- ===========================================================================================
 --   Application Name	:	Hello World 
---   Script Name		:	02_fk_indexes.sql
---   Description		:	Script de création des indexes et des clef étrangères.
+--   Script Name		:	02_indexes_and_keys.sql
+--   Description		:	Script de création des indexes et des clés étrangères et uniques.
 -- ===========================================================================================
 
 /**

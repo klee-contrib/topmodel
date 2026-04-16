@@ -2,20 +2,20 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.1.0
+version: 4.1.1
 modules:
   jpa:
-    version: 4.0.0
-    hash: 47e424bfeef42c46e027b60f2e0eb9f6
+    version: 4.1.0
+    hash: 28692cbcad66fd0f09677eb7e6895a6b
   csharp:
-    version: 4.0.0
-    hash: 8cb4da086a2dc4ed93bf38b5ed6372e3
+    version: 4.1.0
+    hash: 52da107ce6a6a390857360ef8b8c7a71
   sql:
-    version: 4.0.0
-    hash: 80a98f70654348c41ccb61f7260694a9
+    version: 4.1.0
+    hash: 5b93c460eff30ec2bf140ca977125e78
   javascript:
-    version: 4.0.0
-    hash: b593f13af3c8c1006f5ab1456ca73325
+    version: 4.1.0
+    hash: a5e57482ed9d5741fb4b984356ad6a9f
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
   - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs
@@ -47,6 +47,5 @@ generatedFiles:
   - ./output/javascript/model/users/utilisateur-search-result-dto.ts
   - ./output/javascript/model/users/utilisateur-update-dto.ts
   - ./output/sql/01_tables.sql
-  - ./output/sql/02_fk_indexes.sql
-  - ./output/sql/03_unique_keys.sql
-  - ./output/sql/04_references.sql
+  - ./output/sql/02_indexes_and_keys.sql
+  - ./output/sql/03_values.sql

@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.1.1
+
+- [`dba4969`](https://github.com/klee-contrib/topmodel/commit/dba496964fbf844eb3876546bb6452bbc62ced18) - Optimisation vérification des doublons
+
+  Ce correctif devrait nettement améliorer les performances si vous avez des classes avec un grand nombre de propriétés.
+
 ## 4.1.0
 
 - [#547](https://github.com/klee-contrib/topmodel/issues/547) - Support des index dans la définition des entités
