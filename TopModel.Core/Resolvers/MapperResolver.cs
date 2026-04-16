@@ -83,7 +83,7 @@ internal class MapperResolver(
 
                     if (currentProperty != null && mappedProperty != null)
                     {
-                        mappings.Mappings.Add(currentProperty, mappedProperty);
+                        mappings.Mappings.TryAdd(currentProperty, mappedProperty);
 
                         foreach (
                             var error in CheckValidMapping(
@@ -160,11 +160,7 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.FromMappers)
             {
-                foreach (
-                    var param in mapper.Params.Where(
-                        (e, i) => mapper.Params.Where((p, j) => p.GetName() == e.GetName() && j < i).Any()
-                    )
-                )
+                foreach (var param in mapper.Params.GetDuplicates(p => p.GetName()))
                 {
                     yield return new ModelError(
                         localizer,
@@ -193,11 +189,7 @@ internal class MapperResolver(
                 );
 
                 var hasDoublon = false;
-                foreach (
-                    var mapping in mappedProperties.Where(
-                        (e, i) => mappedProperties.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()
-                    )
-                )
+                foreach (var mapping in mappedProperties.GetDuplicates(p => p.ReferenceName))
                 {
                     hasDoublon = true;
                     yield return new ModelError(
@@ -244,7 +236,7 @@ internal class MapperResolver(
                                 var mappedProperty = matchingProperties.Single();
                                 if (CheckPossibleMapping(mappedProperty, currentProperty))
                                 {
-                                    param.Mappings.Add(currentProperty, mappedProperty);
+                                    param.Mappings.TryAdd(currentProperty, mappedProperty);
                                 }
                             }
                         }
@@ -280,7 +272,7 @@ internal class MapperResolver(
                                     && CheckPossibleMapping(mappedProperty, currentProperty)
                                 )
                                 {
-                                    param.Mappings.Add(currentProperty, mappedProperty);
+                                    param.Mappings.TryAdd(currentProperty, mappedProperty);
                                 }
                             }
                         }
@@ -298,11 +290,7 @@ internal class MapperResolver(
 
                     if (finalMappings.TrueForAll(mapping => mapping.Key != null))
                     {
-                        foreach (
-                            var mapping in finalMappings.Where(
-                                (e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()
-                            )
-                        )
+                        foreach (var mapping in finalMappings.GetDuplicates(p => p.Key))
                         {
                             yield return new ModelError(
                                 ErrorType.TMD8003,
@@ -333,11 +321,7 @@ internal class MapperResolver(
                 }
             }
 
-            foreach (
-                var mapper in classe.ToMappers.Where(
-                    (e, i) => classe.ToMappers.Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var mapper in classe.ToMappers.GetDuplicates(p => p.Name))
             {
                 yield return new ModelError(localizer, ErrorType.TMD0001, [mapper.Name], classe, mapper.GetLocation());
             }
@@ -370,7 +354,7 @@ internal class MapperResolver(
                             && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
-                            mapper.Mappings.Add(currentProperty, mappedProperty);
+                            mapper.Mappings.TryAdd(currentProperty, mappedProperty);
                         }
                     }
                 }
@@ -394,16 +378,12 @@ internal class MapperResolver(
                             && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
-                            mapper.Mappings.Add(currentProperty, mappedProperty);
+                            mapper.Mappings.TryAdd(currentProperty, mappedProperty);
                         }
                     }
                 }
 
-                foreach (
-                    var mapping in mapper.Mappings.Where(
-                        (e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()
-                    )
-                )
+                foreach (var mapping in mapper.Mappings.GetDuplicates(p => p.Value))
                 {
                     yield return new ModelError(
                         ErrorType.TMD8003,

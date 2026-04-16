@@ -71,11 +71,7 @@ public class AnnotationResolver(
                 }
             }
 
-            foreach (
-                var templateParam in annotation.TemplateParameters.Where(
-                    (e, i) => annotation.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var templateParam in annotation.TemplateParameters.GetDuplicates(p => p.Name))
             {
                 yield return new ModelError(
                     localizer,

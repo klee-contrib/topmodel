@@ -17,11 +17,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
         {
             foreach (var endpoint in modelFile.Endpoints)
             {
-                foreach (
-                    var property in endpoint.Params.Where(
-                        (e, i) => endpoint.Params.Where((p, j) => p.GetParamName() == e.GetParamName() && j < i).Any()
-                    )
-                )
+                foreach (var property in endpoint.Params.GetDuplicates(p => p.GetParamName()))
                 {
                     yield return new ModelError(
                         localizer,

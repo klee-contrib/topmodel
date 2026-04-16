@@ -39,11 +39,7 @@ internal class DomainResolver(
                 domain.AsDomains[asName] = asDomain;
             }
 
-            foreach (
-                var templateParam in domain.TemplateParameters.Where(
-                    (e, i) => domain.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
             {
                 yield return new ModelError(
                     localizer,

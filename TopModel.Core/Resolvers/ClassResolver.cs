@@ -23,11 +23,7 @@ internal class ClassResolver(
         {
             foreach (var classe in modelFile.Classes)
             {
-                foreach (
-                    var property in classe.ExtendedProperties.Where(
-                        (e, i) => classe.ExtendedProperties.Where((p, j) => p.NamePascal == e.NamePascal && j < i).Any()
-                    )
-                )
+                foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
                 {
                     yield return new ModelError(
                         localizer,

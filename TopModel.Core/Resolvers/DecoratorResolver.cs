@@ -116,11 +116,7 @@ internal class DecoratorResolver(
                 }
             }
 
-            foreach (
-                var templateParam in decorator.TemplateParameters.Where(
-                    (e, i) => decorator.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var templateParam in decorator.TemplateParameters.GetDuplicates(p => p.Name == p.Name))
             {
                 yield return new ModelError(
                     localizer,

@@ -208,27 +208,13 @@ internal class PropertyResolver(
                 }
             }
 
-            foreach (
-                var include in alp.Reference.IncludeReferences.Where(
-                    (e, i) =>
-                        alp
-                            .Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i)
-                            .Any()
-                )
-            )
+            foreach (var include in alp.Reference.IncludeReferences.GetDuplicates(p => p.ReferenceName))
             {
                 yield return new ModelError(localizer, ErrorType.TMD9001, [include.ReferenceName], alp, include);
                 shouldBreak = true;
             }
 
-            foreach (
-                var exclude in alp.Reference.ExcludeReferences.Where(
-                    (e, i) =>
-                        alp
-                            .Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i)
-                            .Any()
-                )
-            )
+            foreach (var exclude in alp.Reference.ExcludeReferences.GetDuplicates(p => p.ReferenceName))
             {
                 yield return new ModelError(localizer, ErrorType.TMD9001, [exclude.ReferenceName], alp, exclude);
                 shouldBreak = true;

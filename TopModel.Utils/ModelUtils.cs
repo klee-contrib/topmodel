@@ -51,6 +51,18 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Récupère les éléments en doublon d'une liste.
+    /// </summary>
+    /// <typeparam name="T">Type de l'objet de la liste.</typeparam>
+    /// <param name="source">Liste.</param>
+    /// <param name="getKey">La clé sur laquelle comparer.</param>
+    /// <returns>Les doublons.</returns>
+    public static IEnumerable<T> GetDuplicates<T>(this IEnumerable<T> source, Func<T, object> getKey)
+    {
+        return source.GroupBy(getKey).Where(g => g.Count() > 1).SelectMany(p => p.Skip(1));
+    }
+
+    /// <summary>
     /// Convertit un text en camelCase.
     /// </summary>
     /// <param name="text">Le texte en entrée.</param>

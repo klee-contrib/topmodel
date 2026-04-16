@@ -443,11 +443,7 @@ public class ModelStore(
         {
             var endpoints = files.SelectMany(f => f.Endpoints);
 
-            foreach (
-                var endpoint in endpoints.Where(
-                    (e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()
-                )
-            )
+            foreach (var endpoint in endpoints.GetDuplicates(p => p.Name))
             {
                 yield return new ModelError(
                     localizer,
@@ -793,6 +789,11 @@ public class ModelStore(
             yield return error;
         }
 
+        foreach (var error in classResolver.CheckResult())
+        {
+            yield return error;
+        }
+
         foreach (var error in domainResolver.ResolveConverters())
         {
             yield return error;
@@ -804,11 +805,6 @@ public class ModelStore(
         }
 
         foreach (var error in dataFlowResolver.ResolveDataFlows())
-        {
-            yield return error;
-        }
-
-        foreach (var error in classResolver.CheckResult())
         {
             yield return error;
         }
