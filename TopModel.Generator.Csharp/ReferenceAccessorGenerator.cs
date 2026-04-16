@@ -316,34 +316,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
         {
-            if (Config.DotnetVersion >= 8)
-            {
-                w.Write(2, "return [");
-            }
-            else
-            {
-                w.Write(2, $"return new List<{Config.GetTypeName(classe)}>() {{ ");
-            }
-
-            foreach (var refValue in classe.Values)
-            {
-                w.Write($"{Config.GetTypeName(classe)}.{refValue.Name.ToPascalCase(strictIfUppercase: true)}");
-
-                if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
-                {
-                    w.Write(", ");
-                }
-            }
-
-            if (Config.DotnetVersion >= 8)
-            {
-                w.WriteLine("];");
-            }
-            else
-            {
-                w.WriteLine(" };");
-            }
-
+            w.WriteLine(2, $"return {classe.NamePascal}.Values;");
             return;
         }
         else if (!classe.IsPersistent)

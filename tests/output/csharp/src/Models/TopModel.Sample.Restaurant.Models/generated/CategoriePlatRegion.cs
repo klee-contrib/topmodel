@@ -23,6 +23,11 @@ public partial record CategoriePlatRegion
     public static CategoriePlatRegion IdfEntree { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Codes.ENTREE };
 
     /// <summary>
+    /// Liste des valeurs.
+    /// </summary>
+    public static IList<CategoriePlatRegion> Values { get; } = [IdfEntree, IdfDessert];
+
+    /// <summary>
     /// Région.
     /// </summary>
     [Required]

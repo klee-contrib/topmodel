@@ -417,18 +417,13 @@ public class DbContextGenerator(
             {
                 hasData = true;
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
-                foreach (var refValue in classe.Values)
+                if (classe.Enum == EnumMode.Class && classe.Readonly)
                 {
-                    if (classe.Enum == EnumMode.Class && classe.Readonly)
-                    {
-                        w.Write($"{GetClassName(classe, tag)}.{refValue.Name.ToPascalCase(strictIfUppercase: true)}");
-
-                        if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
-                        {
-                            w.Write(", ");
-                        }
-                    }
-                    else
+                    w.Write($"{GetClassName(classe, tag)}.Values");
+                }
+                else
+                {
+                    foreach (var refValue in classe.Values)
                     {
                         w.WriteLine();
                         w.Write($"            new {GetClassName(classe, tag)} {{");

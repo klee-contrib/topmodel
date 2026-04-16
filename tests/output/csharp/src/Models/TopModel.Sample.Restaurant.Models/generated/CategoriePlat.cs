@@ -84,6 +84,11 @@ public partial record CategoriePlat
     public static CategoriePlat Plat { get; } = new() { Code = Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = PlatOrdre, PrixMoyen = 10 };
 
     /// <summary>
+    /// Liste des valeurs.
+    /// </summary>
+    public static IList<CategoriePlat> Values { get; } = [Boisson, Entree, Plat, Dessert];
+
+    /// <summary>
     /// Code de la catégorie.
     /// </summary>
     [Column("cat_code")]

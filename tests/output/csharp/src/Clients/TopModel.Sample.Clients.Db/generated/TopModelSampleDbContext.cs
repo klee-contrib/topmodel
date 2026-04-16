@@ -186,8 +186,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Departement>().HasIndex(p => p.Libelle);
         modelBuilder.Entity<Region>().HasIndex(p => p.Libelle);
 
-        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Entree, CategoriePlat.Plat, CategoriePlat.Dessert, CategoriePlat.Boisson);
-        modelBuilder.Entity<Departement>().HasData(Departement.Paris, Departement.HautsDeSeine, Departement.SeineSaintDenis, Departement.SeineEtMarne);
+        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Values);
+        modelBuilder.Entity<Departement>().HasData(Departement.Values);
         modelBuilder.Entity<Region>().HasData(
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
 

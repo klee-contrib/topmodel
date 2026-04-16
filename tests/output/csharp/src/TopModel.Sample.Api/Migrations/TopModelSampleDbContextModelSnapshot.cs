@@ -22,6 +22,101 @@ namespace TopModel.Sample.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Common.Translation", b =>
+                {
+                    b.Property<string>("ResourceKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("tra_resource_key")
+                        .HasComment("Clé de traduction.");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("tra_value")
+                        .HasComment("Valeur de la clé de traduction.");
+
+                    b.HasKey("ResourceKey");
+
+                    b.ToTable("translation", t =>
+                        {
+                            t.HasComment("Table pour stocker les traductions en SQL.");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Boisson",
+                            Value = "Boisson"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Dessert",
+                            Value = "Dessert"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Entree",
+                            Value = "Entrée"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            Value = "Plat principal"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.HautsDeSeine",
+                            Value = "Hauts de Seine"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.Paris",
+                            Value = "Paris"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineEtMarne",
+                            Value = "Seine et Marne"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineSaintDenis",
+                            Value = "Seine Saint Denis"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.region.values.Idf",
+                            Value = "Île de France"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Annulee",
+                            Value = "Annulée"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnAttente",
+                            Value = "En attente"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnPreparation",
+                            Value = "En préparation"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Prete",
+                            Value = "Prête"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Servie",
+                            Value = "Servie"
+                        });
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.AvisClient", b =>
                 {
                     b.Property<int>("Id")
@@ -705,7 +800,14 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("cat_ordre")
                         .HasComment("Ordre d'affichage dans le menu.");
 
+                    b.Property<decimal?>("PrixMoyen")
+                        .HasColumnType("numeric")
+                        .HasColumnName("cat_prix_moyen")
+                        .HasComment("Prix moyen de la catégorie, à titre indicatif.");
+
                     b.HasKey("Code");
+
+                    b.HasIndex("Libelle");
 
                     b.HasIndex("Ordre")
                         .IsUnique();
@@ -718,6 +820,13 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasData(
                         new
                         {
+                            Code = "BOISSON",
+                            Libelle = "restaurant.categoriePlat.values.Boisson",
+                            Ordre = 1,
+                            PrixMoyen = 2m
+                        },
+                        new
+                        {
                             Code = "ENTREE",
                             Libelle = "restaurant.categoriePlat.values.Entree",
                             Ordre = 2
@@ -726,19 +835,14 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             Code = "PLAT",
                             Libelle = "restaurant.categoriePlat.values.Plat",
-                            Ordre = 3
+                            Ordre = 3,
+                            PrixMoyen = 10m
                         },
                         new
                         {
                             Code = "DESSERT",
                             Libelle = "restaurant.categoriePlat.values.Dessert",
                             Ordre = 4
-                        },
-                        new
-                        {
-                            Code = "BOISSON",
-                            Libelle = "restaurant.categoriePlat.values.Boisson",
-                            Ordre = 1
                         });
                 });
 
@@ -766,6 +870,8 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.HasKey("Code");
 
+                    b.HasIndex("Libelle");
+
                     b.HasIndex("RegionCode");
 
                     b.ToTable("departement", t =>
@@ -776,26 +882,26 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Code = "75",
-                            Libelle = "restaurant.departement.values.Paris",
-                            RegionCode = "IDF"
-                        },
-                        new
-                        {
                             Code = "92",
                             Libelle = "restaurant.departement.values.HautsDeSeine",
                             RegionCode = "IDF"
                         },
                         new
                         {
-                            Code = "93",
-                            Libelle = "restaurant.departement.values.SeineSaintDenis",
+                            Code = "75",
+                            Libelle = "restaurant.departement.values.Paris",
                             RegionCode = "IDF"
                         },
                         new
                         {
                             Code = "94",
                             Libelle = "restaurant.departement.values.SeineEtMarne",
+                            RegionCode = "IDF"
+                        },
+                        new
+                        {
+                            Code = "93",
+                            Libelle = "restaurant.departement.values.SeineSaintDenis",
                             RegionCode = "IDF"
                         });
                 });
@@ -822,6 +928,8 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Nom du responsable de la région.");
 
                     b.HasKey("Code");
+
+                    b.HasIndex("Libelle");
 
                     b.ToTable("region", t =>
                         {
@@ -893,6 +1001,8 @@ namespace TopModel.Sample.Api.Migrations
                         .IsUnique();
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("Telephone");
 
                     b.ToTable("employe", t =>
                         {

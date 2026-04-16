@@ -485,6 +485,20 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteLine(" };");
             w.WriteLine();
         }
+
+        w.WriteSummary(1, "Liste des valeurs");
+        w.Write(1, $"public static IList<{Config.GetTypeName(item)}> Values {{ get; }} = ");
+
+        w.Write(Config.DotnetVersion >= 8 ? "[" : "new() { ");
+
+        IEnumerable<ClassValue> values =
+            (item.OrderProperty ?? item.DefaultProperty) != null
+                ? item.Values.OrderBy(v => v.Value[item.OrderProperty ?? item.DefaultProperty])
+                : item.Values;
+
+        w.Write(string.Join(", ", values.Select(r => r.Name.ToPascalCase(strictIfUppercase: true))));
+        w.WriteLine(Config.DotnetVersion >= 8 ? "];" : " };");
+        w.WriteLine();
     }
 
     protected virtual void GenerateReadonlyEnumKeyMapper(CSharpWriter w, Class item)

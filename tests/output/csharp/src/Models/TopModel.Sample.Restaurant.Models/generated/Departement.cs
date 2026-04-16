@@ -58,6 +58,11 @@ public partial record Departement
     public static Departement SeineSaintDenis { get; } = new() { Code = SeineSaintDenisCode, Libelle = "restaurant.departement.values.SeineSaintDenis", RegionCode = Region.Codes.IDF };
 
     /// <summary>
+    /// Liste des valeurs.
+    /// </summary>
+    public static IList<Departement> Values { get; } = [HautsDeSeine, Paris, SeineEtMarne, SeineSaintDenis];
+
+    /// <summary>
     /// Code du département.
     /// </summary>
     [Column("dep_code")]
