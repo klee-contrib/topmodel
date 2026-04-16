@@ -1,3 +1,7 @@
+## 4.1.1
+
+- [`d632416`](https://github.com/klee-contrib/topmodel/commit/d6324164d4d97e1c9b93aaf8cf9e7071b05fe363) - [C#] Ajout propriété statique `Values` avec toutes les instances des classes enums readonly
+
 ## 4.1.0
 
 Compatibilité avec TopModel 4.1 (annotations d'endpoint client ou serveur, indexes non uniques et des enums sans PK)
