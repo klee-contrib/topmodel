@@ -1,3 +1,11 @@
+## 4.1.1
+
+- [`3733989`](https://github.com/klee-contrib/topmodel/commit/3733989cc947866a377ff2620d98f15f500d6fa8) - [SQL] Unification de la génération des inserts de listes de ref entre procedural et ssdt
+
+  Impacts :
+  - `procedural` : Les nulls sont écrits en majuscules, et les propriétés de domaine à valeur autogénérée non renseignées dans la valeur ne sont plus insérées à `NULL`.
+  - `ssdt` : Le choix de sauvegarder les traductions en BDD est bien respecté.
+
 ## 4.1.0
 
 Compatibilité avec TopModel 4.1 (indexes non uniques)
