@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Generator.Core;
@@ -18,33 +17,6 @@ public abstract class AbstractSqlValuesGenerator(
     /// Indique si pour une insertion dans une table avec une identité en mode séquence la colonne de PK doit être explicitement initialisée via la séquence.
     /// </summary>
     protected virtual bool ExplicitSequenceNextVal { get; } = false;
-
-    /// <summary>
-    /// Crée un dictionnaire { nom de la propriété => valeur } pour un item à insérer.
-    /// </summary>
-    /// <param name="modelClass">Modele de la classe.</param>
-    /// <param name="initItem">Item a insérer.</param>
-    /// <returns>Dictionnaire contenant { nom de la propriété => valeur }.</returns>
-    protected IDictionary<string, string?> CreatePropertyValueDictionary(Class modelClass, ClassValue initItem)
-    {
-        var nameValueDict = new Dictionary<string, string?>();
-        var definition = initItem.Value;
-        foreach (var property in modelClass.Properties)
-        {
-            definition.TryGetValue(property, out var value);
-            if (Config.GetValue(property, value) != null)
-            {
-                nameValueDict[property.SqlName] = Config.GetValue(property, value);
-
-                if (Config.TranslateReferences == true && modelClass.DefaultProperty == property)
-                {
-                    nameValueDict[property.SqlName] = $@"'{initItem.ResourceKey}'";
-                }
-            }
-        }
-
-        return nameValueDict;
-    }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -95,58 +67,6 @@ public abstract class AbstractSqlValuesGenerator(
     protected virtual void WriteInsertStart(IFileWriter writerInsert) { }
 
     /// <summary>
-    /// Retourne la ligne d'insert.
-    /// </summary>
-    /// <param name="tableName">Nom de la table dans laquelle ajouter la ligne.</param>
-    /// <param name="propertyValuePairs">Dictionnaire au format {nom de la propriété => valeur}.</param>
-    /// <returns>La requête "INSERT INTO ..." générée.</returns>
-    private static string GetInsertLine(string tableName, IDictionary<string, string?> propertyValuePairs)
-    {
-        var sb = new StringBuilder();
-        sb.Append("INSERT INTO ").Append(tableName).Append('(');
-        var isFirst = true;
-        foreach (var columnName in propertyValuePairs.Keys)
-        {
-            if (!isFirst)
-            {
-                sb.Append(", ");
-            }
-
-            isFirst = false;
-            sb.Append(columnName);
-        }
-
-        sb.Append(") VALUES(");
-
-        isFirst = true;
-        foreach (var value in propertyValuePairs.Values)
-        {
-            if (!isFirst)
-            {
-                sb.Append(", ");
-            }
-
-            isFirst = false;
-            sb.Append(string.IsNullOrEmpty(value) ? "null" : value);
-        }
-
-        sb.Append(");");
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// Retourne la ligne d'insert.
-    /// </summary>
-    /// <param name="modelClass">Modele de la classe.</param>
-    /// <param name="initItem">Item a insérer.</param>
-    /// <returns>Requête.</returns>
-    private string GetInsertLine(Class modelClass, ClassValue initItem)
-    {
-        var propertyValueDict = CreatePropertyValueDictionary(modelClass, initItem);
-        return GetInsertLine(modelClass.SqlName, propertyValueDict);
-    }
-
-    /// <summary>
     /// Ecrit dans le writer le script d'insertion dans la table staticTable ayant pour model modelClass.
     /// </summary>
     /// <param name="writer">Writer.</param>
@@ -157,7 +77,7 @@ public abstract class AbstractSqlValuesGenerator(
         writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.SqlName + "\t\t**/");
         foreach (var initItem in modelClass.Values)
         {
-            writer.WriteLine(GetInsertLine(modelClass, initItem));
+            writer.WriteLine(Config.GetInsertLine(modelClass, initItem));
         }
     }
 }
