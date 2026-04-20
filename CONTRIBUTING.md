@@ -51,3 +51,37 @@ TopModel est décomposé en différents modules :
 - Le fichier `.vscode/launch.json` contient la configuration pour lancer le debug de l'extension. Il suffit de démarrer une session de debug avec la touche `F5`
 
 Pour débugger le Language Server, ouvrir le projet `TopModel.LanguageServer` avec VSCode, puis lancer une session de debug en mode .NET Core Attach. Il faut ensuite sélectionner la bonne instance du language server dans la liste des processus.
+
+## Documentation
+
+La documentation est construite avec [Docusaurus](https://docusaurus.io/) et vit intégralement dans le dossier `docs-v2`.
+
+### [Docs] Prérequis
+
+- Installer NodeJS (≥ 20)
+
+### Structure
+
+- `docs-v2/docs/` : contenu de la documentation (Markdown/MDX)
+  - `getting-started/` : tutoriel pas-à-pas (fichiers préfixés pour l'ordre du sommaire)
+  - `model/` : référence du langage de modélisation (classes, domaines, endpoints, mappers, etc.)
+  - `generator/` : documentation des générateurs (`csharp`, `jpa`, `js`, `sql`, `translation`)
+  - `tmdgen/` : documentation de `tmdgen` (sources OpenAPI et base de données)
+  - `cli.md`, `configuration.md`, `generator.md`, `model.md`, `tmdgen.md` : pages d'index
+- `docs-v2/sidebars.ts` : configuration du sommaire
+- `docs-v2/docusaurus.config.ts` : configuration Docusaurus (thème, plugins, URL)
+- `docs-v2/src/` et `docs-v2/static/` : ressources (CSS, images, page d'accueil)
+
+### Commandes
+
+Depuis le dossier `docs-v2` :
+
+- `npm ci` : installation des dépendances
+- `npm run start` : serveur de développement avec rechargement à chaud (http://localhost:3000)
+- `npm run build` : build de production dans `docs-v2/build/`
+- `npm run serve` : sert le build de production localement
+- `npm run typecheck` : vérification TypeScript de la configuration
+
+### Publication
+
+La documentation est publiée automatiquement sur GitHub Pages via le workflow `.github/workflows/doc.yml` à chaque push de tag. Aucun commit manuel du build n'est nécessaire.

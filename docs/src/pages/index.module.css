@@ -1,0 +1,394 @@
+/* =========================================================
+   Palette minimale de la page (9 tokens couleur) :
+
+   Brand        : --ifm-color-primary, --accent-dark, --tint, --tint-strong
+   Neutres      : --ifm-color-emphasis-200 (borders),
+                  --ifm-color-emphasis-700 (body),
+                  --ifm-color-emphasis-900 (strong)
+   Fonds        : --ifm-background-color, --ifm-background-surface-color
+   Utilitaire   : #fff (texte sur fonds sombres)
+
+   `--accent-dark` est figé à #1a5f8c pour garantir >= 4.5:1
+   avec du texte blanc dans les 2 thèmes (WCAG 1.4.3 AA) —
+   le `--ifm-color-primary-darkest` du thème sombre Docusaurus
+   (#3d7cbd) n'atteint que 4.39:1.
+   ========================================================= */
+.hero,
+.section {
+  --accent-dark: var(--ifm-color-primary-darkest);
+  --tint: color-mix(in srgb, var(--ifm-color-primary) 12%, transparent);
+  --tint-strong: color-mix(in srgb, var(--ifm-color-primary) 25%, transparent);
+  --radius: 14px;
+  --pill: 999px;
+  --t: 0.2s ease;
+}
+
+[data-theme="dark"] .hero,
+[data-theme="dark"] .section {
+  --accent-dark: #1a5f8c;
+}
+
+/* =========================================================
+   Hero
+   ========================================================= */
+.hero {
+  padding: 6rem 1rem 5rem;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 60% 80% at 50% 0%,
+      color-mix(in srgb, var(--ifm-color-primary) 18%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      var(--ifm-background-surface-color),
+      var(--ifm-background-color)
+    );
+}
+
+.heroInner {
+  max-width: 860px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  text-align: center;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--pill);
+  background: var(--tint);
+  border: 1px solid var(--tint-strong);
+  color: var(--ifm-color-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--accent-dark);
+}
+
+[data-theme="dark"] .heroTitle {
+  color: var(--ifm-color-primary);
+}
+
+.heroTagline {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 500;
+  color: var(--ifm-color-emphasis-900);
+}
+
+.heroDescription {
+  margin: 0;
+  max-width: 640px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.cta {
+  min-width: 200px;
+}
+
+.installCommand {
+  max-width: 100%;
+  margin: 1.5rem 0 0;
+  padding: 0.85rem 1.2rem;
+  border-radius: 10px;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-900);
+  font: 0.95rem / 1.4 var(--ifm-font-family-monospace);
+  overflow-x: auto;
+}
+
+.installCommand::before {
+  content: "$ ";
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+}
+
+/* =========================================================
+   Sections (layout générique)
+   ========================================================= */
+.section {
+  padding: 5rem 0;
+}
+
+.sectionAlt {
+  background: var(--ifm-background-surface-color);
+  border-block: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.sectionInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.sectionSubtitle {
+  max-width: 680px;
+  margin: 0 0 3rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* =========================================================
+   Features
+   ========================================================= */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.75rem;
+  border-radius: var(--radius);
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  transition:
+    transform var(--t),
+    border-color var(--t),
+    box-shadow var(--t);
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 12px 30px -18px var(--tint-strong);
+}
+
+.featureIcon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.featureTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.featureDescription {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* =========================================================
+   Showcase (YAML -> code)
+   ========================================================= */
+.showcaseGrid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.showcaseColumn,
+.showcaseTabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.showcaseLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-900);
+}
+
+/* Pastille numérotée : fond `--accent-dark` pour garantir un
+   contraste >= 4.5:1 avec du texte blanc (WCAG 1.4.3 AA). */
+.showcaseStep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-dark);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.showcaseArrow {
+  align-self: center;
+  color: var(--ifm-color-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.showcaseTabs :global(.tabs) {
+  margin-bottom: 0;
+}
+
+.showcaseTabs :global(.tabs__item) {
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+}
+
+.showcaseTabs :global(.margin-top--md) {
+  margin-top: 0.75rem !important;
+}
+
+@media (max-width: 900px) {
+  .showcaseGrid {
+    grid-template-columns: 1fr;
+  }
+  .showcaseArrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* =========================================================
+   Stacks
+   ========================================================= */
+.stacksGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  max-width: 720px;
+  margin-bottom: 1.5rem;
+}
+
+.stackChip {
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--pill);
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-900);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition:
+    transform var(--t),
+    border-color var(--t);
+}
+
+.stackChip:hover {
+  transform: translateY(-2px);
+  border-color: var(--ifm-color-primary);
+}
+
+.stacksLinks {
+  font-weight: 600;
+}
+
+/* =========================================================
+   Final CTA — dégradé mono-teinte dérivé d'`--accent-dark`
+   (aucune nouvelle couleur, juste un assombrissement via
+   color-mix). Contraste >= 6.7:1 avec du texte blanc.
+   ========================================================= */
+.sectionCta {
+  background: linear-gradient(
+    135deg,
+    var(--accent-dark),
+    color-mix(in srgb, var(--accent-dark) 75%, #000)
+  );
+  color: #fff;
+  text-align: center;
+}
+
+.ctaText {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Les 2 états « remplis » (primary par défaut, outline au hover/focus)
+   partagent le même look → on mutualise. */
+.sectionCta :global(.button--primary),
+.sectionCta :global(.button--outline:hover),
+.sectionCta :global(.button--outline:focus) {
+  background: #fff;
+  color: var(--accent-dark);
+  border-color: #fff;
+}
+
+.sectionCta :global(.button--primary:hover),
+.sectionCta :global(.button--primary:focus) {
+  background: var(--ifm-color-emphasis-200);
+}
+
+.sectionCta :global(.button--outline) {
+  background: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+
+/* Focus clavier (WCAG 2.4.7) */
+.sectionCta :global(.button:focus-visible) {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.4);
+}
+
+/* =========================================================
+   Responsive & accessibilité
+   ========================================================= */
+@media (max-width: 600px) {
+  .hero {
+    padding: 4rem 1rem 3.5rem;
+  }
+  .section {
+    padding: 3.5rem 0;
+  }
+  .cta {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featureCard,
+  .stackChip {
+    transition: none;
+  }
+  .featureCard:hover,
+  .stackChip:hover {
+    transform: none;
+  }
+}

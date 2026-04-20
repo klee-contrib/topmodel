@@ -1,6 +1,6 @@
 # TopModel
 
-![Logo TopModel](./docs/media/logo-Dark.svg#gh-dark-mode-only)[Logo TopModel](./docs/media/logo-light.svg#gh-light-mode-only)
+![Logo TopModel](./docs/static/img/logo-Dark.svg#gh-dark-mode-only)[Logo TopModel](./docs/static/img/logo-light.svg#gh-light-mode-only)
 
 | Outil                                | Version                                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
