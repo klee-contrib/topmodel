@@ -54,7 +54,7 @@ Pour débugger le Language Server, ouvrir le projet `TopModel.LanguageServer` av
 
 ## Documentation
 
-La documentation est construite avec [Docusaurus](https://docusaurus.io/) et vit intégralement dans le dossier `docs-v2`.
+La documentation est construite avec [Docusaurus](https://docusaurus.io/) et vit intégralement dans le dossier `docs`.
 
 ### [Docs] Prérequis
 
@@ -62,23 +62,23 @@ La documentation est construite avec [Docusaurus](https://docusaurus.io/) et vit
 
 ### Structure
 
-- `docs-v2/docs/` : contenu de la documentation (Markdown/MDX)
+- `docs/docs/` : contenu de la documentation (Markdown/MDX)
   - `getting-started/` : tutoriel pas-à-pas (fichiers préfixés pour l'ordre du sommaire)
   - `model/` : référence du langage de modélisation (classes, domaines, endpoints, mappers, etc.)
   - `generator/` : documentation des générateurs (`csharp`, `jpa`, `js`, `sql`, `translation`)
   - `tmdgen/` : documentation de `tmdgen` (sources OpenAPI et base de données)
   - `cli.md`, `configuration.md`, `generator.md`, `model.md`, `tmdgen.md` : pages d'index
-- `docs-v2/sidebars.ts` : configuration du sommaire
-- `docs-v2/docusaurus.config.ts` : configuration Docusaurus (thème, plugins, URL)
-- `docs-v2/src/` et `docs-v2/static/` : ressources (CSS, images, page d'accueil)
+- `docs/sidebars.ts` : configuration du sommaire
+- `docs/docusaurus.config.ts` : configuration Docusaurus (thème, plugins, URL)
+- `docs/src/` et `docs/static/` : ressources (CSS, images, page d'accueil)
 
 ### Commandes
 
-Depuis le dossier `docs-v2` :
+Depuis le dossier `docs` :
 
 - `npm ci` : installation des dépendances
-- `npm run start` : serveur de développement avec rechargement à chaud (http://localhost:3000)
-- `npm run build` : build de production dans `docs-v2/build/`
+- `npm run start` : serveur de développement avec rechargement à chaud (<http://localhost:3000>)
+- `npm run build` : build de production dans `docs/build/`
 - `npm run serve` : sert le build de production localement
 - `npm run typecheck` : vérification TypeScript de la configuration
 

@@ -61,7 +61,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           routeBasePath: "/",
           editUrl:
-            "https://github.com/klee-contrib/topmodel/edit/develop/docs-v2/docs/",
+            "https://github.com/klee-contrib/topmodel/edit/develop/docs/docs/",
         },
         blog: false,
         theme: {

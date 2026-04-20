@@ -1,7 +1,7 @@
 # Documentation TopModel (Docusaurus)
 
 ```bash
-cd docs-v2
+cd docs
 npm ci
 npm run start
 ```
