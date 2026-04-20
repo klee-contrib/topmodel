@@ -35,14 +35,3 @@
 .header-github-link:hover:before {
   background-color: var(--ifm-navbar-link-hover-color);
 }
-
-/* Annotations Java / Kotlin / etc. : l'alias `punctuation` du token `annotation`
-   fait que la règle `punctuation` du thème Prism écrase la couleur au moment
-   de la fusion inline. On force donc une couleur distincte via CSS avec !important. */
-.token.annotation {
-  color: hsl(41, 63%, 40%) !important;
-}
-
-[data-theme="dark"] .token.annotation {
-  color: hsl(41, 63%, 40%) !important;
-}
