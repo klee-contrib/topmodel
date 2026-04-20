@@ -17,6 +17,11 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? ModelRootPath { get; set; }
 
     /// <summary>
+    /// Nom du fichier généré contenant les enums d'un module. Par défaut : `enums`.
+    /// </summary>
+    public virtual string EnumsFileName { get; set; } = "enums";
+
+    /// <summary>
     /// Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si '{lang}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.
     /// </summary>
     public virtual string? ResourceRootPath { get; set; }
@@ -65,11 +70,6 @@ public class JavascriptConfig : GeneratorConfigBase
     /// Mode de génération (JS, JSON ou JSON Schema).
     /// </summary>
     public virtual ResourceMode ResourceMode { get; set; }
-
-    /// <summary>
-    /// Mode de génération des listes de références (définitions ou valeurs).
-    /// </summary>
-    public virtual ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
 
     /// <summary>
     /// Ajoute les commentaires dans les entités JS générées.
@@ -177,14 +177,24 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    public virtual string GetEnumsFileName(Namespace ns, string tag)
+    {
+        return Path.Combine(
+                OutputDirectory,
+                ResolveVariables(ModelRootPath!, tag, ns.ModulePathKebab),
+                $"{EnumsFileName}.ts"
+            )
+            .Replace('\\', '/');
+    }
+
     public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag)
     {
         string target;
         if (dep is { Source: IProperty and not { Composition: not null } })
         {
-            if (dep.Classe.IsJSReference() && AvailableClasses.Contains(dep.Classe))
+            if (dep.Classe.Enum != null && AvailableClasses.Contains(dep.Classe))
             {
-                target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
+                target = GetEnumsFileName(dep.Classe.Namespace, targetTag);
             }
             else
             {
@@ -193,9 +203,10 @@ public class JavascriptConfig : GeneratorConfigBase
         }
         else
         {
-            target = dep.Classe.IsJSReference()
-                ? GetReferencesFileName(dep.Classe.Namespace, targetTag)
-                : GetClassFileName(dep.Classe, targetTag);
+            target =
+                dep.Classe.Enum != null
+                    ? GetEnumsFileName(dep.Classe.Namespace, targetTag)
+                    : GetClassFileName(dep.Classe, targetTag);
         }
 
         var source = dep.Source switch
@@ -225,12 +236,6 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string GetMainResourceFilePath(string tag, string lang)
     {
         return Path.Combine(OutputDirectory, ResolveVariables(ResourceRootPath!, tag, lang: lang), "index.ts")
-            .Replace('\\', '/');
-    }
-
-    public virtual string GetReferencesFileName(Namespace ns, string tag)
-    {
-        return Path.Combine(OutputDirectory, ResolveVariables(ModelRootPath!, tag, ns.ModulePathKebab), "references.ts")
             .Replace('\\', '/');
     }
 
@@ -270,7 +275,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual bool IsListComposition(IProperty property)
     {
         return property is { Composition: Class c, Domain: Domain d }
-            && !c.IsJSReference()
+            && c.Enum == null
             && (GetImplementation(d)?.GenericType?.EndsWith("[]") ?? false);
     }
 

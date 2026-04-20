@@ -6,8 +6,8 @@ import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "../../domains";
 
 import {ClientReadEntity} from "./client-read";
+import {StatutCommande} from "./enums";
 import {LigneCommandeReadEntity} from "./ligne-commande-read";
-import {StatutCommande} from "./references";
 import {ReservationReadEntity} from "./reservation-read";
 
 export type CommandeRead = EntityToType<CommandeReadEntityType>;

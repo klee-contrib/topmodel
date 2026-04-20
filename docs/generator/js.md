@@ -43,7 +43,7 @@ Exemple de code généré :
 ```typescript
 export function getProfil(
   id: number,
-  options: AsyncDataOptions<ProfilDto> = {}
+  options: AsyncDataOptions<ProfilDto> = {},
 ): AsyncData<ProfilDto | null, Error | null> {
   return useAsyncData(
     `/api/profil/${id}`,
@@ -51,7 +51,7 @@ export function getProfil(
       $fetch<ProfilDto>(`/api/profil/${id}`, {
         method: "GET",
       }),
-    options
+    options,
   );
 }
 ```
@@ -236,6 +236,116 @@ export const ProfilDtoEntity = {
 } as const;
 ```
 
+### Génération des enums
+
+**On ne génère pas de définition d'entité pour les enums**. A la place, elles seront toutes agrégées dans un fichier `enums.ts` (relativement au `modelRootPath`, donc il y aura à priori au moins un fichier par module). Le nom de ce fichier est configurable via le paramètre de configuration `enumsFileName`.
+
+Pour chaque classe, on génèrera :
+
+- Un type "enum" (union des valeurs possibles) par propriété enum de la classe (ou pour la classe entière si elle est `enum: true`).
+- Le type Typescript "standard" correspondant à la classe (il sera suffixé par `Object` pour une `enum: true`, vu que le nom de la classe est déjà utilisé pour le type "enum")
+- Pour une classe `enum: true` ou `readonly: true`, la liste des valeurs de la classe.
+
+Par exemple :
+
+```ts
+// Region est une classe enum non readonly.
+export type RegionCode = "IDF";
+export interface Region {
+  code: RegionCode;
+  libelle: string;
+  nomResponsable?: string;
+}
+
+// StatutCommande est une classe `enum: true`.
+export type StatutCommande =
+  | "ANNULE"
+  | "EN_ATT"
+  | "EN_PREP"
+  | "PRETE"
+  | "SERVIE";
+export interface StatutCommandeObject {
+  code: StatutCommande;
+  libelle: string;
+}
+export const statutCommandeList: StatutCommandeObject[] = [
+  {
+    code: "EN_ATT",
+    libelle: "restaurant.statutCommande.values.EnAttente", // Car `translateReferences: true`.
+  },
+  {
+    code: "EN_PREP",
+    libelle: "restaurant.statutCommande.values.EnPreparation",
+  },
+  {
+    code: "PRETE",
+    libelle: "restaurant.statutCommande.values.Prete",
+  },
+  {
+    code: "SERVIE",
+    libelle: "restaurant.statutCommande.values.Servie",
+  },
+  {
+    code: "ANNULE",
+    libelle: "restaurant.statutCommande.values.Annulee",
+  },
+];
+```
+
+### Génération des classes de référence
+
+Si `reference: true` sur une classe, alors un objet décrivant la liste de référence sera généré en plus :
+
+- Pour une classe non enum, ou une classe enum non readonly, il sera de la forme `{type, valueKey, labelKey}`
+- Pour une classe enum reaondly ou `enum: true` il sera de la forme `{list, valueKey, labelKey}`
+
+Ces propriétés sont :
+
+- `type`, le type Typescript de la classe (généré comme `{} as Classe`)/
+- `list`, la liste des valeurs de la classe.
+- `valueKey`, le nom de la clé de la classe de référence (la clé primaire ou la clé d'unicité qui la remplace)
+- `labelKey`, le nom de la `DefaultProperty` de la classe de référence.
+
+Exemple :
+
+```ts
+// Liste de référence classique.
+export const region = {
+  type: {} as Region,
+  valueKey: "code",
+  labelKey: "libelle",
+} as const;
+
+// Liste de référence statique.
+export const departementList: Departement[] = [
+  {
+    code: "75",
+    libelle: "restaurant.departement.values.Paris",
+    regionCode: "IDF",
+  },
+  {
+    code: "92",
+    libelle: "restaurant.departement.values.HautsDeSeine",
+    regionCode: "IDF",
+  },
+  {
+    code: "93",
+    libelle: "restaurant.departement.values.SeineSaintDenis",
+    regionCode: "IDF",
+  },
+  {
+    code: "94",
+    libelle: "restaurant.departement.values.SeineEtMarne",
+    regionCode: "IDF",
+  },
+];
+export const departement = {
+  list: departementList,
+  valueKey: "code",
+  labelKey: "libelle",
+} as const;
+```
+
 ### Modes de génération des fichiers de ressource
 
 Le paramètre `resourceMode` permet de choisir le format de génération des fichiers de ressources (traductions).
@@ -321,59 +431,6 @@ export const securiteComments = {
 };
 ```
 
-### Modes de génération des listes de références
-
-#### Définition (défaut)
-
-La génération des listes de références se met en mode **Définition** lorsque le paramètre `referenceMode` est défini à `definition`.
-
-Ce mode permet de générer, pour chaque liste de référence, une définition de ses propriétés (laquelle représente la clé primaire, laquelle représente le texte à afficher).
-
-Exemple :
-
-```typescript
-export type TypeProfilCode = "ADM" | "GES";
-export interface TypeProfil {
-  code: TypeProfilCode;
-  libelle: string;
-}
-export const typeProfil = {
-  type: {} as TypeProfil,
-  valueKey: "code",
-  labelKey: "libelle",
-} as const;
-```
-
-#### Valeurs
-
-La génération des listes de références se met en mode **Valeurs** lorsque le paramètre `referenceMode` est défini à `values`.
-
-Il permet de générer l'ensemble des valeurs de chaque liste de référence telles que définies dans la propriété `values`. Ce mode est préconisé pour les listes de références statiques uniquement.
-
-Exemple :
-
-```typescript
-export type TypeProfilCode = "ADM" | "GES";
-
-export interface TypeProfil {
-  code: TypeProfilCode;
-  libelle: string;
-}
-
-export const typeProfilList: TypeProfil[] = [
-  {
-    code: "ADM",
-    libelle: "typeProfil.values.ADM",
-  },
-  {
-    code: "GES",
-    libelle: "typeProfil.values.GES",
-  },
-];
-```
-
-Si le paramètre `translateReferences` est passé à `false`, les clés de traductions ci-dessus seront remplacées par les libellés correspondant.
-
 ### Configuration complète
 
 Exemple de configuration complète :
@@ -390,7 +447,6 @@ javascript:
   apiMode: angular
   entityMode: focus
   resourceMode: js
-  referenceMode: definition
   domainPath: "../domains"
   fetchPath: "@focus4/core"
   entityTypesPath: "@focus4/entities"
@@ -406,7 +462,7 @@ javascript:
 Le module JavaScript génère plusieurs types de fichiers :
 
 1. **TypescriptDefinitionGenerator** (`JSDefinitionGen`) : Génère les définitions TypeScript des classes (DTOs et entités)
-2. **TypescriptReferenceGenerator** (`JSReferenceGen`) : Génère les définitions des listes de références
+2. **TypescriptEnumsGenerator** (`JSEnumsGen`) : Génère les définitions des listes de références
 3. **JavascriptApiClientGenerator** (`JSApiClientGen`) : Génère les clients API en mode fetch
 4. **AngularApiClientGenerator** (`JSNGApiClientGen`) : Génère les services Angular pour les clients API
 5. **NuxtApiClientGenerator** (`JSApiClientGen`) : Génère les fonctions API pour Nuxt

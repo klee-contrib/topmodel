@@ -5,7 +5,7 @@
 import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
-import {CategoriePlatCode} from "./references";
+import {CategoriePlatCode} from "./enums";
 
 export type PlatItemReadonly = EntityToType<PlatItemReadonlyEntityType>;
 export type PlatItemReadonlyEntityType = typeof PlatItemReadonlyEntity;

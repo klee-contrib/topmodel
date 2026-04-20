@@ -5,7 +5,7 @@
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
-import {StatutCommande} from "./references";
+import {StatutCommande} from "./enums";
 
 export type CommandeItem = EntityToType<CommandeItemEntityType>;
 export type CommandeItemEntityType = typeof CommandeItemEntity;

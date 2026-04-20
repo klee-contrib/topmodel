@@ -5,39 +5,35 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;
 
-using static JavascriptUtils;
-
 /// <summary>
-/// Générateur de définitions Typescript.
+/// Générateur d'enums Typescript.
 /// </summary>
-public class TypescriptReferenceGenerator(
-    ILogger<TypescriptReferenceGenerator> logger,
-    IFileWriterProvider writerProvider
-) : ClassGroupGeneratorBase<JavascriptConfig>(logger, writerProvider)
+public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, IFileWriterProvider writerProvider)
+    : ClassGroupGeneratorBase<JavascriptConfig>(logger, writerProvider)
 {
-    public override string Name => "JSReferenceGen";
+    public override string Name => "JSEnumsGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsJSReference())
+        if (classe.Enum != null)
         {
-            yield return ("main", Config.GetReferencesFileName(classe.Namespace, tag));
+            yield return ("main", Config.GetEnumsFileName(classe.Namespace, tag));
         }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        GenerateReferenceFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
+        GenerateEnumsFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
     }
 
     /// <summary>
     /// Create the template output
     /// </summary>
-    private void GenerateReferenceFile(string fileName, IEnumerable<Class> references, string tag)
+    private void GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
     {
         using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
-        var imports = references
+        var imports = enums
             .SelectMany(r => r.ClassDependencies)
             .Select(dep =>
                 (
@@ -57,13 +53,11 @@ public class TypescriptReferenceGenerator(
                 )
             )
             .Concat(
-                references
-                    .SelectMany(r => r.Properties)
-                    .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
+                enums.SelectMany(r => r.Properties).SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
             )
             .Concat(
-                references
-                    .Where(r => Config.ReferenceMode == ReferenceMode.VALUES || r.Enum == EnumMode.Enum)
+                enums
+                    .Where(r => r.Readonly || r.Enum == EnumMode.Enum)
                     .SelectMany(r =>
                         r.Properties.SelectMany(dep =>
                             r.Values.Where(v => v.Value.ContainsKey(dep))
@@ -71,7 +65,7 @@ public class TypescriptReferenceGenerator(
                         )
                     )
             )
-            .Where(i => i.Path != null && i.Path != $"./references")
+            .Where(i => i.Path != null && i.Path != $"./{Config.EnumsFileName}")
             .GroupAndSort();
 
         foreach (var import in imports)
@@ -89,7 +83,7 @@ public class TypescriptReferenceGenerator(
         }
 
         var first = true;
-        foreach (var reference in references)
+        foreach (var enumClass in enums)
         {
             if (first)
             {
@@ -100,13 +94,13 @@ public class TypescriptReferenceGenerator(
                 fw.WriteLine();
             }
 
-            var values = Config.GetAllValues(reference).ToList();
+            var values = Config.GetAllValues(enumClass).ToList();
 
-            foreach (var enumProp in reference.Properties.Where(e => e.EnumLikeProperty == e))
+            foreach (var enumProp in enumClass.Properties.Where(e => e.EnumLikeProperty == e))
             {
                 fw.Write("export type ");
-                fw.Write(reference.NamePascal);
-                if (reference.Enum == EnumMode.Class)
+                fw.Write(enumClass.NamePascal);
+                if (enumClass.Enum == EnumMode.Class)
                 {
                     fw.Write(enumProp.NamePascal);
                 }
@@ -123,19 +117,19 @@ public class TypescriptReferenceGenerator(
                 fw.WriteLine(";");
             }
 
-            if (reference.FlagProperty != null)
+            if (enumClass.FlagProperty != null)
             {
-                fw.Write($"export enum {reference.NamePascal}Flag {{\r\n");
+                fw.Write($"export enum {enumClass.NamePascal}Flag {{\r\n");
 
-                var flagValues = reference
+                var flagValues = enumClass
                     .Values.Where(refValue =>
-                        refValue.Value.ContainsKey(reference.FlagProperty)
-                        && int.TryParse(refValue.Value[reference.FlagProperty], out var _)
+                        refValue.Value.ContainsKey(enumClass.FlagProperty)
+                        && int.TryParse(refValue.Value[enumClass.FlagProperty], out var _)
                     )
                     .ToList();
                 foreach (var refValue in flagValues)
                 {
-                    var flag = int.Parse(refValue.Value[reference.FlagProperty]);
+                    var flag = int.Parse(refValue.Value[enumClass.FlagProperty]);
                     fw.Write($"    {refValue.Name} = 0b{Convert.ToString(flag, 2)}");
                     if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                     {
@@ -146,74 +140,46 @@ public class TypescriptReferenceGenerator(
                 fw.WriteLine("\r\n}");
             }
 
-            if (Config.ReferenceMode == ReferenceMode.VALUES || reference.Enum != EnumMode.Enum)
+            fw.Write("export interface ");
+            fw.Write(enumClass.NamePascal);
+
+            if (enumClass.Enum == EnumMode.Enum)
             {
-                fw.Write("export interface ");
-                fw.Write(reference.NamePascal);
-
-                if (reference.Enum == EnumMode.Enum)
-                {
-                    fw.Write("Object");
-                }
-
-                if (reference.Extends != null)
-                {
-                    fw.Write($" extends {reference.Extends.NamePascal}");
-                }
-
-                fw.Write(" {\r\n");
-
-                foreach (var property in reference.Properties)
-                {
-                    fw.Write("    ");
-                    fw.Write(property.NameCamel);
-                    fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
-                    fw.Write(": ");
-                    fw.Write(Config.GetType(property));
-                    fw.Write(";\r\n");
-                }
-
-                fw.Write("}\r\n");
+                fw.Write("Object");
             }
 
-            if (Config.ReferenceMode == ReferenceMode.VALUES)
+            if (enumClass.Extends != null)
             {
-                WriteReferenceValues(fw, reference);
+                fw.Write($" extends {enumClass.Extends.NamePascal}");
             }
-            else if (reference.Enum != EnumMode.Enum && reference.Reference)
+
+            fw.Write(" {\r\n");
+
+            foreach (var property in enumClass.Properties)
             {
-                WriteReferenceDefinition(fw, reference);
+                fw.Write("    ");
+                fw.Write(property.NameCamel);
+                fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
+                fw.Write(": ");
+                fw.Write(Config.GetType(property));
+                fw.Write(";\r\n");
             }
-            else if (reference.Enum == EnumMode.Enum)
+
+            fw.Write("}\r\n");
+
+            if (enumClass.Enum != EnumMode.Class || enumClass.Readonly)
             {
-                WriteReferenceMap(fw, reference);
+                WriteEnumValues(fw, enumClass);
+            }
+
+            if (enumClass.Reference)
+            {
+                fw.WriteReferenceDefinition(enumClass, Config);
             }
         }
     }
 
-    private void WriteReferenceMap(IFileWriter fw, Class reference)
-    {
-        if (reference.DefaultProperty == null)
-        {
-            return;
-        }
-
-        fw.Write("export const ");
-        fw.Write(reference.NameCamel);
-        fw.Write("Labels = {");
-        fw.WriteLine();
-        foreach (var refValue in reference.Values)
-        {
-            fw.Write(
-                $"    {refValue.Value[reference.EnumKey]}: {(Config.TranslateReferences == true ? $"\"{refValue.ResourceKey}\"" : Config.GetValue(reference.DefaultProperty, refValue.Value[reference.DefaultProperty]))}"
-            );
-            fw.WriteLine(reference.Values[^1] != refValue ? "," : string.Empty);
-        }
-
-        fw.WriteLine("};");
-    }
-
-    private void WriteReferenceValues(IFileWriter fw, Class reference)
+    private void WriteEnumValues(IFileWriter fw, Class reference)
     {
         fw.Write("export const ");
         fw.Write(reference.NameCamel);

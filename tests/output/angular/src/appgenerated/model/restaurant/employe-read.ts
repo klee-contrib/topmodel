@@ -5,7 +5,7 @@
 import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX, DO_TELEPHONE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
-import {DepartementCode} from "./references";
+import {DepartementCode} from "./enums";
 
 export type EmployeRead = EntityToType<EmployeReadEntityType>;
 export type EmployeReadEntityType = typeof EmployeReadEntity;

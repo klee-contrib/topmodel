@@ -507,7 +507,7 @@
               "type": "string",
               "enum": [
                 "JSDefinitionGen",
-                "JSReferenceGen",
+                "JSEnumsGen",
                 "JSNGApiClientGen",
                 "JSApiClientGen",
                 "JSResourceGen"
@@ -530,6 +530,10 @@
           "modelRootPath": {
             "type": "string",
             "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si '{module}' n'est pas présent dans le chemin, alors il sera ajouté à la fin."
+          },
+          "enumsFileName": {
+            "type": "string",
+            "description": "Nom du fichier généré contenant les enums d'un module. Par défaut : `enums`."
           },
           "resourceRootPath": {
             "type": "string",
@@ -609,15 +613,6 @@
           "generateMainResourceFiles": {
             "type": "boolean",
             "description": "Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`."
-          },
-          "referenceMode": {
-            "type": "string",
-            "description": "Mode de génération des listes de références (définitions ou valeurs).",
-            "enum": [
-              "definition",
-              "values"
-            ],
-            "default": "definition"
           }
         }
       }

@@ -5,7 +5,7 @@
 version: 4.1.1
 custom:
   ../../TopModel.Generator.Csharp: eb470387afb108ee44d7c62c3721dc15
-  ../../TopModel.Generator.Javascript: 4d216bc22f2c1ac1c4c6dda1caa86fe0
+  ../../TopModel.Generator.Javascript: d0cc086a0c091d8148c390ca2159b890
   ../../TopModel.Generator.Jpa: d46a06dd5b3fce98717235e7e6c988ca
   ../../TopModel.Generator.Sql: 6ef4f28773377221c0842c87fe0b466f
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
@@ -28,6 +28,7 @@ generatedFiles:
   - ../output/angular/src/appgenerated/model/restaurant/employe-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/employe-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/employe-write.ts
+  - ../output/angular/src/appgenerated/model/restaurant/enums.ts
   - ../output/angular/src/appgenerated/model/restaurant/ligne-commande-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/ligne-commande-write.ts
   - ../output/angular/src/appgenerated/model/restaurant/menu-read.ts
@@ -38,7 +39,6 @@ generatedFiles:
   - ../output/angular/src/appgenerated/model/restaurant/plat-write.ts
   - ../output/angular/src/appgenerated/model/restaurant/promotion-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/promotion-write.ts
-  - ../output/angular/src/appgenerated/model/restaurant/references.ts
   - ../output/angular/src/appgenerated/model/restaurant/reservation-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/reservation-write.ts
   - ../output/angular/src/appgenerated/model/restaurant/restaurant-avec-statistiques.ts
@@ -134,6 +134,7 @@ generatedFiles:
   - ../output/focus/src/model/restaurant/employe-item.ts
   - ../output/focus/src/model/restaurant/employe-read.ts
   - ../output/focus/src/model/restaurant/employe-write.ts
+  - ../output/focus/src/model/restaurant/enums.ts
   - ../output/focus/src/model/restaurant/ligne-commande-read.ts
   - ../output/focus/src/model/restaurant/ligne-commande-write.ts
   - ../output/focus/src/model/restaurant/menu-read.ts
@@ -144,7 +145,6 @@ generatedFiles:
   - ../output/focus/src/model/restaurant/plat-write.ts
   - ../output/focus/src/model/restaurant/promotion-read.ts
   - ../output/focus/src/model/restaurant/promotion-write.ts
-  - ../output/focus/src/model/restaurant/references.ts
   - ../output/focus/src/model/restaurant/reservation-read.ts
   - ../output/focus/src/model/restaurant/reservation-write.ts
   - ../output/focus/src/model/restaurant/restaurant-avec-statistiques.ts

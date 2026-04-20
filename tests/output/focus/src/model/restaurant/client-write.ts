@@ -5,7 +5,7 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE, DO_LIBELLE, DO_LISTE} from "../../domains";
 
-import {DepartementCode} from "./references";
+import {DepartementCode} from "./enums";
 
 export type ClientWrite = EntityToType<ClientWriteEntityType>;
 export type ClientWriteEntityType = typeof ClientWriteEntity;

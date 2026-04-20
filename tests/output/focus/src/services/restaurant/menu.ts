@@ -2,6 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
+import {CategoriePlat, CategoriePlatCode} from "../../model/restaurant/enums";
 import {MenuRead} from "../../model/restaurant/menu-read";
 import {MenuWrite} from "../../model/restaurant/menu-write";
 import {PlatItem} from "../../model/restaurant/plat-item";
@@ -9,7 +10,6 @@ import {PlatRead} from "../../model/restaurant/plat-read";
 import {PlatWrite} from "../../model/restaurant/plat-write";
 import {PromotionRead} from "../../model/restaurant/promotion-read";
 import {PromotionWrite} from "../../model/restaurant/promotion-write";
-import {CategoriePlat, CategoriePlatCode} from "../../model/restaurant/references";
 
 /**
  * Ajoute un plat

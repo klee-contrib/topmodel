@@ -5,7 +5,7 @@
 import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
-import {DepartementCode} from "./references";
+import {DepartementCode} from "./enums";
 
 export type ClientRead = EntityToType<ClientReadEntityType>;
 export type ClientReadEntityType = typeof ClientReadEntity;

@@ -34,6 +34,7 @@ export const categoriePlatList: CategoriePlat[] = [
         prixMoyen: 2
     },
 ];
+export const categoriePlat = {list: categoriePlatList, valueKey: "code", labelKey: "libelle"} as const;
 
 export interface CategoriePlatRegion {
     regionCode: RegionCode;
@@ -78,6 +79,7 @@ export const departementList: Departement[] = [
         regionCode: "IDF"
     },
 ];
+export const departement = {list: departementList, valueKey: "code", labelKey: "libelle"} as const;
 
 export type RegionCode = "IDF";
 export interface Region {
@@ -85,12 +87,7 @@ export interface Region {
     libelle: string;
     nomResponsable?: string;
 }
-export const regionList: Region[] = [
-    {
-        code: "IDF",
-        libelle: "restaurant.region.values.Idf"
-    },
-];
+export const region = {type: {} as Region, valueKey: "code", labelKey: "libelle"} as const;
 
 export type StatutCommande = "ANNULE" | "EN_ATT" | "EN_PREP" | "PRETE" | "SERVIE";
 export interface StatutCommandeObject {
@@ -119,3 +116,4 @@ export const statutCommandeList: StatutCommandeObject[] = [
         libelle: "restaurant.statutCommande.values.Annulee"
     },
 ];
+export const statutCommande = {list: statutCommandeList, valueKey: "code", labelKey: "libelle"} as const;

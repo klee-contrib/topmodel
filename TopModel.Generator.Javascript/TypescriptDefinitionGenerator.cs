@@ -5,8 +5,6 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;
 
-using static JavascriptUtils;
-
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
@@ -19,7 +17,7 @@ public class TypescriptDefinitionGenerator(
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.IsJSReference();
+        return classe.Enum == null;
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -410,7 +408,7 @@ public class TypescriptDefinitionGenerator(
         if (classe.Reference)
         {
             fw.WriteLine();
-            WriteReferenceDefinition(fw, classe);
+            fw.WriteReferenceDefinition(classe, Config);
         }
     }
 

@@ -6,9 +6,9 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { CategoriePlatCode } from "../../model/restaurant/enums";
 import { MenuRead } from "../../model/restaurant/menu-read";
 import { PlatItem } from "../../model/restaurant/plat-item";
-import { CategoriePlatCode } from "../../model/restaurant/references";
 import { RestaurantAvecStatistiques } from "../../model/restaurant/restaurant-avec-statistiques";
 import { RestaurantItem } from "../../model/restaurant/restaurant-item";
 import { RestaurantRead } from "../../model/restaurant/restaurant-read";

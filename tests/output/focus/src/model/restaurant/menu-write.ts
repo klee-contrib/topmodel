@@ -5,7 +5,7 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "../../domains";
 
-import {CategoriePlatCode} from "./references";
+import {CategoriePlatCode} from "./enums";
 
 export type MenuWrite = EntityToType<MenuWriteEntityType>;
 export type MenuWriteEntityType = typeof MenuWriteEntity;

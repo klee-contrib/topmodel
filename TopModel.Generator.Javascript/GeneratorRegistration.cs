@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using TopModel.Generator.Core;
 using static TopModel.Utils.ModelUtils;
 
@@ -32,6 +33,8 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
         TrimSlashes(config, c => c.ModelRootPath);
         TrimSlashes(config, c => c.ResourceRootPath);
 
+        config.EnumsFileName = Regex.Replace(config.EnumsFileName, "\\.ts$", string.Empty);
+
         if (config.ModelRootPath != null)
         {
             if (!config.ModelRootPath.Contains("{module}"))
@@ -40,7 +43,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
             }
 
             services.AddGenerator<TypescriptDefinitionGenerator, JavascriptConfig>(config, number);
-            services.AddGenerator<TypescriptReferenceGenerator, JavascriptConfig>(config, number);
+            services.AddGenerator<TypescriptEnumsGenerator, JavascriptConfig>(config, number);
 
             if (config.ApiClientRootPath != null)
             {

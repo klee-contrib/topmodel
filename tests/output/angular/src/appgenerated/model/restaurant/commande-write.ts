@@ -6,8 +6,8 @@ import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {ClientWriteEntity} from "./client-write";
+import {StatutCommande} from "./enums";
 import {LigneCommandeWriteEntity} from "./ligne-commande-write";
-import {StatutCommande} from "./references";
 import {ReservationWriteEntity} from "./reservation-write";
 
 export type CommandeWrite = EntityToType<CommandeWriteEntityType>;

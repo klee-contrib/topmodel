@@ -5,8 +5,8 @@
 import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
+import {CategoriePlat} from "./enums";
 import {PlatItemEntity} from "./plat-item";
-import {CategoriePlat} from "./references";
 
 export type MenuRead = EntityToType<MenuReadEntityType>;
 export type MenuReadEntityType = typeof MenuReadEntity;

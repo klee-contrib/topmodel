@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 import { CommandeItem } from "../../model/restaurant/commande-item";
 import { CommandeRead } from "../../model/restaurant/commande-read";
 import { CommandeWrite } from "../../model/restaurant/commande-write";
-import { StatutCommande } from "../../model/restaurant/references";
+import { StatutCommande } from "../../model/restaurant/enums";
 import { ReservationRead } from "../../model/restaurant/reservation-read";
 import { ReservationWrite } from "../../model/restaurant/reservation-write";
 @Injectable({

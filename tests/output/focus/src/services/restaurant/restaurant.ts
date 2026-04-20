@@ -2,9 +2,9 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
+import {CategoriePlatCode} from "../../model/restaurant/enums";
 import {MenuRead} from "../../model/restaurant/menu-read";
 import {PlatItem} from "../../model/restaurant/plat-item";
-import {CategoriePlatCode} from "../../model/restaurant/references";
 import {RestaurantAvecStatistiques} from "../../model/restaurant/restaurant-avec-statistiques";
 import {RestaurantItem} from "../../model/restaurant/restaurant-item";
 import {RestaurantRead} from "../../model/restaurant/restaurant-read";

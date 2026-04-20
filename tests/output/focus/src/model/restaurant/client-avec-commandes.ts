@@ -5,7 +5,7 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "../../domains";
 
-import {DepartementCode, StatutCommande} from "./references";
+import {DepartementCode, StatutCommande} from "./enums";
 
 export type ClientAvecCommandes = EntityToType<ClientAvecCommandesEntityType>;
 export type ClientAvecCommandesEntityType = typeof ClientAvecCommandesEntity;
