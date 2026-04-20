@@ -2,8 +2,7 @@ name: publish documentation
 
 on:
   push:
-    paths:
-      - "docs/**/*"
+    branches: ["develop"]
 
 jobs:
   build-doc:
