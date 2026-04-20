@@ -12,6 +12,7 @@ Bienvenue dans ce tutoriel de prise en main de TopModel. Ici vous allez découvr
 - Générer du code
 - Utiliser l'extension VSCode
 
-> Tout au long de ce tutoriel, n'hésitez pas à vous inspirer du [projet d'exemple](https://github.com/klee-contrib/topmodel/tree/develop/docs/exemple).
+> Tout au long de ce tutoriel, n'hésitez pas à vous inspirer de l'un des starters kit
 
-[Démarrer tout de suite !](/getting-started/intro)
+- [Dotnet - Focus](https://github.com/klee-contrib/dfta-starter-kit)
+- [Spring - Angular](https://github.com/klee-contrib/asta-starter-kit)
