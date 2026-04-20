@@ -22,25 +22,25 @@ Le générateur JPA est compatible avec les options globales de TopModel :
 
 ### Générateurs
 
-| Nom                   | Condition d'activation                                             | Objets ciblés                                                                                                                    | Fichiers générés                                                                                                                                                                                                                                                           |
-| --------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| JavaDtoGen            | Toujours                                                           | Classes non persistées qui ne sont pas des enums                                                                                 | Pojo contenant les propriétés définies dans le modèle avec les annotations de validation                                                                                                                                                                                   |
-| JdbcEntityGen         | `useJdbc: true`                                                    | Classes persistées                                                                                                               | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance Jdbc                                                                                                                                                                |
-| JpaDaoGen             | `daosPath` défini                                                  | Classes persistées qui ne sont pas des enums                                                                                     | Interface Repository permettant de requêter la classe en question                                                                                                                                                                                                          |
-| JpaEntityGen          | `useJdbc: false`                                                   | Classes persistées qui ne sont pas des enums                                                                                     | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA                                                                                                                                                                 |
-| JpaEnumEntityGen      | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées qui sont des enums                                                                                            | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA. Contient également des membres statiques représentant les entitées décrites dans les values                                                                    |
-| JpaEnumGen            | `useJdbc: false` && `enumsAsEnums: false`                          | Classes persistées ou non qui sont des enums                                                                                     | Enumération des valeurs possible de la clé primaire de la classe                                                                                                                                                                                                           |
-| JavaEnumDtoGen        | `useJdbc: false` && `enumsAsEnums: false`                          | Classes non persistées qui sont des enums                                                                                        | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de validation. Contient également des membres statiques représentant les instances décrites dans les values                                                                           |
-| JpaEnumValuesGen      | `useJdbc: false` && `enumsAsEnums: true`                           | Classes qui sont des enums                                                                                                       | Enum contenant toutes les valeurs définies dans les values, dont la clé est la primaryKey ou la première propriété de la classe.                                                                                                                                           |
-| JpaInterfaceGen       | Toujours                                                           | Classes qui ont `abstract: true`                                                                                                 | Interface ne contenant que des `getters` des propriétés définies dans le modèle. Peut également définir une méthode `hydrate`, s'apparentant à un constructeur                                                                                                             |
-| SpringDataFlowGen     | `dataFlowsPath` défini                                             | Dataflows                                                                                                                        | Définition d'un job par module, et d'un step par dataFlow. Peut également générer une interface à implémenter pour les source en mode`partial` et les `hook` ajoutés                                                                                                       |
-| FeignClientApiGen     | `apiGeneration: client` && `clientApiGeneration: feignClient`      | Endpoints                                                                                                                        | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente.                                                                                                                                                                             |
-| SpringApiClientGen    | `apiGeneration: client` && `clientApiGeneration: restClient`       | Endpoints                                                                                                                        | Interface contenant les annotations `@XXXExchange` pour la génération d'un client API via `HttpServiceProxyFactory`. Les méthodes retournent `ResponseEntity<T>`.                                                                                                          |
-| SpringRestTemplateGen | `apiGeneration: client` && `clientApiGeneration: restTemplate`     | Endpoints                                                                                                                        | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un RestTemplate Spring.                                                                                                                                                          |
-| SpringApiServerGen    | `apiGeneration: server`                                            | Endpoints                                                                                                                        | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                                                                                                                                         |
-| JpaMapperGenerator    | Toujours                                                           | Mappers                                                                                                                          | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèle                                                                                                                                                                         |
-| JpaResourceGen        | `resourcesPath` défini                                             | Classes qui contiennent des labels ou des values qui ont des defaultProperty                                                     | Fichiers de resource `.properties` dans les différentes langues de l'application. Les clés sont les clés de traduction des labels des propriétés du modèle, et dont les valeurs sont les labels définis dans le modèle dans la langue de développement, ou leur traduction |
-| JpaMetaModelGen       | `metaModel: true` && `useJdbc: false`                              | Entités persistées non abstraites                                                          | Classes représentant le métamodèle des entités persistées. Une classe par entité avec le suffixe `_`.                                                                                                                                                                      |
+| Nom                   | Condition d'activation                                         | Objets ciblés                                                                | Fichiers générés                                                                                                                                                                                                                                                           |
+| --------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JavaDtoGen            | Toujours                                                       | Classes non persistées qui ne sont pas des enums                             | Pojo contenant les propriétés définies dans le modèle avec les annotations de validation                                                                                                                                                                                   |
+| JdbcEntityGen         | `useJdbc: true`                                                | Classes persistées                                                           | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance Jdbc                                                                                                                                                                |
+| JpaDaoGen             | `daosPath` défini                                              | Classes persistées qui ne sont pas des enums                                 | Interface Repository permettant de requêter la classe en question                                                                                                                                                                                                          |
+| JpaEntityGen          | `useJdbc: false`                                               | Classes persistées qui ne sont pas des enums                                 | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA                                                                                                                                                                 |
+| JpaEnumEntityGen      | `useJdbc: false` && `enumsAsEnums: false`                      | Classes persistées qui sont des enums                                        | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de la persistance JPA. Contient également des membres statiques représentant les entitées décrites dans les values                                                                    |
+| JpaEnumGen            | `useJdbc: false` && `enumsAsEnums: false`                      | Classes persistées ou non qui sont des enums                                 | Enumération des valeurs possible de la clé primaire de la classe                                                                                                                                                                                                           |
+| JavaEnumDtoGen        | `useJdbc: false` && `enumsAsEnums: false`                      | Classes non persistées qui sont des enums                                    | Pojo contenant les propriétés définies dans le modèle, annotées avec les annotations de validation. Contient également des membres statiques représentant les instances décrites dans les values                                                                           |
+| JpaEnumValuesGen      | `useJdbc: false` && `enumsAsEnums: true`                       | Classes qui sont des enums                                                   | Enum contenant toutes les valeurs définies dans les values, dont la clé est la primaryKey ou la première propriété de la classe.                                                                                                                                           |
+| JpaInterfaceGen       | Toujours                                                       | Classes qui ont `abstract: true`                                             | Interface ne contenant que des `getters` des propriétés définies dans le modèle. Peut également définir une méthode `hydrate`, s'apparentant à un constructeur                                                                                                             |
+| SpringDataFlowGen     | `dataFlowsPath` défini                                         | Dataflows                                                                    | Définition d'un job par module, et d'un step par dataFlow. Peut également générer une interface à implémenter pour les source en mode`partial` et les `hook` ajoutés                                                                                                       |
+| FeignClientApiGen     | `apiGeneration: client` && `clientApiGeneration: feignClient`  | Endpoints                                                                    | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente.                                                                                                                                                                             |
+| SpringApiClientGen    | `apiGeneration: client` && `clientApiGeneration: restClient`   | Endpoints                                                                    | Interface contenant les annotations `@XXXExchange` pour la génération d'un client API via `HttpServiceProxyFactory`. Les méthodes retournent `ResponseEntity<T>`.                                                                                                          |
+| SpringRestTemplateGen | `apiGeneration: client` && `clientApiGeneration: restTemplate` | Endpoints                                                                    | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un RestTemplate Spring.                                                                                                                                                          |
+| SpringApiServerGen    | `apiGeneration: server`                                        | Endpoints                                                                    | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                                                                                                                                         |
+| JpaMapperGenerator    | Toujours                                                       | Mappers                                                                      | Classe statique contenant des méthodes statiques, correspondant aux mappers définis dans le modèle                                                                                                                                                                         |
+| JpaResourceGen        | `resourcesPath` défini                                         | Classes qui contiennent des labels ou des values qui ont des defaultProperty | Fichiers de resource `.properties` dans les différentes langues de l'application. Les clés sont les clés de traduction des labels des propriétés du modèle, et dont les valeurs sont les labels définis dans le modèle dans la langue de développement, ou leur traduction |
+| JpaMetaModelGen       | `metaModel: true` && `useJdbc: false`                          | Entités persistées non abstraites                                            | Classes représentant le métamodèle des entités persistées. Une classe par entité avec le suffixe `_`.                                                                                                                                                                      |
 
 ## Génération des classes
 
@@ -70,50 +70,40 @@ Des `getter` et `setter` sont ajoutés automatiquement, sauf si la classe ou la 
 Les classes persistées sont générées avec les annotations correspondant à ce qui est paramétré dans le modèle.
 Sur la classe :
 
-| Annotation                                          | Paramètre correspondant dans le modèle                                               |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `@Entity`                                           | Automatique                                                                          |
-| `@Table("SQL_NAME")`                                | Automatique                                                                          |
-| `@UniqueConstraint`                                 | `unique` : pour chacune des contraintes d'unicité de la classe                       |
-| `@Immutable`                                         | si la classe a `reference: true` et que c'est une enum (clé primaire enum)                           |
-| `@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)` | si la classe a `reference: true` et que c'est une enum (clé primaire enum)                           |
-| `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` | si la classe a `reference: true` et que ce n'est pas une enum                                        |
+| Annotation                                            | Paramètre correspondant dans le modèle                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------------- |
+| `@Entity`                                             | Automatique                                                                |
+| `@Table("SQL_NAME")`                                  | Automatique                                                                |
+| `@UniqueConstraint`                                   | `unique` : pour chacune des contraintes d'unicité de la classe             |
+| `@Immutable`                                          | si la classe a `reference: true` et que c'est une enum (clé primaire enum) |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)`  | si la classe a `reference: true` et que c'est une enum (clé primaire enum) |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` | si la classe a `reference: true` et que ce n'est pas une enum              |
 
 Sur chacune des propriété :
 
-| Annotation                     | Paramètre correspondant dans le modèle                                                                      |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `@Id`                          | `primaryKey: true` : sur la clé primaire                                                                    |
-| `@Enumerated(EnumType.STRING)` | Sur la clé primaire, si TopModel a détecté qu'il s'agissait bien d'une enum                                 |
-| `@SequenceGenerator`           | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
-| `@GeneratedValue`              | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
-| `@Column`                      | Sur les propriétés qui ne sont ni des compositions, ni des associations.                                    |
-| `@OneToOne`                    | `type: OneToOne` sur une association                                                                        |
-| `@ManyToOne`                   | `type: ManyToOne` sur une association                                                                       |
-| `@OneToMany`                   | `type: OneToMany` sur une association                                                                       |
-| `@ManyToMany`                  | `type: ManyToMany` sur une association                                                                      |
-| `@JoinColumn`                  | Sur les associations `manyToOne` et `oneToOne`                                                              |
-| `@JoinTable`                   | Sur les associations `manyToMany`                                                                           |
-| `@OrderBy`                     | Sur les associations `manyToMany` et `oneToMany` pour lesquelles la classe cible définit une `orderProperty` |
-| `@Convert`                     | Sur les compositions. Le converter utilisé est paramétrable.                                                |
+| Annotation                     | Paramètre correspondant dans le modèle                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `@Id`                          | `primaryKey: true` : sur la clé primaire                                                              |
+| `@Enumerated(EnumType.STRING)` | Sur la clé primaire, si TopModel a détecté qu'il s'agissait bien d'une enum                           |
+| `@SequenceGenerator`           | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale |
+| `@GeneratedValue`              | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale |
+| `@Column`                      | Sur les propriétés qui ne sont ni des compositions, ni des associations.                              |
+| `@OneToOne`                    | association contenant une clé d'unicité                                                               |
+| `@ManyToOne`                   | Cas général de l'association                                                                          |
+| `@OneToMany`                   | Propriété réciproque d'une association `ManyToOne`                                                    |
+| `@JoinColumn`                  | Sur les associations `manyToOne` et `oneToOne`                                                        |
+| `@OrderBy`                     | Sur les associations `oneToMany` pour lesquelles la classe cible définit une `orderProperty`          |
+| `@Convert`                     | Sur les compositions. Le converter utilisé est paramétrable.                                          |
 
-Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
+Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, avec :
 
 - `fetch = FetchType.LAZY` pour tous les types d'associations, pour optimisation des performances
-- `cascade = { CascadeType.ALL }` pour les associations `OneToMany`
-- `cascade = { CascadeType.ALL }` pour les associations `OneToOne`
-
-Par ailleurs, dès lors qu'une association est faite entre deux classes, si :
-
-- Les deux classes ont même package racine
-- La classe de destination n'est pas une liste de référence
-- L'association n'est pas de type `oneToOne`
-
-alors l'association réciproque sera générée dans la classe cible.
+- `cascade = { CascadeType.ALL }` pour les associations `OneToMany` par défaut
+- `cascade = { CascadeType.ALL }` pour les associations `OneToOne` par défaut
 
 #### ManyToMany
 
-L'association `ManyToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est celle déclarée dans le modèle TopModel.
+Il n'est pas possible de générer d'association ManyToMany implicite. Pour créer ce type d'association, la classe de liaison doit être explicitée, et doit contenir les associations vers les deux classes de la liaison. Ces deux propriétés doivent avoir `primaryKey: true`. La classe avec clé primaire composite sera générée (avec l'annotation `IdClass`).
 
 #### OneToMany
 
@@ -122,10 +112,6 @@ L'association `ManyToOne` réciproque est générée dans la classe de destinati
 #### ManyToOne
 
 L'association `OneToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est **toujours** l'association `ManyToOne`
-
-#### OneToOne
-
-Pour des raisons de performances, les associations oneToOne réciproques ne sont pas générées.
 
 #### Enum
 
@@ -141,9 +127,9 @@ Sur une classe, lorsque sont remplis les critères suivants :
 
 Alors la classe est une `enum`
 
-Il existe deux modes de gestion des enums.
+Il existe deux modes de gestion des enums, en fonction de ce qui est défini sur la classe
 
-##### Mode par défaut
+##### Mode `enum: class`
 
 - Une enum java `[NomDeLaClasse][NomDeLaPropriété]` est créée en utilisant la propriété `enumsPath` de la configuration, dont les valeurs sont les valeurs possibles définies dans le modèle.
 - La classe générée est identique à ce qu'elle aurait été si elle n'avait pas été une enum sauf :
@@ -237,9 +223,9 @@ public enum TypeDroitCode {
 
 ```
 
-##### Mode `enumsAsEnums`
+##### Mode `enum: true`
 
-En ajoutant la propriété `enumsAsEnums: true` à la configuration, le traitement des enums diffère en ces points :
+Si la class a l'attribut `enum: true`, le traitement des enums diffère en ces points :
 
 - Une enum java `[NomDeLaClasse]` est créée, dont les valeurs sont les valeurs possibles définies dans le modèle, et contenant toutes les valeurs des propriétés de la classe. Cette enum est générée avec le chemin contenu dans la propriété `enumsPath` de la config, sauf si la variable `enumsValuesPath` est définie.
 - Cette enum n'est donc pas une entité
@@ -340,59 +326,6 @@ class:
   abstract: true
 ```
 
-Si certaines d'entre ont `readonly: false`, qui est la valeur par défaut, alors une méthode `hydrate` sera générée, prenant en paramètre toutes les propriétés non `readonly`. Il s'agit d'un `setter` unique. Ce comportement est identique dans les autres modules standards (C#...).
-
-Exemple :
-
-```java
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public interface IUtilisateurDto {
-
-  /**
-   * Getter for id.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#id id}.
-   */
-   long getId();
-
-  /**
-   * Getter for email.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#email email}.
-   */
-   String getEmail();
-
-  /**
-   * Getter for typeUtilisateurCode.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
-   */
-   TypeUtilisateur.Values getTypeUtilisateurCode();
-
-  /**
-   * Getter for profilId.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilId profilId}.
-   */
-  long getProfilId();
-
-  /**
-   * Getter for profilTypeProfilCode.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilTypeProfilCode profilTypeProfilCode}.
-   */
-  TypeProfil.Values getProfilTypeProfilCode();
-
-  /**
-   * Getter for utilisateurParent.
-   *
-   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.
-   */
-  UtilisateurDto getUtilisateurParent();
-}
-
-```
-
 ## Génération des DAO
 
 Un fichier d'interface DAO est généré pour chacune des classes persistées du modèle. Cette interface hérite de `JpaRepository`, et est paramétrée pour gérer l'entité correspondante.
@@ -457,12 +390,12 @@ Le nom de la classe générée est déterminé par la configuration `apisName` (
 
 **Valeurs par défaut selon le mode :**
 
-| Mode | Nom de classe par défaut | Type généré |
-|------|-------------------------|-------------|
-| **Server** | `{fileName}Controller` | Interface |
-| **RestClient** | `{fileName}Client` | Interface |
+| Mode             | Nom de classe par défaut   | Type généré      |
+| ---------------- | -------------------------- | ---------------- |
+| **Server**       | `{fileName}Controller`     | Interface        |
+| **RestClient**   | `{fileName}Client`         | Interface        |
 | **RestTemplate** | `Abstract{fileName}Client` | Classe abstraite |
-| **FeignClient** | `{fileName}Api` | Interface |
+| **FeignClient**  | `{fileName}Api`            | Interface        |
 
 **Exemple :** Pour un fichier d'endpoints nommé `utilisateur`, les noms générés seront :
 
@@ -482,7 +415,7 @@ jpa:
   - tags:
       - api
     apiGeneration: Server
-    apisName: "{fileName}Service"  # Génère UtilisateurService au lieu de UtilisateurController
+    apisName: "{fileName}Service" # Génère UtilisateurService au lieu de UtilisateurController
 ```
 
 ### Emplacement des fichiers
@@ -514,7 +447,7 @@ Pour créer votre API, il suffit donc de créer un nouveau controller qui implé
 ```java
 @RestController
 public class UtilisateurControllerImpl implements UtilisateurController {
-  
+
   @Override
   public UtilisateurDto getUtilisateur(Long id) {
     // Implémentation
@@ -828,8 +761,8 @@ jpa:
   - tags:
       - entity
     dataFlowsPath: topmodel/exemple/flows
-    dataFlowsWriter: bulk  # ou jpa
-    dataFlowsBulkSize: 100000  # Taille des chunks pour le bulk insert (par défaut: 100000)
+    dataFlowsWriter: bulk # ou jpa
+    dataFlowsBulkSize: 100000 # Taille des chunks pour le bulk insert (par défaut: 100000)
 ```
 
 Le générateur supporte plusieurs stratégies d'insertion selon le type de dataflow défini dans le modèle :
@@ -893,7 +826,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `rootModule`
 
   Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions, noms de clients Feign, etc.). Cette propriété est utilisée notamment pour :
-  
   - Déterminer le nom des fichiers de ressources générés (fichiers `.properties` de traduction)
   - Définir l'attribut `name` de l'annotation `@FeignClient` lors de la génération de clients Feign
 
@@ -926,7 +858,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `daosAbstract`
 
   Génération des DAO sous forme 'Abstract' à hériter pour l'utiliser dans le projet avec :
-
   - le nom Abstract{classe.NamePascal}DAO
   - le fichier java sera mise à jour (écrasé) à chaque génération de code
   - l'annotation @NoRepositoryBean ajoutée (org.springframework.data.repository.NoRepositoryBean) permettant de ne pas considérer cette interface comme un DAO
@@ -944,14 +875,12 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `daosInterface`
 
   Permet de surcharger les interfaces par défaut des DAOs :
-
   - si UseJdbc, l'interface est org.springframework.data.repository.CrudRepository
   - si Reference, l'interface est org.springframework.data.repository.CrudRepository
   - si aucun des deux, l'interface est org.springframework.data.jpa.repository.JpaRepository
   - si daosInterface est précisée, les autres cas ne sont pas utilisés.
 
   Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que `JpaRepository` et `CrudRepository` soit :
-
   - La classe de l'entité en premier
   - La classe de l'identifiant en second
   - {DaosInterface}<{classe.NamePascal}, {pk}>
@@ -1039,7 +968,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `clientApiGeneration`
 
   Mode de génération de l'API Client. Les valeurs possibles sont :
-
   - `RestClient` : Génération d'un client en mode RestClient (interface Exchange) - valeur par défaut
   - `RestTemplate` : Génération d'un client en mode RestTemplate (classe abstraite à initialiser)
   - `FeignClient` : Génération d'un client en mode Feign (interface spring controller avec l'annotation Feign)
@@ -1055,7 +983,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données. Les compositions sont des propriétés de type classe non persistée qui sont sérialisées en JSON dans une colonne de la base de données.
 
   _Templating_:
-
   - `{package}` : remplacé par le package de la classe composée
   - `{class}` : remplacé par le nom de la classe composée
 
@@ -1083,7 +1010,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `resourcesEncoding`
 
   Encodage des fichiers de ressources. Les valeurs possibles sont :
-
   - `Latin1` : valeur par défaut
   - `UTF8`
 
@@ -1092,7 +1018,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `fieldsEnum`
 
   Option pour générer une enum des champs de certaines classes. Il s'agit d'une liste dont les 2 valeurs possibles sont :
-
   - `persisted` : ajoute l'enum des champs sur les classes persistées
   - `non-persisted` : ajoute l'enum des champs sur les classes non persistées
 
@@ -1104,7 +1029,7 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
 - `associationAdders`
 
-  Option pour générer des méthodes d'ajout pour les associations `oneToMany` et `manyToMany`. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproques.
+  Option pour générer des méthodes d'ajout pour les associations `oneToMany`. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproques.
 
   _Valeur par défaut_: `false`
 
@@ -1114,7 +1039,7 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 
 - `associationRemovers`
 
-  Option pour générer des méthodes de suppression pour les associations `oneToMany` et `manyToMany`. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
+  Option pour générer des méthodes de suppression pour les associations `oneToMany`. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
 
   _Valeur par défaut_: `false`
 
@@ -1127,7 +1052,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   Types de cascade à ajouter sur les associations JPA générées, par type d'association.
 
   Les clés configurables sont :
-
   - `oneToOne` : cascade(s) à ajouter sur les associations `@OneToOne`
   - `oneToMany` : cascade(s) à ajouter sur les associations `@OneToMany`
   - `manyToOne` : cascade(s) à ajouter sur les associations `@ManyToOne`
@@ -1135,10 +1059,10 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   Les valeurs possibles pour chaque clé sont : `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, `lock`.
 
   _Valeur par défaut_: `
-  {
-    oneToOne: [all],
-    oneToMany: [all]
-  }`
+{
+  oneToOne: [all],
+  oneToMany: [all]
+}`
 
   **Exemple de configuration :**
 
@@ -1209,11 +1133,9 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `identity`
 
   Options de génération de la séquence
-
   - `mode`
 
     Mode de génération de la séquence. Les valeurs possibles sont :
-
     - `"none"` : Aucune génération automatique
     - `"sequence"` : Utilise une séquence de base de données (nécessite `increment` et optionnellement `start`)
     - `"identity"` : Utilise l'auto-incrémentation de la base de données (par défaut)
@@ -1240,7 +1162,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   Lorsque cette option est activée, une classe de métamodèle est générée pour chaque entité persistée (non abstraite, et non enum si `enumsAsEnums: true`). Ces classes suivent la convention de nommage JPA : `[NomEntité]_` (avec un underscore suffixe).
 
   **Structure des classes générées :**
-
   - Annotation `@StaticMetamodel([NomEntité].class)`
   - Annotation `@Generated` (si `generatedHint: true`)
   - Attributs statiques `volatile` de type `SingularAttribute`, `ListAttribute`, `SetAttribute`, `CollectionAttribute`, ou `MapAttribute` selon le type de propriété
@@ -1261,7 +1182,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
   ```
 
   **Documentation :**
-
   - Spec JPA (Voir le chapitre 5): <https://download.oracle.com/otndocs/jcp/persistence-2.0-fr-eval-oth-JSpec/>
   - Exemple d'utilisation: <https://www.baeldung.com/hibernate-criteria-queries-metamodel>
 
@@ -1314,7 +1234,6 @@ Le générateur crée un fichier de configuration de job par module. Ce job ordo
 - `dataFlowsWriter`
 
   Writer à utiliser pour les flux de données. Les valeurs possibles sont :
-
   - `jpa` : Utilise le `JpaItemWriter` de spring-batch (par défaut). Adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.)
   - `bulk` : Utilise le `PgBulkWriter` de la librairie `spring-batch-bulk` pour des performances optimales. Recommandé pour traiter de très gros volumes de données grâce à l'utilisation du bulk insert PostgreSQL (avec la commande `COPY`)
 
@@ -1371,15 +1290,15 @@ jpa:
   - tags:
       - dto
       - entity
-    outputDirectory: ./jpa/src/main/javagen  # Dossier cible de la génération
-    entitiesPath: topmodel/exemple/name/entities  # Dossier cible des entités persistées
-    daosPath: topmodel/exemple/name/daos  # Dossier cible des DAO
-    dtosPath: topmodel/exemple/name/dtos  # Dossier cible des objets non persistés
-    enumsPath: topmodel/exemple/name/enums  # Dossier cible des enums
-    apiPath: topmodel/exemple/name/api  # Dossier cible des API
-    apiGeneration: Server  # Mode de génération de l'API (Client ou Server)
-    fieldsEnum: ["persisted"]  # Classes dans lesquelles le générateur doit ajouter une enum des champs
-    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>  # Interface dont doivent hériter ces enums
+    outputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
+    entitiesPath: topmodel/exemple/name/entities # Dossier cible des entités persistées
+    daosPath: topmodel/exemple/name/daos # Dossier cible des DAO
+    dtosPath: topmodel/exemple/name/dtos # Dossier cible des objets non persistés
+    enumsPath: topmodel/exemple/name/enums # Dossier cible des enums
+    apiPath: topmodel/exemple/name/api # Dossier cible des API
+    apiGeneration: Server # Mode de génération de l'API (Client ou Server)
+    fieldsEnum: ["persisted"] # Classes dans lesquelles le générateur doit ajouter une enum des champs
+    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Interface dont doivent hériter ces enums
     identity:
       mode: sequence
       increment: 50
