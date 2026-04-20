@@ -5,7 +5,7 @@
 import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_CODE, DO_DATE, DO_EMAIL, DO_LIBELLE} from "../../domains";
 
-import {TypeUtilisateurCode} from "../refs/references";
+import {TypeUtilisateurCode} from "../refs/enums";
 
 export type UtilisateurDetailDto = EntityToType<UtilisateurDetailDtoEntityType>;
 export interface UtilisateurDetailDtoEntityType {
