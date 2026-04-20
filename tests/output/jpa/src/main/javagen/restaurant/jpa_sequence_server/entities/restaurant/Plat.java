@@ -32,33 +32,33 @@ public class Plat {
 	 * Identifiant du plat.
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "PLA_ID", nullable = false)
-	@GeneratedValue(generator = "SEQ_PLAT", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_PLAT", sequenceName = "SEQ_PLAT")
+	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PLAT")
+	@SequenceGenerator(sequenceName = "SEQ_PLAT", name = "SEQ_PLAT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
 	 * Nom du plat.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "PLA_NOM", nullable = false)
+	@Column(name = "PLA_NOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Description du plat.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "PLA_DESCRIPTION")
+	@Column(name = "PLA_DESCRIPTION", length = 100, columnDefinition = "varchar")
 	private String description;
 
 	/**
 	 * Prix du plat.
 	 */
-	@Column(columnDefinition = "decimal", name = "PLA_PRIX", nullable = false, scale = 2)
+	@Column(name = "PLA_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le plat est disponible.
 	 */
-	@Column(columnDefinition = "boolean", name = "PLA_DISPONIBLE", nullable = false)
+	@Column(name = "PLA_DISPONIBLE", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
@@ -78,7 +78,7 @@ public class Plat {
 	/**
 	 * Association réciproque de Promotion.Plat.
 	 */
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plat", optional = true)
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, mappedBy = "plat")
 	private Promotion promotion;
 
 	/**

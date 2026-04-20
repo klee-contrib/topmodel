@@ -28,25 +28,25 @@ public class Personne {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(columnDefinition = "int", name = "PER_ID", nullable = false)
+	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "PER_NOM", nullable = false)
+	@Column(name = "PER_NOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Prénom de la personne.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "PER_PRENOM", nullable = false)
+	@Column(name = "PER_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String prenom;
 
 	/**
 	 * Département de résidence de la personne.
 	 */
-	@Column(columnDefinition = "varchar", length = 10, name = "DEP_CODE")
+	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
 	private String departementCode = "75";
 
 	/**

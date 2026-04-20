@@ -40,27 +40,27 @@ public class Commande {
 	 * Identifiant de la commande.
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "COM_ID", nullable = false)
-	@GeneratedValue(generator = "SEQ_COMMANDE", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_COMMANDE", sequenceName = "SEQ_COMMANDE")
+	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMMANDE")
+	@SequenceGenerator(sequenceName = "SEQ_COMMANDE", name = "SEQ_COMMANDE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
 	 * Date et heure de la commande.
 	 */
-	@Column(columnDefinition = "timestamp", name = "COM_DATE_COMMANDE", nullable = false)
+	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
 	 */
-	@Column(columnDefinition = "timestamp", name = "COM_DATE_LIVRAISON")
+	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
 	 */
-	@Column(columnDefinition = "decimal", name = "COM_MONTANT_TOTAL", nullable = false, scale = 2)
+	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
@@ -73,7 +73,7 @@ public class Commande {
 	/**
 	 * Table associée à la commande.
 	 */
-	@Column(columnDefinition = "int", name = "TAB_ID")
+	@Column(name = "TAB_ID", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
@@ -87,14 +87,14 @@ public class Commande {
 	 * Statut de la commande.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "varchar", length = 10, name = "STC_CODE", nullable = false)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 */
 	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	private AvisClient avisClient;
 
 	/**

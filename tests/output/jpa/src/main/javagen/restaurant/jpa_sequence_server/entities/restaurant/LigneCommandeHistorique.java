@@ -25,41 +25,41 @@ public class LigneCommandeHistorique {
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande#getId() LigneCommande#getId()}
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "LIG_ID", nullable = false)
+	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Quantité commandée.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
 	 */
-	@Column(columnDefinition = "int", name = "LIG_QUANTITE", nullable = false)
+	@Column(name = "LIG_QUANTITE", nullable = false, columnDefinition = "int")
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
 	 */
-	@Column(columnDefinition = "decimal", name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2)
+	@Column(name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
 	 */
-	@Column(columnDefinition = "decimal", name = "LIG_PRIX_TOTAL", nullable = false, scale = 2)
+	@Column(name = "LIG_PRIX_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixTotal;
 
 	/**
 	 * Plat commandé.
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
-	@Column(columnDefinition = "int", name = "PLA_ID", nullable = false)
+	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
 	private Integer platId;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
-	@Column(columnDefinition = "int", name = "COM_ID", nullable = false)
+	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
 	private Integer commandeHistoriqueId;
 
 	/**

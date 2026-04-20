@@ -22,13 +22,13 @@ public class Translation {
 	 * Clé de traduction.
 	 */
 	@Id
-	@Column(columnDefinition = "varchar", length = 100, name = "TRA_RESOURCE_KEY", nullable = false)
+	@Column(name = "TRA_RESOURCE_KEY", nullable = false, length = 100, columnDefinition = "varchar")
 	private String resourceKey;
 
 	/**
 	 * Valeur de la clé de traduction.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "TRA_VALUE", nullable = false)
+	@Column(name = "TRA_VALUE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String value;
 
 	/**

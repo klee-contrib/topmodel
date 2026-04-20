@@ -28,7 +28,7 @@ import jakarta.persistence.UniqueConstraint;
 		@UniqueConstraint(columnNames = {"EMP_MATRICULE"})
 	},
 	indexes = {
-		@Index(columnList = "EMP_TELEPHONE", name = "IDX_EMP_EMP_TELEPHONE")
+		@Index(name = "IDX_EMP_EMP_TELEPHONE", columnList = "EMP_TELEPHONE")
 	}
 )
 public class Employe extends Personne {
@@ -36,31 +36,31 @@ public class Employe extends Personne {
 	/**
 	 * Numéro de téléphone de l'employé.
 	 */
-	@Column(columnDefinition = "varchar", length = 20, name = "EMP_TELEPHONE")
+	@Column(name = "EMP_TELEPHONE", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**
 	 * Date de naissance.
 	 */
-	@Column(columnDefinition = "timestamp", name = "EMP_DATE_NAISSANCE")
+	@Column(name = "EMP_DATE_NAISSANCE", columnDefinition = "timestamp")
 	private LocalDateTime dateNaissance;
 
 	/**
 	 * Matricule de l'employé.
 	 */
-	@Column(columnDefinition = "varchar", length = 10, name = "EMP_MATRICULE", nullable = false)
+	@Column(name = "EMP_MATRICULE", nullable = false, length = 10, columnDefinition = "varchar")
 	private String matricule;
 
 	/**
 	 * Date d'embauche.
 	 */
-	@Column(columnDefinition = "timestamp", name = "EMP_DATE_EMBAUCHE", nullable = false)
+	@Column(name = "EMP_DATE_EMBAUCHE", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateEmbauche;
 
 	/**
 	 * Salaire de l'employé.
 	 */
-	@Column(columnDefinition = "decimal", name = "EMP_SALAIRE", scale = 2)
+	@Column(name = "EMP_SALAIRE", scale = 2, columnDefinition = "decimal")
 	private BigDecimal salaire;
 
 	/**

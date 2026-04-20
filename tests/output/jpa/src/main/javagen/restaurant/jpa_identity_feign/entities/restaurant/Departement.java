@@ -45,20 +45,20 @@ public class Departement {
 	 * Code du département.
 	 */
 	@Id
-	@Column(columnDefinition = "varchar", length = 10, name = "DEP_CODE", nullable = false)
+	@Column(name = "DEP_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private String code;
 
 	/**
 	 * Libellé du département.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "DEP_LIBELLE", nullable = false)
+	@Column(name = "DEP_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Région associée.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "varchar", length = 10, name = "REG_CODE", nullable = false)
+	@Column(name = "REG_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private RegionCode regionCode;
 
 	/**

@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.1.1
+
+- [`96ff409`](https://github.com/klee-contrib/topmodel/commit/96ff40992602c7ad031b77a9666e101ca68be6e8) - [JPA] Fixes régression ordre paramètres annotation et génération `enum: true`
+
 ## 4.1.0
 
 Compatibilité avec TopModel 4.1 (annotations d'endpoint client ou serveur, indexes non uniques et des enums sans PK)
@@ -12,6 +16,8 @@ Compatibilité avec TopModel 4.0, les impacts propres aux générateurs JPA sont
 - La valeur par défaut de mappersInClass est maintenant `false`
 - Nouvelle configuration `mapperTagsOverrides` : Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
 - Nouvelle configuration `cascadeTypes` : Permet de configurer les types de cascade JPA à ajouter par type d'association (`oneToOne`, `oneToMany`, `manyToOne`). Les valeurs possibles sont `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, et `lock`.
+
+  _Remarque : La position du paramètre `cascadeType` dans l'annotation généré peut avoir changé suite à cette évolution._
 
 ## 3.5.7
 

@@ -31,27 +31,27 @@ public class Restaurant {
 	 * Identifiant du restaurant.
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "RES_ID", nullable = false)
-	@GeneratedValue(generator = "SEQ_RESTAURANT", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_RESTAURANT", sequenceName = "SEQ_RESTAURANT")
+	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_RESTAURANT")
+	@SequenceGenerator(sequenceName = "SEQ_RESTAURANT", name = "SEQ_RESTAURANT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
 	 * Nom du restaurant.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "RES_NOM", nullable = false)
+	@Column(name = "RES_NOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Adresse du restaurant.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "RES_ADRESSE")
+	@Column(name = "RES_ADRESSE", length = 100, columnDefinition = "varchar")
 	private String adresse;
 
 	/**
 	 * Numéro de téléphone.
 	 */
-	@Column(columnDefinition = "varchar", length = 20, name = "RES_TELEPHONE")
+	@Column(name = "RES_TELEPHONE", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**

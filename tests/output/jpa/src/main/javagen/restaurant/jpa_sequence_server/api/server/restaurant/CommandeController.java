@@ -85,7 +85,7 @@ public interface CommandeController {
 	@PreAuthorize("isAuthenticated()")
 	@Operation(description = "Exporte les commandes au format CSV")
 	@GetMapping(path = "commandes/export", produces = "application/octet-stream")
-	byte[] exportCommandes(@Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateDebut") LocalDateTime dateDebut, @Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateFin") LocalDateTime dateFin);
+	byte[] exportCommandes(@Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'une commande.
@@ -107,7 +107,7 @@ public interface CommandeController {
 	 */
 	@GetMapping(path = "commandes")
 	@Operation(description = "Liste toutes les commandes")
-	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(required = true, value = "clientId") Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(required = true, value = "statutCommande") StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(required = false, value = "tableId") Integer tableId);
+	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
 
 	/**
 	 * Récupère les commandes par date.
@@ -117,7 +117,7 @@ public interface CommandeController {
 	 */
 	@GetMapping(path = "commandes/by-date")
 	@Operation(description = "Récupère les commandes par date")
-	List<CommandeItem> getCommandesByDate(@Parameter(description = "Date et heure de la commande") @RequestParam(required = true, value = "dateCommande") LocalDateTime dateCommande);
+	List<CommandeItem> getCommandesByDate(@Parameter(description = "Date et heure de la commande") @RequestParam(value = "dateCommande", required = true) LocalDateTime dateCommande);
 
 	/**
 	 * Liste tous les statuts de commande.
@@ -159,5 +159,5 @@ public interface CommandeController {
 	 */
 	@PatchMapping(path = "commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
-	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(required = true, value = "statutCommande") StatutCommande statutCommande);
+	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande);
 }

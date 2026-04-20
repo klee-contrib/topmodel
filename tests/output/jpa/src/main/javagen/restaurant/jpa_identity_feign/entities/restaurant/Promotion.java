@@ -37,37 +37,37 @@ public class Promotion {
 	 */
 	@MapsId
 	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID", unique = true)
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
 	private Plat plat;
 
 	/**
 	 * Libellé de la promotion.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "PRO_LIBELLE", nullable = false)
+	@Column(name = "PRO_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Pourcentage de réduction (0-100).
 	 */
-	@Column(columnDefinition = "int", name = "PRO_POURCENTAGE_REDUCTION", nullable = false)
+	@Column(name = "PRO_POURCENTAGE_REDUCTION", nullable = false, columnDefinition = "int")
 	private Integer pourcentageReduction;
 
 	/**
 	 * Date de début de la promotion.
 	 */
-	@Column(columnDefinition = "timestamp", name = "PRO_DATE_DEBUT", nullable = false)
+	@Column(name = "PRO_DATE_DEBUT", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateDebut;
 
 	/**
 	 * Date de fin de la promotion.
 	 */
-	@Column(columnDefinition = "timestamp", name = "PRO_DATE_FIN", nullable = false)
+	@Column(name = "PRO_DATE_FIN", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateFin;
 
 	/**
 	 * Indique si la promotion est active.
 	 */
-	@Column(columnDefinition = "boolean", name = "PRO_ACTIVE", nullable = false)
+	@Column(name = "PRO_ACTIVE", nullable = false, columnDefinition = "boolean")
 	private Boolean active = true;
 
 	/**

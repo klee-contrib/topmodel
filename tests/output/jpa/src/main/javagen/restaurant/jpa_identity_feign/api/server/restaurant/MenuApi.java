@@ -34,7 +34,7 @@ import restaurant.jpa_identity_feign.dtos.restaurant.PromotionWrite;
 import restaurant.jpa_identity_feign.entities.restaurant.CategoriePlat;
 import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 
-@FeignClient(contextId = "MenuApi", name = "Restaurant")
+@FeignClient(name = "Restaurant", contextId = "MenuApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface MenuApi {
 
@@ -96,7 +96,7 @@ public interface MenuApi {
 	 */
 	@GetMapping(path = "api/restaurants/plats")
 	@Operation(description = "Liste tous les plats")
-	List<PlatItem> getPlats(@Parameter(description = "Indique si le plat est disponible") @RequestParam(required = true, value = "disponible") Boolean disponible, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(required = true, value = "restaurantId") Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(required = true, value = "categoriePlatCode") CategoriePlatCode categoriePlatCode);
+	List<PlatItem> getPlats(@Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
 
 	/**
 	 * Met à jour partiellement un plat.
@@ -131,7 +131,7 @@ public interface MenuApi {
 	 */
 	@GetMapping(path = "api/restaurants/plats/search")
 	@Operation(description = "Recherche de plats avec critères multiples")
-	List<PlatItem> searchPlats(@Parameter(description = "Nom du plat") @RequestParam(required = true, value = "nom") String nom, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(required = true, value = "restaurantId") Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(required = true, value = "categoriePlatCode") CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(required = true, value = "disponible") Boolean disponible);
+	List<PlatItem> searchPlats(@Parameter(description = "Nom du plat") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Met à jour un plat.

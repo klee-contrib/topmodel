@@ -36,39 +36,39 @@ public class AvisClient {
 	 * Identifiant de l'avis.
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "AVI_ID", nullable = false)
-	@GeneratedValue(generator = "SEQ_AVIS_CLIENT", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_AVIS_CLIENT", sequenceName = "SEQ_AVIS_CLIENT")
+	@Column(name = "AVI_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_AVIS_CLIENT")
+	@SequenceGenerator(sequenceName = "SEQ_AVIS_CLIENT", name = "SEQ_AVIS_CLIENT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
 	 * Note sur 5.
 	 */
-	@Column(columnDefinition = "int", name = "AVI_NOTE", nullable = false)
+	@Column(name = "AVI_NOTE", nullable = false, columnDefinition = "int")
 	private Integer note;
 
 	/**
 	 * Commentaire de l'avis.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "AVI_COMMENTAIRE")
+	@Column(name = "AVI_COMMENTAIRE", length = 100, columnDefinition = "varchar")
 	private String commentaire;
 
 	/**
 	 * Date de l'avis.
 	 */
-	@Column(columnDefinition = "timestamp", name = "AVI_DATE_AVIS", nullable = false)
+	@Column(name = "AVI_DATE_AVIS", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateAvis;
 
 	/**
 	 * Indique si l'avis est approuvé par le restaurant.
 	 */
-	@Column(columnDefinition = "boolean", name = "AVI_APPROUVE", nullable = false)
+	@Column(name = "AVI_APPROUVE", nullable = false, columnDefinition = "boolean")
 	private Boolean approuve = false;
 
 	/**
 	 * Nombre de vues de l'avis (calculé).
 	 */
-	@Column(columnDefinition = "int", name = "AVI_NOMBRE_VUES", nullable = false)
+	@Column(name = "AVI_NOMBRE_VUES", nullable = false, columnDefinition = "int")
 	private Integer nombreVues = 0;
 
 	/**

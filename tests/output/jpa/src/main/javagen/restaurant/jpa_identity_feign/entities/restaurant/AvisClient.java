@@ -36,37 +36,37 @@ public class AvisClient {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(columnDefinition = "int", name = "AVI_ID", nullable = false)
+	@Column(name = "AVI_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Note sur 5.
 	 */
-	@Column(columnDefinition = "int", name = "AVI_NOTE", nullable = false)
+	@Column(name = "AVI_NOTE", nullable = false, columnDefinition = "int")
 	private Integer note;
 
 	/**
 	 * Commentaire de l'avis.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "AVI_COMMENTAIRE")
+	@Column(name = "AVI_COMMENTAIRE", length = 100, columnDefinition = "varchar")
 	private String commentaire;
 
 	/**
 	 * Date de l'avis.
 	 */
-	@Column(columnDefinition = "timestamp", name = "AVI_DATE_AVIS", nullable = false)
+	@Column(name = "AVI_DATE_AVIS", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateAvis;
 
 	/**
 	 * Indique si l'avis est approuvé par le restaurant.
 	 */
-	@Column(columnDefinition = "boolean", name = "AVI_APPROUVE", nullable = false)
+	@Column(name = "AVI_APPROUVE", nullable = false, columnDefinition = "boolean")
 	private Boolean approuve = false;
 
 	/**
 	 * Nombre de vues de l'avis (calculé).
 	 */
-	@Column(columnDefinition = "int", name = "AVI_NOMBRE_VUES", nullable = false)
+	@Column(name = "AVI_NOMBRE_VUES", nullable = false, columnDefinition = "int")
 	private Integer nombreVues = 0;
 
 	/**

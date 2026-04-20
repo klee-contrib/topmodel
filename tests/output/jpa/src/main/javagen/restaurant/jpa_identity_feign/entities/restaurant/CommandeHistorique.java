@@ -30,49 +30,49 @@ public class CommandeHistorique {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "COM_ID", nullable = false)
+	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Date et heure de la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
-	@Column(columnDefinition = "timestamp", name = "COM_DATE_COMMANDE", nullable = false)
+	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
-	@Column(columnDefinition = "timestamp", name = "COM_DATE_LIVRAISON")
+	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
-	@Column(columnDefinition = "decimal", name = "COM_MONTANT_TOTAL", nullable = false, scale = 2)
+	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
-	@Column(columnDefinition = "int", name = "PER_ID", nullable = false)
+	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
 	private Integer clientId;
 
 	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
-	@Column(columnDefinition = "int", name = "TAB_ID")
+	@Column(name = "TAB_ID", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
-	@Column(columnDefinition = "int", name = "REV_ID")
+	@Column(name = "REV_ID", columnDefinition = "int")
 	private Integer reservationId;
 
 	/**
@@ -80,14 +80,14 @@ public class CommandeHistorique {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "varchar", length = 10, name = "STC_CODE", nullable = false)
+	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
-	@Column(columnDefinition = "int", name = "AVI_ID")
+	@Column(name = "AVI_ID", columnDefinition = "int")
 	private Integer avisClientId;
 
 	/**

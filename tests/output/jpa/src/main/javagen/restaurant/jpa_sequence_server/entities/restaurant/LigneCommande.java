@@ -36,27 +36,27 @@ public class LigneCommande {
 	 * Identifiant de la ligne.
 	 */
 	@Id
-	@Column(columnDefinition = "int", name = "LIG_ID", nullable = false)
-	@GeneratedValue(generator = "SEQ_LIGNE_COMMANDE", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(allocationSize = 50, initialValue = 1000, name = "SEQ_LIGNE_COMMANDE", sequenceName = "SEQ_LIGNE_COMMANDE")
+	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LIGNE_COMMANDE")
+	@SequenceGenerator(sequenceName = "SEQ_LIGNE_COMMANDE", name = "SEQ_LIGNE_COMMANDE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**
 	 * Quantité commandée.
 	 */
-	@Column(columnDefinition = "int", name = "LIG_QUANTITE", nullable = false)
+	@Column(name = "LIG_QUANTITE", nullable = false, columnDefinition = "int")
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
 	 */
-	@Column(columnDefinition = "decimal", name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2)
+	@Column(name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
 	 */
-	@Column(columnDefinition = "decimal", name = "LIG_PRIX_TOTAL", nullable = false, scale = 2)
+	@Column(name = "LIG_PRIX_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixTotal;
 
 	/**

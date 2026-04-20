@@ -36,31 +36,31 @@ public class Reservation {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(columnDefinition = "int", name = "REV_ID", nullable = false)
+	@Column(name = "REV_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Date et heure de la réservation.
 	 */
-	@Column(columnDefinition = "timestamp", name = "REV_DATE_RESERVATION", nullable = false)
+	@Column(name = "REV_DATE_RESERVATION", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateReservation;
 
 	/**
 	 * Nombre de personnes.
 	 */
-	@Column(columnDefinition = "int", name = "REV_NOMBRE_PERSONNES", nullable = false)
+	@Column(name = "REV_NOMBRE_PERSONNES", nullable = false, columnDefinition = "int")
 	private Integer nombrePersonnes;
 
 	/**
 	 * Commentaire sur la réservation.
 	 */
-	@Column(columnDefinition = "varchar", length = 100, name = "REV_COMMENTAIRE")
+	@Column(name = "REV_COMMENTAIRE", length = 100, columnDefinition = "varchar")
 	private String commentaire;
 
 	/**
 	 * Indique si la réservation est confirmée.
 	 */
-	@Column(columnDefinition = "boolean", name = "REV_CONFIRMEE", nullable = false)
+	@Column(name = "REV_CONFIRMEE", nullable = false, columnDefinition = "boolean")
 	private Boolean confirmee = false;
 
 	/**
@@ -73,7 +73,7 @@ public class Reservation {
 	/**
 	 * Table réservée.
 	 */
-	@Column(columnDefinition = "int", name = "TAB_ID")
+	@Column(name = "TAB_ID", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
