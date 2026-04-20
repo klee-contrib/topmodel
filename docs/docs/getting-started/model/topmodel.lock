@@ -2,11 +2,11 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.1.3
+version: 4.1.4
 modules:
   jpa:
-    version: 4.1.0
-    hash: 28692cbcad66fd0f09677eb7e6895a6b
+    version: 4.1.1
+    hash: 1efede261caa4a48eb0aaed6405c8291
   csharp:
     version: 4.1.1
     hash: 053b2cc63c216b74534e15dd9a6df22a

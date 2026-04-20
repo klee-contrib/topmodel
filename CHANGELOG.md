@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.1.4
+
+- [`707a65f`](https://github.com/klee-contrib/topmodel/commit/707a65ff12ecfcfe5a059a039f48862cb63ea3ab) - [Core] Fix check manquant sur dispo classe pour type association
+
 ## 4.1.3
 
 - [`4b6fa75`](https://github.com/klee-contrib/topmodel/commit/4b6fa7517427012a067bf4b29fce9c82bbf5b2bd) - [Core] Parallélisation de la résolution des dépendances
