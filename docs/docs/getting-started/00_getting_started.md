@@ -14,5 +14,5 @@ Bienvenue dans ce tutoriel de prise en main de TopModel. Ici vous allez découvr
 
 > Tout au long de ce tutoriel, n'hésitez pas à vous inspirer de l'un des starters kit
 
-- [Dotnet - Focus](https://github.com/klee-contrib/dfta-starter-kit)
+- [Dotnet - React](https://github.com/klee-contrib/dfta-starter-kit)
 - [Spring - Angular](https://github.com/klee-contrib/asta-starter-kit)
