@@ -228,7 +228,7 @@ function Showcase(): ReactNode {
     <section className={clsx(styles.section, styles.sectionAlt)}>
       <div className={clsx("container", styles.sectionInner)}>
         <h2 className={styles.sectionTitle}>
-          Du modèle au code, en une commande
+          Du modèle au code, en une seule commande
         </h2>
         <p className={styles.sectionSubtitle}>
           Décrivez votre classe en YAML, lancez <code>modgen</code>, et obtenez
