@@ -12,7 +12,7 @@ const config: Config = {
   },
 
   url: "https://klee-contrib.github.io",
-  baseUrl: "",
+  baseUrl: "topmodel/",
 
   organizationName: "klee-contrib",
   projectName: "topmodel",
