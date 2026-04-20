@@ -80,18 +80,6 @@ class:
     - name: Nom
       domain: DO_LIBELLE
       required: true
----
-endpoint:
-  name: GetUtilisateur
-  method: GET
-  route: Utilisateur/{utilisateurId}
-  params:
-    - alias:
-        class: Utilisateur
-        property: Id
-  returns:
-    composition: Utilisateur
-    name: detail
 `;
 
 const GENERATED_CSHARP = `[Table("utilisateur")]
@@ -138,30 +126,6 @@ public class Utilisateur {
 
     public String getNom() { return this.nom; }
     public void setNom(String nom) { this.nom = nom; }
-}`;
-
-const GENERATED_ANGULAR = `import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
-
-import {Utilisateur} from "../model/users/utilisateur";
-
-@Injectable({providedIn: "root"})
-export class UtilisateurService {
-
-    private readonly http = inject(HttpClient);
-
-    getUtilisateur(utilisateurId: number): Observable<Utilisateur> {
-        return this.http.get<Utilisateur>(\`/Utilisateur/\${utilisateurId}\`);
-    }
-
-    createUtilisateur(detail: Utilisateur): Observable<Utilisateur> {
-        return this.http.post<Utilisateur>(\`/Utilisateur\`, detail);
-    }
-
-    deleteUtilisateur(utilisateurId: number): Observable<void> {
-        return this.http.delete<void>(\`/Utilisateur/\${utilisateurId}\`);
-    }
 }`;
 
 function Hero(): ReactNode {
@@ -266,14 +230,6 @@ function Showcase(): ReactNode {
                 <TabItem value="java" label="Java / JPA">
                   <CodeBlock language="java" title="Utilisateur.java">
                     {GENERATED_JAVA}
-                  </CodeBlock>
-                </TabItem>
-                <TabItem value="angular" label="Angular">
-                  <CodeBlock
-                    language="typescript"
-                    title="utilisateur.service.ts"
-                  >
-                    {GENERATED_ANGULAR}
                   </CodeBlock>
                 </TabItem>
               </Tabs>
