@@ -476,7 +476,7 @@ internal class ClassResolver(
         {
             foreach (var p in classe.Properties.Where(p => p.Label != null))
             {
-                translationStore.Translations[defaultLang][p.ResourceKey] = p.Label!;
+                translationStore.AddTranslation(defaultLang, p.ResourceKey, p.Label!);
             }
 
             if (classe.DefaultProperty != null)
@@ -485,7 +485,7 @@ internal class ClassResolver(
                 {
                     if (r.Value.TryGetValue(classe.DefaultProperty, out var labelProperty))
                     {
-                        translationStore.Translations[defaultLang][r.ResourceKey] = labelProperty;
+                        translationStore.AddTranslation(defaultLang, r.ResourceKey, labelProperty);
                     }
                 }
             }

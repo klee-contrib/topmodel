@@ -10,8 +10,7 @@ internal class DomainResolver(
     IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
-    IDictionary<string, Domain> domains,
-    IEnumerable<Converter> converters
+    IDictionary<string, Domain> domains
 )
 {
     /// <summary>
@@ -63,7 +62,7 @@ internal class DomainResolver(
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveConverters()
     {
-        foreach (var converter in converters)
+        foreach (var converter in modelFiles.SelectMany(mf => mf.Converters))
         {
             converter.Variables.Clear();
 
@@ -89,12 +88,6 @@ internal class DomainResolver(
             converter.From.Clear();
             converter.To.Clear();
 
-            foreach (var domain in domains.Values)
-            {
-                domain.ConvertersFrom.Remove(converter);
-                domain.ConvertersTo.Remove(converter);
-            }
-
             foreach (var dom in converter.DomainsFromReferences)
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
@@ -115,16 +108,6 @@ internal class DomainResolver(
                 }
 
                 converter.To.Add(domain);
-            }
-
-            foreach (var f in converter.From)
-            {
-                f.ConvertersFrom.Add(converter);
-            }
-
-            foreach (var f in converter.To)
-            {
-                f.ConvertersTo.Add(converter);
             }
         }
     }

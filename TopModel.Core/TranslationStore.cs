@@ -4,6 +4,8 @@ namespace TopModel.Core;
 
 public class TranslationStore
 {
+    private readonly object _lock = new();
+
     public IDictionary<string, Dictionary<string, string>> Translations { get; } =
         new Dictionary<string, Dictionary<string, string>>();
 
@@ -23,5 +25,13 @@ public class TranslationStore
             && dict.TryGetValue(refValue.ResourceKey, out var translatedValue)
             ? translatedValue
             : refValue.Value[refValue.Class.DefaultProperty!];
+    }
+
+    internal void AddTranslation(string lang, string resourceKey, string value)
+    {
+        lock (_lock)
+        {
+            Translations[lang][resourceKey] = value;
+        }
     }
 }

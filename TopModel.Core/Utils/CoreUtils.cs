@@ -51,7 +51,7 @@ public static class CoreUtils
         return sorted;
     }
 
-    public static IList<IList<ModelFile>> SortWithCycles(
+    public static IList<List<IList<ModelFile>>> SortWithCyclesByLevel(
         IEnumerable<ModelFile> source,
         Func<ModelFile, IEnumerable<ModelFile>> getDependencies
     )
@@ -60,7 +60,7 @@ public static class CoreUtils
         var lowLinkMap = new Dictionary<ModelFile, int>();
         var pending = new Stack<ModelFile>();
 
-        IList<IList<ModelFile>> sorted = [];
+        IList<IList<ModelFile>> sortedFileCycles = [];
 
         int index = 0;
 
@@ -94,7 +94,7 @@ public static class CoreUtils
                     cycle.Add(w);
                 } while (!w.Equals(item));
 
-                sorted.Add(cycle.OrderBy(f => f.Name).ToList());
+                sortedFileCycles.Add(cycle.OrderBy(f => f.Name).ToList());
             }
         }
 
@@ -106,7 +106,69 @@ public static class CoreUtils
             }
         }
 
-        return sorted;
+        var fileNodeMap = new Dictionary<ModelFile, DependencyNode>();
+        var nodes = new List<DependencyNode>();
+
+        foreach (var fileCycle in sortedFileCycles)
+        {
+            var node = new DependencyNode { Files = fileCycle };
+            nodes.Add(node);
+            foreach (var file in node.Files)
+            {
+                fileNodeMap[file] = node;
+            }
+        }
+
+        foreach (var node in nodes)
+        {
+            foreach (var file in node.Files)
+            {
+                foreach (var dep in getDependencies(file))
+                {
+                    if (!fileNodeMap.TryGetValue(dep, out var depNode))
+                    {
+                        continue;
+                    }
+
+                    if (depNode == node)
+                    {
+                        continue;
+                    }
+
+                    node.Dependencies.Add(depNode);
+                    depNode.Dependents.Add(node);
+                }
+            }
+        }
+
+        var levels = new List<IList<DependencyNode>>();
+
+        var remainingDeps = nodes.ToDictionary(n => n, n => n.Dependencies.Count);
+
+        var ready = new List<DependencyNode>(remainingDeps.Where(p => p.Value == 0).Select(p => p.Key));
+
+        while (ready.Count > 0)
+        {
+            levels.Add(ready);
+
+            var next = new List<DependencyNode>();
+
+            foreach (var node in ready)
+            {
+                foreach (var dependent in node.Dependents)
+                {
+                    remainingDeps[dependent]--;
+                    if (remainingDeps[dependent] == 0)
+                    {
+                        next.Add(dependent);
+                    }
+                }
+            }
+
+            ready = next;
+        }
+
+        return levels.Select(node => node.Select(n => n.Files).ToList()).ToList();
     }
 
     internal static string GetSqlName(IProperty? property)
@@ -125,5 +187,14 @@ public static class CoreUtils
     internal static string GetSqlTrigram(string? trigram)
     {
         return (!string.IsNullOrWhiteSpace(trigram) ? $"{trigram}_" : string.Empty).ToConstantCase();
+    }
+
+    private sealed class DependencyNode
+    {
+        public IList<ModelFile> Files { get; init; } = [];
+
+        public HashSet<DependencyNode> Dependencies { get; } = [];
+
+        public HashSet<DependencyNode> Dependents { get; } = [];
     }
 }

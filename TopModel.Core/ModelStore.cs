@@ -257,7 +257,7 @@ public class ModelStore(
 
             try
             {
-                var referenceErrors = new List<ModelError>();
+                var referenceErrors = new ConcurrentBag<ModelError>();
 
                 var affectedFiles = pendingFileChanges
                     .Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null)
@@ -265,17 +265,29 @@ public class ModelStore(
                     ? _modelFiles
                     : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
-                var sortedFileCycles = CoreUtils.SortWithCycles(
+                var levels = CoreUtils.SortWithCyclesByLevel(
                     affectedFiles.Values,
                     f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
                 );
 
-                foreach (var sortedFileCycle in sortedFileCycles)
+                foreach (var level in levels)
                 {
-                    referenceErrors.AddRange(ResolveReferences(sortedFileCycle));
+                    Parallel.ForEach(
+                        level,
+                        fileGroup =>
+                        {
+                            foreach (var error in ResolveReferences(fileGroup))
+                            {
+                                referenceErrors.Add(error);
+                            }
+                        }
+                    );
                 }
 
-                referenceErrors.AddRange(GetGlobalErrors());
+                foreach (var error in GetGlobalErrors())
+                {
+                    referenceErrors.Add(error);
+                }
 
                 Parallel.ForEach(
                     _modelWatchers,
@@ -301,7 +313,7 @@ public class ModelStore(
                     logger.LogWarning(error.ToString());
                 }
 
-                var hasError = referenceErrors.Exists(r => r.IsError);
+                var hasError = referenceErrors.Any(r => r.IsError);
                 OnResolve?.Invoke(hasError);
 
                 if (hasError)
@@ -318,7 +330,11 @@ public class ModelStore(
 
                 Parallel.ForEach(
                     _modelWatchers,
-                    modelWatcher => modelWatcher.OnFilesChanged(sortedFileCycles.SelectMany(x => x), _storeConfig)
+                    modelWatcher =>
+                        modelWatcher.OnFilesChanged(
+                            levels.SelectMany(level => level.SelectMany(fg => fg)),
+                            _storeConfig
+                        )
                 );
 
                 var generatedFiles = _modelWatchers
@@ -400,6 +416,12 @@ public class ModelStore(
             yield return error;
         }
 
+        foreach (var domain in Domains.Values)
+        {
+            domain.ConvertersFrom.Clear();
+            domain.ConvertersTo.Clear();
+        }
+
         foreach (var converter in Converters)
         {
             var dup = Converters.FirstOrDefault(c =>
@@ -412,6 +434,16 @@ public class ModelStore(
                 {
                     yield return new ModelError(localizer, ErrorType.TMD6002, [from.Name, to.Name], converter);
                 }
+            }
+
+            foreach (var from in converter.From)
+            {
+                from.ConvertersFrom.Add(converter);
+            }
+
+            foreach (var to in converter.To)
+            {
+                to.ConvertersTo.Add(converter);
             }
         }
 
@@ -702,7 +734,7 @@ public class ModelStore(
         var classResolver = new ClassResolver(localizer, modelFiles, referencedClasses, translationStore);
         var dataFlowResolver = new DataFlowResolver(localizer, modelFiles, referencedDataFlows, referencedClasses);
         var decoratorResolver = new DecoratorResolver(localizer, modelFiles, config, referencedDecorators);
-        var domainResolver = new DomainResolver(localizer, modelFiles, config, Domains, Converters);
+        var domainResolver = new DomainResolver(localizer, modelFiles, config, Domains);
         var endpointResolver = new EndpointResolver(localizer, modelFiles);
         var mapperResolver = new MapperResolver(localizer, modelFiles, referencedClasses, Converters);
         var propertyResolver = new PropertyResolver(
