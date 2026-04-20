@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.1.3
+
+- [`4b6fa75`](https://github.com/klee-contrib/topmodel/commit/4b6fa7517427012a067bf4b29fce9c82bbf5b2bd) - [Core] Parallélisation de la résolution des dépendances
+
+  Cette amélioration devrait sensiblement améliorer les performances de la résolution du modèle, ce qui sera en particulier visible dans l'extension VSCode (car cela représente la quasi-totalité de son travail).
+
 ## 4.1.2
 
 - [`57ba218`](https://github.com/klee-contrib/topmodel/commit/57ba218853704387127e6758ff365ab68b10868a) - [Core] Fix calcul doublon paramètre de décorateur
