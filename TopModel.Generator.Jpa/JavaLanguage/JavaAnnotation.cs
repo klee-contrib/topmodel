@@ -118,7 +118,7 @@ public class JavaAnnotation
         }
         else
         {
-            var attributes = string.Join(", ", Attributes.OrderBy(a => a.Key).Select(a => $"{a.Key} = {a.Value}"));
+            var attributes = string.Join(", ", Attributes.Select(a => $"{a.Key} = {a.Value}"));
             return $"{name}({attributes})";
         }
     }

@@ -29,11 +29,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual JavaAnnotation ValidAnnotation => new("Valid", imports: "jakarta.validation.Valid");
 
-    public static bool ShouldWriteEnumAnnotation(IProperty property)
-    {
-        return property.EnumProperty != null && property.Class.IsPersistent;
-    }
-
     public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
     {
         return classe.Properties.Where(p =>
@@ -289,6 +284,13 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         }
 
         return propertyName.ToPascalCase().WithPrefix("set");
+    }
+
+    public bool ShouldWriteEnumAnnotation(IProperty property)
+    {
+        return property is { EnumProperty: IProperty ep }
+            && property.Class.IsPersistent
+            && Config.AvailableClasses.Contains(ep.Class);
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetAnnotations(IProperty property, string tag)

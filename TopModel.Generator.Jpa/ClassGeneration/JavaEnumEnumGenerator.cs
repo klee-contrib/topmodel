@@ -81,19 +81,12 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
                     if (
                         prop is { Association: Class association, AssociationProperty: IProperty ap }
                         && association.Values.Any(r => r.Value.ContainsKey(ap) && r.Value[ap] == value)
+                        && value != "null"
                     )
                     {
                         fw.AddImport(
                             $"{Config.GetEnumPackageName(association.EnumKey!.Class, tag)}.{association.NamePascal}"
                         );
-                        if (value != "null")
-                        {
-                            value = association.NamePascal + "." + value;
-                        }
-                    }
-                    else if (prop.EnumProperty != null && value != "null")
-                    {
-                        value = Config.GetType(prop) + "." + value;
                     }
 
                     if (
