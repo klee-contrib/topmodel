@@ -154,9 +154,6 @@ function Hero(): ReactNode {
             Lire la documentation
           </Link>
         </div>
-        <pre className={styles.installCommand}>
-          <code>dotnet tool install --global TopModel.Generator</code>
-        </pre>
       </div>
     </header>
   );
@@ -222,14 +219,14 @@ function Showcase(): ReactNode {
             </div>
             <div className={styles.showcaseTabs}>
               <Tabs groupId="showcase-lang">
-                <TabItem value="csharp" label="C#" default>
-                  <CodeBlock language="csharp" title="Utilisateur.cs">
-                    {GENERATED_CSHARP}
-                  </CodeBlock>
-                </TabItem>
                 <TabItem value="java" label="Java / JPA">
                   <CodeBlock language="java" title="Utilisateur.java">
                     {GENERATED_JAVA}
+                  </CodeBlock>
+                </TabItem>
+                <TabItem value="csharp" label="C#" default>
+                  <CodeBlock language="csharp" title="Utilisateur.cs">
+                    {GENERATED_CSHARP}
                   </CodeBlock>
                 </TabItem>
               </Tabs>
@@ -296,6 +293,9 @@ function FinalCta(): ReactNode {
             Voir sur GitHub
           </Link>
         </div>
+        <pre className={styles.installCommand}>
+          <code>dotnet tool install --global TopModel.Generator</code>
+        </pre>
       </div>
     </section>
   );
