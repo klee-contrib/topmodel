@@ -2,8 +2,8 @@ name: publish documentation
 
 on:
   push:
-    tags:
-      - "*"
+    paths:
+      - "docs/**/*"
   workflow_dispatch:
 
 jobs:
