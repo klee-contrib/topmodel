@@ -416,7 +416,12 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
             if (queue.Count == 0)
             {
-                if (property.Association != null && property.UseClassForAssociation && !forceAssociationPropertyType)
+                if (
+                    property.Association != null
+                    && property.UseClassForAssociation
+                    && !forceAssociationPropertyType
+                    && AvailableClasses.Contains(property.Association)
+                )
                 {
                     return GetTypeName(property.Association!);
                 }
