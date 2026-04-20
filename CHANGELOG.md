@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.1.2
+
+- [`57ba218`](https://github.com/klee-contrib/topmodel/commit/57ba218853704387127e6758ff365ab68b10868a) - [Core] Fix calcul doublon paramètre de décorateur
+
 ## 4.1.1
 
 - [`dba4969`](https://github.com/klee-contrib/topmodel/commit/dba496964fbf844eb3876546bb6452bbc62ced18) - Optimisation vérification des doublons

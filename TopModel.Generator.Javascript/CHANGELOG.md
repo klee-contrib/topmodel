@@ -1,3 +1,11 @@
+## 4.2.0
+
+- [`4a2d7cc`](https://github.com/klee-contrib/topmodel/commit/4a2d7ccbfc2dbd932f56f0bcb8f8cd3cb32e95a8) - [JS] references => enums
+
+  **breaking changes**:
+  - Les fichiers `references.ts` ont été renommés en `enums.ts` et ne comportent désormais plus que les enums (il pouvait y avoir certaines listes de références dedans également aussi). Le nom est configurable via le nouveau paramètre `enumsFileName` (vous pouvez donc mettre `enumsFileName: references` pour minimiser les impacts)
+  - Le paramètre `referenceMode` a été supprimé : les listes de valeurs seront générées si la classe enum est readonly (ou `enum: true`) comme en JPA ou en C#, et non généres sinon. Une classe `reference: true` aura toujours (et c'est la seule chose que cette propriété fait désormais) son objet de définition de liste de référence (`{type, valueKey, labelKey}`) de généré. Si on génère les valeurs, alors cet objet sera maintenant de la forme `{list, valueKey, labelKey}` (cet objet pourra être utilisé dans le store de référence Focus à partir de la 12.11).
+
 ## 4.1.1
 
 - [`99f8bf8`](https://github.com/klee-contrib/topmodel/commit/99f8bf8a2da4468b3f3c3124d7a3e3596cd571bd) - [JS Client] Fix gestion des réponses primitives dans les retours d'API
