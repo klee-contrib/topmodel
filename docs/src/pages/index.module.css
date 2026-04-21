@@ -303,14 +303,26 @@
   color: var(--ifm-color-emphasis-900);
   font-size: 0.95rem;
   font-weight: 600;
+  text-decoration: none;
   transition:
     transform var(--t),
-    border-color var(--t);
+    border-color var(--t),
+    background var(--t),
+    color var(--t);
 }
 
-.stackChip:hover {
+.stackChip:hover,
+.stackChip:focus-visible {
   transform: translateY(-2px);
   border-color: var(--ifm-color-primary);
+  background: var(--tint);
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.stackChip:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
 }
 
 .stacksLinks {

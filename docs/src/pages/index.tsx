@@ -54,11 +54,11 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const STACKS: { label: string; language: string }[] = [
-  { label: "C#", language: "csharp" },
-  { label: "Java / JPA", language: "java" },
-  { label: "TypeScript", language: "ts" },
-  { label: "SQL", language: "sql" },
+const STACKS: { label: string; to: string }[] = [
+  { label: "C#", to: "/generator/csharp" },
+  { label: "Java / JPA", to: "/generator/jpa" },
+  { label: "TypeScript", to: "/generator/js" },
+  { label: "SQL", to: "/generator/sql" },
 ];
 
 const MODEL_EXAMPLE = `---
@@ -249,9 +249,13 @@ function Stacks(): ReactNode {
         </p>
         <div className={styles.stacksGrid}>
           {STACKS.map((stack) => (
-            <div key={stack.label} className={styles.stackChip}>
+            <Link
+              key={stack.label}
+              to={stack.to}
+              className={styles.stackChip}
+            >
               {stack.label}
-            </div>
+            </Link>
           ))}
         </div>
         <div className={styles.stacksLinks}>
