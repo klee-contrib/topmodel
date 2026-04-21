@@ -1,4 +1,4 @@
-# Migrer un modèle externe
+# Migration d'un modèle externe
 
 **TopModel.ModelGenerator** (`tmdgen`) est un outil de migration de modèle, permettant de générer des fichiers `.tmd` à partir d'une source externe (`openApi` ou `database`) dans un modèle `TopModel` existant.
 

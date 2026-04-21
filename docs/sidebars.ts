@@ -61,7 +61,9 @@ const sidebars: SidebarsConfig = {
           type: "category",
           label: "JavaScript",
           link: { type: "doc", id: "generator/js" },
-          items: [{ type: "doc", id: "generator/js/angular", label: "Angular" }],
+          items: [
+            { type: "doc", id: "generator/js/angular", label: "Angular" },
+          ],
         },
         {
           type: "doc",
@@ -73,7 +75,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Migrer un modèle externe",
+      label: "Migration d'un modèle externe",
       link: { type: "doc", id: "tmdgen" },
       items: ["tmdgen/openapi", "tmdgen/database"],
     },
