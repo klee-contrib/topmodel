@@ -54,6 +54,7 @@ const sidebars: SidebarsConfig = {
             "generator/jpa/dataflows",
             "generator/jpa/resources",
             "generator/jpa/metamodel",
+            "generator/jpa/snippets",
           ],
         },
         {
