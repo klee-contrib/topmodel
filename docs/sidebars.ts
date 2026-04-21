@@ -42,9 +42,19 @@ const sidebars: SidebarsConfig = {
       items: [
         { type: "doc", id: "generator/csharp", label: "C#" },
         {
-          type: "doc",
-          id: "generator/jpa",
+          type: "category",
           label: "JPA",
+          link: { type: "doc", id: "generator/jpa" },
+          items: [
+            "generator/jpa/configuration",
+            "generator/jpa/classes",
+            "generator/jpa/daos",
+            "generator/jpa/mappers",
+            "generator/jpa/endpoints",
+            "generator/jpa/dataflows",
+            "generator/jpa/resources",
+            "generator/jpa/metamodel",
+          ],
         },
         {
           type: "doc",
