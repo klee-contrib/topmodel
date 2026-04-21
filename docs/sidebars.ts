@@ -57,9 +57,10 @@ const sidebars: SidebarsConfig = {
           ],
         },
         {
-          type: "doc",
-          id: "generator/js",
+          type: "category",
           label: "JavaScript",
+          link: { type: "doc", id: "generator/js" },
+          items: [{ type: "doc", id: "generator/js/angular", label: "Angular" }],
         },
         {
           type: "doc",

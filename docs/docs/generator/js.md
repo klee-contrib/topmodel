@@ -18,21 +18,9 @@ _(Remarque : Il s'agit du mode à utiliser pour focus4 12.7+)_
 
 #### Angular
 
-Le mode `angular` permet de générer un service injectable au sens `Angular`, contenant les méthodes d'appels à l'API. Les méthodes retournent des `Observable` de RxJS.
+Les modes `angular` et `angular_promise` permettent de générer un service `@Injectable` au sens Angular, contenant les méthodes d'appels à l'API. Les méthodes retournent respectivement des `Observable` de RxJS ou des `Promise`.
 
-##### Observe
-
-Le générateur Angular détecte automatiquement le type de retour de l'endpoint pour configurer l'option `observe` de la requête HTTP :
-
-- **`HttpResponse<TonObjet>`** : Si le type de retour est `HttpResponse<UnObjet>`, le générateur ajoutera automatiquement `observe: 'response'` à la requête. Cela permet d'accéder à l'objet `HttpResponse` complet, incluant les headers et le status code, en plus du body.
-
-- **`HttpEvent<>`** : Si le type de retour est `HttpEvent<>`, le générateur ajoutera automatiquement `observe: 'events'` à la requête.
-
-- **Par défaut** : Pour tous les autres types de retour, l'option `observe: 'body'` sera ajoutée, ce qui retourne uniquement le body de la réponse.
-
-##### Angular Promise
-
-Le mode `angular_promise` fonctionne de la même manière que le mode `angular`, mais les méthodes retournent des `Promise` au lieu d'`Observable`. Ce mode utilise `lastValueFrom` de RxJS pour convertir les observables en promesses.
+Ce mode dispose d'une [page de documentation dédiée](./js/angular.md).
 
 #### Nuxt
 
