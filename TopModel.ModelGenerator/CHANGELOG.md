@@ -1,5 +1,9 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.13.1
+
+- [`45fb64`](https://github.com/klee-contrib/topmodel/commit/45fb64d95ba24b530d91fafb95146fa318509be0) - [Tmdgen] Ajout de la contrainte d'unicité sur `value` pour la propriété d'enum (1 cas manquant)
+
 ## 1.12.9
 
 - [`0bcebea`](https://github.com/klee-contrib/topmodel/commit/0bcebeaae8f1aa50fc9f1af2ea96ebfa4984bc75) - [tmdgen] Gestion récursion dans les références de schéma
