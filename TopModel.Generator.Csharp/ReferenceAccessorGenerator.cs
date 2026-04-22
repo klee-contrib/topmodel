@@ -117,7 +117,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteLine("[RegisterImpl]");
 
-        if (classList.All(c => !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly))
+        if (classList.All(c => !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly && !Config.PersistedReferencesResources))
         {
             w.WriteClassDeclaration(implementationName, inheritedClass: null, isRecord: false, [interfaceName]);
         }
