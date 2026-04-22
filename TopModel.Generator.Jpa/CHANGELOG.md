@@ -2,9 +2,17 @@
 
 ## 4.2.0
 
-- [JPA] Unification de la génération des classes enum (`enum: class`) : `JavaEnumDtoGenerator` et `JpaEnumEntityGenerator` sont supprimés, leur logique est désormais portée directement par `JavaDtoGen` et `JpaEntityGen`.
-- [JPA] Les constantes statiques (`public static final`) représentant les valeurs de référence des classes `enum: class` sont désormais initialisées via le **constructeur tout argument** de la classe (chaque propriété est passée explicitement).
-- [JPA] Génération d'une nouvelle méthode statique `getValue(code)` sur les classes `enum: class` permettant de récupérer l'instance correspondant à une valeur de clé.
+- ['486'](https://github.com/klee-contrib/topmodel/pull/558)
+  - [JPA] Unification de la génération des classes enum (`enum: class`) : `JavaEnumDtoGenerator` et `JpaEnumEntityGenerator` sont supprimés, leur logique est désormais portée directement par `JavaDtoGen` et `JpaEntityGen`.
+  - [JPA] Les constantes statiques (`public static final`) représentant les valeurs de référence des classes `enum: class` sont désormais initialisées via le **constructeur tout argument** de la classe (chaque propriété est passée explicitement).
+  - [JPA] Génération d'une nouvelle méthode statique `getValue(code)` sur les classes `enum: class` permettant de récupérer l'instance correspondant à une valeur de clé.
+  - [JPA] Harmonisation du formatage des enums :
+    Les classes qui ont `enum: true` sont maintenant générées dans le même format que les autres enums du module. Les modifications sont :
+    - Le commentaire de chaque propriété est maintenant correctement repris
+    - Le constructeur est explicitement privé
+    - Les arguments du constructeur n'ont plus `final`
+    - Les getter ont désormais le commentaire `@returns`
+    Les enum des classes `enum: class` ont maintenant des sauts de lignes entre les valeurs, si `defaultProperty` est renseigné. Si pas de commentaire, pas de saut de ligne
 
 ### :warning: Breaking change
 
