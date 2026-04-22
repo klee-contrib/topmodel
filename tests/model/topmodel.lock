@@ -6,11 +6,11 @@ version: 4.1.4
 custom:
   ../../TopModel.Generator.Csharp: 5f7095078e12cd79499adeeb88ee8ca3
   ../../TopModel.Generator.Javascript: d0cc086a0c091d8148c390ca2159b890
-  ../../TopModel.Generator.Jpa: fd7123274ddcfe55acd3c36c4528edd5
+  ../../TopModel.Generator.Jpa: 0af3f8678fa73ed7683bb084496adf2e
   ../../TopModel.Generator.Sql: 6ef4f28773377221c0842c87fe0b466f
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
 generatedFiles:
-  - ../05_comments.sql
+  - ../../05_comments.sql
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/menu.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/personne.service.ts

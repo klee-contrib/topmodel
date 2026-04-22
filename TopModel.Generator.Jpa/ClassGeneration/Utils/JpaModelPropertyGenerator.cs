@@ -429,7 +429,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                     && association.Readonly
                 )
                 {
-                    return $"new {association.NamePascal}({defaultValue})";
+                    return $"{association.NamePascal}.getValue({defaultValue})";
                 }
                 else
                 {
