@@ -7,7 +7,7 @@ package restaurant.jpa_identity_feign.enums.restaurant;
 import jakarta.annotation.Generated;
 
 /**
- * Enumération des valeurs possibles de la classe StatutCommande.
+ * Statut d'une commande.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum StatutCommande {
@@ -34,24 +34,25 @@ public enum StatutCommande {
 	/**
 	 * Annulée.
 	 */
-	ANNULE("Annulée"),
-
-	;
+	ANNULE("Annulée");
 
 	/**
-	 * Libelle.
+	 * Libellé du statut.
 	 */
-	private final String libelle;
+	private String libelle;
 
 	/**
-	 * Enum values constructor.
+	 * All args constructor for 'StatutCommande'.
+	 * @param libelle Libellé du statut.
 	 */
-	StatutCommande(final String libelle) {
+	private StatutCommande(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
 	 * Getter for libelle.
+	 *
+	 * @return value of {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;

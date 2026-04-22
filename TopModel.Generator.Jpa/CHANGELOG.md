@@ -1,5 +1,27 @@
 # Changelog JPA
 
+## 4.2.0
+
+- [JPA] Unification de la génération des classes enum (`enum: class`) : `JavaEnumDtoGenerator` et `JpaEnumEntityGenerator` sont supprimés, leur logique est désormais portée directement par `JavaDtoGen` et `JpaEntityGen`.
+- [JPA] Les constantes statiques (`public static final`) représentant les valeurs de référence des classes `enum: class` sont désormais initialisées via le **constructeur tout argument** de la classe (chaque propriété est passée explicitement).
+- [JPA] Génération d'une nouvelle méthode statique `getValue(code)` sur les classes `enum: class` permettant de récupérer l'instance correspondant à une valeur de clé.
+
+### :warning: Breaking change
+
+- Le constructeur à un seul argument (la clé) généré jusqu'ici sur les classes `enum: class` **n'est plus généré**. Le constructeur sans argument ne l'est plus non plus.
+
+  Tout code qui instanciait ces classes via `new MaClasse(MaClasseCode.XXX)` pour obtenir l'instance correspondant à une clé doit désormais utiliser la méthode statique `MaClasse.getValue(MaClasseCode.XXX)`.
+
+  Exemple de migration :
+
+  ```java
+  // Avant
+  CategoriePlat cat = new CategoriePlat(CategoriePlatCode.BOISSON);
+
+  // Après
+  CategoriePlat cat = CategoriePlat.getValue(CategoriePlatCode.BOISSON);
+  ```
+
 ## 4.1.1
 
 - [`96ff409`](https://github.com/klee-contrib/topmodel/commit/96ff40992602c7ad031b77a9666e101ca68be6e8) - [JPA] Fixes régression ordre paramètres annotation et génération `enum: true`

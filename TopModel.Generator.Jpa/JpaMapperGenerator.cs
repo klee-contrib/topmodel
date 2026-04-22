@@ -140,7 +140,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         fromMapperMethod.AddBodyLine(
                             indent,
-                            $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
+                            $"if ({param.Name}.{Config.GetGetterName(propertySource)}() != null) {{"
                         );
                     }
 
@@ -205,7 +205,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
     {
         var imports = new List<string>();
         var checkSourceNull = false;
-        var getter = $"{paramName}.{JpaModelPropertyGenerator.GetGetterName(source)}()";
+        var getter = $"{paramName}.{Config.GetGetterName(source)}()";
 
         var converter = source.Domain.GetConverter(target.Domain);
         if (converter != null && Config.GetImplementation(converter) != null)
@@ -239,7 +239,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         $"{Config.GetMapperName(targetMapperNs, targetMapperModelPath)}.create{targetClass.NamePascal}({value})";
                     if (targetProperty != null)
                     {
-                        var targetGetter = $"target.{JpaModelPropertyGenerator.GetGetterName(targetProperty)}()";
+                        var targetGetter = $"target.{Config.GetGetterName(targetProperty)}()";
                         return $"{targetGetter} != null ? {Config.GetMapperName(targetMapperNs, targetMapperModelPath)}.map{targetClass.NamePascal}({value}, {targetGetter}) : {createMapper}";
                     }
                     else
@@ -256,7 +256,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (targetProperty != null)
                     {
-                        var targetGetter = $"target.{JpaModelPropertyGenerator.GetGetterName(targetProperty)}()";
+                        var targetGetter = $"target.{Config.GetGetterName(targetProperty)}()";
                         return $"{targetGetter} != null ? {mapperTo}({value}, {targetGetter}) : {mapperTo}({value})";
                     }
                     else
@@ -279,7 +279,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 {
                     imports.Add(sourceProp.Class.GetImport(Config, tag));
                     getter +=
-                        $".map({sourceProp.Class.NamePascal}::{JpaModelPropertyGenerator.GetGetterName(sourceProp)}).filter(Objects::nonNull)";
+                        $".map({sourceProp.Class.NamePascal}::{Config.GetGetterName(sourceProp)}).filter(Objects::nonNull)";
                     sourceProp = t1.Property;
                 }
 
@@ -287,7 +287,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 imports.Add("java.util.Objects");
 
                 var selector =
-                    $"p -> {HandleConversion($"p.{JpaModelPropertyGenerator.GetGetterName(sourceProp)}()", sourceProp, target, collection: true)}";
+                    $"p -> {HandleConversion($"p.{Config.GetGetterName(sourceProp)}()", sourceProp, target, collection: true)}";
                 if (selector.StartsWith("p -> p") && selector.Count(c => c == '.') == 1)
                 {
                     imports.Add(sourceProp.Class.GetImport(Config, tag));
@@ -328,7 +328,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             );
 
             getter =
-                $"new {Config.GetTypeName(tt1rec.Class)}({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
+                $"{Config.GetTypeName(tt1rec.Class)}.getValue({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
         }
         else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
         {
@@ -340,7 +340,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             );
 
             getter +=
-                $".stream().filter(Objects::nonNull).map({tt2rec.Class.NamePascal}::new).{Config.GetCollector(tt2rec.Domain)}";
+                $".stream().filter(Objects::nonNull).map({tt2rec.Class.NamePascal}::getValue).{Config.GetCollector(tt2rec.Domain)}";
         }
         else
         {
@@ -348,7 +348,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 checkSourceNull = true;
                 source = t1.Property;
-                getter += $".{JpaModelPropertyGenerator.GetGetterName(t1.Property)}()";
+                getter += $".{Config.GetGetterName(t1.Property)}()";
             }
 
             getter = HandleConversion(getter, source, target);
@@ -417,9 +417,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 if (checkSourceNull)
                 {
-                    toMapperMethod.AddBodyLine(
-                        $"if (source.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{"
-                    );
+                    toMapperMethod.AddBodyLine($"if (source.{Config.GetGetterName(propertySource)}() != null) {{");
                 }
 
                 toMapperMethod.AddBodyLine(

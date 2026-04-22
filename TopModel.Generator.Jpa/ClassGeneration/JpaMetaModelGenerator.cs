@@ -54,7 +54,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             javaClass.Extends = classe.Extends.NamePascal + "_";
         }
 
-        foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
+        foreach (var property in Config.GetAvailableProperties(classe))
         {
             var javaType = Config.GetType(property);
             var genericType = javaType.Split("<")[0];
@@ -89,7 +89,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             javaClass.Add(javaField);
         }
 
-        foreach (var property in jpaModelPropertyGenerator.GetAvailableProperties(classe))
+        foreach (var property in Config.GetAvailableProperties(classe))
         {
             javaClass.Add(
                 new JavaField("String", property.NameCamel.ToConstantCase())

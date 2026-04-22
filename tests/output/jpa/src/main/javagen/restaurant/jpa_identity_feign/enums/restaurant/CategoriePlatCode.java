@@ -12,14 +12,17 @@ public enum CategoriePlatCode {
 	 * Boisson.
 	 */
 	BOISSON,
+
 	/**
 	 * Dessert.
 	 */
 	DESSERT,
+
 	/**
 	 * Entrée.
 	 */
 	ENTREE,
+
 	/**
 	 * Plat principal.
 	 */

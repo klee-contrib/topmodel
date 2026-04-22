@@ -30,16 +30,16 @@ import restaurant.jpa_identity_feign.enums.restaurant.RegionCode;
 public class Departement {
 
 	@Transient
-	public static final Departement HAUTS_DE_SEINE = new Departement("92");
+	public static final Departement HAUTS_DE_SEINE = new Departement("92", "Hauts de Seine", RegionCode.IDF);
 
 	@Transient
-	public static final Departement PARIS = new Departement("75");
+	public static final Departement PARIS = new Departement("75", "Paris", RegionCode.IDF);
 
 	@Transient
-	public static final Departement SEINE_ET_MARNE = new Departement("94");
+	public static final Departement SEINE_ET_MARNE = new Departement("94", "Seine et Marne", RegionCode.IDF);
 
 	@Transient
-	public static final Departement SEINE_SAINT_DENIS = new Departement("93");
+	public static final Departement SEINE_SAINT_DENIS = new Departement("93", "Seine Saint Denis", RegionCode.IDF);
 
 	/**
 	 * Code du département.
@@ -62,36 +62,15 @@ public class Departement {
 	private RegionCode regionCode;
 
 	/**
-	 * No arg constructor.
+	 * All args constructor for 'Departement'.
+	 * @param code Code du département.
+	 * @param libelle Libellé du département.
+	 * @param regionCode Région associée.
 	 */
-	public Departement() {
-		// No arg constructor
-	}
-
-	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
-	 */
-	public Departement(String code) {
+	private Departement(String code, String libelle, RegionCode regionCode) {
 		this.code = code;
-		switch(code) {
-			case "92":
-				this.libelle = "Hauts de Seine";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case "75":
-				this.libelle = "Paris";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case "94":
-				this.libelle = "Seine et Marne";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case "93":
-				this.libelle = "Seine Saint Denis";
-				this.regionCode = RegionCode.IDF;
-				break;
-		}
+		this.libelle = libelle;
+		this.regionCode = regionCode;
 	}
 
 	/**
@@ -119,6 +98,22 @@ public class Departement {
 	 */
 	public RegionCode getRegionCode() {
 		return this.regionCode;
+	}
+
+	/**
+	 * Retourne la valeur de l'énumération pour la clé spécifiée.
+	 * @param code La clé de l'énumération pour laquelle obtenir la valeur.
+	 *
+	 * @return La valeur de l'énumération correspondant à la clé 'Code'.
+	 */
+	public static Departement getValue(String code) {
+		return switch (code) {
+			case "92" -> HAUTS_DE_SEINE;
+			case "75" -> PARIS;
+			case "94" -> SEINE_ET_MARNE;
+			case "93" -> SEINE_SAINT_DENIS;
+			default -> throw new IllegalArgumentException("Clé d'énumération inconnue : " + code);
+		};
 	}
 
 	/**

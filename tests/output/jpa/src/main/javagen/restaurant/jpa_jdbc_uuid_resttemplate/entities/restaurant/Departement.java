@@ -25,16 +25,16 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.RegionCode;
 public class Departement {
 
 	@Transient
-	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine);
+	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine, "restaurant.departement.values.HautsDeSeine", RegionCode.Idf);
 
 	@Transient
-	public static final Departement PARIS = new Departement(DepartementCode.Paris);
+	public static final Departement PARIS = new Departement(DepartementCode.Paris, "restaurant.departement.values.Paris", RegionCode.Idf);
 
 	@Transient
-	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne);
+	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne, "restaurant.departement.values.SeineEtMarne", RegionCode.Idf);
 
 	@Transient
-	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis);
+	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.Idf);
 
 	/**
 	 * Code du département.
@@ -59,29 +59,15 @@ public class Departement {
 	private String regionCode;
 
 	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
+	 * All args constructor for 'Departement'.
+	 * @param code Code du département.
+	 * @param libelle Libellé du département.
+	 * @param regionCode Région associée.
 	 */
-	public Departement(String code) {
+	private Departement(String code, String libelle, String regionCode) {
 		this.code = code;
-		switch(code) {
-			case DepartementCode.HautsDeSeine:
-				this.libelle = "restaurant.departement.values.HautsDeSeine";
-				this.regionCode = RegionCode.Idf;
-				break;
-			case DepartementCode.Paris:
-				this.libelle = "restaurant.departement.values.Paris";
-				this.regionCode = RegionCode.Idf;
-				break;
-			case DepartementCode.SeineEtMarne:
-				this.libelle = "restaurant.departement.values.SeineEtMarne";
-				this.regionCode = RegionCode.Idf;
-				break;
-			case DepartementCode.SeineSaintDenis:
-				this.libelle = "restaurant.departement.values.SeineSaintDenis";
-				this.regionCode = RegionCode.Idf;
-				break;
-		}
+		this.libelle = libelle;
+		this.regionCode = regionCode;
 	}
 
 	/**

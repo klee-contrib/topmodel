@@ -29,13 +29,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual JavaAnnotation ValidAnnotation => new("Valid", imports: "jakarta.validation.Valid");
 
-    public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
-    {
-        return classe.Properties.Where(p =>
-            p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
-        );
-    }
-
     public virtual JavaAnnotation GetColumnAnnotation(IProperty property)
     {
         JavaAnnotation column = new JavaAnnotation("Column", imports: "jakarta.persistence.Column").AddAttribute(
@@ -174,7 +167,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        var availableProperties = GetAvailableProperties(classe);
+        var availableProperties = Config.GetAvailableProperties(classe);
         foreach (var property in availableProperties)
         {
             yield return GetField(property, tag);

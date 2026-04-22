@@ -12,18 +12,18 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> logger, IFileWriterProvider writerProvider)
     : ClassGeneratorBase<JpaConfig>(logger, writerProvider)
 {
-    private JavaConstructorGenerator? _jpaModelConstructorGenerator;
+    private JavaConstructorGenerator? _javaConstructorGenerator;
     private JpaModelPropertyGenerator? _jpaModelPropertyGenerator;
 
     protected static IDictionary<string, string> NewableTypes =>
         new Dictionary<string, string>() { ["List"] = "ArrayList", ["Set"] = "HashSet" };
 
-    protected virtual JavaConstructorGenerator ConstructorGenerator
+    protected virtual JavaConstructorGenerator JavaEnumGeneratorHelper
     {
         get
         {
-            _jpaModelConstructorGenerator ??= new JavaConstructorGenerator(Config);
-            return _jpaModelConstructorGenerator;
+            _javaConstructorGenerator ??= new JavaConstructorGenerator(Config);
+            return _javaConstructorGenerator;
         }
     }
 
@@ -61,12 +61,12 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             && classe.FromMappers.Any(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
         )
         {
-            yield return ConstructorGenerator.GetNoArgConstructor(classe, tag);
+            yield return JavaEnumGeneratorHelper.GetNoArgConstructor(classe, tag);
         }
 
         if (Config.MappersInClass)
         {
-            foreach (var constructor in ConstructorGenerator.GetFromMappers(classe, tag))
+            foreach (var constructor in JavaEnumGeneratorHelper.GetFromMappers(classe, tag))
             {
                 yield return constructor;
             }
@@ -123,7 +123,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaEnumValue> GetFieldsEnumValues(Class classe, string tag)
     {
-        return JpaModelPropertyGenerator
+        return Config
             .GetAvailableProperties(classe)
             .Select(prop =>
             {
@@ -142,7 +142,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         if (!(Config.HasAnnotation(classe, "Getter") || Config.HasAnnotation(classe, "Data")))
         {
-            foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
+            foreach (var property in Config.GetAvailableProperties(classe))
             {
                 if (!Config.HasAnnotation(property, "Getter") || Config.HasAnnotation(classe, "Data"))
                 {
@@ -182,7 +182,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         if (!(Config.HasAnnotation(classe, "Setter") || Config.HasAnnotation(classe, "Data")))
         {
-            foreach (var property in JpaModelPropertyGenerator.GetAvailableProperties(classe))
+            foreach (var property in Config.GetAvailableProperties(classe))
             {
                 if (!(Config.HasAnnotation(property, "Setter") || Config.HasAnnotation(classe, "Data")))
                 {

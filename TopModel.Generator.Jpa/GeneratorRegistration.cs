@@ -33,12 +33,10 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         else
         {
             services.AddGenerator<JpaEntityGenerator, JpaConfig>(config, number);
-            services.AddGenerator<JpaEnumEntityGenerator, JpaConfig>(config, number);
         }
 
         services.AddGenerator<JavaUniqueValuedPropertyGenerator, JpaConfig>(config, number);
         services.AddGenerator<JavaEnumClassPropertyGenerator, JpaConfig>(config, number);
-        services.AddGenerator<JavaEnumDtoGenerator, JpaConfig>(config, number);
         services.AddGenerator<JavaEnumEnumGenerator, JpaConfig>(config, number);
 
         services.AddGenerator<JpaModelInterfaceGenerator, JpaConfig>(config, number);

@@ -27,16 +27,16 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre
 public class CategoriePlat {
 
 	@Transient
-	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson);
+	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
 
 	@Transient
-	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert);
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
 
 	@Transient
-	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree);
+	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
 	@Transient
-	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat);
+	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat, "restaurant.categoriePlat.values.Plat", CategoriePlatOrdre.Plat, new BigDecimal(10));
 
 	/**
 	 * Code de la catégorie.
@@ -67,33 +67,17 @@ public class CategoriePlat {
 	private BigDecimal prixMoyen;
 
 	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
+	 * All args constructor for 'CategoriePlat'.
+	 * @param code Code de la catégorie.
+	 * @param libelle Libellé de la catégorie.
+	 * @param ordre Ordre d'affichage dans le menu.
+	 * @param prixMoyen Prix moyen de la catégorie, à titre indicatif.
 	 */
-	public CategoriePlat(String code) {
+	private CategoriePlat(String code, String libelle, Integer ordre, BigDecimal prixMoyen) {
 		this.code = code;
-		switch(code) {
-			case CategoriePlatCode.Boisson:
-				this.libelle = "restaurant.categoriePlat.values.Boisson";
-				this.ordre = CategoriePlatOrdre.Boisson;
-				this.prixMoyen = new BigDecimal(2);
-				break;
-			case CategoriePlatCode.Dessert:
-				this.libelle = "restaurant.categoriePlat.values.Dessert";
-				this.ordre = CategoriePlatOrdre.Dessert;
-				this.prixMoyen = null;
-				break;
-			case CategoriePlatCode.Entree:
-				this.libelle = "restaurant.categoriePlat.values.Entree";
-				this.ordre = CategoriePlatOrdre.Entree;
-				this.prixMoyen = null;
-				break;
-			case CategoriePlatCode.Plat:
-				this.libelle = "restaurant.categoriePlat.values.Plat";
-				this.ordre = CategoriePlatOrdre.Plat;
-				this.prixMoyen = new BigDecimal(10);
-				break;
-		}
+		this.libelle = libelle;
+		this.ordre = ordre;
+		this.prixMoyen = prixMoyen;
 	}
 
 	/**
