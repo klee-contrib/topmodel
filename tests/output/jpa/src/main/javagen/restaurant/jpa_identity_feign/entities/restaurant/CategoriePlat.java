@@ -38,16 +38,16 @@ import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 public class CategoriePlat {
 
 	@Transient
-	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON);
+	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "Boisson", 1, new BigDecimal(2));
 
 	@Transient
-	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT);
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "Dessert", 4, null);
 
 	@Transient
-	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE);
+	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "Entrée", 2, null);
 
 	@Transient
-	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT);
+	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT, "Plat principal", 3, new BigDecimal(10));
 
 	/**
 	 * Code de la catégorie.
@@ -76,40 +76,17 @@ public class CategoriePlat {
 	private BigDecimal prixMoyen;
 
 	/**
-	 * No arg constructor.
+	 * All args constructor for 'CategoriePlat'.
+	 * @param code Code de la catégorie.
+	 * @param libelle Libellé de la catégorie.
+	 * @param ordre Ordre d'affichage dans le menu.
+	 * @param prixMoyen Prix moyen de la catégorie, à titre indicatif.
 	 */
-	public CategoriePlat() {
-		// No arg constructor
-	}
-
-	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
-	 */
-	public CategoriePlat(CategoriePlatCode code) {
+	private CategoriePlat(CategoriePlatCode code, String libelle, Integer ordre, BigDecimal prixMoyen) {
 		this.code = code;
-		switch(code) {
-			case BOISSON:
-				this.libelle = "Boisson";
-				this.ordre = 1;
-				this.prixMoyen = new BigDecimal(2);
-				break;
-			case DESSERT:
-				this.libelle = "Dessert";
-				this.ordre = 4;
-				this.prixMoyen = null;
-				break;
-			case ENTREE:
-				this.libelle = "Entrée";
-				this.ordre = 2;
-				this.prixMoyen = null;
-				break;
-			case PLAT:
-				this.libelle = "Plat principal";
-				this.ordre = 3;
-				this.prixMoyen = new BigDecimal(10);
-				break;
-		}
+		this.libelle = libelle;
+		this.ordre = ordre;
+		this.prixMoyen = prixMoyen;
 	}
 
 	/**
@@ -146,6 +123,21 @@ public class CategoriePlat {
 	 */
 	public BigDecimal getPrixMoyen() {
 		return this.prixMoyen;
+	}
+
+	/**
+	 * Retourne la valeur de l'énumération pour la clé spécifiée.
+	 * @param code La clé de l'énumération pour laquelle obtenir la valeur.
+	 *
+	 * @return La valeur de l'énumération correspondant à la clé 'Code'.
+	 */
+	public static CategoriePlat getValue(CategoriePlatCode code) {
+		return switch (code) {
+			case BOISSON -> BOISSON;
+			case DESSERT -> DESSERT;
+			case ENTREE -> ENTREE;
+			case PLAT -> PLAT;
+		};
 	}
 
 	/**

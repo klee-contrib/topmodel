@@ -2,16 +2,15 @@
 
 Plusieurs générateurs du module `TopModel.Generator.Jpa` sont dédiés à la génération des classes Java à partir du modèle :
 
-| Nom                    | Condition d'activation                         | Objets ciblés                                                          | Fichiers générés                                                                                                                          |
-| ---------------------- | ---------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `JavaDtoGen`           | Toujours                                       | Classes non abstraites, non persistées, qui ne sont pas des enums      | POJO contenant les propriétés définies dans le modèle avec les annotations de validation. La classe implémente `Serializable`.            |
-| `JdbcEntityGen`        | `useJdbc: true`                                | Classes non abstraites, persistées, qui ne sont pas en `enum: true`    | POJO annoté avec les annotations `org.springframework.data.*` (persistance Spring Data JDBC, sans associations JPA).                      |
-| `JpaEntityGen`         | `useJdbc: false`                               | Classes non abstraites, persistées, non `readonly`                     | POJO annoté avec les annotations JPA (Jakarta Persistence).                                                                               |
-| `JpaEnumEntityGen`     | `useJdbc: false`                               | Classes non abstraites, persistées, avec `enum: class` et `readonly`   | POJO persisté (JPA) contenant, en plus, des membres statiques `@Transient` représentant les entités décrites dans les `values`.           |
-| `JavaEnumClassPropGen` | `uniqueValueGeneration` autorise les enums     | Classes non abstraites avec `enum: class`                              | Enum Java nommée `[NomDeLaClasse][NomDeLaPropriété]`, listant les valeurs possibles de la clé primaire de la classe.                      |
-| `JavaEnumDtoGen`       | Toujours                                       | Classes non abstraites, non persistées, avec `enum: class`             | POJO non persisté avec des membres statiques représentant les instances décrites dans les `values`.                                       |
-| `JavaEnumEnumGen`      | Toujours                                       | Classes non abstraites avec `enum: true`                               | Enum Java contenant toutes les valeurs définies dans les `values`, dont la clé est la `primaryKey` ou la première propriété de la classe. |
-| `JpaInterfaceGen`      | Toujours                                       | Classes avec `abstract: true`                                          | Interface ne contenant que des `getters` (et `setters` si la propriété n'est pas `readonly`) des propriétés définies dans le modèle.      |
+| Nom                    | Condition d'activation                          | Objets ciblés                                                       | Fichiers générés                                                                                                                               |
+| ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JavaDtoGen`           | Toujours                                        | Classes non abstraites, non persistées, qui ne sont pas des enums   | POJO contenant les propriétés définies dans le modèle avec les annotations de validation. La classe implémente `Serializable`.                 |
+| `JdbcEntityGen`        | `useJdbc: true`                                 | Classes non abstraites, persistées, qui ne sont pas en `enum: true` | POJO annoté avec les annotations `org.springframework.data.*` (persistance Spring Data JDBC, sans associations JPA).                           |
+| `JpaEntityGen`         | `useJdbc: false`                                | Classes non abstraites, persistées, non `readonly`                  | POJO annoté avec les annotations JPA (Jakarta Persistence).                                                                                    |
+| `JavaEnumClassPropGen` | `uniqueValueGeneration` autorise les enums      | Classes non abstraites avec `enum: class`                           | Enum Java nommée `[NomDeLaClasse][NomDeLaPropriété]`, listant les valeurs possibles de la clé primaire de la classe.                           |
+| `JavaEnumEnumGen`      | Toujours                                        | Classes non abstraites avec `enum: true`                            | Enum Java contenant toutes les valeurs définies dans les `values`, dont la clé est la `primaryKey` ou la première propriété de la classe.      |
+| `JavaUniqValPropGen`   | `uniqueValueGeneration` autorise les constantes | Classes non abstraites qui ne sont pas en `enum: true`              | Classe utilitaire `[NomDeLaClasse][NomDeLaPropriété]` exposant, en `public static final`, les valeurs connues d'une propriété à clé d'unicité. |
+| `JpaInterfaceGen`      | Toujours                                        | Classes avec `abstract: true`                                       | Interface ne contenant que des `getters` (et `setters` si la propriété n'est pas `readonly`) des propriétés définies dans le modèle.           |
 
 Le choix entre les deux modes d'enum (`enum: class` ou `enum: true`) se fait **classe par classe**, directement sur la classe dans le modèle.
 
@@ -40,17 +39,17 @@ Les classes persistées sont générées avec les annotations correspondant à c
 
 ### Sur la classe
 
-| Annotation                                            | Paramètre correspondant dans le modèle                                                                           |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `@Entity`                                             | Automatique                                                                                                      |
-| `@Table(name = "SQL_NAME")`                           | Automatique                                                                                                      |
-| `@Table(uniqueConstraints = { ... })`                 | Pour chaque index marqué `unique` dans la classe                                                                 |
-| `@Table(indexes = { @Index(...) })`                   | Pour chaque index non unique de la classe                                                                        |
-| `@Inheritance(strategy = InheritanceType.JOINED)`     | Si au moins une autre classe du modèle étend cette classe                                                        |
-| `@IdClass(XxxId.class)`                               | Si la classe a une clé primaire composite (plus d'une propriété `primaryKey: true`)                              |
-| `@Immutable`                                          | Si `reference: true` **et** la classe est `readonly` (typiquement une enum persistée de type `class`)            |
-| `@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)`  | Si `reference: true` **et** la classe est `readonly`                                                             |
-| `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` | Si `reference: true` **et** la classe n'est pas `readonly`                                                       |
+| Annotation                                            | Paramètre correspondant dans le modèle                                                                |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@Entity`                                             | Automatique                                                                                           |
+| `@Table(name = "SQL_NAME")`                           | Automatique                                                                                           |
+| `@Table(uniqueConstraints = { ... })`                 | Pour chaque index marqué `unique` dans la classe                                                      |
+| `@Table(indexes = { @Index(...) })`                   | Pour chaque index non unique de la classe                                                             |
+| `@Inheritance(strategy = InheritanceType.JOINED)`     | Si au moins une autre classe du modèle étend cette classe                                             |
+| `@IdClass(XxxId.class)`                               | Si la classe a une clé primaire composite (plus d'une propriété `primaryKey: true`)                   |
+| `@Immutable`                                          | Si `reference: true` **et** la classe est `readonly` (typiquement une enum persistée de type `class`) |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)`  | Si `reference: true` **et** la classe est `readonly`                                                  |
+| `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` | Si `reference: true` **et** la classe n'est pas `readonly`                                            |
 
 ### Sur chacune des propriétés
 
@@ -237,6 +236,62 @@ public enum StatutCommande {
 
     public String getLibelle() {
         return this.libelle;
+    }
+}
+```
+
+## Propriétés à valeurs connues (constantes)
+
+En plus — ou à la place — des enums, TopModel peut générer une **classe utilitaire de constantes** pour toute propriété à clé d'unicité dont les valeurs sont connues (définies dans les `values` de la classe). C'est le rôle du générateur `JavaUniqValPropGen`.
+
+Ce générateur s'applique aux classes :
+
+- non abstraites,
+- qui ne sont pas en `enum: true` (une classe en `enum: true` est déjà intégralement générée comme enum Java),
+- et qui possèdent au moins une propriété ciblée par une clé d'unicité simple avec des `values` renseignées.
+
+Pour chacune des propriétés éligibles, une classe nommée `[NomDeLaClasse][NomDeLaPropriété]` est générée dans `enumsPath`. Elle contient :
+
+- un **constructeur privé** (la classe ne doit jamais être instanciée),
+- un champ `public static final` par valeur, nommé en `PascalCase` à partir de la `name` de la `value`, typé avec le type Java de la propriété, et initialisé avec la valeur correspondante,
+- si la classe définit une `defaultProperty`, la Javadoc de chaque champ reprend la valeur correspondante (libellé par défaut).
+
+Quand une propriété est éligible à la fois à la génération d'une enum et à la génération d'une classe de constantes, le choix se fait via l'option [`uniqueValueGeneration`](/model/properties#propriété-avec-des-valeurs-et-une-clé-dunicité) :
+
+- `enum-or-const` (valeur par défaut) : une enum est générée pour la clé primaire d'une classe `enum: class`, et des classes de constantes sont générées pour les **autres** propriétés à valeurs uniques.
+- `const-only` : **toutes** les propriétés à valeurs uniques sont générées sous forme de classes de constantes (y compris la clé primaire d'une `enum: class`, qui ne produit alors pas d'enum).
+- `enum-only` : aucune classe de constantes n'est générée ; seules les enums le sont.
+- `none` : ni enum ni classe de constantes.
+
+Les constantes ainsi générées sont également utilisées automatiquement comme **`defaultValue`** des propriétés concernées dans le code généré (à la place de la valeur brute).
+
+### Exemple
+
+Soit la classe `CategoriePlat`, en `enum: class`, avec une clé primaire `code` et une propriété `ordre` porteuse d'une clé d'unicité. En mode `enum-or-const`, on obtient :
+
+- `CategoriePlatCode` : enum Java (générée par `JavaEnumClassPropGen`),
+- `CategoriePlatOrdre` : classe utilitaire de constantes (générée par `JavaUniqValPropGen`).
+
+```java
+/**
+ * Valeurs connues de la propriété Ordre de la classe CategoriePlat.
+ */
+public class CategoriePlatOrdre {
+
+    /** Boisson. */
+    public static final Integer Boisson = 1;
+
+    /** Dessert. */
+    public static final Integer Dessert = 4;
+
+    /** Entrée. */
+    public static final Integer Entree = 2;
+
+    /** Plat principal. */
+    public static final Integer Plat = 3;
+
+    private CategoriePlatOrdre() {
+        // private constructor to hide implicite public one
     }
 }
 ```

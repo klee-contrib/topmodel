@@ -31,16 +31,16 @@ import restaurant.jpa_sequence_server.enums.restaurant.RegionCode;
 public class Departement {
 
 	@Transient
-	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine);
+	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine, "restaurant.departement.values.HautsDeSeine", RegionCode.IDF);
 
 	@Transient
-	public static final Departement PARIS = new Departement(DepartementCode.Paris);
+	public static final Departement PARIS = new Departement(DepartementCode.Paris, "restaurant.departement.values.Paris", RegionCode.IDF);
 
 	@Transient
-	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne);
+	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne, "restaurant.departement.values.SeineEtMarne", RegionCode.IDF);
 
 	@Transient
-	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis);
+	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.IDF);
 
 	/**
 	 * Code du département.
@@ -63,36 +63,15 @@ public class Departement {
 	private RegionCode regionCode;
 
 	/**
-	 * No arg constructor.
+	 * All args constructor for 'Departement'.
+	 * @param code Code du département.
+	 * @param libelle Libellé du département.
+	 * @param regionCode Région associée.
 	 */
-	public Departement() {
-		// No arg constructor
-	}
-
-	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
-	 */
-	public Departement(String code) {
+	private Departement(String code, String libelle, RegionCode regionCode) {
 		this.code = code;
-		switch(code) {
-			case DepartementCode.HautsDeSeine:
-				this.libelle = "restaurant.departement.values.HautsDeSeine";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case DepartementCode.Paris:
-				this.libelle = "restaurant.departement.values.Paris";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case DepartementCode.SeineEtMarne:
-				this.libelle = "restaurant.departement.values.SeineEtMarne";
-				this.regionCode = RegionCode.IDF;
-				break;
-			case DepartementCode.SeineSaintDenis:
-				this.libelle = "restaurant.departement.values.SeineSaintDenis";
-				this.regionCode = RegionCode.IDF;
-				break;
-		}
+		this.libelle = libelle;
+		this.regionCode = regionCode;
 	}
 
 	/**
@@ -120,6 +99,22 @@ public class Departement {
 	 */
 	public RegionCode getRegionCode() {
 		return this.regionCode;
+	}
+
+	/**
+	 * Retourne la valeur de l'énumération pour la clé spécifiée.
+	 * @param code La clé de l'énumération pour laquelle obtenir la valeur.
+	 *
+	 * @return La valeur de l'énumération correspondant à la clé 'Code'.
+	 */
+	public static Departement getValue(String code) {
+		return switch (code) {
+			case DepartementCode.HautsDeSeine -> HAUTS_DE_SEINE;
+			case DepartementCode.Paris -> PARIS;
+			case DepartementCode.SeineEtMarne -> SEINE_ET_MARNE;
+			case DepartementCode.SeineSaintDenis -> SEINE_SAINT_DENIS;
+			default -> throw new IllegalArgumentException("Clé d'énumération inconnue : " + code);
+		};
 	}
 
 	/**

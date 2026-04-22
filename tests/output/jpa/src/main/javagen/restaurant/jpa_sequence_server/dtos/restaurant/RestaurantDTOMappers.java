@@ -73,7 +73,7 @@ public class RestaurantDTOMappers {
 		target.setDateFin(source.getDateFin());
 		target.setRestaurantId(source.getRestaurantId());
 		if (source.getCategoriesPlat() != null) {
-			target.setCategoriesPlat(source.getCategoriesPlat().stream().filter(Objects::nonNull).map(CategoriePlat::new).collect(Collectors.toList()));
+			target.setCategoriesPlat(source.getCategoriesPlat().stream().filter(Objects::nonNull).map(CategoriePlat::getValue).collect(Collectors.toList()));
 		} else {
 			target.setCategoriesPlat(null);
 		}

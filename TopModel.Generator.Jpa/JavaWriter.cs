@@ -98,10 +98,17 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
         if (javaClass is JavaEnum javaEnum)
         {
+            var i = -1;
             foreach (var value in javaEnum.Values)
             {
+                i++;
                 if (value.Comment != string.Empty)
                 {
+                    if (i > 0)
+                    {
+                        WriteLine();
+                    }
+
                     WriteDocStart(indentationLevel + 1, value.Comment);
                     WriteDocEnd(indentationLevel + 1);
                 }

@@ -969,7 +969,7 @@ public class RestaurantMappers {
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
 		if (source.getCategoriePlatCode() != null) {
-			target.setCategoriePlat(new CategoriePlat(source.getCategoriePlatCode()));
+			target.setCategoriePlat(CategoriePlat.getValue(source.getCategoriePlatCode()));
 		} else {
 			target.setCategoriePlat(null);
 		}
@@ -1008,7 +1008,7 @@ public class RestaurantMappers {
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
 		if (source.getCategoriePlatCode() != null) {
-			target.setCategoriePlat(new CategoriePlat(source.getCategoriePlatCode()));
+			target.setCategoriePlat(CategoriePlat.getValue(source.getCategoriePlatCode()));
 		} else {
 			target.setCategoriePlat(null);
 		}

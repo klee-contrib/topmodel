@@ -13,11 +13,21 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterProvider writerProvider)
     : JavaClassGeneratorBase(logger, writerProvider)
 {
+    private JavaEnumGeneratorHelper? _javaEnumGeneratorHelper;
     public override string Name => "JpaEntityGen";
+
+    protected override JavaEnumGeneratorHelper JavaEnumGeneratorHelper
+    {
+        get
+        {
+            _javaEnumGeneratorHelper ??= new JavaEnumGeneratorHelper(Config);
+            return _javaEnumGeneratorHelper;
+        }
+    }
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && !classe.Readonly;
+        return !classe.Abstract && classe.IsPersistent && classe.Enum != EnumMode.Enum;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)
@@ -188,8 +198,28 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         return javaClass;
     }
 
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            var allArgsConstructor = JavaEnumGeneratorHelper.GetAllArgsConstructor(classe, tag);
+            allArgsConstructor.Visibility = "private";
+            return [allArgsConstructor];
+        }
+
+        return base.GetConstuctors(classe, tag);
+    }
+
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            foreach (var javaFinalField in JavaEnumGeneratorHelper.GetConstFields(classe, tag))
+            {
+                javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
+                yield return javaFinalField;
+            }
+        }
         if (
             classe.PrimaryKey.Count() == 1
             && classe.PrimaryKey.First() is { Association: Class association, AssociationProperty: IProperty ap } pk
@@ -242,10 +272,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
-        if (
-            Config.FieldsEnum.Contains(AnnotationConstraint.Persisted)
-            && JpaModelPropertyGenerator.GetAvailableProperties(classe).Any()
-        )
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && Config.GetAvailableProperties(classe).Any())
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
             yield return fieldEnum;
@@ -305,10 +332,20 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 yield return method;
             }
         }
+
+        if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
+        {
+            yield return JavaEnumGeneratorHelper.GetGetValueStaticMethod(classe);
+        }
     }
 
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            yield break;
+        }
+
         foreach (var setter in base.GetSetters(classe, tag))
         {
             yield return setter;
@@ -325,7 +362,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (pk is { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum })
         {
-            return $".{JpaModelPropertyGenerator.GetGetterName(ap)}()";
+            return $".{Config.GetGetterName(ap)}()";
         }
 
         return string.Empty;

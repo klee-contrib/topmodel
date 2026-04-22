@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -11,15 +12,45 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvider writerProvider)
     : JavaClassGeneratorBase(logger, writerProvider)
 {
+    private JavaEnumGeneratorHelper? _javaEnumGeneratorHelper;
     public override string Name => "JavaDtoGen";
+
+    protected override JavaEnumGeneratorHelper JavaEnumGeneratorHelper
+    {
+        get
+        {
+            _javaEnumGeneratorHelper ??= new JavaEnumGeneratorHelper(Config);
+            return _javaEnumGeneratorHelper;
+        }
+    }
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && !classe.IsPersistent && classe.Enum == null;
+        return !classe.Abstract && !classe.IsPersistent && classe.Enum != EnumMode.Enum;
+    }
+
+    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            var allArgsConstructor = JavaEnumGeneratorHelper.GetAllArgsConstructor(classe, tag);
+            allArgsConstructor.Visibility = "private";
+            return [allArgsConstructor];
+        }
+
+        return base.GetConstuctors(classe, tag);
     }
 
     protected override IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            foreach (var javaFinalField in JavaEnumGeneratorHelper.GetConstFields(classe, tag))
+            {
+                yield return javaFinalField;
+            }
+        }
+
         yield return new JavaField("long", "serialVersionUID")
         {
             Static = true,
@@ -27,7 +58,6 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             Comment = { "Serial ID" },
             DefaultValue = "1L",
         }.Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
-
         foreach (var property in base.GetFields(classe, tag))
         {
             yield return property;
@@ -46,13 +76,35 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
     {
         if (
-            Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted)
-            && JpaModelPropertyGenerator.GetAvailableProperties(classe).Any()
+            Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && Config.GetAvailableProperties(classe).Any()
         )
         {
             var fieldEnum = GetFieldsEnum(classe, tag);
             yield return fieldEnum;
         }
+    }
+
+    protected override IEnumerable<JavaMethod> GetMethods(Class classe, string tag)
+    {
+        foreach (var method in base.GetMethods(classe, tag))
+        {
+            yield return method;
+        }
+
+        if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
+        {
+            yield return JavaEnumGeneratorHelper.GetGetValueStaticMethod(classe);
+        }
+    }
+
+    protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
+    {
+        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        {
+            return [];
+        }
+
+        return base.GetSetters(classe, tag);
     }
 
     protected override JavaClass InitClass(Class classe, string tag)

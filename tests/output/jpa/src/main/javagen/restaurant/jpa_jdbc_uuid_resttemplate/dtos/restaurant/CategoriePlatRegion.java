@@ -13,11 +13,18 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.RegionCode;
+
 /**
  * Catégories de plats disponibles par région.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion implements Serializable {
+
+	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Dessert);
+
+	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Entree);
 
 	/**
 	 * Serial ID.
@@ -42,10 +49,13 @@ public class CategoriePlatRegion implements Serializable {
 	private String categoriePlatCode;
 
 	/**
-	 * No arg constructor.
+	 * All args constructor for 'CategoriePlatRegion'.
+	 * @param regionCode Région.
+	 * @param categoriePlatCode Catégorie de plat.
 	 */
-	public CategoriePlatRegion() {
-		// No arg constructor
+	private CategoriePlatRegion(String regionCode, String categoriePlatCode) {
+		this.regionCode = regionCode;
+		this.categoriePlatCode = categoriePlatCode;
 	}
 
 	/**

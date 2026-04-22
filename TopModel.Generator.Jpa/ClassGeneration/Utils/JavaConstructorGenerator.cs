@@ -10,6 +10,39 @@ public class JavaConstructorGenerator(JpaConfig config)
 {
     protected JpaConfig Config { get; set; } = config;
 
+    public JavaConstructor GetAllArgsConstructor(Class classe, string tag)
+    {
+        var properties = classe.Properties;
+        return GetConstructor(classe, properties, tag);
+    }
+
+    public JavaConstructor GetConstructor(Class classe, IEnumerable<IProperty> properties, string tag)
+    {
+        var constructor = new JavaConstructor(classe.NamePascal)
+        {
+            Visibility = "public",
+            Comment = $"All args constructor for '{classe.NamePascal}'.",
+        };
+
+        if (Config.GetClassExtends(classe, tag) != null)
+        {
+            constructor.AddBodyLine("super();");
+        }
+
+        foreach (var property in properties)
+        {
+            var parameter = new JavaMethodParameter(Config.GetType(property), property.NameCamel)
+            {
+                Comment = property.Comment,
+            };
+            parameter.Imports.AddRange(property.GetTypeImports(Config, tag));
+            constructor.AddParameter(parameter);
+            constructor.AddBodyLine($"this.{property.NameCamel} = {property.NameCamel};");
+        }
+
+        return constructor;
+    }
+
     public IEnumerable<JavaMethod> GetFromMappers(Class classe, string tag)
     {
         var fromMappers = classe

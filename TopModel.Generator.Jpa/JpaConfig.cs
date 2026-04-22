@@ -220,6 +220,18 @@ public class JpaConfig : GeneratorConfigBase
         return Path.Combine(OutputDirectory, path.ToFilePath());
     }
 
+    public virtual IEnumerable<IProperty> GetAvailableProperties(Class classe)
+    {
+        if (UseJdbc)
+        {
+            return classe.Properties.Where(p =>
+                (!p.AssociationMultiple && !p.IsReverseProperty || !classe.IsPersistent)
+                && (p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc))
+            );
+        }
+        return classe.Properties.Where(p => p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc));
+    }
+
     public virtual string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
@@ -286,6 +298,19 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string GetEnumPackageName(Class classe, string tag)
     {
         return GetPackageName(classe.Namespace, EnumsPath, tag);
+    }
+
+    public virtual string GetGetterName(IProperty property)
+    {
+        var propertyName = !UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+        var propertyType = GetType(property);
+        var getterPrefix = propertyType == "boolean" ? "is" : "get";
+        if (property.Class.PreservePropertyCasing)
+        {
+            return propertyName.ToFirstUpper().WithPrefix(getterPrefix);
+        }
+
+        return propertyName.ToPascalCase().WithPrefix(getterPrefix);
     }
 
     public virtual string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)

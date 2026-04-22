@@ -10,14 +10,6 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
 {
     private static new JavaAnnotation IdAnnotation => new("Id", imports: "org.springframework.data.annotation.Id");
 
-    public override IEnumerable<IProperty> GetAvailableProperties(Class classe)
-    {
-        return classe.Properties.Where(p =>
-            (!p.AssociationMultiple && !p.IsReverseProperty || !classe.IsPersistent)
-            && (p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
-        );
-    }
-
     public override JavaAnnotation GetColumnAnnotation(IProperty property)
     {
         return new JavaAnnotation(

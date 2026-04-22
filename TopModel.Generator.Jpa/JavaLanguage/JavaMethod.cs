@@ -107,6 +107,6 @@ public class JavaMethod
 
     public string CallWith(params string[] parameters)
     {
-        return $"{Name}{string.Join(", ", parameters)}";
+        return $"{Name}({string.Join(", ", parameters)})";
     }
 }

@@ -19,6 +19,10 @@ import restaurant.jpa_sequence_server.enums.restaurant.RegionCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion implements Serializable {
 
+	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.IDF, CategoriePlatCode.DESSERT);
+
+	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.IDF, CategoriePlatCode.ENTREE);
+
 	/**
 	 * Serial ID.
 	 */
@@ -38,10 +42,13 @@ public class CategoriePlatRegion implements Serializable {
 	private CategoriePlatCode categoriePlatCode;
 
 	/**
-	 * No arg constructor.
+	 * All args constructor for 'CategoriePlatRegion'.
+	 * @param regionCode Région.
+	 * @param categoriePlatCode Catégorie de plat.
 	 */
-	public CategoriePlatRegion() {
-		// No arg constructor
+	private CategoriePlatRegion(RegionCode regionCode, CategoriePlatCode categoriePlatCode) {
+		this.regionCode = regionCode;
+		this.categoriePlatCode = categoriePlatCode;
 	}
 
 	/**
