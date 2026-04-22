@@ -10,7 +10,7 @@ custom:
   ../../TopModel.Generator.Sql: 6ef4f28773377221c0842c87fe0b466f
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
 generatedFiles:
-  - ../../05_comments.sql
+  - ../05_comments.sql
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/menu.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/personne.service.ts
