@@ -279,7 +279,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         return propertyName.ToPascalCase().WithPrefix("set");
     }
 
-    public bool ShouldWriteEnumAnnotation(IProperty property)
+    public virtual bool ShouldWriteEnumAnnotation(IProperty property)
     {
         return property is { EnumProperty: IProperty ep }
             && property.Class.IsPersistent

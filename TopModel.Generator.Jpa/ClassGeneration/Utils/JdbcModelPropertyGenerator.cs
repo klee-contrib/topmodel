@@ -18,6 +18,11 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         ).AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
     }
 
+    public override bool ShouldWriteEnumAnnotation(IProperty property)
+    {
+        return false;
+    }
+
     protected override string GetDefaultValue(IProperty property)
     {
         var defaultValue = Config.GetValue(property);

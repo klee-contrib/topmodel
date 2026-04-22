@@ -12,8 +12,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
@@ -76,7 +74,6 @@ public class Commande {
 	 */
 	@NotNull
 	@Column("stc_code")
-	@Enumerated(EnumType.STRING)
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
