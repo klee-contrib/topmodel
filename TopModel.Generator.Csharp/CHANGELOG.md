@@ -1,3 +1,7 @@
+## 4.1.2
+
+- [#559](https://github.com/klee-contrib/topmodel/pull/559) - Fix ReferenceAccessorGenerator with translations
+
 ## 4.1.1
 
 - [`d632416`](https://github.com/klee-contrib/topmodel/commit/d6324164d4d97e1c9b93aaf8cf9e7071b05fe363) - [C#] Ajout propriété statique `Values` avec toutes les instances des classes enums readonly
