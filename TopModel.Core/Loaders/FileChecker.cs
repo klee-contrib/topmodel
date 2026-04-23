@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
-using Newtonsoft.Json.Linq;
-using NJsonSchema;
-using NJsonSchema.Validation;
+using System.Text.Json;
+using Json.Schema;
 using Spectre.Console;
 using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Utils;
@@ -25,12 +24,10 @@ public class FileChecker
     {
         if (configSchemaPath != null)
         {
-            _configSchema = JsonSchema
-                .FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath))
-                .Result;
+            _configSchema = JsonSchema.FromFile(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath));
         }
 
-        _modelSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), "schema.json")).Result;
+        _modelSchema = JsonSchema.FromFile(GetFilePath(Assembly.GetExecutingAssembly(), "schema.json"));
 
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -110,10 +107,7 @@ public class FileChecker
                 case (YamlScalarNode { Value: "useLegacyRoleNames" }, YamlScalarNode { Value: var value }):
                     config.UseLegacyRoleNames = value == "true";
                     break;
-                case (
-                    YamlScalarNode { Value: "defaultAssociationUseClass" },
-                    YamlScalarNode { Value: var value }
-                ):
+                case (YamlScalarNode { Value: "defaultAssociationUseClass" }, YamlScalarNode { Value: var value }):
                     config.DefaultAssociationUseClass = value == "true";
                     break;
                 case (YamlScalarNode { Value: "i18n" }, YamlMappingNode map):
@@ -136,15 +130,13 @@ public class FileChecker
         return config;
     }
 
-    public async Task<object> GetGenConfig(
-        string configName,
-        Type configType,
-        IDictionary<string, object> genConfigMap,
-        CancellationToken ct = default
-    )
+    public object GetGenConfig(string configName, Type configType, IDictionary<string, object> genConfigMap)
     {
-        var schema = await JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json"), ct);
-        Validate(configName, schema, JToken.FromObject(genConfigMap));
+        var schema = JsonSchema.FromFile(
+            GetFilePath(configType.Assembly, $"{configName}.config.json"),
+            new() { SchemaRegistry = new SchemaRegistry() }
+        );
+        Validate(configName, schema, JsonSerializer.SerializeToElement(genConfigMap));
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
@@ -153,38 +145,31 @@ public class FileChecker
         return _deserializer.Deserialize<WatcherConfigBase>(_serializer.Serialize(genConfigMap))!;
     }
 
-    private static void Validate(string fileName, JsonSchema schema, JToken json)
+    private static void Validate(string fileName, JsonSchema schema, JsonElement json)
     {
-        var errors = schema.Validate(json);
+        var result = schema.Evaluate(json, new() { OutputFormat = OutputFormat.Hierarchical });
 
-        if (errors.Any())
+        if (!result.IsValid)
         {
             var erreur = new StringBuilder();
-            erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
+            erreur.AppendLine($"Erreur dans le fichier {fileName.ToRelative()} :");
 
-            void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
+            void HandleErrors(EvaluationResults r)
             {
-                foreach (var e in validationErrors)
+                if (r.Errors != null)
                 {
-                    erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
-                    if (e is ChildSchemaValidationError csve)
+                    erreur.AppendLine($"{r.EvaluationPath}:{string.Join(", ", r.Errors)}");
+                }
+                else if (r.Details != null)
+                {
+                    foreach (var d in r.Details)
                     {
-                        foreach (var schema in csve.Errors)
-                        {
-                            var newIndent = indent + "  ";
-                            if (csve.Errors.Count > 1)
-                            {
-                                erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
-                                newIndent += "  ";
-                            }
-
-                            HandleErrors(schema.Value, newIndent);
-                        }
+                        HandleErrors(d);
                     }
                 }
             }
 
-            HandleErrors(errors);
+            HandleErrors(result);
             throw new ModelException(erreur.ToString());
         }
     }
@@ -196,19 +181,14 @@ public class FileChecker
         var parser = new Parser(new StringReader(content));
         parser.Consume<YamlDotNet.Core.Events.StreamStart>();
 
-        var firstObject = true;
         while (parser.Current is YamlDotNet.Core.Events.DocumentStart)
         {
             var yaml =
                 _deserializer.Deserialize(parser)
                 ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
-            var json = JToken.FromObject(yaml);
+            var json = JsonSerializer.SerializeToElement(yaml);
 
-            var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
-
-            Validate(fileName, finalSchema, json);
-
-            firstObject = false;
+            Validate(fileName, schema, json);
         }
     }
 

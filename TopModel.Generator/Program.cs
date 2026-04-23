@@ -704,9 +704,7 @@ for (var i = 0; i < configs.Count; i++)
 
                 try
                 {
-                    var genConfig = (GeneratorConfigBase)(
-                        await fileChecker.GetGenConfig(configName, configType, genConfigMap)
-                    );
+                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
                     genConfig.InitVariables(config.App, number);
 
                     genConfig.ExcludedTags = excludedTags;
