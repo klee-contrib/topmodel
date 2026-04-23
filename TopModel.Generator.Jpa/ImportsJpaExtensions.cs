@@ -46,33 +46,23 @@ public static class ImportsJpaExtensions
             && config.AvailableClasses.Contains(association)
         )
         {
-            if (association.Enum != null)
+            if (
+                association.Enum == EnumMode.Enum
+                || association.Enum == EnumMode.Class
+                    && ap.EnumProperty != null
+                    && (!p.UseClassForAssociation || config.UseJdbc)
+                    && config.UniqueValueGeneration.CanEnum
+            )
             {
-                if (
-                    association.Enum == EnumMode.Enum
-                    || ap.EnumProperty != null
-                        && (!p.UseClassForAssociation || config.UseJdbc)
-                        && config.UniqueValueGeneration.CanEnum
-                )
-                {
-                    yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";
-                }
-                else if (
-                    p.Class != null
+                yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";
+            }
+            else if (
+                p.Class != null && association.IsPersistent && p.Class.IsPersistent && !forceAssociationPropertyType
+                || !config.UseJdbc
+                    && p.Class != null
                     && association.IsPersistent
                     && p.Class.IsPersistent
                     && !forceAssociationPropertyType
-                )
-                {
-                    yield return association.GetImport(config, config.GetBestClassTag(association, tag));
-                }
-            }
-            else if (
-                !config.UseJdbc
-                && p.Class != null
-                && association.IsPersistent
-                && p.Class.IsPersistent
-                && !forceAssociationPropertyType
             )
             {
                 yield return association.GetImport(config, config.GetBestClassTag(association, tag));

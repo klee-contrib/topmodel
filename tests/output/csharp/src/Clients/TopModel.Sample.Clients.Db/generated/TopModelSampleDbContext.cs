@@ -25,6 +25,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<CategoriePlat> CategoriePlats { get; set; }
 
     /// <summary>
+    /// Accès à l'entité CategoriePlatRegion.
+    /// </summary>
+    public DbSet<CategoriePlatRegion> CategoriePlatRegions { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Client.
     /// </summary>
     public DbSet<Client> Clients { get; set; }
@@ -116,6 +121,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
+        modelBuilder.Entity<CategoriePlatRegion>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
+        modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasMaxLength(10);
         modelBuilder.Entity<Commande>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Departement>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
@@ -124,6 +131,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<AvisClient>().HasOne(p => p.Client).WithMany(p => p.AvisClients).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AvisClient>().HasOne(p => p.Restaurant).WithMany(p => p.AvisClients).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CategoriePlatRegion>().HasOne<Region>().WithMany().HasForeignKey(p => p.RegionCode).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CategoriePlatRegion>().HasOne(p => p.CategoriePlat).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.Reservation).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -151,6 +160,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Reservation>().HasOne(p => p.Restaurant).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TableRestaurant>().HasOne<Models.Restaurant.Restaurant>().WithMany().HasForeignKey(p => p.RestaurantId).OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<CategoriePlatRegion>().HasKey("RegionCode", "CategoriePlatCode");
         modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
 
@@ -165,6 +175,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<AvisClient>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasColumnName("cat_code");
         modelBuilder.Entity<Commande>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
         modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");
@@ -187,6 +198,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Region>().HasIndex(p => p.Libelle);
 
         modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Values);
+        modelBuilder.Entity<CategoriePlatRegion>().HasData(CategoriePlatRegion.Values);
         modelBuilder.Entity<Departement>().HasData(Departement.Values);
         modelBuilder.Entity<Region>().HasData(
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });

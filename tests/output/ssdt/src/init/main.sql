@@ -12,6 +12,9 @@
 /* Insertion dans la table REGION. */
 :r .\REGION.insert.sql
 
+/* Insertion dans la table CATEGORIE_PLAT_REGION. */
+:r .\CATEGORIE_PLAT_REGION.insert.sql
+
 /* Insertion dans la table DEPARTEMENT. */
 :r .\DEPARTEMENT.insert.sql
 

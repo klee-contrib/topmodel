@@ -16,7 +16,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     public override string Name => "JdbcEntityGen";
 
-    protected override JavaEnumGeneratorHelper JavaEnumGeneratorHelper
+    protected override JavaEnumGeneratorHelper JavaConstructorGenerator
     {
         get
         {
@@ -45,7 +45,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            var allArgsConstructor = JavaEnumGeneratorHelper.GetAllArgsConstructor(classe, tag);
+            var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
             allArgsConstructor.Visibility = "private";
             yield return allArgsConstructor;
         }
@@ -55,7 +55,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            foreach (var javaFinalField in JavaEnumGeneratorHelper.GetConstFields(classe, tag))
+            foreach (var javaFinalField in JavaConstructorGenerator.GetConstFields(classe, tag))
             {
                 javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
                 yield return javaFinalField;

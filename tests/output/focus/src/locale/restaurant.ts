@@ -26,7 +26,7 @@ export const restaurant = {
         }
     },
     categoriePlatRegion: {
-        categoriePlatCode: "CategoriePlatCode",
+        categoriePlatCode: "CategoriePlat",
         regionCode: "RegionCode"
     },
     client: {

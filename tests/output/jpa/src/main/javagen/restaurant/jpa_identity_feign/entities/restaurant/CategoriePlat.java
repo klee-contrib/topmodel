@@ -76,6 +76,13 @@ public class CategoriePlat {
 	private BigDecimal prixMoyen;
 
 	/**
+	 * No arg constructor.
+	 */
+	public CategoriePlat() {
+		// No arg constructor
+	}
+
+	/**
 	 * All args constructor for 'CategoriePlat'.
 	 * @param code Code de la catégorie.
 	 * @param libelle Libellé de la catégorie.

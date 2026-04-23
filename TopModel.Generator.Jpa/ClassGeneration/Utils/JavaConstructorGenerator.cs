@@ -31,13 +31,17 @@ public class JavaConstructorGenerator(JpaConfig config)
 
         foreach (var property in properties)
         {
-            var parameter = new JavaMethodParameter(Config.GetType(property), property.NameCamel)
+            var propName = !Config.UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+            var parameter = new JavaMethodParameter(
+                Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
+                propName
+            )
             {
                 Comment = property.Comment,
             };
             parameter.Imports.AddRange(property.GetTypeImports(Config, tag));
             constructor.AddParameter(parameter);
-            constructor.AddBodyLine($"this.{property.NameCamel} = {property.NameCamel};");
+            constructor.AddBodyLine($"this.{propName} = {propName};");
         }
 
         return constructor;

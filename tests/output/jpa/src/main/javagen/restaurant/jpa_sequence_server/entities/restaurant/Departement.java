@@ -63,6 +63,13 @@ public class Departement {
 	private RegionCode regionCode;
 
 	/**
+	 * No arg constructor.
+	 */
+	public Departement() {
+		// No arg constructor
+	}
+
+	/**
 	 * All args constructor for 'Departement'.
 	 * @param code Code du département.
 	 * @param libelle Libellé du département.

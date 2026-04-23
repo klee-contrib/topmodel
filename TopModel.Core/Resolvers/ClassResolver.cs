@@ -75,6 +75,25 @@ internal class ClassResolver(
                     }
                 }
 
+                if (classe.Enum == EnumMode.Class && classe.Readonly)
+                {
+                    foreach (
+                        var prop in classe.Properties.Where(c =>
+                            c.Composition != null && (c.Composition?.Enum == null || c.Composition?.Readonly != true)
+                            || c.Association != null
+                                && c.UseClassForAssociation
+                                && (c.Association?.Enum == null || c.Association?.Readonly != true)
+                        )
+                    )
+                    {
+                        yield return new ModelError(
+                            ErrorType.TMD3020,
+                            prop,
+                            $"Impossible de créer une composition ou une association classe vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe enum readonly comme '{classe}'."
+                        );
+                    }
+                }
+
                 foreach (
                     var index in classe.Indexes.Where(
                         (idx1, i) =>

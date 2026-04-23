@@ -15,7 +15,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     private JavaEnumGeneratorHelper? _javaEnumGeneratorHelper;
     public override string Name => "JavaDtoGen";
 
-    protected override JavaEnumGeneratorHelper JavaEnumGeneratorHelper
+    protected override JavaEnumGeneratorHelper JavaConstructorGenerator
     {
         get
         {
@@ -33,7 +33,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            var allArgsConstructor = JavaEnumGeneratorHelper.GetAllArgsConstructor(classe, tag);
+            var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
             allArgsConstructor.Visibility = "private";
             return [allArgsConstructor];
         }
@@ -45,7 +45,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            foreach (var javaFinalField in JavaEnumGeneratorHelper.GetConstFields(classe, tag))
+            foreach (var javaFinalField in JavaConstructorGenerator.GetConstFields(classe, tag))
             {
                 yield return javaFinalField;
             }
@@ -93,7 +93,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
         if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
         {
-            yield return JavaEnumGeneratorHelper.GetGetValueStaticMethod(classe);
+            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe);
         }
     }
 

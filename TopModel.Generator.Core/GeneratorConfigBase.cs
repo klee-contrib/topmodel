@@ -389,6 +389,19 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return GetEnumInEnumClassType(className, propName, internalReference);
     }
 
+    public virtual string GetReadonlyEnumClassInstanceName(Class classe, string refName, bool internalReference = false)
+    {
+        var sb = new StringBuilder();
+
+        if (!internalReference)
+        {
+            sb.Append($"{classe.NamePascal}.");
+        }
+
+        sb.Append(refName.ToPascalCase(strictIfUppercase: true));
+        return sb.ToString();
+    }
+
     /// <summary>
     /// Récupère le module racine pour un namespace.
     /// </summary>
@@ -504,6 +517,27 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
 
         if (
+            UseValueNameForValues
+            && property
+                is { Association: Class { Readonly: true, Enum: EnumMode.Class } a, UseClassForAssociation: true }
+            && AvailableClasses.Contains(a)
+        )
+        {
+            var refName = property
+                .UniqueValuedProperty!.Class.Values.SingleOrDefault(rv =>
+                    rv.Value[property.UniqueValuedProperty] == value
+                )
+                ?.Name;
+            if (refName != null)
+            {
+                var instanceName = GetReadonlyEnumClassInstanceName(a, refName);
+                if (!string.IsNullOrEmpty(instanceName))
+                {
+                    return instanceName;
+                }
+            }
+        }
+        else if (
             HasEnumSupport
             && UseValueNameForValues
             && property.EnumProperty != null

@@ -16,7 +16,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     private JavaEnumGeneratorHelper? _javaEnumGeneratorHelper;
     public override string Name => "JpaEntityGen";
 
-    protected override JavaEnumGeneratorHelper JavaEnumGeneratorHelper
+    protected override JavaEnumGeneratorHelper JavaConstructorGenerator
     {
         get
         {
@@ -202,9 +202,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            var allArgsConstructor = JavaEnumGeneratorHelper.GetAllArgsConstructor(classe, tag);
+            var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
             allArgsConstructor.Visibility = "private";
-            return [allArgsConstructor];
+            return [JavaConstructorGenerator.GetNoArgConstructor(classe, tag), allArgsConstructor];
         }
 
         return base.GetConstuctors(classe, tag);
@@ -214,7 +214,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
-            foreach (var javaFinalField in JavaEnumGeneratorHelper.GetConstFields(classe, tag))
+            foreach (var javaFinalField in JavaConstructorGenerator.GetConstFields(classe, tag))
             {
                 javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
                 yield return javaFinalField;
@@ -335,7 +335,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
         {
-            yield return JavaEnumGeneratorHelper.GetGetValueStaticMethod(classe);
+            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe);
         }
     }
 
@@ -360,7 +360,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
     {
-        if (pk is { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum })
+        if (
+            pk is
+            { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum, UseClassForAssociation: true }
+        )
         {
             return $".{Config.GetGetterName(ap)}()";
         }

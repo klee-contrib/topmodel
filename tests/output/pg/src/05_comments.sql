@@ -31,6 +31,13 @@ COMMENT ON COLUMN CATEGORIE_PLAT.CAT_ORDRE IS 'Ordre d''affichage dans le menu.'
 COMMENT ON COLUMN CATEGORIE_PLAT.CAT_PRIX_MOYEN IS 'Prix moyen de la catégorie, à titre indicatif.';
 
 /**
+  * Commentaires pour la table CATEGORIE_PLAT_REGION
+ **/
+COMMENT ON TABLE CATEGORIE_PLAT_REGION IS 'Catégories de plats disponibles par région';
+COMMENT ON COLUMN CATEGORIE_PLAT_REGION.REG_CODE IS 'Région';
+COMMENT ON COLUMN CATEGORIE_PLAT_REGION.CAT_CODE IS 'Catégorie de plat';
+
+/**
   * Commentaires pour la table CLIENT
  **/
 COMMENT ON TABLE CLIENT IS 'Client du restaurant';

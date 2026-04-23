@@ -127,13 +127,14 @@ class:
   readonly: true
   properties:
     - association: Region
-      required: true
+      primaryKey: true
+      useClass: false
       comment: Région
 
     - association: CategoriePlat
-      required: true
+      primaryKey: true
       comment: Catégorie de plat
 
   values:
-    IdfEntree: { RegionCode: IDF, CategoriePlatCode: ENTREE }
-    IdfDessert: { RegionCode: IDF, CategoriePlatCode: DESSERT }
+    IdfEntree: { RegionCode: IDF, CategoriePlat: ENTREE }
+    IdfDessert: { RegionCode: IDF, CategoriePlat: DESSERT }

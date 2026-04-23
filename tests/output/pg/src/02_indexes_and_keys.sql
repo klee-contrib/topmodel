@@ -37,6 +37,34 @@ alter table AVIS_CLIENT
 		references RESTAURANT (RES_ID);
 
 /**
+  * Création de l'index de clef étrangère pour CATEGORIE_PLAT_REGION.REG_CODE
+ **/
+create index IDX_CATEGORIE_PLAT_REGION_REG_CODE_FK on CATEGORIE_PLAT_REGION (
+	REG_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour CATEGORIE_PLAT_REGION.REG_CODE
+ **/
+alter table CATEGORIE_PLAT_REGION
+	add constraint FK_CATEGORIE_PLAT_REGION_REG_CODE foreign key (REG_CODE)
+		references REGION (REG_CODE);
+
+/**
+  * Création de l'index de clef étrangère pour CATEGORIE_PLAT_REGION.CAT_CODE
+ **/
+create index IDX_CATEGORIE_PLAT_REGION_CAT_CODE_FK on CATEGORIE_PLAT_REGION (
+	CAT_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour CATEGORIE_PLAT_REGION.CAT_CODE
+ **/
+alter table CATEGORIE_PLAT_REGION
+	add constraint FK_CATEGORIE_PLAT_REGION_CAT_CODE foreign key (CAT_CODE)
+		references CATEGORIE_PLAT (CAT_CODE);
+
+/**
   * Création de l'index de clef étrangère pour CLIENT.PER_ID
  **/
 create index IDX_CLI_PER_ID_FK on CLIENT (

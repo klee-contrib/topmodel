@@ -161,7 +161,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 fw.Write(property.NameCamel);
                 fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                 fw.Write(": ");
-                fw.Write(Config.GetType(property));
+                fw.Write(Config.GetType(property, forceAssociationPropertyType: true));
                 fw.Write(";\r\n");
             }
 

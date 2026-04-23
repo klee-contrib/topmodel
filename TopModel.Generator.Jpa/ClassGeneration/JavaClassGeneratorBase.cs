@@ -18,7 +18,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     protected static IDictionary<string, string> NewableTypes =>
         new Dictionary<string, string>() { ["List"] = "ArrayList", ["Set"] = "HashSet" };
 
-    protected virtual JavaConstructorGenerator JavaEnumGeneratorHelper
+    protected virtual JavaConstructorGenerator JavaConstructorGenerator
     {
         get
         {
@@ -61,12 +61,12 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             && classe.FromMappers.Any(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
         )
         {
-            yield return JavaEnumGeneratorHelper.GetNoArgConstructor(classe, tag);
+            yield return JavaConstructorGenerator.GetNoArgConstructor(classe, tag);
         }
 
         if (Config.MappersInClass)
         {
-            foreach (var constructor in JavaEnumGeneratorHelper.GetFromMappers(classe, tag))
+            foreach (var constructor in JavaConstructorGenerator.GetFromMappers(classe, tag))
             {
                 yield return constructor;
             }

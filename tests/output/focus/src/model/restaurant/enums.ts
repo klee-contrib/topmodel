@@ -38,16 +38,16 @@ export const categoriePlat = {list: categoriePlatList, valueKey: "code", labelKe
 
 export interface CategoriePlatRegion {
     regionCode: RegionCode;
-    categoriePlatCode: CategoriePlatCode;
+    categoriePlat: CategoriePlatCode;
 }
 export const categoriePlatRegionList: CategoriePlatRegion[] = [
     {
         regionCode: "IDF",
-        categoriePlatCode: "ENTREE"
+        categoriePlat: "ENTREE"
     },
     {
         regionCode: "IDF",
-        categoriePlatCode: "DESSERT"
+        categoriePlat: "DESSERT"
     },
 ];
 

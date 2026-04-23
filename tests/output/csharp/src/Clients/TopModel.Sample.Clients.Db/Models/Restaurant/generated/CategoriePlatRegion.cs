@@ -3,24 +3,27 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
+using TopModel.Sample.Restaurant.Models;
 
-namespace TopModel.Sample.Restaurant.Models;
+namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
 /// <summary>
 /// Catégories de plats disponibles par région.
 /// </summary>
+[Table("categorie_plat_region")]
 public partial record CategoriePlatRegion
 {
     /// <summary>
     /// IdfDessert.
     /// </summary>
-    public static CategoriePlatRegion IdfDessert { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Codes.DESSERT };
+    public static CategoriePlatRegion IdfDessert { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlat = CategoriePlat.Dessert };
 
     /// <summary>
     /// IdfEntree.
     /// </summary>
-    public static CategoriePlatRegion IdfEntree { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Codes.ENTREE };
+    public static CategoriePlatRegion IdfEntree { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlat = CategoriePlat.Entree };
 
     /// <summary>
     /// Liste des valeurs.
@@ -30,6 +33,7 @@ public partial record CategoriePlatRegion
     /// <summary>
     /// Région.
     /// </summary>
+    [Column("reg_code")]
     [Required]
     [ReferencedType(typeof(Region))]
     [Domain(Domains.Code)]
@@ -40,6 +44,5 @@ public partial record CategoriePlatRegion
     /// </summary>
     [Required]
     [ReferencedType(typeof(CategoriePlat))]
-    [Domain(Domains.Code)]
-    public CategoriePlat.Codes? CategoriePlatCode { get; init; }
+    public CategoriePlat? CategoriePlat { get; init; }
 }

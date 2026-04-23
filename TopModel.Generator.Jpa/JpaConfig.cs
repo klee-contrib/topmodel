@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using System.Text;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
@@ -399,6 +400,28 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string GetPackageName(Namespace ns, string modelPath, string tag)
     {
         return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
+    }
+
+    public override string GetReadonlyEnumClassInstanceName(
+        Class classe,
+        string refName,
+        bool internalReference = false
+    )
+    {
+        if (UseJdbc)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+
+        if (!internalReference)
+        {
+            sb.Append($"{classe.NamePascal}.");
+        }
+
+        sb.Append(refName.ToConstantCase());
+        return sb.ToString();
     }
 
     public override string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)

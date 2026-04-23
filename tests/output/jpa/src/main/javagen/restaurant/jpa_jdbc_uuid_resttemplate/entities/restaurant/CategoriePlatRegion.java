@@ -2,16 +2,13 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant;
+package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
-import java.io.Serial;
-import java.io.Serializable;
-
-import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Transient;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatCode;
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.RegionCode;
@@ -19,33 +16,26 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.RegionCode;
 /**
  * Catégories de plats disponibles par région.
  */
+@Table(name = "categorie_plat_region")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class CategoriePlatRegion implements Serializable {
+public class CategoriePlatRegion {
 
-	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Dessert);
+	@Transient
+	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, "DESSERT");
 
-	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Entree);
-
-	/**
-	 * Serial ID.
-	 */
-	@Serial
-	private static final long serialVersionUID = 1L;
+	@Transient
+	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, "ENTREE");
 
 	/**
 	 * Région.
 	 */
-	@NotNull
-	@Size(max = 10)
-	@Column("reg_code")
+	@Id
 	private String regionCode;
 
 	/**
 	 * Catégorie de plat.
 	 */
-	@NotNull
-	@Size(max = 10)
-	@Column("cat_code")
+	@Id
 	private String categoriePlatCode;
 
 	/**

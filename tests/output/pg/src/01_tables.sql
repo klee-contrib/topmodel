@@ -40,6 +40,15 @@ create table CATEGORIE_PLAT (
 );
 
 /**
+  * Création de la table CATEGORIE_PLAT_REGION
+ **/
+create table CATEGORIE_PLAT_REGION (
+	REG_CODE varchar(10) not null,
+	CAT_CODE varchar(10) not null,
+	constraint PK_CATEGORIE_PLAT_REGION primary key (REG_CODE,CAT_CODE)
+);
+
+/**
   * Création de la table CLIENT
  **/
 create table CLIENT (
