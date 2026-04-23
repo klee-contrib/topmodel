@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using OmniSharp.Extensions.JsonRpc;
+using TopModel.Utils.Mermaid;
 
 namespace TopModel.LanguageServer;
 

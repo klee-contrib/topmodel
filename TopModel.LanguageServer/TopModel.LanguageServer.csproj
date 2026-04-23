@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
+    <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>
   <Target Name="PostPublish" AfterTargets="Publish">
     <Delete Files="$(PublishDir)/System.Reactive.xml" />

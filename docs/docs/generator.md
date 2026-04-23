@@ -4,13 +4,14 @@
 
 ## Modules de générateurs
 
-Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut**. TopModel maintient et publie les 5 modules de générateurs suivants, qui seront automatiquement installés si vous les renseignez dans votre [fichier de configuration `topmodel.config`](./configuration) :
+Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut**. TopModel maintient et publie les 6 modules de générateurs suivants, qui seront automatiquement installés si vous les renseignez dans votre [fichier de configuration `topmodel.config`](./configuration) :
 
 - **Le module de générateurs [C# (`csharp`)](./generator/csharp)** : Génération de classes C#, Entity Framework Core, API controllers/clients, etc.
 - **Le module de générateurs [JPA (`jpa`)](./generator/jpa)** : Génération de classes Java/JPA, entités, repositories, etc.
 - **Le module de générateurs [Javascript (`javascript`)](./generator/js)** : Génération de classes TypeScript, clients API Angular/Nuxt, etc.
 - **Le module de générateurs [SQL (`sql`)](./generator/sql)** : Génération de scripts SQL (PostgreSQL, Oracle, SQL Server, SSDT, etc.)
 - **Le module de générateurs [traductions manquantes (`translation`)](./generator/translation)** : Génération de fichiers de traductions manquantes
+- **Le module de générateurs [documentation (`documentation`)](./generator/documentation)** : Génération de documentation Markdown (dictionnaire de données, liste d'endpoints, diagrammes de classes Mermaid)
 
 Ces modules sont publiés sur NuGet (comme toute librairie .NET) sous le nom `TopModel.Generator.{module}`. En théorie, `modgen` n'est pas limité à ces 5 modules là, et si quelqu'un d'autre publiait un module `TopModel.Generator.Brainfuck` par exemple, il serait automatiquement installé si une config `brainfuck` était renseignée dans la configuration.
 
