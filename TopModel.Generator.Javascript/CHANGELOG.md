@@ -1,3 +1,9 @@
+## 4.2.1
+
+- [`d6ca9ac`](https://github.com/klee-contrib/topmodel/commit/d6ca9ace2aac80df42b8e1c82d7e20ca93a408be) - Fix association enum class readonly vers enum class readonly
+
+  Corrige le type des associations classes générées dans les enums.
+
 ## 4.2.0
 
 - [`4a2d7cc`](https://github.com/klee-contrib/topmodel/commit/4a2d7ccbfc2dbd932f56f0bcb8f8cd3cb32e95a8) - [JS] references => enums

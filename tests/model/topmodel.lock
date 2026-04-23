@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.1.4
+version: 4.2.0
 custom:
   ../../TopModel.Generator.Csharp: 5f7095078e12cd79499adeeb88ee8ca3
   ../../TopModel.Generator.Javascript: 0a071b1a53f63db7e8cce8528b09e6e9

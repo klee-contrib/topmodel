@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.1.4
+version: 4.2.0
 modules:
   jpa:
     version: 4.1.1

@@ -8,6 +8,16 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.2.0
+
+- [`d6ca9ac`](https://github.com/klee-contrib/topmodel/commit/d6ca9ace2aac80df42b8e1c82d7e20ca93a408be) - Fix association enum class readonly vers enum class readonly
+
+  _breaking change_ : Une association sur une classe enum readonly doit maintenant aussi être une classe enum readonly (si `useClass: true`). En réalité, la génération était incorrecte pour ce cas-là précédemment, donc ce n'est pas un vrai breaking change...
+
+- [`a435f82`](https://github.com/klee-contrib/topmodel/commit/a435f829232db2e2cceaaaf492b4543de25348a4) - [Core] Vérification nom des values (+ maj lib de vérification du schéma)
+
+  _breaking change_ : Le nom d'une value doit désormais obligatoirement commencer par une lettre ou un underscore. Comme le breaking change précédent, la génération était incorrecte (si le nom était utilisé) si ce n'était pas le cas...
+
 ## 4.1.4
 
 - [`707a65f`](https://github.com/klee-contrib/topmodel/commit/707a65ff12ecfcfe5a059a039f48862cb63ea3ab) - [Core] Fix check manquant sur dispo classe pour type association

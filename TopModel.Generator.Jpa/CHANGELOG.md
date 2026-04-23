@@ -12,7 +12,7 @@
     - Le constructeur est explicitement privé
     - Les arguments du constructeur n'ont plus `final`
     - Les getter ont désormais le commentaire `@returns`
-    Les enum des classes `enum: class` ont maintenant des sauts de lignes entre les valeurs, si `defaultProperty` est renseigné. Si pas de commentaire, pas de saut de ligne
+      Les enum des classes `enum: class` ont maintenant des sauts de lignes entre les valeurs, si `defaultProperty` est renseigné. Si pas de commentaire, pas de saut de ligne
 
 ### :warning: Breaking change
 
