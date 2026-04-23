@@ -71,6 +71,11 @@ const sidebars: SidebarsConfig = {
           label: "Translation",
         },
         { type: "doc", id: "generator/sql", label: "SQL" },
+        {
+          type: "doc",
+          id: "generator/documentation",
+          label: "Documentation",
+        },
       ],
     },
     {

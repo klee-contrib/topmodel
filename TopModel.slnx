@@ -6,6 +6,7 @@
   </Folder>
   <Project Path="TopModel.Core/TopModel.Core.csproj" />
   <Project Path="TopModel.Generator.Core/TopModel.Generator.Core.csproj" />
+  <Project Path="TopModel.Generator.Documentation/TopModel.Generator.Documentation.csproj" />
   <Project Path="TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj" />
   <Project Path="TopModel.Generator.Javascript/TopModel.Generator.Javascript.csproj" />
   <Project Path="TopModel.Generator.Jpa/TopModel.Generator.Jpa.csproj" />
@@ -15,4 +16,5 @@
   <Project Path="TopModel.LanguageServer/TopModel.LanguageServer.csproj" />
   <Project Path="TopModel.ModelGenerator/TopModel.ModelGenerator.csproj" />
   <Project Path="TopModel.Utils/TopModel.Utils.csproj" />
+  <Project Path="TopModel.Utils.Mermaid/TopModel.Utils.Mermaid.csproj" />
 </Solution>

@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de Documentation.",
+  "additionalProperties": false,
+  "required": ["outputDirectory", "tags"],
+  "properties": {
+    "language": {
+      "type": "string",
+      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Pas de valeur par défaut."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Précise les tags de fichier que le générateur doit lire",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".+": {
+          "type": "string"
+        }
+      }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Désactive les générateurs demandés",
+      "items": {
+        "type": "string",
+        "enum": ["DocClassGen", "DocEndpointGen", "DocMermaidGen"]
+      }
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "schemas": {
+      "type": "object",
+      "description": "Correspondance entre les tags et les pods dans lesquels ils sont utilisés. Permet de désigner dans quelle base de données chaque table est présente",
+      "additionalProperties": {
+        "type": "array",
+        "description": "Liste des tags dont les classes persistées sont dans le schéma",
+        "items": {
+          "type": "string",
+          "description": "Tag dont les classes persistées sont dans le schéma"
+        }
+      }
+    },
+    "endpointsFilePath": {
+      "type": "string",
+      "description": "Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.",
+      "default": "endpoints.md"
+    },
+    "classesFilePath": {
+      "type": "string",
+      "description": "Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.",
+      "default": "classes.md"
+    },
+    "mermaidFilePath": {
+      "type": "string",
+      "description": "Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un diagramme par fichier de modèle si `{fileName}` est présent, un diagramme par module si `{module}` est présent, un unique diagramme global sinon.",
+      "default": "{module}.md"
+    },
+    "authorizationAnnotations": {
+      "type": "array",
+      "description": "Liste des noms d'annotations (ex. `RoleRequired`, `HasRole`) dont les paramètres doivent être agrégés pour alimenter la colonne `Autorisation` dans la liste des endpoints. Si la liste est vide ou non renseignée, la colonne `Autorisation` n'est pas générée.",
+      "items": {
+        "type": "string",
+        "description": "Nom d'une annotation dont les paramètres seront concaténés dans la colonne `Autorisation`."
+      }
+    }
+  }
+}

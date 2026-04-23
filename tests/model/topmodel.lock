@@ -9,6 +9,7 @@ custom:
   ../../TopModel.Generator.Jpa: 09424a0fb5035b1f0dd29bfa28a4d365
   ../../TopModel.Generator.Sql: 6ef4f28773377221c0842c87fe0b466f
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
+  ../../TopModel.Generator.Documentation: 99133fc37e32f9d7f135f218f52fcf67
 generatedFiles:
   - ../05_comments.sql
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
@@ -120,6 +121,11 @@ generatedFiles:
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/MenuController.cs
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/PersonneController.cs
   - ../output/csharp/src/TopModel.Sample.Api/Controllers/Restaurant/RestaurantController.cs
+  - ../output/documentation/classes/common.md
+  - ../output/documentation/classes/restaurant.md
+  - ../output/documentation/endpoints/restaurant.md
+  - ../output/documentation/mermaid/common.md
+  - ../output/documentation/mermaid/restaurant.md
   - ../output/focus/src/locale/restaurant.ts
   - ../output/focus/src/model/restaurant/avis-client-read.ts
   - ../output/focus/src/model/restaurant/avis-client-write.ts

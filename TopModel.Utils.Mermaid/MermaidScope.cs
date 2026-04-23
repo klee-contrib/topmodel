@@ -1,4 +1,4 @@
-﻿namespace TopModel.LanguageServer;
+namespace TopModel.Utils.Mermaid;
 
 public enum MermaidScope
 {

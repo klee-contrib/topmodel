@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Génération des fichiers TopModel
-dotnet run --project ../TopModel.Generator -- --check --file ./model/topmodel.config
+dotnet run --project ../TopModel.Generator -- --check --file ./model/topmodel.config -s
 
 # Vérification que la génération s'est bien passée
 if [ $? -ne 0 ]; then

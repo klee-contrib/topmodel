@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>4.0.0</Version>
+    <Description>Générateurs de documentation pour TopModel</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
+    <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="documentation.config.json">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <PackagePath>build\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
