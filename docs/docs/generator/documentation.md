@@ -46,7 +46,7 @@ Le nom du schéma et le nom de la table ne sont répétés que sur la première 
 
 Le découpage en plusieurs fichiers (par module ou par fichier de modèle) est piloté par les variables `{module}` / `{fileName}` de `classesFilePath` (voir [Découpage des fichiers générés](#découpage-des-fichiers-générés)).
 
-> Le type SQL est récupéré via l'implémentation `sql` du domaine de la propriété. Il est donc nécessaire que vos domaines déclarent une implémentation `sql` cohérente avec votre base de données cible.
+> Le type est récupéré via l'implémentation du domain pour le langage du générateur (`sql` par défaut).
 
 ## Liste des endpoints
 
