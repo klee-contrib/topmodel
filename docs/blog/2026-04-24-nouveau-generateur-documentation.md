@@ -5,7 +5,7 @@ slug: nouveau-generateur-documentation
 authors:
   - name: Gildéric Deruette
     title: Contributeur
-    url: https://github.com/klee-contrib/topmodel
+    url: https://github.com/gideruette
     image_url: https://avatars.githubusercontent.com/u/15626856
 tags: [génération, documentation]
 date: 2026-04-24
