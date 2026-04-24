@@ -17,11 +17,6 @@ public class DocumentationClassDocGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (!classe.IsPersistent || classe.Abstract)
-        {
-            yield break;
-        }
-
         yield return ("main", Config.GetClassesFilePath(tag, classe));
     }
 
