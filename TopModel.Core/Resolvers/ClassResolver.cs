@@ -122,7 +122,8 @@ internal class ClassResolver(
                     {
                         if (
                             property.AssociationMultiple
-                            || property.UseClassForAssociation
+                            || classe.Enum != null
+                                && property.UseClassForAssociation
                                 && (property.Association?.Enum == null || !property.Association!.Readonly)
                         )
                         {
