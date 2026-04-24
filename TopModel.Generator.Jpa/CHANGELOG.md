@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.2.1
+
+- [`63d8bd0`](https://github.com/klee-contrib/topmodel/commit/63d8bd0265e33b65b731ce986e6f2103b8b29776) - [C#/JPA] Fixes sur les valeurs par défaut générées pour associations
+
+  Les valeurs par défaut pour les associations de classes enums readonly utilisent désormais directement les instances statiques (au lieu de les récupérer avec `getValue`).
+
 ## 4.2.0
 
 - ['486'](https://github.com/klee-contrib/topmodel/pull/558)

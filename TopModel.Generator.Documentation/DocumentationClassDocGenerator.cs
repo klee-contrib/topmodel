@@ -58,26 +58,24 @@ public class DocumentationClassDocGenerator(
                     constraints.Add("Clé primaire");
                 }
 
-                table.AddRow(
-                    [
-                        schema,
-                        tableName,
-                        property.Name,
-                        property.SqlName,
-                        property.Label,
-                        Config.GetType(property),
-                        $"{property.Domain.Length}",
-                        property.Comment,
-                        string.Join("<br>", constraints),
-                        property.Required ? "Oui" : string.Empty,
-                        string.Join(
-                            ", ",
-                            property.Class.Values.Select(v =>
-                                v.Value.TryGetValue(property, out var val) ? val : string.Empty
-                            )
-                        ),
-                    ]
-                );
+                table.AddRow([
+                    schema,
+                    tableName,
+                    property.Name,
+                    property.SqlName,
+                    property.Label,
+                    Config.GetType(property),
+                    $"{property.Domain?.Length}",
+                    property.Comment,
+                    string.Join("<br>", constraints),
+                    property.Required ? "Oui" : string.Empty,
+                    string.Join(
+                        ", ",
+                        property.Class.Values.Select(v =>
+                            v.Value.TryGetValue(property, out var val) ? val : string.Empty
+                        )
+                    ),
+                ]);
 
                 schema = string.Empty;
                 tableName = string.Empty;

@@ -1,3 +1,9 @@
+## 4.1.3
+
+- [`63d8bd0`](https://github.com/klee-contrib/topmodel/commit/63d8bd0265e33b65b731ce986e6f2103b8b29776) - [C#/JPA] Fixes sur les valeurs par défaut générées pour associations
+
+  Les valeurs par défaut pour les associations classes sont désormais générées.
+
 ## 4.1.2
 
 - [#559](https://github.com/klee-contrib/topmodel/pull/559) - Fix ReferenceAccessorGenerator with translations

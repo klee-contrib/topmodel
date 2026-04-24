@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.2.1
+
+- [`95fe698`](https://github.com/klee-contrib/topmodel/commit/95fe6986c29f32de1d14b44c239f7ff55a7d3597) - [Core] Contrôles supplémentaires sur les valeurs pour associations (fix #543)
+
+  _breaking change_ : On ne peut plus renseigner de valeur (par défaut) pour une association classe non readonly. Comme pour les "breaking changes" précédent, le faire générait du code invalide donc ce n'est pas exactement dérangeant...
+
 ## 4.2.0
 
 - [`d6ca9ac`](https://github.com/klee-contrib/topmodel/commit/d6ca9ace2aac80df42b8e1c82d7e20ca93a408be) - Fix association enum class readonly vers enum class readonly
