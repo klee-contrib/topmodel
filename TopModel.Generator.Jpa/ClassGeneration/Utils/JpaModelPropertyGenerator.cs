@@ -418,32 +418,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     protected virtual string GetDefaultValue(IProperty property)
     {
         var defaultValue = Config.GetValue(property);
-        if (property is { Association: Class association })
-        {
-            if (association.PrimaryKey.Count() == 1 && defaultValue != "null")
-            {
-                if (
-                    property.Class.IsPersistent
-                    && property.UseClassForAssociation
-                    && association.Enum == EnumMode.Class
-                    && association.Readonly
-                )
-                {
-                    return $"{association.NamePascal}.getValue({defaultValue})";
-                }
-                else
-                {
-                    return defaultValue;
-                }
-            }
-
-            return string.Empty;
-        }
-        else
-        {
-            var suffix = defaultValue != "null" ? $"{defaultValue}" : string.Empty;
-            return suffix;
-        }
+        return defaultValue != "null" ? defaultValue : string.Empty;
     }
 
     protected virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)

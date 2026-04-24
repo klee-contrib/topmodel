@@ -354,7 +354,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetDefaultValue(IProperty property, string tag)
     {
-        var defaultValue = property.UseClassForAssociation ? "null" : GetValue(property);
+        var defaultValue = GetValue(property);
         var type = GetType(property, nonNullable: true);
 
         if (

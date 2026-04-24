@@ -69,7 +69,7 @@ public partial record Commande
     /// </summary>
     [Required]
     [ReferencedType(typeof(StatutCommande))]
-    public StatutCommande? StatutCommande { get; set; }
+    public StatutCommande? StatutCommande { get; set; } = Sample.Restaurant.Models.StatutCommande.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
