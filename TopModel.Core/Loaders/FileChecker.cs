@@ -156,6 +156,11 @@ public class FileChecker
 
             void HandleErrors(EvaluationResults r)
             {
+                if (r.IsValid)
+                {
+                    return;
+                }
+
                 if (r.Errors != null)
                 {
                     erreur.AppendLine($"{r.EvaluationPath}:{string.Join(", ", r.Errors)}");
