@@ -25,7 +25,7 @@ const config: Config = {
     [
       "@cmfcmf/docusaurus-search-local",
       {
-        indexBlog: false,
+        indexBlog: true,
         language: ["fr", "en"],
       },
     ],
@@ -64,7 +64,16 @@ const config: Config = {
           editUrl:
             "https://github.com/klee-contrib/topmodel/edit/develop/docs/",
         },
-        blog: false,
+        blog: {
+          path: "blog",
+          blogTitle: "Actualités",
+          blogDescription:
+            "Nouveautés et sujets autour de TopModel et de la génération.",
+          showReadingTime: true,
+          onInlineTags: "warn",
+          editUrl:
+            "https://github.com/klee-contrib/topmodel/edit/develop/docs/blog/",
+        },
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -89,6 +98,11 @@ const config: Config = {
           sidebarId: "docsSidebar",
           position: "left",
           label: "Documentation",
+        },
+        {
+          to: "/blog",
+          label: "Actualités",
+          position: "left",
         },
         // {
         //   type: "localeDropdown",
@@ -115,6 +129,10 @@ const config: Config = {
             {
               label: "Tutoriel",
               to: "/getting-started/getting_started",
+            },
+            {
+              label: "Actualités (blog)",
+              to: "/blog",
             },
           ],
         },
