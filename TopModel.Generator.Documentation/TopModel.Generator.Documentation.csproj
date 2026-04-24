@@ -4,9 +4,6 @@
     <Description>Générateurs de documentation pour TopModel</Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
     <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>
