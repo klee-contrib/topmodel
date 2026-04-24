@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.2.2
+
+- [`c2116c0`](https://github.com/klee-contrib/topmodel/commit/c2116c04c374f41185f4425500f6e0d8fd29d1d7) - [Core] Fix schéma values + check association enum
+
 ## 4.2.1
 
 - [`95fe698`](https://github.com/klee-contrib/topmodel/commit/95fe6986c29f32de1d14b44c239f7ff55a7d3597) - [Core] Contrôles supplémentaires sur les valeurs pour associations (fix #543)
