@@ -204,4 +204,7 @@
   <data name="TMD9012" xml:space="preserve">
     <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>
   </data>
+  <data name="TMD9013" xml:space="preserve">
+    <value>Il est impossible de définir une valeur pour l'association '{0}' de la classe '{1}' car elle est multiple ou ne cible pas une classe enum readonly.</value>
+  </data>
 </root>

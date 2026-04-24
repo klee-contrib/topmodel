@@ -23,6 +23,7 @@ internal class ClassResolver(
         {
             foreach (var classe in modelFile.Classes)
             {
+                // Doublons de propriétés.
                 foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
                 {
                     yield return new ModelError(
@@ -38,6 +39,7 @@ internal class ClassResolver(
                     );
                 }
 
+                // Doublons d'associations.
                 foreach (
                     var property in classe
                         .Properties.OfType<AssociationProperty>()
@@ -58,6 +60,7 @@ internal class ClassResolver(
                     );
                 }
 
+                // Vérification de la cohérence des enums.
                 if (classe.Enum == EnumMode.Enum)
                 {
                     foreach (
@@ -74,8 +77,7 @@ internal class ClassResolver(
                         );
                     }
                 }
-
-                if (classe.Enum == EnumMode.Class && classe.Readonly)
+                else if (classe.Enum == EnumMode.Class && classe.Readonly)
                 {
                     foreach (
                         var prop in classe.Properties.Where(c =>
@@ -94,6 +96,50 @@ internal class ClassResolver(
                     }
                 }
 
+                // Vérification des valeurs.
+                foreach (
+                    var property in classe.Properties.Where(p =>
+                        p.DefaultValue != null
+                        && (
+                            p.AssociationMultiple
+                            || p.UseClassForAssociation && (p.Association?.Enum == null || !p.Association!.Readonly)
+                        )
+                    )
+                )
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD9013,
+                        [property.Name, classe.Name],
+                        classe,
+                        property.GetLocation()
+                    );
+                }
+
+                foreach (var value in classe.Values)
+                {
+                    foreach (var (property, _) in value.Value)
+                    {
+                        if (
+                            property.AssociationMultiple
+                            || property.UseClassForAssociation
+                                && (property.Association?.Enum == null || !property.Association!.Readonly)
+                        )
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD9013,
+                                [property.Name, classe.Name],
+                                classe,
+                                classe
+                                    .ValueReferences[value.Reference]
+                                    .Keys.SingleOrDefault(r => r.ReferenceName == property.Name)
+                            );
+                        }
+                    }
+                }
+
+                // Doublons d'indexes
                 foreach (
                     var index in classe.Indexes.Where(
                         (idx1, i) =>
@@ -119,6 +165,7 @@ internal class ClassResolver(
             }
         }
 
+        // Vérification des contraintes d'unicités
         foreach (
             var classe in modelFiles
                 .SelectMany(mf => mf.Classes)

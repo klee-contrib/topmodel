@@ -440,5 +440,10 @@ public enum ErrorType
     /// </summary>
     TMD9012,
 
+    /// <summary>
+    /// Valeur sur une propriété interdite.
+    /// </summary>
+    TMD9013,
+
     #endregion
 }

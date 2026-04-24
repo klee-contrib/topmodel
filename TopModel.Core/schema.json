@@ -1260,6 +1260,18 @@
               "description": "Liste des valeurs de la table à insérer à la création de la base de données. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés.",
               "propertyNames": {
                 "pattern": "^[A-Za-z_]"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "string",
+                    "boolean",
+                    "integer",
+                    "number"
+                  ]
+                }
+
               }
             },
             "customProperties": {
