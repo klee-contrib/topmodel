@@ -11,6 +11,8 @@ namespace TopModel.Generator.Documentation;
 /// </summary>
 public class DocumentationConfig : GeneratorConfigBase
 {
+    public override string? DefaultLanguage => "sql";
+
     /// <summary>
     /// Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération.
     /// La finesse de génération est déduite de la présence de variables dans le chemin :

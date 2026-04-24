@@ -70,7 +70,7 @@ public class DocumentationClassDocGenerator(
                         property.Name,
                         property.SqlName,
                         property.Label,
-                        property.Domain.Implementations["sql"].Type,
+                        Config.GetType(property),
                         $"{property.Domain.Length}",
                         property.Comment,
                         string.Join("<br>", constraints),
