@@ -25,7 +25,7 @@ public class ModelFileLoader(
 {
     private static Dictionary<
         (string App, string ModelRoot, bool PluralizeTableNames, bool UseLegacyRoleNames),
-        Dictionary<string, (string? FileName, ModelFile? ModelFile)>
+        Dictionary<string, ModelFile>
     > GlobalCache { get; } = [];
 
     private static Dictionary<
@@ -35,16 +35,12 @@ public class ModelFileLoader(
             IMemoryCache Cache,
             IList<(
                 GlobCollection ModelFilePaths,
-                Func<
-                    IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)>,
-                    CancellationToken,
-                    Task
-                > ApplyUpdates
+                Func<IEnumerable<(string FullPath, ModelFile? ModelFile)>, CancellationToken, Task> ApplyUpdates
             )> Configs
         )
     > FileWatchers { get; } = [];
 
-    private Dictionary<string, (string? FileName, ModelFile? ModelFile)> Cache
+    private Dictionary<string, ModelFile> Cache
     {
         get
         {
@@ -60,58 +56,53 @@ public class ModelFileLoader(
         }
     }
 
-    public async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadModelFile(
+    public async Task<(string FullPath, ModelFile? ModelFile)> LoadModelFile(
         string fullPath,
         WatcherChangeTypes changeType,
         string? content = null,
         CancellationToken ct = default
     )
     {
+        fullPath = fullPath.Replace('\\', '/');
+
         if (content != null)
         {
-            Cache.Remove(fullPath);
+            RemoveFromCache(fullPath);
         }
         else if (Cache.TryGetValue(fullPath, out var file))
         {
-            return (fullPath, file.FileName, file.ModelFile);
+            return (fullPath, file);
         }
-
-        var fileName = config.GetFileName(fullPath);
 
         try
         {
-            if (changeType != WatcherChangeTypes.Deleted)
+            ModelFile? modelFile = null;
+            if (changeType != WatcherChangeTypes.Deleted && File.Exists(fullPath))
             {
-                ModelFile? modelFile = null;
-                if (File.Exists(fullPath))
-                {
-                    modelFile = await ReadModelFile(fileName, fullPath, content, ct);
-                }
-
-                if (modelFile != null)
-                {
-                    Cache.Add(fullPath, (modelFile.Name, modelFile));
-                    return (fullPath, modelFile.Name, modelFile);
-                }
+                modelFile = await ReadModelFile(fullPath, content, ct);
             }
 
-            Cache.Add(fullPath, (fileName, null));
-            return (fullPath, fileName, null);
+            if (modelFile != null)
+            {
+                Cache.Add(fullPath, modelFile);
+            }
+            else
+            {
+                RemoveFromCache(fullPath);
+            }
+
+            return (fullPath, modelFile);
         }
         catch (Exception e)
         {
             logger.LogError(e, e.Message);
-            Cache.Add(fullPath, (null, null));
-            return (fullPath, null, null);
+            RemoveFromCache(fullPath);
+            return (fullPath, null);
         }
     }
 
     public Action Watch(
-        Func<
-            IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)>,
-            CancellationToken,
-            Task
-        > applyUpdates
+        Func<IEnumerable<(string FullPath, ModelFile? ModelFile)>, CancellationToken, Task> applyUpdates
     )
     {
         var watchConfig = (config.ModelFilePaths, applyUpdates);
@@ -149,7 +140,7 @@ public class ModelFileLoader(
     private void OnFileChanged(string modelRoot, IMemoryCache cache, FileSystemEventArgs e)
     {
         cache.Set(
-            $"{e.FullPath}:{e.ChangeType}",
+            e.FullPath.Replace('\\', '/'),
             e,
             new MemoryCacheEntryOptions()
                 .AddExpirationToken(
@@ -174,18 +165,18 @@ public class ModelFileLoader(
 
                         logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
 
-                        var files = new List<(string, string?, ModelFile?)>();
+                        var files = new List<(string, ModelFile?)>();
 
                         if (e is RenamedEventArgs re)
                         {
-                            Cache.Remove(re.OldFullPath);
-                            Cache.Remove(re.FullPath);
+                            RemoveFromCache(re.OldFullPath);
+                            RemoveFromCache(re.FullPath);
                             files.Add(await LoadModelFile(re.OldFullPath, WatcherChangeTypes.Deleted, ct: default));
                             files.Add(await LoadModelFile(re.FullPath, WatcherChangeTypes.Created, ct: default));
                         }
                         else
                         {
-                            Cache.Remove(e.FullPath);
+                            RemoveFromCache(e.FullPath);
                             files.Add(await LoadModelFile(e.FullPath, e.ChangeType, ct: default));
                         }
 
@@ -204,12 +195,12 @@ public class ModelFileLoader(
     }
 
     private async Task<ModelFile?> ReadModelFile(
-        string fileName,
         string filePath,
         string? content = null,
         CancellationToken ct = default
     )
     {
+        var fileName = config.GetFileName(filePath);
         content ??= await File.ReadAllTextAsync(filePath, ct);
 
         fileChecker.CheckModelFile(filePath, content);
@@ -315,5 +306,10 @@ public class ModelFileLoader(
         }
 
         return file;
+    }
+
+    private void RemoveFromCache(string fullPath)
+    {
+        Cache.Remove(fullPath.Replace('\\', '/'));
     }
 }

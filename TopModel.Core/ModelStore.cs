@@ -25,7 +25,7 @@ public class ModelStore(
     private readonly AsyncLock _lockUpdate = new();
     private readonly Dictionary<string, ModelFile> _modelFiles = [];
     private readonly IEnumerable<IModelWatcher> _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
-    private readonly ConcurrentQueue<(string FullPath, string? FileName, ModelFile? ModelFile)> _pendingUpdates = new();
+    private readonly ConcurrentQueue<(string FilePath, ModelFile? ModelFile)> _pendingUpdates = new();
     private Action? _disposer;
     private LoggingScope? _storeConfig;
     private TopModelLock? _topModelLock;
@@ -177,8 +177,8 @@ public class ModelStore(
                 .ModelFilePaths.EnumerateFiles(config.ModelRoot)
                 .ToAsyncEnumerable()
                 .Select(
-                    async (string fullPath, CancellationToken ct) =>
-                        await modelFileLoader.LoadModelFile(fullPath, WatcherChangeTypes.Created, ct: ct)
+                    async (string filePath, CancellationToken ct) =>
+                        await modelFileLoader.LoadModelFile(filePath, WatcherChangeTypes.Created, ct: ct)
                 )
                 .ToListAsync(cancellationToken: ct);
 
@@ -187,10 +187,10 @@ public class ModelStore(
         }
     }
 
-    public async Task OnModelFileChange(string fullPath, string content, CancellationToken ct = default)
+    public async Task OnModelFileChange(string filePath, string content, CancellationToken ct = default)
     {
         await ApplyUpdates(
-            [await modelFileLoader.LoadModelFile(fullPath, WatcherChangeTypes.Changed, content, ct)],
+            [await modelFileLoader.LoadModelFile(filePath, WatcherChangeTypes.Changed, content, ct)],
             ct
         );
     }
@@ -204,7 +204,7 @@ public class ModelStore(
     }
 
     private async Task ApplyUpdates(
-        IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> updates,
+        IEnumerable<(string FilePath, ModelFile? ModelFile)> updates,
         CancellationToken ct = default
     )
     {
@@ -218,7 +218,7 @@ public class ModelStore(
 
         using (await _lockUpdate.LockAsync(ct))
         {
-            var files = new List<(string FullPath, string? FileName, ModelFile? ModelFile)>();
+            var files = new List<(string FilePath, ModelFile? ModelFile)>();
             while (_pendingUpdates.TryDequeue(out var file))
             {
                 files.Add(file);
@@ -227,11 +227,12 @@ public class ModelStore(
             var pendingFileChanges = new Dictionary<string, string>();
             var pendingFileDeletes = new HashSet<string>();
 
-            foreach (var (fullPath, fileName, modelFile) in files)
+            foreach (var (filePath, modelFile) in files)
             {
+                var fileName = config.GetFileName(filePath);
                 if (fileName != null)
                 {
-                    pendingFileChanges[fullPath] = fileName;
+                    pendingFileChanges[filePath] = fileName;
 
                     if (modelFile != null)
                     {
