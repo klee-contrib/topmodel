@@ -49,6 +49,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             {
                 yield return javaFinalField;
             }
+            yield return JavaConstructorGenerator.GetStaticValuesList(classe);
         }
 
         yield return new JavaField("long", "serialVersionUID")

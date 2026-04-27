@@ -5,6 +5,7 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -49,6 +50,11 @@ public class CategoriePlat {
 
 	@Transient
 	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT, "restaurant.categoriePlat.values.Plat", CategoriePlatOrdre.Plat, new BigDecimal(10));
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
+	 */
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, DESSERT, ENTREE, PLAT);
 
 	/**
 	 * Code de la catégorie.

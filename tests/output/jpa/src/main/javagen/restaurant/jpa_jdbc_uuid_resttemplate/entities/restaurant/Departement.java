@@ -4,6 +4,8 @@
 
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -33,6 +35,11 @@ public class Departement {
 
 	@Transient
 	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.Idf);
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération Departement.
+	 */
+	public static final List<Departement> VALUES = List.of(HAUTS_DE_SEINE, PARIS, SEINE_ET_MARNE, SEINE_SAINT_DENIS);
 
 	/**
 	 * Code du département.

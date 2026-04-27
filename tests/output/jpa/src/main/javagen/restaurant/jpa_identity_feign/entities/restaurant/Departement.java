@@ -4,6 +4,8 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.util.List;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -40,6 +42,11 @@ public class Departement {
 
 	@Transient
 	public static final Departement SEINE_SAINT_DENIS = new Departement("93", "Seine Saint Denis", RegionCode.IDF);
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération Departement.
+	 */
+	public static final List<Departement> VALUES = List.of(HAUTS_DE_SEINE, PARIS, SEINE_ET_MARNE, SEINE_SAINT_DENIS);
 
 	/**
 	 * Code du département.

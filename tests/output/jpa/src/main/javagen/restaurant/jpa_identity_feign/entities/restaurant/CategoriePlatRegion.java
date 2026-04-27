@@ -4,6 +4,7 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.annotation.Generated;
@@ -34,6 +35,11 @@ public class CategoriePlatRegion {
 
 	@Transient
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.IDF, CategoriePlat.ENTREE);
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.
+	 */
+	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_DESSERT, IDF_ENTREE);
 
 	/**
 	 * Région.

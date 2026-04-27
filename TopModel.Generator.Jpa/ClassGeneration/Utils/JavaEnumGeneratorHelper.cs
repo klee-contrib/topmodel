@@ -84,6 +84,26 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         return method;
     }
 
+    public JavaField GetStaticValuesList(Class classe)
+    {
+        var values = string.Join(
+            ", ",
+            classe
+                .Values.OrderBy(refValue => refValue.Name, StringComparer.Ordinal)
+                .Select(refValue => refValue.Name.ToConstantCase())
+        );
+        var field = new JavaField($"List<{classe.NamePascal}>", "VALUES")
+        {
+            Static = true,
+            Final = true,
+            Visibility = "public",
+            DefaultValue = $"List.of({values})",
+            Comment = [$"Liste de toutes les valeurs de l'énumération {classe.NamePascal}."],
+        };
+        field.Imports.Add("java.util.List");
+        return field;
+    }
+
     /// <summary>
     /// Calcule la valeur Java à utiliser pour une propriété d'une valeur de référence
     /// (utilisée aussi bien dans le corps du constructeur enum que pour l'appel du constructeur tout argument).

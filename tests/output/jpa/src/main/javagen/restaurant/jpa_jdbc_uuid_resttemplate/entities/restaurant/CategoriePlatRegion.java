@@ -4,6 +4,8 @@
 
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -25,6 +27,11 @@ public class CategoriePlatRegion {
 
 	@Transient
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, "ENTREE");
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.
+	 */
+	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_DESSERT, IDF_ENTREE);
 
 	/**
 	 * Région.

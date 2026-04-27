@@ -60,6 +60,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
                 javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
                 yield return javaFinalField;
             }
+            yield return JavaConstructorGenerator.GetStaticValuesList(classe);
         }
 
         foreach (var property in Config.GetAvailableProperties(classe))

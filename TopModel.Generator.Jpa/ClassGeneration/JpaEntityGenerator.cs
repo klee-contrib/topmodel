@@ -219,6 +219,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
                 yield return javaFinalField;
             }
+            yield return JavaConstructorGenerator.GetStaticValuesList(classe);
         }
         if (
             classe.PrimaryKey.Count() == 1

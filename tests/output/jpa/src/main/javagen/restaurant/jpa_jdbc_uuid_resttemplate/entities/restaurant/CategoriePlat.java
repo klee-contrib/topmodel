@@ -5,6 +5,7 @@
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -35,6 +36,11 @@ public class CategoriePlat {
 
 	@Transient
 	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat, "restaurant.categoriePlat.values.Plat", CategoriePlatOrdre.Plat, new BigDecimal(10));
+
+	/**
+	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
+	 */
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, DESSERT, ENTREE, PLAT);
 
 	/**
 	 * Code de la catégorie.
