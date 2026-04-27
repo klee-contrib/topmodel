@@ -8,6 +8,13 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.2.3
+
+- [`fe3a950`](https://github.com/klee-contrib/topmodel/commit/fe3a9505904890cb3c81ff1eb01ed9a8567191c1) - [Core] Fixes mode watch (en particulier autour des git reverts)
+- [`6038609`](https://github.com/klee-contrib/topmodel/commit/6038609c02bd6e096c0454f11d26ce1c53286020) - [Core] Gestion propre des fichiers en erreur
+
+  Vous devriez avoir moins de comportements étranges autour des fichiers en erreur dans le mode watch ou l'extension, et les changements de branches/revert devraient également poser moins de problèmes.
+
 ## 4.2.2
 
 - [`c2116c0`](https://github.com/klee-contrib/topmodel/commit/c2116c04c374f41185f4425500f6e0d8fd29d1d7) - [Core] Fix schéma values + check association enum
