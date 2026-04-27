@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.2.2
+
+- [`7d0d91`](https://github.com/klee-contrib/topmodel/commit/7d0d913c94ba07a3c01781af4bc2833472f0a7d7) - [JPA] Ajoute le champ contenant la liste de toutes les valeurs
+
 ## 4.2.1
 
 - [`63d8bd0`](https://github.com/klee-contrib/topmodel/commit/63d8bd0265e33b65b731ce986e6f2103b8b29776) - [C#/JPA] Fixes sur les valeurs par défaut générées pour associations
