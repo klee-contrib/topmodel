@@ -53,7 +53,7 @@ public class CategoriePlat {
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
 	 */
-	public static final List<CategoriePlat> VALUES = List.of(BOISSON, DESSERT, ENTREE, PLAT);
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PLAT, DESSERT);
 
 	/**
 	 * Code de la catégorie.

@@ -86,18 +86,17 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
 
     public JavaField GetStaticValuesList(Class classe)
     {
-        var values = string.Join(
-            ", ",
-            classe
-                .Values.OrderBy(refValue => refValue.Name, StringComparer.Ordinal)
-                .Select(refValue => refValue.Name.ToConstantCase())
-        );
+        var values =
+            (classe.OrderProperty ?? classe.DefaultProperty) != null
+                ? classe.Values.OrderBy(v => v.Value[classe.OrderProperty ?? classe.DefaultProperty]).ToList()
+                : classe.Values;
+        var stringValues = string.Join(", ", values.Select(refValue => refValue.Name.ToConstantCase()));
         var field = new JavaField($"List<{classe.NamePascal}>", "VALUES")
         {
             Static = true,
             Final = true,
             Visibility = "public",
-            DefaultValue = $"List.of({values})",
+            DefaultValue = $"List.of({stringValues})",
             Comment = [$"Liste de toutes les valeurs de l'énumération {classe.NamePascal}."],
         };
         field.Imports.Add("java.util.List");

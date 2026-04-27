@@ -12,6 +12,12 @@ export interface CategoriePlat {
 }
 export const categoriePlatList: CategoriePlat[] = [
     {
+        code: "BOISSON",
+        libelle: "restaurant.categoriePlat.values.Boisson",
+        ordre: 1,
+        prixMoyen: 2
+    },
+    {
         code: "ENTREE",
         libelle: "restaurant.categoriePlat.values.Entree",
         ordre: 2
@@ -26,12 +32,6 @@ export const categoriePlatList: CategoriePlat[] = [
         code: "DESSERT",
         libelle: "restaurant.categoriePlat.values.Dessert",
         ordre: 4
-    },
-    {
-        code: "BOISSON",
-        libelle: "restaurant.categoriePlat.values.Boisson",
-        ordre: 1,
-        prixMoyen: 2
     },
 ];
 export const categoriePlat = {list: categoriePlatList, valueKey: "code", labelKey: "libelle"} as const;
@@ -59,23 +59,23 @@ export interface Departement {
 }
 export const departementList: Departement[] = [
     {
-        code: "75",
-        libelle: "restaurant.departement.values.Paris",
-        regionCode: "IDF"
-    },
-    {
         code: "92",
         libelle: "restaurant.departement.values.HautsDeSeine",
         regionCode: "IDF"
     },
     {
-        code: "93",
-        libelle: "restaurant.departement.values.SeineSaintDenis",
+        code: "75",
+        libelle: "restaurant.departement.values.Paris",
         regionCode: "IDF"
     },
     {
         code: "94",
         libelle: "restaurant.departement.values.SeineEtMarne",
+        regionCode: "IDF"
+    },
+    {
+        code: "93",
+        libelle: "restaurant.departement.values.SeineSaintDenis",
         regionCode: "IDF"
     },
 ];
@@ -96,6 +96,10 @@ export interface StatutCommandeObject {
 }
 export const statutCommandeList: StatutCommandeObject[] = [
     {
+        code: "ANNULE",
+        libelle: "restaurant.statutCommande.values.Annulee"
+    },
+    {
         code: "EN_ATT",
         libelle: "restaurant.statutCommande.values.EnAttente"
     },
@@ -110,10 +114,6 @@ export const statutCommandeList: StatutCommandeObject[] = [
     {
         code: "SERVIE",
         libelle: "restaurant.statutCommande.values.Servie"
-    },
-    {
-        code: "ANNULE",
-        libelle: "restaurant.statutCommande.values.Annulee"
     },
 ];
 export const statutCommande = {list: statutCommandeList, valueKey: "code", labelKey: "libelle"} as const;

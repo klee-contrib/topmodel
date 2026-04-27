@@ -185,7 +185,11 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         fw.Write(reference.NameCamel);
         fw.Write($"List: {reference.NamePascal}{(reference.Enum == EnumMode.Enum ? "Object" : string.Empty)}[] = [");
         fw.WriteLine();
-        foreach (var refValue in reference.Values)
+        var values =
+            (reference.OrderProperty ?? reference.DefaultProperty) != null
+                ? reference.Values.OrderBy(v => v.Value[reference.OrderProperty ?? reference.DefaultProperty]).ToList()
+                : reference.Values;
+        foreach (var refValue in values)
         {
             fw.WriteLine("    {");
             fw.Write("        ");
