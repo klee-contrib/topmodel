@@ -447,7 +447,9 @@ internal class PropertyResolver(
         foreach (
             var cp in modelFiles.SelectMany(mf =>
                 mf.Properties.Where(p =>
-                    p.Composition == null && !(p.DomainChain.LastOrDefault().Domain?.NonGeneric ?? false)
+                    p.Composition == null
+                    && p.Domain != null
+                    && !(p.DomainChain.LastOrDefault().Domain?.NonGeneric ?? false)
                 )
             )
         )

@@ -35,7 +35,11 @@ public class ModelFileLoader(
             IMemoryCache Cache,
             IList<(
                 GlobCollection ModelFilePaths,
-                Func<IEnumerable<(string FullPath, ModelFile? ModelFile)>, CancellationToken, Task> ApplyUpdates
+                Func<
+                    IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
+                    CancellationToken,
+                    Task
+                > ApplyUpdates
             )> Configs
         )
     > FileWatchers { get; } = [];
@@ -56,7 +60,7 @@ public class ModelFileLoader(
         }
     }
 
-    public async Task<(string FullPath, ModelFile? ModelFile)> LoadModelFile(
+    internal async Task<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)> LoadModelFile(
         string fullPath,
         WatcherChangeTypes changeType,
         string? content = null,
@@ -71,7 +75,7 @@ public class ModelFileLoader(
         }
         else if (Cache.TryGetValue(fullPath, out var file))
         {
-            return (fullPath, file);
+            return (fullPath, file, ModelFileStatus.Ok);
         }
 
         try
@@ -85,24 +89,28 @@ public class ModelFileLoader(
             if (modelFile != null)
             {
                 Cache.Add(fullPath, modelFile);
+                return (fullPath, modelFile, ModelFileStatus.Ok);
             }
             else
             {
                 RemoveFromCache(fullPath);
+                return (fullPath, modelFile, ModelFileStatus.NotFound);
             }
-
-            return (fullPath, modelFile);
         }
         catch (Exception e)
         {
             logger.LogError(e, e.Message);
             RemoveFromCache(fullPath);
-            return (fullPath, null);
+            return (fullPath, null, ModelFileStatus.Errored);
         }
     }
 
-    public Action Watch(
-        Func<IEnumerable<(string FullPath, ModelFile? ModelFile)>, CancellationToken, Task> applyUpdates
+    internal Action Watch(
+        Func<
+            IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
+            CancellationToken,
+            Task
+        > applyUpdates
     )
     {
         var watchConfig = (config.ModelFilePaths, applyUpdates);
@@ -165,7 +173,7 @@ public class ModelFileLoader(
 
                         logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
 
-                        var files = new List<(string, ModelFile?)>();
+                        var files = new List<(string, ModelFile?, ModelFileStatus)>();
 
                         if (e is RenamedEventArgs re)
                         {

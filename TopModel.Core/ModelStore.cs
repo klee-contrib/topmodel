@@ -25,7 +25,8 @@ public class ModelStore(
     private readonly AsyncLock _lockUpdate = new();
     private readonly Dictionary<string, ModelFile> _modelFiles = [];
     private readonly IEnumerable<IModelWatcher> _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
-    private readonly ConcurrentQueue<(string FilePath, ModelFile? ModelFile)> _pendingUpdates = new();
+    private readonly ConcurrentQueue<(string FilePath, ModelFile? ModelFile, ModelFileStatus Status)> _pendingUpdates =
+        new();
     private Action? _disposer;
     private LoggingScope? _storeConfig;
     private TopModelLock? _topModelLock;
@@ -35,6 +36,8 @@ public class ModelStore(
 #pragma warning restore MA0046
 
     public bool DisableLockfile { get; set; }
+
+    public bool KeepFileErrorsInReferenceResolution { get; set; }
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
@@ -177,7 +180,7 @@ public class ModelStore(
                 .ModelFilePaths.EnumerateFiles(config.ModelRoot)
                 .ToAsyncEnumerable()
                 .Select(
-                    async (string filePath, CancellationToken ct) =>
+                    async (filePath, ct) =>
                         await modelFileLoader.LoadModelFile(filePath, WatcherChangeTypes.Created, ct: ct)
                 )
                 .ToListAsync(cancellationToken: ct);
@@ -204,7 +207,7 @@ public class ModelStore(
     }
 
     private async Task ApplyUpdates(
-        IEnumerable<(string FilePath, ModelFile? ModelFile)> updates,
+        IEnumerable<(string FilePath, ModelFile? ModelFile, ModelFileStatus Status)> updates,
         CancellationToken ct = default
     )
     {
@@ -218,37 +221,44 @@ public class ModelStore(
 
         using (await _lockUpdate.LockAsync(ct))
         {
-            var files = new List<(string FilePath, ModelFile? ModelFile)>();
+            var files = new List<(string FilePath, ModelFile? ModelFile, ModelFileStatus Status)>();
             while (_pendingUpdates.TryDequeue(out var file))
             {
                 files.Add(file);
             }
 
-            var pendingFileChanges = new Dictionary<string, string>();
+            var pendingFileChanges =
+                new Dictionary<string, (string FileName, ModelFileStatus Status, bool HasDomains)>();
             var pendingFileDeletes = new HashSet<string>();
 
-            foreach (var (filePath, modelFile) in files)
+            foreach (var (filePath, modelFile, status) in files)
             {
                 var fileName = config.GetFileName(filePath);
-                if (fileName != null)
-                {
-                    pendingFileChanges[filePath] = fileName;
 
-                    if (modelFile != null)
-                    {
-                        UpdateFile(fileName, modelFile);
-                    }
-                    else
-                    {
-                        RemoveFile(fileName);
-                        pendingFileDeletes.Add(fileName);
-                    }
+                var existingFile = Files.SingleOrDefault(f => f.Name == fileName);
+                var hasDomains =
+                    existingFile != null && (existingFile.Domains.Count > 0 || existingFile.Converters.Count > 0);
+
+                if (modelFile != null)
+                {
+                    UpdateFile(fileName, modelFile);
+                    hasDomains |= modelFile.Domains.Count > 0 || modelFile.Converters.Count > 0;
                 }
+                else
+                {
+                    RemoveFile(fileName);
+                    pendingFileDeletes.Add(fileName);
+                }
+
+                pendingFileChanges[filePath] = (fileName, status, hasDomains);
             }
 
-            foreach (var modelWatcher in _modelWatchers)
+            if (pendingFileDeletes.Count > 0)
             {
-                modelWatcher.OnFilesDeleted(pendingFileDeletes);
+                foreach (var modelWatcher in _modelWatchers)
+                {
+                    modelWatcher.OnFilesDeleted(pendingFileDeletes);
+                }
             }
 
             if (pendingFileChanges.Count == 0)
@@ -256,15 +266,20 @@ public class ModelStore(
                 return;
             }
 
+            var hasError = pendingFileChanges.Any(p => p.Value.Status == ModelFileStatus.Errored);
+
             try
             {
                 var referenceErrors = new ConcurrentBag<ModelError>();
 
-                var affectedFiles = pendingFileChanges
-                    .Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null)
-                    .Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
+                var affectedFiles = pendingFileChanges.Values.Any(pu => pu.HasDomains)
                     ? _modelFiles
-                    : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
+                    : GetAffectedFiles(
+                            pendingFileChanges.Values.Select(pu => pu.FileName),
+                            pendingFileChanges.ToDictionary(pu => pu.Value.FileName, pu => pu.Value.Status)
+                        )
+                        .Distinct()
+                        .ToDictionary(f => f.Name, f => f);
 
                 var levels = CoreUtils.SortWithCyclesByLevel(
                     affectedFiles.Values,
@@ -314,7 +329,7 @@ public class ModelStore(
                     logger.LogWarning(error.ToString());
                 }
 
-                var hasError = referenceErrors.Any(r => r.IsError);
+                hasError |= referenceErrors.Any(r => r.IsError);
                 OnResolve?.Invoke(hasError);
 
                 if (hasError)
@@ -322,6 +337,11 @@ public class ModelStore(
                     foreach (var file in files)
                     {
                         _pendingUpdates.Enqueue(file);
+                    }
+
+                    foreach (var pu in pendingFileChanges.Where(pu => pu.Value.Status == ModelFileStatus.Errored))
+                    {
+                        logger.LogError($"{pu.Key.ToRelative()} - Fichier invalide.");
                     }
 
                     throw new ModelException("Erreur lors de la lecture du modèle.");
@@ -358,13 +378,27 @@ public class ModelStore(
         }
     }
 
-    private IEnumerable<ModelFile> GetAffectedFiles(IEnumerable<string> fileNames, HashSet<string>? foundFiles = null)
+    private IEnumerable<ModelFile> GetAffectedFiles(
+        IEnumerable<string> fileNames,
+        IDictionary<string, ModelFileStatus> statuses,
+        HashSet<string>? foundFiles = null
+    )
     {
         foundFiles ??= [];
 
+        bool IsValid(string fileName)
+        {
+            return KeepFileErrorsInReferenceResolution
+                || !statuses.TryGetValue(fileName, out var status)
+                || status != ModelFileStatus.Errored;
+        }
+
+        fileNames = fileNames.Where(IsValid);
+
         foreach (
             var file in _modelFiles.Values.Where(f =>
-                fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d.ReferenceName))
+                fileNames.Contains(f.Name)
+                || f.Uses.Any(d => fileNames.Contains(d.ReferenceName) && f.Uses.All(d => IsValid(d.ReferenceName)))
             )
         )
         {
@@ -373,7 +407,7 @@ public class ModelStore(
                 foundFiles.Add(file.Name);
                 yield return file;
 
-                foreach (var use in GetAffectedFiles([file.Name], foundFiles))
+                foreach (var use in GetAffectedFiles([file.Name], statuses, foundFiles))
                 {
                     yield return use;
                 }
@@ -536,7 +570,7 @@ public class ModelStore(
         {
             foreach (var genConfig in config.Configs.Values.Where(c => c.Classes.Contains(classe)))
             {
-                if (!genConfig.AvailableClasses.Contains(classe.Extends))
+                if (!genConfig.AvailableClasses.Contains(classe.Extends) && Classes.Contains(classe.Extends))
                 {
                     yield return new ModelError(
                         ErrorType.TMD3013,
@@ -555,7 +589,7 @@ public class ModelStore(
                     var composition in endpoint.Properties.Select(c => c.Composition).Where(c => c != null).Distinct()
                 )
                 {
-                    if (!genConfig.AvailableClasses.Contains(composition))
+                    if (!genConfig.AvailableClasses.Contains(composition) && Classes.Contains(composition))
                     {
                         yield return new ModelError(
                             ErrorType.TMD7006,

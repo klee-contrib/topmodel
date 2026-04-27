@@ -71,7 +71,9 @@ var server = await LanguageServer.From(options =>
         .OnInitialize(
             async (server, _, __) =>
             {
-                await server.Services.GetRequiredService<ModelStore>().LoadFromConfig(watch: true, ct: __);
+                var modelStore = server.Services.GetRequiredService<ModelStore>();
+                modelStore.KeepFileErrorsInReferenceResolution = true;
+                await modelStore.LoadFromConfig(watch: true, ct: __);
             }
         )
 );
