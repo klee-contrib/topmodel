@@ -1,3 +1,9 @@
+# Changelog Javascript
+
+## 4.2.2
+
+- [`6917bf`](https://github.com/klee-contrib/topmodel/commit/6917bf9abfeddccf949f2482ab5a16c4a24c6f29) - Trie des valeurs selon la defaultProperty ou la orderProperty
+
 ## 4.2.1
 
 - [`d6ca9ac`](https://github.com/klee-contrib/topmodel/commit/d6ca9ace2aac80df42b8e1c82d7e20ca93a408be) - Fix association enum class readonly vers enum class readonly

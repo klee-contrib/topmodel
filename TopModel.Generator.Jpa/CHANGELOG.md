@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.2.3
+
+- [`6917bf`](https://github.com/klee-contrib/topmodel/commit/6917bf9abfeddccf949f2482ab5a16c4a24c6f29) - Trie des valeurs selon la defaultProperty ou la orderProperty
+
 ## 4.2.2
 
 - [`7d0d91`](https://github.com/klee-contrib/topmodel/commit/7d0d913c94ba07a3c01781af4bc2833472f0a7d7) - [JPA] Ajoute le champ contenant la liste de toutes les valeurs
