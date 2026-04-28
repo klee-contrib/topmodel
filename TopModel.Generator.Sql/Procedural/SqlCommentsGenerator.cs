@@ -26,7 +26,7 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
 
         writer.WriteSqlFileHeader(
             appName,
-            fileName.Split('/')[^1],
+            Path.GetFileName(fileName).Split(Path.PathSeparator)[^1],
             "Script de création de commentaires sur les tables et les colonnes."
         );
 
