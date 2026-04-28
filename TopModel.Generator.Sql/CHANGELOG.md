@@ -1,3 +1,7 @@
+## 4.1.3
+
+- [`a5f4856`](https://github.com/klee-contrib/topmodel/commit/a5f4856005bdf79907b64c6add8a9cf492283668) - [SQL] Fix reverses de oneToOne générées à tord
+
 ## 4.1.2
 
 - [`5816553`](https://github.com/klee-contrib/topmodel/commit/5816553d7de103ef57a19d29295726b7028f4ee9) - [SQL] Fix assocation reverse multiple non générées
