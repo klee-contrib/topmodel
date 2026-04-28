@@ -1,3 +1,7 @@
+## 4.1.2
+
+- [`5816553`](https://github.com/klee-contrib/topmodel/commit/5816553d7de103ef57a19d29295726b7028f4ee9) - [SQL] Fix assocation reverse multiple non générées
+
 ## 4.1.1
 
 - [`3733989`](https://github.com/klee-contrib/topmodel/commit/3733989cc947866a377ff2620d98f15f500d6fa8) - [SQL] Unification de la génération des inserts de listes de ref entre procedural et ssdt
