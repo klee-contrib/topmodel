@@ -117,3 +117,16 @@ export const statutCommandeList: StatutCommandeObject[] = [
     },
 ];
 export const statutCommande = {list: statutCommandeList, valueKey: "code", labelKey: "libelle"} as const;
+
+export type TypeTerrasse = "EXT" | "INT";
+export interface TypeTerrasseObject {
+    code: TypeTerrasse;
+}
+export const typeTerrasseList: TypeTerrasseObject[] = [
+    {
+        code: "INT"
+    },
+    {
+        code: "EXT"
+    },
+];

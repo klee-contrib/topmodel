@@ -6,7 +6,7 @@ version: 4.2.3
 custom:
   ../../TopModel.Generator.Csharp: 8fefba4ad5bfc89ecd60bc4630257dc0
   ../../TopModel.Generator.Javascript: 03f0545430c92a60e75e455a4d82813c
-  ../../TopModel.Generator.Jpa: e8ad166c70fad38c37f52c08d5f59c56
+  ../../TopModel.Generator.Jpa: bed85c9a9acc5530853f515626e83277
   ../../TopModel.Generator.Sql: ae69cadc8f1bb491bb3149961416fcb1
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: 950cd4b8b59bcf41532329bb1556984d
@@ -72,6 +72,7 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Reservation.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Restaurant.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/TableRestaurant.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/TypeTerrasse.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Reference/generated/DbRestaurantReferenceAccessors.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Reference/generated/IDbRestaurantReferenceAccessors.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/CommandeClient.cs
@@ -264,6 +265,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/CategoriePlatCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/StatutCommande.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/TypeTerrasse.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractCommandeClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractMenuClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractPersonneClient.java
@@ -344,6 +346,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/DepartementCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/StatutCommande.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/TypeTerrasse.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/CommandeController.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/MenuController.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/PersonneController.java
@@ -445,6 +448,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/DepartementCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/StatutCommande.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/TypeTerrasse.java
   - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/restaurant.properties
   - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/restaurant.properties
   - ../output/pg/src/01_tables.sql
@@ -457,6 +461,7 @@ generatedFiles:
   - ../output/ssdt/src/init/main.sql
   - ../output/ssdt/src/init/REGION.insert.sql
   - ../output/ssdt/src/init/STATUT_COMMANDE.insert.sql
+  - ../output/ssdt/src/init/TYPE_TERRASSE.insert.sql
   - ../output/ssdt/src/tables/AVIS_CLIENT.sql
   - ../output/ssdt/src/tables/CATEGORIE_PLAT_REGION.sql
   - ../output/ssdt/src/tables/CATEGORIE_PLAT.sql
@@ -478,3 +483,4 @@ generatedFiles:
   - ../output/ssdt/src/tables/STATUT_COMMANDE.sql
   - ../output/ssdt/src/tables/TABLE.sql
   - ../output/ssdt/src/tables/TRANSLATION.sql
+  - ../output/ssdt/src/tables/TYPE_TERRASSE.sql

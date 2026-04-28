@@ -308,3 +308,11 @@ create table TRANSLATION (
 	TRA_VALUE varchar(100) not null,
 	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY)
 );
+
+/**
+  * Création de la table TYPE_TERRASSE
+ **/
+create table TYPE_TERRASSE (
+	CODE varchar(10) not null,
+	constraint PK_TYPE_TERRASSE primary key (CODE)
+);

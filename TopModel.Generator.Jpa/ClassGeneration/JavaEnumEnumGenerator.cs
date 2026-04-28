@@ -60,6 +60,11 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
             classe.Properties.Where(p => p.EnumProperty != p),
             tag
         );
+        if (constructor.Parameters.Count == 0)
+        {
+            return [];
+        }
+
         constructor.Visibility = "private";
         return [constructor];
     }

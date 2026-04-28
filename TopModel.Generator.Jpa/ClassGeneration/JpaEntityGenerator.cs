@@ -203,8 +203,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
             var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
-            allArgsConstructor.Visibility = "private";
-            return [JavaConstructorGenerator.GetNoArgConstructor(classe, tag), allArgsConstructor];
+            if (allArgsConstructor.Parameters.Count > 0)
+            {
+                allArgsConstructor.Visibility = "private";
+                return [JavaConstructorGenerator.GetNoArgConstructor(classe, tag), allArgsConstructor];
+            }
+
+            return [];
         }
 
         return base.GetConstuctors(classe, tag);

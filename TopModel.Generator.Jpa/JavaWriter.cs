@@ -118,9 +118,14 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
                         Line =
                             value.ToString()
                             + (
-                                value != javaEnum.Values[^1] ? ","
-                                : javaEnum.Fields.Any() ? ";"
-                                : string.Empty
+                                i < javaEnum.Values.Count - 1 ? ","
+                                : (
+                                    javaClass.Fields.Count == 0
+                                    && javaClass.Constructors.Count == 0
+                                    && javaClass.Methods.Count == 0
+                                )
+                                    ? string.Empty
+                                : ";"
                             ),
                         Indent = indentationLevel + 1,
                     }

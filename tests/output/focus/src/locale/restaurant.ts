@@ -182,5 +182,8 @@ export const restaurant = {
         id: "Id",
         numero: "Numero",
         restaurantId: "RestaurantId"
+    },
+    typeTerrasse: {
+        code: "Code"
     }
 };

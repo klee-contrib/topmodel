@@ -179,6 +179,12 @@ EN_PREP En préparation
 PRETE Prête
 SERVIE Servie
 }
+%% Type de terrasse
+class TypeTerrasse{
+&lt;&lt;Enum&gt;&gt;
+EXT
+INT
+}
 Personne <|--  Client
 Personne <|--  Employe
 

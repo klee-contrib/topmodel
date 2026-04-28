@@ -46,8 +46,11 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
             var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
-            allArgsConstructor.Visibility = "private";
-            yield return allArgsConstructor;
+            if (allArgsConstructor.Parameters.Count > 0)
+            {
+                allArgsConstructor.Visibility = "private";
+                yield return allArgsConstructor;
+            }
         }
     }
 

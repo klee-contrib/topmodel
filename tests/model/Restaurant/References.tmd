@@ -138,3 +138,17 @@ class:
   values:
     IdfEntree: { RegionCode: IDF, CategoriePlat: ENTREE }
     IdfDessert: { RegionCode: IDF, CategoriePlat: DESSERT }
+---
+class:
+  name: TypeTerrasse
+  comment: Type de terrasse
+  readonly: true
+  enum: true
+  properties:
+    - name: Code
+      domain: DO_CODE
+      primaryKey: true
+      comment: Code du type de terrase
+  values:
+    INT: { Code: INT }
+    EXT: { Code: EXT }

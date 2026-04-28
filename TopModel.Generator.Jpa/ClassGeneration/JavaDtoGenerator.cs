@@ -35,7 +35,12 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         {
             var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
             allArgsConstructor.Visibility = "private";
-            return [allArgsConstructor];
+            if (allArgsConstructor.Parameters.Count > 0)
+            {
+                return [allArgsConstructor];
+            }
+
+            return [];
         }
 
         return base.GetConstuctors(classe, tag);

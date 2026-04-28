@@ -117,7 +117,12 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 Visibility = "public",
             }
         );
-        javaEnum.Constructors.Add(javaEnum.GetAllArgsConstructor());
+        var allArgsConstructor = javaEnum.GetAllArgsConstructor();
+        if (allArgsConstructor.Parameters.Count > 0)
+        {
+            javaEnum.Constructors.Add(allArgsConstructor);
+        }
+
         return javaEnum;
     }
 
