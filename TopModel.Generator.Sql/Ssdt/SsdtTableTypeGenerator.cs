@@ -110,7 +110,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         var sb = new StringBuilder();
 
         // Colonnes
-        foreach (var property in table.GetAllProperties(Config.Classes))
+        foreach (var property in table.AllProperties)
         {
             if (
                 (!property.PrimaryKey || Config.ShouldQuoteValue(property))

@@ -146,9 +146,7 @@ public abstract class AbstractSqlTablesGenerator(
         writer.WriteLine(" **/");
         writer.WriteLine("create table " + tableName + " (");
 
-        var properties = classe.GetAllProperties(Config.Classes);
-
-        foreach (var property in properties)
+        foreach (var property in classe.AllProperties)
         {
             var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 
@@ -198,8 +196,8 @@ public abstract class AbstractSqlTablesGenerator(
             }
         }
 
-        WriteCheckConstraints(writer, properties);
-        WritePrimaryKeyConstraint(writer, classe, properties);
+        WriteCheckConstraints(writer, classe.AllProperties);
+        WritePrimaryKeyConstraint(writer, classe, classe.AllProperties);
         WriteEndTableDeclaration(writer);
 
         var shouldWriteSequence =

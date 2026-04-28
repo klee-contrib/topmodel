@@ -70,10 +70,9 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
             WriteType(classe, writer);
         }
 
-        var properties = classe.GetAllProperties(Config.AvailableClasses);
         var t = 0;
 
-        foreach (var property in properties)
+        foreach (var property in classe.AllProperties)
         {
             var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 

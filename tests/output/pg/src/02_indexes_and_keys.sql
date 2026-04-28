@@ -401,20 +401,6 @@ alter table PLAT
 		references RESTAURANT (RES_ID);
 
 /**
-  * Création de l'index de clef étrangère pour PLAT.PLA_ID
- **/
-create index IDX_PLA_PLA_ID_FK on PLAT (
-	PLA_ID ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PLAT.PLA_ID
- **/
-alter table PLAT
-	add constraint FK_PLAT_PLA_ID foreign key (PLA_ID)
-		references PROMOTION (PLA_ID);
-
-/**
   * Génération de la contrainte de clef étrangère pour PROMOTION.PLA_ID
  **/
 alter table PROMOTION

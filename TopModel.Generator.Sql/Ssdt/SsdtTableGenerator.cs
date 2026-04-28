@@ -42,13 +42,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         WriteCreateTableOpening(writer, classe);
 
         // Intérieur du create table.
-        var properties = WriteInsideInstructions(writer, classe);
+        WriteInsideInstructions(writer, classe);
 
         // Fin du create table.
         WriteCreateTableClosing(writer, classe, useCompression);
 
         // Indexes sur les clés étrangères.
-        WriteIndexes(writer, classe, properties);
+        WriteIndexes(writer, classe, classe.AllProperties);
 
         // Définition
         if (Config.Ssdt!.GenerateComments)
@@ -259,16 +259,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    protected virtual IEnumerable<IProperty> WriteInsideInstructions(IFileWriter writer, Class table)
+    protected virtual void WriteInsideInstructions(IFileWriter writer, Class table)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
         var sb = new StringBuilder();
 
-        // Colonnes
-        var properties = table.GetAllProperties(Config.Classes);
-
-        foreach (var property in properties)
+        foreach (var property in table.AllProperties)
         {
             sb.Clear();
             WriteColumn(sb, property);
@@ -277,13 +274,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
         // Primary Key
         sb.Clear();
-        WritePkLine(sb, table, properties);
+        WritePkLine(sb, table, table.AllProperties);
 
         definitions.Add(sb.ToString());
 
         // Foreign key constraints
         foreach (
-            var property in properties.Where(ap =>
+            var property in table.AllProperties.Where(ap =>
                 (ap.Association?.IsPersistent ?? false) && Config.AvailableClasses.Contains(ap.Association)
             )
         )
@@ -299,8 +296,6 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         // Ecriture de la liste concaténée.
         var separator = "," + Environment.NewLine;
         writer.Write(string.Join(separator, definitions.Select(x => "\t" + x)));
-
-        return properties;
     }
 
     /// <summary>

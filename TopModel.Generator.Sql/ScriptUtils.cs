@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿#pragma warning disable KTA1200
+
+using System.Text;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -6,22 +8,33 @@ using TopModel.Utils;
 namespace TopModel.Generator.Sql;
 
 /// <summary>
-/// Classe utilitaire pour écritre du SQL.
+/// Classe utilitaire pour écrire du SQL.
 /// </summary>
 public static class ScriptUtils
 {
     public const string InsertKeyName = "InsertKey";
 
-    public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
+    extension(Class classe)
     {
-        foreach (var prop in classe.Properties.Where(p => !p.AssociationMultiple))
+        public IEnumerable<IProperty> AllProperties
         {
-            yield return prop;
-        }
+            get
+            {
+                // On enlève les multiples (directes ou reverse) + les reverses de oneToOne.
+                foreach (
+                    var prop in classe.Properties.Where(p =>
+                        !p.AssociationMultiple && (!p.IsReverseProperty || p.ReverseProperty!.AssociationMultiple)
+                    )
+                )
+                {
+                    yield return prop;
+                }
 
-        if (classe.ParentAssociationProperty != null)
-        {
-            yield return classe.ParentAssociationProperty!;
+                if (classe.ParentAssociationProperty != null)
+                {
+                    yield return classe.ParentAssociationProperty!;
+                }
+            }
         }
     }
 
@@ -121,7 +134,7 @@ public static class ScriptUtils
             );
             writer.WriteLine("go");
 
-            foreach (var p in classe.GetAllProperties(config.AvailableClasses))
+            foreach (var p in classe.AllProperties)
             {
                 writer.WriteLine(
                     $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}'"
@@ -135,7 +148,7 @@ public static class ScriptUtils
                 $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
             );
 
-            foreach (var p in classe.GetAllProperties(config.AvailableClasses))
+            foreach (var p in classe.AllProperties)
             {
                 writer.WriteLine(
                     $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"

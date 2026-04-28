@@ -14,11 +14,9 @@ create table [dbo].[PLAT] (
 	[PLA_DISPONIBLE] boolean not null default true,
 	[CAT_CODE] varchar not null,
 	[RES_ID] int not null,
-	[PLA_ID] int,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
-	constraint [FK_PLAT_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PROMOTION] ([PLA_ID]))
+	constraint [FK_PLAT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */
@@ -29,11 +27,6 @@ go
 /* Index on foreign key column for PLAT.RES_ID */
 create nonclustered index [IDX_PLA_RES_ID_FK]
 	on [dbo].[PLAT] ([RES_ID] ASC)
-go
-
-/* Index on foreign key column for PLAT.PLA_ID */
-create nonclustered index [IDX_PLA_PLA_ID_FK]
-	on [dbo].[PLAT] ([PLA_ID] ASC)
 go
 
 /**
@@ -54,6 +47,4 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'RES_ID'
-go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association réciproque de Promotion.Plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_ID'
 go
