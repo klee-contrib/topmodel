@@ -26,7 +26,7 @@ public class SqlResourcesGenerator(
             )
         )
         {
-            yield return ("resources", Config.Procedural!.ResourcesFileName);
+            yield return ("resources", Path.Combine(Config.OutputDirectory, Config.Procedural!.ResourcesFileName));
         }
     }
 

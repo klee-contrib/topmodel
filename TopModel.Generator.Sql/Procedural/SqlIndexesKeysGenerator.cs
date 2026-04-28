@@ -14,7 +14,10 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("index-and-keys", Config.Procedural!.IndexesAndKeysFileName);
+            yield return (
+                "index-and-keys",
+                Path.Combine(Config.OutputDirectory, Config.Procedural!.IndexesAndKeysFileName)
+            );
         }
     }
 

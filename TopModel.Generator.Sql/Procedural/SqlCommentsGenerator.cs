@@ -14,7 +14,7 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("comments", Config.Procedural!.CommentsFileName!);
+            yield return ("comments", Path.Combine(Config.OutputDirectory, Config.Procedural!.CommentsFileName!));
         }
     }
 

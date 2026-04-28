@@ -24,7 +24,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("type", Config.Procedural!.TypesFileName!);
+            yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
         }
     }
 
