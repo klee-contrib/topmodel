@@ -206,6 +206,7 @@ create table PLAT (
 	PLA_DISPONIBLE boolean not null,
 	CAT_CODE varchar(10) not null,
 	RES_ID int not null,
+	PLA_ID int,
 	constraint PK_PLAT primary key (PLA_ID)
 );
 

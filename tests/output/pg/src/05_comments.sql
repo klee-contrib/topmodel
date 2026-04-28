@@ -155,6 +155,7 @@ COMMENT ON COLUMN PLAT.PLA_PRIX IS 'Prix du plat';
 COMMENT ON COLUMN PLAT.PLA_DISPONIBLE IS 'Indique si le plat est disponible';
 COMMENT ON COLUMN PLAT.CAT_CODE IS 'Catégorie du plat';
 COMMENT ON COLUMN PLAT.RES_ID IS 'Restaurant proposant ce plat';
+COMMENT ON COLUMN PLAT.PLA_ID IS 'Association réciproque de Promotion.Plat';
 
 /**
   * Commentaires pour la table PROMOTION

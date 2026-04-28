@@ -14,7 +14,7 @@ public static class ScriptUtils
 
     public static IEnumerable<IProperty> GetAllProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
-        foreach (var prop in classe.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty))
+        foreach (var prop in classe.Properties.Where(p => !p.AssociationMultiple))
         {
             yield return prop;
         }
