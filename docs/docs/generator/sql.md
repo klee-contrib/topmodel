@@ -60,6 +60,8 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 
     _Valeur par défaut_: `identity`
 
+    En mode `sequence`, si une classe possède des `values` mais dont la PK n'est pas précisée, le générateur inclut la colonne PK dans l'`INSERT` et l'initialise via la séquence de la table.
+
   - `increment`
 
     Incrément de la séquence générée.

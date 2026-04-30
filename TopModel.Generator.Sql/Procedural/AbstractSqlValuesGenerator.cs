@@ -13,11 +13,6 @@ public abstract class AbstractSqlValuesGenerator(
 {
     public override string Name => "SqlValuesGen";
 
-    /// <summary>
-    /// Indique si pour une insertion dans une table avec une identité en mode séquence la colonne de PK doit être explicitement initialisée via la séquence.
-    /// </summary>
-    protected virtual bool ExplicitSequenceNextVal { get; } = false;
-
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsPersistent && !classe.Abstract && classe.Values.Count > 0)
@@ -25,14 +20,6 @@ public abstract class AbstractSqlValuesGenerator(
             yield return ("values", Config.Procedural!.ValuesFileName);
         }
     }
-
-    /// <summary>
-    /// Renvoie le SQL pour appeler la valeur suivante d'une séquence donnée.
-    /// </summary>
-    /// <param name="sequenceName">Nom de la séquence.</param>
-    /// <returns>SQL.</returns>
-    protected virtual string GetNextValCall(string sequenceName) =>
-        throw new NotSupportedException($"Sequence declaration is not implemented with {Config.TargetDBMS}");
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
