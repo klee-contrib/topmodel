@@ -15,6 +15,19 @@ public class DatabaseOraTmdGenerator(
 
     public override string Name => "DatabaseOraGen";
 
+    protected override string GetColumnCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    table_name  AS TableName,
+                    column_name AS ColumnName,
+                    comments    AS Comment
+                FROM all_col_comments
+                WHERE owner = '{_config.Source.Schema}'
+                    AND comments IS NOT NULL
+            ";
+    }
+
     protected override string GetColumnsQuery()
     {
         return @$"
@@ -62,6 +75,19 @@ public class DatabaseOraTmdGenerator(
     protected override string GetPrimaryKeysQuery()
     {
         return GetConstraintKeyQuery("P");
+    }
+
+    protected override string GetTableCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    table_name  AS TableName,
+                    comments    AS Comment
+                FROM all_tab_comments
+                WHERE owner = '{_config.Source.Schema}'
+                    AND table_type = 'TABLE'
+                    AND comments IS NOT NULL
+            ";
     }
 
     protected override string GetUniqueKeysQuery()

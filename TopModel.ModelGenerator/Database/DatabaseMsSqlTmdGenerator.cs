@@ -15,6 +15,25 @@ public class DatabaseMsSqlTmdGenerator(
 
     public override string Name => "DatabaseMsSqlGen";
 
+    protected override string GetColumnCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    t.name                              AS TableName,
+                    c.name                              AS ColumnName,
+                    CAST(ep.value AS NVARCHAR(MAX))     AS Comment
+                FROM sys.columns         AS c
+                JOIN sys.tables          AS t   ON t.object_id  = c.object_id
+                JOIN sys.schemas         AS s   ON s.schema_id  = t.schema_id
+                JOIN sys.extended_properties AS ep
+                    ON  ep.major_id     = c.object_id
+                    AND ep.minor_id     = c.column_id
+                    AND ep.class        = 1
+                    AND ep.name         = 'MS_Description'
+                WHERE s.name = '{_config.Source.Schema}'
+            ";
+    }
+
     protected override string GetColumnsQuery()
     {
         return @$"
@@ -83,6 +102,23 @@ public class DatabaseMsSqlTmdGenerator(
     protected override string GetPrimaryKeysQuery()
     {
         return GetConstraintKeyQuery("PK");
+    }
+
+    protected override string GetTableCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    t.name                              AS TableName,
+                    CAST(ep.value AS NVARCHAR(MAX))     AS Comment
+                FROM sys.tables          AS t
+                JOIN sys.schemas         AS s   ON s.schema_id  = t.schema_id
+                JOIN sys.extended_properties AS ep
+                    ON  ep.major_id     = t.object_id
+                    AND ep.minor_id     = 0
+                    AND ep.class        = 1
+                    AND ep.name         = 'MS_Description'
+                WHERE s.name = '{_config.Source.Schema}'
+            ";
     }
 
     protected override string GetUniqueKeysQuery()

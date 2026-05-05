@@ -15,19 +15,40 @@ public class DatabasePgTmdGenerator(
 
     public override string Name => "DatabasePgGen";
 
+    protected override string GetColumnCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    c.table_name    AS TableName,
+                    c.column_name   AS ColumnName,
+                    pgd.description AS Comment
+                FROM information_schema.columns c
+                JOIN pg_class pgc
+                    ON pgc.relname = c.table_name
+                JOIN pg_namespace pgn
+                    ON pgn.oid = pgc.relnamespace
+                    AND pgn.nspname = c.table_schema
+                LEFT JOIN pg_description pgd
+                    ON pgd.objoid = pgc.oid
+                    AND pgd.objsubid = c.ordinal_position
+                WHERE c.table_schema = '{_config.Source.Schema}'
+                    AND pgd.description IS NOT NULL
+            ";
+    }
+
     protected override string GetColumnsQuery()
     {
         // Récupération des colonnes
         return @$"
-                select  table_name                                                              as TableName, 
-                        column_name                                                             as ColumnName, 
+                select  table_name                                                              as TableName,
+                        column_name                                                             as ColumnName,
                         data_type                                                               as DataType,
                         is_nullable = 'YES'                                                     as Nullable,
                         coalesce(numeric_precision, datetime_precision, interval_precision)     as Precision,
                         coalesce(character_maximum_length, numeric_scale, interval_precision)   as Scale
-                from information_schema.columns 
+                from information_schema.columns
                 where table_schema  = '{_config.Source.Schema}'
-                order by ordinal_position 
+                order by ordinal_position
             ";
     }
 
@@ -46,6 +67,21 @@ public class DatabasePgTmdGenerator(
     {
         // Récupération des contraintes de clés primaires
         return GetConstraintKeyQuery("PRIMARY KEY");
+    }
+
+    protected override string GetTableCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    pgc.relname                             AS TableName,
+                    obj_description(pgc.oid, 'pg_class')   AS Comment
+                FROM pg_class pgc
+                JOIN pg_namespace pgn
+                    ON pgn.oid = pgc.relnamespace
+                WHERE pgn.nspname = '{_config.Source.Schema}'
+                    AND pgc.relkind = 'r'
+                    AND obj_description(pgc.oid, 'pg_class') IS NOT NULL
+            ";
     }
 
     protected override string GetUniqueKeysQuery()

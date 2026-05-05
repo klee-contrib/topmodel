@@ -19,4 +19,6 @@ public class TmdProperty
     public string Domain { get; set; }
 
     public bool Required { get; set; }
+
+    public string SqlName { get; set; } = string.Empty;
 }
