@@ -15,6 +15,19 @@ public class DatabaseMySqlTmdGenerator(
 
     public override string Name => "DatabaseMySqlGen";
 
+    protected override string GetColumnCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    TABLE_NAME      AS TableName,
+                    COLUMN_NAME     AS ColumnName,
+                    COLUMN_COMMENT  AS Comment
+                FROM information_schema.columns
+                WHERE table_schema = '{_config.Source.Schema}'
+                    AND COLUMN_COMMENT != ''
+            ";
+    }
+
     protected override string GetColumnsQuery()
     {
         // Récupération des colonnes
@@ -47,6 +60,18 @@ public class DatabaseMySqlTmdGenerator(
     {
         // Récupération des contraintes de clés primaires
         return GetConstraintKeyQuery("PRIMARY KEY");
+    }
+
+    protected override string GetTableCommentsQuery()
+    {
+        return @$"
+                SELECT
+                    TABLE_NAME      AS TableName,
+                    TABLE_COMMENT   AS Comment
+                FROM information_schema.tables
+                WHERE table_schema = '{_config.Source.Schema}'
+                    AND TABLE_COMMENT != ''
+            ";
     }
 
     protected override string GetUniqueKeysQuery()

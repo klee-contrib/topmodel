@@ -53,10 +53,20 @@ public abstract class DatabaseTmdGenerator(
         // Initialisation de {classGroups.Count()} classes
         InitClasses(classGroups);
 
+        // Récupération des commentaires depuis la base de données
+        var tableComments = await GetTableComments();
+        var columnComments = await GetColumnComments();
+
+        // Application des commentaires de tables (les classes sont déjà initialisées)
+        ApplyTableComments(tableComments);
+
         // Initialisation des propriétés
         await InitProperties(classGroups);
         await InitUniqConstraints(classGroups);
         await ReadValues();
+
+        // Application des commentaires de colonnes (les propriétés avec SqlName sont maintenant disponibles)
+        ApplyColumnComments(columnComments);
 
         CreateFiles();
 
@@ -76,6 +86,8 @@ public abstract class DatabaseTmdGenerator(
         }
     }
 
+    protected abstract string GetColumnCommentsQuery();
+
     protected abstract string GetColumnsQuery();
 
     protected abstract DbConnection GetConnection();
@@ -83,6 +95,8 @@ public abstract class DatabaseTmdGenerator(
     protected abstract string GetForeignKeysQuery();
 
     protected abstract string GetPrimaryKeysQuery();
+
+    protected abstract string GetTableCommentsQuery();
 
     protected abstract string GetUniqueKeysQuery();
 
@@ -141,6 +155,34 @@ public abstract class DatabaseTmdGenerator(
             )
             {
                 stack.Enqueue(d);
+            }
+        }
+    }
+
+    private void ApplyColumnComments(IEnumerable<DbColumnComment> columnComments)
+    {
+        foreach (var cc in columnComments.Where(c => !string.IsNullOrWhiteSpace(c.Comment)))
+        {
+            if (!_classes.TryGetValue(cc.TableName, out var classe))
+            {
+                continue;
+            }
+
+            var property = classe.Properties.FirstOrDefault(p => p.SqlName == cc.ColumnName);
+            if (property != null)
+            {
+                property.Comment = cc.Comment!;
+            }
+        }
+    }
+
+    private void ApplyTableComments(IEnumerable<DbTableComment> tableComments)
+    {
+        foreach (var tc in tableComments.Where(t => !string.IsNullOrWhiteSpace(t.Comment)))
+        {
+            if (_classes.TryGetValue(tc.TableName, out var classe))
+            {
+                classe.Comment = tc.Comment!;
             }
         }
     }
@@ -387,6 +429,12 @@ public abstract class DatabaseTmdGenerator(
         }
     }
 
+    private async Task<IEnumerable<DbColumnComment>> GetColumnComments()
+    {
+        var comments = await _connection!.QueryAsync<DbColumnComment>(GetColumnCommentsQuery());
+        return comments.Where(c => !config.Exclude.Select(e => e.ToLower()).Contains(c.TableName.ToLower()));
+    }
+
     private async Task<IEnumerable<DbColumn>> GetColumns()
     {
         // Récupération des colonnes
@@ -410,6 +458,12 @@ public abstract class DatabaseTmdGenerator(
     private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
     {
         return GetConstraintKeys(GetPrimaryKeysQuery());
+    }
+
+    private async Task<IEnumerable<DbTableComment>> GetTableComments()
+    {
+        var comments = await _connection!.QueryAsync<DbTableComment>(GetTableCommentsQuery());
+        return comments.Where(c => !config.Exclude.Select(e => e.ToLower()).Contains(c.TableName.ToLower()));
     }
 
     private Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
