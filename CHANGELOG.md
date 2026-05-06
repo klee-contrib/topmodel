@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.2.4
+
+- [`2b19dd2`](https://github.com/klee-contrib/topmodel/commit/2b19dd275f760a2d60d184d9894213adab281bd6) - [Core] readonly non transféré sur un alias
+
 ## 4.2.3
 
 - [`fe3a950`](https://github.com/klee-contrib/topmodel/commit/fe3a9505904890cb3c81ff1eb01ed9a8567191c1) - [Core] Fixes mode watch (en particulier autour des git reverts)
