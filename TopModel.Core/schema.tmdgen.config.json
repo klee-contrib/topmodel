@@ -304,6 +304,10 @@
           "classPrefix": {
             "type": "string",
             "description": "Préfixe à ajouter à toutes les classes générées pour cette source."
+          },
+          "useEnumClasses": {
+            "type": "boolean",
+            "description": "Génère des classes `enum: class` au lieu de classes `enum: true` pour les enums."
           }
         }
       }

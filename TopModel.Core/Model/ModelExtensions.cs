@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 using OneOf;
 using TopModel.Utils;
 
@@ -141,7 +140,7 @@ public static class ModelExtensions
                 var elp = prop.UniqueValuedProperty;
                 return
                     elp?.Class.Enum != null
-                    && elp.Class.Values.All(r => r.Value.ContainsKey(elp) && IsEnumNameValid(r.Value[elp]))
+                    && elp.Class.Values.All(r => r.Value.ContainsKey(elp) && r.Value[elp].IsEnumNameValid())
                     ? elp
                     : null;
             }
@@ -397,15 +396,5 @@ public static class ModelExtensions
 
             return null;
         }
-    }
-
-    private static bool IsEnumNameValid(string name)
-    {
-        return !Regex.IsMatch(name, "^\\d")
-            && !name.Contains('-')
-            && !Regex.IsMatch(
-                name ?? string.Empty,
-                "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"
-            );
     }
 }

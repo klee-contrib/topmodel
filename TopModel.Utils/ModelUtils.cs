@@ -63,6 +63,21 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Vérifie si la chaîne de caractères est un nom d'enum valide.
+    /// </summary>
+    /// <param name="name">Le nom à vérifier.</param>
+    /// <returns>True si le nom est valide, sinon false.</returns>
+    public static bool IsEnumNameValid(this string name)
+    {
+        return !Regex.IsMatch(name, "^\\d")
+            && !name.Contains('-')
+            && !Regex.IsMatch(
+                name ?? string.Empty,
+                "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"
+            );
+    }
+
+    /// <summary>
     /// Convertit un text en camelCase.
     /// </summary>
     /// <param name="text">Le texte en entrée.</param>

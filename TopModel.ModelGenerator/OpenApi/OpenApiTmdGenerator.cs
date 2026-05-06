@@ -468,6 +468,15 @@ public class OpenApiTmdGenerator : TmdGenerator
             p.Class = enumClass;
             enumClass.Properties.Add(p);
             AddValues(enumClass, schema);
+            if (!_config.UseEnumClasses && enumClass.Values.All(v => v.Values.Single()!.IsEnumNameValid()))
+            {
+                enumClass.Enum = "true";
+            }
+            else
+            {
+                enumClass.Readonly = true;
+            }
+
             enumClass.Unique.Add(["Value"]);
         }
 

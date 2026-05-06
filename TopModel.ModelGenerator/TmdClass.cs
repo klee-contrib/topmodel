@@ -25,6 +25,10 @@ public class TmdClass
 
     public IList<IList<string>> Unique { get; set; } = [];
 
+    public string? Enum { get; set; }
+
+    public bool Readonly { get; set; }
+
     public bool PreservePropertyCasing { get; set; }
 
     public string? Extends { get; set; }

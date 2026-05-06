@@ -27,4 +27,6 @@ public class OpenApiConfig
     public bool PreservePropertyCasing { get; set; } = true;
 
     public string? ClassPrefix { get; set; }
+
+    public bool UseEnumClasses { get; set; }
 }

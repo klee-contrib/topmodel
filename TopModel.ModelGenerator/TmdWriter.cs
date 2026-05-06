@@ -70,6 +70,7 @@ public class TmdWriter : IDisposable
         _writer.WriteLine($"---");
         _writer.WriteLine($"class:");
         _writer.WriteLine($"  name: {classe.Name}");
+
         if (!string.IsNullOrEmpty(classe.Extends))
         {
             _writer.WriteLine($"  extends: {classe.Extends}");
@@ -81,6 +82,17 @@ public class TmdWriter : IDisposable
         }
 
         _writer.WriteLine($"  comment: {classe.Comment}");
+
+        if (!string.IsNullOrEmpty(classe.Enum))
+        {
+            _writer.WriteLine($"  enum: {classe.Enum}");
+        }
+
+        if (classe.Readonly)
+        {
+            _writer.WriteLine($"  readonly: true");
+        }
+
         if (!string.IsNullOrEmpty(classe.Trigram))
         {
             _writer.WriteLine($"  trigram: {classe.Trigram.ToUpper()}");
