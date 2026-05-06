@@ -39,7 +39,7 @@ class:
 ---
 class:
   name: FindPetsByStatusStatus
-  comment: enum pour les valeurs de status
+  comment: Enum pour les valeurs de 'status'.
   preservePropertyCasing: true
   properties:
     - name: Value
@@ -93,7 +93,7 @@ class:
 ---
 class:
   name: OrderStatus
-  comment: enum pour les valeurs de Status
+  comment: Enum pour les valeurs de 'status'.
   preservePropertyCasing: true
   properties:
     - name: Value
@@ -146,7 +146,7 @@ class:
 ---
 class:
   name: PetStatus
-  comment: enum pour les valeurs de Status
+  comment: Enum pour les valeurs de 'status'.
   preservePropertyCasing: true
   properties:
     - name: Value

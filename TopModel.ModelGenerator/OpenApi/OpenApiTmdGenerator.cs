@@ -65,7 +65,7 @@ public class OpenApiTmdGenerator : TmdGenerator
         else
         {
 #pragma warning disable S1075
-            using var stream = File.Open(DirectoryName + "/" + _config.Source, FileMode.Open);
+            await using var stream = File.Open(DirectoryName + "/" + _config.Source, FileMode.Open);
 #pragma warning restore S1075
             string s = string.Empty;
             using (var reader = new StreamReader(stream))
@@ -83,7 +83,8 @@ public class OpenApiTmdGenerator : TmdGenerator
             .Paths.SelectMany(p =>
                 p.Value.Operations?.Where(o =>
                     o.Value.Tags?.Any(t => t.Name != null || t.Reference.Id != null) ?? false
-                ) ?? []
+                )
+                ?? []
             )
             .GroupBy(o => (o.Value.Tags?.First().Name ?? o.Value.Tags?.First().Reference.Id ?? "Null").ToPascalCase())
             .Where(m =>
@@ -127,19 +128,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                     continue;
                 }
 
-                var enumClass = _classesStore[schema.Value];
-                enumClass.File = tmdFile;
-                enumClass.Name = $"{_config.ClassPrefix}{schema.Key.ToPascalCase()}";
-                enumClass.Comment = $"enum pour les valeurs de {schema.Key.ToPascalCase()}";
-                enumClass.PreservePropertyCasing = _config.PreservePropertyCasing;
-
-                tmdFile.Classes.Add(enumClass);
-
-                var p = WriteProperty(_config, new("Value", schema.Value), schema: null, tmdFile);
-                p.Class = enumClass;
-                enumClass.Properties.Add(p);
-                AddValues(enumClass, schema.Value);
-                enumClass.Unique.Add(["Value"]);
+                _classesStore[schema.Value] = EnsureEnumClass(tmdFile, _config.ClassPrefix, schema.Key, schema.Value);
             }
             else
             {
@@ -183,26 +172,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                     }
                     else
                     {
-                        var enumClass = tmdFile.Classes.SingleOrDefault(c =>
-                            c.Name == $"{classe.Name}{property.Key.ToPascalCase()}"
-                        );
-                        if (enumClass == null)
-                        {
-                            enumClass = new TmdClass()
-                            {
-                                File = tmdFile,
-                                Name = $"{classe.Name}{property.Key.ToPascalCase()}",
-                                Comment = $"enum pour les valeurs de {property.Key.ToPascalCase()}",
-                                PreservePropertyCasing = _config.PreservePropertyCasing,
-                            };
-
-                            tmdFile.Classes.Add(enumClass);
-                            var p = WriteProperty(_config, new("Value", property.Value), schema: null, tmdFile);
-                            p.Class = enumClass;
-                            enumClass.Properties.Add(p);
-                            AddValues(enumClass, property.Value);
-                            enumClass.Unique.Add(["Value"]);
-                        }
+                        var enumClass = EnsureEnumClass(tmdFile, classe.Name, property.Key, property.Value);
 
                         classeProperties.Add(
                             new TmdAliasProperty()
@@ -302,26 +272,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                         TmdProperty property;
                         if ((param.Schema?.Enum ?? []).Any())
                         {
-                            var enumClass = tmdFile.Classes.SingleOrDefault(c =>
-                                c.Name == $"{endPoint.Name.ToPascalCase()}{param.Name?.ToPascalCase()}"
-                            );
-                            if (enumClass == null)
-                            {
-                                enumClass = new TmdClass()
-                                {
-                                    File = tmdFile,
-                                    Name = $"{endPoint.Name.ToPascalCase()}{param.Name?.ToPascalCase()}",
-                                    Comment = $"enum pour les valeurs de {param.Name}",
-                                    PreservePropertyCasing = _config.PreservePropertyCasing,
-                                };
-
-                                tmdFile.Classes.Add(enumClass);
-                                var p = WriteProperty(_config, new("Value", param.Schema!), schema: null, tmdFile);
-                                p.Class = enumClass;
-                                enumClass.Properties.Add(p);
-                                AddValues(enumClass, param.Schema!);
-                                enumClass.Unique.Add(["Value"]);
-                            }
+                            var enumClass = EnsureEnumClass(tmdFile, endPoint.Name, param.Name!, param.Schema!);
 
                             property = new TmdAliasProperty()
                             {
@@ -410,7 +361,8 @@ public class OpenApiTmdGenerator : TmdGenerator
             foreach (
                 var response in operation
                     .Value.Responses?.Where(r => r.Key == "200" || r.Key == "201")
-                    .Select(r => r.Value) ?? []
+                    .Select(r => r.Value)
+                    ?? []
             )
             {
                 if (response != null && (response.Content?.Any() ?? false))
@@ -491,6 +443,37 @@ public class OpenApiTmdGenerator : TmdGenerator
         }
     }
 
+    private TmdClass EnsureEnumClass(
+        TmdFile tmdFile,
+        string? sourceClassName,
+        string sourcePropertyName,
+        IOpenApiSchema schema
+    )
+    {
+        var enumClass = tmdFile.Classes.SingleOrDefault(c =>
+            c.Name == $"{sourceClassName?.ToPascalCase()}{sourcePropertyName.ToPascalCase()}"
+        );
+        if (enumClass == null)
+        {
+            enumClass = new TmdClass()
+            {
+                File = tmdFile,
+                Name = $"{sourceClassName?.ToPascalCase()}{sourcePropertyName.ToPascalCase()}",
+                Comment = $"Enum pour les valeurs de '{sourcePropertyName}'.",
+                PreservePropertyCasing = _config.PreservePropertyCasing,
+            };
+
+            tmdFile.Classes.Add(enumClass);
+            var p = WriteProperty(_config, new("Value", schema), schema: null, tmdFile);
+            p.Class = enumClass;
+            enumClass.Properties.Add(p);
+            AddValues(enumClass, schema);
+            enumClass.Unique.Add(["Value"]);
+        }
+
+        return enumClass;
+    }
+
     private string GetEndpointName(KeyValuePair<HttpMethod, OpenApiOperation> operation)
     {
         var operationId = _model.GetOperationId(operation);
@@ -542,27 +525,7 @@ public class OpenApiTmdGenerator : TmdGenerator
             && property.Value.Items?.Type == JsonSchemaType.String
         )
         {
-            var aliasClass = tmdFile.Classes.SingleOrDefault(c =>
-                c.Name == $"{_config.ClassPrefix}{property.Key.ToPascalCase()}"
-            );
-            if (aliasClass == null)
-            {
-                aliasClass = new TmdClass()
-                {
-                    File = tmdFile,
-                    Name = $"{_config.ClassPrefix}{property.Key.ToPascalCase()}",
-                    Comment = $"enum pour les valeurs de {property.Key.ToPascalCase()}",
-                    PreservePropertyCasing = _config.PreservePropertyCasing,
-                };
-
-                tmdFile.Classes.Add(aliasClass);
-
-                var p = WriteProperty(_config, new("Value", property.Value.Items), schema: null, tmdFile);
-                p.Class = aliasClass;
-                aliasClass.Properties.Add(p);
-                AddValues(aliasClass, property.Value.Items);
-                aliasClass.Unique.Add(["Value"]);
-            }
+            var aliasClass = EnsureEnumClass(tmdFile, _config.ClassPrefix, property.Key, property.Value.Items);
 
             var aliasProperty = new TmdAliasProperty()
             {
