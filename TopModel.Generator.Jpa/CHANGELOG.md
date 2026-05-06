@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.2.4
+
+- [`e379f0b`](https://github.com/klee-contrib/topmodel/commit/e379f0b3c44faa070072dd3404ad6bd67ac06677) - [JPA] Ne pas générer le allArgConstructor s'il n'a pas de paramètre.
+
+  Cela concerne en particulier les classes `enum: true` qui n'ont qu'une seule propriété.
+
 ## 4.2.3
 
 - [`6917bf`](https://github.com/klee-contrib/topmodel/commit/6917bf9abfeddccf949f2482ab5a16c4a24c6f29) - Trie des valeurs selon la defaultProperty ou la orderProperty

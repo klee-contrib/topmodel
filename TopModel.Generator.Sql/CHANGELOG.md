@@ -1,3 +1,14 @@
+## 4.1.4
+
+- [`b2f1a96`](https://github.com/klee-contrib/topmodel/commit/b2f1a96103691ce9907b8dbd529287405ec5f4a1) - [SQL] Correction du chemin de génération des fichiers SQL dans le lockfile
+
+  Cela devrait corriger le fait que les anciens fichiers SQL n'étaient pas supprimés suite à un changement de config.
+
+- [`9c779c6`](https://github.com/klee-contrib/topmodel/commit/9c779c6287c9d473a06458e164d21052316112c5) - [SQL] Fix fileName in comment file
+- [`2277f23`](https://github.com/klee-contrib/topmodel/commit/2277f2370f9c18bab7e6fbf497b3d18682a6b5e1) - [SQL] Identity Sequence pour les values
+
+  Cela corrige l'insertion de `values` lorsqu'il faut utiliser une séquence pour la clé primaire (cela marchait déjà pour une identité).
+
 ## 4.1.3
 
 - [`a5f4856`](https://github.com/klee-contrib/topmodel/commit/a5f4856005bdf79907b64c6add8a9cf492283668) - [SQL] Fix reverses de oneToOne générées à tord
