@@ -129,7 +129,7 @@ internal class AliasProperty : IProperty
 
     public bool Readonly
     {
-        get => Class?.Readonly == true || (_readonly ?? _property?.Readonly ?? false);
+        get => Class?.Readonly == true || _readonly == true;
         set => _readonly = value;
     }
 

@@ -65,5 +65,5 @@ public partial record MenuWrite
     /// </summary>
     [Required]
     [Domain(Domains.Liste)]
-    public ICollection<CategoriePlat.Codes>? CategoriesPlat { get; init; }
+    public ICollection<CategoriePlat.Codes>? CategoriesPlat { get; set; }
 }

@@ -52,7 +52,7 @@ public partial record AvisClientRead
     /// </summary>
     [Required]
     [Domain(Domains.Quantite)]
-    public int? NombreVues { get; init; } = 0;
+    public int? NombreVues { get; set; } = 0;
 
     /// <summary>
     /// Client ayant donné l'avis.
