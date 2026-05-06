@@ -1,5 +1,15 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 4.0.0
+
+- [`4a2d5a6`](https://github.com/klee-contrib/topmodel/commit/4a2d5a6fc0b8878075648c224de3c8d352c8a5a7) - [tmdgen - openapi] Enums générées par défaut en enum: true, + config useEnumClasses pour readonly: true à la place
+
+  Cette évolution est un **breaking change** dans le sens où le code généré n'est compatible avec TopModel 4 (et versions ultérieures), car les enums sont par défaut générées avec `enum: true`, et l'option de config ajoutée qui permet de retrouver le comportement précédent ajoute `readonly: true` sur la classe, qui sont tous les deux des évolutions apportées par TopModel 4.0
+
+  La version de tmdgen est donc montée pour être à la même majeure que TopModel lui-même pour cette raison-là. Il ne s'agit pas d'une "réelle" version majeure de l'outil 😅
+
+- [`cd57bb9`](https://github.com/klee-contrib/topmodel/commit/cd57bb9ecf446ef343ff9c2055f3de50abe31f5d) - [tmdgen] Reprendre les commentaires de la base de données s'ils existents
+
 ## 1.13.1
 
 - [`45fb64`](https://github.com/klee-contrib/topmodel/commit/45fb64d95ba24b530d91fafb95146fa318509be0) - [Tmdgen] Ajout de la contrainte d'unicité sur `value` pour la propriété d'enum (1 cas manquant)

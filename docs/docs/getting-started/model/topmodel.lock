@@ -5,14 +5,14 @@
 version: 4.2.4
 modules:
   jpa:
-    version: 4.2.3
-    hash: 127591cfd0cf09f63b56860d836ba7b3
+    version: 4.2.4
+    hash: 55aa49c0a03cc4b99e4c976ceb02e249
   csharp:
     version: 4.1.3
     hash: 1b740dd238650587e809d932edf08414
   sql:
-    version: 4.1.3
-    hash: 40c4b8bd1e52ff4af754f8eb37a12682
+    version: 4.1.4
+    hash: 58d5d82a9cbd98ade193d782add63120
   javascript:
     version: 4.2.2
     hash: b68d1c5f74a603161e2cd1ce3fbbb624
