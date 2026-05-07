@@ -105,7 +105,12 @@ internal class AliasProperty : IProperty
 
     public bool UseClass
     {
-        get => Class?.IsPersistent == true && (_useClass ?? (_property as AssociationProperty)?.UseClass ?? false);
+        get =>
+            Class?.IsPersistent == true
+            && (
+                (Property as AssociationProperty)?.Property?.Class.Enum == EnumMode.Enum
+                || (_useClass ?? (_property as AssociationProperty)?.UseClass ?? false)
+            );
         set => _useClass = value;
     }
 
@@ -136,6 +141,8 @@ internal class AliasProperty : IProperty
     public bool PreservePrimaryKey { get; set; }
 
     public bool PreserveTrigram { get; set; }
+
+    public bool DiscardAssociations { get; set; }
 
     public Domain Domain
     {
@@ -328,6 +335,7 @@ internal class AliasProperty : IProperty
             Trigram = Trigram,
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
+            DiscardAssociations = DiscardAssociations,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,
             OwnAnnotations = OwnAnnotations,
@@ -396,6 +404,7 @@ internal class AliasProperty : IProperty
             As = As,
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
+            DiscardAssociations = DiscardAssociations,
             OriginalAliasProperty = this,
             DomainParameters = _domainParameters!,
             CustomProperties = _customProperties,

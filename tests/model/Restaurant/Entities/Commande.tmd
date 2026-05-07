@@ -152,10 +152,7 @@ class:
         exclude: Lignes
       preservePrimaryKey: true
       preserveTrigram: true
-      useClass: false
-
-  unique:
-    - [AvisClientId]
+      discardAssociations: true
 ---
 class:
   name: LigneCommandeHistorique
@@ -167,7 +164,7 @@ class:
         exclude: Commande
       preservePrimaryKey: true
       preserveTrigram: true
-      useClass: false
+      discardAssociations: true
 
     - association: CommandeHistorique
       required: true

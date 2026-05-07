@@ -43,6 +43,5 @@ public partial record CategoriePlatRegion
     /// Catégorie de plat.
     /// </summary>
     [Required]
-    [ReferencedType(typeof(CategoriePlat))]
     public CategoriePlat? CategoriePlat { get; init; }
 }

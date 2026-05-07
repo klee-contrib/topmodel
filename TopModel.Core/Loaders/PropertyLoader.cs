@@ -440,6 +440,9 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                         case "preserveTrigram":
                             alp.PreserveTrigram = value!.Value == "true";
                             break;
+                        case "discardAssociations":
+                            alp.DiscardAssociations = value!.Value == "true";
+                            break;
                         case "readonly":
                             alp.Readonly = value!.Value == "true";
                             break;

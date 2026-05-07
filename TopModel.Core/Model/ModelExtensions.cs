@@ -18,7 +18,8 @@ public static class ModelExtensions
             {
                 { Composition: not null } => null,
                 AssociationProperty { Association: Class a } => a,
-                AliasProperty { Property: AssociationProperty { Association: Class a } } => a,
+                AliasProperty { DiscardAssociations: false, Property: AssociationProperty { Association: Class a } } =>
+                    a,
                 _ => null,
             };
 
@@ -66,8 +67,40 @@ public static class ModelExtensions
             prop switch
             {
                 AssociationProperty ap => ap.UseClass,
+                AliasProperty
+                {
+                    DiscardAssociations: true,
+                    Property: AssociationProperty { Association.Enum: var e }
+                } => e == EnumMode.Enum,
                 AliasProperty { Property: AssociationProperty } alp => alp.UseClass,
                 _ => false,
+            };
+
+        /// <summary>
+        /// Si la propriété est une association vers une classe enum readonly, retourne cette classe.
+        /// </summary>
+        public Class? ReadonlyEnumClassAssociation =>
+            prop switch
+            {
+                AssociationProperty { Association: Class { Readonly: true, Enum: EnumMode.Class } a, UseClass: true } =>
+                    a,
+                AliasProperty
+                {
+                    Property: AssociationProperty { Association: Class { Readonly: true, Enum: EnumMode.Class } a },
+                    UseClass: true
+                } => a,
+                _ => null,
+            };
+
+        /// <summary>
+        /// Si la propriété est une association vers une classe enum: true, retourne cette classe.
+        /// </summary>
+        public Class? TrueEnumClassAssociation =>
+            prop switch
+            {
+                AssociationProperty { Association: Class { Enum: EnumMode.Enum } a } => a,
+                AliasProperty { Property: AssociationProperty { Association: Class { Enum: EnumMode.Enum } a } } => a,
+                _ => null,
             };
 
         /// <summary>
@@ -220,7 +253,7 @@ public static class ModelExtensions
         /// </summary>
         /// <remarks>Cela permet de considérer des alias de clé primaire comme des clés primaires.</remarks>
         public bool PrimaryKeyish =>
-            prop.PrimaryKey
+            prop.Class?.PrimaryKey.Count() == 1 && prop.Class.PrimaryKey.Single() == prop
             || prop
                 is AliasProperty
                 {
@@ -238,6 +271,7 @@ public static class ModelExtensions
             prop switch
             {
                 { PrimaryKey: true, Class: { Reference: true } c } => c,
+                { Association: Class { Reference: true } c, UseClassForAssociation: false } => c,
                 AliasProperty { Property: { PrimaryKey: true, Class: { Reference: true } c } } => c,
                 _ => null,
             };
@@ -303,7 +337,15 @@ public static class ModelExtensions
         /// <returns></returns>
         internal string GetAssociationName(bool pascalCase = false, bool forcePropertyName = false)
         {
-            if (prop.Association == null)
+            var association = prop switch
+            {
+                { Composition: not null } => null,
+                AssociationProperty { Association: Class a } => a,
+                AliasProperty { Property: AssociationProperty { Association: Class a } } => a,
+                _ => null,
+            };
+
+            if (association == null)
             {
                 return string.Empty;
             }
@@ -323,17 +365,17 @@ public static class ModelExtensions
             }
             else if (prop.AssociationMultiple)
             {
-                name.Append(pascalCase ? prop.Association?.PluralNamePascal : prop.Association?.PluralName);
+                name.Append(pascalCase ? association.PluralNamePascal : association.PluralName);
             }
-            else if (prop.Association?.Extends == null || !(prop.Association?.PrimaryKey.Any() ?? false))
+            else if (association.Extends == null || !association.PrimaryKey.Any())
             {
-                name.Append(pascalCase ? prop.Association?.NamePascal : prop.Association?.Name);
+                name.Append(pascalCase ? association.NamePascal : association.Name);
             }
 
             if (
                 !prop.AssociationMultiple
                 && (!prop.UseClassForAssociation || forcePropertyName)
-                && prop.Association?.Enum != EnumMode.Enum
+                && association.Enum != EnumMode.Enum
             )
             {
                 if (prop.AssociationProperty?.Association != null)

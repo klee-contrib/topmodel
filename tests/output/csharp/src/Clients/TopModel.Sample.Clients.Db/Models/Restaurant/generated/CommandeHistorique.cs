@@ -72,10 +72,7 @@ public partial record CommandeHistorique
     /// <summary>
     /// Statut de la commande.
     /// </summary>
-    [Column("stc_code")]
     [Required]
-    [ReferencedType(typeof(StatutCommande))]
-    [Domain(Domains.Code)]
     public StatutCommande? StatutCommande { get; set; } = Sample.Restaurant.Models.StatutCommande.EN_ATT;
 
     /// <summary>

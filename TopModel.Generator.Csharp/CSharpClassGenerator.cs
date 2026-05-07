@@ -355,25 +355,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "Required");
             }
 
-            if (Config.Kinetix)
+            if (
+                Config.Kinetix
+                && property is { ReferenceClass: Class refClass, PrimaryKeyish: false }
+                && Config.AvailableClasses.Contains(refClass)
+            )
             {
-                if (
-                    property is { Association: Class association }
-                    && Config.AvailableClasses.Contains(association)
-                    && association.IsPersistent
-                    && association.Reference
-                )
-                {
-                    w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(association)})");
-                }
-                else if (
-                    property is { ReferenceClass: Class refClass, PrimaryKeyish: false }
-                    && property.Class != refClass
-                    && Config.AvailableClasses.Contains(refClass)
-                )
-                {
-                    w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(refClass)})");
-                }
+                w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(refClass)})");
             }
 
             if (Config.Kinetix && property.Composition == null && !property.UseClassForAssociation)
@@ -601,10 +589,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 case { Association: Class a, AssociationProperty: IProperty ap }
                     when Config.AvailableClasses.Contains(a)
-                        && (
-                            ap.EnumProperty != null && Config.UniqueValueGeneration.CanEnum
-                            || Config.Kinetix && a.IsPersistent && a.Reference
-                        ):
+                        && ap.EnumProperty != null
+                        && Config.UniqueValueGeneration.CanEnum:
                     usings.Add(GetNamespace(a, tag));
                     break;
                 case { EnumProperty: IProperty ep }
@@ -612,7 +598,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
                 case { ReferenceClass: Class refClass, PrimaryKeyish: false }
-                    when Config.Kinetix && Config.AvailableClasses.Contains(refClass) && refClass != property.Class:
+                    when Config.Kinetix && Config.AvailableClasses.Contains(refClass):
                     usings.Add(GetNamespace(refClass, tag));
                     break;
                 case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):

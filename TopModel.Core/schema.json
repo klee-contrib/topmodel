@@ -462,6 +462,10 @@
               "type": "boolean",
               "description": "Conserve le trigramme de de la propriété aliasée."
             },
+            "discardAssociations": {
+              "type": "boolean",
+              "description": "Ignore l'association de la propriété aliasée (elle sera recopiée comme une propriété standard)."
+            },
             "readonly": {
               "type": "boolean",
               "description": "Surcharge le caractère readonly de la propriété aliasée."

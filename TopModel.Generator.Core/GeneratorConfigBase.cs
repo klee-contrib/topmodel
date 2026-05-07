@@ -518,8 +518,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         if (
             UseValueNameForValues
-            && property
-                is { Association: Class { Readonly: true, Enum: EnumMode.Class } a, UseClassForAssociation: true }
+            && property is { ReadonlyEnumClassAssociation: Class a }
             && AvailableClasses.Contains(a)
         )
         {

@@ -84,6 +84,7 @@ dotnet_diagnostic.MA0002.severity = none
 dotnet_diagnostic.MA0003.severity = warning
 dotnet_diagnostic.MA0004.severity = none
 dotnet_diagnostic.MA0006.severity = none
+dotnet_diagnostic.MA0007.severity = none
 dotnet_diagnostic.MA0009.severity = none
 dotnet_diagnostic.MA0011.severity = none
 dotnet_diagnostic.MA0028.severity = warning

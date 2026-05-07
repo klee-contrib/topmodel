@@ -102,7 +102,9 @@ internal class ClassResolver(
                         p.DefaultValue != null
                         && (
                             p.AssociationMultiple
-                            || p.UseClassForAssociation && (p.Association?.Enum == null || !p.Association!.Readonly)
+                            || p.UseClassForAssociation
+                                && p.ReadonlyEnumClassAssociation == null
+                                && p.TrueEnumClassAssociation == null
                         )
                     )
                 )
@@ -124,7 +126,8 @@ internal class ClassResolver(
                             property.AssociationMultiple
                             || classe.Enum != null
                                 && property.UseClassForAssociation
-                                && (property.Association?.Enum == null || !property.Association!.Readonly)
+                                && property.ReadonlyEnumClassAssociation == null
+                                && property.TrueEnumClassAssociation == null
                         )
                         {
                             yield return new ModelError(

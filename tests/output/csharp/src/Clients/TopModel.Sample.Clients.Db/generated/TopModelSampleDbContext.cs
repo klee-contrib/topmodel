@@ -137,15 +137,10 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Commande>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.Reservation).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Commande>().HasOne(p => p.AvisClient).WithOne().HasForeignKey<Commande>("AvisClientId").OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeHistorique>().HasOne<Client>().WithMany().HasForeignKey(p => p.ClientId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeHistorique>().HasOne<TableRestaurant>().WithMany().HasForeignKey(p => p.TableId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeHistorique>().HasOne<Reservation>().WithMany().HasForeignKey(p => p.ReservationId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<CommandeHistorique>().HasOne<AvisClient>().WithOne().HasForeignKey<CommandeHistorique>(p => p.AvisClientId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Departement>().HasOne<Region>().WithMany().HasForeignKey(p => p.RegionCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Employe>().HasOne(p => p.Restaurant).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne(p => p.Commande).WithMany(p => p.Lignes).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommande>().HasOne(p => p.Plat).WithMany().OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<LigneCommandeHistorique>().HasOne<Plat>().WithMany().HasForeignKey(p => p.PlatId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LigneCommandeHistorique>().HasOne<CommandeHistorique>().WithMany().HasForeignKey(p => p.CommandeHistoriqueId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Menu>().HasOne(p => p.Restaurant).WithMany(p => p.Menus).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne(p => p.Menu).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
@@ -180,6 +175,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
         modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");
         modelBuilder.Entity<Commande>().Property("AvisClientId").HasColumnName("avi_id");
+        modelBuilder.Entity<CommandeHistorique>().Property("StatutCommande").HasColumnName("stc_code");
         modelBuilder.Entity<Employe>().Property("RestaurantId").HasColumnName("res_id");
         modelBuilder.Entity<LigneCommande>().Property("CommandeId").HasColumnName("com_id");
         modelBuilder.Entity<LigneCommande>().Property("PlatId").HasColumnName("pla_id");
@@ -198,7 +194,9 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Region>().HasIndex(p => p.Libelle);
 
         modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Values);
-        modelBuilder.Entity<CategoriePlatRegion>().HasData(CategoriePlatRegion.Values);
+        modelBuilder.Entity<CategoriePlatRegion>().HasData(
+            new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Entree.Code },
+            new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Dessert.Code });
         modelBuilder.Entity<Departement>().HasData(Departement.Values);
         modelBuilder.Entity<Region>().HasData(
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });

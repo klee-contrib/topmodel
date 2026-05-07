@@ -21,12 +21,12 @@ class CommandeHistorique{
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
+ DO_ID ClientId
+ DO_ID TableId
+ DO_ID ReservationId
+ DO_CODE StatutCommande
+ DO_ID AvisClientId
 }
-CommandeHistorique "1" --> "0..*" Client
-CommandeHistorique "0..1" --> "0..*" TableRestaurant
-CommandeHistorique "0..1" --> "0..*" Reservation
-CommandeHistorique "1" --> "0..*" StatutCommande
-CommandeHistorique "0..1" --> "1" AvisClient
 %% Ligne d'une commande
 class LigneCommande{
  DO_ID Id
@@ -42,8 +42,8 @@ class LigneCommandeHistorique{
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
+ DO_ID PlatId
 }
-LigneCommandeHistorique "1" --> "0..*" Plat
 LigneCommandeHistorique "1" --> "0..*" CommandeHistorique
 %% Réservation d'une table
 class Reservation{

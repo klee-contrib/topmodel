@@ -14,13 +14,7 @@ create table [dbo].[LIGNE_COMMANDE_HISTORIQUE] (
 	[PLA_ID] int not null,
 	[COM_ID] int not null,
 	constraint [PK_LIGNE_COMMANDE_HISTORIQUE] primary key clustered ([LIG_ID] ASC),
-	constraint [FK_LIGNE_COMMANDE_HISTORIQUE_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
 	constraint [FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID] foreign key ([COM_ID]) references [dbo].[COMMANDE_HISTORIQUE] ([COM_ID]))
-go
-
-/* Index on foreign key column for LIGNE_COMMANDE_HISTORIQUE.PLA_ID */
-create nonclustered index [IDX_LIGNE_COMMANDE_HISTORIQUE_PLA_ID_FK]
-	on [dbo].[LIGNE_COMMANDE_HISTORIQUE] ([PLA_ID] ASC)
 go
 
 /* Index on foreign key column for LIGNE_COMMANDE_HISTORIQUE.COM_ID */

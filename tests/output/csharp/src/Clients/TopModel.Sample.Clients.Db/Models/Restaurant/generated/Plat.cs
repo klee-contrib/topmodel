@@ -60,7 +60,6 @@ public partial record Plat
     /// Catégorie du plat.
     /// </summary>
     [Required]
-    [ReferencedType(typeof(CategoriePlat))]
     public CategoriePlat? CategoriePlat { get; set; }
 
     /// <summary>

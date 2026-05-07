@@ -416,8 +416,11 @@ public class DbContextGenerator(
             foreach (var classe in classes.Distinct().Where(c => c.Values.Count > 0).OrderBy(c => c.NamePascal))
             {
                 hasData = true;
+
+                var hasClassAssociations = classe.Properties.Any(p => p.UseClassForAssociation);
+
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
-                if (classe.Enum == EnumMode.Class && classe.Readonly)
+                if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)
                 {
                     w.Write($"{GetClassName(classe, tag)}.Values");
                 }
@@ -426,7 +429,9 @@ public class DbContextGenerator(
                     foreach (var refValue in classe.Values)
                     {
                         w.WriteLine();
-                        w.Write($"            new {GetClassName(classe, tag)} {{");
+                        w.Write(
+                            $"            new {(hasClassAssociations ? string.Empty : $"{GetClassName(classe, tag)} ")}{{"
+                        );
 
                         foreach (var refProp in refValue.Value.ToList())
                         {
@@ -438,6 +443,11 @@ public class DbContextGenerator(
                                 value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
                             }
 
+                            if (refProp.Key.ReadonlyEnumClassAssociation != null)
+                            {
+                                value += $".{refProp.Key.AssociationProperty!.NamePascal}";
+                            }
+
                             if (
                                 classe.Reference
                                 && refProp.Key == classe.DefaultProperty
@@ -447,7 +457,7 @@ public class DbContextGenerator(
                                 value = $"\"{refValue.ResourceKey}\"";
                             }
 
-                            w.Write($" {refProp.Key.NamePascal} = {value}");
+                            w.Write($" {refProp.Key.PropertyNamePascal} = {value}");
                             if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
                             {
                                 w.Write(",");

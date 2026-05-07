@@ -176,6 +176,42 @@ namespace TopModel.Sample.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CategoriePlatRegion", b =>
+                {
+                    b.Property<string>("RegionCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("reg_code")
+                        .HasComment("Région");
+
+                    b.Property<string>("CategoriePlatCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("cat_code")
+                        .HasComment("Catégorie de plat");
+
+                    b.HasKey("RegionCode", "CategoriePlatCode");
+
+                    b.HasIndex("CategoriePlatCode");
+
+                    b.ToTable("categorie_plat_region", t =>
+                        {
+                            t.HasComment("Catégories de plats disponibles par région");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            RegionCode = "IDF",
+                            CategoriePlatCode = "ENTREE"
+                        },
+                        new
+                        {
+                            RegionCode = "IDF",
+                            CategoriePlatCode = "DESSERT"
+                        });
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Commande", b =>
                 {
                     b.Property<int>("Id")
@@ -296,15 +332,6 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AvisClientId")
-                        .IsUnique();
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ReservationId");
-
-                    b.HasIndex("TableId");
-
                     b.ToTable("commande_historique", t =>
                         {
                             t.HasComment("Commande pour historique avec préservation des clés primaires");
@@ -394,8 +421,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CommandeHistoriqueId");
-
-                    b.HasIndex("PlatId");
 
                     b.ToTable("ligne_commande_historique", t =>
                         {
@@ -1029,6 +1054,23 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Restaurant");
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CategoriePlatRegion", b =>
+                {
+                    b.HasOne("TopModel.Sample.Restaurant.Models.CategoriePlat", "CategoriePlat")
+                        .WithMany()
+                        .HasForeignKey("CategoriePlatCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TopModel.Sample.Restaurant.Models.Region", null)
+                        .WithMany()
+                        .HasForeignKey("RegionCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CategoriePlat");
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Commande", b =>
                 {
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.AvisClient", "AvisClient")
@@ -1059,30 +1101,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Reservation");
                 });
 
-            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", b =>
-                {
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.AvisClient", null)
-                        .WithOne()
-                        .HasForeignKey("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", "AvisClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Client", null)
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Reservation", null)
-                        .WithMany()
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
-                        .WithMany()
-                        .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.LigneCommande", b =>
                 {
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Commande", "Commande")
@@ -1107,12 +1125,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.CommandeHistorique", null)
                         .WithMany()
                         .HasForeignKey("CommandeHistoriqueId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", null)
-                        .WithMany()
-                        .HasForeignKey("PlatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
