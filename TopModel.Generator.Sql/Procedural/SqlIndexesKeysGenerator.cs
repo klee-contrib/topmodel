@@ -85,7 +85,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         {
             foreach (var index in classe.Indexes)
             {
-                WriteIndex(classe, index, writer);
+                WriteIndex(index, writer);
             }
         }
 
@@ -98,7 +98,9 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
             foreach (var fkProperty in resourceProperties)
             {
-                WriteForeignKeyIndex(fkProperty, writer);
+                var index = new IndexDefinition { Class = fkProperty.Class };
+                index.Properties.Add(fkProperty);
+                WriteIndex(index, writer);
             }
         }
     }
@@ -153,9 +155,9 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
     /// <summary>
     /// Génère un index défini dans le modèle.
     /// </summary>
-    protected virtual void WriteIndex(Class classe, IndexDefinition index, IFileWriter writer)
+    protected virtual void WriteIndex(IndexDefinition index, IFileWriter writer)
     {
-        var tableName = classe.SqlName;
+        var tableName = index.Class.SqlName;
 
         writer.WriteLine();
         writer.WriteLine("/**");

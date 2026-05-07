@@ -530,29 +530,29 @@ alter table RESERVATION add constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATIO
 alter table TABLE add constraint UK_TABLE_RES_ID_TAB_NUMERO unique (RES_ID, TAB_NUMERO);
 
 /**
-  * Création de l'index de clef étrangère pour CATEGORIE_PLAT.CAT_LIBELLE
+  * Création de l'index IDX_CAT_CAT_LIBELLE sur CATEGORIE_PLAT.
  **/
-create index  on CATEGORIE_PLAT (
+create index IDX_CAT_CAT_LIBELLE on CATEGORIE_PLAT (
 	CAT_LIBELLE ASC
 );
 
 /**
-  * Création de l'index de clef étrangère pour DEPARTEMENT.DEP_LIBELLE
+  * Création de l'index IDX_DEP_DEP_LIBELLE sur DEPARTEMENT.
  **/
-create index  on DEPARTEMENT (
+create index IDX_DEP_DEP_LIBELLE on DEPARTEMENT (
 	DEP_LIBELLE ASC
 );
 
 /**
-  * Création de l'index de clef étrangère pour REGION.REG_LIBELLE
+  * Création de l'index IDX_REG_REG_LIBELLE sur REGION.
  **/
-create index  on REGION (
+create index IDX_REG_REG_LIBELLE on REGION (
 	REG_LIBELLE ASC
 );
 
 /**
-  * Création de l'index de clef étrangère pour STATUT_COMMANDE.STC_LIBELLE
+  * Création de l'index IDX_STC_STC_LIBELLE sur STATUT_COMMANDE.
  **/
-create index  on STATUT_COMMANDE (
+create index IDX_STC_STC_LIBELLE on STATUT_COMMANDE (
 	STC_LIBELLE ASC
 );

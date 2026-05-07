@@ -12,6 +12,10 @@ create table [dbo].[STATUT_COMMANDE] (
 	constraint [PK_STATUT_COMMANDE] primary key clustered ([STC_CODE] ASC))
 go
 
+create nonclustered index [IDX_STC_STC_LIBELLE]
+	on [dbo].[STATUT_COMMANDE] ([STC_LIBELLE] ASC)
+go
+
 /**
   * Commentaires pour la table STATUT_COMMANDE
  **/

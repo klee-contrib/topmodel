@@ -19,6 +19,10 @@ create nonclustered index [IDX_DEP_REG_CODE_FK]
 	on [dbo].[DEPARTEMENT] ([REG_CODE] ASC)
 go
 
+create nonclustered index [IDX_DEP_DEP_LIBELLE]
+	on [dbo].[DEPARTEMENT] ([DEP_LIBELLE] ASC)
+go
+
 /**
   * Commentaires pour la table DEPARTEMENT
  **/

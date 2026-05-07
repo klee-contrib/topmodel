@@ -13,6 +13,10 @@ create table [dbo].[REGION] (
 	constraint [PK_REGION] primary key clustered ([REG_CODE] ASC))
 go
 
+create nonclustered index [IDX_REG_REG_LIBELLE]
+	on [dbo].[REGION] ([REG_LIBELLE] ASC)
+go
+
 /**
   * Commentaires pour la table REGION
  **/

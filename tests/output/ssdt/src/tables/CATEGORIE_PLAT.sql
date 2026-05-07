@@ -15,6 +15,10 @@ create table [dbo].[CATEGORIE_PLAT] (
 	constraint [UK_CATEGORIE_PLAT_CAT_ORDRE] unique nonclustered ([CAT_ORDRE] ASC))
 go
 
+create nonclustered index [IDX_CAT_CAT_LIBELLE]
+	on [dbo].[CATEGORIE_PLAT] ([CAT_LIBELLE] ASC)
+go
+
 /**
   * Commentaires pour la table CATEGORIE_PLAT
  **/

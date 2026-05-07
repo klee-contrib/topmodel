@@ -229,6 +229,11 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         writer.WriteLine();
     }
 
+    protected virtual void WriteIndex(IFileWriter writer, IndexDefinition index)
+    {
+        WriteIndex(writer, index.SqlName, index.Class.SqlName, index.Properties.Select(p => p.SqlName));
+    }
+
     /// <summary>
     /// Génère les indexes portant sur les FK.
     /// </summary>
@@ -250,7 +255,20 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         foreach (var index in classe.Indexes.Where(idx => !idx.Unique))
         {
             writer.WriteLine($"/* Index {index.SqlName} on {classe.SqlName} */");
-            WriteIndex(writer, index.SqlName, classe.SqlName, index.Properties.Select(p => p.SqlName));
+            WriteIndex(writer, index);
+        }
+
+        if (
+            Config.TranslateReferences == true
+            && Config.AvailableClasses.Any(c => c.Translation)
+            && classe.DefaultProperty != null
+            && classe.Values.Count > 0
+            && classe.Enum != null
+        )
+        {
+            var index = new IndexDefinition { Class = classe };
+            index.Properties.Add(classe.DefaultProperty);
+            WriteIndex(writer, index);
         }
     }
 
