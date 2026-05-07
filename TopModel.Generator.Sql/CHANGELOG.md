@@ -1,3 +1,7 @@
+## 4.1.5
+
+- [`84fd3b7`](https://github.com/klee-contrib/topmodel/commit/84fd3b7df7f45da85ae3bad3ff5ba49b42444b49) - [SQL] Fix génération des indexes de clés de traductions
+
 ## 4.1.4
 
 - [`b2f1a96`](https://github.com/klee-contrib/topmodel/commit/b2f1a96103691ce9907b8dbd529287405ec5f4a1) - [SQL] Correction du chemin de génération des fichiers SQL dans le lockfile
