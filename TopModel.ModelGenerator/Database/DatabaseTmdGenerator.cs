@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using TopModel.Utils;
+using TopModel.Utils.Cli;
 
 namespace TopModel.ModelGenerator.Database;
 
@@ -45,8 +46,8 @@ public abstract class DatabaseTmdGenerator(
     )
     {
         InitConnection();
-        logger.LogInformation($"Connexion à la base de données {config.Source.DbName} réussie !");
-        logger.LogInformation($"Génération en cours, veuillez patienter...");
+        logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.DbConnectionSuccess, config.Source.DbName));
+        logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.GeneratingPleaseWait));
         var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
 
@@ -541,13 +542,16 @@ public abstract class DatabaseTmdGenerator(
         try
         {
             _connection = GetConnection();
-            logger.LogInformation($"Connexion à la base de données {config.Source.DbName}...");
+            logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.ConnectingToDb, config.Source.DbName));
             _connection.Open();
         }
         catch (Exception)
         {
             logger.LogInformation(
-                $"Mot de passe{(password != null ? " erroné" : string.Empty)} pour l'utilisateur {config.Source.User}:  "
+                LocalizeUtils.Localize(
+                    password != null ? ModelGeneratorMessage.WrongPasswordPrompt : ModelGeneratorMessage.PasswordPrompt,
+                    config.Source.User ?? string.Empty
+                )
             );
             Passwords.Remove(config.Source.DbName);
             while (true)

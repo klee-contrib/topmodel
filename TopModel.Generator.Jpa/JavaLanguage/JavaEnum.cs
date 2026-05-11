@@ -1,5 +1,3 @@
-using NuGet.Packaging;
-
 namespace TopModel.Generator.Jpa;
 
 public class JavaEnum : JavaClass
@@ -15,7 +13,10 @@ public class JavaEnum : JavaClass
     public JavaEnum Add(JavaEnumValue javaEnumValue)
     {
         Values.Add(javaEnumValue);
-        Imports.AddRange(javaEnumValue.Imports);
+        foreach (var import in javaEnumValue.Imports)
+        {
+            Imports.Add(import);
+        }
         return this;
     }
 

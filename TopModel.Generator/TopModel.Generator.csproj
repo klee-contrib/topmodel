@@ -11,6 +11,7 @@
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
     <ProjectReference Include="..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfigFileNotFound" xml:space="preserve">
+    <value>Le fichier de configuration '{0}' est introuvable.</value>
+  </data>
+  <data name="ConfigFilesFound" xml:space="preserve">
+    <value>Fichiers de configuration trouvés :</value>
+  </data>
+  <data name="NoConfigFileFound" xml:space="preserve">
+    <value>Aucun fichier de configuration trouvé.</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Nouvelle version disponible : {0}</value>
+  </data>
+  <data name="DotnetUpdateCommand" xml:space="preserve">
+    <value>Vous pouvez lancer la commande `dotnet tool update -g {0}` pour effectuer la mise à jour.</value>
+  </data>
+  <data name="WatchModeEnabled" xml:space="preserve">
+    <value>Mode [darkcyan]watch[/] activé.</value>
+  </data>
+  <data name="CheckModeEnabled" xml:space="preserve">
+    <value>Mode [darkcyan]check[/] activé.</value>
+  </data>
+  <data name="OneFileModifiedInCheckMode" xml:space="preserve">
+    <value>1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.</value>
+  </data>
+  <data name="MultipleFilesModifiedInCheckMode" xml:space="preserve">
+    <value>{0} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.</value>
+  </data>
+  <data name="FileOptionDescription" xml:space="preserve">
+    <value>Chemin vers un fichier de config.</value>
+  </data>
+  <data name="WatchOptionDescription" xml:space="preserve">
+    <value>Lance le générateur en mode 'watch'.</value>
+  </data>
+  <data name="CheckOptionDescription" xml:space="preserve">
+    <value>Vérifie que la génération est à jour (aucun fichier ne doit être généré).</value>
+  </data>
+</root>

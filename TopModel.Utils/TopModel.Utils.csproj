@@ -7,7 +7,7 @@
     <PackageReference Include="Meziantou.Framework.Globbing" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="NuGet.Commands" />
+    <PackageReference Include="System.CommandLine" />
     <PackageReference Include="Spectre.Console" />
     <PackageReference Include="Spectre.Console.Cli" />
     <PackageReference Include="YamlDotNet" />

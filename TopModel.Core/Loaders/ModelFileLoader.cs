@@ -141,6 +141,7 @@ public class ModelFileLoader(
             if (fw.Configs.Count == 0)
             {
                 fw.FileWatcher.Dispose();
+                FileWatchers.Remove(config.ModelRoot);
             }
         };
     }
