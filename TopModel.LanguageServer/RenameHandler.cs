@@ -2,21 +2,26 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : RenameHandlerBase
+public class RenameHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : RenameHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
     {
+        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return null;
+        }
+
+        var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         if (file != null)
         {
             var references = modelStore.GetReferencesForPositionInFile(request.Position, file, includeTransitive: true);
@@ -57,6 +62,6 @@ public class RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, 
         ClientCapabilities clientCapabilities
     )
     {
-        return new RenameRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new RenameRegistrationOptions { DocumentSelector = registry.GetCombinedDocumentSelector() };
     }
 }

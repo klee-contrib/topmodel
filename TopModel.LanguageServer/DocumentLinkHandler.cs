@@ -1,11 +1,10 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class DocumentLinkHandler(ModelStore modelStore) : DocumentLinkHandlerBase
+public class DocumentLinkHandler(ModelStoreRegistry registry) : DocumentLinkHandlerBase
 {
     public override Task<DocumentLink> Handle(DocumentLink request, CancellationToken cancellationToken)
     {
@@ -17,7 +16,7 @@ public class DocumentLinkHandler(ModelStore modelStore) : DocumentLinkHandlerBas
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await registry.WaitForAllUpdatesAsync(cancellationToken);
 
         var lockFile = new FileInfo(
             Path.GetFullPath(

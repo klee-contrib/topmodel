@@ -2,12 +2,11 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+public class SemanticTokensHandler(ModelStoreRegistry registry, ILanguageServerFacade facade)
     : SemanticTokensHandlerBase
 {
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
@@ -17,8 +16,12 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = config.GetDocumentSelector(),
-            Legend = new() { TokenModifiers = capability.TokenModifiers, TokenTypes = capability.TokenTypes },
+            DocumentSelector = registry.GetCombinedDocumentSelector(),
+            Legend = new()
+            {
+                TokenModifiers = capability?.TokenModifiers ?? [],
+                TokenTypes = capability?.TokenTypes ?? [],
+            },
             Full = new SemanticTokensCapabilityRequestFull { Delta = true },
             Range = true,
         };
@@ -38,11 +41,17 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
         CancellationToken cancellationToken
     )
     {
+        var filePath = identifier.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return;
+        }
+
+        var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath()
-        );
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         if (file != null)
         {
             foreach (var reference in file.Uses)

@@ -2,16 +2,29 @@ import Ajv from "ajv";
 import { readFile } from "fs/promises";
 import { load } from "js-yaml";
 import { makeAutoObservable } from "mobx";
-import { ExtensionContext, Terminal, Uri, window, workspace } from "vscode";
-import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
+import { ExtensionContext, Terminal, window, workspace } from "vscode";
 
-import { SERVER_EXE } from "./const";
 import { TopModelConfig } from "./types";
 import path = require("path");
+
 export class Application {
     private _terminal?: Terminal;
-    public client?: LanguageClient;
-    public modelRoot?: string;
+    public status: "LOADING" | "STARTED" | "ERROR" = "LOADING";
+
+    constructor(
+        public readonly _configPath: string,
+        public readonly config: TopModelConfig,
+        public readonly extensionContext: ExtensionContext,
+    ) {
+        makeAutoObservable(this);
+        window.onDidCloseTerminal((terminal) => {
+            if (terminal.name === this._terminal?.name) {
+                this._terminal = undefined;
+            }
+        });
+        this.start();
+    }
+
     public get terminal(): Terminal {
         if (!this._terminal) {
             this._terminal = window.createTerminal({
@@ -23,48 +36,12 @@ export class Application {
         return this._terminal;
     }
 
-    public status: "LOADING" | "STARTED" | "ERROR" = "LOADING";
-    constructor(
-        public readonly _configPath: string,
-        public readonly config: TopModelConfig,
-        public readonly extensionContext: ExtensionContext,
-        configs: { config: TopModelConfig; file: Uri }[],
-    ) {
-        makeAutoObservable(this);
-        this.status = "LOADING";
-        window.onDidCloseTerminal((terminal) => {
-            if (terminal.name === this._terminal?.name) {
-                this._terminal = undefined;
-            }
-        });
-        const shouldStartLanguageServer =
-            configs.find(
-                (c) =>
-                    path.resolve(this.extensionContext.asAbsolutePath(c.file.path), c.config.modelRoot ?? "./") ===
-                    this.modelRootPath,
-            )?.config === config;
-        this.start(shouldStartLanguageServer);
-
-        if (shouldStartLanguageServer) {
-            workspace.onDidSaveTextDocument(async (event) => {
-                if (event.uri.fsPath.toLowerCase() === this._configPath.toLowerCase()) {
-                    if (await this.validateConfigFile()) {
-                        await this.client?.stop();
-                        this.status = "LOADING";
-                        this.startLanguageServer();
-                    }
-                }
-            });
-        }
-    }
-
-    public get modelRootPath() {
-        const cp = this.extensionContext.asAbsolutePath(this._configPath);
-        return path.resolve(cp, this.config.modelRoot ?? "./");
+    public get modelRoot(): string {
+        return this.config.modelRoot ?? this.configFolder;
     }
 
     public get modelRootFolder() {
-        return path.dirname(path.resolve(this._configPath, this.config.modelRoot ?? "./"));
+        return path.dirname(path.resolve(this._configPath, this.modelRoot ?? "./"));
     }
 
     public get configPath() {
@@ -79,6 +56,16 @@ export class Application {
         return workspace.workspaceFolders?.find((w) => {
             return this._configPath.toLowerCase().includes(w.uri.fsPath.toLowerCase());
         });
+    }
+
+    public async start() {
+        this.status = (await this.validateConfigFile()) ? "STARTED" : "ERROR";
+    }
+
+    public startModgen(watch: boolean) {
+        let p = this._configPath;
+        this.terminal.sendText(`modgen -f ${p}` + (watch ? " --watch" : ""));
+        this.terminal.show();
     }
 
     public async validateConfigFile() {
@@ -109,39 +96,5 @@ export class Application {
         }
 
         return true;
-    }
-
-    public async start(shouldStartLanguageServer: boolean) {
-        if (shouldStartLanguageServer && (await this.validateConfigFile())) {
-            this.startLanguageServer();
-        } else {
-            this.status = "STARTED";
-        }
-    }
-
-    public startModgen(watch: boolean) {
-        let path = this._configPath;
-        this.terminal.sendText(`modgen -f ${path}` + (watch ? " --watch" : ""));
-        this.terminal.show();
-    }
-
-    private async startLanguageServer() {
-        const args = [
-            this.extensionContext.asAbsolutePath(path.join(`./language-server`, `TopModel.LanguageServer.dll`)),
-        ];
-        args.push(this._configPath);
-        let serverOptions: ServerOptions = {
-            run: { command: SERVER_EXE, args },
-            debug: { command: SERVER_EXE, args },
-        };
-        this.modelRoot = this.config.modelRoot ?? this.configFolder;
-        this.client = new LanguageClient(
-            `TopModel - ${this.config.app}`,
-            `TopModel - ${this.config.app}`,
-            serverOptions,
-            { workspaceFolder: this.workspaceFolder },
-        );
-        await this.client.start();
-        this.status = "STARTED";
     }
 }

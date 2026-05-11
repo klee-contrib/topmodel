@@ -2,12 +2,12 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
-using TopModel.Core;
 using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade) : WorkspaceSymbolsHandlerBase
+public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServerFacade facade)
+    : WorkspaceSymbolsHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Container<WorkspaceSymbol>?> Handle(
@@ -15,99 +15,85 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await registry.WaitForAllUpdatesAsync(cancellationToken);
 
-        return modelStore
-            .Classes.Select(c =>
-            {
-                return new WorkspaceSymbol
-                {
-                    Kind = SymbolKind.Class,
-                    Name = c.Name,
-                    Location = new Location
-                    {
-                        Range = c.Name.GetLocation().ToRange()!,
-                        Uri = facade.GetFilePath(c.ModelFile),
-                    },
-                };
-            })
-            .Concat(
+        return registry
+            .All.Select(entry => entry.Store)
+            .SelectMany(modelStore =>
                 modelStore
-                    .Files.Where(e => e.Endpoints.Count > 0)
-                    .SelectMany(f => f.Endpoints)
-                    .Select(e =>
+                    .Classes.Select(c => new WorkspaceSymbol
                     {
-                        return new WorkspaceSymbol
+                        Kind = SymbolKind.Class,
+                        Name = c.Name,
+                        Location = new Location
                         {
-                            Kind = SymbolKind.Method,
-                            Name = e.Name,
+                            Range = c.Name.GetLocation().ToRange()!,
+                            Uri = facade.GetFilePath(c.ModelFile),
+                        },
+                    })
+                    .Concat(
+                        modelStore
+                            .Files.Where(e => e.Endpoints.Count > 0)
+                            .SelectMany(f => f.Endpoints)
+                            .Select(e => new WorkspaceSymbol
+                            {
+                                Kind = SymbolKind.Method,
+                                Name = e.Name,
+                                Location = new Location
+                                {
+                                    Range = e.Name.GetLocation()!.ToRange()!,
+                                    Uri = facade.GetFilePath(e.ModelFile),
+                                },
+                            })
+                    )
+                    .Concat(
+                        modelStore.Domains.Select(d => new WorkspaceSymbol
+                        {
+                            Kind = SymbolKind.Struct,
+                            Name = d.Value.Name,
                             Location = new Location
                             {
-                                Range = e.Name.GetLocation()!.ToRange()!,
-                                Uri = facade.GetFilePath(e.ModelFile),
+                                Range = d.Value.GetLocation().ToRange()!,
+                                Uri = facade.GetFilePath(d.Value.GetFile()),
                             },
-                        };
-                    })
-            )
-            .Concat(
-                modelStore.Domains.Select(d =>
-                {
-                    return new WorkspaceSymbol
-                    {
-                        Kind = SymbolKind.Struct,
-                        Name = d.Value.Name,
-                        Location = new Location
+                        })
+                    )
+                    .Concat(
+                        modelStore.Annotations.Select(d => new WorkspaceSymbol
                         {
-                            Range = d.Value.GetLocation().ToRange()!,
-                            Uri = facade.GetFilePath(d.Value.GetFile()),
-                        },
-                    };
-                })
-            )
-            .Concat(
-                modelStore.Annotations.Select(d =>
-                {
-                    return new WorkspaceSymbol
-                    {
-                        Kind = SymbolKind.Interface,
-                        Name = d.Name,
-                        Location = new Location
+                            Kind = SymbolKind.Interface,
+                            Name = d.Name,
+                            Location = new Location
+                            {
+                                Range = d.GetLocation().ToRange()!,
+                                Uri = facade.GetFilePath(d.GetFile()),
+                            },
+                        })
+                    )
+                    .Concat(
+                        modelStore.Decorators.Select(d => new WorkspaceSymbol
                         {
-                            Range = d.GetLocation().ToRange()!,
-                            Uri = facade.GetFilePath(d.GetFile()),
-                        },
-                    };
-                })
-            )
-            .Concat(
-                modelStore.Decorators.Select(d =>
-                {
-                    return new WorkspaceSymbol
-                    {
-                        Kind = SymbolKind.Interface,
-                        Name = d.Name,
-                        Location = new Location
+                            Kind = SymbolKind.Interface,
+                            Name = d.Name,
+                            Location = new Location
+                            {
+                                Range = d.GetLocation().ToRange()!,
+                                Uri = facade.GetFilePath(d.GetFile()),
+                            },
+                        })
+                    )
+                    .Concat(
+                        modelStore.DataFlows.Select(d => new WorkspaceSymbol
                         {
-                            Range = d.GetLocation().ToRange()!,
-                            Uri = facade.GetFilePath(d.GetFile()),
-                        },
-                    };
-                })
-            )
-            .Concat(
-                modelStore.DataFlows.Select(d =>
-                {
-                    return new WorkspaceSymbol
-                    {
-                        Kind = SymbolKind.Operator,
-                        Name = d.Name,
-                        Location = new Location
-                        {
-                            Range = d.GetLocation().ToRange()!,
-                            Uri = facade.GetFilePath(d.GetFile()),
-                        },
-                    };
-                })
+                            Kind = SymbolKind.Operator,
+                            Name = d.Name,
+                            Location = new Location
+                            {
+                                Range = d.GetLocation().ToRange()!,
+                                Uri = facade.GetFilePath(d.GetFile()),
+                            },
+                        })
+                    )
             )
             .Where(s => s.Name.ShouldMatch(request.Query))
             .ToList();

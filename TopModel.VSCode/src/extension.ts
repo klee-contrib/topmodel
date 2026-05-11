@@ -20,9 +20,18 @@ export async function activate(ctx: ExtensionContext) {
         const installed = await checkDotnetInstall();
         if (installed) {
             const confs = await findConfFiles();
-            const applications = confs.map((conf) => new Application(conf.file.fsPath, conf.config, ctx, confs));
             state = new State(ctx);
-            state.applications.push(...applications);
+            state.applications.push(...confs.map((conf) => new Application(conf.file.fsPath, conf.config, ctx)));
+
+            if (confs.length > 0) {
+                await state.startLanguageServer();
+
+                workspace.onDidSaveTextDocument(async (event) => {
+                    if (confs.some((c) => c.file.fsPath.toLowerCase() === event.uri.fsPath.toLowerCase())) {
+                        state.client?.restart();
+                    }
+                });
+            }
         }
     } catch (error: any) {
         handleError(error);

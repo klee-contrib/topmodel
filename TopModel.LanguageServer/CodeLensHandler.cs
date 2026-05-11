@@ -2,13 +2,11 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : CodeLensHandlerBase
+public class CodeLensHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : CodeLensHandlerBase
 {
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
     {
@@ -17,11 +15,16 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
 
     public override async Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return new();
+        }
 
-        var file = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var modelStore = entry.Store;
+        await modelStore.WaitForUpdates(cancellationToken);
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         if (file != null)
         {
             return new(
@@ -106,6 +109,6 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
         ClientCapabilities clientCapabilities
     )
     {
-        return new CodeLensRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new CodeLensRegistrationOptions { DocumentSelector = registry.GetCombinedDocumentSelector() };
     }
 }

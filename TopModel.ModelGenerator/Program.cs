@@ -1,12 +1,14 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Help;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using SharpYaml.Serialization;
 using Spectre.Console;
+using TopModel.Core;
 using TopModel.ModelGenerator;
 using TopModel.ModelGenerator.Database;
 using TopModel.ModelGenerator.OpenApi;
@@ -62,32 +64,10 @@ if (files.Any())
 }
 else
 {
-    var dir = Directory.GetCurrentDirectory();
-    var pattern = "tmdgen*.config";
-    foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
+    var tmdgenPattern = new Regex(@"tmdgen[^/\\]*\.config$");
+    foreach (var file in ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory(), tmdgenPattern))
     {
-        var foundFile = new FileInfo(fileName);
-        if (foundFile != null)
-        {
-            HandleFile(foundFile);
-        }
-    }
-
-    if (!configs.Any())
-    {
-        var found = false;
-        while (!found && dir != null)
-        {
-            dir = Directory.GetParent(dir)?.FullName;
-            if (dir != null)
-            {
-                foreach (var fileName in Directory.GetFiles(dir, pattern))
-                {
-                    HandleFile(new FileInfo(fileName));
-                    found = true;
-                }
-            }
-        }
+        HandleFile(file);
     }
 }
 

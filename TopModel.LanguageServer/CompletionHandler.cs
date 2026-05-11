@@ -8,12 +8,8 @@ using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer;
 
-public class CompletionHandler(
-    ModelStore modelStore,
-    ILanguageServerFacade facade,
-    ModelFileCache fileCache,
-    ModelConfig config
-) : CompletionHandlerBase
+public class CompletionHandler(ModelStoreRegistry registry, ILanguageServerFacade facade, ModelFileCache fileCache)
+    : CompletionHandlerBase
 {
     private static readonly char[] Separators =
     [
@@ -42,19 +38,24 @@ public class CompletionHandler(
 
     public override async Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
+        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return new();
+        }
+
+        var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(filePath);
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
 
         if (currentLine == null)
         {
             return new();
         }
-
-        var file = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         if (file == null || currentLine == string.Empty)
         {
             return new();
@@ -77,50 +78,50 @@ public class CompletionHandler(
             || rootObject == "converter" && (currentKey == "to" || currentKey == "from")
         )
         {
-            return CompleteDomain(request);
+            return CompleteDomain(request, modelStore);
         }
 
         List<string> classCompleteKeys = ["association", "composition", "class", "extends"];
 
         if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
         {
-            return CompleteClass(request, file, useIndex);
+            return CompleteClass(request, file, useIndex, modelStore);
         }
 
         if (currentKey == "endpoint")
         {
-            return CompleteEndpoint(request, file, useIndex);
+            return CompleteEndpoint(request, file, useIndex, modelStore);
         }
 
         // Tags
         if (currentKey == "tags")
         {
-            return CompleteTag(request, file);
+            return CompleteTag(request, file, modelStore);
         }
 
         // Use
         if (currentKey == "uses")
         {
-            return CompleteFile(request, file);
+            return CompleteFile(request, file, modelStore);
         }
         // Décorateur
         else if (currentKey.Contains("decorator"))
         {
-            return CompleteDecorator(request, file, useIndex);
+            return CompleteDecorator(request, file, useIndex, modelStore);
         }
         // Annotation
         else if (currentKey.ToLowerInvariant().Contains("annotation"))
         {
-            return CompleteAnnotation(request, file, useIndex);
+            return CompleteAnnotation(request, file, useIndex, modelStore);
         }
         // DataFlow
         else if (currentKey == "dependsOn")
         {
-            return CompleteDataFlow(request, file, useIndex);
+            return CompleteDataFlow(request, file, useIndex, modelStore);
         }
         else
         {
-            return CompleteProperty(request, text, currentLine, file);
+            return CompleteProperty(request, text, currentLine, file, modelStore);
         }
     }
 
@@ -129,7 +130,7 @@ public class CompletionHandler(
         ClientCapabilities clientCapabilities
     )
     {
-        return new CompletionRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new CompletionRegistrationOptions { DocumentSelector = registry.GetCombinedDocumentSelector() };
     }
 
     private static (string Key, int Line, int End, bool IsKey) GetCurrentKey(string[] text, int line, int position)
@@ -337,7 +338,12 @@ public class CompletionHandler(
         return 0;
     }
 
-    private CompletionList CompleteAnnotation(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteAnnotation(
+        CompletionParams request,
+        ModelFile file,
+        int useIndex,
+        ModelStore modelStore
+    )
     {
         var searchText = GetSearchText(request);
         var availableAnnotations = new HashSet<Annotation>(modelStore.GetAvailableAnnotations(file));
@@ -379,7 +385,7 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex, ModelStore modelStore)
     {
         var searchText = GetSearchText(request);
         var availableClasses = new HashSet<Class>(modelStore.GetAvailableClasses(file));
@@ -420,7 +426,12 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteDataFlow(
+        CompletionParams request,
+        ModelFile file,
+        int useIndex,
+        ModelStore modelStore
+    )
     {
         var searchText = GetSearchText(request);
         var availableDataFlows = new HashSet<DataFlow>(modelStore.GetAvailableDataFlows(file));
@@ -461,7 +472,12 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteDecorator(
+        CompletionParams request,
+        ModelFile file,
+        int useIndex,
+        ModelStore modelStore
+    )
     {
         var searchText = GetSearchText(request);
         var availableDecorators = new HashSet<Decorator>(modelStore.GetAvailableDecorators(file));
@@ -503,7 +519,7 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteDomain(CompletionParams request)
+    private CompletionList CompleteDomain(CompletionParams request, ModelStore modelStore)
     {
         var searchText = GetSearchText(request);
         return new(
@@ -521,7 +537,12 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteEndpoint(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteEndpoint(
+        CompletionParams request,
+        ModelFile file,
+        int useIndex,
+        ModelStore modelStore
+    )
     {
         var searchText = GetSearchText(request);
         var availableEndpoints = new HashSet<Endpoint>(modelStore.GetAvailableEndpoints(file));
@@ -562,7 +583,7 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteFile(CompletionParams request, ModelFile file)
+    private CompletionList CompleteFile(CompletionParams request, ModelFile file, ModelStore modelStore)
     {
         var searchText = GetSearchText(request);
         return new(
@@ -581,7 +602,13 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteProperty(CompletionParams request, string[] text, string currentLine, ModelFile file)
+    private CompletionList CompleteProperty(
+        CompletionParams request,
+        string[] text,
+        string currentLine,
+        ModelFile file,
+        ModelStore modelStore
+    )
     {
         // Alias, propriété d'association ou propriété de flux de données
         string? className = null;
@@ -783,7 +810,7 @@ public class CompletionHandler(
         );
     }
 
-    private CompletionList CompleteTag(CompletionParams request, ModelFile file)
+    private CompletionList CompleteTag(CompletionParams request, ModelFile file, ModelStore modelStore)
     {
         var searchText = GetSearchText(request);
         return new(

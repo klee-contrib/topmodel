@@ -1,11 +1,13 @@
 import { autorun, makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 import { Application } from "./application";
-import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
 import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
+import path = require("path");
 
 const open = require("open");
 
@@ -16,6 +18,8 @@ export class State {
     };
     topModelStatusBar: StatusBarItem;
     applications: Application[] = [];
+    _client?: LanguageClient;
+    lspStatus: "LOADING" | "READY" | "ERROR" = "LOADING";
     error?: string;
     preview?: TopModelPreviewPanel;
     constructor(public readonly context: ExtensionContext) {
@@ -25,6 +29,10 @@ export class State {
         autorun(() => this.updateStatusBar());
         this.initTools();
         this.registerCommands();
+    }
+
+    get client() {
+        return this._client;
     }
 
     get status(): Status {
@@ -96,11 +104,25 @@ export class State {
     }
 
     get appStatus(): Status {
-        return this.applications.some((a) => a.status === "ERROR")
-            ? "ERROR"
-            : this.applications.some((a) => a.status === "LOADING")
-              ? "LOADING"
-              : "READY";
+        if (this.applications.some((a) => a.status === "ERROR") || this.lspStatus === "ERROR") return "ERROR";
+        if (this.applications.some((a) => a.status === "LOADING") || this.lspStatus === "LOADING") return "LOADING";
+        return "READY";
+    }
+
+    async startLanguageServer(): Promise<void> {
+        this.lspStatus = "LOADING";
+        try {
+            const args = [this.context.asAbsolutePath(path.join("./language-server", "TopModel.LanguageServer.dll"))];
+            const serverOptions: ServerOptions = {
+                run: { command: SERVER_EXE, args },
+                debug: { command: SERVER_EXE, args },
+            };
+            this._client = new LanguageClient("TopModel", "TopModel", serverOptions, {});
+            await this._client.start();
+            this.lspStatus = "READY";
+        } catch {
+            this.lspStatus = "ERROR";
+        }
     }
 
     get toolsStatus(): Status {
@@ -142,7 +164,7 @@ export class State {
     private registerPreviewCommand() {
         commands.registerCommand(COMMANDS.preview, () => {
             if (!this.preview) {
-                this.preview = new TopModelPreviewPanel(this.context, this.applications);
+                this.preview = new TopModelPreviewPanel(this.context, this.client);
                 this.preview.panel.onDidDispose(
                     () => (this.preview = undefined),
                     undefined,

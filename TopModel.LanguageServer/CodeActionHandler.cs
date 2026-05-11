@@ -12,12 +12,8 @@ using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer;
 
-public class CodeActionHandler(
-    ModelStore modelStore,
-    ILanguageServerFacade facade,
-    ModelFileCache modelFileCache,
-    ModelConfig config
-) : CodeActionHandlerBase
+public class CodeActionHandler(ModelStoreRegistry registry, ILanguageServerFacade facade, ModelFileCache modelFileCache)
+    : CodeActionHandlerBase
 {
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
@@ -29,11 +25,17 @@ public class CodeActionHandler(
         CancellationToken cancellationToken
     )
     {
+        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return CommandOrCodeActionContainer.From(Array.Empty<CommandOrCodeAction>());
+        }
+
+        var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var modelFile = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
@@ -56,27 +58,39 @@ public class CodeActionHandler(
                 switch (modelErrorType)
                 {
                     case ErrorType.TMD0002:
-                        codeActions.AddRange(GetCodeActionMissingClassImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingClassImport(request, diagnostic, modelFile, modelStore)
+                        );
                         codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
                         break;
                     case ErrorType.TMD0003:
-                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic));
+                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelStore));
                         break;
                     case ErrorType.TMD0005:
-                        codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile, modelStore)
+                        );
                         break;
                     case ErrorType.TMD0006:
-                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingEndpointImport(request, diagnostic, modelFile, modelStore)
+                        );
                         break;
                     case ErrorType.TMD2001:
-                        codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile, modelStore)
+                        );
                         codeActions.AddRange(GetCodeActionAddAnnotation(request, diagnostic, modelFile));
                         break;
                     case ErrorType.TMD4002:
-                        codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile, modelStore)
+                        );
                         break;
                     case ErrorType.TMD9008:
-                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(
+                            GetCodeActionMissingWithReverseImport(request, diagnostic, modelFile, modelStore)
+                        );
                         break;
                     default:
                         break;
@@ -94,7 +108,7 @@ public class CodeActionHandler(
     {
         return new()
         {
-            DocumentSelector = config.GetDocumentSelector(),
+            DocumentSelector = registry.GetCombinedDocumentSelector(),
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>
             {
@@ -134,11 +148,11 @@ public class CodeActionHandler(
                                 NewText =
                                     @$"
 ---
-annotation: 
+annotation:
   name: {annotationName}
-  description: 
+  description:
   target:
-    - 
+    -
 ",
                                 Range = new Range(text.Length, 0, text.Length, 0),
                             },
@@ -177,11 +191,11 @@ annotation:
                                 NewText =
                                     @$"
 ---
-class: 
+class:
   name: {className}
-  comment: 
+  comment:
   properties:
-    - 
+    -
 ",
                                 Range = new Range(text.Length, 0, text.Length, 0),
                             },
@@ -194,7 +208,8 @@ class:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(
         CodeActionParams request,
-        Diagnostic diagnostic
+        Diagnostic diagnostic,
+        ModelStore modelStore
     )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
@@ -227,7 +242,7 @@ class:
 ---
 domain:
   name: {domainName}
-  label: 
+  label:
 ",
                                     },
                                 ],
@@ -298,7 +313,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
@@ -312,7 +328,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (className, useIndex) = GetImport(request, diagnostic, modelFile);
@@ -324,7 +341,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDataFlowImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (dataFlowName, useIndex) = GetImport(request, diagnostic, modelFile);
@@ -338,7 +356,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
@@ -352,7 +371,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingEndpointImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (endpointName, useIndex) = GetImport(request, diagnostic, modelFile);
@@ -366,7 +386,8 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingWithReverseImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile modelFile,
+        ModelStore modelStore
     )
     {
         var (_, objet) = modelFile.GetObjetAtPosition(diagnostic.Range.Start);
@@ -389,6 +410,8 @@ domain:
 
     protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
+        var entry = registry.GetPrimaryForFile(request.TextDocument.Uri.GetFileSystemPath())!;
+        var modelStore = entry.Store;
         var uses = modelFile.Uses.Except(modelStore.GetUselessImports(modelFile));
         var start = modelFile.Uses[0].ToRange()!.Start;
         var end = modelFile.Uses[^1].ToRange()!.End;

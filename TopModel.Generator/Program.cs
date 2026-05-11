@@ -106,46 +106,9 @@ if (files.Any())
 }
 else
 {
-    var dir = Directory.GetCurrentDirectory();
-    var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
-
-    void SearchConfigFile(string dirName, int depth = 0)
+    foreach (var file in ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory()))
     {
-        if (depth > 3)
-        {
-            return;
-        }
-
-        foreach (var entryName in Directory.EnumerateFileSystemEntries(dirName))
-        {
-            if (Directory.Exists(entryName))
-            {
-                SearchConfigFile(entryName, depth + 1);
-            }
-            else if (pattern.IsMatch(entryName))
-            {
-                HandleFile(new FileInfo(entryName));
-            }
-        }
-    }
-
-    SearchConfigFile(dir);
-
-    if (configs.Count == 0)
-    {
-        var found = false;
-        while (!found && dir != null)
-        {
-            dir = Directory.GetParent(dir)?.FullName;
-            if (dir != null)
-            {
-                foreach (var fileName in Directory.EnumerateFiles(dir).Where(f => pattern.IsMatch(f)))
-                {
-                    HandleFile(new FileInfo(fileName));
-                    found = true;
-                }
-            }
-        }
+        HandleFile(file);
     }
 }
 
@@ -371,7 +334,7 @@ for (var i = 0; i < configs.Count; i++)
             var dep in lockFile
                 .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= dotnetMajor)
                 ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
-                ?? []
+            ?? []
         )
         {
             if (dep.Name == "TopModel.Generator.Core")

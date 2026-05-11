@@ -4,10 +4,11 @@ export type TopModelConfig = {
 };
 
 export class TopModelException {
-    constructor(public readonly message: string) { }
+    constructor(public readonly message: string) {}
 }
 
 export type Mermaid = {
+    app: string;
     diagram: string;
     module: string;
     fileName: string;

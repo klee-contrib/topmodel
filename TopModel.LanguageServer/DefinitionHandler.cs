@@ -2,14 +2,12 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : DefinitionHandlerBase
+public class DefinitionHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : DefinitionHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<LocationOrLocationLinks?> Handle(
@@ -17,11 +15,17 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
         CancellationToken cancellationToken
     )
     {
+        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        var entry = registry.GetPrimaryForFile(filePath);
+        if (entry == null)
+        {
+            return new();
+        }
+
+        var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
         if (file != null)
         {
             var (reference, objet) = file.GetObjetAtPosition(request.Position);
@@ -98,6 +102,6 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
         ClientCapabilities clientCapabilities
     )
     {
-        return new DefinitionRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new DefinitionRegistrationOptions { DocumentSelector = registry.GetCombinedDocumentSelector() };
     }
 }

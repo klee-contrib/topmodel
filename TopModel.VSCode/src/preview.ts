@@ -13,9 +13,9 @@ import {
     Position,
     Range,
 } from "vscode";
-import { Application } from "./application";
 import { Mermaid } from "./types";
 import { t } from "./i18n";
+import { LanguageClient } from "vscode-languageclient/node";
 
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
@@ -29,7 +29,7 @@ export class TopModelPreviewPanel {
 
     constructor(
         context: ExtensionContext,
-        private readonly applications: Application[],
+        private readonly client?: LanguageClient,
     ) {
         makeAutoObservable(this);
         autorun(() => this.refresh());
@@ -85,19 +85,6 @@ export class TopModelPreviewPanel {
         );
     }
 
-    get currentApplication(): Application {
-        if (this.currentFsPath) {
-            return (
-                this.applications.find((c) => {
-                    if (this.currentFsPath.includes(c.modelRootFolder || "")) {
-                        return c;
-                    }
-                }) ?? this.applications[0]
-            );
-        }
-        return this.applications[0];
-    }
-
     async handleMessage(message: any) {
         if (message.type === "update:matrix") {
             this.matrix = message.matrix;
@@ -108,7 +95,7 @@ export class TopModelPreviewPanel {
         if (message.type === "click:class") {
             const className = message.className;
             const symbolInformations: SymbolInformation[] =
-                (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
+                (await this.client?.sendRequest("workspace/symbol", {
                     query: className,
                 })) ?? [];
             const symbol = symbolInformations.find((s) => s.name === className);
@@ -128,8 +115,8 @@ export class TopModelPreviewPanel {
     }
 
     async refresh() {
-        if (this.currentApplication?.client) {
-            const data = await this.currentApplication.client.sendRequest("mermaid", {
+        if (this.client) {
+            const data = await this.client.sendRequest("mermaid", {
                 uri: this.currentFsPath,
                 scope: this.currentScope,
             });
@@ -139,7 +126,7 @@ export class TopModelPreviewPanel {
     }
 
     get webviewContent() {
-        if (!(this.diagramMap[this.currentFsPath] && this.currentApplication)) {
+        if (!(this.diagramMap[this.currentFsPath] && this.client)) {
             return "";
         }
         return `<!DOCTYPE html>
@@ -296,7 +283,7 @@ export class TopModelPreviewPanel {
     }
 
     get appTitle() {
-        return "[" + this.currentApplication.config.app + "]";
+        return `[${this.diagramMap[this.currentFsPath].app}]`;
     }
 
     get moduleTitle() {
