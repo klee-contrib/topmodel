@@ -20,7 +20,6 @@ import { t } from "./i18n";
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
     private readonly context: ExtensionContext;
-    private readonly mermaidSrcUri: Uri;
     private readonly previewSrcUri: Uri;
     private matrix: { scale: number; x: number; y: number };
 
@@ -47,9 +46,6 @@ export class TopModelPreviewPanel {
             y: -1,
             scale: 1,
         };
-        this.mermaidSrcUri = this.panel.webview.asWebviewUri(
-            Uri.file(path.join(this.context.extensionPath, "out", "mermaid.js")),
-        );
         this.previewSrcUri = this.panel.webview.asWebviewUri(
             Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js")),
         );
@@ -64,7 +60,7 @@ export class TopModelPreviewPanel {
     private initSubscriptions() {
         this.context.subscriptions.push(
             window.onDidChangeActiveTextEditor(async (textEditor?: TextEditor) => {
-                if (textEditor && textEditor.document.uri.fsPath.endsWith(".tmd")) {
+                if (textEditor?.document.uri.fsPath.endsWith(".tmd")) {
                     this.currentFsPath = textEditor.document.uri.fsPath;
                     this.currentScope = "file";
                     this.matrix.x = -1;
@@ -73,7 +69,7 @@ export class TopModelPreviewPanel {
                 }
             }),
             workspace.onDidChangeTextDocument(async (textDocumentChangeEvent?: TextDocumentChangeEvent) => {
-                if (textDocumentChangeEvent && textDocumentChangeEvent.document.uri.fsPath.endsWith(".tmd")) {
+                if (textDocumentChangeEvent?.document.uri.fsPath.endsWith(".tmd")) {
                     this.currentFsPath = textDocumentChangeEvent.document.uri.fsPath;
                     this.currentScope = "file";
                 }
@@ -107,7 +103,7 @@ export class TopModelPreviewPanel {
             this.matrix = message.matrix;
         }
         if (message.type === "update:scope") {
-            this.currentScope = message.scope as any;
+            this.currentScope = message.scope;
         }
         if (message.type === "click:class") {
             const className = message.className;
@@ -115,13 +111,13 @@ export class TopModelPreviewPanel {
                 (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
                     query: className,
                 })) ?? [];
-            const symbol = symbolInformations.filter((s) => s.name === className)[0];
-            const position = new Position(symbol.location.range.start.line, 0);
-            const uri = Uri.parse(symbol.location.uri as any);
+            const symbol = symbolInformations.find((s) => s.name === className);
+            const position = new Position(symbol!.location.range.start.line, 0);
+            const uri = Uri.parse(symbol!.location.uri as any);
             const textEditor =
-                window.visibleTextEditors.filter((t) => t.document.uri.fsPath === uri.fsPath)[0] ??
+                window.visibleTextEditors.find((t) => t.document.uri.fsPath === uri.fsPath) ??
                 (window.activeTextEditor?.document.uri.fsPath.endsWith(".tmd") ? window.activeTextEditor : undefined) ??
-                window.visibleTextEditors.filter((t) => t.document.uri.fsPath.endsWith(".tmd"))[0] ??
+                window.visibleTextEditors.find((t) => t.document.uri.fsPath.endsWith(".tmd")) ??
                 window.visibleTextEditors[0];
             await window.showTextDocument(uri, {
                 preserveFocus: false,
@@ -152,10 +148,21 @@ export class TopModelPreviewPanel {
             <meta charset="UTF-8">
             <meta name="viewport">
             <style>
-                body {
+                html, body {
+                    height: 100%;
                     margin: 0;
                     padding: 0;
-                    overflow: auto;
+                    overflow: hidden;
+                }
+                body {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .content {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 0;
                 }
                 .dragme {
                     position: relative;
@@ -164,11 +171,19 @@ export class TopModelPreviewPanel {
                     max-height: fit-content;
                     overflow: hidden;
                 }
+                .dragme svg *, .dragme foreignObject * {
+                    cursor: inherit;
+                }
                 .cadre {
-                    height: 100%;
+                    position: relative;
+                    flex: 1;
+                    min-height: 0;
                     width: 100%;
                     overflow: hidden;
-                    margin-bottom: 1rem;
+                    cursor: move;
+                }
+#draggable.zooming {
+                    transition: transform 0.2s ease-out;
                 }
                 #draggable .mermaid g.fileReference.node rect {
                     opacity: 0.5;
@@ -195,8 +210,16 @@ export class TopModelPreviewPanel {
                 button:hover {
                     background-color: rgb(2, 75, 153);
                 }
+                .code-wrapper {
+                    flex: 1;
+                    min-height: 0;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
                 code {
                     display: block;
+                    flex: 1;
+                    min-height: 0;
                     margin: 1rem;
                     padding: 1rem;
                     border: 1px solid #ddd;
@@ -204,6 +227,7 @@ export class TopModelPreviewPanel {
                     font-family: monospace;
                     white-space: pre-wrap;
                     position: relative;
+                    overflow: auto;
                 }
                 .copy-button {
                     width: 5rem;
@@ -228,16 +252,15 @@ export class TopModelPreviewPanel {
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
         <script src="${this.previewSrcUri}"></script>
-        <script src="${this.mermaidSrcUri}"></script>
         <title>TopModel</title>
     </head>
     <body>
         <h1>
             <span class="clickable" onclick="scope('model')">${this.appTitle}</span>
             ${
-                this.currentScope !== "model"
-                    ? `/ <span class="clickable" onclick="scope('module')">${this.moduleTitle}</span>`
-                    : ""
+                this.currentScope === "model"
+                    ? ""
+                    : `/ <span class="clickable" onclick="scope('module')">${this.moduleTitle}</span>`
             }
             ${
                 this.currentScope === "file"
@@ -252,11 +275,11 @@ export class TopModelPreviewPanel {
                 <button style="display: block;" class="uml-element" onclick="zoomClick(true)">+</button>
             </nav>
             <div class="cadre uml-element">
-                <div id="draggable" class="dragme" style="display: block;">
+<div id="draggable" class="dragme" style="display: block;">
                     ${this.mermaidContent}
                 </div>
             </div>
-            <div class="code-element" style="display: none;">
+            <div class="code-element code-wrapper" style="display: none;">
             <button style="display: none;" class="copy-button code-element" onclick="copyCode(currentDiagram)">
                 Copier
             </button>
@@ -290,7 +313,7 @@ export class TopModelPreviewPanel {
             this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n"
         ) {
             return `<pre class="mermaid">
-            %%{init: {'securityLevel': 'loose', 'theme': 'base', 'hideEmptyMembersBox': true, 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
+            %%{init: {'theme': 'base', 'hideEmptyMembersBox': true, 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}
             </pre>`;
         } else {
