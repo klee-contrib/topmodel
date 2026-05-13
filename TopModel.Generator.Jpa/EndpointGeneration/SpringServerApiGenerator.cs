@@ -27,6 +27,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return Config.GetApiGenerationMode(tag) == ApiGenerationMode.Server;
     }
 
+    protected virtual JavaAnnotation GetBodyParamNotMultipartAnnotation()
+    {
+        return new("ModelAttribute", imports: "org.springframework.web.bind.annotation.ModelAttribute");
+    }
+
     protected virtual IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file, string tag)
     {
         if (Config.GeneratedHint)
@@ -183,12 +188,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         {
             if (!(bodyParam.Domain?.IsMultipart ?? false))
             {
-                parameter.Add(
-                    new JavaAnnotation(
-                        "ModelAttribute",
-                        imports: "org.springframework.web.bind.annotation.ModelAttribute"
-                    )
-                );
+                parameter.Add(GetBodyParamNotMultipartAnnotation());
                 parameter.Add(new JavaAnnotation("Valid", imports: "jakarta.validation.Valid"));
             }
             else

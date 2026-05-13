@@ -21,6 +21,11 @@ public class FeignClientApiGenerator(ILogger<FeignClientApiGenerator> logger, IF
             && Config.ResolveVariables(Config.ClientApiGeneration!, tag) == ClientApiMode.FeignClient;
     }
 
+    protected override JavaAnnotation GetBodyParamNotMultipartAnnotation()
+    {
+        return new("SpringQueryMap", imports: "org.springframework.cloud.openfeign.SpringQueryMap");
+    }
+
     protected override IEnumerable<JavaAnnotation> GetClassAnnotations(ModelFile file, string tag)
     {
         var fileName = file.Options.Endpoints.FileName;
