@@ -63,6 +63,26 @@ public class DatabasePgTmdGenerator(
         return GetConstraintKeyQuery("FOREIGN KEY");
     }
 
+    protected override string GetIndexesQuery()
+    {
+        return $@"
+                SELECT
+                    i.relname                                   AS Name,
+                    t.relname                                   AS TableName,
+                    a.attname                                   AS ColumnName
+                FROM pg_index ix
+                JOIN pg_class t      ON t.oid = ix.indrelid
+                JOIN pg_class i      ON i.oid = ix.indexrelid
+                JOIN pg_namespace n  ON n.oid = t.relnamespace
+                CROSS JOIN LATERAL unnest(ix.indkey) WITH ORDINALITY AS u(attnum, ord)
+                JOIN pg_attribute a  ON a.attrelid = t.oid AND a.attnum = u.attnum
+                WHERE n.nspname      = '{_config.Source.Schema}'
+                  AND ix.indisunique  = false
+                  AND ix.indisprimary = false
+                ORDER BY t.relname, i.relname, u.ord
+            ";
+    }
+
     protected override string GetPrimaryKeysQuery()
     {
         // Récupération des contraintes de clés primaires

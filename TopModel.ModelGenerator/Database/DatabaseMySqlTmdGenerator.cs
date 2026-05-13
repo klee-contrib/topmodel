@@ -56,6 +56,29 @@ public class DatabaseMySqlTmdGenerator(
         return GetConstraintKeyQuery("FOREIGN KEY");
     }
 
+    protected override string GetIndexesQuery()
+    {
+        return $@"
+                SELECT
+                    s.INDEX_NAME    AS Name,
+                    s.TABLE_NAME    AS TableName,
+                    s.COLUMN_NAME   AS ColumnName
+                FROM information_schema.STATISTICS s
+                WHERE s.TABLE_SCHEMA    = '{_config.Source.Schema}'
+                  AND s.NON_UNIQUE      = 1
+                  AND s.INDEX_NAME     != 'PRIMARY'
+                  AND NOT EXISTS (
+                    SELECT 1
+                    FROM information_schema.KEY_COLUMN_USAGE kcu
+                    WHERE kcu.TABLE_SCHEMA          = s.TABLE_SCHEMA
+                      AND kcu.TABLE_NAME            = s.TABLE_NAME
+                      AND kcu.CONSTRAINT_NAME       = s.INDEX_NAME
+                      AND kcu.REFERENCED_TABLE_NAME IS NOT NULL
+                  )
+                ORDER BY s.TABLE_NAME, s.INDEX_NAME, s.SEQ_IN_INDEX
+            ";
+    }
+
     protected override string GetPrimaryKeysQuery()
     {
         // Récupération des contraintes de clés primaires

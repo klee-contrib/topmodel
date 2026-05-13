@@ -133,6 +133,16 @@ public class TmdWriter : IDisposable
             }
         }
 
+        if (classe.Indexes.Count > 0)
+        {
+            _writer.WriteLine();
+            _writer.WriteLine($"  indexes:");
+            foreach (var index in classe.Indexes)
+            {
+                _writer.WriteLine($"    - [{string.Join(", ", index)}]");
+            }
+        }
+
         if (classe.Values.Count > 0)
         {
             _writer.WriteLine();

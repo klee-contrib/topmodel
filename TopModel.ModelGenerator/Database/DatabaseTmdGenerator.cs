@@ -63,6 +63,7 @@ public abstract class DatabaseTmdGenerator(
         // Initialisation des propriétés
         await InitProperties(classGroups);
         await InitUniqConstraints(classGroups);
+        await InitIndexes(classGroups);
         await ReadValues();
 
         // Application des commentaires de colonnes (les propriétés avec SqlName sont maintenant disponibles)
@@ -98,6 +99,8 @@ public abstract class DatabaseTmdGenerator(
 
     protected abstract string GetTableCommentsQuery();
 
+    protected abstract string GetIndexesQuery();
+
     protected abstract string GetUniqueKeysQuery();
 
     private static void AddUniqConstraints(TmdClass classe, IEnumerable<IGrouping<string, ConstraintKey>> groupings)
@@ -131,6 +134,41 @@ public abstract class DatabaseTmdGenerator(
             )
             {
                 classe.Unique.Add(c);
+            }
+        }
+    }
+
+    private static void AddIndexes(TmdClass classe, IEnumerable<IGrouping<string, DbIndex>> groupings)
+    {
+        foreach (var group in groupings)
+        {
+            var indexByName = group.GroupBy(g => g.Name);
+            foreach (var indexGroup in indexByName)
+            {
+                var allMapped = indexGroup.All(i => classe.Properties.Any(p => p.SqlName == i.ColumnName));
+                if (!allMapped)
+                {
+                    continue;
+                }
+
+                var props = indexGroup
+                    .Select(i =>
+                    {
+                        var property = classe.Properties.First(p => p.SqlName == i.ColumnName);
+                        if (property is TmdAssociationProperty ap)
+                        {
+                            return ap.Association.Name + (ap.ForeignProperty?.Name ?? string.Empty) + ap.Role;
+                        }
+
+                        return property.Name;
+                    })
+                    .Distinct()
+                    .ToList();
+
+                if (props.Count > 0)
+                {
+                    classe.Indexes.Add(props);
+                }
             }
         }
     }
@@ -469,6 +507,27 @@ public abstract class DatabaseTmdGenerator(
     private Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
     {
         return GetConstraintKeys(GetUniqueKeysQuery());
+    }
+
+    private async Task<IEnumerable<DbIndex>> GetIndexes()
+    {
+        var indexes = await _connection!.QueryAsync<DbIndex>(GetIndexesQuery());
+        return indexes.Where(i => !config.Exclude.Select(e => e.ToLower()).Contains(i.TableName.ToLower()));
+    }
+
+    private async Task InitIndexes(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    {
+        var indexes = await GetIndexes();
+        var indexGroups = indexes.GroupBy(i => i.TableName);
+        foreach (var group in classGroups)
+        {
+            var classe = _classes[group.Key];
+            var tableIndexes = indexGroups.Where(g => g.Key == group.Key);
+            if (tableIndexes.Any())
+            {
+                AddIndexes(classe, tableIndexes);
+            }
+        }
     }
 
     private void GroupFiles()

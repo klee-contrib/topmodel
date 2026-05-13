@@ -25,6 +25,8 @@ public class TmdClass
 
     public IList<IList<string>> Unique { get; set; } = [];
 
+    public IList<IList<string>> Indexes { get; set; } = [];
+
     public string? Enum { get; set; }
 
     public bool Readonly { get; set; }

@@ -72,6 +72,30 @@ public class DatabaseOraTmdGenerator(
             ";
     }
 
+    protected override string GetIndexesQuery()
+    {
+        return $@"
+                SELECT
+                    ai.index_name       AS ""Name"",
+                    ai.table_name       AS TableName,
+                    aic.column_name     AS ColumnName
+                FROM all_indexes ai
+                JOIN all_ind_columns aic
+                    ON  aic.index_owner = ai.owner
+                    AND aic.index_name  = ai.index_name
+                    AND aic.table_name  = ai.table_name
+                WHERE ai.owner          = '{_config.Source.Schema}'
+                  AND ai.uniqueness     = 'NONUNIQUE'
+                  AND NOT EXISTS (
+                    SELECT 1
+                    FROM all_constraints ac
+                    WHERE ac.owner      = ai.owner
+                      AND ac.index_name = ai.index_name
+                  )
+                ORDER BY ai.table_name, ai.index_name, aic.column_position
+            ";
+    }
+
     protected override string GetPrimaryKeysQuery()
     {
         return GetConstraintKeyQuery("P");

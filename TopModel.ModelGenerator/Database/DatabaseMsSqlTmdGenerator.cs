@@ -99,6 +99,28 @@ public class DatabaseMsSqlTmdGenerator(
             ";
     }
 
+    protected override string GetIndexesQuery()
+    {
+        return $@"
+                SELECT
+                    i.name      AS Name,
+                    t.name      AS TableName,
+                    c.name      AS ColumnName
+                FROM sys.indexes          i
+                JOIN sys.tables           t   ON t.object_id  = i.object_id
+                JOIN sys.schemas          s   ON s.schema_id  = t.schema_id
+                JOIN sys.index_columns    ic  ON ic.object_id = i.object_id AND ic.index_id = i.index_id
+                JOIN sys.columns          c   ON c.object_id  = ic.object_id AND c.column_id = ic.column_id
+                WHERE s.name                  = '{_config.Source.Schema}'
+                  AND i.is_unique             = 0
+                  AND i.is_primary_key        = 0
+                  AND i.is_unique_constraint  = 0
+                  AND i.type                 != 0
+                  AND ic.is_included_column   = 0
+                ORDER BY t.name, i.name, ic.key_ordinal;
+            ";
+    }
+
     protected override string GetPrimaryKeysQuery()
     {
         return GetConstraintKeyQuery("PK");
