@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.2.5
+
+- [`3fb4d72`](https://github.com/klee-contrib/topmodel/commit/3fb4d72e) - [JPA] Feign client : replace `@ModelAttribute` by `@SpringQueryMap`
+
+  Fix [#574](https://github.com/klee-contrib/topmodel/issues/574)
+
 ## 4.2.4
 
 - [`e379f0b`](https://github.com/klee-contrib/topmodel/commit/e379f0b3c44faa070072dd3404ad6bd67ac06677) - [JPA] Ne pas générer le allArgConstructor s'il n'a pas de paramètre.
