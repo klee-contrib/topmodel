@@ -1,5 +1,4 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -9,10 +8,8 @@ namespace TopModel.LanguageServer;
 
 public static class OmnisharpExtensions
 {
-    public static string GetFilePath(this ILanguageServerFacade facade, ModelFile file)
-    {
-        return facade.Workspace.ClientSettings.RootPath + file.Path[1..].Replace('/', Path.DirectorySeparatorChar);
-    }
+    public static string GetFilePath(this ModelFile file) =>
+        Path.GetFullPath(file.Path.Replace('/', Path.DirectorySeparatorChar));
 
     public static string? GetName(this object objet)
     {

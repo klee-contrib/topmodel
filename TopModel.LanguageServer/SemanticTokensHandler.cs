@@ -1,13 +1,11 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class SemanticTokensHandler(ModelStoreRegistry registry, ILanguageServerFacade facade)
-    : SemanticTokensHandlerBase
+public class SemanticTokensHandler(ModelStoreRegistry registry) : SemanticTokensHandlerBase
 {
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
         SemanticTokensCapability capability,
@@ -51,7 +49,7 @@ public class SemanticTokensHandler(ModelStoreRegistry registry, ILanguageServerF
         var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         if (file != null)
         {
             foreach (var reference in file.Uses)

@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
     <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
     <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>

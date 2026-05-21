@@ -2,7 +2,6 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -12,8 +11,7 @@ using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer;
 
-public class CodeActionHandler(ModelStoreRegistry registry, ILanguageServerFacade facade, ModelFileCache modelFileCache)
-    : CodeActionHandlerBase
+public class CodeActionHandler(ModelStoreRegistry registry, ModelFileCache modelFileCache) : CodeActionHandlerBase
 {
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
@@ -35,7 +33,7 @@ public class CodeActionHandler(ModelStoreRegistry registry, ILanguageServerFacad
         var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var modelFile = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
@@ -141,7 +139,7 @@ public class CodeActionHandler(ModelStoreRegistry registry, ILanguageServerFacad
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(modelFile.GetFilePath())] =
                         [
                             new()
                             {
@@ -152,7 +150,7 @@ annotation:
   name: {annotationName}
   description:
   target:
-    -
+    - 
 ",
                                 Range = new Range(text.Length, 0, text.Length, 0),
                             },
@@ -184,7 +182,7 @@ annotation:
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(modelFile.GetFilePath())] =
                         [
                             new()
                             {
@@ -195,7 +193,7 @@ class:
   name: {className}
   comment:
   properties:
-    -
+    - 
 ",
                                 Range = new Range(text.Length, 0, text.Length, 0),
                             },
@@ -220,7 +218,7 @@ class:
             .Files.Where(f => f.Domains.Count > 0)
             .Select(f =>
             {
-                var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
+                var lastLine = File.ReadAllLines(f.GetFilePath()).Length;
                 return (CommandOrCodeAction)
                     new CodeAction
                     {
@@ -232,7 +230,7 @@ class:
                         {
                             Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                             {
-                                [new Uri(facade.GetFilePath(f))] =
+                                [new Uri(f.GetFilePath())] =
                                 [
                                     new()
                                     {
@@ -294,7 +292,7 @@ domain:
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(modelFile.GetFilePath())] =
                         [
                             new()
                             {
@@ -398,7 +396,7 @@ domain:
         }
 
         var targetFile = objet.GetFile();
-        var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
+        var fileText = File.ReadAllLines(targetFile.GetFilePath());
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
         return modelStore
@@ -496,7 +494,7 @@ domain:
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(targetFile))] =
+                        [new Uri(targetFile.GetFilePath())] =
                         [
                             new()
                             {

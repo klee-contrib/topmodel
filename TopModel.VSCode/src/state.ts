@@ -1,5 +1,5 @@
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 import { Application } from "./application";
 import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
@@ -109,10 +109,13 @@ export class State {
         return "READY";
     }
 
-    async startLanguageServer(): Promise<void> {
+    async startLanguageServer(configFiles: string[]): Promise<void> {
         this.lspStatus = "LOADING";
         try {
-            const args = [this.context.asAbsolutePath(path.join("./language-server", "TopModel.LanguageServer.dll"))];
+            const args = [
+                this.context.asAbsolutePath(path.join("./language-server", "TopModel.LanguageServer.dll")),
+                ...configFiles.flatMap((f) => ["-f", f]),
+            ];
             const serverOptions: ServerOptions = {
                 run: { command: SERVER_EXE, args },
                 debug: { command: SERVER_EXE, args },

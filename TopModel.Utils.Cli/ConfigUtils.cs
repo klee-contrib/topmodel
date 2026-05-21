@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace TopModel.Core;
+namespace TopModel.Utils.Cli;
 
 /// <summary>
 /// Localise les fichiers de configuration TopModel dans un répertoire.
@@ -8,17 +8,14 @@ namespace TopModel.Core;
 /// </summary>
 public static partial class ConfigUtils
 {
-    private static readonly Regex ModgenPattern = new("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
-
     /// <summary>
     /// Cherche les fichiers de config depuis un répertoire racine.
     /// Stratégie :
     ///   1. Descend récursivement jusqu'à profondeur 3.
     ///   2. Si rien trouvé, remonte l'arbre jusqu'au premier niveau qui en contient.
     /// </summary>
-    public static IEnumerable<FileInfo> FindConfigFiles(string rootPath, Regex? pattern = null)
+    public static IEnumerable<FileInfo> FindConfigFiles(string rootPath, Regex pattern)
     {
-        pattern ??= ModgenPattern;
         var found = new List<FileInfo>();
 
         SearchDescending(pattern, rootPath, found, depth: 0);

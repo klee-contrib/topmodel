@@ -4,8 +4,9 @@ using NuGet.Packaging;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using TopModel.Utils;
 
-namespace TopModel.Utils;
+namespace TopModel.Utils.Cli;
 
 public static class NugetUtils
 {

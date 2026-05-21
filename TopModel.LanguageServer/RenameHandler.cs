@@ -1,12 +1,11 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class RenameHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : RenameHandlerBase
+public class RenameHandler(ModelStoreRegistry registry) : RenameHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
@@ -21,7 +20,7 @@ public class RenameHandler(ModelStoreRegistry registry, ILanguageServerFacade fa
         var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         if (file != null)
         {
             var references = modelStore.GetReferencesForPositionInFile(request.Position, file, includeTransitive: true);
@@ -40,7 +39,7 @@ public class RenameHandler(ModelStoreRegistry registry, ILanguageServerFacade fa
                         .Where(r => r.Reference.ReferenceName == references.Objet.GetName())
                         .Select(r => new Location
                         {
-                            Uri = new Uri(facade.GetFilePath(r.File)),
+                            Uri = new Uri(r.File.GetFilePath()),
                             Range = r.Reference.ToRange()!,
                         })
                         .Select(c => new

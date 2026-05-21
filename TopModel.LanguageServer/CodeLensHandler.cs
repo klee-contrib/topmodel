@@ -1,12 +1,11 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class CodeLensHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : CodeLensHandlerBase
+public class CodeLensHandler(ModelStoreRegistry registry) : CodeLensHandlerBase
 {
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
     {
@@ -24,7 +23,7 @@ public class CodeLensHandler(ModelStoreRegistry registry, ILanguageServerFacade 
 
         var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         if (file != null)
         {
             return new(

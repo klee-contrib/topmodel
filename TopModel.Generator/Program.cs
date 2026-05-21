@@ -20,19 +20,11 @@ using TopModel.Core.Loaders;
 using TopModel.Generator;
 using TopModel.Generator.Core;
 using TopModel.Utils;
+using TopModel.Utils.Cli;
 
-var fileOption = new Option<IEnumerable<FileInfo>>("--file", "-f")
-{
-    Description = "Chemin vers un fichier de config.",
-};
 var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")
 {
     Description = "Tag à ignorer lors de la génération.",
-};
-var watchOption = new Option<bool>("--watch", "-w") { Description = "Lance le générateur en mode 'watch'" };
-var checkOption = new Option<bool>("--check", "-c")
-{
-    Description = "Vérifie que le code généré est conforme au modèle.",
 };
 var updateOption = new Option<string>("--update", "-u")
 {
@@ -45,10 +37,10 @@ var schemaOption = new Option<bool>("--schema", "-s")
 
 var command = new RootCommand("Lance le générateur topmodel.")
 {
-    fileOption,
+    TopModelCli.FileOption,
     excludeOption,
-    watchOption,
-    checkOption,
+    TopModelCli.WatchOption,
+    TopModelCli.CheckOption,
     updateOption,
     schemaOption,
 };
@@ -63,10 +55,10 @@ if (result.GetResult(helpOption) != null || result.GetResult(versionOption) != n
     return await result.InvokeAsync();
 }
 
-var files = result.GetValue(fileOption) ?? [];
-var watchMode = result.GetValue(watchOption);
+var files = result.GetValue(TopModelCli.FileOption) ?? [];
+var watchMode = result.GetValue(TopModelCli.WatchOption);
 var excludedTags = result.GetValue(excludeOption)?.ToArray() ?? [];
-var checkMode = result.GetValue(checkOption);
+var checkMode = result.GetValue(TopModelCli.CheckOption);
 var updateMode = result.GetValue(updateOption);
 var schemaMode = result.GetValue(schemaOption);
 
@@ -90,86 +82,43 @@ void HandleFile(FileInfo file)
     }
 }
 
-if (files.Any())
+var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
+foreach (var file in TopModelCli.ResolveFiles(files, pattern))
 {
-    foreach (var file in files)
-    {
-        if (!file.Exists)
-        {
-            AnsiConsole.MarkupLine($"[red]{file.FullName}[/]");
-        }
-        else
-        {
-            HandleFile(file);
-        }
-    }
-}
-else
-{
-    foreach (var file in ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory()))
-    {
-        HandleFile(file);
-    }
+    HandleFile(file);
 }
 
 if (configs.Count == 0)
 {
-    AnsiConsole.MarkupLine($"[red]Aucun fichier de configuration trouvé.[/]");
+    AnsiConsole.MarkupLine($"[red]{LocalizeUtils.Localize(CliMessage.NoConfigFileFound)}[/]");
     return 1;
 }
 
-var version = Assembly
-    .GetEntryAssembly()!
-    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
-    .InformationalVersion;
-var majorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Major;
-var minorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Minor;
+var (version, majorVersion, minorVersion) = await TopModelCli.ShowBannerAsync("TopModel.Generator");
 var prerelease = version.Contains('-');
-
-var colors = new[] { "teal", "olive", "yellow", "aqua" };
-
-AnsiConsole.MarkupLine($"========= TopModel.Generator v{version} =========");
-AnsiConsole.WriteLine();
-
-var latestVersion = await NugetUtils.GetLatestVersionAsync("TopModel.Generator", prerelease: prerelease);
-if (latestVersion != null && latestVersion.Version != version)
-{
-    AnsiConsole.MarkupLine($"[yellow]Nouvelle version disponible : {latestVersion.Version}[/]");
-    AnsiConsole.MarkupLine(
-        "[yellow]Vous pouvez lancer la commande `dotnet tool update -g TopModel.Generator` pour effectuer la mise à jour.[/]"
-    );
-    AnsiConsole.WriteLine();
-}
 
 if (excludedTags.Length > 0)
 {
-    AnsiConsole.MarkupLine($"Tags [teal]exclus[/] de la génération : {string.Join(", ", excludedTags)}.");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(GeneratorMessage.ExcludedTags, string.Join(", ", excludedTags)));
 }
 
 if (updateMode != null)
 {
-    AnsiConsole.MarkupLine($"Mode [darkcyan]update[/] activé pour : [gray]{updateMode}[/].");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(GeneratorMessage.UpdateModeEnabled, updateMode));
     await NugetUtils.ClearAsync();
 }
 
 if (watchMode)
 {
-    AnsiConsole.MarkupLine("Mode [darkcyan]watch[/] activé.");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.WatchModeEnabled));
 }
 
 if (checkMode)
 {
-    AnsiConsole.MarkupLine("Mode [darkcyan]check[/] activé.");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.CheckModeEnabled));
 }
 
-AnsiConsole.WriteLine("Fichiers de configuration trouvés :");
-
-for (var i = 0; i < configs.Count; i++)
-{
-    var fullName = configs.ElementAt(i).Key;
-    var color = colors[i % colors.Length];
-    AnsiConsole.MarkupLine($"[{color}]#{i + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), fullName)}[/]");
-}
+TopModelCli.ListFoundFiles(configs.Keys);
 
 static Type? GetIGenRegInterface(Type t)
 {
@@ -196,7 +145,7 @@ for (var i = 0; i < configs.Count; i++)
 {
     var (fullName, config) = configs.ElementAt(i);
 
-    var storeConfig = new LoggingScope(i + 1, colors[i % colors.Length]);
+    var storeConfig = new LoggingScope(i + 1, TopModelCli.Colors[i % TopModelCli.Colors.Length]);
     var logger = loggerProvider.CreateLogger("TopModel.Generator");
     using var scope = logger.BeginScope(storeConfig);
     var topModelLock = new TopModelLock(config, logger);
@@ -255,7 +204,7 @@ for (var i = 0; i < configs.Count; i++)
             || customHash != customHashLocal
         )
         {
-            logger.LogInformation($"Build de '{cg}' en cours...");
+            logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.BuildInProgress, cg));
             var build = Process.Start(
                 new ProcessStartInfo
                 {
@@ -278,12 +227,12 @@ for (var i = 0; i < configs.Count; i++)
 
             if (build.ExitCode != 0)
             {
-                logger.LogError($"Erreur lors du build de '{cg}'");
+                logger.LogError(LocalizeUtils.Localize(GeneratorMessage.BuildError, cg));
                 logger.LogError((await build.StandardOutput.ReadToEndAsync()).Trim());
                 return 1;
             }
 
-            logger.LogInformation($"Build de '{cg}' terminé.");
+            logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.BuildCompleted, cg));
             topModelLock.Custom ??= new Dictionary<string, string>();
             topModelLock.Custom[cg] = customHash;
             await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[cg]);
@@ -314,7 +263,7 @@ for (var i = 0; i < configs.Count; i++)
 
         if (!Directory.EnumerateFiles(projDir, "*.csproj").Any())
         {
-            logger.LogError($"Aucun fichier csproj trouvé pour le module de générateurs '{cg}'.");
+            logger.LogError(LocalizeUtils.Localize(GeneratorMessage.NoCsprojFound, cg));
             returnCode = 1;
             continue;
         }
@@ -323,7 +272,7 @@ for (var i = 0; i < configs.Count; i++)
 
         if (!File.Exists(assetsPath))
         {
-            logger.LogError($"Le module de générateurs '{cg}' n'a pas été buildé correctement...");
+            logger.LogError(LocalizeUtils.Localize(GeneratorMessage.GeneratorModuleNotBuilt, cg));
             returnCode = 1;
             continue;
         }
@@ -342,7 +291,12 @@ for (var i = 0; i < configs.Count; i++)
                 if (dep.Version?.Major != majorVersion)
                 {
                     logger.LogError(
-                        $"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version})."
+                        LocalizeUtils.Localize(
+                            GeneratorMessage.GeneratorModuleBadMajorVersion,
+                            cg,
+                            dep.Version?.ToString() ?? string.Empty,
+                            version
+                        )
                     );
                     returnCode = 1;
                     continue;
@@ -350,7 +304,12 @@ for (var i = 0; i < configs.Count; i++)
                 else if (dep.Version?.Minor > minorVersion)
                 {
                     logger.LogError(
-                        $"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Version} > {version})."
+                        LocalizeUtils.Localize(
+                            GeneratorMessage.GeneratorModuleNewerVersion,
+                            cg,
+                            dep.Version?.ToString() ?? string.Empty,
+                            version
+                        )
                     );
                     returnCode = 1;
                     continue;
@@ -366,7 +325,13 @@ for (var i = 0; i < configs.Count; i++)
                 else if (ev.Version != dep.Version?.ToString())
                 {
                     logger.LogError(
-                        $"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Version}', ce qui n'est pas la version du lockfile ('{ev}')."
+                        LocalizeUtils.Localize(
+                            GeneratorMessage.CustomModuleWrongLockfileVersion,
+                            cg,
+                            configKey,
+                            dep.Version?.ToString() ?? string.Empty,
+                            ev
+                        )
                     );
                     returnCode = 1;
                     continue;
@@ -422,7 +387,7 @@ for (var i = 0; i < configs.Count; i++)
 
             if (moduleVersion == null)
             {
-                logger.LogError($"Aucun module de générateurs trouvé pour '{configKey}'.");
+                logger.LogError(LocalizeUtils.Localize(GeneratorMessage.NoGeneratorModuleFound, configKey));
                 returnCode = 1;
                 continue;
             }
@@ -450,15 +415,29 @@ for (var i = 0; i < configs.Count; i++)
             {
                 if (Directory.Exists(moduleFolder))
                 {
-                    logger.LogInformation($"({dep.ConfigKey}) Module corrompu, réinstallation...");
+                    logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.ModuleCorrupted, dep.ConfigKey));
                     Directory.Delete(moduleFolder, recursive: true);
                 }
 
-                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} en cours...");
+                logger.LogInformation(
+                    LocalizeUtils.Localize(
+                        GeneratorMessage.ModuleInstallInProgress,
+                        dep.ConfigKey,
+                        dep.FullName,
+                        depVersion
+                    )
+                );
 
                 if (!await NugetUtils.DoesPackageExistsAsync(dep.FullName, depVersion))
                 {
-                    logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{depVersion} est introuvable.");
+                    logger.LogError(
+                        LocalizeUtils.Localize(
+                            GeneratorMessage.PackageNotFound,
+                            dep.ConfigKey,
+                            dep.FullName,
+                            depVersion
+                        )
+                    );
                     returnCode = 1;
                     continue;
                 }
@@ -537,7 +516,12 @@ for (var i = 0; i < configs.Count; i++)
 
                 hasInstalled = true;
                 logger.LogInformation(
-                    $"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} terminée avec succès."
+                    LocalizeUtils.Localize(
+                        GeneratorMessage.ModuleInstallCompleted,
+                        dep.ConfigKey,
+                        dep.FullName,
+                        depVersion
+                    )
                 );
                 dep.Version.Hash = GetFolderHash(moduleFolder);
             }
@@ -547,7 +531,7 @@ for (var i = 0; i < configs.Count; i++)
             if (minVersion[0] != majorVersion)
             {
                 logger.LogError(
-                    $"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({depVersion} < {version})."
+                    LocalizeUtils.Localize(GeneratorMessage.ModuleBadMajorVersion, dep.ConfigKey, depVersion, version)
                 );
                 returnCode = 1;
                 continue;
@@ -555,7 +539,7 @@ for (var i = 0; i < configs.Count; i++)
             else if (minVersion[1] > minorVersion)
             {
                 logger.LogError(
-                    $"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({minVersionText} > {version})."
+                    LocalizeUtils.Localize(GeneratorMessage.ModuleNewerVersion, dep.ConfigKey, minVersionText, version)
                 );
                 returnCode = 1;
                 continue;
@@ -583,23 +567,32 @@ for (var i = 0; i < configs.Count; i++)
     }
 
     logger.LogInformation(
-        $"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
+        LocalizeUtils.Localize(
+            GeneratorMessage.GeneratorsInUse,
+            $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
+        )
     );
 
     var depsToUpdate = deps.Where(dep => dep.LatestVersion != null && dep.LatestVersion != dep.Version.Version);
     if (depsToUpdate.Any())
     {
         logger.LogWarning(
-            $"Il existe une mise à jour pour les générateurs suivants :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
+            LocalizeUtils.Localize(
+                GeneratorMessage.GeneratorUpdatesAvailable,
+                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
+            )
         );
         logger.LogWarning(
-            $"Vous pouvez lancer la commande `modgen --update {(depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all")}` pour effectuer la mise à jour."
+            LocalizeUtils.Localize(
+                GeneratorMessage.ModgenUpdateCommand,
+                depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all"
+            )
         );
     }
 
     if (schemaMode || hasInstalled)
     {
-        logger.LogInformation("Génération du schéma de configuration...");
+        logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.GeneratingConfigSchema));
 
         var schema = JsonNode
             .Parse(
@@ -642,7 +635,7 @@ for (var i = 0; i < configs.Count; i++)
             await File.WriteAllTextAsync(fullName, configFile);
         }
 
-        logger.LogInformation("Schéma de configuration généré avec succès.");
+        logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.ConfigSchemaGenerated));
     }
 
     var services = new ServiceCollection()
@@ -685,7 +678,9 @@ for (var i = 0; i < configs.Count; i++)
                     }
                     catch (ArgumentException)
                     {
-                        logger.LogError($"Le nom de configuration '{genConfig.Name}' est déjà utilisé.");
+                        logger.LogError(
+                            LocalizeUtils.Localize(GeneratorMessage.ConfigNameAlreadyInUse, genConfig.Name)
+                        );
                         return 1;
                     }
 
@@ -698,7 +693,12 @@ for (var i = 0; i < configs.Count; i++)
                         else
                         {
                             logger.LogWarning(
-                                $"La configuration '{referencedTag.Value}' n'existe pas, le tag référencé '{referencedTag.Key}' pour la config '{genConfig.Name}' sera ignoré."
+                                LocalizeUtils.Localize(
+                                    GeneratorMessage.ReferencedConfigNotFound,
+                                    referencedTag.Value,
+                                    referencedTag.Key,
+                                    genConfig.Name
+                                )
                             );
                         }
                     }
@@ -766,18 +766,11 @@ if (hasErrors.Any(he => he))
 if (checkMode && loggerProvider.Changes > 0)
 {
     AnsiConsole.WriteLine();
-    if (loggerProvider.Changes == 1)
-    {
-        AnsiConsole.MarkupLine(
-            $"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]"
-        );
-    }
-    else
-    {
-        AnsiConsole.MarkupLine(
-            $"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]"
-        );
-    }
+    AnsiConsole.MarkupLine(
+        loggerProvider.Changes == 1
+            ? $"[red]{LocalizeUtils.Localize(CliMessage.OneFileModifiedInCheckMode)}[/]"
+            : $"[red]{LocalizeUtils.Localize(CliMessage.MultipleFilesModifiedInCheckMode, loggerProvider.Changes)}[/]"
+    );
 
     return 1;
 }

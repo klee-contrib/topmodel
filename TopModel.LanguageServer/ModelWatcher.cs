@@ -44,7 +44,7 @@ public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
                 new()
                 {
                     Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
-                    Uri = new Uri(facade.GetFilePath(fileErrors.Key)),
+                    Uri = new Uri(fileErrors.Key.GetFilePath()),
                 }
             );
         }

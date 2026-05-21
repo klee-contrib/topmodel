@@ -1,0 +1,29 @@
+namespace TopModel.Generator;
+
+public enum GeneratorMessage
+{
+    ExcludedTags,
+    UpdateModeEnabled,
+    BuildInProgress,
+    BuildError,
+    BuildCompleted,
+    NoCsprojFound,
+    GeneratorModuleNotBuilt,
+    GeneratorModuleBadMajorVersion,
+    GeneratorModuleNewerVersion,
+    CustomModuleWrongLockfileVersion,
+    NoGeneratorModuleFound,
+    ModuleCorrupted,
+    ModuleInstallInProgress,
+    PackageNotFound,
+    ModuleInstallCompleted,
+    ModuleBadMajorVersion,
+    ModuleNewerVersion,
+    GeneratorsInUse,
+    GeneratorUpdatesAvailable,
+    ModgenUpdateCommand,
+    GeneratingConfigSchema,
+    ConfigSchemaGenerated,
+    ConfigNameAlreadyInUse,
+    ReferencedConfigNotFound,
+}

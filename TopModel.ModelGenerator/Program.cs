@@ -1,6 +1,5 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Help;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,18 +12,14 @@ using TopModel.ModelGenerator;
 using TopModel.ModelGenerator.Database;
 using TopModel.ModelGenerator.OpenApi;
 using TopModel.Utils;
+using TopModel.Utils.Cli;
 
-var fileOption = new Option<IEnumerable<FileInfo>>("--file", "-f")
+var command = new RootCommand("Lance le générateur de fichiers tmd.")
 {
-    Description = "Chemin vers un fichier de config.",
+    TopModelCli.FileOption,
+    TopModelCli.WatchOption,
+    TopModelCli.CheckOption,
 };
-var watchOption = new Option<bool>("--watch", "-w") { Description = "Lance le générateur en mode 'watch'" };
-var checkOption = new Option<bool>("--check", "-c")
-{
-    Description = "Vérifie que le modèle généré est conforme aux sources.",
-};
-
-var command = new RootCommand("Lance le générateur de fichiers tmd.") { fileOption, watchOption, checkOption };
 
 var helpOption = command.Options.OfType<HelpOption>().Single();
 var versionOption = command.Options.OfType<VersionOption>().Single();
@@ -36,9 +31,9 @@ if (result.GetResult(helpOption) != null || result.GetResult(versionOption) != n
     return await result.InvokeAsync();
 }
 
-var files = result.GetValue(fileOption) ?? [];
-var watchMode = result.GetValue(watchOption);
-var checkMode = result.GetValue(checkOption);
+var files = result.GetValue(TopModelCli.FileOption) ?? [];
+var watchMode = result.GetValue(TopModelCli.WatchOption);
+var checkMode = result.GetValue(TopModelCli.CheckOption);
 
 var configs = new List<(string FullPath, string DirectoryName)>();
 var serializer = new Serializer(new() { NamingConvention = new CamelCaseNamingConvention() });
@@ -48,63 +43,31 @@ void HandleFile(FileInfo file)
     configs.Add((file.FullName, file.DirectoryName!));
 }
 
-if (files.Any())
+var tmdgenPattern = new Regex(@"tmdgen[^/\\]*\.config$");
+foreach (var file in TopModelCli.ResolveFiles(files, tmdgenPattern))
 {
-    foreach (var file in files)
-    {
-        if (!file.Exists)
-        {
-            AnsiConsole.MarkupLine($"[red]Le fichier '{file.FullName}' est introuvable.[/]");
-        }
-        else
-        {
-            HandleFile(file);
-        }
-    }
-}
-else
-{
-    var tmdgenPattern = new Regex(@"tmdgen[^/\\]*\.config$");
-    foreach (var file in ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory(), tmdgenPattern))
-    {
-        HandleFile(file);
-    }
+    HandleFile(file);
 }
 
 if (!configs.Any())
 {
-    AnsiConsole.MarkupLine($"[red]Aucun fichier de configuration trouvé.[/]");
+    AnsiConsole.MarkupLine($"[red]{LocalizeUtils.Localize(CliMessage.NoConfigFileFound)}[/]");
     return 1;
 }
 
-var version = Assembly
-    .GetEntryAssembly()!
-    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
-    .InformationalVersion;
-
-var colors = new[] { "teal", "olive", "yellow", "aqua" };
-
-AnsiConsole.MarkupLine($"========= TopModel.ModelGenerator v{version} =========");
-AnsiConsole.WriteLine();
+await TopModelCli.ShowBannerAsync("TopModel.ModelGenerator");
 
 if (watchMode)
 {
-    AnsiConsole.MarkupLine("Mode [darkcyan]watch[/] activé.");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.WatchModeEnabled));
 }
 
 if (checkMode)
 {
-    AnsiConsole.MarkupLine("Mode [darkcyan]check[/] activé.");
+    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.CheckModeEnabled));
 }
 
-AnsiConsole.WriteLine("Fichiers de configuration trouvés :");
-
-for (var i = 0; i < configs.Count; i++)
-{
-    var (fullName, _) = configs[i];
-    var color = colors[i % colors.Length];
-    AnsiConsole.MarkupLine($"[{color}]#{i + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), fullName)}[/]");
-}
+TopModelCli.ListFoundFiles(configs.Select(c => c.FullPath));
 
 var disposables = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
@@ -208,13 +171,16 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     using var provider = services.BuildServiceProvider();
 
     var mainLogger = provider.GetRequiredService<ILogger<TmdGenerator>>();
-    var loggingScope = new LoggingScope(i + 1, colors[i]);
+    var loggingScope = new LoggingScope(i + 1, TopModelCli.Colors[i % TopModelCli.Colors.Length]);
     using var scope = mainLogger.BeginScope(loggingScope);
 
     var generators = provider.GetRequiredService<IEnumerable<TmdGenerator>>();
 
     mainLogger.LogInformation(
-        $"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
+        LocalizeUtils.Localize(
+            ModelGeneratorMessage.RegisteredGenerators,
+            $"\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
+        )
     );
 
     var tmdLock = new TopModelLock(config, mainLogger);
@@ -227,7 +193,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     tmdLock.UpdateFiles(generatedFiles);
 
-    mainLogger.LogInformation("Mise à jour terminée avec succès.");
+    mainLogger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.UpdateCompleted));
 }
 
 foreach (var config in configs)
@@ -283,20 +249,12 @@ if (watchMode)
 
 if (checkMode && loggerProvider.Changes > 0)
 {
-    Console.ForegroundColor = ConsoleColor.Red;
     AnsiConsole.WriteLine();
-    if (loggerProvider.Changes == 1)
-    {
-        AnsiConsole.MarkupLine(
-            $"[red]1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.[/]"
-        );
-    }
-    else
-    {
-        AnsiConsole.MarkupLine(
-            $"[red]{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.[/]"
-        );
-    }
+    AnsiConsole.MarkupLine(
+        loggerProvider.Changes == 1
+            ? $"[red]{LocalizeUtils.Localize(CliMessage.OneFileModifiedInCheckMode)}[/]"
+            : $"[red]{LocalizeUtils.Localize(CliMessage.MultipleFilesModifiedInCheckMode, loggerProvider.Changes)}[/]"
+    );
 
     return 1;
 }

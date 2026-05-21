@@ -1,13 +1,11 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServerFacade facade)
-    : WorkspaceSymbolsHandlerBase
+public class WorkspaceSymbolHandler(ModelStoreRegistry registry) : WorkspaceSymbolsHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Container<WorkspaceSymbol>?> Handle(
@@ -28,7 +26,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                         Location = new Location
                         {
                             Range = c.Name.GetLocation().ToRange()!,
-                            Uri = facade.GetFilePath(c.ModelFile),
+                            Uri = c.ModelFile.GetFilePath(),
                         },
                     })
                     .Concat(
@@ -42,7 +40,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                                 Location = new Location
                                 {
                                     Range = e.Name.GetLocation()!.ToRange()!,
-                                    Uri = facade.GetFilePath(e.ModelFile),
+                                    Uri = e.ModelFile.GetFilePath(),
                                 },
                             })
                     )
@@ -54,7 +52,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                             Location = new Location
                             {
                                 Range = d.Value.GetLocation().ToRange()!,
-                                Uri = facade.GetFilePath(d.Value.GetFile()),
+                                Uri = d.Value.GetFile().GetFilePath(),
                             },
                         })
                     )
@@ -66,7 +64,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                             Location = new Location
                             {
                                 Range = d.GetLocation().ToRange()!,
-                                Uri = facade.GetFilePath(d.GetFile()),
+                                Uri = d.GetFile().GetFilePath(),
                             },
                         })
                     )
@@ -78,7 +76,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                             Location = new Location
                             {
                                 Range = d.GetLocation().ToRange()!,
-                                Uri = facade.GetFilePath(d.GetFile()),
+                                Uri = d.GetFile().GetFilePath(),
                             },
                         })
                     )
@@ -90,7 +88,7 @@ public class WorkspaceSymbolHandler(ModelStoreRegistry registry, ILanguageServer
                             Location = new Location
                             {
                                 Range = d.GetLocation().ToRange()!,
-                                Uri = facade.GetFilePath(d.GetFile()),
+                                Uri = d.GetFile().GetFilePath(),
                             },
                         })
                     )

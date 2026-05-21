@@ -1,11 +1,10 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 
 namespace TopModel.LanguageServer;
 
-public class ReferencesHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : ReferencesHandlerBase
+public class ReferencesHandler(ModelStoreRegistry registry) : ReferencesHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<LocationContainer?> Handle(ReferenceParams request, CancellationToken cancellationToken)
@@ -26,7 +25,7 @@ public class ReferencesHandler(ModelStoreRegistry registry, ILanguageServerFacad
         foreach (var entry in entries)
         {
             var modelStore = entry.Store;
-            var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+            var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
             if (file == null)
             {
                 continue;
@@ -38,7 +37,7 @@ public class ReferencesHandler(ModelStoreRegistry registry, ILanguageServerFacad
                 locations.AddRange(
                     references.Select(r => new Location
                     {
-                        Uri = new Uri(facade.GetFilePath(r.File)),
+                        Uri = new Uri(r.File.GetFilePath()),
                         Range = r.Reference.ToRange()!,
                     })
                 );

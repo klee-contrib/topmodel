@@ -1,12 +1,11 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer;
 
-public class HoverHandler(ModelStoreRegistry registry, ILanguageServerFacade facade) : HoverHandlerBase
+public class HoverHandler(ModelStoreRegistry registry) : HoverHandlerBase
 {
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
@@ -21,7 +20,7 @@ public class HoverHandler(ModelStoreRegistry registry, ILanguageServerFacade fac
         var modelStore = entry.Store;
         await modelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         if (file != null)
         {
             var (reference, objet) = file.GetObjetAtPosition(request.Position);

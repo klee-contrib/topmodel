@@ -1,3 +1,5 @@
+using System.CommandLine;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -6,6 +8,11 @@ using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.LanguageServer;
 using TopModel.Utils;
+using TopModel.Utils.Cli;
+
+var command = new RootCommand { TopModelCli.FileOption };
+var result = command.Parse(args);
+var filesFromArgs = result.GetValue(TopModelCli.FileOption) ?? [];
 
 var fileChecker = new FileChecker();
 
@@ -47,11 +54,11 @@ var server = await LanguageServer.From(options =>
                 var rootPath = ResolveRootPath(request.RootPath, request.RootUri?.ToString());
 
                 var registry = lspServer.Services.GetRequiredService<ModelStoreRegistry>();
+                var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
 
-                var configFiles =
-                    args.Length > 0
-                        ? [new FileInfo(args[0])]
-                        : ConfigUtils.FindConfigFiles(rootPath ?? Directory.GetCurrentDirectory()).ToArray();
+                var configFiles = filesFromArgs.Any()
+                    ? filesFromArgs.ToArray()
+                    : ConfigUtils.FindConfigFiles(rootPath ?? Directory.GetCurrentDirectory(), pattern).ToArray();
 
                 var sp = lspServer.Services;
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();

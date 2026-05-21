@@ -1,15 +1,13 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer;
 
-public class CompletionHandler(ModelStoreRegistry registry, ILanguageServerFacade facade, ModelFileCache fileCache)
-    : CompletionHandlerBase
+public class CompletionHandler(ModelStoreRegistry registry, ModelFileCache fileCache) : CompletionHandlerBase
 {
     private static readonly char[] Separators =
     [
@@ -55,7 +53,7 @@ public class CompletionHandler(ModelStoreRegistry registry, ILanguageServerFacad
         {
             return new();
         }
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+        var file = modelStore.Files.SingleOrDefault(f => f.GetFilePath() == filePath);
         if (file == null || currentLine == string.Empty)
         {
             return new();

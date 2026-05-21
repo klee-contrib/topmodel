@@ -23,12 +23,26 @@ export async function activate(ctx: ExtensionContext) {
             state = new State(ctx);
             state.applications.push(...confs.map((conf) => new Application(conf.file.fsPath, conf.config, ctx)));
 
-            if (confs.length > 0) {
-                await state.startLanguageServer();
+            if (state.applications.length > 0) {
+                const validConfigs: string[] = [];
+                for (const app of state.applications) {
+                    const isValid = await app.validateConfigFile();
+                    if (isValid) {
+                        validConfigs.push(app.configPath);
+                    }
+                }
+                await state.startLanguageServer(validConfigs);
 
                 workspace.onDidSaveTextDocument(async (event) => {
-                    if (confs.some((c) => c.file.fsPath.toLowerCase() === event.uri.fsPath.toLowerCase())) {
-                        state.client?.restart();
+                    for (const app of state.applications) {
+                        if (app.configPath.toLowerCase() === event.uri.fsPath.toLowerCase()) {
+                            const isValid = await app.validateConfigFile();
+                            if (isValid) {
+                                state.lspStatus = "LOADING";
+                                await state.client?.restart();
+                                state.lspStatus = "READY";
+                            }
+                        }
                     }
                 });
             }

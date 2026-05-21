@@ -1,4 +1,4 @@
-using NuGet.Packaging;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 

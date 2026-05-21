@@ -16,5 +16,6 @@
   <Project Path="TopModel.LanguageServer/TopModel.LanguageServer.csproj" />
   <Project Path="TopModel.ModelGenerator/TopModel.ModelGenerator.csproj" />
   <Project Path="TopModel.Utils/TopModel.Utils.csproj" />
+  <Project Path="TopModel.Utils.Cli/TopModel.Utils.Cli.csproj" />
   <Project Path="TopModel.Utils.Mermaid/TopModel.Utils.Mermaid.csproj" />
 </Solution>

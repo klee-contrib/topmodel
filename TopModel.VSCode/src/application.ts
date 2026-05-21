@@ -22,7 +22,7 @@ export class Application {
                 this._terminal = undefined;
             }
         });
-        this.start();
+        this.refreshConfig();
     }
 
     public get terminal(): Terminal {
@@ -58,7 +58,8 @@ export class Application {
         });
     }
 
-    public async start() {
+    public async refreshConfig() {
+        this.status = "LOADING";
         this.status = (await this.validateConfigFile()) ? "STARTED" : "ERROR";
     }
 

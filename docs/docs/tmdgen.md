@@ -57,6 +57,7 @@ tmdgen
 
 - **`--file`**/**`-f`** : Précise le fichier de configuration à utiliser. Par défaut, l'outil cherchera tous les fichiers de configuration au format `tmdgen*.config`.
 - **`--watch`**/**`-w`** : Permet de surveiller les modifications du fichier de configuration `tmdgen.config` et de relancer la génération automatiquement. À la différence de `modgen`, cette option ne permet de suivre les modifications que du fichier de configuration.
+- **`--check`**/**`-c`** : Vérifie que la génération est à jour (aucun fichier ne doit être généré). Retourne un code de sortie `1` si des fichiers ont été créés, modifiés ou supprimés. Utile en CI/CD pour s'assurer que les fichiers `.tmd` sont bien synchronisés avec leur source.
 
 ### Exemples d'utilisation
 
@@ -69,4 +70,7 @@ tmdgen --watch
 
 # Génération d'un fichier de configuration spécifique
 tmdgen --file tmdgen.config
+
+# Vérification que la génération est à jour (CI/CD)
+tmdgen --check
 ```
