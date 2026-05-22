@@ -19,7 +19,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="tag">Tag.</param>
     protected virtual void GenerateClassDeclaration(CSharpWriter w, Class item, string tag)
     {
-        if (!item.Abstract && item.Enum != EnumMode.Enum)
+        if (item.Type != ClassType.Interface && item.Enum != EnumMode.Enum)
         {
             if (item.Reference && Config.Kinetix)
             {
@@ -70,7 +70,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         var extends = Config.GetClassExtends(item, tag);
         var implements = Config.GetClassImplements(item, tag);
 
-        if (item.Abstract)
+        if (item.Type == ClassType.Interface)
         {
             w.Write($"public interface {Config.GetTypeName(item)}");
 
@@ -84,7 +84,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         }
         else
         {
-            w.WriteClassDeclaration(Config.GetTypeName(item), extends, Config.UseRecords, implements.ToArray());
+            w.WriteClassDeclaration(
+                Config.GetTypeName(item),
+                extends,
+                Config.UseRecords,
+                isAbstract: item.Type == ClassType.Abstract,
+                implements.ToArray()
+            );
 
             GenerateConstProperties(w, item);
 
@@ -322,7 +328,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 || property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
         );
 
-        if (!property.Class.Abstract)
+        if (property.Class.Type != ClassType.Interface)
         {
             if (
                 property.PersistentClass != null
@@ -531,7 +537,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         var usings = new List<string>();
 
-        if (!item.Abstract)
+        if (item.Type != ClassType.Interface)
         {
             if (item.Reference && item.DefaultProperty != null)
             {

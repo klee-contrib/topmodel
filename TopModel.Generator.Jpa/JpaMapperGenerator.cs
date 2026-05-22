@@ -225,7 +225,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetFromMappers(Class classe, FromMapper mapper, string tag)
     {
-        if (!classe.Abstract)
+        if (classe.Type == ClassType.Regular)
         {
             yield return GetFromMapperNoTarget(classe, mapper, tag);
         }
@@ -481,7 +481,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, ClassMappings mapper, string tag)
     {
-        if (!mapper.Class.Abstract)
+        if (mapper.Class.Type == ClassType.Regular)
         {
             yield return GetToMapperMethodNoTarget(classe, mapper, tag);
         }

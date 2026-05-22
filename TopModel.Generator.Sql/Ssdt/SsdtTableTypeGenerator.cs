@@ -17,7 +17,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     protected override bool FilterClass(Class classe)
     {
         return classe.IsPersistent
-            && !classe.Abstract
+            && classe.Type != ClassType.Interface
             && classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName);
     }
 

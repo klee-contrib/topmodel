@@ -32,7 +32,12 @@ public class DbContextGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag) && classe.Enum != EnumMode.Enum)
+        if (
+            classe.IsPersistent
+            && classe.Type != ClassType.Interface
+            && !Config.NoPersistence(tag)
+            && classe.Enum != EnumMode.Enum
+        )
         {
             yield return ("main", Config.GetDbContextFilePath(tag));
 

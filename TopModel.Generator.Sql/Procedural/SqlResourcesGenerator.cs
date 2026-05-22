@@ -19,7 +19,7 @@ public class SqlResourcesGenerator(
         if (
             Config.AvailableClasses.Any(c => c.Translation)
             && classe.IsPersistent
-            && !classe.Abstract
+            && classe.Type != ClassType.Interface
             && (
                 Config.TranslateReferences == true && classe.DefaultProperty != null && classe.Values.Any()
                 || Config.TranslateProperties == true && classe.Properties.Any(c => c.Label != null)

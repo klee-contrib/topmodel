@@ -12,7 +12,7 @@ uses:
 ---
 class:
   name: CommandeItem
-  abstract: true
+  type: interface
   comment: Détail d'une commande en liste
 
   properties:
@@ -93,7 +93,7 @@ class:
 ---
 class:
   name: CommandeResume
-  abstract: true
+  type: interface
   comment: Résumé d'une commande pour liste
 
   properties:

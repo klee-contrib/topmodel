@@ -27,7 +27,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.IsPersistent && classe.Enum != EnumMode.Enum;
+        return classe.Type != ClassType.Interface && classe.IsPersistent && classe.Enum != EnumMode.Enum;
     }
 
     protected override IEnumerable<JavaAnnotation> GetAnnotations(Class classe, string tag)

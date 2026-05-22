@@ -10,31 +10,8 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'un client en liste.
 /// </summary>
-public partial record ClientItem
+public partial record ClientItem : PersonneItem
 {
-    /// <summary>
-    /// Identifiant de la personne.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Id)]
-    public int? Id { get; set; }
-
-    /// <summary>
-    /// Nom de la personne.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string? Nom { get; set; }
-
-    /// <summary>
-    /// Prénom de la personne.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string? Prenom { get; set; }
-
     /// <summary>
     /// Nom complet du client (calculé).
     /// </summary>

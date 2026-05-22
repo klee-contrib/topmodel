@@ -120,15 +120,6 @@
   <data name="restaurant.client.email" xml:space="preserve">
     <value>Courriel</value>
   </data>
-  <data name="restaurant.clientItem.id" xml:space="preserve">
-    <value>Informations client</value>
-  </data>
-  <data name="restaurant.clientItem.nom" xml:space="preserve">
-    <value>Informations client</value>
-  </data>
-  <data name="restaurant.clientItem.prenom" xml:space="preserve">
-    <value>Informations client</value>
-  </data>
   <data name="restaurant.commande.montantTotal" xml:space="preserve">
     <value>Montant total</value>
   </data>

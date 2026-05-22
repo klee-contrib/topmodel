@@ -30,10 +30,7 @@
         "email": "Courriel"
     },
     "clientItem": {
-        "id": "Informations client",
-        "nom": "Informations client",
-        "nomComplet": "NomComplet",
-        "prenom": "Informations client"
+        "nomComplet": "NomComplet"
     },
     "commande": {
         "avisClientId": "AvisClient",
@@ -70,10 +67,7 @@
         "telephone": "Telephone"
     },
     "employeItem": {
-        "autresEmployes": "AutresEmployes",
-        "id": "Id",
-        "nom": "Nom",
-        "prenom": "Prenom"
+        "autresEmployes": "AutresEmployes"
     },
     "ligneCommande": {
         "commandeId": "Commande",
@@ -102,6 +96,11 @@
         "id": "Id",
         "nom": "Nom",
         "prenom": "Prénom"
+    },
+    "personneItem": {
+        "id": "Id",
+        "nom": "Nom",
+        "prenom": "Prenom"
     },
     "plat": {
         "categoriePlatCode": "CategoriePlat",

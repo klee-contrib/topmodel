@@ -59,7 +59,7 @@ class:
 ---
 class:
   name: PlatItem
-  abstract: true
+  type: interface
   comment: Détail d'un plat en liste
 
   properties:
@@ -82,7 +82,7 @@ class:
 ---
 class:
   name: PlatItemReadonly
-  abstract: true
+  type: interface
   comment: Détail d'un plat en liste
 
   properties:

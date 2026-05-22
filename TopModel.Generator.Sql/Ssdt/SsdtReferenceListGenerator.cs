@@ -15,7 +15,7 @@ public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logg
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract && classe.Values.Count > 0;
+        return classe.IsPersistent && classe.Type != ClassType.Interface && classe.Values.Count > 0;
     }
 
     protected override string GetFileName(Class classe, string tag)

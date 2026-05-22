@@ -346,7 +346,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.Write(
                 1,
-                $"public static {Config.GetTypeName(classe)} Create{classe.NamePascal}{(classe.Abstract ? "<T>" : string.Empty)}"
+                $"public static {Config.GetTypeName(classe)} Create{classe.NamePascal}{(classe.Type != ClassType.Regular ? "<T>" : string.Empty)}"
             );
 
             w.WriteLine(
@@ -355,7 +355,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}")))})"
             );
 
-            if (classe.Abstract)
+            if (classe.Type != ClassType.Regular)
             {
                 w.WriteLine(2, $"where T : {Config.GetTypeName(classe)}, new()");
             }
@@ -411,7 +411,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.WriteLine();
             }
 
-            w.WriteLine(2, $"return new {(classe.Abstract ? "T" : Config.GetTypeName(mapper.Class))}");
+            w.WriteLine(2, $"return new {(classe.Type != ClassType.Regular ? "T" : Config.GetTypeName(mapper.Class))}");
             w.WriteLine(2, "{");
 
             foreach (var p in mapper.Params)
@@ -510,10 +510,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteLine(
                 1,
-                $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}{(mapper.Class.Abstract ? "<T>" : string.Empty)}(this {Config.GetTypeName(classe)} source{extraParams})"
+                $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}{(mapper.Class.Type != ClassType.Regular ? "<T>" : string.Empty)}(this {Config.GetTypeName(classe)} source{extraParams})"
             );
 
-            if (mapper.Class.Abstract)
+            if (mapper.Class.Type != ClassType.Regular)
             {
                 w.WriteLine(2, $"where T : {Config.GetTypeName(mapper.Class)}, new()");
             }
@@ -536,7 +536,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
             }
 
-            w.WriteLine(2, $"return new {(mapper.Class.Abstract ? "T" : Config.GetTypeName(mapper.Class))}");
+            w.WriteLine(
+                2,
+                $"return new {(mapper.Class.Type != ClassType.Regular ? "T" : Config.GetTypeName(mapper.Class))}"
+            );
             w.WriteLine(2, "{");
 
             foreach (var mapping in mapper.Mappings)

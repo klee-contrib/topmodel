@@ -153,6 +153,12 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
+  <data name="TMD3007" xml:space="preserve">
+    <value>Class '{0}' cannot inherit class '{1}' because interfaces can only inherit another interface, and vice versa.</value>
+  </data>
+  <data name="TMD3008" xml:space="preserve">
+    <value>Abstract class '{0}' cannot inherit non-abstract class '{1}'.</value>
+  </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Index for properties '{1}' already exists on class '{0}'.</value>
   </data>

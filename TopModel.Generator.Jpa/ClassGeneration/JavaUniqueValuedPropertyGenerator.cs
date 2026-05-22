@@ -28,7 +28,9 @@ public class JavaUniqueValuedPropertyGenerator(
 
     protected bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.Enum != EnumMode.Enum && Config.UniqueValueGeneration.CanConst;
+        return classe.Type != ClassType.Interface
+            && classe.Enum != EnumMode.Enum
+            && Config.UniqueValueGeneration.CanConst;
     }
 
     protected string GetFileName(IProperty property, Class classe, string tag)

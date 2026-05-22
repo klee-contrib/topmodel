@@ -1149,9 +1149,10 @@
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
-            "abstract": {
-              "type": "boolean",
-              "description": "Permet de marquer la classe comme abstraite, pour laquelle aucune implémentation ne sera générée."
+            "type": {
+              "type": "string",
+              "description": "Permet de définir la classe comme étant une interface ou une classe abstraite.",
+              "enum": ["regular", "abstract", "interface"]
             },
             "readonly": {
               "type": "boolean",

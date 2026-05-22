@@ -22,7 +22,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract)
+        if (classe.IsPersistent && classe.Type != ClassType.Interface)
         {
             yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
         }

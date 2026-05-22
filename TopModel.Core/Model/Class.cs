@@ -42,7 +42,10 @@ public class Class : IPropertyContainer
 
     public bool Reference { get; set; }
 
-    public bool Abstract { get; set; }
+    public ClassType Type { get; set; }
+
+    [Obsolete("Utiliser `Type` à la place.")]
+    public bool Abstract => Type == ClassType.Interface;
 
     public bool Readonly { get; set; }
 
