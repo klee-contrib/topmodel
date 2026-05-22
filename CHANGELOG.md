@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.3.0
+
+- [`d600829`](https://github.com/klee-contrib/topmodel/commit/d600829c1e511a83e497f75abab25120aeca964a) - [Core] `discardAssociations: true` sur un alias
+
+  Vous pouvez désormais utiliser `discardAssociations: true` lorsque vous faites des alias de propriétés pour que les nouvelles propriétés ne soient plus des associations dans la classe cible, ce qui peut être utile lorsque vous faites des tables de dénormalisation (ou d'historique) en base de données.
+
 ## 4.2.4
 
 - [`2b19dd2`](https://github.com/klee-contrib/topmodel/commit/2b19dd275f760a2d60d184d9894213adab281bd6) - [Core] readonly non transféré sur un alias

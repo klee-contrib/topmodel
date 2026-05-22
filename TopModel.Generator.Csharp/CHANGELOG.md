@@ -1,3 +1,9 @@
+## 4.1.4
+
+- [`d600829`](https://github.com/klee-contrib/topmodel/commit/d600829c1e511a83e497f75abab25120aeca964a) - [C#] Fixes `[ReferencedType]` manquants et values dans DbContext avec association `useClass: true`
+
+  **impacts génération** : Vous devriez voir des annotations `[ReferencedType]` générées en plus pour des listes de références non persistées (l'annotation n'était auparavant posée que pour les liste de références persistées, alors qu'il n'y avait pas de raison à ça), et sur des alias de clés primaires multiples (l'annotation n'est pas posée sur des alias de clé primaire puisque cela équivaudrait à ce référencer soi-même, le DTO en question étant un DTO de la classe de référence, mais si la clé est multiple alors c'est une autre classe qui est référencée, qui était une possibilité qui avait été oubliée).
+
 ## 4.1.3
 
 - [`63d8bd0`](https://github.com/klee-contrib/topmodel/commit/63d8bd0265e33b65b731ce986e6f2103b8b29776) - [C#/JPA] Fixes sur les valeurs par défaut générées pour associations
