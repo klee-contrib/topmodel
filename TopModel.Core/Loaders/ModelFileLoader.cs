@@ -203,7 +203,6 @@ public class ModelFileLoader(
             {
                 var nc = new Class
                 {
-                    Abstract = c.Abstract,
                     AnnotationReferences = c.AnnotationReferences,
                     Comment = c.Comment,
                     CustomProperties = c.CustomProperties,
@@ -229,6 +228,7 @@ public class ModelFileLoader(
                     SqlName = c.SqlName,
                     Translation = c.Translation,
                     Trigram = c.Trigram,
+                    Type = c.Type,
                     ValueReferences = c.ValueReferences,
                 };
 

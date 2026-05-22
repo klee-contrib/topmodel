@@ -55,8 +55,8 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "enum":
                     classe.EnumOverride = new LocatedString(value!);
                     break;
-                case "abstract":
-                    classe.Abstract = value!.Value == "true";
+                case "type":
+                    classe.Type = Enum.Parse<ClassType>(value!.Value, ignoreCase: true);
                     break;
                 case "orderProperty":
                     classe.OrderPropertyReference = new Reference(value!);

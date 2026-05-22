@@ -34,10 +34,7 @@ export const restaurant = {
         email: "Email"
     },
     clientItem: {
-        id: "Customer information",
-        nom: "Customer information",
-        nomComplet: "NomComplet",
-        prenom: "Customer information"
+        nomComplet: "NomComplet"
     },
     commande: {
         avisClientId: "AvisClient",
@@ -74,10 +71,7 @@ export const restaurant = {
         telephone: "Telephone"
     },
     employeItem: {
-        autresEmployes: "AutresEmployes",
-        id: "Id",
-        nom: "Nom",
-        prenom: "Prenom"
+        autresEmployes: "AutresEmployes"
     },
     ligneCommande: {
         commandeId: "Commande",
@@ -106,6 +100,11 @@ export const restaurant = {
         id: "Id",
         nom: "Last name",
         prenom: "First name"
+    },
+    personneItem: {
+        id: "Id",
+        nom: "Nom",
+        prenom: "Prenom"
     },
     plat: {
         categoriePlatCode: "CategoriePlat",

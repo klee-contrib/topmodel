@@ -218,7 +218,7 @@ internal class MapperResolver(
                             var currentProperty in classe
                                 .ExtendedProperties.OfType<AliasProperty>()
                                 .Where(property =>
-                                    (!property.Readonly || !classe.Abstract)
+                                    (!property.Readonly || classe.Type != ClassType.Interface)
                                     && !explicitMappings.Exists(m => m.Key == property)
                                     && !param.MappingReferences.Any(m =>
                                         m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
@@ -256,7 +256,7 @@ internal class MapperResolver(
                     {
                         foreach (
                             var currentProperty in classe.ExtendedProperties.Where(property =>
-                                (!property.Readonly || !classe.Abstract)
+                                (!property.Readonly || classe.Type != ClassType.Interface)
                                 && !explicitAndAliasMappings.Exists(m => m.Key == property)
                                 && !param.MappingReferences.Any(m =>
                                     m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
@@ -350,7 +350,7 @@ internal class MapperResolver(
                     {
                         var mappedProperty = matchingProperties.Single();
                         if (
-                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
+                            (!mappedProperty.Readonly || mappedProperty.Class.Type != ClassType.Interface)
                             && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
                         {
@@ -373,7 +373,7 @@ internal class MapperResolver(
                     foreach (var mappedProperty in mapper.Class.ExtendedProperties)
                     {
                         if (
-                            (!mappedProperty.Readonly || !mappedProperty.Class.Abstract)
+                            (!mappedProperty.Readonly || mappedProperty.Class.Type != ClassType.Interface)
                             && mappedProperty.Name == currentProperty.Name
                             && CheckPossibleMapping(currentProperty, mappedProperty)
                         )
@@ -520,12 +520,12 @@ internal class MapperResolver(
         Reference? propRef
     )
     {
-        if (targetProperty.Class.Abstract && targetProperty.Readonly)
+        if (targetProperty.Class.Type == ClassType.Interface && targetProperty.Readonly)
         {
             yield return new ModelError(
                 ErrorType.TMD8008,
                 classe,
-                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est abstraite.",
+                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est une interface.",
                 propRef
             );
         }

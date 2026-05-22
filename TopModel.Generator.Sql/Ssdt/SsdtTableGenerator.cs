@@ -21,7 +21,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract;
+        return classe.IsPersistent && classe.Type != ClassType.Interface;
     }
 
     protected override string GetFileName(Class classe, string tag)

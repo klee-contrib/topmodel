@@ -4,79 +4,121 @@
 
 package restaurant.jpa_identity_feign.dtos.restaurant;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 import jakarta.annotation.Generated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 /**
  * Détail d'un employé en liste.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public interface EmployeItem {
+public class EmployeItem extends PersonneItem implements Serializable {
 
 	/**
-	 * Identifiant de l'employé.
+	 * Serial ID.
 	 */
-	Integer getId();
-
-	/**
-	 * Nom de l'employé.
-	 */
-	String getNom();
-
-	/**
-	 * Prénom de l'employé.
-	 */
-	String getPrenom();
+	@Serial
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Matricule de l'employé.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Employe#getMatricule() Employe#getMatricule()}
 	 */
-	String getMatricule();
+	@NotNull
+	@Size(max = 10)
+	private String matricule;
 
 	/**
 	 * Restaurant où travaille l'employé.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Employe#getRestaurant() Employe#getRestaurant()}
 	 */
-	Integer getRestaurantId();
+	@NotNull
+	private Integer restaurantId;
 
 	/**
 	 * Liste des autres employés.
 	 */
-	List<EmployeItem> getAutresEmployes();
+	@Valid
+	@NotNull
+	private List<EmployeItem> autresEmployes;
 
 	/**
-	 * Identifiant de l'employé.
-	 * @param id value to set.
+	 * Getter for matricule.
+	 *
+	 * @return value of {@link #matricule matricule}.
 	 */
-	void setId(Integer id);
+	public String getMatricule() {
+		return this.matricule;
+	}
 
 	/**
-	 * Nom de l'employé.
-	 * @param nom value to set.
+	 * Getter for restaurantId.
+	 *
+	 * @return value of {@link #restaurantId restaurantId}.
 	 */
-	void setNom(String nom);
+	public Integer getRestaurantId() {
+		return this.restaurantId;
+	}
 
 	/**
-	 * Prénom de l'employé.
-	 * @param prenom value to set.
+	 * Getter for autresEmployes.
+	 *
+	 * @return value of {@link #autresEmployes autresEmployes}.
 	 */
-	void setPrenom(String prenom);
+	public List<EmployeItem> getAutresEmployes() {
+		return this.autresEmployes;
+	}
 
 	/**
-	 * Matricule de l'employé.
+	 * Set the value of {@link #matricule matricule}.
 	 * @param matricule value to set.
 	 */
-	void setMatricule(String matricule);
+	public void setMatricule(String matricule) {
+		this.matricule = matricule;
+	}
 
 	/**
-	 * Restaurant où travaille l'employé.
+	 * Set the value of {@link #restaurantId restaurantId}.
 	 * @param restaurantId value to set.
 	 */
-	void setRestaurantId(Integer restaurantId);
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
+	}
 
 	/**
-	 * Liste des autres employés.
+	 * Set the value of {@link #autresEmployes autresEmployes}.
 	 * @param autresEmployes value to set.
 	 */
-	void setAutresEmployes(List<EmployeItem> autresEmployes);
+	public void setAutresEmployes(List<EmployeItem> autresEmployes) {
+		this.autresEmployes = autresEmployes;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.dtos.restaurant.EmployeItem EmployeItem}.
+	 */
+	public enum Fields {
+		MATRICULE(String.class),
+		RESTAURANT_ID(Integer.class),
+		AUTRES_EMPLOYES(List.class);
+
+		private final Class<?> type;
+
+		Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
 }

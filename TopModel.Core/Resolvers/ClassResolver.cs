@@ -289,17 +289,6 @@ internal class ClassResolver(
     {
         foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.ExtendsReference != null))
         {
-            if (classe.Abstract)
-            {
-                yield return new ModelError(
-                    ErrorType.TMD3008,
-                    classe,
-                    $"Impossible de définir un 'extends' sur la classe '{classe}' abstraite.",
-                    classe.ExtendsReference!
-                );
-                continue;
-            }
-
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
                 yield return new ModelError(
@@ -312,12 +301,28 @@ internal class ClassResolver(
                 continue;
             }
 
-            if (extends.Abstract)
+            if (
+                (classe.Type == ClassType.Interface || extends.Type == ClassType.Interface)
+                && extends.Type != classe.Type
+            )
             {
                 yield return new ModelError(
-                    ErrorType.TMD3008,
+                    localizer,
+                    ErrorType.TMD3007,
+                    [classe.Name, classe.ExtendsReference.ReferenceName],
                     classe,
-                    $"Impossible de définir la classe '{extends}' abstraite comme 'extends' sur la classe '{classe}'.",
+                    classe.ExtendsReference!
+                );
+                continue;
+            }
+
+            if (classe.Type == ClassType.Abstract && extends.Type == ClassType.Regular)
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD3008,
+                    [classe.Name, classe.ExtendsReference.ReferenceName],
+                    classe,
                     classe.ExtendsReference!
                 );
                 continue;

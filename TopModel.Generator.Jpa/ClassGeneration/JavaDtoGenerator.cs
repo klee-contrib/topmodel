@@ -26,7 +26,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && !classe.IsPersistent && classe.Enum != EnumMode.Enum;
+        return classe.Type != ClassType.Interface && !classe.IsPersistent && classe.Enum != EnumMode.Enum;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)

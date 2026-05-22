@@ -14,7 +14,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.Abstract;
+        return classe.Type == ClassType.Interface;
     }
 
     protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)

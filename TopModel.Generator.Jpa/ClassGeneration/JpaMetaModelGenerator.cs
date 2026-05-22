@@ -13,7 +13,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
     public override string Name => "JpaMetaModelGen";
 
-    protected virtual JpaModelPropertyGenerator jpaModelPropertyGenerator
+    protected virtual JpaModelPropertyGenerator JpaModelPropertyGenerator
     {
         get
         {
@@ -24,7 +24,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && !classe.Abstract && classe.Enum != EnumMode.Enum;
+        return classe.IsPersistent && classe.Type != ClassType.Interface && classe.Enum != EnumMode.Enum;
     }
 
     protected override string GetFileName(Class classe, string tag)

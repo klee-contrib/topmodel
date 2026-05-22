@@ -18,7 +18,7 @@ public class DocumentationMermaidGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (!classe.IsPersistent || classe.Abstract)
+        if (!classe.IsPersistent || classe.Type == ClassType.Interface)
         {
             yield break;
         }

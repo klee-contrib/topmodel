@@ -174,7 +174,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             yield return method;
         }
 
-        if (Config.MappersInClass && !classe.Abstract)
+        if (Config.MappersInClass && classe.Type != ClassType.Interface)
         {
             foreach (var method in GetToMappers(classe, tag))
             {
@@ -248,7 +248,11 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual JavaClass InitClass(Class classe, string tag)
     {
-        var javaClass = new JavaClass(classe.NamePascal) { Comment = classe.Comment };
+        var javaClass = new JavaClass(classe.NamePascal)
+        {
+            Comment = classe.Comment,
+            Modifier = classe.Type == ClassType.Abstract ? "abstract" : null,
+        };
         javaClass.AddRange(GetAnnotations(classe, tag));
         var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)

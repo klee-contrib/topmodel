@@ -12,7 +12,7 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract)
+        if (classe.IsPersistent && classe.Type != ClassType.Interface)
         {
             yield return ("comments", Path.Combine(Config.OutputDirectory, Config.Procedural!.CommentsFileName!));
         }

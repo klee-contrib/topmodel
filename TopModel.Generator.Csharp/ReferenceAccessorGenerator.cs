@@ -123,7 +123,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             )
         )
         {
-            w.WriteClassDeclaration(implementationName, inheritedClass: null, isRecord: false, [interfaceName]);
+            w.WriteClassDeclaration(implementationName, inheritedClass: null, isRecord: false, ifList: [interfaceName]);
         }
         else if (Config.DbContextPath != null)
         {
@@ -134,8 +134,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 implementationName,
                 inheritedClass: null,
                 isRecord: false,
-                [interfaceName],
-                PrimaryConstructor ? parameters : null
+                ifList: [interfaceName],
+                parameters: PrimaryConstructor ? parameters : null
             );
             if (!PrimaryConstructor)
             {
@@ -158,8 +158,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 implementationName,
                 inheritedClass: null,
                 isRecord: false,
-                [interfaceName],
-                PrimaryConstructor ? parameters : null
+                ifList: [interfaceName],
+                parameters: PrimaryConstructor ? parameters : null
             );
             if (!PrimaryConstructor)
             {

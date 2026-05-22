@@ -604,7 +604,7 @@ public class CsharpConfig : GeneratorConfigBase
             return null;
         }
 
-        return $"{(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal}";
+        return $"{(classe.Type == ClassType.Interface ? "I" : string.Empty)}{classe.NamePascal}";
     }
 
     public override bool IsPersistent(Class classe, string tag)

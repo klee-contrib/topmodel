@@ -50,7 +50,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
 
     protected override bool FilterClass(Class classe)
     {
-        return !classe.Abstract && classe.Enum == EnumMode.Enum;
+        return classe.Type != ClassType.Interface && classe.Enum == EnumMode.Enum;
     }
 
     protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)

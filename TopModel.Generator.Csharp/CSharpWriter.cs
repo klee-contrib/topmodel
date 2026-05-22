@@ -139,6 +139,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         string name,
         string? inheritedClass,
         bool isRecord,
+        bool isAbstract = false,
         string[]? ifList = null,
         string? parameters = null,
         string? baseParameters = null
@@ -151,7 +152,15 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
 
         var sb = new StringBuilder();
 
-        sb.Append("public partial ");
+        sb.Append("public ");
+
+        if (isAbstract)
+        {
+            sb.Append("abstract ");
+        }
+
+        sb.Append("partial ");
+
         if (isRecord)
         {
             sb.Append("record ");

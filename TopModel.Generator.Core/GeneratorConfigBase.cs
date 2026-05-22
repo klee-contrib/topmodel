@@ -641,10 +641,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     AnnotationConstraint.NonPersisted => container is Endpoint
                         || container is Class c && !IsPersistent(c, tag)
                         || container is IProperty { Endpoint: not null }
-                        || container is IProperty { Class: Class { Abstract: false } pc } && !IsPersistent(pc, tag),
+                        || container is IProperty { Class: Class pc } && !IsPersistent(pc, tag),
                     AnnotationConstraint.Persisted => container is Class c && IsPersistent(c, tag)
-                        || container is IProperty { Class: Class { Abstract: false } pc } && IsPersistent(pc, tag),
-                    AnnotationConstraint.ClassProperty => container is IProperty { Class: Class { Abstract: false } },
+                        || container is IProperty { Class: Class pc } && IsPersistent(pc, tag),
+                    AnnotationConstraint.ClassProperty => container is IProperty { Class: not null },
                     AnnotationConstraint.EndpointParam => container is IProperty { Endpoint: Endpoint e } p
                         && e.Params.Contains(p),
                     AnnotationConstraint.PrimaryKey => container is IProperty { PrimaryKey: true },

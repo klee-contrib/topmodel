@@ -152,7 +152,12 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
-    /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
+    /// Classes interfaces ne peuvent être héritées qu'entre elles.
+    /// </summary>
+    TMD3007,
+
+    /// <summary>
+    /// Classe abstraite ne peut pas hériter de classe non abstraite.
     /// </summary>
     TMD3008,
 

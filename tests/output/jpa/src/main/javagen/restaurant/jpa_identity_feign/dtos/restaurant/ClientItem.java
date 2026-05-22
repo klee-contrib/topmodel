@@ -8,7 +8,6 @@ import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.annotation.Generated;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Client;
@@ -18,36 +17,13 @@ import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
  * Détail d'un client en liste.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class ClientItem implements Serializable {
+public class ClientItem extends PersonneItem implements Serializable {
 
 	/**
 	 * Serial ID.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Identifiant de la personne.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getId() Personne#getId()}
-	 */
-	@NotNull
-	private Integer id;
-
-	/**
-	 * Nom de la personne.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getNom() Personne#getNom()}
-	 */
-	@NotNull
-	@Size(max = 100)
-	private String nom;
-
-	/**
-	 * Prénom de la personne.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
-	 */
-	@NotNull
-	@Size(max = 100)
-	private String prenom;
 
 	/**
 	 * Nom complet du client (calculé).
@@ -59,7 +35,7 @@ public class ClientItem implements Serializable {
 	 * No arg constructor.
 	 */
 	public ClientItem() {
-		// No arg constructor
+		super();
 	}
 
 	/**
@@ -69,34 +45,8 @@ public class ClientItem implements Serializable {
 	 * @return Une nouvelle instance de 'ClientItem'.
 	 */
 	public ClientItem(Client client) {
+		super();
 		RestaurantMappers.mapClientItem(client, this);
-	}
-
-	/**
-	 * Getter for id.
-	 *
-	 * @return value of {@link #id id}.
-	 */
-	public Integer getId() {
-		return this.id;
-	}
-
-	/**
-	 * Getter for nom.
-	 *
-	 * @return value of {@link #nom nom}.
-	 */
-	public String getNom() {
-		return this.nom;
-	}
-
-	/**
-	 * Getter for prenom.
-	 *
-	 * @return value of {@link #prenom prenom}.
-	 */
-	public String getPrenom() {
-		return this.prenom;
 	}
 
 	/**
@@ -106,30 +56,6 @@ public class ClientItem implements Serializable {
 	 */
 	public String getNomComplet() {
 		return this.nomComplet;
-	}
-
-	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
-	 */
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
-	 */
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
 	}
 
 	/**
@@ -144,9 +70,6 @@ public class ClientItem implements Serializable {
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.dtos.restaurant.ClientItem ClientItem}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
-		NOM(String.class),
-		PRENOM(String.class),
 		NOM_COMPLET(String.class);
 
 		private final Class<?> type;

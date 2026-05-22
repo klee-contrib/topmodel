@@ -8,7 +8,7 @@ uses:
 ---
 class:
   name: RestaurantItem
-  abstract: true
+  type: interface
   comment: Détail d'un restaurant en liste
 
   properties:
@@ -108,7 +108,7 @@ class:
 ---
 class:
   name: TableItem
-  abstract: true
+  type: interface
   comment: Détail d'une table en liste
 
   properties:

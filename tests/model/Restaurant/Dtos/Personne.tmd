@@ -9,10 +9,9 @@ uses:
 
 ---
 class:
-  name: EmployeItem
-  abstract: true
-  comment: Détail d'un employé en liste
-
+  name: PersonneItem
+  type: abstract
+  comment: Détail d'une personne en liste.
   properties:
     - name: Id
       domain: DO_ID
@@ -23,6 +22,13 @@ class:
     - name: Prenom
       domain: DO_LIBELLE
       comment: Prénom de l'employé
+---
+class:
+  name: EmployeItem
+  extends: PersonneItem
+  comment: Détail d'un employé en liste
+
+  properties:
     - alias:
         class: Employe
         include:
@@ -68,15 +74,9 @@ class:
 ---
 class:
   name: ClientItem
+  extends: PersonneItem
   comment: Détail d'un client en liste
   properties:
-    - alias:
-        class: Personne
-        include:
-          - Id
-          - Nom
-          - Prenom
-      label: Informations client
     - name: NomComplet
       domain: DO_LIBELLE
       readonly: true
