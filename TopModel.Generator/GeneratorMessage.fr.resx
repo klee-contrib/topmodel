@@ -72,16 +72,16 @@
     <value>Aucun module de générateurs trouvé pour '{0}'.</value>
   </data>
   <data name="ModuleCorrupted" xml:space="preserve">
-    <value>({0}) Module corrompu, réinstallation...</value>
+    <value>Module {0} corrompu, suppression...</value>
   </data>
   <data name="ModuleInstallInProgress" xml:space="preserve">
-    <value>({0}) Installation de {1}@{2} en cours...</value>
+    <value>Installation de {0}@{1} en cours...</value>
   </data>
   <data name="PackageNotFound" xml:space="preserve">
-    <value>({0}) Le package {1}@{2} est introuvable.</value>
+    <value>Le package {0}@{1} est introuvable.</value>
   </data>
   <data name="ModuleInstallCompleted" xml:space="preserve">
-    <value>({0}) Installation de {1}@{2} terminée avec succès.</value>
+    <value>Installation de {0}@{1} terminée.</value>
   </data>
   <data name="ModuleBadMajorVersion" xml:space="preserve">
     <value>Le module '{0}' ne référence pas la bonne version majeure de TopModel ({1} &lt; {2}).</value>

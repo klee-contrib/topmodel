@@ -72,16 +72,16 @@
     <value>No generator module found for '{0}'.</value>
   </data>
   <data name="ModuleCorrupted" xml:space="preserve">
-    <value>({0}) Module corrupted, reinstalling...</value>
+    <value>Module {0} corrupted, deleting...</value>
   </data>
   <data name="ModuleInstallInProgress" xml:space="preserve">
-    <value>({0}) Installing {1}@{2}...</value>
+    <value>Installing {0}@{1}...</value>
   </data>
   <data name="PackageNotFound" xml:space="preserve">
-    <value>({0}) Package {1}@{2} not found.</value>
+    <value>Package {0}@{1} not found.</value>
   </data>
   <data name="ModuleInstallCompleted" xml:space="preserve">
-    <value>({0}) Installation of {1}@{2} completed successfully.</value>
+    <value>Installation of {0}@{1} completed successfully.</value>
   </data>
   <data name="ModuleBadMajorVersion" xml:space="preserve">
     <value>Module '{0}' does not reference the correct major version of TopModel ({1} &lt; {2}).</value>

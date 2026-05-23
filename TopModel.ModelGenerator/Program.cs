@@ -55,7 +55,7 @@ if (!configs.Any())
     return 1;
 }
 
-await TopModelCli.ShowBannerAsync("TopModel.ModelGenerator");
+await TopModelCli.StartPackage("TopModel.ModelGenerator", CancellationToken.None);
 
 if (watchMode)
 {

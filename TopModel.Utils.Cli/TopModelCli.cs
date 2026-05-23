@@ -57,29 +57,27 @@ public static class TopModelCli
         }
     }
 
-    public static async Task<(string Version, int MajorVersion, int MinorVersion)> ShowBannerAsync(
-        string nugetPackageName
-    )
+    public static async Task StartPackage(string nugetPackageName, CancellationToken cancellationToken)
     {
         var version = Assembly
             .GetEntryAssembly()!
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
             .InformationalVersion;
-        var majorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Major;
-        var minorVersion = Assembly.GetEntryAssembly()!.GetName().Version!.Minor;
-        var prerelease = version.Contains('-');
 
         AnsiConsole.MarkupLine($"========= {nugetPackageName} v{version} =========");
         AnsiConsole.WriteLine();
 
-        var latestVersion = await NugetUtils.GetLatestVersionAsync(nugetPackageName, prerelease: prerelease);
+        var prerelease = version.Contains('-');
+        var latestVersion = await NugetUtils.GetLatestVersionAsync(
+            nugetPackageName,
+            cancellationToken,
+            prerelease: prerelease
+        );
         if (latestVersion != null && latestVersion.Version != version)
         {
             LogUtils.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
             LogUtils.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
             AnsiConsole.WriteLine();
         }
-
-        return (version, majorVersion, minorVersion);
     }
 }
