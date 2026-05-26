@@ -4,3 +4,4 @@
 | ------- | ----------- | ----------- | ---------------- | ------- | -------- | -------- | ------------------------------- | ------------ | ----------- | ----------------- |
 | gestion | TRANSLATION | ResourceKey | TRA_RESOURCE_KEY |         | varchar  | 100      | Clé de traduction.              | Clé primaire | Oui         |                   |
 |         |             | Value       | TRA_VALUE        |         | varchar  | 100      | Valeur de la clé de traduction. |              | Oui         |                   |
+|         |             | Lang        | TRA_LANG         |         | varchar  | 100      | Langue de traduction            | Clé primaire | Oui         |                   |

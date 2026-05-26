@@ -158,6 +158,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<CategoriePlatRegion>().HasKey("RegionCode", "CategoriePlatCode");
         modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
+        modelBuilder.Entity<Translation>().HasKey(p => new { p.ResourceKey, p.Lang });
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();
@@ -189,6 +190,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Reservation>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("res_id");
 
+        modelBuilder.Entity<Translation>().HasIndex(p => p.ResourceKey);
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Libelle);
         modelBuilder.Entity<Departement>().HasIndex(p => p.Libelle);
         modelBuilder.Entity<Region>().HasIndex(p => p.Libelle);
@@ -202,13 +204,19 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
 
         AddComments(modelBuilder);
-        AddResources(modelBuilder);
+        AddFrResources(modelBuilder);
+        AddDeResources(modelBuilder);
+        AddEnResources(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void AddComments(ModelBuilder modelBuilder);
 
-    partial void AddResources(ModelBuilder modelBuilder);
+    partial void AddDeResources(ModelBuilder modelBuilder);
+
+    partial void AddEnResources(ModelBuilder modelBuilder);
+
+    partial void AddFrResources(ModelBuilder modelBuilder);
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

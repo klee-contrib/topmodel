@@ -31,7 +31,7 @@ export const restaurant = {
     },
     client: {
         avisClients: "AvisClients",
-        email: "Email"
+        email: "Courriel"
     },
     clientItem: {
         id: "Informations client",
@@ -46,7 +46,7 @@ export const restaurant = {
         dateLivraison: "DateLivraison",
         id: "Id",
         lignes: "Lignes",
-        montantTotal: "MontantTotal",
+        montantTotal: "Montant total",
         reservationId: "Reservation",
         statutCommande: "StatutCommande",
         tableId: "TableId"
@@ -104,7 +104,7 @@ export const restaurant = {
         departementCode: "DepartementCode",
         id: "Id",
         nom: "Nom",
-        prenom: "Prenom"
+        prenom: "Prénom"
     },
     plat: {
         categoriePlatCode: "CategoriePlat",

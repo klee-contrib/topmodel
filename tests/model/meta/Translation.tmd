@@ -9,6 +9,7 @@ class:
   trigram: TRA
   translation: true
   defaultProperty: Value
+  localeProperty: Lang
   properties:
     - name: ResourceKey
       domain: DO_LIBELLE
@@ -18,3 +19,8 @@ class:
       domain: DO_LIBELLE
       required: true
       comment: Valeur de la clé de traduction.
+    - name: Lang
+      domain: DO_LIBELLE
+      primaryKey: true
+      required: true
+      comment: Langue de traduction

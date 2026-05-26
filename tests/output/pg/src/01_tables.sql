@@ -306,7 +306,8 @@ create sequence SEQ_TABLE as INT start 1000 increment 50 owned by TABLE.TAB_ID;
 create table TRANSLATION (
 	TRA_RESOURCE_KEY varchar(100) not null,
 	TRA_VALUE varchar(100) not null,
-	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY)
+	TRA_LANG varchar(100) not null,
+	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY,TRA_LANG)
 );
 
 /**

@@ -180,5 +180,6 @@ public partial class TopModelSampleDbContext : DbContext
         translation.ToTable(t => t.HasComment("Table pour stocker les traductions en SQL."));
         translation.Property(p => p.ResourceKey).HasComment("Clé de traduction.");
         translation.Property(p => p.Value).HasComment("Valeur de la clé de traduction.");
+        translation.Property(p => p.Lang).HasComment("Langue de traduction");
     }
 }

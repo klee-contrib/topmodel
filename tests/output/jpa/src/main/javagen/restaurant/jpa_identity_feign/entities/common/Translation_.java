@@ -16,7 +16,11 @@ public class Translation_ {
 
 	public static volatile SingularAttribute<Translation, String> value;
 
+	public static volatile SingularAttribute<Translation, String> lang;
+
 	public static final String RESOURCE_KEY = "resourceKey";
 
 	public static final String VALUE = "value";
+
+	public static final String LANG = "lang";
 }

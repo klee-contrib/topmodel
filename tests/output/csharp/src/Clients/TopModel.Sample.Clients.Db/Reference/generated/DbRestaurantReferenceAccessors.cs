@@ -2,6 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
+using System.Globalization;
 using Kinetix.Services.Annotations;
 using TopModel.Sample.Restaurant.Models;
 
@@ -19,7 +20,7 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     {
         return (
             from row in dbContext.CategoriePlats
-            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            join tra in dbContext.Translations on new { ResourceKey = row.Libelle, Lang = CultureInfo.CurrentUICulture.Name } equals new { tra.ResourceKey, tra.Lang }
             orderby row.Ordre
             select new CategoriePlat
             {
@@ -36,7 +37,7 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     {
         return (
             from row in dbContext.Departements
-            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            join tra in dbContext.Translations on new { ResourceKey = row.Libelle, Lang = CultureInfo.CurrentUICulture.Name } equals new { tra.ResourceKey, tra.Lang }
             orderby row.Libelle
             select new Departement
             {
@@ -52,7 +53,7 @@ public partial class DbRestaurantReferenceAccessors(TopModelSampleDbContext dbCo
     {
         return (
             from row in dbContext.Regions
-            join tra in dbContext.Translations on row.Libelle equals tra.ResourceKey
+            join tra in dbContext.Translations on new { ResourceKey = row.Libelle, Lang = CultureInfo.CurrentUICulture.Name } equals new { tra.ResourceKey, tra.Lang }
             orderby row.Libelle
             select new Region
             {

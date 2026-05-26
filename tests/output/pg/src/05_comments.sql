@@ -221,6 +221,7 @@ COMMENT ON COLUMN TABLE.RES_ID IS 'Restaurant auquel appartient la table';
 COMMENT ON TABLE TRANSLATION IS 'Table pour stocker les traductions en SQL.';
 COMMENT ON COLUMN TRANSLATION.TRA_RESOURCE_KEY IS 'Clé de traduction.';
 COMMENT ON COLUMN TRANSLATION.TRA_VALUE IS 'Valeur de la clé de traduction.';
+COMMENT ON COLUMN TRANSLATION.TRA_LANG IS 'Langue de traduction';
 
 /**
   * Commentaires pour la table TYPE_TERRASSE

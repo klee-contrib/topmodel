@@ -31,6 +31,7 @@ class:
     - name: MontantTotal
       domain: DO_PRIX
       required: true
+      label: Montant total
       comment: Montant total de la commande
 
     - association: Client

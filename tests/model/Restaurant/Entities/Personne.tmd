@@ -20,11 +20,13 @@ class:
       domain: DO_LIBELLE
       required: true
       comment: Nom de la personne
+      label: Nom
 
     - name: Prenom
       domain: DO_LIBELLE
       required: true
       comment: Prénom de la personne
+      label: Prénom
 
     - association: Departement
       defaultValue: 75
@@ -80,6 +82,7 @@ class:
     - name: Email
       domain: DO_LIBELLE
       comment: Adresse email du client
+      label: Courriel
 ---
 class:
   name: AvisClient

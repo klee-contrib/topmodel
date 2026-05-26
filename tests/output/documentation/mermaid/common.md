@@ -6,6 +6,7 @@ classDiagram
 class Translation{
  DO_LIBELLE ResourceKey
  DO_LIBELLE Value
+ DO_LIBELLE Lang
 }
 
 

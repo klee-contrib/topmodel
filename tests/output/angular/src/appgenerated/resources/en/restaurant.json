@@ -1,0 +1,185 @@
+{
+    "avisClient": {
+        "approuve": "Approuve",
+        "clientId": "Client",
+        "commentaire": "Commentaire",
+        "dateAvis": "DateAvis",
+        "id": "Id",
+        "nombreVues": "NombreVues",
+        "note": "Note",
+        "restaurantId": "Restaurant"
+    },
+    "categoriePlat": {
+        "code": "Code",
+        "libelle": "Libelle",
+        "ordre": "Ordre",
+        "prixMoyen": "PrixMoyen",
+        "values": {
+            "Entree": "Entrée",
+            "Plat": "Plat principal",
+            "Dessert": "Dessert",
+            "Boisson": "Boisson"
+        }
+    },
+    "categoriePlatRegion": {
+        "categoriePlatCode": "CategoriePlat",
+        "regionCode": "RegionCode"
+    },
+    "client": {
+        "avisClients": "AvisClients",
+        "email": "Courriel"
+    },
+    "clientItem": {
+        "id": "Informations client",
+        "nom": "Informations client",
+        "nomComplet": "NomComplet",
+        "prenom": "Informations client"
+    },
+    "commande": {
+        "avisClientId": "AvisClient",
+        "clientId": "Client",
+        "dateCommande": "DateCommande",
+        "dateLivraison": "DateLivraison",
+        "id": "Id",
+        "lignes": "Lignes",
+        "montantTotal": "Montant total",
+        "reservationId": "Reservation",
+        "statutCommande": "StatutCommande",
+        "tableId": "TableId"
+    },
+    "commandeRead": {
+        "reservation": "Reservation"
+    },
+    "departement": {
+        "code": "Code",
+        "libelle": "Libelle",
+        "regionCode": "RegionCode",
+        "values": {
+            "Paris": "Paris",
+            "HautsDeSeine": "Hauts de Seine",
+            "SeineSaintDenis": "Seine Saint Denis",
+            "SeineEtMarne": "Seine et Marne"
+        }
+    },
+    "employe": {
+        "dateEmbauche": "DateEmbauche",
+        "dateNaissance": "DateNaissance",
+        "matricule": "Matricule",
+        "restaurantId": "Restaurant",
+        "salaire": "Salaire",
+        "telephone": "Telephone"
+    },
+    "employeItem": {
+        "id": "Id",
+        "nom": "Nom",
+        "prenom": "Prenom"
+    },
+    "ligneCommande": {
+        "commandeId": "Commande",
+        "id": "Id",
+        "platId": "Plat",
+        "prixTotal": "PrixTotal",
+        "prixUnitaire": "PrixUnitaire",
+        "quantite": "Quantite"
+    },
+    "menu": {
+        "dateDebut": "DateDebut",
+        "dateFin": "DateFin",
+        "description": "Description",
+        "disponible": "Disponible",
+        "id": "Id",
+        "nom": "Nom",
+        "prix": "Prix",
+        "restaurantId": "Restaurant"
+    },
+    "menuRead": {
+        "categoriesPlat": "CategoriesPlat",
+        "plats": "Plats"
+    },
+    "personne": {
+        "departementCode": "DepartementCode",
+        "id": "Id",
+        "nom": "Nom",
+        "prenom": "Prénom"
+    },
+    "plat": {
+        "categoriePlatCode": "CategoriePlat",
+        "description": "Description",
+        "disponible": "Disponible",
+        "id": "Id",
+        "nom": "Nom",
+        "prix": "Prix",
+        "restaurantId": "Restaurant"
+    },
+    "promotion": {
+        "active": "Active",
+        "dateDebut": "DateDebut",
+        "dateFin": "DateFin",
+        "libelle": "Libelle",
+        "platId": "Plat",
+        "pourcentageReduction": "PourcentageReduction",
+        "restaurantId": "Restaurant"
+    },
+    "region": {
+        "code": "Code",
+        "libelle": "Libelle",
+        "nomResponsable": "NomResponsable",
+        "values": {
+            "Idf": "Île de France"
+        }
+    },
+    "reservation": {
+        "clientId": "Client",
+        "commentaire": "Commentaire",
+        "confirmee": "Confirmee",
+        "dateReservation": "DateReservation",
+        "id": "Id",
+        "nombrePersonnes": "NombrePersonnes",
+        "restaurantId": "Restaurant",
+        "tableId": "TableId"
+    },
+    "restaurant": {
+        "adresse": "Adresse",
+        "avisClients": "AvisClients",
+        "id": "Id",
+        "menus": "Menus",
+        "nom": "Nom",
+        "plats": "Plats",
+        "promotions": "Promotions",
+        "tableIds": "TableIds",
+        "telephone": "Telephone"
+    },
+    "restaurantAvecStatistiques": {
+        "nombrePlats": "NombrePlats",
+        "nombreTables": "NombreTables",
+        "noteMoyenne": "NoteMoyenne"
+    },
+    "statistiquesRestaurant": {
+        "chiffreAffaires": "ChiffreAffaires",
+        "nombreClients": "NombreClients",
+        "nombreCommandes": "NombreCommandes",
+        "noteMoyenne": "NoteMoyenne",
+        "restaurantId": "RestaurantId"
+    },
+    "statutCommande": {
+        "code": "Code",
+        "libelle": "Libelle",
+        "values": {
+            "EnAttente": "En attente",
+            "EnPreparation": "En préparation",
+            "Prete": "Prête",
+            "Servie": "Servie",
+            "Annulee": "Annulée"
+        }
+    },
+    "tableRestaurant": {
+        "capacite": "Capacite",
+        "disponible": "Disponible",
+        "id": "Id",
+        "numero": "Numero",
+        "restaurantId": "RestaurantId"
+    },
+    "typeTerrasse": {
+        "code": "Code"
+    }
+}

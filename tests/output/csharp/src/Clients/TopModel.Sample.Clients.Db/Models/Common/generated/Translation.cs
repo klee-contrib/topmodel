@@ -19,9 +19,9 @@ public partial record Translation
     /// Clé de traduction.
     /// </summary>
     [Column("tra_resource_key")]
+    [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
-    [Key]
     public string? ResourceKey { get; set; }
 
     /// <summary>
@@ -32,4 +32,13 @@ public partial record Translation
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Langue de traduction.
+    /// </summary>
+    [Column("tra_lang")]
+    [Required]
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string? Lang { get; set; }
 }

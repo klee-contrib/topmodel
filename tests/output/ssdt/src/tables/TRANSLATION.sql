@@ -9,7 +9,8 @@
 create table [dbo].[TRANSLATION] (
 	[TRA_RESOURCE_KEY] varchar,
 	[TRA_VALUE] varchar not null,
-	constraint [PK_TRANSLATION] primary key clustered ([TRA_RESOURCE_KEY] ASC))
+	[TRA_LANG] varchar,
+	constraint [PK_TRANSLATION] primary key clustered ([TRA_RESOURCE_KEY] ASC, [TRA_LANG] ASC))
 go
 
 /**
@@ -20,4 +21,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_RESOURCE_KEY'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Valeur de la clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_VALUE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Langue de traduction', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_LANG'
 go

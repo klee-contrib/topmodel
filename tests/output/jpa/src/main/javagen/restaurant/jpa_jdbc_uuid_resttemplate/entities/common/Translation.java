@@ -22,7 +22,6 @@ public class Translation {
 	 * Clé de traduction.
 	 */
 	@Id
-	@Column("tra_resource_key")
 	private String resourceKey;
 
 	/**
@@ -31,6 +30,12 @@ public class Translation {
 	@NotNull
 	@Column("tra_value")
 	private String value;
+
+	/**
+	 * Langue de traduction.
+	 */
+	@Id
+	private String lang;
 
 	/**
 	 * Getter for resourceKey.
@@ -51,6 +56,15 @@ public class Translation {
 	}
 
 	/**
+	 * Getter for lang.
+	 *
+	 * @return value of {@link #lang lang}.
+	 */
+	public String getLang() {
+		return this.lang;
+	}
+
+	/**
 	 * Set the value of {@link #resourceKey resourceKey}.
 	 * @param resourceKey value to set.
 	 */
@@ -64,5 +78,13 @@ public class Translation {
 	 */
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	/**
+	 * Set the value of {@link #lang lang}.
+	 * @param lang value to set.
+	 */
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 }

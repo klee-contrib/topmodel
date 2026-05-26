@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="restaurant.client.email" xml:space="preserve">
+    <value>Courriel</value>
+  </data>
   <data name="restaurant.clientItem.id" xml:space="preserve">
     <value>Informations client</value>
   </data>
@@ -125,5 +128,14 @@
   </data>
   <data name="restaurant.clientItem.prenom" xml:space="preserve">
     <value>Informations client</value>
+  </data>
+  <data name="restaurant.commande.montantTotal" xml:space="preserve">
+    <value>Montant total</value>
+  </data>
+  <data name="restaurant.personne.nom" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="restaurant.personne.prenom" xml:space="preserve">
+    <value>Prénom</value>
   </data>
 </root>
