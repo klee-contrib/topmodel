@@ -3,11 +3,11 @@
 ####
 
 ---
-module: Commande
+module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Commande/03_Personne
+  - 03_Restaurant/04_Personne
 ---
 class:
   name: Client

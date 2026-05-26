@@ -27,3 +27,26 @@ class:
     - name: NomResponsable
       domain: DO_LIBELLE
       comment: Nom du responsable de la région.
+---
+class:
+  name: Translation
+  sqlName: translation
+  comment: Table pour stocker les traductions en SQL.
+  trigram: TRA
+  properties:
+    - name: ResourceKey
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Clé de traduction.
+
+    - name: Value
+      domain: DO_LIBELLE
+      required: true
+      comment: Valeur de la clé de traduction.
+
+    - name: Lang
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Langue de traduction

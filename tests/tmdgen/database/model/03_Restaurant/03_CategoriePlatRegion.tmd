@@ -3,12 +3,12 @@
 ####
 
 ---
-module: Common
+module: Restaurant
 tags:
   - Back
 uses:
   - 01_Common/01_Region
-  - 03_Commande/01_Restaurant
+  - 03_Restaurant/01_Restaurant
 ---
 class:
   name: CategoriePlatRegion

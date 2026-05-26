@@ -3,7 +3,7 @@
 ####
 
 ---
-module: Commande
+module: Restaurant
 tags:
   - Back
 uses:

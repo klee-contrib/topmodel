@@ -3,58 +3,63 @@
 ####
 
 ---
-module: Join
+module: Restaurant
 tags:
   - Back
+uses:
+  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/02_Plat
+  - 03_Restaurant/07_Client
+  - 03_Restaurant/09_AvisClient
+  - 03_Restaurant/10_Reservation
 ---
 class:
-  name: CommandeHistorique
-  sqlName: commande_historique
-  comment: Commande pour historique avec préservation des clés primaires
+  name: Commande
+  sqlName: commande
+  comment: Commande d'un client
+  trigram: COM
   properties:
-    - name: ComId
+    - name: Id
       domain: DO_ID
       required: true
       primaryKey: true
       comment: Identifiant de la commande
 
-    - name: ComDateCommande
+    - name: DateCommande
       domain: DO_DATE_TIME
       required: true
       comment: Date et heure de la commande
 
-    - name: ComDateLivraison
+    - name: DateLivraison
       domain: DO_DATE_TIME
       comment: Date et heure de livraison
 
-    - name: ComMontantTotal
+    - name: MontantTotal
       domain: DO_ENTIER
       required: true
       comment: Montant total de la commande
 
-    - name: PerId
-      domain: DO_ID
-      required: true
+    - association: Client
       comment: Client ayant passé la commande
+      required: true
 
-    - name: TabId
-      domain: DO_ID
+    - association: TableRestaurant
       comment: Table associée à la commande
 
-    - name: RevId
-      domain: DO_ID
+    - association: Reservation
       comment: Réservation associée à la commande
 
-    - name: StcCode
-      domain: DO_LIBELLE
-      required: true
+    - association: StatutCommande
       comment: Statut de la commande
+      required: true
 
-    - name: AviId
-      domain: DO_ID
+    - association: AvisClient
       comment: Avis laissé par le client sur la commande.
 
-    - name: ComDateCreation
+    - name: DateCreation
       domain: DO_DATE_TIME
       required: true
       comment: Date de création de l'enregistrement
+
+  unique:
+    - [AvisClientId]

@@ -3,12 +3,12 @@
 ####
 
 ---
-module: Commande
+module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Commande/01_Restaurant
-  - 03_Commande/02_Plat
+  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/02_Plat
 ---
 class:
   name: Promotion

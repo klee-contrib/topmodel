@@ -3,48 +3,52 @@
 ####
 
 ---
-module: Join
+module: Restaurant
 tags:
   - Back
 uses:
-  - 04_Join/01_CommandeHistorique
+  - 03_Restaurant/02_Plat
+  - 03_Restaurant/11_Commande
 ---
 class:
-  name: LigneCommandeHistorique
-  sqlName: ligne_commande_historique
-  comment: Ligne de commande pour historique avec préservation des clés primaires
+  name: LigneCommande
+  sqlName: ligne_commande
+  comment: Ligne d'une commande
+  trigram: LIG
   properties:
-    - name: LigId
+    - name: Id
       domain: DO_ID
       required: true
       primaryKey: true
       comment: Identifiant de la ligne
 
-    - name: LigQuantite
+    - name: Quantite
       domain: DO_ENTIER
       required: true
       comment: Quantité commandée
 
-    - name: LigPrixUnitaire
+    - name: PrixUnitaire
       domain: DO_ENTIER
       required: true
       comment: Prix unitaire au moment de la commande
 
-    - name: LigPrixTotal
+    - name: PrixTotal
       domain: DO_ENTIER
       required: true
       comment: Prix total de la ligne
 
-    - name: PlaId
-      domain: DO_ID
+    - association: Commande
+      comment: Commande à laquelle appartient la ligne
       required: true
-      comment: Plat commandé
 
-    - name: LigDateCreation
+    - association: Plat
+      comment: Plat commandé
+      required: true
+
+    - name: DateCreation
       domain: DO_DATE_TIME
       required: true
       comment: Date de création de l'enregistrement
 
-    - association: CommandeHistorique
-      comment: Commande à laquelle appartient la ligne
-      required: true
+  unique:
+    - [CommandeId, PlatId]

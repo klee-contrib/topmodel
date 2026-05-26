@@ -3,7 +3,7 @@
 ####
 
 ---
-module: Commande
+module: Restaurant
 tags:
   - Back
 ---
@@ -35,6 +35,58 @@ class:
 
   unique:
     - [Ordre]
+---
+class:
+  name: CommandeHistorique
+  sqlName: commande_historique
+  comment: Commande pour historique avec préservation des clés primaires
+  properties:
+    - name: ComId
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la commande
+
+    - name: ComDateCommande
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date et heure de la commande
+
+    - name: ComDateLivraison
+      domain: DO_DATE_TIME
+      comment: Date et heure de livraison
+
+    - name: ComMontantTotal
+      domain: DO_ENTIER
+      required: true
+      comment: Montant total de la commande
+
+    - name: PerId
+      domain: DO_ID
+      required: true
+      comment: Client ayant passé la commande
+
+    - name: TabId
+      domain: DO_ID
+      comment: Table associée à la commande
+
+    - name: RevId
+      domain: DO_ID
+      comment: Réservation associée à la commande
+
+    - name: StcCode
+      domain: DO_LIBELLE
+      required: true
+      comment: Statut de la commande
+
+    - name: AviId
+      domain: DO_ID
+      comment: Avis laissé par le client sur la commande.
+
+    - name: ComDateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
 ---
 class:
   name: Restaurant
@@ -82,3 +134,14 @@ class:
       domain: DO_LIBELLE
       required: true
       comment: Libellé du statut
+---
+class:
+  name: TypeTerrasse
+  sqlName: type_terrasse
+  comment: Type de terrasse
+  properties:
+    - name: Code
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Code du type de terrase
