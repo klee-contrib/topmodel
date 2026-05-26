@@ -642,7 +642,7 @@ public abstract class DatabaseTmdGenerator(
         foreach (var group in Files.GroupBy(f => f.Module))
         {
             var indice = 1;
-            var files = group.OrderBy(f => f.ExtendedUses.Count);
+            var files = group.OrderBy(f => f.ExtendedUses.Count + f.Name);
             foreach (var file in files)
             {
                 var mainClass = file
