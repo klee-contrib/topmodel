@@ -23,4 +23,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage-results.xml
+          files: ./modgen-coverage-results.xml,./tmdgen-coverage-results.xml
