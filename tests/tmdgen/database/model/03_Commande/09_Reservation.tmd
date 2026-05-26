@@ -1,0 +1,62 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/01_Restaurant
+  - 03_Commande/02_Plat
+  - 03_Commande/06_Client
+---
+class:
+  name: Reservation
+  sqlName: reservation
+  comment: Réservation d'une table
+  trigram: REV
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la réservation
+
+    - name: DateReservation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date et heure de la réservation
+
+    - name: NombrePersonnes
+      domain: DO_ENTIER
+      required: true
+      comment: Nombre de personnes
+
+    - name: Commentaire
+      domain: DO_LIBELLE
+      comment: Commentaire sur la réservation
+
+    - name: Confirmee
+      domain: DO_BOOLEAN
+      required: true
+      comment: Indique si la réservation est confirmée
+
+    - association: Client
+      comment: Client ayant fait la réservation
+      required: true
+
+    - association: TableRestaurant
+      comment: Table réservée
+
+    - association: Restaurant
+      comment: Restaurant concerné par la réservation
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+
+  unique:
+    - [TableRestaurantId, DateReservation]

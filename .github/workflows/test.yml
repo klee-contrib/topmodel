@@ -5,6 +5,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Test coverage
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: demo
+          POSTGRES_USER: demo
+          POSTGRES_DB: demo
+        ports:
+          - 5962:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
 
@@ -14,13 +28,20 @@ jobs:
       - name: Install dotnet-coverage
         run: dotnet tool install --global dotnet-coverage
 
-      - name: run tests
+      - name: Init database
+        run: |
+          for f in tests/output/pg/src/*.sql; do
+            PGPASSWORD=demo psql -h localhost -p 5962 -U demo -d demo -f "$f"
+          done
+
+      - name: run tests - tmdgen (
+        run: dotnet-coverage collect --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
+
+      - name: run tests - modgen
         run: dotnet-coverage collect --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
-      - name: run tests
-        run: dotnet-coverage collect --output "./tmdgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/open-api/tmdgen.config -c"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./modgen-coverage-results.xml,./tmdgen-coverage-results.xml
+          files: ./modgen-coverage-results.xml,./tmdgen-coverage-results.xml,./tmdgen-database-coverage-results.xml

@@ -1,0 +1,54 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/02_Plat
+  - 03_Commande/10_Commande
+---
+class:
+  name: LigneCommande
+  sqlName: ligne_commande
+  comment: Ligne d'une commande
+  trigram: LIG
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la ligne
+
+    - name: Quantite
+      domain: DO_ENTIER
+      required: true
+      comment: Quantité commandée
+
+    - name: PrixUnitaire
+      domain: DO_ENTIER
+      required: true
+      comment: Prix unitaire au moment de la commande
+
+    - name: PrixTotal
+      domain: DO_ENTIER
+      required: true
+      comment: Prix total de la ligne
+
+    - association: Commande
+      comment: Commande à laquelle appartient la ligne
+      required: true
+
+    - association: Plat
+      comment: Plat commandé
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+
+  unique:
+    - [CommandeId, PlatId]

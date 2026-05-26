@@ -218,15 +218,15 @@ COMMENT ON COLUMN STATUT_COMMANDE.STC_CODE IS 'Code du statut';
 COMMENT ON COLUMN STATUT_COMMANDE.STC_LIBELLE IS 'Libellé du statut';
 
 /**
-  * Commentaires pour la table TABLE
+  * Commentaires pour la table TABLE_RESTAURANT
  **/
-COMMENT ON TABLE TABLE IS 'Table du restaurant';
-COMMENT ON COLUMN TABLE.TAB_ID IS 'Identifiant de la table';
-COMMENT ON COLUMN TABLE.TAB_NUMERO IS 'Numéro de la table';
-COMMENT ON COLUMN TABLE.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
-COMMENT ON COLUMN TABLE.TAB_DISPONIBLE IS 'Indique si la table est disponible';
-COMMENT ON COLUMN TABLE.RES_ID IS 'Restaurant auquel appartient la table';
-COMMENT ON COLUMN TABLE.TAB_DATE_CREATION IS 'Date de création de l''enregistrement';
+COMMENT ON TABLE TABLE_RESTAURANT IS 'Table du restaurant';
+COMMENT ON COLUMN TABLE_RESTAURANT.TAB_ID IS 'Identifiant de la table';
+COMMENT ON COLUMN TABLE_RESTAURANT.TAB_NUMERO IS 'Numéro de la table';
+COMMENT ON COLUMN TABLE_RESTAURANT.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
+COMMENT ON COLUMN TABLE_RESTAURANT.TAB_DISPONIBLE IS 'Indique si la table est disponible';
+COMMENT ON COLUMN TABLE_RESTAURANT.RES_ID IS 'Restaurant auquel appartient la table';
+COMMENT ON COLUMN TABLE_RESTAURANT.TAB_DATE_CREATION IS 'Date de création de l''enregistrement';
 
 /**
   * Commentaires pour la table TRANSLATION

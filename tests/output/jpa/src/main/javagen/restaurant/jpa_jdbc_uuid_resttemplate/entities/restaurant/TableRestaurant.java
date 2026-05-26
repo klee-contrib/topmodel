@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 /**
  * Table du restaurant.
  */
-@Table(name = "table")
+@Table(name = "table_restaurant")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TableRestaurant {

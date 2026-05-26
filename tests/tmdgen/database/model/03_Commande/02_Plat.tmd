@@ -1,0 +1,141 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/01_Restaurant
+---
+class:
+  name: Menu
+  sqlName: menu
+  comment: Menu du restaurant
+  trigram: MEN
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant du menu
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du menu
+
+    - name: Description
+      domain: DO_LIBELLE
+      comment: Description du menu
+
+    - name: Prix
+      domain: DO_ENTIER
+      required: true
+      comment: Prix du menu
+
+    - name: Disponible
+      domain: DO_BOOLEAN
+      required: true
+      comment: Indique si le menu est disponible
+
+    - name: DateDebut
+      domain: DO_DATE_TIME
+      comment: Date de début de validité du menu
+
+    - name: DateFin
+      domain: DO_DATE_TIME
+      comment: Date de fin de validité du menu
+
+    - association: Restaurant
+      comment: Restaurant proposant ce menu
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+---
+class:
+  name: Plat
+  sqlName: plat
+  comment: Plat du menu
+  trigram: PLA
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant du plat
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du plat
+
+    - name: Description
+      domain: DO_LIBELLE
+      comment: Description du plat
+
+    - name: Prix
+      domain: DO_ENTIER
+      required: true
+      comment: Prix du plat
+
+    - name: Disponible
+      domain: DO_BOOLEAN
+      required: true
+      comment: Indique si le plat est disponible
+
+    - association: CategoriePlat
+      comment: Catégorie du plat
+      required: true
+
+    - association: Restaurant
+      comment: Restaurant proposant ce plat
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+---
+class:
+  name: TableRestaurant
+  sqlName: table_restaurant
+  comment: Table du restaurant
+  trigram: TAB
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la table
+
+    - name: Numero
+      domain: DO_LIBELLE
+      required: true
+      comment: Numéro de la table
+
+    - name: Capacite
+      domain: DO_ENTIER
+      required: true
+      comment: Capacité de la table (nombre de places)
+
+    - name: Disponible
+      domain: DO_BOOLEAN
+      required: true
+      comment: Indique si la table est disponible
+
+    - association: Restaurant
+      comment: Restaurant auquel appartient la table
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+
+  unique:
+    - [RestaurantId, Numero]

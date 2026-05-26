@@ -1,0 +1,24 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/03_Personne
+---
+class:
+  name: Client
+  sqlName: client
+  comment: Client du restaurant
+  properties:
+    - name: CliEmail
+      domain: DO_LIBELLE
+      comment: Adresse email du client
+
+    - association: Personne
+      comment: Association vers la clé primaire de la classe parente
+      required: true
+      primaryKey: true

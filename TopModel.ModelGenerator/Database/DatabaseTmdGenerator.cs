@@ -113,17 +113,7 @@ public abstract class DatabaseTmdGenerator(
                             var property = classe
                                 .Properties.OfType<TmdRegularProperty>()
                                 .First(p => p.SqlName == c.ColumnName);
-                            string name = string.Empty;
-                            if (property is TmdAssociationProperty ap)
-                            {
-                                name = ap.Association.Name + ap.ForeignProperty!.Name + ap.Role;
-                            }
-                            else
-                            {
-                                name = property.Name;
-                            }
-
-                            return name;
+                            return GetSemanticPropertyName(property);
                         })
                         .Distinct()
                         .ToList()
@@ -133,6 +123,16 @@ public abstract class DatabaseTmdGenerator(
                 classe.Unique.Add(c);
             }
         }
+    }
+
+    private static string GetSemanticPropertyName(TmdRegularProperty prop)
+    {
+        if (prop is TmdAssociationProperty ap)
+        {
+            return ap.Association.Name + GetSemanticPropertyName(ap.ForeignProperty!) + ap.Role;
+        }
+
+        return prop.Name;
     }
 
     private void AffectModule(TmdClass mainClass, string? module = null)

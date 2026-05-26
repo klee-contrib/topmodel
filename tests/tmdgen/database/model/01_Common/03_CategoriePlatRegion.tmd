@@ -1,0 +1,26 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Common
+tags:
+  - Back
+uses:
+  - 01_Common/01_Region
+  - 03_Commande/01_Restaurant
+---
+class:
+  name: CategoriePlatRegion
+  sqlName: categorie_plat_region
+  comment: Catégories de plats disponibles par région
+  properties:
+    - association: Region
+      comment: Région
+      required: true
+      primaryKey: true
+
+    - association: CategoriePlat
+      comment: Catégorie de plat
+      required: true
+      primaryKey: true

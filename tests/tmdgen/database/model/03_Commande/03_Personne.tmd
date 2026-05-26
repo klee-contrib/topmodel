@@ -1,0 +1,40 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 01_Common/02_Departement
+---
+class:
+  name: Personne
+  sqlName: personne
+  comment: Classe de base représentant une personne
+  trigram: PER
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la personne
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom de la personne
+
+    - name: Prenom
+      domain: DO_LIBELLE
+      required: true
+      comment: Prénom de la personne
+
+    - association: Departement
+      comment: Département de résidence de la personne.
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement

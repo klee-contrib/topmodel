@@ -1,0 +1,84 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+---
+class:
+  name: CategoriePlat
+  sqlName: categorie_plat
+  comment: Catégorie de plat
+  trigram: CAT
+  properties:
+    - name: Code
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Code de la catégorie
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé de la catégorie
+
+    - name: Ordre
+      domain: DO_ENTIER
+      required: true
+      comment: Ordre d'affichage dans le menu.
+
+    - name: PrixMoyen
+      domain: DO_ENTIER
+      comment: Prix moyen de la catégorie, à titre indicatif.
+
+  unique:
+    - [Ordre]
+---
+class:
+  name: Restaurant
+  sqlName: restaurant
+  comment: Restaurant
+  trigram: RES
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant du restaurant
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom du restaurant
+
+    - name: Adresse
+      domain: DO_LIBELLE
+      comment: Adresse du restaurant
+
+    - name: Telephone
+      domain: DO_LIBELLE
+      comment: Numéro de téléphone
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+---
+class:
+  name: StatutCommande
+  sqlName: statut_commande
+  comment: Statut d'une commande
+  trigram: STC
+  properties:
+    - name: Code
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Code du statut
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé du statut

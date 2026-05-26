@@ -1,0 +1,31 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Common
+tags:
+  - Back
+uses:
+  - 01_Common/01_Region
+---
+class:
+  name: Departement
+  sqlName: departement
+  comment: Département
+  trigram: DEP
+  properties:
+    - name: Code
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Code du département.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé du département.
+
+    - association: Region
+      comment: Région associée.
+      required: true

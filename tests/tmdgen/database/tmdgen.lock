@@ -1,0 +1,23 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 4.0.0
+generatedFiles:
+  - ./model/01_Common/01_Region.tmd
+  - ./model/01_Common/02_Departement.tmd
+  - ./model/01_Common/03_CategoriePlatRegion.tmd
+  - ./model/03_Commande/01_Restaurant.tmd
+  - ./model/03_Commande/02_Plat.tmd
+  - ./model/03_Commande/03_Personne.tmd
+  - ./model/03_Commande/04_Promotion.tmd
+  - ./model/03_Commande/05_MenuPlat.tmd
+  - ./model/03_Commande/06_Client.tmd
+  - ./model/03_Commande/07_Employe.tmd
+  - ./model/03_Commande/08_AvisClient.tmd
+  - ./model/03_Commande/09_Reservation.tmd
+  - ./model/03_Commande/10_Commande.tmd
+  - ./model/03_Commande/11_LigneCommande.tmd
+  - ./model/04_Join/01_CommandeHistorique.tmd
+  - ./model/04_Join/02_LigneCommandeHistorique.tmd
+  - ./model/05_Autres/01_TypeTerrasse.tmd

@@ -19,7 +19,7 @@ create table [dbo].[COMMANDE] (
 	[COM_DATE_CREATION] timestamp not null,
 	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),
 	constraint [FK_COMMANDE_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_COMMANDE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_COMMANDE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_RESTAURANT] ([TAB_ID]),
 	constraint [FK_COMMANDE_REV_ID] foreign key ([REV_ID]) references [dbo].[RESERVATION] ([REV_ID]),
 	constraint [FK_COMMANDE_STC_CODE] foreign key ([STC_CODE]) references [dbo].[STATUT_COMMANDE] ([STC_CODE]),
 	constraint [FK_COMMANDE_AVI_ID] foreign key ([AVI_ID]) references [dbo].[AVIS_CLIENT] ([AVI_ID]),

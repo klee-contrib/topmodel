@@ -2,10 +2,10 @@ services:
   db:
     image: postgres:latest
     ports:
-      - 5432:5432
+      - 5962:5432
     environment:
       - POSTGRES_PASSWORD=demo
       - POSTGRES_USER=demo
       - POSTGRES_DB=demo
     volumes:
-      - ./db/init:/docker-entrypoint-initdb.d
+      - ./output/pg/src:/docker-entrypoint-initdb.d

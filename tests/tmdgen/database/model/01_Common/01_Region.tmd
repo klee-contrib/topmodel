@@ -1,0 +1,29 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Common
+tags:
+  - Back
+---
+class:
+  name: Region
+  sqlName: region
+  comment: Région
+  trigram: REG
+  properties:
+    - name: Code
+      domain: DO_LIBELLE
+      required: true
+      primaryKey: true
+      comment: Code de la région.
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé de la région.
+
+    - name: NomResponsable
+      domain: DO_LIBELLE
+      comment: Nom du responsable de la région.

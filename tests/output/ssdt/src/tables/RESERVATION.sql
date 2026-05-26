@@ -18,7 +18,7 @@ create table [dbo].[RESERVATION] (
 	[REV_DATE_CREATION] timestamp not null,
 	constraint [PK_RESERVATION] primary key clustered ([REV_ID] ASC),
 	constraint [FK_RESERVATION_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
+	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_RESTAURANT] ([TAB_ID]),
 	constraint [FK_RESERVATION_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
 	constraint [UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION] unique nonclustered ([TAB_ID] ASC, [REV_DATE_RESERVATION] ASC))
 go

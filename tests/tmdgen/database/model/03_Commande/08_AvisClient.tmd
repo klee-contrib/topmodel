@@ -1,0 +1,63 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/01_Restaurant
+  - 03_Commande/06_Client
+---
+class:
+  name: AvisClient
+  sqlName: avis_client
+  comment: Avis d'un client sur un restaurant
+  trigram: AVI
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de l'avis
+
+    - name: Note
+      domain: DO_ENTIER
+      required: true
+      comment: Note sur 5
+
+    - name: Commentaire
+      domain: DO_LIBELLE
+      comment: Commentaire de l'avis
+
+    - name: DateAvis
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de l'avis
+
+    - name: Approuve
+      domain: DO_BOOLEAN
+      required: true
+      comment: Indique si l'avis est approuvé par le restaurant
+
+    - name: NombreVues
+      domain: DO_ENTIER
+      required: true
+      comment: Nombre de vues de l'avis (calculé)
+
+    - association: Client
+      comment: Client ayant donné l'avis
+      required: true
+
+    - association: Restaurant
+      comment: Restaurant concerné par l'avis
+      required: true
+
+    - name: DateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+
+  unique:
+    - [ClientPersonneId, RestaurantId, DateAvis]

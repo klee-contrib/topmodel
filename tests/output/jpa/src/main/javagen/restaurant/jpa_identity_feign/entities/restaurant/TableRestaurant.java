@@ -26,7 +26,7 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "TABLE",
+	name = "TABLE_RESTAURANT",
 	uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"RES_ID", "TAB_NUMERO"})
 	}

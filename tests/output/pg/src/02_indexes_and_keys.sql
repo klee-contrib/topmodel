@@ -104,7 +104,7 @@ create index IDX_COM_TAB_ID_FK on COMMANDE (
  **/
 alter table COMMANDE
 	add constraint FK_COMMANDE_TAB_ID foreign key (TAB_ID)
-		references TABLE (TAB_ID);
+		references TABLE_RESTAURANT (TAB_ID);
 
 /**
   * Création de l'index de clef étrangère pour COMMANDE.REV_ID
@@ -363,7 +363,7 @@ create index IDX_REV_TAB_ID_FK on RESERVATION (
  **/
 alter table RESERVATION
 	add constraint FK_RESERVATION_TAB_ID foreign key (TAB_ID)
-		references TABLE (TAB_ID);
+		references TABLE_RESTAURANT (TAB_ID);
 
 /**
   * Création de l'index de clef étrangère pour RESERVATION.RES_ID
@@ -380,17 +380,17 @@ alter table RESERVATION
 		references RESTAURANT (RES_ID);
 
 /**
-  * Création de l'index de clef étrangère pour TABLE.RES_ID
+  * Création de l'index de clef étrangère pour TABLE_RESTAURANT.RES_ID
  **/
-create index IDX_TAB_RES_ID_FK on TABLE (
+create index IDX_TAB_RES_ID_FK on TABLE_RESTAURANT (
 	RES_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour TABLE.RES_ID
+  * Génération de la contrainte de clef étrangère pour TABLE_RESTAURANT.RES_ID
  **/
-alter table TABLE
-	add constraint FK_TABLE_RES_ID foreign key (RES_ID)
+alter table TABLE_RESTAURANT
+	add constraint FK_TABLE_RESTAURANT_RES_ID foreign key (RES_ID)
 		references RESTAURANT (RES_ID);
 
 /**
@@ -436,9 +436,9 @@ alter table MENU_PLAT add constraint UK_MENU_PLAT_MEN_ID_MPL_ORDRE unique (MEN_I
 alter table RESERVATION add constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION unique (TAB_ID, REV_DATE_RESERVATION);
 
 /**
-  * Création de l'index UK_TABLE_RES_ID_TAB_NUMERO sur TABLE.
+  * Création de l'index UK_TABLE_RESTAURANT_RES_ID_TAB_NUMERO sur TABLE_RESTAURANT.
  **/
-alter table TABLE add constraint UK_TABLE_RES_ID_TAB_NUMERO unique (RES_ID, TAB_NUMERO);
+alter table TABLE_RESTAURANT add constraint UK_TABLE_RESTAURANT_RES_ID_TAB_NUMERO unique (RES_ID, TAB_NUMERO);
 
 /**
   * Création de l'index IDX_CAT_CAT_LIBELLE sur CATEGORIE_PLAT.

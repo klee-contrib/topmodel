@@ -12,7 +12,7 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// <summary>
 /// Table du restaurant.
 /// </summary>
-[Table("table")]
+[Table("table_restaurant")]
 public partial record TableRestaurant
 {
     /// <summary>

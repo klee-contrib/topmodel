@@ -1,0 +1,50 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Join
+tags:
+  - Back
+uses:
+  - 04_Join/01_CommandeHistorique
+---
+class:
+  name: LigneCommandeHistorique
+  sqlName: ligne_commande_historique
+  comment: Ligne de commande pour historique avec préservation des clés primaires
+  properties:
+    - name: LigId
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la ligne
+
+    - name: LigQuantite
+      domain: DO_ENTIER
+      required: true
+      comment: Quantité commandée
+
+    - name: LigPrixUnitaire
+      domain: DO_ENTIER
+      required: true
+      comment: Prix unitaire au moment de la commande
+
+    - name: LigPrixTotal
+      domain: DO_ENTIER
+      required: true
+      comment: Prix total de la ligne
+
+    - name: PlaId
+      domain: DO_ID
+      required: true
+      comment: Plat commandé
+
+    - name: LigDateCreation
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date de création de l'enregistrement
+
+    - association: CommandeHistorique
+      comment: Commande à laquelle appartient la ligne
+      required: true

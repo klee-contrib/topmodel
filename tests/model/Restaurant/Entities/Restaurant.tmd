@@ -35,7 +35,7 @@ class:
 ---
 class:
   name: TableRestaurant
-  sqlName: TABLE
+  sqlName: TABLE_RESTAURANT
   trigram: TAB
   comment: Table du restaurant
   decorators:

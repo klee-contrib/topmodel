@@ -27,7 +27,7 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "TABLE",
+	name = "TABLE_RESTAURANT",
 	uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"RES_ID", "TAB_NUMERO"})
 	}
@@ -39,8 +39,8 @@ public class TableRestaurant {
 	 */
 	@Id
 	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TABLE")
-	@SequenceGenerator(sequenceName = "SEQ_TABLE", name = "SEQ_TABLE", initialValue = 1000, allocationSize = 50)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TABLE_RESTAURANT")
+	@SequenceGenerator(sequenceName = "SEQ_TABLE_RESTAURANT", name = "SEQ_TABLE_RESTAURANT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

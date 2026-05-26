@@ -1,0 +1,51 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Commande
+tags:
+  - Back
+uses:
+  - 03_Commande/01_Restaurant
+  - 03_Commande/03_Personne
+---
+class:
+  name: Employe
+  sqlName: employe
+  comment: Employé du restaurant
+  trigram: EMP
+  properties:
+    - name: Telephone
+      domain: DO_LIBELLE
+      comment: Numéro de téléphone de l'employé.
+
+    - name: DateNaissance
+      domain: DO_DATE_TIME
+      comment: Date de naissance
+
+    - name: Matricule
+      domain: DO_LIBELLE
+      required: true
+      comment: Matricule de l'employé
+
+    - name: DateEmbauche
+      domain: DO_DATE_TIME
+      required: true
+      comment: Date d'embauche
+
+    - name: Salaire
+      domain: DO_ENTIER
+      comment: Salaire de l'employé
+
+    - association: Restaurant
+      comment: Restaurant où travaille l'employé
+      required: true
+
+    - association: Personne
+      comment: Association vers la clé primaire de la classe parente
+      required: true
+      primaryKey: true
+
+  unique:
+    - [Matricule]

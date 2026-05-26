@@ -296,22 +296,22 @@ create table STATUT_COMMANDE (
 );
 
 /**
-  * Création de la table TABLE
+  * Création de la table TABLE_RESTAURANT
  **/
-create table TABLE (
+create table TABLE_RESTAURANT (
 	TAB_ID int not null,
 	TAB_NUMERO varchar(10) not null,
 	TAB_CAPACITE int not null,
 	TAB_DISPONIBLE boolean not null,
 	RES_ID int not null,
 	TAB_DATE_CREATION timestamp not null,
-	constraint PK_TABLE primary key (TAB_ID)
+	constraint PK_TABLE_RESTAURANT primary key (TAB_ID)
 );
 
 /**
-  * Création de la séquence pour la clé primaire de la table TABLE
+  * Création de la séquence pour la clé primaire de la table TABLE_RESTAURANT
  **/
-create sequence SEQ_TABLE as INT start 1000 increment 50 owned by TABLE.TAB_ID;
+create sequence SEQ_TABLE_RESTAURANT as INT start 1000 increment 50 owned by TABLE_RESTAURANT.TAB_ID;
 
 /**
   * Création de la table TRANSLATION

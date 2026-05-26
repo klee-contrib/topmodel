@@ -511,7 +511,7 @@ generatedFiles:
   - ../output/ssdt/src/tables/RESERVATION.sql
   - ../output/ssdt/src/tables/RESTAURANT.sql
   - ../output/ssdt/src/tables/STATUT_COMMANDE.sql
-  - ../output/ssdt/src/tables/TABLE.sql
+  - ../output/ssdt/src/tables/TABLE_RESTAURANT.sql
   - ../output/ssdt/src/tables/TRANSLATION.sql
   - ../output/ssdt/src/tables/TYPE_TERRASSE.sql
   - ../output/translation/i18n/de/out/common_de.properties
