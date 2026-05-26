@@ -156,3 +156,11 @@ domain:
     type: byte[]
   sql:
     type: blob
+---
+converter:
+  from:
+    - DO_ID
+  to:
+    - DO_LIBELLE
+  java:
+    text: "{value}.toString()"

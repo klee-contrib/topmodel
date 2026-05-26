@@ -1,7 +1,5 @@
 name: Test coverage
-on:
-  push:
-    branches: ["develop"]
+on: [push]
 
 jobs:
   build:
