@@ -14,6 +14,7 @@ create table [dbo].[PLAT] (
 	[PLA_DISPONIBLE] boolean not null default true,
 	[CAT_CODE] varchar not null,
 	[RES_ID] int not null,
+	[PLA_DATE_CREATION] timestamp not null,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
 	constraint [FK_PLAT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
@@ -47,4 +48,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'RES_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
 go

@@ -23,6 +23,9 @@ export const EmployeReadEntity = entity({
     departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
         .label("restaurant.personne.departementCode")
     ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
+    ),
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.employe.telephone")
     ),

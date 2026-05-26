@@ -66,6 +66,13 @@ public partial record RestaurantRead
     public ICollection<int>? AvisClients { get; set; }
 
     /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
+
+    /// <summary>
     /// Association réciproque de TableRestaurant.RestaurantId.
     /// </summary>
     [Required]

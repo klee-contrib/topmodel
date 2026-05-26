@@ -8,6 +8,7 @@ class Commande{
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
+ DO_DATE_HEURE DateCreation
 }
 Commande "1" --> "0..*" Client
 Commande "0..1" --> "0..*" TableRestaurant
@@ -26,6 +27,7 @@ class CommandeHistorique{
  DO_ID ReservationId
  DO_CODE StatutCommande
  DO_ID AvisClientId
+ DO_DATE_HEURE DateCreation
 }
 %% Ligne d'une commande
 class LigneCommande{
@@ -33,6 +35,7 @@ class LigneCommande{
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
+ DO_DATE_HEURE DateCreation
 }
 LigneCommande "1" --> "0..*" Commande
 LigneCommande "1" --> "0..*" Plat
@@ -43,6 +46,7 @@ class LigneCommandeHistorique{
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
  DO_ID PlatId
+ DO_DATE_HEURE DateCreation
 }
 LigneCommandeHistorique "1" --> "0..*" CommandeHistorique
 %% Réservation d'une table
@@ -52,6 +56,7 @@ class Reservation{
  DO_QUANTITE NombrePersonnes
  DO_LIBELLE Commentaire
  DO_BOOLEEN Confirmee
+ DO_DATE_HEURE DateCreation
 }
 Reservation "1" --> "0..*" Client
 Reservation "0..1" --> "0..*" TableRestaurant
@@ -65,12 +70,14 @@ class Menu{
  DO_BOOLEEN Disponible
  DO_DATE_HEURE DateDebut
  DO_DATE_HEURE DateFin
+ DO_DATE_HEURE DateCreation
 }
 Menu "1" --> "0..*" Restaurant
 Menu "1..*" --> "1" MenuPlat
 %% Plat dans un menu
 class MenuPlat{
  DO_QUANTITE Ordre
+ DO_DATE_HEURE DateCreation
 }
 MenuPlat "1" --> "0..*" Menu
 MenuPlat "1" --> "0..*" Plat
@@ -81,6 +88,7 @@ class Plat{
  DO_LIBELLE Description
  DO_PRIX Prix
  DO_BOOLEEN Disponible
+ DO_DATE_HEURE DateCreation
 }
 Plat "1" --> "0..*" CategoriePlat
 Plat "1" --> "0..*" Restaurant
@@ -92,6 +100,7 @@ class Promotion{
  DO_DATE_HEURE DateDebut
  DO_DATE_HEURE DateFin
  DO_BOOLEEN Active
+ DO_DATE_HEURE DateCreation
 }
 Promotion "1" --> "1" Plat
 Promotion "0..1" --> "0..*" Restaurant
@@ -103,6 +112,7 @@ class AvisClient{
  DO_DATE_HEURE DateAvis
  DO_BOOLEEN Approuve
  DO_QUANTITE NombreVues
+ DO_DATE_HEURE DateCreation
 }
 AvisClient "1" --> "0..*" Client
 AvisClient "1" --> "0..*" Restaurant
@@ -125,6 +135,7 @@ class Personne{
  DO_ID Id
  DO_LIBELLE Nom
  DO_LIBELLE Prenom
+ DO_DATE_HEURE DateCreation
 }
 Personne "0..1" --> "0..*" Departement
 %% Restaurant
@@ -133,6 +144,7 @@ class Restaurant{
  DO_LIBELLE Nom
  DO_LIBELLE Adresse
  DO_TELEPHONE Telephone
+ DO_DATE_HEURE DateCreation
 }
 Restaurant "1..*" --> "1" Menu
 Restaurant "1..*" --> "1" Plat
@@ -145,6 +157,7 @@ class TableRestaurant{
  DO_CODE Numero
  DO_QUANTITE Capacite
  DO_BOOLEEN Disponible
+ DO_DATE_HEURE DateCreation
 }
 TableRestaurant "1" --> "0..*" Restaurant
 %% Catégorie de plat

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Reservation;
@@ -81,6 +82,14 @@ public class ReservationRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Reservation#getDateCreation() Reservation#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Informations du client ayant fait la réservation.
@@ -210,6 +219,15 @@ public class ReservationRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for clientNom.
 	 *
 	 * @return value of {@link #clientNom clientNom}.
@@ -319,6 +337,14 @@ public class ReservationRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #clientNom clientNom}.
 	 * @param clientNom value to set.
 	 */
@@ -370,6 +396,7 @@ public class ReservationRead implements Serializable {
 		CLIENT_ID(Integer.class),
 		TABLE_ID(Integer.class),
 		RESTAURANT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class),
 		CLIENT_NOM(String.class),
 		CLIENT_PRENOM(String.class),
 		CLIENT_EMAIL(String.class),

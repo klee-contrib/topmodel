@@ -9,10 +9,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
@@ -32,6 +36,7 @@ import restaurant.jpa_identity_feign.enums.restaurant.StatutCommande;
  */
 @Entity
 @Table(name = "COMMANDE")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Commande {
 
@@ -100,6 +105,13 @@ public class Commande {
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "commande")
 	private List<LigneCommande> lignes;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "COM_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -195,6 +207,15 @@ public class Commande {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -275,6 +296,14 @@ public class Commande {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Add a value to {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#lignes lignes}.
 	 * @param ligneCommande value to add to commande.
 	 */
@@ -305,7 +334,8 @@ public class Commande {
 		RESERVATION(Reservation.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		AVIS_CLIENT(AvisClient.class),
-		LIGNES(List.class);
+		LIGNES(List.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

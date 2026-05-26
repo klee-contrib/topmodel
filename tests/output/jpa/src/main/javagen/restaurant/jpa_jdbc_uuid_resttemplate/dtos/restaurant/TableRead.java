@@ -6,11 +6,13 @@ package restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -67,6 +69,15 @@ public class TableRead implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.TableRestaurant#getDateCreation() TableRestaurant#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	@Column("tab_date_creation")
+	private LocalDateTime dateCreation;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -112,6 +123,15 @@ public class TableRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -149,5 +169,13 @@ public class TableRead implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

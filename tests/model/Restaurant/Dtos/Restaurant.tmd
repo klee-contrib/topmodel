@@ -49,6 +49,7 @@ class:
         class: RestaurantRead
         exclude:
           - Id
+          - DateCreation
 
   mappers:
     to:
@@ -132,6 +133,7 @@ class:
         class: TableRestaurant
         exclude:
           - Id
+          - DateCreation
 
   mappers:
     to:

@@ -43,6 +43,7 @@ class:
         exclude:
           - Id
           - Plats
+          - DateCreation
 
     - alias:
         class: CategoriePlat
@@ -157,6 +158,7 @@ class:
         class: Promotion
         exclude:
           - Plat
+          - DateCreation
 
   mappers:
     to:

@@ -6,10 +6,12 @@ package restaurant.jpa_sequence_server.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -53,6 +55,14 @@ public class ClientRead implements Serializable {
 	 */
 	@Size(max = 10)
 	private String departementCode;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Adresse email du client.
@@ -105,6 +115,15 @@ public class ClientRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -152,6 +171,14 @@ public class ClientRead implements Serializable {
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**

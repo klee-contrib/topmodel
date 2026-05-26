@@ -58,4 +58,12 @@ public partial record LigneCommande
     /// </summary>
     [Required]
     public Plat? Plat { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("lig_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

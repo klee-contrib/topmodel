@@ -4,11 +4,14 @@ tags:
   - back
 uses:
   - Restaurant/Entities/Restaurant
+  - meta/decorators
 ---
 class:
   name: Personne
   trigram: PER
   comment: Classe de base représentant une personne
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -88,6 +91,8 @@ class:
   name: AvisClient
   trigram: AVI
   comment: Avis d'un client sur un restaurant
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id

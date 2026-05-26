@@ -36,6 +36,9 @@ export const MenuReadEntity = entity({
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.menu.restaurantId")
     ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
+    ),
     categoriesPlat: e.field(DO_LISTE, f => f.type<CategoriePlat[]>()
         .label("restaurant.menuRead.categoriesPlat")
     ),

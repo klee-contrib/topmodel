@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
+import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {DepartementCode} from "./enums";
@@ -22,6 +22,9 @@ export const ClientReadEntity = entity({
     ),
     departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
         .label("restaurant.personne.departementCode")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")

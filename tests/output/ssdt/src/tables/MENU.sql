@@ -15,6 +15,7 @@ create table [dbo].[MENU] (
 	[MEN_DATE_DEBUT] timestamp,
 	[MEN_DATE_FIN] timestamp,
 	[RES_ID] int not null,
+	[MEN_DATE_CREATION] timestamp not null,
 	constraint [PK_MENU] primary key clustered ([MEN_ID] ASC),
 	constraint [FK_MENU_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
 go
@@ -44,4 +45,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de fin de validité du menu', 'SCHEMA', 'dbo', 'TABLE', 'MENU', 'COLUMN', 'MEN_DATE_FIN'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce menu', 'SCHEMA', 'dbo', 'TABLE', 'MENU', 'COLUMN', 'RES_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'MENU', 'COLUMN', 'MEN_DATE_CREATION'
 go

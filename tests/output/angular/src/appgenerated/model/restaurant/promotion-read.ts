@@ -29,5 +29,8 @@ export const PromotionReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f.optional()
         .label("restaurant.promotion.restaurantId")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     )
 });

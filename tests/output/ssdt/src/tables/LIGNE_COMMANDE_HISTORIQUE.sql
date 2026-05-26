@@ -12,6 +12,7 @@ create table [dbo].[LIGNE_COMMANDE_HISTORIQUE] (
 	[LIG_PRIX_UNITAIRE] decimal not null,
 	[LIG_PRIX_TOTAL] decimal not null,
 	[PLA_ID] int not null,
+	[LIG_DATE_CREATION] timestamp not null,
 	[COM_ID] int not null,
 	constraint [PK_LIGNE_COMMANDE_HISTORIQUE] primary key clustered ([LIG_ID] ASC),
 	constraint [FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID] foreign key ([COM_ID]) references [dbo].[COMMANDE_HISTORIQUE] ([COM_ID]))
@@ -36,6 +37,8 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Prix total de la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE_HISTORIQUE', 'COLUMN', 'LIG_PRIX_TOTAL'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Plat commandé', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE_HISTORIQUE', 'COLUMN', 'PLA_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE_HISTORIQUE', 'COLUMN', 'LIG_DATE_CREATION'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Commande à laquelle appartient la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE_HISTORIQUE', 'COLUMN', 'COM_ID'
 go

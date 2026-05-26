@@ -9,10 +9,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +32,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "MENU")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Menu {
 
@@ -88,6 +93,13 @@ public class Menu {
 	@OrderBy("ordre ASC")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menu")
 	private List<MenuPlat> plats;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "MEN_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -174,6 +186,15 @@ public class Menu {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -246,6 +267,14 @@ public class Menu {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Add a value to {@link restaurant.jpa_identity_feign.entities.restaurant.Menu#plats plats}.
 	 * @param menuPlat value to add to menu.
 	 */
@@ -275,7 +304,8 @@ public class Menu {
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		RESTAURANT(Restaurant.class),
-		PLATS(List.class);
+		PLATS(List.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

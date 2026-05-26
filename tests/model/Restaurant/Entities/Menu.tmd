@@ -5,11 +5,14 @@ tags:
 uses:
   - Restaurant/Entities/Restaurant
   - Restaurant/References
+  - meta/decorators
 ---
 class:
   name: Menu
   trigram: MEN
   comment: Menu du restaurant
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -54,6 +57,8 @@ class:
   name: Plat
   trigram: PLA
   comment: Plat du menu
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -94,6 +99,8 @@ class:
   name: MenuPlat
   trigram: MPL
   comment: Plat dans un menu
+  decorators:
+    - DateCreation
 
   properties:
     - association: Menu
@@ -118,6 +125,8 @@ class:
   name: Promotion
   trigram: PRO
   comment: Promotion sur un plat
+  decorators:
+    - DateCreation
 
   properties:
     - association: Plat

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Promotion;
@@ -75,6 +76,14 @@ public class PromotionRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
 	 */
 	private Integer restaurantId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Promotion#getDateCreation() Promotion#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * No arg constructor.
@@ -157,6 +166,15 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #platId platId}.
 	 * @param platId value to set.
 	 */
@@ -213,6 +231,14 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.dtos.restaurant.PromotionRead PromotionRead}.
 	 */
 	public enum Fields {
@@ -222,7 +248,8 @@ public class PromotionRead implements Serializable {
 		DATE_DEBUT(LocalDateTime.class),
 		DATE_FIN(LocalDateTime.class),
 		ACTIVE(Boolean.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

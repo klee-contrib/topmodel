@@ -12,6 +12,7 @@ create table [dbo].[TABLE] (
 	[TAB_CAPACITE] int not null,
 	[TAB_DISPONIBLE] boolean not null default true,
 	[RES_ID] int not null,
+	[TAB_DATE_CREATION] timestamp not null,
 	constraint [PK_TABLE] primary key clustered ([TAB_ID] ASC),
 	constraint [FK_TABLE_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
 	constraint [UK_TABLE_RES_ID_TAB_NUMERO] unique nonclustered ([RES_ID] ASC, [TAB_NUMERO] ASC))
@@ -36,4 +37,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si la table est disponible', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DISPONIBLE'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant auquel appartient la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'RES_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DATE_CREATION'
 go

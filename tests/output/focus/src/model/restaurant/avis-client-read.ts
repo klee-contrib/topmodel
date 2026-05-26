@@ -32,5 +32,8 @@ export const AvisClientReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.restaurantId")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     )
 });

@@ -55,4 +55,12 @@ public partial record TableRestaurant
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("tab_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

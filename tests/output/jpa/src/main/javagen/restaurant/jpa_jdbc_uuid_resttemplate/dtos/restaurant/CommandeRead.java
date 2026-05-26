@@ -14,6 +14,7 @@ import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.Valid;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
@@ -82,6 +83,15 @@ public class CommandeRead implements Serializable {
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	@Column("com_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Client ayant passé la commande.
@@ -169,6 +179,15 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for client.
 	 *
 	 * @return value of {@link #client client}.
@@ -249,6 +268,14 @@ public class CommandeRead implements Serializable {
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**

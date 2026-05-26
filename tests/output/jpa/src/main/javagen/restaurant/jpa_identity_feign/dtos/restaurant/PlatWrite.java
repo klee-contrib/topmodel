@@ -7,9 +7,11 @@ package restaurant.jpa_identity_feign.dtos.restaurant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Plat;
@@ -72,6 +74,14 @@ public class PlatWrite implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Plat#getDateCreation() Plat#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
+
+	/**
 	 * Getter for nom.
 	 *
 	 * @return value of {@link #nom nom}.
@@ -126,6 +136,15 @@ public class PlatWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #nom nom}.
 	 * @param nom value to set.
 	 */
@@ -174,6 +193,14 @@ public class PlatWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Mappe 'PlatWrite' vers 'Plat'.
 	 * @param target Instance pré-existante de 'Plat'. Une nouvelle instance sera créée si non spécifié.
 	 *
@@ -192,7 +219,8 @@ public class PlatWrite implements Serializable {
 		PRIX(BigDecimal.class),
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT_CODE(CategoriePlatCode.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

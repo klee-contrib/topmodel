@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX, DO_QUANTITE, DO_TELEPHONE} from "@/domains";
+import {DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX, DO_QUANTITE, DO_TELEPHONE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type RestaurantAvecStatistiques = EntityToType<RestaurantAvecStatistiquesEntityType>;
@@ -35,6 +35,9 @@ export const RestaurantAvecStatistiquesEntity = entity({
     ),
     tableIds: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.tableIds")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     ),
     nombrePlats: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.restaurantAvecStatistiques.nombrePlats")

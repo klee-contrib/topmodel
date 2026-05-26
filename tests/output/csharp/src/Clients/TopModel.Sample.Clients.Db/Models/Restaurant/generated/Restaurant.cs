@@ -74,4 +74,12 @@ public partial record Restaurant
     [Domain(Domains.Liste)]
     [NotMapped]
     public ICollection<int>? TableIds { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("res_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

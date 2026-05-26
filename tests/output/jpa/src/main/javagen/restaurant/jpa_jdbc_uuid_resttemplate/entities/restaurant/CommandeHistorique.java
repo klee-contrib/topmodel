@@ -7,6 +7,7 @@ package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -92,6 +93,15 @@ public class CommandeHistorique {
 	private Integer avisClientId;
 
 	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("com_date_creation")
+	private LocalDateTime dateCreation;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -173,6 +183,15 @@ public class CommandeHistorique {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -242,5 +261,13 @@ public class CommandeHistorique {
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

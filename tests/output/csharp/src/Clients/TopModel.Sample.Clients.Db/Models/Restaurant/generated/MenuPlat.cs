@@ -34,4 +34,12 @@ public partial record MenuPlat
     [Required]
     [Domain(Domains.Quantite)]
     public int? Ordre { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("mpl_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

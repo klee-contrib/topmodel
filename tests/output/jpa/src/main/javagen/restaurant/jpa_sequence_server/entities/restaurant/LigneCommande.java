@@ -5,10 +5,15 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +28,7 @@ import jakarta.persistence.UniqueConstraint;
  * Ligne d'une commande.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
 	name = "LIGNE_COMMANDE",
@@ -72,6 +78,13 @@ public class LigneCommande {
 	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
 	private Plat plat;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "LIG_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -128,6 +141,15 @@ public class LigneCommande {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -176,6 +198,14 @@ public class LigneCommande {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.LigneCommande LigneCommande}.
 	 */
 	public enum Fields {
@@ -184,7 +214,8 @@ public class LigneCommande {
 		PRIX_UNITAIRE(BigDecimal.class),
 		PRIX_TOTAL(BigDecimal.class),
 		COMMANDE(Commande.class),
-		PLAT(Plat.class);
+		PLAT(Plat.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

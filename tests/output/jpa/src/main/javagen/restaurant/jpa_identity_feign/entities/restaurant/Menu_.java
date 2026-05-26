@@ -35,6 +35,8 @@ public class Menu_ {
 
 	public static volatile ListAttribute<Menu, MenuPlat> plats;
 
+	public static volatile SingularAttribute<Menu, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -52,4 +54,6 @@ public class Menu_ {
 	public static final String RESTAURANT = "restaurant";
 
 	public static final String PLATS = "plats";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

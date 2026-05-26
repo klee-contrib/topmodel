@@ -5,7 +5,9 @@
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -61,6 +63,15 @@ public class LigneCommandeHistorique {
 	private Integer platId;
 
 	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("lig_date_creation")
+	private LocalDateTime dateCreation;
+
+	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
 	@NotNull
@@ -113,6 +124,15 @@ public class LigneCommandeHistorique {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for commandeHistoriqueId.
 	 *
 	 * @return value of {@link #commandeHistoriqueId commandeHistoriqueId}.
@@ -159,6 +179,14 @@ public class LigneCommandeHistorique {
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**

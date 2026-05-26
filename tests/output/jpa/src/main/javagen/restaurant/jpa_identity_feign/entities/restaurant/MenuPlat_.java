@@ -4,6 +4,8 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.time.LocalDateTime;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
@@ -18,9 +20,13 @@ public class MenuPlat_ {
 
 	public static volatile SingularAttribute<MenuPlat, Integer> ordre;
 
+	public static volatile SingularAttribute<MenuPlat, LocalDateTime> dateCreation;
+
 	public static final String MENU = "menu";
 
 	public static final String PLAT = "plat";
 
 	public static final String ORDRE = "ordre";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

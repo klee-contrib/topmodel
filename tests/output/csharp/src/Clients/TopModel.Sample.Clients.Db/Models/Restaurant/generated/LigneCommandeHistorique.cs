@@ -57,6 +57,14 @@ public partial record LigneCommandeHistorique
     public int? PlatId { get; set; }
 
     /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("lig_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
+
+    /// <summary>
     /// Commande à laquelle appartient la ligne.
     /// </summary>
     [Column("com_id")]

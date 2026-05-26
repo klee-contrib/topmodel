@@ -4,13 +4,18 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +28,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "RESTAURANT")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Restaurant {
 
@@ -80,6 +86,13 @@ public class Restaurant {
 	 * Association réciproque de TableRestaurant.RestaurantId.
 	 */
 	private List<Integer> tableIds;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "RES_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -178,6 +191,15 @@ public class Restaurant {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -247,6 +269,14 @@ public class Restaurant {
 	 */
 	public void setTableIds(List<Integer> tableIds) {
 		this.tableIds = tableIds;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**
@@ -333,7 +363,8 @@ public class Restaurant {
 		PLATS(List.class),
 		PROMOTIONS(List.class),
 		AVIS_CLIENTS(List.class),
-		TABLE_IDS(List.class);
+		TABLE_IDS(List.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

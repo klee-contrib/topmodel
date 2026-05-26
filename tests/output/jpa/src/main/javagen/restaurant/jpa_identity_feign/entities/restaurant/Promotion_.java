@@ -28,6 +28,8 @@ public class Promotion_ {
 
 	public static volatile SingularAttribute<Promotion, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<Promotion, LocalDateTime> dateCreation;
+
 	public static final String PLAT = "plat";
 
 	public static final String LIBELLE = "libelle";
@@ -41,4 +43,6 @@ public class Promotion_ {
 	public static final String ACTIVE = "active";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

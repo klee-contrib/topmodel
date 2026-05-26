@@ -76,6 +76,7 @@ public class RestaurantMappers {
 		target.setNombreVues(avisClient.getNombreVues());
 		target.setClientId(avisClient.getClientId());
 		target.setRestaurantId(avisClient.getRestaurantId());
+		target.setDateCreation(avisClient.getDateCreation());
 		return target;
 	}
 
@@ -141,6 +142,7 @@ public class RestaurantMappers {
 		target.setNom(client.getNom());
 		target.setPrenom(client.getPrenom());
 		target.setDepartementCode(client.getDepartementCode());
+		target.setDateCreation(client.getDateCreation());
 		target.setEmail(client.getEmail());
 		return target;
 	}
@@ -178,6 +180,7 @@ public class RestaurantMappers {
 		target.setTableId(commande.getTableId());
 		target.setStatutCommande(commande.getStatutCommande());
 		target.setAvisClientId(commande.getAvisClientId());
+		target.setDateCreation(commande.getDateCreation());
 		return target;
 	}
 
@@ -211,6 +214,7 @@ public class RestaurantMappers {
 		target.setNom(employe.getNom());
 		target.setPrenom(employe.getPrenom());
 		target.setDepartementCode(employe.getDepartementCode());
+		target.setDateCreation(employe.getDateCreation());
 		target.setTelephone(employe.getTelephone());
 		target.setDateNaissance(employe.getDateNaissance());
 		target.setMatricule(employe.getMatricule());
@@ -252,6 +256,7 @@ public class RestaurantMappers {
 		target.setPrixTotal(ligneCommande.getPrixTotal());
 		target.setCommandeId(ligneCommande.getCommandeId());
 		target.setPlatId(ligneCommande.getPlatId());
+		target.setDateCreation(ligneCommande.getDateCreation());
 		return target;
 	}
 
@@ -289,6 +294,7 @@ public class RestaurantMappers {
 		target.setDateDebut(menu.getDateDebut());
 		target.setDateFin(menu.getDateFin());
 		target.setRestaurantId(menu.getRestaurantId());
+		target.setDateCreation(menu.getDateCreation());
 		return target;
 	}
 
@@ -349,6 +355,7 @@ public class RestaurantMappers {
 		target.setDisponible(plat.getDisponible());
 		target.setCategoriePlatCode(plat.getCategoriePlatCode());
 		target.setRestaurantId(plat.getRestaurantId());
+		target.setDateCreation(plat.getDateCreation());
 		return target;
 	}
 
@@ -385,6 +392,7 @@ public class RestaurantMappers {
 		target.setDateFin(promotion.getDateFin());
 		target.setActive(promotion.getActive());
 		target.setRestaurantId(promotion.getRestaurantId());
+		target.setDateCreation(promotion.getDateCreation());
 		return target;
 	}
 
@@ -422,6 +430,7 @@ public class RestaurantMappers {
 		target.setClientId(reservation.getClientId());
 		target.setTableId(reservation.getTableId());
 		target.setRestaurantId(reservation.getRestaurantId());
+		target.setDateCreation(reservation.getDateCreation());
 		return target;
 	}
 
@@ -461,6 +470,7 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
+		target.setDateCreation(restaurant.getDateCreation());
 		target.setNombrePlats(nombrePlats);
 		target.setNombreTables(nombreTables);
 		target.setNoteMoyenne(noteMoyenne);
@@ -497,6 +507,7 @@ public class RestaurantMappers {
 		target.setNom(restaurant.getNom());
 		target.setAdresse(restaurant.getAdresse());
 		target.setTelephone(restaurant.getTelephone());
+		target.setDateCreation(restaurant.getDateCreation());
 		return target;
 	}
 
@@ -568,6 +579,7 @@ public class RestaurantMappers {
 		target.setCapacite(table.getCapacite());
 		target.setDisponible(table.getDisponible());
 		target.setRestaurantId(table.getRestaurantId());
+		target.setDateCreation(table.getDateCreation());
 		return target;
 	}
 
@@ -839,6 +851,7 @@ public class RestaurantMappers {
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
 		target.setCategoriePlatCode(source.getCategoriePlatCode());
+		target.setDateCreation(source.getDateCreation());
 		return target;
 	}
 

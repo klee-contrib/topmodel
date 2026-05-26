@@ -39,6 +39,8 @@ public class Commande_ {
 
 	public static volatile ListAttribute<Commande, LigneCommande> lignes;
 
+	public static volatile SingularAttribute<Commande, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String DATE_COMMANDE = "dateCommande";
@@ -58,4 +60,6 @@ public class Commande_ {
 	public static final String AVIS_CLIENT = "avisClient";
 
 	public static final String LIGNES = "lignes";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

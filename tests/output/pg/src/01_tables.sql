@@ -20,6 +20,7 @@ create table AVIS_CLIENT (
 	AVI_NOMBRE_VUES int not null,
 	PER_ID int not null,
 	RES_ID int not null,
+	AVI_DATE_CREATION timestamp not null,
 	constraint PK_AVIS_CLIENT primary key (AVI_ID)
 );
 
@@ -70,6 +71,7 @@ create table COMMANDE (
 	REV_ID int,
 	STC_CODE varchar(10) not null,
 	AVI_ID int,
+	COM_DATE_CREATION timestamp not null,
 	constraint PK_COMMANDE primary key (COM_ID)
 );
 
@@ -91,6 +93,7 @@ create table COMMANDE_HISTORIQUE (
 	REV_ID int,
 	STC_CODE varchar(10) not null,
 	AVI_ID int,
+	COM_DATE_CREATION timestamp not null,
 	constraint PK_COMMANDE_HISTORIQUE primary key (COM_ID)
 );
 
@@ -128,6 +131,7 @@ create table LIGNE_COMMANDE (
 	LIG_PRIX_TOTAL decimal not null,
 	COM_ID int not null,
 	PLA_ID int not null,
+	LIG_DATE_CREATION timestamp not null,
 	constraint PK_LIGNE_COMMANDE primary key (LIG_ID)
 );
 
@@ -145,6 +149,7 @@ create table LIGNE_COMMANDE_HISTORIQUE (
 	LIG_PRIX_UNITAIRE decimal not null,
 	LIG_PRIX_TOTAL decimal not null,
 	PLA_ID int not null,
+	LIG_DATE_CREATION timestamp not null,
 	COM_ID int not null,
 	constraint PK_LIGNE_COMMANDE_HISTORIQUE primary key (LIG_ID)
 );
@@ -161,6 +166,7 @@ create table MENU (
 	MEN_DATE_DEBUT timestamp,
 	MEN_DATE_FIN timestamp,
 	RES_ID int not null,
+	MEN_DATE_CREATION timestamp not null,
 	constraint PK_MENU primary key (MEN_ID)
 );
 
@@ -176,6 +182,7 @@ create table MENU_PLAT (
 	MEN_ID int not null,
 	PLA_ID int not null,
 	MPL_ORDRE int not null,
+	MPL_DATE_CREATION timestamp not null,
 	constraint PK_MENU_PLAT primary key (MEN_ID,PLA_ID)
 );
 
@@ -187,6 +194,7 @@ create table PERSONNE (
 	PER_NOM varchar(100) not null,
 	PER_PRENOM varchar(100) not null,
 	DEP_CODE varchar(10),
+	PER_DATE_CREATION timestamp not null,
 	constraint PK_PERSONNE primary key (PER_ID)
 );
 
@@ -206,6 +214,7 @@ create table PLAT (
 	PLA_DISPONIBLE boolean not null,
 	CAT_CODE varchar(10) not null,
 	RES_ID int not null,
+	PLA_DATE_CREATION timestamp not null,
 	constraint PK_PLAT primary key (PLA_ID)
 );
 
@@ -225,6 +234,7 @@ create table PROMOTION (
 	PRO_DATE_FIN timestamp not null,
 	PRO_ACTIVE boolean not null,
 	RES_ID int,
+	PRO_DATE_CREATION timestamp not null,
 	constraint PK_PROMOTION primary key (PLA_ID)
 );
 
@@ -250,6 +260,7 @@ create table RESERVATION (
 	PER_ID int not null,
 	TAB_ID int,
 	RES_ID int not null,
+	REV_DATE_CREATION timestamp not null,
 	constraint PK_RESERVATION primary key (REV_ID)
 );
 
@@ -266,6 +277,7 @@ create table RESTAURANT (
 	RES_NOM varchar(100) not null,
 	RES_ADRESSE varchar(100),
 	RES_TELEPHONE varchar(20),
+	RES_DATE_CREATION timestamp not null,
 	constraint PK_RESTAURANT primary key (RES_ID)
 );
 
@@ -292,6 +304,7 @@ create table TABLE (
 	TAB_CAPACITE int not null,
 	TAB_DISPONIBLE boolean not null,
 	RES_ID int not null,
+	TAB_DATE_CREATION timestamp not null,
 	constraint PK_TABLE primary key (TAB_ID)
 );
 

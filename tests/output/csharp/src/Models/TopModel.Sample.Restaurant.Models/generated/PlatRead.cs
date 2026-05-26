@@ -62,4 +62,11 @@ public partial record PlatRead
     [Required]
     [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
 }

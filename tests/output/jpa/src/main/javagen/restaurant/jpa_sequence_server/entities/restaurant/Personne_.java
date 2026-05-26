@@ -4,6 +4,8 @@
 
 package restaurant.jpa_sequence_server.entities.restaurant;
 
+import java.time.LocalDateTime;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
@@ -20,6 +22,8 @@ public class Personne_ {
 
 	public static volatile SingularAttribute<Personne, String> departementCode;
 
+	public static volatile SingularAttribute<Personne, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -27,4 +31,6 @@ public class Personne_ {
 	public static final String PRENOM = "prenom";
 
 	public static final String DEPARTEMENT_CODE = "departementCode";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

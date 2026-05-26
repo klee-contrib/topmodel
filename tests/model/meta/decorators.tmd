@@ -1,0 +1,56 @@
+---
+module: Common
+tags:
+  - back
+  - front
+---
+annotation:
+  name: EntityListeners
+  description: Entity Listener pour suivre les évènements de création et de modification.
+  target:
+    - class
+  java:
+    - text: EntityListeners(AuditingEntityListener.class)
+      imports:
+        - org.springframework.data.jpa.domain.support.AuditingEntityListener
+        - jakarta.persistence.EntityListeners
+---
+annotation:
+  name: CreatedDate
+  description: Date de création automatiquement renseignée par Spring Data.
+  target:
+    - property
+  java:
+    - text: "@CreatedDate"
+      imports:
+        - org.springframework.data.annotation.CreatedDate
+      when:
+        - persisted
+---
+annotation:
+  name: PastOrPresent
+  description: Valide qu'une date est dans le passé ou le présent.
+  target:
+    - property
+  java:
+    - text: "@PastOrPresent"
+      imports:
+        - jakarta.validation.constraints.PastOrPresent
+      when:
+        - non-persisted
+---
+decorator:
+  name: DateCreation
+  description: Ajoute une date de création sur les tables persistées
+  annotations:
+    - EntityListeners
+  properties:
+    - name: DateCreation
+      domain: DO_DATE_HEURE
+      required: true
+      readonly: true
+      comment: Date de création de l'enregistrement
+      label: Date de création
+      annotations:
+        - PastOrPresent
+        - CreatedDate

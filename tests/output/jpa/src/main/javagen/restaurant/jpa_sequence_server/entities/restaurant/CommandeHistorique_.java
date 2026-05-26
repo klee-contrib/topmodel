@@ -35,6 +35,8 @@ public class CommandeHistorique_ {
 
 	public static volatile SingularAttribute<CommandeHistorique, Integer> avisClientId;
 
+	public static volatile SingularAttribute<CommandeHistorique, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String DATE_COMMANDE = "dateCommande";
@@ -52,4 +54,6 @@ public class CommandeHistorique_ {
 	public static final String STATUT_COMMANDE = "statutCommande";
 
 	public static final String AVIS_CLIENT_ID = "avisClientId";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

@@ -4,9 +4,15 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +23,7 @@ import jakarta.persistence.UniqueConstraint;
  * Table du restaurant.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
 	name = "TABLE",
@@ -57,6 +64,13 @@ public class TableRestaurant {
 	 */
 	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
 	private Integer restaurantId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "TAB_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -104,6 +118,15 @@ public class TableRestaurant {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -144,6 +167,14 @@ public class TableRestaurant {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.entities.restaurant.TableRestaurant TableRestaurant}.
 	 */
 	public enum Fields {
@@ -151,7 +182,8 @@ public class TableRestaurant {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),
 		DISPONIBLE(Boolean.class),
-		RESTAURANT_ID(Integer.class);
+		RESTAURANT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

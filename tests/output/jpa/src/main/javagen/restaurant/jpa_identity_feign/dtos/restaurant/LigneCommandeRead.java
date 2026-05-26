@@ -7,9 +7,11 @@ package restaurant.jpa_identity_feign.dtos.restaurant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import restaurant.jpa_identity_feign.entities.restaurant.LigneCommande;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
@@ -67,6 +69,14 @@ public class LigneCommandeRead implements Serializable {
 	 */
 	@NotNull
 	private Integer platId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * No arg constructor.
@@ -140,6 +150,15 @@ public class LigneCommandeRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -188,6 +207,14 @@ public class LigneCommandeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.dtos.restaurant.LigneCommandeRead LigneCommandeRead}.
 	 */
 	public enum Fields {
@@ -196,7 +223,8 @@ public class LigneCommandeRead implements Serializable {
 		PRIX_UNITAIRE(BigDecimal.class),
 		PRIX_TOTAL(BigDecimal.class),
 		COMMANDE_ID(Integer.class),
-		PLAT_ID(Integer.class);
+		PLAT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

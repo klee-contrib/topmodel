@@ -5,6 +5,9 @@
 package restaurant.jpa_identity_feign.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
@@ -55,6 +58,14 @@ public class LigneCommandeHistorique {
 	 */
 	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
 	private Integer platId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
+	 */
+	@CreatedDate
+	@Column(name = "LIG_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
@@ -108,6 +119,15 @@ public class LigneCommandeHistorique {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for commandeHistoriqueId.
 	 *
 	 * @return value of {@link #commandeHistoriqueId commandeHistoriqueId}.
@@ -157,6 +177,14 @@ public class LigneCommandeHistorique {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #commandeHistoriqueId commandeHistoriqueId}.
 	 * @param commandeHistoriqueId value to set.
 	 */
@@ -173,6 +201,7 @@ public class LigneCommandeHistorique {
 		PRIX_UNITAIRE(BigDecimal.class),
 		PRIX_TOTAL(BigDecimal.class),
 		PLAT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class),
 		COMMANDE_HISTORIQUE_ID(Integer.class);
 
 		private final Class<?> type;

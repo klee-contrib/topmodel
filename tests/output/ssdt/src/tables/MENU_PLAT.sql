@@ -10,6 +10,7 @@ create table [dbo].[MENU_PLAT] (
 	[MEN_ID] int,
 	[PLA_ID] int,
 	[MPL_ORDRE] int not null,
+	[MPL_DATE_CREATION] timestamp not null,
 	constraint [PK_MENU_PLAT] primary key clustered ([MEN_ID] ASC, [PLA_ID] ASC),
 	constraint [FK_MENU_PLAT_MEN_ID] foreign key ([MEN_ID]) references [dbo].[MENU] ([MEN_ID]),
 	constraint [FK_MENU_PLAT_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
@@ -36,4 +37,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Plat du menu', 'SCHEMA', 'dbo', 'TABLE', 'MENU_PLAT', 'COLUMN', 'PLA_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Ordre d''affichage du plat dans le menu', 'SCHEMA', 'dbo', 'TABLE', 'MENU_PLAT', 'COLUMN', 'MPL_ORDRE'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'MENU_PLAT', 'COLUMN', 'MPL_DATE_CREATION'
 go

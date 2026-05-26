@@ -5,11 +5,16 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +30,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "PLAT")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Plat {
 
@@ -80,6 +86,13 @@ public class Plat {
 	 */
 	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, mappedBy = "plat")
 	private Promotion promotion;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "PLA_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -154,6 +167,15 @@ public class Plat {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -218,6 +240,14 @@ public class Plat {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.Plat Plat}.
 	 */
 	public enum Fields {
@@ -228,7 +258,8 @@ public class Plat {
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT(CategoriePlat.class),
 		RESTAURANT(Restaurant.class),
-		PROMOTION(Promotion.class);
+		PROMOTION(Promotion.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

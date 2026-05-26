@@ -6,9 +6,13 @@ package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +27,7 @@ import jakarta.persistence.UniqueConstraint;
  * Avis d'un client sur un restaurant.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
 	name = "AVIS_CLIENT",
@@ -84,6 +89,13 @@ public class AvisClient {
 	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "AVI_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -158,6 +170,15 @@ public class AvisClient {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -222,6 +243,14 @@ public class AvisClient {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.AvisClient AvisClient}.
 	 */
 	public enum Fields {
@@ -232,7 +261,8 @@ public class AvisClient {
 		APPROUVE(Boolean.class),
 		NOMBRE_VUES(Integer.class),
 		CLIENT(Client.class),
-		RESTAURANT(Restaurant.class);
+		RESTAURANT(Restaurant.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

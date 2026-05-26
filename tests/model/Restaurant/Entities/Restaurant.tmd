@@ -5,11 +5,14 @@ tags:
 uses:
   - Restaurant/Entities/Menu
   - Restaurant/Entities/Personne
+  - meta/decorators
 ---
 class:
   name: Restaurant
   trigram: RES
   comment: Restaurant
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -35,6 +38,8 @@ class:
   sqlName: TABLE
   trigram: TAB
   comment: Table du restaurant
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id

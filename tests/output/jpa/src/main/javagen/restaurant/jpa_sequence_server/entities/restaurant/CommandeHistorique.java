@@ -7,6 +7,8 @@ package restaurant.jpa_sequence_server.entities.restaurant;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -91,6 +93,14 @@ public class CommandeHistorique {
 	private Integer avisClientId;
 
 	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@CreatedDate
+	@Column(name = "COM_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -172,6 +182,15 @@ public class CommandeHistorique {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -244,6 +263,14 @@ public class CommandeHistorique {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.CommandeHistorique CommandeHistorique}.
 	 */
 	public enum Fields {
@@ -255,7 +282,8 @@ public class CommandeHistorique {
 		TABLE_ID(Integer.class),
 		RESERVATION_ID(Integer.class),
 		STATUT_COMMANDE(StatutCommande.class),
-		AVIS_CLIENT_ID(Integer.class);
+		AVIS_CLIENT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

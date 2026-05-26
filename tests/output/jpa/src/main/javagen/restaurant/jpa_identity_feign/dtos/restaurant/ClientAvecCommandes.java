@@ -12,6 +12,7 @@ import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.enums.restaurant.StatutCommande;
@@ -57,6 +58,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	@Size(max = 10)
 	private String departementCode;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Adresse email du client.
@@ -139,6 +148,14 @@ public class ClientAvecCommandes implements Serializable {
 	private List<List<Integer>> commandeLignes;
 
 	/**
+	 * Liste des commandes du client.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private List<LocalDateTime> commandeDateCreation;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -172,6 +189,15 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
+	}
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
 	}
 
 	/**
@@ -283,6 +309,15 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
+	 * Getter for commandeDateCreation.
+	 *
+	 * @return value of {@link #commandeDateCreation commandeDateCreation}.
+	 */
+	public List<LocalDateTime> getCommandeDateCreation() {
+		return this.commandeDateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -312,6 +347,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**
@@ -411,6 +454,14 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #commandeDateCreation commandeDateCreation}.
+	 * @param commandeDateCreation value to set.
+	 */
+	public void setCommandeDateCreation(List<LocalDateTime> commandeDateCreation) {
+		this.commandeDateCreation = commandeDateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.dtos.restaurant.ClientAvecCommandes ClientAvecCommandes}.
 	 */
 	public enum Fields {
@@ -418,6 +469,7 @@ public class ClientAvecCommandes implements Serializable {
 		NOM(String.class),
 		PRENOM(String.class),
 		DEPARTEMENT_CODE(String.class),
+		DATE_CREATION(LocalDateTime.class),
 		EMAIL(String.class),
 		AVIS_CLIENTS(List.class),
 		COMMANDE_ID(List.class),
@@ -429,7 +481,8 @@ public class ClientAvecCommandes implements Serializable {
 		COMMANDE_RESERVATION_ID(List.class),
 		COMMANDE_STATUT_COMMANDE(List.class),
 		COMMANDE_AVIS_CLIENT_ID(List.class),
-		COMMANDE_LIGNES(List.class);
+		COMMANDE_LIGNES(List.class),
+		COMMANDE_DATE_CREATION(List.class);
 
 		private final Class<?> type;
 

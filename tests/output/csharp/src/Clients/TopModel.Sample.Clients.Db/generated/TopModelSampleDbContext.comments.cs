@@ -26,6 +26,7 @@ public partial class TopModelSampleDbContext : DbContext
         avisClient.Property(p => p.NombreVues).HasComment("Nombre de vues de l'avis (calculé)");
         avisClient.Property("ClientId").HasComment("Client ayant donné l'avis");
         avisClient.Property("RestaurantId").HasComment("Restaurant concerné par l'avis");
+        avisClient.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var categoriePlat = modelBuilder.Entity<CategoriePlat>();
         categoriePlat.ToTable(t => t.HasComment("Catégorie de plat"));
@@ -54,6 +55,7 @@ public partial class TopModelSampleDbContext : DbContext
         commande.Property("ReservationId").HasComment("Réservation associée à la commande");
         commande.Property(p => p.StatutCommande).HasComment("Statut de la commande");
         commande.Property("AvisClientId").HasComment("Avis laissé par le client sur la commande.");
+        commande.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var commandeHistorique = modelBuilder.Entity<CommandeHistorique>();
         commandeHistorique.ToTable(t => t.HasComment("Commande pour historique avec préservation des clés primaires"));
@@ -66,6 +68,7 @@ public partial class TopModelSampleDbContext : DbContext
         commandeHistorique.Property(p => p.ReservationId).HasComment("Réservation associée à la commande");
         commandeHistorique.Property(p => p.StatutCommande).HasComment("Statut de la commande");
         commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
+        commandeHistorique.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var departement = modelBuilder.Entity<Departement>();
         departement.ToTable(t => t.HasComment("Département"));
@@ -90,6 +93,7 @@ public partial class TopModelSampleDbContext : DbContext
         ligneCommande.Property(p => p.PrixTotal).HasComment("Prix total de la ligne");
         ligneCommande.Property("CommandeId").HasComment("Commande à laquelle appartient la ligne");
         ligneCommande.Property("PlatId").HasComment("Plat commandé");
+        ligneCommande.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var ligneCommandeHistorique = modelBuilder.Entity<LigneCommandeHistorique>();
         ligneCommandeHistorique.ToTable(t => t.HasComment("Ligne de commande pour historique avec préservation des clés primaires"));
@@ -98,6 +102,7 @@ public partial class TopModelSampleDbContext : DbContext
         ligneCommandeHistorique.Property(p => p.PrixUnitaire).HasComment("Prix unitaire au moment de la commande");
         ligneCommandeHistorique.Property(p => p.PrixTotal).HasComment("Prix total de la ligne");
         ligneCommandeHistorique.Property(p => p.PlatId).HasComment("Plat commandé");
+        ligneCommandeHistorique.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
         ligneCommandeHistorique.Property(p => p.CommandeHistoriqueId).HasComment("Commande à laquelle appartient la ligne");
 
         var menu = modelBuilder.Entity<Menu>();
@@ -110,12 +115,14 @@ public partial class TopModelSampleDbContext : DbContext
         menu.Property(p => p.DateDebut).HasComment("Date de début de validité du menu");
         menu.Property(p => p.DateFin).HasComment("Date de fin de validité du menu");
         menu.Property("RestaurantId").HasComment("Restaurant proposant ce menu");
+        menu.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var menuPlat = modelBuilder.Entity<MenuPlat>();
         menuPlat.ToTable(t => t.HasComment("Plat dans un menu"));
         menuPlat.Property("MenuId").HasComment("Menu contenant ce plat");
         menuPlat.Property("PlatId").HasComment("Plat du menu");
         menuPlat.Property(p => p.Ordre).HasComment("Ordre d'affichage du plat dans le menu");
+        menuPlat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var personne = modelBuilder.Entity<Personne>();
         personne.ToTable(t => t.HasComment("Classe de base représentant une personne"));
@@ -123,6 +130,7 @@ public partial class TopModelSampleDbContext : DbContext
         personne.Property(p => p.Nom).HasComment("Nom de la personne");
         personne.Property(p => p.Prenom).HasComment("Prénom de la personne");
         personne.Property(p => p.DepartementCode).HasComment("Département de résidence de la personne.");
+        personne.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var plat = modelBuilder.Entity<Plat>();
         plat.ToTable(t => t.HasComment("Plat du menu"));
@@ -133,6 +141,7 @@ public partial class TopModelSampleDbContext : DbContext
         plat.Property(p => p.Disponible).HasComment("Indique si le plat est disponible");
         plat.Property("CategoriePlatCode").HasComment("Catégorie du plat");
         plat.Property("RestaurantId").HasComment("Restaurant proposant ce plat");
+        plat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var promotion = modelBuilder.Entity<Promotion>();
         promotion.ToTable(t => t.HasComment("Promotion sur un plat"));
@@ -143,6 +152,7 @@ public partial class TopModelSampleDbContext : DbContext
         promotion.Property(p => p.DateFin).HasComment("Date de fin de la promotion");
         promotion.Property(p => p.Active).HasComment("Indique si la promotion est active");
         promotion.Property("RestaurantId").HasComment("Restaurant concerné par la promotion (null si globale)");
+        promotion.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var region = modelBuilder.Entity<Region>();
         region.ToTable(t => t.HasComment("Région"));
@@ -160,6 +170,7 @@ public partial class TopModelSampleDbContext : DbContext
         reservation.Property("ClientId").HasComment("Client ayant fait la réservation");
         reservation.Property(p => p.TableId).HasComment("Table réservée");
         reservation.Property("RestaurantId").HasComment("Restaurant concerné par la réservation");
+        reservation.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var restaurant = modelBuilder.Entity<Models.Restaurant.Restaurant>();
         restaurant.ToTable(t => t.HasComment("Restaurant"));
@@ -167,6 +178,7 @@ public partial class TopModelSampleDbContext : DbContext
         restaurant.Property(p => p.Nom).HasComment("Nom du restaurant");
         restaurant.Property(p => p.Adresse).HasComment("Adresse du restaurant");
         restaurant.Property(p => p.Telephone).HasComment("Numéro de téléphone");
+        restaurant.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var tableRestaurant = modelBuilder.Entity<TableRestaurant>();
         tableRestaurant.ToTable(t => t.HasComment("Table du restaurant"));
@@ -175,6 +187,7 @@ public partial class TopModelSampleDbContext : DbContext
         tableRestaurant.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
         tableRestaurant.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
         tableRestaurant.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
+        tableRestaurant.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var translation = modelBuilder.Entity<Translation>();
         translation.ToTable(t => t.HasComment("Table pour stocker les traductions en SQL."));

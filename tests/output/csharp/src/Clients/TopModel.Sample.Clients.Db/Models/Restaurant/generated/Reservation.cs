@@ -73,4 +73,12 @@ public partial record Reservation
     /// </summary>
     [Required]
     public Restaurant? Restaurant { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("rev_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

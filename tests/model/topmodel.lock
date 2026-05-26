@@ -49,8 +49,11 @@ generatedFiles:
   - ../output/angular/src/appgenerated/model/restaurant/table-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/table-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/table-write.ts
+  - ../output/angular/src/appgenerated/resources/de/common.json
   - ../output/angular/src/appgenerated/resources/de/restaurant.json
+  - ../output/angular/src/appgenerated/resources/en/common.json
   - ../output/angular/src/appgenerated/resources/en/restaurant.json
+  - ../output/angular/src/appgenerated/resources/fr/common.json
   - ../output/angular/src/appgenerated/resources/fr/restaurant.json
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs
@@ -82,6 +85,9 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/MenuClient.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/PersonneClient.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/RestaurantClient.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.de.resx
+  - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.en.resx
+  - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.fr.resx
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlat.cs
@@ -132,8 +138,11 @@ generatedFiles:
   - ../output/documentation/endpoints/restaurant.md
   - ../output/documentation/mermaid/common.md
   - ../output/documentation/mermaid/restaurant.md
+  - ../output/focus/src/locale/de/common.ts
   - ../output/focus/src/locale/de/restaurant.ts
+  - ../output/focus/src/locale/en/common.ts
   - ../output/focus/src/locale/en/restaurant.ts
+  - ../output/focus/src/locale/fr/common.ts
   - ../output/focus/src/locale/fr/restaurant.ts
   - ../output/focus/src/model/restaurant/avis-client-read.ts
   - ../output/focus/src/model/restaurant/avis-client-write.ts
@@ -455,9 +464,15 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/StatutCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/enums/restaurant/TypeTerrasse.java
+  - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/common_de.properties
+  - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/common_en.properties
+  - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/common_fr.properties
   - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/restaurant_de.properties
   - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/restaurant_en.properties
   - ../output/jpa/src/main/resources/jpa-jdbc-uuid-resttemplate/i18n/model/restaurant_fr.properties
+  - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/common_de.properties
+  - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/common_en.properties
+  - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/common_fr.properties
   - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/restaurant_de.properties
   - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/restaurant_en.properties
   - ../output/jpa/src/main/resources/jpa-sequence-server/i18n/model/restaurant_fr.properties
@@ -495,5 +510,5 @@ generatedFiles:
   - ../output/ssdt/src/tables/TABLE.sql
   - ../output/ssdt/src/tables/TRANSLATION.sql
   - ../output/ssdt/src/tables/TYPE_TERRASSE.sql
+  - ../output/translation/i18n/de/out/common_de.properties
   - ../output/translation/i18n/de/out/restaurant_de.properties
-  - ../output/translation/i18n/en/out/restaurant_en.properties

@@ -65,4 +65,12 @@ public partial record Promotion
     /// Restaurant concerné par la promotion (null si globale).
     /// </summary>
     public Restaurant? Restaurant { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("pro_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

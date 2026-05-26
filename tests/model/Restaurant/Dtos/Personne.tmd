@@ -52,7 +52,9 @@ class:
   properties:
     - alias:
         class: Personne
-        exclude: Id
+        exclude:
+          - Id
+          - DateCreation
     - alias:
         class: Employe
 
@@ -104,7 +106,9 @@ class:
   properties:
     - alias:
         class: Personne
-        exclude: Id
+        exclude:
+          - Id
+          - DateCreation
     - alias:
         class: Client
 
@@ -152,6 +156,7 @@ class:
           - Id
           - DateAvis
           - NombreVues
+          - DateCreation
 
   mappers:
     to:

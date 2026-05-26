@@ -12,6 +12,7 @@ import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Commande;
@@ -75,6 +76,14 @@ public class CommandeRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	private Integer avisClientId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Client ayant passé la commande.
@@ -179,6 +188,15 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for client.
 	 *
 	 * @return value of {@link #client client}.
@@ -262,6 +280,14 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #client client}.
 	 * @param client value to set.
 	 */
@@ -296,6 +322,7 @@ public class CommandeRead implements Serializable {
 		TABLE_ID(Integer.class),
 		STATUT_COMMANDE(StatutCommande.class),
 		AVIS_CLIENT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class),
 		CLIENT(ClientRead.class),
 		RESERVATION(ReservationRead.class),
 		LIGNES(List.class);

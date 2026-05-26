@@ -44,6 +44,13 @@ public partial record ClientAvecCommandes
     public string? DepartementCode { get; set; }
 
     /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
+
+    /// <summary>
     /// Adresse email du client.
     /// </summary>
     [Domain(Domains.Libelle)]
@@ -121,4 +128,11 @@ public partial record ClientAvecCommandes
     /// </summary>
     [Domain(Domains.Liste)]
     public ICollection<ICollection<int>>? CommandeLignes { get; set; }
+
+    /// <summary>
+    /// Liste des commandes du client.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Liste)]
+    public ICollection<DateTime>? CommandeDateCreation { get; set; }
 }

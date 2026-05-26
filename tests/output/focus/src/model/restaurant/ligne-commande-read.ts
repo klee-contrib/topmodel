@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_ID, DO_PRIX, DO_QUANTITE} from "../../domains";
+import {DO_DATE_HEURE, DO_ID, DO_PRIX, DO_QUANTITE} from "../../domains";
 
 export type LigneCommandeRead = EntityToType<LigneCommandeReadEntityType>;
 export type LigneCommandeReadEntityType = typeof LigneCommandeReadEntity;
@@ -26,5 +26,8 @@ export const LigneCommandeReadEntity = entity({
     ),
     platId: e.field(DO_ID, f => f
         .label("restaurant.ligneCommande.platId")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     )
 });

@@ -19,10 +19,10 @@ export const restaurant = {
         ordre: "Ordre",
         prixMoyen: "PrixMoyen",
         values: {
-            Entree: "Entrée",
-            Plat: "Plat principal",
+            Entree: "Starter",
+            Plat: "Main course",
             Dessert: "Dessert",
-            Boisson: "Boisson"
+            Boisson: "Drink"
         }
     },
     categoriePlatRegion: {
@@ -31,13 +31,13 @@ export const restaurant = {
     },
     client: {
         avisClients: "AvisClients",
-        email: "Courriel"
+        email: "Email"
     },
     clientItem: {
-        id: "Informations client",
-        nom: "Informations client",
+        id: "Customer information",
+        nom: "Customer information",
         nomComplet: "NomComplet",
-        prenom: "Informations client"
+        prenom: "Customer information"
     },
     commande: {
         avisClientId: "AvisClient",
@@ -46,7 +46,7 @@ export const restaurant = {
         dateLivraison: "DateLivraison",
         id: "Id",
         lignes: "Lignes",
-        montantTotal: "Montant total",
+        montantTotal: "Total amount",
         reservationId: "Reservation",
         statutCommande: "StatutCommande",
         tableId: "TableId"
@@ -103,8 +103,8 @@ export const restaurant = {
     personne: {
         departementCode: "DepartementCode",
         id: "Id",
-        nom: "Nom",
-        prenom: "Prénom"
+        nom: "Last name",
+        prenom: "First name"
     },
     plat: {
         categoriePlatCode: "CategoriePlat",
@@ -169,11 +169,11 @@ export const restaurant = {
         code: "Code",
         libelle: "Libelle",
         values: {
-            EnAttente: "En attente",
-            EnPreparation: "En préparation",
-            Prete: "Prête",
-            Servie: "Servie",
-            Annulee: "Annulée"
+            EnAttente: "Pending",
+            EnPreparation: "In preparation",
+            Prete: "Ready",
+            Servie: "Served",
+            Annulee: "Cancelled"
         }
     },
     tableRestaurant: {

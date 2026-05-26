@@ -49,4 +49,12 @@ public partial record Personne
     [Domain(Domains.Code)]
     [StringLength(10)]
     public string? DepartementCode { get; set; } = Departement.ParisCode;
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("per_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

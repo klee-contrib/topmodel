@@ -4,11 +4,16 @@
 
 package restaurant.jpa_sequence_server.entities.restaurant;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -22,6 +27,7 @@ import jakarta.persistence.UniqueConstraint;
  */
 @Entity
 @IdClass(MenuPlat.MenuPlatId.class)
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
 	name = "MENU_PLAT",
@@ -48,6 +54,13 @@ public class MenuPlat {
 	 */
 	@Column(name = "MPL_ORDRE", nullable = false, columnDefinition = "int")
 	private Integer ordre;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "MPL_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for menu.
@@ -77,6 +90,15 @@ public class MenuPlat {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #menu menu}.
 	 * @param menu value to set.
 	 */
@@ -101,12 +123,21 @@ public class MenuPlat {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.MenuPlat MenuPlat}.
 	 */
 	public enum Fields {
 		MENU(Menu.class),
 		PLAT(Plat.class),
-		ORDRE(Integer.class);
+		ORDRE(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 

@@ -30,6 +30,8 @@ public class AvisClient_ {
 
 	public static volatile SingularAttribute<AvisClient, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<AvisClient, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String NOTE = "note";
@@ -45,4 +47,6 @@ public class AvisClient_ {
 	public static final String CLIENT = "client";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

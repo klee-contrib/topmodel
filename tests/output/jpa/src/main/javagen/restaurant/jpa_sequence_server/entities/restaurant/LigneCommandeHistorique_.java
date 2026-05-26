@@ -5,6 +5,7 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -24,6 +25,8 @@ public class LigneCommandeHistorique_ {
 
 	public static volatile SingularAttribute<LigneCommandeHistorique, Integer> platId;
 
+	public static volatile SingularAttribute<LigneCommandeHistorique, LocalDateTime> dateCreation;
+
 	public static volatile SingularAttribute<LigneCommandeHistorique, Integer> commandeHistoriqueId;
 
 	public static final String ID = "id";
@@ -35,6 +38,8 @@ public class LigneCommandeHistorique_ {
 	public static final String PRIX_TOTAL = "prixTotal";
 
 	public static final String PLAT_ID = "platId";
+
+	public static final String DATE_CREATION = "dateCreation";
 
 	public static final String COMMANDE_HISTORIQUE_ID = "commandeHistoriqueId";
 }

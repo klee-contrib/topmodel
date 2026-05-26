@@ -4,6 +4,7 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.annotation.Generated;
@@ -33,6 +34,8 @@ public class Restaurant_ {
 
 	public static volatile ListAttribute<Restaurant, Integer> tableIds;
 
+	public static volatile SingularAttribute<Restaurant, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -50,4 +53,6 @@ public class Restaurant_ {
 	public static final String AVIS_CLIENTS = "avisClients";
 
 	public static final String TABLE_IDS = "tableIds";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

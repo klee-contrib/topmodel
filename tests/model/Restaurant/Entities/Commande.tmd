@@ -7,11 +7,14 @@ uses:
   - Restaurant/Entities/Personne
   - Restaurant/Entities/Restaurant
   - Restaurant/References
+  - meta/decorators
 ---
 class:
   name: Commande
   trigram: COM
   comment: Commande d'un client
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -61,6 +64,8 @@ class:
   name: LigneCommande
   trigram: LIG
   comment: Ligne d'une commande
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id
@@ -100,6 +105,8 @@ class:
   name: Reservation
   trigram: REV
   comment: Réservation d'une table
+  decorators:
+    - DateCreation
 
   properties:
     - name: Id

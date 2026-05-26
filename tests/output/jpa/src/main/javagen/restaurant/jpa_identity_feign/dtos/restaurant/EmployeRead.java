@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Employe;
@@ -57,6 +58,14 @@ public class EmployeRead implements Serializable {
 	 */
 	@Size(max = 10)
 	private String departementCode;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Numéro de téléphone de l'employé.
@@ -153,6 +162,15 @@ public class EmployeRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for telephone.
 	 *
 	 * @return value of {@link #telephone telephone}.
@@ -239,6 +257,14 @@ public class EmployeRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #telephone telephone}.
 	 * @param telephone value to set.
 	 */
@@ -294,6 +320,7 @@ public class EmployeRead implements Serializable {
 		NOM(String.class),
 		PRENOM(String.class),
 		DEPARTEMENT_CODE(String.class),
+		DATE_CREATION(LocalDateTime.class),
 		TELEPHONE(String.class),
 		DATE_NAISSANCE(LocalDateTime.class),
 		MATRICULE(String.class),

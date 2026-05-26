@@ -15,6 +15,7 @@ create table [dbo].[RESERVATION] (
 	[PER_ID] int not null,
 	[TAB_ID] int,
 	[RES_ID] int not null,
+	[REV_DATE_CREATION] timestamp not null,
 	constraint [PK_RESERVATION] primary key clustered ([REV_ID] ASC),
 	constraint [FK_RESERVATION_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
 	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
@@ -57,4 +58,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Table réservée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'TAB_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'RES_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_CREATION'
 go

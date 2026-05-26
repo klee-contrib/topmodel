@@ -44,6 +44,13 @@ public partial record EmployeRead
     public string? DepartementCode { get; set; }
 
     /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
+
+    /// <summary>
     /// Numéro de téléphone de l'employé.
     /// </summary>
     [Domain(Domains.Telephone)]

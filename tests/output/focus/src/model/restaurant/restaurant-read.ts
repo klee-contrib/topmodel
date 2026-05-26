@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_ID, DO_LIBELLE, DO_LISTE, DO_TELEPHONE} from "../../domains";
+import {DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_TELEPHONE} from "../../domains";
 
 import {TableItemEntity} from "./table-item";
 
@@ -34,6 +34,9 @@ export const RestaurantReadEntity = entity({
     ),
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.restaurant.avisClients")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     ),
     tables: e.list(TableItemEntity, f => f
         .label("restaurant.restaurant.tableIds")

@@ -33,6 +33,9 @@ export const ReservationReadEntity = entity({
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.reservation.restaurantId")
     ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
+    ),
     clientNom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personne.nom")
     ),

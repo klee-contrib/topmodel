@@ -5,18 +5,23 @@
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotNull;
 
 /**
  * Ligne d'une commande.
  */
 @Table(name = "ligne_commande")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommande {
 
@@ -61,6 +66,14 @@ public class LigneCommande {
 	@NotNull
 	@Column("pla_id")
 	private Integer platId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("lig_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -117,6 +130,15 @@ public class LigneCommande {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -162,5 +184,13 @@ public class LigneCommande {
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

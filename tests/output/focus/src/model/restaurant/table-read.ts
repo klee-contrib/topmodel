@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_CODE, DO_ID, DO_QUANTITE} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_QUANTITE} from "../../domains";
 
 export type TableRead = EntityToType<TableReadEntityType>;
 export type TableReadEntityType = typeof TableReadEntity;
@@ -23,5 +23,8 @@ export const TableReadEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.tableRestaurant.restaurantId")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     )
 });

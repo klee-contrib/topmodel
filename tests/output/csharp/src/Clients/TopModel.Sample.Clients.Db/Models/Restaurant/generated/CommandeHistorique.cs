@@ -81,4 +81,12 @@ public partial record CommandeHistorique
     [Column("avi_id")]
     [Domain(Domains.Id)]
     public int? AvisClientId { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("com_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
 }

@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -60,6 +61,15 @@ public class EmployeRead implements Serializable {
 	@Size(max = 10)
 	@Column("dep_code")
 	private String departementCode;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	@Column("per_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Numéro de téléphone de l'employé.
@@ -142,6 +152,15 @@ public class EmployeRead implements Serializable {
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
+	}
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
 	}
 
 	/**
@@ -228,6 +247,14 @@ public class EmployeRead implements Serializable {
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**

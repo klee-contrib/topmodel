@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
 
 import {CategoriePlatCode} from "./enums";
 
@@ -28,5 +28,8 @@ export const PlatWriteEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.plat.restaurantId")
+    ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
     )
 });

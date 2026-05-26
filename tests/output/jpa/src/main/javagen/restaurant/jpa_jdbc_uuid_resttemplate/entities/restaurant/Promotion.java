@@ -6,17 +6,21 @@ package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotNull;
 
 /**
  * Promotion sur un plat.
  */
 @Table(name = "promotion")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Promotion {
 
@@ -67,6 +71,14 @@ public class Promotion {
 	 */
 	@Column("res_id")
 	private Integer restaurantId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("pro_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for platId.
@@ -132,6 +144,15 @@ public class Promotion {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #platId platId}.
 	 * @param platId value to set.
 	 */
@@ -185,5 +206,13 @@ public class Promotion {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

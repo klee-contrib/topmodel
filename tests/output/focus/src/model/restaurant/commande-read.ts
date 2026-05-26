@@ -35,6 +35,9 @@ export const CommandeReadEntity = entity({
     avisClientId: e.field(DO_ID, f => f.optional()
         .label("restaurant.commande.avisClientId")
     ),
+    dateCreation: e.field(DO_DATE_HEURE, f => f
+        .label("common.dateCreation.dateCreation")
+    ),
     client: e.object(ClientReadEntity, f => f
         .label("restaurant.commande.clientId")
     ),

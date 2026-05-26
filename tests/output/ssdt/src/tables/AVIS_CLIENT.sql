@@ -15,6 +15,7 @@ create table [dbo].[AVIS_CLIENT] (
 	[AVI_NOMBRE_VUES] int not null default 0,
 	[PER_ID] int not null,
 	[RES_ID] int not null,
+	[AVI_DATE_CREATION] timestamp not null,
 	constraint [PK_AVIS_CLIENT] primary key clustered ([AVI_ID] ASC),
 	constraint [FK_AVIS_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
 	constraint [FK_AVIS_CLIENT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
@@ -51,4 +52,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'PER_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'RES_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_CREATION'
 go

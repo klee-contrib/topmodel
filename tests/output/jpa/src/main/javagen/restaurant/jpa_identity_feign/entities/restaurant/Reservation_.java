@@ -30,6 +30,8 @@ public class Reservation_ {
 
 	public static volatile SingularAttribute<Reservation, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<Reservation, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String DATE_RESERVATION = "dateReservation";
@@ -45,4 +47,6 @@ public class Reservation_ {
 	public static final String TABLE_ID = "tableId";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

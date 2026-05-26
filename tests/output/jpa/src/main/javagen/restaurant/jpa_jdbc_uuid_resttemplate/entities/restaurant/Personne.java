@@ -4,11 +4,16 @@
 
 package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.DepartementCode;
@@ -17,6 +22,7 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.DepartementCode;
  * Classe de base représentant une personne.
  */
 @Table(name = "personne")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Personne {
 
@@ -46,6 +52,14 @@ public class Personne {
 	 */
 	@Column("dep_code")
 	private String departementCode = DepartementCode.Paris;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("per_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -84,6 +98,15 @@ public class Personne {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -113,5 +136,13 @@ public class Personne {
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

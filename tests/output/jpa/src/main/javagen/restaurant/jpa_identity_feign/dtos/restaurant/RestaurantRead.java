@@ -6,10 +6,12 @@ package restaurant.jpa_identity_feign.dtos.restaurant;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
@@ -83,6 +85,14 @@ public class RestaurantRead implements Serializable {
 	 */
 	@NotNull
 	private List<Integer> avisClients;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getDateCreation() Restaurant#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
@@ -182,6 +192,15 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Getter for tables.
 	 *
 	 * @return value of {@link #tables tables}.
@@ -255,6 +274,14 @@ public class RestaurantRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #tables tables}.
 	 * @param tables value to set.
 	 */
@@ -274,6 +301,7 @@ public class RestaurantRead implements Serializable {
 		PLATS(List.class),
 		PROMOTIONS(List.class),
 		AVIS_CLIENTS(List.class),
+		DATE_CREATION(LocalDateTime.class),
 		TABLES(List.class);
 
 		private final Class<?> type;

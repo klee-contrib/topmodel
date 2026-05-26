@@ -31,8 +31,9 @@ public static class Mappers
     /// </summary>
     /// <param name="source">Instance de 'MenuWrite'.</param>
     /// <param name="id">Identifiant du menu.</param>
+    /// <param name="dateCreation">Date de création de l'enregistrement.</param>
     /// <returns>Une nouvelle instance de 'MenuRead'.</returns>
-    public static MenuRead ToMenuRead(this MenuWrite source, int? id = null)
+    public static MenuRead ToMenuRead(this MenuWrite source, int? id = null, DateTime? dateCreation = null)
     {
         return new MenuRead
         {
@@ -44,7 +45,8 @@ public static class Mappers
             DateFin = source.DateFin,
             RestaurantId = source.RestaurantId,
             CategoriesPlat = source.CategoriesPlat?.Select(CategoriePlat.GetValue).ToList() ?? [],
-            Id = id
+            Id = id,
+            DateCreation = dateCreation
         };
     }
 

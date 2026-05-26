@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -72,6 +73,14 @@ public class PromotionRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
 	 */
 	private Integer restaurantId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Promotion#getDateCreation() Promotion#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for platId.
@@ -137,6 +146,15 @@ public class PromotionRead implements Serializable {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #platId platId}.
 	 * @param platId value to set.
 	 */
@@ -190,5 +208,13 @@ public class PromotionRead implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

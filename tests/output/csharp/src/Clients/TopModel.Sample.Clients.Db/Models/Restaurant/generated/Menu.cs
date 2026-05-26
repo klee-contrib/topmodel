@@ -80,4 +80,12 @@ public partial record Menu
     /// Association réciproque de MenuPlat.Menu.
     /// </summary>
     public ICollection<MenuPlat> Plats { get; set; } = [];
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Column("men_date_creation")]
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; init; }
 }

@@ -53,4 +53,11 @@ public partial record LigneCommandeRead
     [Required]
     [Domain(Domains.Id)]
     public int? PlatId { get; set; }
+
+    /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
 }

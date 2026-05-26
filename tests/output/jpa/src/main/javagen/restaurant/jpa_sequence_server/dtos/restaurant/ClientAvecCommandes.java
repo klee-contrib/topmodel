@@ -12,6 +12,7 @@ import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
@@ -57,6 +58,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	@Size(max = 10)
 	private String departementCode;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Adresse email du client.
@@ -139,6 +148,14 @@ public class ClientAvecCommandes implements Serializable {
 	private List<List<Integer>> commandeLignes;
 
 	/**
+	 * Liste des commandes du client.
+	 * Alias of {@link restaurant.jpa_sequence_server.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 */
+	@NotNull
+	@PastOrPresent
+	private List<LocalDateTime> commandeDateCreation;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -172,6 +189,15 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
+	}
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
 	}
 
 	/**
@@ -283,6 +309,15 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
+	 * Getter for commandeDateCreation.
+	 *
+	 * @return value of {@link #commandeDateCreation commandeDateCreation}.
+	 */
+	public List<LocalDateTime> getCommandeDateCreation() {
+		return this.commandeDateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -312,6 +347,14 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	/**
@@ -408,5 +451,13 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public void setCommandeLignes(List<List<Integer>> commandeLignes) {
 		this.commandeLignes = commandeLignes;
+	}
+
+	/**
+	 * Set the value of {@link #commandeDateCreation commandeDateCreation}.
+	 * @param commandeDateCreation value to set.
+	 */
+	public void setCommandeDateCreation(List<LocalDateTime> commandeDateCreation) {
+		this.commandeDateCreation = commandeDateCreation;
 	}
 }

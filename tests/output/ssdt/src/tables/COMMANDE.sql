@@ -16,6 +16,7 @@ create table [dbo].[COMMANDE] (
 	[REV_ID] int,
 	[STC_CODE] varchar not null default N'EN_ATT',
 	[AVI_ID] int,
+	[COM_DATE_CREATION] timestamp not null,
 	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),
 	constraint [FK_COMMANDE_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
 	constraint [FK_COMMANDE_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE] ([TAB_ID]),
@@ -72,4 +73,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Statut de la commande', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'STC_CODE'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Avis laissé par le client sur la commande.', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'AVI_ID'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'COMMANDE', 'COLUMN', 'COM_DATE_CREATION'
 go

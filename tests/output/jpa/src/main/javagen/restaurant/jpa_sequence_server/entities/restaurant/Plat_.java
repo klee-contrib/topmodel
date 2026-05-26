@@ -5,6 +5,7 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -30,6 +31,8 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Promotion> promotion;
 
+	public static volatile SingularAttribute<Plat, LocalDateTime> dateCreation;
+
 	public static final String ID = "id";
 
 	public static final String NOM = "nom";
@@ -45,4 +48,6 @@ public class Plat_ {
 	public static final String RESTAURANT = "restaurant";
 
 	public static final String PROMOTION = "promotion";
+
+	public static final String DATE_CREATION = "dateCreation";
 }

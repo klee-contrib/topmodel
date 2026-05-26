@@ -68,6 +68,13 @@ public partial record MenuRead
     public int? RestaurantId { get; set; }
 
     /// <summary>
+    /// Date de création de l'enregistrement.
+    /// </summary>
+    [Required]
+    [Domain(Domains.DateHeure)]
+    public DateTime? DateCreation { get; set; }
+
+    /// <summary>
     /// Catégories de plat dans le menu.
     /// </summary>
     [Required]

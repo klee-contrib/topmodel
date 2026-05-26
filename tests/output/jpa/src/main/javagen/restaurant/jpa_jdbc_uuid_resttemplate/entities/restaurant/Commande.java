@@ -7,11 +7,14 @@ package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
@@ -20,6 +23,7 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.StatutCommande;
  * Commande d'un client.
  */
 @Table(name = "commande")
+@EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Commande {
 
@@ -81,6 +85,14 @@ public class Commande {
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@NotNull
+	@CreatedDate
+	@Column("com_date_creation")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -164,6 +176,15 @@ public class Commande {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -233,5 +254,13 @@ public class Commande {
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
+	}
+
+	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 }

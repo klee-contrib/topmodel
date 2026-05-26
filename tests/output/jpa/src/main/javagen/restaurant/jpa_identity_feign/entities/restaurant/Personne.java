@@ -4,9 +4,15 @@
 
 package restaurant.jpa_identity_feign.entities.restaurant;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,6 +25,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "PERSONNE")
+@EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Personne {
@@ -48,6 +55,13 @@ public class Personne {
 	 */
 	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
 	private String departementCode = "75";
+
+	/**
+	 * Date de création de l'enregistrement.
+	 */
+	@CreatedDate
+	@Column(name = "PER_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	private LocalDateTime dateCreation;
 
 	/**
 	 * Getter for id.
@@ -86,6 +100,15 @@ public class Personne {
 	}
 
 	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link #dateCreation dateCreation}.
+	 */
+	public LocalDateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -118,13 +141,22 @@ public class Personne {
 	}
 
 	/**
+	 * Set the value of {@link #dateCreation dateCreation}.
+	 * @param dateCreation value to set.
+	 */
+	public void setDateCreation(LocalDateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_identity_feign.entities.restaurant.Personne Personne}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),
 		PRENOM(String.class),
-		DEPARTEMENT_CODE(String.class);
+		DEPARTEMENT_CODE(String.class),
+		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;
 
