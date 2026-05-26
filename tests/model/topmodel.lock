@@ -362,9 +362,13 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/RegionCode.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/StatutCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/enums/restaurant/TypeTerrasse.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/CommandeClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/CommandeController.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/MenuClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/MenuController.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/PersonneClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/PersonneController.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/RestaurantClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/api/server/restaurant/RestaurantController.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/common/TranslationDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/AvisClientDAO.java
