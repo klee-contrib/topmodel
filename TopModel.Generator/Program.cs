@@ -10,15 +10,15 @@ using TopModel.Utils.Cli;
 
 var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")
 {
-    Description = "Tag à ignorer lors de la génération.",
+    Description = LocalizeUtils.Localize(GeneratorMessage.ExcludeOptionDescription),
 };
 var updateOption = new Option<string>("--update", "-u")
 {
-    Description = "Met à jour le module de générateurs spécifié (ou tous les modules si 'all').",
+    Description = LocalizeUtils.Localize(GeneratorMessage.UpdateOptionDescription),
 };
 var schemaOption = new Option<bool>("--schema", "-s")
 {
-    Description = "Génère le fichier de schéma JSON du fichier de config.",
+    Description = LocalizeUtils.Localize(GeneratorMessage.SchemaOptionDescription),
 };
 
 var command = new RootCommand("Lance le générateur topmodel.")

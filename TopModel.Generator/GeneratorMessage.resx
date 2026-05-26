@@ -110,4 +110,13 @@
   <data name="ReferencedConfigNotFound" xml:space="preserve">
     <value>Configuration '{0}' does not exist, referenced tag '{1}' for config '{2}' will be ignored.</value>
   </data>
+  <data name="ExcludeOptionDescription" xml:space="preserve">
+    <value>Tag to ignore during generation.</value>
+  </data>
+  <data name="UpdateOptionDescription" xml:space="preserve">
+    <value>Updates the specified generator module (or all modules if 'all').</value>
+  </data>
+  <data name="SchemaOptionDescription" xml:space="preserve">
+    <value>Generates the JSON schema file for the config file.</value>
+  </data>
 </root>

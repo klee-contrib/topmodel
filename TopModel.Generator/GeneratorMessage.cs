@@ -26,4 +26,7 @@ public enum GeneratorMessage
     ConfigSchemaGenerated,
     ConfigNameAlreadyInUse,
     ReferencedConfigNotFound,
+    ExcludeOptionDescription,
+    UpdateOptionDescription,
+    SchemaOptionDescription,
 }
