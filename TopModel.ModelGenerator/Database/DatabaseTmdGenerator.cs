@@ -455,6 +455,18 @@ public abstract class DatabaseTmdGenerator(
         return GetConstraintKeys(GetForeignKeysQuery());
     }
 
+    private TmdClass GetMainClass(TmdFile file)
+    {
+        var max = file.Classes.Max(cl =>
+            cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
+        );
+        return file
+            .Classes.Where(cl =>
+                max == cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
+            )
+            .MinBy(c => c.Name)!;
+    }
+
     private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
     {
         return GetConstraintKeys(GetPrimaryKeysQuery());
@@ -650,18 +662,6 @@ public abstract class DatabaseTmdGenerator(
                 file.Path = Path.Combine(config.OutputDirectory, file.Module!, file.Name);
             }
         }
-    }
-
-    private TmdClass GetMainClass(TmdFile file)
-    {
-        var max = file.Classes.Max(cl =>
-            cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
-        );
-        return file
-            .Classes.Where(cl =>
-                max == cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
-            )
-            .MinBy(c => c.Name)!;
     }
 
     private void ResolveForeignProperties(
