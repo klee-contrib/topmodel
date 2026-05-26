@@ -1,0 +1,29 @@
+name: Test coverage
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Test coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: Install dotnet-coverage
+        run: dotnet tool install --global dotnet-coverage
+
+      - name: run tests
+        run: dotnet-coverage collect --settings ".github/workflows/coverage.settings.xml" --output "./coverage-results" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
+      - name: Upload test result reports to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          report_type: test_results
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
