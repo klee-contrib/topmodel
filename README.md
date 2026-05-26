@@ -1,5 +1,6 @@
 # TopModel
 
+[![codecov](https://codecov.io/github/klee-contrib/topmodel/graph/badge.svg?token=1osfXl9XNw)](https://codecov.io/github/klee-contrib/topmodel)
 ![Logo TopModel](./docs/static/img/logo-Dark.svg#gh-dark-mode-only)[Logo TopModel](./docs/static/img/logo-light.svg#gh-light-mode-only)
 
 | Outil                                | Version                                                                                                                                           |
