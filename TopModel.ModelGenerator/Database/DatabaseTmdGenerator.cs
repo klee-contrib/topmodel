@@ -642,18 +642,26 @@ public abstract class DatabaseTmdGenerator(
         foreach (var group in Files.GroupBy(f => f.Module))
         {
             var indice = 1;
-            var files = group.OrderBy(f => f.ExtendedUses.Count + f.Name);
+            var files = group.OrderBy(f => f.ExtendedUses.Count + GetMainClass(f).Name);
             foreach (var file in files)
             {
-                var mainClass = file
-                    .Classes.OrderByDescending(cl =>
-                        cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
-                    )
-                    .First();
+                var mainClass = GetMainClass(file);
                 file.Name = (indice < 10 ? "0" : string.Empty) + indice++ + "_" + mainClass.Name;
                 file.Path = Path.Combine(config.OutputDirectory, file.Module!, file.Name);
             }
         }
+    }
+
+    private TmdClass GetMainClass(TmdFile file)
+    {
+        var max = file.Classes.Max(cl =>
+            cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
+        );
+        return file
+            .Classes.Where(cl =>
+                max == cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Count(c => c == cl)
+            )
+            .MinBy(c => c.Name)!;
     }
 
     private void ResolveForeignProperties(

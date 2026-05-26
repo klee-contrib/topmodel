@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/04_Personne
+  - 03_Restaurant/05_Personne
 ---
 class:
   name: Client

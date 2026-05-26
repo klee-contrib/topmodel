@@ -9,9 +9,9 @@ generatedFiles:
   - ./model/03_Restaurant/01_Restaurant.tmd
   - ./model/03_Restaurant/02_Plat.tmd
   - ./model/03_Restaurant/03_CategoriePlatRegion.tmd
-  - ./model/03_Restaurant/04_Personne.tmd
-  - ./model/03_Restaurant/05_Promotion.tmd
-  - ./model/03_Restaurant/06_MenuPlat.tmd
+  - ./model/03_Restaurant/04_MenuPlat.tmd
+  - ./model/03_Restaurant/05_Personne.tmd
+  - ./model/03_Restaurant/06_Promotion.tmd
   - ./model/03_Restaurant/07_Client.tmd
   - ./model/03_Restaurant/08_Employe.tmd
   - ./model/03_Restaurant/09_AvisClient.tmd
