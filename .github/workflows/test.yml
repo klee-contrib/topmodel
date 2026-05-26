@@ -18,11 +18,6 @@ jobs:
 
       - name: run tests
         run: dotnet-coverage collect --output "./coverage-results" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
-      - name: Upload test result reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          report_type: test_results
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
