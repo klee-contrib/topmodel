@@ -15,7 +15,9 @@ jobs:
         run: dotnet tool install --global dotnet-coverage
 
       - name: run tests
-        run: dotnet-coverage collect --output "./coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
+        run: dotnet-coverage collect --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
+      - name: run tests
+        run: dotnet-coverage collect --output "./tmdgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/open-api/tmdgen.config -c"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
