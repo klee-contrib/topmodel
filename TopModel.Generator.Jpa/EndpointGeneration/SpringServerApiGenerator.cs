@@ -16,12 +16,6 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     public override string Name => "SpringApiServerGen";
     private static string DefaultApiClassName => "{fileName}Controller";
 
-    protected virtual void AddImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
-    {
-        fw.AddImports(GetTypeImports(endpoints, tag));
-        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
-    }
-
     protected override bool FilterTag(string tag)
     {
         return Config.GetApiGenerationMode(tag) == ApiGenerationMode.Server;
@@ -171,14 +165,6 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         javaInterface.AddRange(annotations);
         javaInterface.AddRange(GetMethods(endpoints, tag));
         fw.Write(0, javaInterface);
-    }
-
-    protected virtual void WriteMethods(JavaWriter fw, IEnumerable<Endpoint> endpoints, string tag)
-    {
-        foreach (var method in GetMethods(endpoints, tag))
-        {
-            fw.Write(1, method);
-        }
     }
 
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)

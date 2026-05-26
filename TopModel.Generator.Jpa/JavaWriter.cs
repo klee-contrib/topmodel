@@ -306,16 +306,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     }
 
     /// <summary>
-    /// Ecrit l'annotation avec le niveau indenté.
-    /// </summary>
-    /// <param name="javaAnnotation">Valeur à écrire dans le flux.</param>
-    public void WriteLine(JavaAnnotation javaAnnotation)
-    {
-        AddImports(javaAnnotation.Imports);
-        _toWrite.Add(new WriterLine() { Line = javaAnnotation.ToString(), Indent = 0 });
-    }
-
-    /// <summary>
     /// Ecrit la chaine de caractère dans le flux.
     /// </summary>
     /// <param name="value">Valeur à écrire dans le flux.</param>
@@ -369,19 +359,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         {
             WriteLine(indentationLevel, " *");
             WriteLine(indentationLevel, LoadReturns(value));
-        }
-    }
-
-    /// <summary>
-    /// Ecrit le commentaire de throws.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indention.</param>
-    /// <param name="value">Description du returns.</param>
-    public void WriteThrows(int indentationLevel, string value)
-    {
-        if (!string.IsNullOrEmpty(value))
-        {
-            WriteLine(indentationLevel, LoadThrows(value));
         }
     }
 
@@ -455,29 +432,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         var sb = new StringBuilder();
         sb.Append(" * @return ");
-        sb.Append(value);
-        if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
-        {
-            sb.Append('.');
-        }
-
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// Retourne le commentaire du returns formatté.
-    /// </summary>
-    /// <param name="value">Description de la valeur retournée.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadThrows(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        var sb = new StringBuilder();
-        sb.Append(" * @throws ");
         sb.Append(value);
         if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {

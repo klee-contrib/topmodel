@@ -155,9 +155,4 @@ public class JavaClass(string name)
 
         return sb.ToString();
     }
-
-    public JavaConstructor GetNoArgsConstructor()
-    {
-        return new JavaConstructor(Name);
-    }
 }

@@ -377,16 +377,6 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         return string.Empty;
     }
 
-    protected virtual void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe, string tag)
-    {
-        if (classe.PrimaryKey.Count() <= 1)
-        {
-            return;
-        }
-
-        fw.Write(1, GetCompositePrimaryKeyClass(classe, tag));
-    }
-
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
         foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
