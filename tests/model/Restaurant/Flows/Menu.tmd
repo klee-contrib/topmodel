@@ -2,6 +2,8 @@
 uses:
   - Restaurant/Entities/Menu
   - Restaurant/Dtos/Menu
+  - Restaurant/Dtos/Restaurant
+  - Restaurant/Entities/Restaurant
 module: Restaurant
 tags:
   - back
@@ -15,3 +17,19 @@ dataFlow:
     - class: Menu
       mode: queryAll
       source: Primary
+---
+dataFlow:
+  name: ExportRestaurants
+  target: External
+  class: RestaurantRead
+  type: insert
+  sources:
+    - class: Restaurant
+      mode: queryAll
+      source: Primary
+  dependsOn:
+    - ExportMenus
+  hooks:
+    - afterSource
+    - map
+    - beforeTarget

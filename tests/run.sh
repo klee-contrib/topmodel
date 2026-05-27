@@ -30,3 +30,6 @@ npm run build
 
 cd ../focus
 npm run build
+
+cd ../csharp/src
+dotnet build

@@ -5,6 +5,7 @@
 package restaurant.jpa_identity_feign.flows.restaurant;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -19,17 +20,22 @@ import jakarta.annotation.Generated;
 
 @Configuration
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Import({ExportMenusFlow.class})
+@Import({ExportMenusFlow.class, ExportRestaurantsFlow.class})
 public class RestaurantJobConfiguration {
 	@Bean("RestaurantJob")
 	public Job restaurantJob( //
 				JobRepository jobRepository, //
 				TaskExecutor taskExecutor, //
-			@Qualifier("ExportMenusFlow") Flow exportMenusFlow
+			@Qualifier("ExportMenusFlow") Flow exportMenusFlow, //
+			@Qualifier("ExportRestaurantsFlow") Flow exportRestaurantsFlow
 	) {
 		return new JobBuilder("RestaurantJob", jobRepository) //
 				.incrementer(new RunIdIncrementer()) //
-				.start(exportMenusFlow)
+				.start( //
+		          new FlowBuilder<Flow>("ExportMenus-ExportRestaurants") //
+		            .start(exportMenusFlow)//
+		            .next(exportRestaurantsFlow) //
+		          .build())
 				.end() //
 				.build();
 	}

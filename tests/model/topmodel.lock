@@ -85,6 +85,9 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/MenuClient.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/PersonneClient.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.External/Restaurant/generated/RestaurantClient.cs
+  - ../output/csharp/src/Flows/TopModel.Sample.Restaurant.Flows/generated/ExportMenusFlow.cs
+  - ../output/csharp/src/Flows/TopModel.Sample.Restaurant.Flows/generated/ExportRestaurantsFlow.cs
+  - ../output/csharp/src/Flows/TopModel.Sample.Restaurant.Flows/generated/ServiceExtensions.cs
   - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.de.resx
   - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.en.resx
   - ../output/csharp/src/Models/TopModel.Sample.Common.Models/Common.fr.resx
@@ -283,6 +286,8 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/StatutCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/enums/restaurant/TypeTerrasse.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/flows/restaurant/ExportMenusFlow.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/flows/restaurant/ExportRestaurantsFlow.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/flows/restaurant/ExportRestaurantsPartialFlow.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/flows/restaurant/RestaurantJobConfiguration.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractCommandeClient.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/api/server/restaurant/AbstractMenuClient.java
