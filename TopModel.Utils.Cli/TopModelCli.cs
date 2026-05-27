@@ -8,26 +8,21 @@ namespace TopModel.Utils.Cli;
 public static class TopModelCli
 {
     public static Option<IEnumerable<FileInfo>> FileOption { get; } =
-        new("--file", "-f") { Description = LocalizeUtils.Localize(CliMessage.FileOptionDescription) };
+        new("--file", "-f") { Description = CliMessage.FileOptionDescription.GetMessage() };
 
     public static Option<bool> WatchOption { get; } =
-        new("--watch", "-w") { Description = LocalizeUtils.Localize(CliMessage.WatchOptionDescription) };
+        new("--watch", "-w") { Description = CliMessage.WatchOptionDescription.GetMessage() };
 
     public static Option<bool> CheckOption { get; } =
-        new("--check", "-c") { Description = LocalizeUtils.Localize(CliMessage.CheckOptionDescription) };
-
-    public static string[] Colors => LogUtils.Colors;
+        new("--check", "-c") { Description = CliMessage.CheckOptionDescription.GetMessage() };
 
     public static void ListFoundFiles(IEnumerable<string> filePaths)
     {
-        LogUtils.LogInformation(CliMessage.ConfigFilesFound);
+        AnsiConsole.LogInformation(CliMessage.ConfigFilesFound);
         var i = 0;
         foreach (var path in filePaths)
         {
-            var color = LogUtils.Colors[i % LogUtils.Colors.Length];
-            AnsiConsole.MarkupLine(
-                $"[{color}]#{i + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), path)}[/]"
-            );
+            AnsiConsole.LogConfig(path, i);
             i++;
         }
     }
@@ -40,7 +35,7 @@ public static class TopModelCli
             {
                 if (!file.Exists)
                 {
-                    LogUtils.LogError(CliMessage.ConfigFileNotFound, file.FullName);
+                    AnsiConsole.LogError(CliMessage.ConfigFileNotFound, file.FullName);
                 }
                 else
                 {
@@ -75,8 +70,8 @@ public static class TopModelCli
         );
         if (latestVersion != null && latestVersion.Version != version)
         {
-            LogUtils.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
-            LogUtils.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
+            AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
+            AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
             AnsiConsole.WriteLine();
         }
     }

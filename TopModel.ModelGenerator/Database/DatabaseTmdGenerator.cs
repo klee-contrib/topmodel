@@ -46,8 +46,8 @@ public abstract class DatabaseTmdGenerator(
     )
     {
         InitConnection();
-        logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.DbConnectionSuccess, config.Source.DbName));
-        logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.GeneratingPleaseWait));
+        logger.LogInformation(ModelGeneratorMessage.DbConnectionSuccess, config.Source.DbName);
+        logger.LogInformation(ModelGeneratorMessage.GeneratingPleaseWait);
         var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
 
@@ -554,16 +554,14 @@ public abstract class DatabaseTmdGenerator(
         try
         {
             _connection = GetConnection();
-            logger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.ConnectingToDb, config.Source.DbName));
+            logger.LogInformation(ModelGeneratorMessage.ConnectingToDb, config.Source.DbName);
             _connection.Open();
         }
         catch (Exception)
         {
             logger.LogInformation(
-                LocalizeUtils.Localize(
-                    password != null ? ModelGeneratorMessage.WrongPasswordPrompt : ModelGeneratorMessage.PasswordPrompt,
-                    config.Source.User ?? string.Empty
-                )
+                password != null ? ModelGeneratorMessage.WrongPasswordPrompt : ModelGeneratorMessage.PasswordPrompt,
+                config.Source.User ?? string.Empty
             );
             Passwords.Remove(config.Source.DbName);
             while (true)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
-namespace TopModel.Utils;
+namespace TopModel.Utils.Cli;
 
 public class LoggerProvider : ILoggerProvider
 {

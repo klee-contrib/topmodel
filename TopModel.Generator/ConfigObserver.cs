@@ -3,8 +3,6 @@ using Microsoft.Extensions.Primitives;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
-using TopModel.Utils;
-using TopModel.Utils.Cli;
 
 namespace TopModel.Generator;
 
@@ -31,17 +29,8 @@ public class ConfigObserver(
 
     public async Task Start(CancellationToken cancellationToken)
     {
-        LogConfigFound();
         StartWatchConfig(cancellationToken);
         await Run(cancellationToken);
-    }
-
-    private void LogConfigFound()
-    {
-        var color = LogUtils.Colors[configIndex % LogUtils.Colors.Length];
-        AnsiConsole.MarkupLine(
-            $"[{color}]#{configIndex + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), configInfo.FullName)}[/]"
-        );
     }
 
     private async Task ReadConfig(CancellationToken cancellationToken)

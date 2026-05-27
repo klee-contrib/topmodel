@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Localization;
-using Spectre.Console;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;

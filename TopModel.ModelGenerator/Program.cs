@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using SharpYaml.Serialization;
 using Spectre.Console;
-using TopModel.Core;
 using TopModel.ModelGenerator;
 using TopModel.ModelGenerator.Database;
 using TopModel.ModelGenerator.OpenApi;
@@ -51,7 +50,7 @@ foreach (var file in TopModelCli.ResolveFiles(files, tmdgenPattern))
 
 if (!configs.Any())
 {
-    AnsiConsole.MarkupLine($"[red]{LocalizeUtils.Localize(CliMessage.NoConfigFileFound)}[/]");
+    AnsiConsole.LogError(CliMessage.NoConfigFileFound);
     return 1;
 }
 
@@ -59,12 +58,12 @@ await TopModelCli.StartPackage("TopModel.ModelGenerator", CancellationToken.None
 
 if (watchMode)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.WatchModeEnabled));
+    AnsiConsole.LogInformation(CliMessage.WatchModeEnabled);
 }
 
 if (checkMode)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.CheckModeEnabled));
+    AnsiConsole.LogInformation(CliMessage.CheckModeEnabled);
 }
 
 TopModelCli.ListFoundFiles(configs.Select(c => c.FullPath));
@@ -171,16 +170,14 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     await using var provider = services.BuildServiceProvider();
 
     var mainLogger = provider.GetRequiredService<ILogger<TmdGenerator>>();
-    var loggingScope = new LoggingScope(i + 1, TopModelCli.Colors[i % TopModelCli.Colors.Length]);
+    var loggingScope = LogUtils.GetScope(i);
     using var scope = mainLogger.BeginScope(loggingScope);
 
     var generators = provider.GetRequiredService<IEnumerable<TmdGenerator>>();
 
     mainLogger.LogInformation(
-        LocalizeUtils.Localize(
-            ModelGeneratorMessage.RegisteredGenerators,
-            $"\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
-        )
+        ModelGeneratorMessage.RegisteredGenerators,
+        $"\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
     );
 
     var tmdLock = new TopModelLock(config, mainLogger);
@@ -193,7 +190,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     tmdLock.UpdateFiles(generatedFiles);
 
-    mainLogger.LogInformation(LocalizeUtils.Localize(ModelGeneratorMessage.UpdateCompleted));
+    mainLogger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
 }
 
 foreach (var config in configs)
@@ -250,10 +247,11 @@ if (watchMode)
 if (checkMode && loggerProvider.Changes > 0)
 {
     AnsiConsole.WriteLine();
-    AnsiConsole.MarkupLine(
+    AnsiConsole.LogError(
         loggerProvider.Changes == 1
-            ? $"[red]{LocalizeUtils.Localize(CliMessage.OneFileModifiedInCheckMode)}[/]"
-            : $"[red]{LocalizeUtils.Localize(CliMessage.MultipleFilesModifiedInCheckMode, loggerProvider.Changes)}[/]"
+            ? CliMessage.OneFileModifiedInCheckMode
+            : CliMessage.MultipleFilesModifiedInCheckMode,
+        loggerProvider.Changes
     );
 
     return 1;

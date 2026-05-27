@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
-using Spectre.Console;
+using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Core.Model;
@@ -118,13 +118,10 @@ public class WatcherConfigBase
     {
         get
         {
-            if (_classes == null)
-            {
-                _classes = Files
-                    .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()))
-                    .Distinct()
-                    .ToHashSet();
-            }
+            _classes ??= Files
+                .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()))
+                .Distinct()
+                .ToHashSet();
 
             return _classes;
         }
@@ -145,13 +142,10 @@ public class WatcherConfigBase
     {
         get
         {
-            if (_endpoints == null)
-            {
-                _endpoints = Files
-                    .SelectMany(f => f.Value.Endpoints.Where(c => Tags.Intersect(c.Tags).Any()))
-                    .Distinct()
-                    .ToHashSet();
-            }
+            _endpoints ??= Files
+                .SelectMany(f => f.Value.Endpoints.Where(c => Tags.Intersect(c.Tags).Any()))
+                .Distinct()
+                .ToHashSet();
 
             return _endpoints;
         }
@@ -204,7 +198,8 @@ public class WatcherConfigBase
     /// </summary>
     /// <param name="app">Valeur de la variable 'app'.</param>
     /// <param name="number">Numéro du générateur.</param>
-    public virtual void InitVariables(string app, int number)
+    /// <param name="logger">Logger.</param>
+    public virtual void InitVariables(string app, int number, ILogger? logger = null)
     {
         if (Language.Count == 0 && DefaultLanguage != null)
         {
@@ -269,8 +264,8 @@ public class WatcherConfigBase
                         if (!supportedProperties.Contains(property.Name))
                         {
                             hasMissingVar = true;
-                            AnsiConsole.MarkupLine(
-                                $"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas supportée par cette propriété.[/]"
+                            logger?.LogWarning(
+                                $"{{{Name}.{property.Name}}} - La variable '{{{varName}}}' n'est pas supportée par cette propriété."
                             );
                         }
 
@@ -282,15 +277,15 @@ public class WatcherConfigBase
                     if (!hasTagSupport)
                     {
                         hasMissingVar = true;
-                        AnsiConsole.MarkupLine(
-                            $"[yellow]{Emoji.Known.Warning} {{{GetType().Name}[[{number}]].{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour ce générateur.[/]"
+                        logger?.LogWarning(
+                            $"{{{Name}.{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour cette configuration."
                         );
                     }
                     else if (!TagVariableNames.Contains(varName))
                     {
                         hasMissingVar = true;
-                        AnsiConsole.MarkupLine(
-                            $"[yellow]{Emoji.Known.Warning}  {{{GetType().Name}[[{number}]].{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour ce générateur.[/]"
+                        logger?.LogWarning(
+                            $"{{{Name}.{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour cette configuration."
                         );
                     }
                 }
@@ -310,7 +305,7 @@ public class WatcherConfigBase
 
         if (hasMissingVar)
         {
-            AnsiConsole.WriteLine();
+            logger?.LogWarning(string.Empty);
         }
     }
 

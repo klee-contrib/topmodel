@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;

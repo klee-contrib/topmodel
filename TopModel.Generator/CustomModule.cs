@@ -1,12 +1,8 @@
 using System.Diagnostics;
-using System.Reflection;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
 using NuGet.ProjectModel;
-using TopModel.Core;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 using TopModel.Utils.Cli;
 
@@ -67,7 +63,7 @@ public class CustomModule(
                     return;
                 }
 
-                logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.BuildCompleted, customGenerator));
+                logger.LogInformation(GeneratorMessage.BuildCompleted, customGenerator);
             }
 
             topModelLock.Custom ??= new Dictionary<string, string>();
@@ -81,7 +77,7 @@ public class CustomModule(
         var projDir = Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!);
         if (!Directory.EnumerateFiles(projDir, "*.csproj").Any())
         {
-            logger.LogError(LocalizeUtils.Localize(GeneratorMessage.NoCsprojFound, customGenerator));
+            logger.LogError(GeneratorMessage.NoCsprojFound, customGenerator);
             HasError = true;
             return;
         }
@@ -89,7 +85,7 @@ public class CustomModule(
         var assetsPath = Path.Combine(projDir, "obj", "project.assets.json");
         if (!File.Exists(assetsPath))
         {
-            logger.LogError(LocalizeUtils.Localize(GeneratorMessage.GeneratorModuleNotBuilt, customGenerator));
+            logger.LogError(GeneratorMessage.GeneratorModuleNotBuilt, customGenerator);
             HasError = true;
             return;
         }
@@ -100,7 +96,7 @@ public class CustomModule(
             var dep in lockFile
                 .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= VersionUtils.DotnetMajor)
                 ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
-            ?? []
+                ?? []
         )
         {
             if (dep.Name == "TopModel.Generator.Core")
@@ -108,12 +104,10 @@ public class CustomModule(
                 if (dep.Version?.Major != VersionUtils.MajorVersion)
                 {
                     logger.LogError(
-                        LocalizeUtils.Localize(
-                            GeneratorMessage.GeneratorModuleBadMajorVersion,
-                            customGenerator,
-                            dep.Version?.ToString() ?? string.Empty,
-                            VersionUtils.Version
-                        )
+                        GeneratorMessage.GeneratorModuleBadMajorVersion,
+                        customGenerator,
+                        dep.Version?.ToString() ?? string.Empty,
+                        VersionUtils.Version
                     );
                     HasError = true;
                     return;
@@ -121,12 +115,10 @@ public class CustomModule(
                 else if (dep.Version?.Minor > VersionUtils.MinorVersion)
                 {
                     logger.LogError(
-                        LocalizeUtils.Localize(
-                            GeneratorMessage.GeneratorModuleNewerVersion,
-                            customGenerator,
-                            dep.Version?.ToString() ?? string.Empty,
-                            VersionUtils.Version
-                        )
+                        GeneratorMessage.GeneratorModuleNewerVersion,
+                        customGenerator,
+                        dep.Version?.ToString() ?? string.Empty,
+                        VersionUtils.Version
                     );
                     HasError = true;
                     return;
@@ -142,13 +134,11 @@ public class CustomModule(
                 else if (ev.Version != dep.Version?.ToString())
                 {
                     logger.LogError(
-                        LocalizeUtils.Localize(
-                            GeneratorMessage.CustomModuleWrongLockfileVersion,
-                            customGenerator,
-                            configKey,
-                            dep.Version?.ToString() ?? string.Empty,
-                            ev
-                        )
+                        GeneratorMessage.CustomModuleWrongLockfileVersion,
+                        customGenerator,
+                        configKey,
+                        dep.Version?.ToString() ?? string.Empty,
+                        ev
                     );
                     HasError = true;
                     return;
@@ -190,7 +180,7 @@ public class CustomModule(
 
     private async Task BuildCSharpProject(string customDir, CancellationToken cancellationToken)
     {
-        logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.BuildInProgress, customGenerator));
+        logger.LogInformation(GeneratorMessage.BuildInProgress, customGenerator);
         var build = Process.Start(
             new ProcessStartInfo
             {
@@ -220,7 +210,7 @@ public class CustomModule(
 
         if (build.ExitCode != 0)
         {
-            logger.LogError(LocalizeUtils.Localize(GeneratorMessage.BuildError, customGenerator));
+            logger.LogError(GeneratorMessage.BuildError, customGenerator);
             var output = stdout.Trim();
             if (!string.IsNullOrEmpty(output))
             {

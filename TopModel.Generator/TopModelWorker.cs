@@ -1,24 +1,18 @@
-using System.CommandLine;
-using System.CommandLine.Help;
-using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
-using NuGet.ProjectModel;
 using NuGet.Versioning;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
-using TopModel.Generator;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 using TopModel.Utils.Cli;
@@ -36,7 +30,7 @@ public class TopModelWorker : IDisposable
 
     private readonly IList<Type> Generators = [];
     private readonly IList<IDisposable> providers = [];
-    private readonly IDictionary<string, string> resolvedConfigKeys = new Dictionary<string, string>();
+    private readonly Dictionary<string, string> resolvedConfigKeys = [];
     private readonly IServiceCollection services;
     private readonly LoggingScope storeConfig;
 
@@ -51,7 +45,7 @@ public class TopModelWorker : IDisposable
     )
     {
         FileChecker = fileChecker;
-        storeConfig = new LoggingScope(configIndex + 1, TopModelCli.Colors[configIndex % TopModelCli.Colors.Length]);
+        storeConfig = LogUtils.GetScope(configIndex);
         Config = config;
         Logger = loggerProvider.CreateLogger("TopModel.Generator");
         var scope = Logger.BeginScope(storeConfig);
@@ -112,10 +106,8 @@ public class TopModelWorker : IDisposable
         if (resolvedConfigKeys.Any())
         {
             Logger.LogInformation(
-                LocalizeUtils.Localize(
-                    GeneratorMessage.GeneratorsInUse,
-                    $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
-                )
+                GeneratorMessage.GeneratorsInUse,
+                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
             );
         }
 
@@ -139,7 +131,7 @@ public class TopModelWorker : IDisposable
 
     public async Task WriteSchema(CancellationToken cancellationToken)
     {
-        Logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.GeneratingConfigSchema));
+        Logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
         var schema = JsonNode
             .Parse(
                 await File.ReadAllTextAsync(
@@ -184,7 +176,7 @@ public class TopModelWorker : IDisposable
             await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
         }
 
-        Logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.ConfigSchemaGenerated));
+        Logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
     }
 
     static async Task<List<PackageDependency>> DownloadMissingDependenciesCascade(
@@ -324,17 +316,15 @@ public class TopModelWorker : IDisposable
 
             if (moduleVersion == null)
             {
-                Logger.LogError(LocalizeUtils.Localize(GeneratorMessage.NoGeneratorModuleFound, configKey));
+                Logger.LogError(GeneratorMessage.NoGeneratorModuleFound, configKey);
                 HasError = true;
                 return;
             }
-            TopModelLock.Modules.Add(configKey, new() { Version = moduleVersion.Version });
+            TopModelLock.Modules.Add(configKey, moduleVersion);
         }
         else if (!await NugetUtils.DoesPackageExistsAsync(fullModuleName, moduleVersion.Version, cancellationToken))
         {
-            Logger.LogError(
-                LocalizeUtils.Localize(GeneratorMessage.PackageNotFound, fullModuleName, moduleVersion.Version)
-            );
+            Logger.LogError(GeneratorMessage.PackageNotFound, fullModuleName, moduleVersion.Version);
             HasError = true;
             return;
         }
@@ -368,16 +358,12 @@ public class TopModelWorker : IDisposable
         if (depsToUpdate.Any())
         {
             Logger.LogWarning(
-                LocalizeUtils.Localize(
-                    GeneratorMessage.GeneratorUpdatesAvailable,
-                    $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
-                )
+                GeneratorMessage.GeneratorUpdatesAvailable,
+                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
             );
             Logger.LogWarning(
-                LocalizeUtils.Localize(
-                    GeneratorMessage.ModgenUpdateCommand,
-                    depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all"
-                )
+                GeneratorMessage.ModgenUpdateCommand,
+                depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all"
             );
         }
     }
@@ -395,24 +381,20 @@ public class TopModelWorker : IDisposable
             if (minNuGetVersion.Major != VersionUtils.MajorVersion)
             {
                 Logger.LogError(
-                    LocalizeUtils.Localize(
-                        GeneratorMessage.ModuleBadMajorVersion,
-                        dep.ConfigKey,
-                        depVersion,
-                        VersionUtils.Version
-                    )
+                    GeneratorMessage.ModuleBadMajorVersion,
+                    dep.ConfigKey,
+                    depVersion,
+                    VersionUtils.Version
                 );
                 HasError = true;
             }
             else if (minNuGetVersion.Minor > VersionUtils.MinorVersion)
             {
                 Logger.LogError(
-                    LocalizeUtils.Localize(
-                        GeneratorMessage.ModuleNewerVersion,
-                        dep.ConfigKey,
-                        minVersionText,
-                        VersionUtils.Version
-                    )
+                    GeneratorMessage.ModuleNewerVersion,
+                    dep.ConfigKey,
+                    minVersionText,
+                    VersionUtils.Version
                 );
                 HasError = true;
             }
@@ -428,13 +410,11 @@ public class TopModelWorker : IDisposable
         var depVersion = dep.Version.Version;
         if (Directory.Exists(moduleFolder))
         {
-            Logger.LogInformation(LocalizeUtils.Localize(GeneratorMessage.ModuleCorrupted, dep.FullName));
+            Logger.LogInformation(GeneratorMessage.ModuleCorrupted, dep.FullName);
             Directory.Delete(moduleFolder, recursive: true);
         }
 
-        Logger.LogInformation(
-            LocalizeUtils.Localize(GeneratorMessage.ModuleInstallInProgress, dep.FullName, depVersion)
-        );
+        Logger.LogInformation(GeneratorMessage.ModuleInstallInProgress, dep.FullName, depVersion);
 
         Directory.CreateDirectory(moduleFolder);
 
@@ -467,9 +447,7 @@ public class TopModelWorker : IDisposable
         var missingDependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core").ToList();
         await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, framework, cancellationToken);
 
-        Logger.LogInformation(
-            LocalizeUtils.Localize(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion)
-        );
+        Logger.LogInformation(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion);
         dep.Version.Hash = GetFolderHash(moduleFolder);
     }
 
@@ -624,7 +602,7 @@ public class TopModelWorker : IDisposable
                     {
                         var genConfig = (GeneratorConfigBase)
                             FileChecker.GetGenConfig(configName, configType, genConfigMap);
-                        genConfig.InitVariables(Config.App, number);
+                        genConfig.InitVariables(Config.App, number, Logger);
 
                         genConfig.ExcludedTags = ExcludedTags.ToList();
 
@@ -641,9 +619,7 @@ public class TopModelWorker : IDisposable
                         }
                         catch (ArgumentException)
                         {
-                            Logger.LogError(
-                                LocalizeUtils.Localize(GeneratorMessage.ConfigNameAlreadyInUse, genConfig.Name)
-                            );
+                            Logger.LogError(GeneratorMessage.ConfigNameAlreadyInUse, genConfig.Name);
                             HasError = true;
                             return;
                         }
@@ -657,12 +633,10 @@ public class TopModelWorker : IDisposable
                             else
                             {
                                 Logger.LogWarning(
-                                    LocalizeUtils.Localize(
-                                        GeneratorMessage.ReferencedConfigNotFound,
-                                        referencedTag.Value,
-                                        referencedTag.Key,
-                                        genConfig.Name
-                                    )
+                                    GeneratorMessage.ReferencedConfigNotFound,
+                                    referencedTag.Value,
+                                    referencedTag.Key,
+                                    genConfig.Name
                                 );
                             }
                         }

@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using Json.Schema;
-using Spectre.Console;
 using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Utils;
 using YamlDotNet.Core;

@@ -5,23 +5,22 @@ using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.Generator;
-using TopModel.Utils;
 using TopModel.Utils.Cli;
 
 var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")
 {
-    Description = LocalizeUtils.Localize(GeneratorMessage.ExcludeOptionDescription),
+    Description = GeneratorMessage.ExcludeOptionDescription.GetMessage(),
 };
 var updateOption = new Option<string>("--update", "-u")
 {
-    Description = LocalizeUtils.Localize(GeneratorMessage.UpdateOptionDescription),
+    Description = GeneratorMessage.UpdateOptionDescription.GetMessage(),
 };
 var schemaOption = new Option<bool>("--schema", "-s")
 {
-    Description = LocalizeUtils.Localize(GeneratorMessage.SchemaOptionDescription),
+    Description = GeneratorMessage.SchemaOptionDescription.GetMessage(),
 };
 
-var command = new RootCommand(LocalizeUtils.Localize(GeneratorMessage.RootCommandDescription))
+var command = new RootCommand(GeneratorMessage.RootCommandDescription.GetMessage())
 {
     TopModelCli.FileOption,
     excludeOption,
@@ -59,30 +58,32 @@ foreach (var file in TopModelCli.ResolveFiles(files, pattern))
 
 if (configs.Count == 0)
 {
-    AnsiConsole.MarkupLine($"[red]{LocalizeUtils.Localize(CliMessage.NoConfigFileFound)}[/]");
+    AnsiConsole.LogError(CliMessage.NoConfigFileFound);
     return 1;
 }
 
 if (excludedTags.Length > 0)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(GeneratorMessage.ExcludedTags, string.Join(", ", excludedTags)));
+    AnsiConsole.LogInformation(GeneratorMessage.ExcludedTags, string.Join(", ", excludedTags));
 }
 
 if (updateMode != null)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(GeneratorMessage.UpdateModeEnabled, updateMode));
+    AnsiConsole.LogInformation(GeneratorMessage.UpdateModeEnabled, updateMode);
     await NugetUtils.ClearAsync(cts.Token);
 }
 
 if (watchMode)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.WatchModeEnabled));
+    AnsiConsole.LogInformation(CliMessage.WatchModeEnabled);
 }
 
 if (checkMode)
 {
-    AnsiConsole.MarkupLine(LocalizeUtils.Localize(CliMessage.CheckModeEnabled));
+    AnsiConsole.LogInformation(CliMessage.CheckModeEnabled);
 }
+
+TopModelCli.ListFoundFiles(configs.Select(c => c.FullName));
 
 var loggerProvider = new LoggerProvider();
 Console.CancelKeyPress += (sender, eventArgs) =>
@@ -130,10 +131,11 @@ try
     if (checkMode && loggerProvider.Changes > 0)
     {
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine(
+        AnsiConsole.LogError(
             loggerProvider.Changes == 1
-                ? $"[red]{LocalizeUtils.Localize(CliMessage.OneFileModifiedInCheckMode)}[/]"
-                : $"[red]{LocalizeUtils.Localize(CliMessage.MultipleFilesModifiedInCheckMode, loggerProvider.Changes)}[/]"
+                ? CliMessage.OneFileModifiedInCheckMode
+                : CliMessage.MultipleFilesModifiedInCheckMode,
+            loggerProvider.Changes
         );
 
         return 1;
