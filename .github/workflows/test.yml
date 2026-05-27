@@ -38,7 +38,7 @@ jobs:
         run: dotnet-coverage collect --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
 
       - name: run tests - modgen
-        run: dotnet-coverage collect --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -c Release"
+        run: dotnet-coverage collect --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -s -u all -c Release"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
