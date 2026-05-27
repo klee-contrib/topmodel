@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ExcludedTags" xml:space="preserve">
+    <value>Tags [teal]exclus[/] de la génération : {0}.</value>
+  </data>
+  <data name="UpdateModeEnabled" xml:space="preserve">
+    <value>Mode [darkcyan]update[/] activé pour : [gray]{0}[/].</value>
+  </data>
+  <data name="BuildInProgress" xml:space="preserve">
+    <value>Build de '{0}' en cours...</value>
+  </data>
+  <data name="BuildError" xml:space="preserve">
+    <value>Erreur lors du build de '{0}'</value>
+  </data>
+  <data name="BuildCompleted" xml:space="preserve">
+    <value>Build de '{0}' terminé.</value>
+  </data>
+  <data name="NoCsprojFound" xml:space="preserve">
+    <value>Aucun fichier csproj trouvé pour le module de générateurs '{0}'.</value>
+  </data>
+  <data name="GeneratorModuleNotBuilt" xml:space="preserve">
+    <value>Le module de générateurs '{0}' n'a pas été buildé correctement...</value>
+  </data>
+  <data name="GeneratorModuleBadMajorVersion" xml:space="preserve">
+    <value>Le module de générateurs '{0}' ne référence pas la bonne version majeure de TopModel ({1} &lt; {2}).</value>
+  </data>
+  <data name="GeneratorModuleNewerVersion" xml:space="preserve">
+    <value>Le module de générateurs '{0}' référence une version plus récente de TopModel ({1} &gt; {2}).</value>
+  </data>
+  <data name="CustomModuleWrongLockfileVersion" xml:space="preserve">
+    <value>Le module personalisé '{0}' référence le module '{1}' en version '{2}', ce qui n'est pas la version du lockfile ('{3}').</value>
+  </data>
+  <data name="NoGeneratorModuleFound" xml:space="preserve">
+    <value>Aucun module de générateurs trouvé pour '{0}'.</value>
+  </data>
+  <data name="ModuleCorrupted" xml:space="preserve">
+    <value>Module {0} corrompu, suppression...</value>
+  </data>
+  <data name="ModuleInstallInProgress" xml:space="preserve">
+    <value>Installation de {0}@{1} en cours...</value>
+  </data>
+  <data name="PackageNotFound" xml:space="preserve">
+    <value>Le package {0}@{1} est introuvable.</value>
+  </data>
+  <data name="ModuleInstallCompleted" xml:space="preserve">
+    <value>Installation de {0}@{1} terminée.</value>
+  </data>
+  <data name="ModuleBadMajorVersion" xml:space="preserve">
+    <value>Le module '{0}' ne référence pas la bonne version majeure de TopModel ({1} &lt; {2}).</value>
+  </data>
+  <data name="ModuleNewerVersion" xml:space="preserve">
+    <value>Le module '{0}' référence une version plus récente de TopModel ({1} &gt; {2}).</value>
+  </data>
+  <data name="GeneratorsInUse" xml:space="preserve">
+    <value>Générateurs utilisés :{0}</value>
+  </data>
+  <data name="GeneratorUpdatesAvailable" xml:space="preserve">
+    <value>Il existe une mise à jour pour les générateurs suivants :{0}</value>
+  </data>
+  <data name="ModgenUpdateCommand" xml:space="preserve">
+    <value>Vous pouvez lancer la commande `modgen --update {0}` pour effectuer la mise à jour.</value>
+  </data>
+  <data name="GeneratingConfigSchema" xml:space="preserve">
+    <value>Génération du schéma de configuration...</value>
+  </data>
+  <data name="ConfigSchemaGenerated" xml:space="preserve">
+    <value>Schéma de configuration généré avec succès.</value>
+  </data>
+  <data name="ConfigNameAlreadyInUse" xml:space="preserve">
+    <value>Le nom de configuration '{0}' est déjà utilisé.</value>
+  </data>
+  <data name="ReferencedConfigNotFound" xml:space="preserve">
+    <value>La configuration '{0}' n'existe pas, le tag référencé '{1}' pour la config '{2}' sera ignoré.</value>
+  </data>
+  <data name="ExcludeOptionDescription" xml:space="preserve">
+    <value>Tag à ignorer lors de la génération.</value>
+  </data>
+  <data name="UpdateOptionDescription" xml:space="preserve">
+    <value>Met à jour le module de générateurs spécifié (ou tous les modules si 'all').</value>
+  </data>
+  <data name="SchemaOptionDescription" xml:space="preserve">
+    <value>Génère le fichier de schéma JSON du fichier de config.</value>
+  </data>
+  <data name="RootCommandDescription" xml:space="preserve">
+    <value>Lance le générateur topmodel.</value>
+  </data>
+</root>

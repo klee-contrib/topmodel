@@ -4,8 +4,9 @@ using NuGet.Packaging;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using TopModel.Utils;
 
-namespace TopModel.Utils;
+namespace TopModel.Utils.Cli;
 
 public static class NugetUtils
 {
@@ -13,7 +14,6 @@ public static class NugetUtils
         NuGetEnvironment.GetFolderPath(NuGetFolderPath.Temp),
         "topmodel-cache.json"
     );
-    private static readonly CancellationToken Ct = CancellationToken.None;
     private static readonly SourceCacheContext NugetCache = new();
     private static readonly Dictionary<string, ModuleLatestVersion> Versions = [];
 
@@ -30,15 +30,15 @@ public static class NugetUtils
         }
     }
 
-    public static async Task ClearAsync()
+    public static async Task ClearAsync(CancellationToken Ct)
     {
         Versions.Clear();
-        await WriteAsync();
+        await WriteAsync(Ct);
     }
 
-    public static async Task<bool> DoesPackageExistsAsync(string id, string version)
+    public static async Task<bool> DoesPackageExistsAsync(string id, string version, CancellationToken Ct)
     {
-        var nugetResource = await GetNugetResourceAsync();
+        var nugetResource = await GetNugetResourceAsync(Ct);
         return await nugetResource.DoesPackageExistAsync(
             id,
             new NuGetVersion(version),
@@ -48,9 +48,9 @@ public static class NugetUtils
         );
     }
 
-    public static async Task<PackageArchiveReader> DownloadPackageAsync(string id, string version)
+    public static async Task<PackageArchiveReader> DownloadPackageAsync(string id, string version, CancellationToken Ct)
     {
-        var nugetResource = await GetNugetResourceAsync();
+        var nugetResource = await GetNugetResourceAsync(Ct);
         var packageStream = new MemoryStream();
         await nugetResource.CopyNupkgToStreamAsync(
             id,
@@ -65,6 +65,7 @@ public static class NugetUtils
 
     public static async Task<TopModelLockModule?> GetLatestVersionAsync(
         string id,
+        CancellationToken Ct,
         bool forceCheck = false,
         bool prerelease = false
     )
@@ -73,7 +74,7 @@ public static class NugetUtils
         {
             if (cachedVersion.CheckDate.AddHours(6) < DateTime.UtcNow)
             {
-                Versions.Remove(id);
+                Versions.Remove(prerelease ? $"{id}-prerelease" : id);
             }
             else
             {
@@ -95,8 +96,16 @@ public static class NugetUtils
 
         try
         {
-            var nugetResource = await GetNugetResourceAsync();
-            var moduleVersions = await nugetResource.GetAllVersionsAsync(id, NugetCache, NullLogger.Instance, Ct);
+            var nugetResource = await GetNugetResourceAsync(Ct);
+            IEnumerable<NuGetVersion> moduleVersions;
+            try
+            {
+                moduleVersions = await nugetResource.GetAllVersionsAsync(id, NugetCache, NullLogger.Instance, Ct);
+            }
+            catch (InvalidPackageIdException)
+            {
+                return null;
+            }
 
             if (!moduleVersions.Any())
             {
@@ -108,21 +117,21 @@ public static class NugetUtils
                 Version = moduleVersions.Last(m => prerelease || !m.IsPrerelease).ToFullString(),
             };
 
-            Versions[id] = new(version.Version, DateTime.UtcNow);
-            await WriteAsync();
+            Versions[prerelease ? $"{id}-prerelease" : id] = new(version.Version, DateTime.UtcNow);
+            await WriteAsync(Ct);
             return version;
         }
         catch (FatalProtocolException)
         {
             // Si on a pas internet par exemple.
             _cantCheckVersion = true;
-            Versions[id] = new(Version: null, DateTime.UtcNow);
-            await WriteAsync();
+            Versions[prerelease ? $"{id}-prerelease" : id] = new(Version: null, DateTime.UtcNow);
+            await WriteAsync(Ct);
             return null;
         }
     }
 
-    private static async Task<FindPackageByIdResource> GetNugetResourceAsync()
+    private static async Task<FindPackageByIdResource> GetNugetResourceAsync(CancellationToken Ct)
     {
         if (_nugetResource == null)
         {
@@ -133,7 +142,7 @@ public static class NugetUtils
         return _nugetResource;
     }
 
-    private static async Task WriteAsync()
+    private static async Task WriteAsync(CancellationToken Ct)
     {
         await File.WriteAllTextAsync(CacheFile, JsonSerializer.Serialize(Versions), Ct);
     }

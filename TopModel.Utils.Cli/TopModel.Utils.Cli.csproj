@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>4.2.5</Version>
+    <Description>Utilitaires CLI TopModel.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="Spectre.Console.Cli" />
+    <PackageReference Include="NuGet.Commands" />
+    <ProjectReference Include="..\TopModel.Utils\TopModel.Utils.csproj" />
+  </ItemGroup>
+</Project>

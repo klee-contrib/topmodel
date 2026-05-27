@@ -18,6 +18,8 @@
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
     <ProjectReference Include="..\TopModel.Utils\TopModel.Utils.csproj" />
+    <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
   </ItemGroup>
 </Project>
