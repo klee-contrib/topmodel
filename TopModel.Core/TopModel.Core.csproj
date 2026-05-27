@@ -4,7 +4,6 @@
     <Description>Librairie de modélisation TopModel.</Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="NeoSmart.AsyncLock" />
     <PackageReference Include="OneOf" />

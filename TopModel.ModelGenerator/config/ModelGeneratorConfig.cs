@@ -4,9 +4,18 @@ using TopModel.Utils;
 
 namespace TopModel.ModelGenerator;
 
-internal class ModelGeneratorConfig : ConfigBase
+public class ModelGeneratorConfig : ConfigBase
 {
-    public List<OpenApiConfig> OpenApi { get; set; } = [];
+    public IList<OpenApiConfig> OpenApi { get; set; } = [];
 
-    public List<DatabaseConfig> Database { get; set; } = [];
+    public IList<DatabaseConfig> Database { get; set; } = [];
+
+    public override ModelGeneratorConfig Init(string rootDir)
+    {
+        ConfigRoot = rootDir;
+        ModelRoot ??= "./";
+        LockFileName ??= "tmdgen.lock";
+        ModelUtils.CombinePath(rootDir, this, c => c.ModelRoot);
+        return this;
+    }
 }

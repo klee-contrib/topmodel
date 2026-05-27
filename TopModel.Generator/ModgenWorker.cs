@@ -19,102 +19,93 @@ using TopModel.Utils.Cli;
 
 namespace TopModel.Generator;
 
-public class TopModelWorker : IDisposable
+public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 {
     private static readonly ReferencedTagInterceptor interceptor = new();
     private static readonly ProxyGenerator proxyGenerator = new();
-    private readonly IEnumerable<CustomModule> CustomModules;
+    private readonly IList<ModgenDependency> _deps = [];
+    private readonly IList<Type> _generators = [];
+    private readonly IList<IDisposable> _providers = [];
+    private readonly Dictionary<string, string> _resolvedConfigKeys = [];
 
-    private readonly IList<ModgenDependency> Deps = [];
-    private readonly FileChecker FileChecker;
+#nullable disable
 
-    private readonly IList<Type> Generators = [];
-    private readonly IList<IDisposable> providers = [];
-    private readonly Dictionary<string, string> resolvedConfigKeys = [];
-    private readonly IServiceCollection services;
-    private readonly LoggingScope storeConfig;
+    private IEnumerable<CustomModule> _customModules;
+    private Microsoft.Extensions.Logging.ILogger _logger;
+    private string _modgenRoot;
+    private IServiceCollection _services;
+    private TopModelLock _topModelLock;
 
-    private bool HasInstalled = false;
+#nullable enable
 
-    public TopModelWorker(
-        ModelConfig config,
-        string configFullName,
-        LoggerProvider loggerProvider,
-        int configIndex,
-        FileChecker fileChecker
-    )
-    {
-        FileChecker = fileChecker;
-        storeConfig = LogUtils.GetScope(configIndex);
-        Config = config;
-        Logger = loggerProvider.CreateLogger("TopModel.Generator");
-        var scope = Logger.BeginScope(storeConfig);
-        if (scope != null)
-        {
-            providers.Add(scope);
-        }
-        TopModelLock = new TopModelLock(config, Logger);
-        ConfigFullName = configFullName;
-        ModgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
-        AddDevCustomGenerators();
-        CustomModules = Config
-            .CustomGenerators.Select(cg => new CustomModule(cg, ConfigFullName, ModgenRoot, Logger, TopModelLock))
-            .ToList();
-        services = new ServiceCollection()
-            .AddTransient(typeof(ILogger<>), typeof(Logger<>))
-            .AddTransient<ILoggerFactory, LoggerFactory>()
-            .AddSingleton<ILoggerProvider>(loggerProvider)
-            .AddSingleton<IFileWriterProvider>(new GeneratedFileWriterProvider(Config))
-            .AddModelStore(FileChecker, Config);
-    }
-
-    public bool HasError { get; private set; } = false;
+    private bool hasInstalled = false;
 
     public string? UpdateMode { get; set; }
+
     public bool SchemaMode { get; set; }
+
     public bool WatchMode { get; set; }
+
     public IEnumerable<string> ExcludedTags { get; set; } = [];
 
-    public Microsoft.Extensions.Logging.ILogger Logger { get; }
-    public string ConfigFullName { get; }
-    public string ModgenRoot { get; }
-    public ModelConfig Config { get; }
-    public TopModelLock TopModelLock { get; }
-
     /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    public override void Dispose()
     {
-        foreach (var provider in providers)
+        foreach (var provider in _providers)
         {
             provider.Dispose();
         }
     }
 
-    public async Task LoadModules(CancellationToken cancellationToken)
+    public override void Init()
     {
-        if (Deps.Count > 0)
+        _logger = LoggerProvider.CreateLogger("TopModel.Generator");
+
+        var scope = _logger.BeginScope(StoreConfig);
+        if (scope != null)
         {
-            Directory.CreateDirectory(ModgenRoot);
+            _providers.Add(scope);
         }
 
-        foreach (var dep in Deps)
+        _topModelLock = new TopModelLock(Config, _logger);
+        _modgenRoot = Path.GetFullPath(".modgen", Config.ModelRoot);
+        AddDevCustomGenerators();
+        _customModules = Config
+            .CustomGenerators.Select(cg => new CustomModule(cg, ConfigFullName, _modgenRoot, _logger, _topModelLock))
+            .ToList();
+        _services = new ServiceCollection()
+            .AddTransient(typeof(ILogger<>), typeof(Logger<>))
+            .AddTransient<ILoggerFactory, LoggerFactory>()
+            .AddSingleton<ILoggerProvider>(LoggerProvider)
+            .AddSingleton<IFileWriterProvider>(new GeneratedFileWriterProvider(Config))
+            .AddModelStore(FileChecker, Config);
+    }
+
+    public async Task LoadModules(CancellationToken cancellationToken)
+    {
+        if (_deps.Count > 0)
+        {
+            Directory.CreateDirectory(_modgenRoot);
+        }
+
+        foreach (var dep in _deps)
         {
             await LoadModule(dep, cancellationToken);
         }
 
-        TopModelLock.Write();
-        if (resolvedConfigKeys.Any())
+        _topModelLock.Write();
+        if (_resolvedConfigKeys.Any())
         {
-            Logger.LogInformation(
+            _logger.LogInformation(
                 GeneratorMessage.GeneratorsInUse,
-                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
+                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", _resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
             );
         }
 
         CheckDependenciesToUpdate();
     }
 
-    public async Task Run(CancellationToken cancellationToken)
+    public override async Task Run(CancellationToken cancellationToken)
     {
         await InitModules(cancellationToken);
         if (HasError)
@@ -131,11 +122,11 @@ public class TopModelWorker : IDisposable
 
     public async Task WriteSchema(CancellationToken cancellationToken)
     {
-        Logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
+        _logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
         var schema = JsonNode
             .Parse(
                 await File.ReadAllTextAsync(
-                    FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json"),
+                    Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"),
                     cancellationToken
                 )
             )!
@@ -144,7 +135,7 @@ public class TopModelWorker : IDisposable
         schema.Remove("additionalProperties");
         schema.Add("additionalProperties", value: false);
 
-        foreach (var generator in Generators)
+        foreach (var generator in _generators)
         {
             var (configType, configName) = ModuleUtils.GetIGenRegInterfaceAndName(generator);
 
@@ -153,7 +144,7 @@ public class TopModelWorker : IDisposable
                 "items",
                 JsonNode.Parse(
                     await File.ReadAllTextAsync(
-                        FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json"),
+                        configType.Assembly.GetFilePath($"{configName}.config.json"),
                         cancellationToken
                     )
                 )
@@ -176,7 +167,7 @@ public class TopModelWorker : IDisposable
             await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
         }
 
-        Logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
+        _logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
     }
 
     static async Task<List<PackageDependency>> DownloadMissingDependenciesCascade(
@@ -297,15 +288,15 @@ public class TopModelWorker : IDisposable
 
     private async Task AddRemoteModule(string configKey, CancellationToken cancellationToken)
     {
-        if (Generators.ToList().Exists(g => ModuleUtils.GetIGenRegInterfaceAndName(g).Name == configKey))
+        if (_generators.ToList().Exists(g => ModuleUtils.GetIGenRegInterfaceAndName(g).Name == configKey))
         {
-            resolvedConfigKeys.Add(configKey, "custom");
+            _resolvedConfigKeys.Add(configKey, "custom");
             return;
         }
 
         var fullModuleName = $"TopModel.Generator.{configKey.ToFirstUpper()}";
 
-        if (!TopModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
+        if (!_topModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
         {
             moduleVersion = await NugetUtils.GetLatestVersionAsync(
                 fullModuleName,
@@ -316,19 +307,19 @@ public class TopModelWorker : IDisposable
 
             if (moduleVersion == null)
             {
-                Logger.LogError(GeneratorMessage.NoGeneratorModuleFound, configKey);
+                _logger.LogError(GeneratorMessage.NoGeneratorModuleFound, configKey);
                 HasError = true;
                 return;
             }
-            TopModelLock.Modules.Add(configKey, moduleVersion);
+            _topModelLock.Modules.Add(configKey, moduleVersion);
         }
         else if (!await NugetUtils.DoesPackageExistsAsync(fullModuleName, moduleVersion.Version, cancellationToken))
         {
-            Logger.LogError(GeneratorMessage.PackageNotFound, fullModuleName, moduleVersion.Version);
+            _logger.LogError(GeneratorMessage.PackageNotFound, fullModuleName, moduleVersion.Version);
             HasError = true;
             return;
         }
-        Deps.Add(new(configKey, moduleVersion));
+        _deps.Add(new(configKey, moduleVersion));
     }
 
     private async Task AddRemoteModules(CancellationToken cancellationToken)
@@ -341,7 +332,7 @@ public class TopModelWorker : IDisposable
 
     private async Task BuildCustomModulesAsync(CancellationToken cancellationToken)
     {
-        foreach (var customModule in CustomModules)
+        foreach (var customModule in _customModules)
         {
             await customModule.BuildAsync(cancellationToken);
             if (customModule.HasError)
@@ -357,11 +348,11 @@ public class TopModelWorker : IDisposable
         var depsToUpdate = GetDependenciesToUpdate();
         if (depsToUpdate.Any())
         {
-            Logger.LogWarning(
+            _logger.LogWarning(
                 GeneratorMessage.GeneratorUpdatesAvailable,
                 $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}"
             );
-            Logger.LogWarning(
+            _logger.LogWarning(
                 GeneratorMessage.ModgenUpdateCommand,
                 depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all"
             );
@@ -380,7 +371,7 @@ public class TopModelWorker : IDisposable
         {
             if (minNuGetVersion.Major != VersionUtils.MajorVersion)
             {
-                Logger.LogError(
+                _logger.LogError(
                     GeneratorMessage.ModuleBadMajorVersion,
                     dep.ConfigKey,
                     depVersion,
@@ -390,7 +381,7 @@ public class TopModelWorker : IDisposable
             }
             else if (minNuGetVersion.Minor > VersionUtils.MinorVersion)
             {
-                Logger.LogError(
+                _logger.LogError(
                     GeneratorMessage.ModuleNewerVersion,
                     dep.ConfigKey,
                     minVersionText,
@@ -410,11 +401,11 @@ public class TopModelWorker : IDisposable
         var depVersion = dep.Version.Version;
         if (Directory.Exists(moduleFolder))
         {
-            Logger.LogInformation(GeneratorMessage.ModuleCorrupted, dep.FullName);
+            _logger.LogInformation(GeneratorMessage.ModuleCorrupted, dep.FullName);
             Directory.Delete(moduleFolder, recursive: true);
         }
 
-        Logger.LogInformation(GeneratorMessage.ModuleInstallInProgress, dep.FullName, depVersion);
+        _logger.LogInformation(GeneratorMessage.ModuleInstallInProgress, dep.FullName, depVersion);
 
         Directory.CreateDirectory(moduleFolder);
 
@@ -447,13 +438,13 @@ public class TopModelWorker : IDisposable
         var missingDependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core").ToList();
         await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, framework, cancellationToken);
 
-        Logger.LogInformation(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion);
+        _logger.LogInformation(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion);
         dep.Version.Hash = GetFolderHash(moduleFolder);
     }
 
     private IEnumerable<ModgenDependency> GetDependenciesToUpdate()
     {
-        return Deps.Where(dep => dep.LatestVersion != null && dep.LatestVersion != dep.Version.Version);
+        return _deps.Where(dep => dep.LatestVersion != null && dep.LatestVersion != dep.Version.Version);
     }
 
     private void HandleUpdate()
@@ -465,7 +456,7 @@ public class TopModelWorker : IDisposable
         var modgenRoot = Path.GetFullPath(".modgen", Config.ModelRoot);
         if (UpdateMode == "all")
         {
-            TopModelLock.Modules = new Dictionary<string, TopModelLockModule>();
+            _topModelLock.Modules = new Dictionary<string, TopModelLockModule>();
 
             if (Directory.Exists(modgenRoot))
             {
@@ -474,7 +465,7 @@ public class TopModelWorker : IDisposable
         }
         else if (UpdateMode != null)
         {
-            TopModelLock.Modules.Remove(UpdateMode);
+            _topModelLock.Modules.Remove(UpdateMode);
 
             foreach (
                 var module in Directory
@@ -515,15 +506,15 @@ public class TopModelWorker : IDisposable
             return;
         }
 
-        if (Directory.Exists(ModgenRoot))
+        if (Directory.Exists(_modgenRoot))
         {
-            var usedPrefixes = Deps.Select(d => $"{d.ConfigKey}.").ToHashSet(StringComparer.OrdinalIgnoreCase);
-            foreach (var dir in Directory.GetDirectories(ModgenRoot))
+            var usedPrefixes = _deps.Select(d => $"{d.ConfigKey}.").ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var dir in Directory.GetDirectories(_modgenRoot))
             {
                 if (!usedPrefixes.Any(p => Path.GetFileName(dir).StartsWith(p)))
                 {
                     Directory.Delete(dir, recursive: true);
-                    Logger.LogInformation($"Supprimé: {dir.ToRelative()}");
+                    _logger.LogInformation($"Supprimé: {dir.ToRelative()}");
                 }
             }
         }
@@ -534,7 +525,7 @@ public class TopModelWorker : IDisposable
             return;
         }
 
-        if (SchemaMode || HasInstalled)
+        if (SchemaMode || hasInstalled)
         {
             await WriteSchema(cancellationToken);
         }
@@ -544,9 +535,9 @@ public class TopModelWorker : IDisposable
 
     private void LoadCustomModulesAssemblies()
     {
-        foreach (var customModule in CustomModules)
+        foreach (var customModule in _customModules)
         {
-            customModule.LoadAssemblies(ConfigFullName, Generators);
+            customModule.LoadAssemblies(ConfigFullName, _generators);
             if (HasError)
             {
                 break;
@@ -557,14 +548,14 @@ public class TopModelWorker : IDisposable
     private async Task LoadModule(ModgenDependency dep, CancellationToken cancellationToken)
     {
         var depVersion = dep.Version.Version;
-        var moduleFolder = Path.Combine(ModgenRoot, $"{dep.ConfigKey}.{depVersion}");
+        var moduleFolder = Path.Combine(_modgenRoot, $"{dep.ConfigKey}.{depVersion}");
 
         var depHash = GetFolderHash(moduleFolder);
 
         if (depHash == null || depHash != dep.Version.Hash)
         {
             await DownloadDependencies(dep, moduleFolder, cancellationToken);
-            HasInstalled = true;
+            hasInstalled = true;
         }
         await CheckMinVersionAsync(moduleFolder, depVersion, dep, cancellationToken);
         if (HasError)
@@ -572,14 +563,14 @@ public class TopModelWorker : IDisposable
             return;
         }
 
-        Generators.AddRange(
+        _generators.AddRange(
             Directory
                 .GetFiles(moduleFolder, "*.dll")
                 .SelectMany(a =>
                     Assembly.LoadFrom(a).GetExportedTypes().Where(t => ModuleUtils.GetIGenRegInterface(t) != null)
                 )
         );
-        resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
+        _resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
         dep.LatestVersion = (
             await NugetUtils.GetLatestVersionAsync(dep.FullName, cancellationToken, prerelease: VersionUtils.Prerelease)
         )?.Version;
@@ -587,7 +578,7 @@ public class TopModelWorker : IDisposable
 
     private async Task PrepareConfiguration()
     {
-        foreach (var generator in Generators)
+        foreach (var generator in _generators)
         {
             var (configType, configName) = ModuleUtils.GetIGenRegInterfaceAndName(generator);
 
@@ -602,7 +593,7 @@ public class TopModelWorker : IDisposable
                     {
                         var genConfig = (GeneratorConfigBase)
                             FileChecker.GetGenConfig(configName, configType, genConfigMap);
-                        genConfig.InitVariables(Config.App, number, Logger);
+                        genConfig.InitVariables(Config.App, number, _logger);
 
                         genConfig.ExcludedTags = ExcludedTags.ToList();
 
@@ -619,7 +610,7 @@ public class TopModelWorker : IDisposable
                         }
                         catch (ArgumentException)
                         {
-                            Logger.LogError(GeneratorMessage.ConfigNameAlreadyInUse, genConfig.Name);
+                            _logger.LogError(GeneratorMessage.ConfigNameAlreadyInUse, genConfig.Name);
                             HasError = true;
                             return;
                         }
@@ -632,7 +623,7 @@ public class TopModelWorker : IDisposable
                             }
                             else
                             {
-                                Logger.LogWarning(
+                                _logger.LogWarning(
                                     GeneratorMessage.ReferencedConfigNotFound,
                                     referencedTag.Value,
                                     referencedTag.Key,
@@ -648,7 +639,7 @@ public class TopModelWorker : IDisposable
                         }
 
                         var instance = Activator.CreateInstance(generator);
-                        instance!.GetType().GetMethod("Register")!.Invoke(instance, [services, genConfig, number]);
+                        instance!.GetType().GetMethod("Register")!.Invoke(instance, [_services, genConfig, number]);
                     }
                     catch (ModelException me)
                     {
@@ -664,27 +655,27 @@ public class TopModelWorker : IDisposable
 
     private void RemoveUnusedCustomModules()
     {
-        var unused = TopModelLock.Custom.Keys.Except(Config.CustomGenerators).ToList();
+        var unused = _topModelLock.Custom.Keys.Except(Config.CustomGenerators).ToList();
         if (unused.Count > 0)
         {
             foreach (var key in unused)
             {
-                TopModelLock.Custom.Remove(key);
-                var hashFile = CustomModule.GetHashFilePath(ModgenRoot, key);
+                _topModelLock.Custom.Remove(key);
+                var hashFile = CustomModule.GetHashFilePath(_modgenRoot, key);
                 if (File.Exists(hashFile))
                 {
                     File.Delete(hashFile);
                 }
             }
 
-            TopModelLock.Write();
+            _topModelLock.Write();
         }
     }
 
     private async Task RunGeneration(CancellationToken cancellationToken)
     {
-        var provider = services.BuildServiceProvider();
-        providers.Add(provider);
+        var provider = _services.BuildServiceProvider();
+        _providers.Add(provider);
 
         var modelStore = provider.GetRequiredService<ModelStore>();
 
@@ -695,6 +686,6 @@ public class TopModelWorker : IDisposable
             HasError = he;
         };
 
-        await modelStore.LoadFromConfig(WatchMode, TopModelLock, storeConfig, cancellationToken);
+        await modelStore.LoadFromConfig(WatchMode, _topModelLock, StoreConfig, cancellationToken);
     }
 }

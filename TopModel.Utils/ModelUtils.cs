@@ -63,6 +63,17 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Récupère le chemin d'un fichier dans un assembly.
+    /// </summary>
+    /// <param name="assembly">L'assembly contenant le fichier.</param>
+    /// <param name="fileName">Le fichier.</param>
+    /// <returns>Le chemin.</returns>
+    public static string GetFilePath(this Assembly assembly, string fileName)
+    {
+        return Path.Combine(Path.GetDirectoryName(assembly.Location)!, fileName);
+    }
+
+    /// <summary>
     /// Vérifie si la chaîne de caractères est un nom d'enum valide.
     /// </summary>
     /// <param name="name">Le nom à vérifier.</param>

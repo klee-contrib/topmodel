@@ -14,4 +14,5 @@ public enum CliMessage
     FileOptionDescription,
     WatchOptionDescription,
     CheckOptionDescription,
+    ConfigChanged,
 }

@@ -7,7 +7,7 @@ namespace TopModel.Utils;
 /// <summary>
 /// Configuration commune aux générateurs.
 /// </summary>
-public class ConfigBase
+public abstract class ConfigBase
 {
     /// <summary>
     /// Répertoire contenant le fichier de config.
@@ -44,4 +44,6 @@ public class ConfigBase
     /// Liste des warnings à ignorer.
     /// </summary>
     public IList<ErrorType> NoWarn { get; set; } = [];
+
+    public abstract ConfigBase Init(string rootDir);
 }

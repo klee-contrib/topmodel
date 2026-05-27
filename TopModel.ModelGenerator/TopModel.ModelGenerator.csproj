@@ -18,7 +18,11 @@
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
     <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="schema.tmdgen.config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

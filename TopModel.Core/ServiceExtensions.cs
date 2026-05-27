@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core.Loaders;
-using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -31,16 +30,5 @@ public static class ServiceExtensions
             .AddSingleton(config);
 
         return services;
-    }
-
-    public static ModelConfig Init(this ModelConfig config, string rootDir)
-    {
-        config.ConfigRoot = rootDir;
-        config.ModelRoot ??= string.Empty;
-        config.LockFileName ??= "topmodel.lock";
-        ModelUtils.TrimSlashes(config, c => c.ModelRoot);
-        ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
-        ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
-        return config;
     }
 }

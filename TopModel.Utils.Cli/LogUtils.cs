@@ -28,11 +28,11 @@ public static class LogUtils
 
     extension(AnsiConsole)
     {
-        public static void LogConfig(string configPath, int index)
+        public static void LogConfig(string configPath, int index, bool changed = false)
         {
             var color = Colors[index % Colors.Length];
             AnsiConsole.MarkupLine(
-                $"[{color}]#{index + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), configPath)}[/]"
+                $"[{color}]#{index + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), configPath)}[/]{(changed ? $": [teal]{CliMessage.ConfigChanged.GetMessage()}[/]" : string.Empty)}"
             );
         }
 
@@ -45,7 +45,7 @@ public static class LogUtils
         public static void LogInformation<T>(T key, params object[] args)
             where T : struct, Enum
         {
-            Log(key, "white", args);
+            AnsiConsole.MarkupLine(key.GetMessage(args));
         }
 
         public static void LogWarning<T>(T key, params object[] args)

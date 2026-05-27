@@ -1,21 +1,23 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using Spectre.Console;
-using TopModel.Core;
-using TopModel.Core.Loaders;
 
-namespace TopModel.Generator;
+namespace TopModel.Utils.Cli;
 
-public class ConfigObserver(
+public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     FileInfo configInfo,
-    FileChecker fileChecker,
+    TFileChecker fileChecker,
+    LoggerProvider loggerProvider,
     int configIndex,
-    Func<ModelConfig, FileInfo, int, TopModelWorker> createWorker
+    Action<TWorker>? configurator = null
 ) : IDisposable
+    where TConfig : ConfigBase
+    where TFileChecker : AbstractFileChecker<TConfig>
+    where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
 {
     private readonly MemoryCache fsCache = new(new MemoryCacheOptions());
     private FileSystemWatcher? ConfigWatcher;
-    private TopModelWorker? Worker;
+    private TWorker? Worker;
 
     public bool HasError => Worker?.HasError ?? true;
 
@@ -42,9 +44,19 @@ public class ConfigObserver(
             var config = fileChecker
                 .DeserializeConfig(await text.ReadToEndAsync(cancellationToken))
                 .Init(configInfo.DirectoryName!);
-            Worker = createWorker(config, configInfo, configIndex);
+            Worker = new TWorker
+            {
+                Config = (TConfig)config,
+                ConfigFullName = configInfo.FullName,
+                ConfigDirectoryName = configInfo.DirectoryName!,
+                ConfigIndex = configIndex,
+                LoggerProvider = loggerProvider,
+                FileChecker = fileChecker,
+            };
+            configurator?.Invoke(Worker);
+            Worker.Init();
         }
-        catch (ModelException me)
+        catch (LegitException me)
         {
             AnsiConsole.WriteLine($"[red]{me.Message}[/]");
         }
@@ -54,6 +66,8 @@ public class ConfigObserver(
     {
         Worker?.Dispose();
         Worker = null;
+        AnsiConsole.WriteLine();
+        AnsiConsole.LogConfig(configInfo.FullName, configIndex, changed: true);
         await Run(cancellationToken);
     }
 

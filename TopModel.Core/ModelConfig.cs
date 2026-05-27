@@ -75,4 +75,15 @@ public class ModelConfig : ConfigBase
             .Replace(".tmd", string.Empty)
             .Replace('\\', '/');
     }
+
+    public override ModelConfig Init(string rootDir)
+    {
+        ConfigRoot = rootDir;
+        ModelRoot ??= string.Empty;
+        LockFileName ??= "topmodel.lock";
+        ModelUtils.TrimSlashes(this, c => c.ModelRoot);
+        ModelUtils.CombinePath(rootDir, this, c => c.ModelRoot);
+        ModelUtils.CombinePath(rootDir, I18n, c => c.RootPath);
+        return this;
+    }
 }
