@@ -62,7 +62,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Nom du schéma sur lequel les entités sont sauvegardées
     /// </summary>
-    public virtual string? DbSchema { get; set; }
+    public virtual string DbSchema { get; set; } = "public";
 
     /// <summary>
     /// Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd

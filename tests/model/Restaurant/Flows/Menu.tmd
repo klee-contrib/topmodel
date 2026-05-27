@@ -1,0 +1,17 @@
+---
+uses:
+  - Restaurant/Entities/Menu
+  - Restaurant/Dtos/Menu
+module: Restaurant
+tags:
+  - back
+---
+dataFlow:
+  name: ExportMenus
+  target: External
+  class: MenuRead
+  type: insert
+  sources:
+    - class: Menu
+      mode: queryAll
+      source: Primary

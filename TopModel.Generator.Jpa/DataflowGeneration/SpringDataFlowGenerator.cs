@@ -191,7 +191,21 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         var query =
             $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources[0].Class.SqlName}";
         fw.AddImport("org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder");
-        fw.AddImport("io.github.kleecontrib.spring.batch.bulk.mapping.JdbcEntityRowMapper");
+
+        string rowMapperImport;
+        string rowMapperInstance;
+        if (Config.DataFlowsWriter == DataFlowsWriter.Bulk)
+        {
+            rowMapperImport = "io.github.kleecontrib.spring.batch.bulk.mapping.JdbcEntityRowMapper";
+            rowMapperInstance = $"new JdbcEntityRowMapper<>({dataFlow.Sources[0].Class.NamePascal}.class)";
+        }
+        else
+        {
+            rowMapperImport = "org.springframework.jdbc.core.BeanPropertyRowMapper";
+            rowMapperInstance = $"new BeanPropertyRowMapper<>({dataFlow.Sources[0].Class.NamePascal}.class)";
+        }
+
+        fw.AddImport(rowMapperImport);
         fw.AddImport("org.springframework.batch.item.ItemReader");
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Reader"")");
         fw.WriteLine(
@@ -202,7 +216,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Sources[0].Source}"") DataSource datasource) {{");
         fw.WriteLine(2, $"return new JdbcCursorItemReaderBuilder<{dataFlow.Sources[0].Class.NamePascal}>() //");
         fw.WriteLine(2, @$"		.name(""{dataFlow.Name.ToPascalCase()}Reader"") //");
-        fw.WriteLine(2, @$"		.rowMapper(new JdbcEntityRowMapper<>({dataFlow.Sources[0].Class.NamePascal}.class)) //");
+        fw.WriteLine(2, @$"		.rowMapper({rowMapperInstance}) //");
         fw.WriteLine(2, @$"		.sql(""{query}"") //");
         fw.WriteLine(2, @$"		.fetchSize({Config.DataFlowsBulkSize}) //");
         fw.WriteLine(2, @$"		.dataSource(datasource) //");
