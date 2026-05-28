@@ -466,7 +466,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         fw.WriteLine(@$"@Import({{{string.Join(", ", flows.Select(f => $@"{f.Name.ToPascalCase()}Flow.class"))}}})");
 
-        var className = configFilePath.Split("\\")[^1].Split('.')[0];
+        var className = Path.GetFileNameWithoutExtension(configFilePath);
         fw.WriteClassDeclaration($"{className}", modifier: null);
         fw.WriteLine(1, @$"@Bean(""{module.ToPascalCase()}Job"")");
         fw.WriteLine(1, @$"public Job {module.ToCamelCase()}Job( //");
