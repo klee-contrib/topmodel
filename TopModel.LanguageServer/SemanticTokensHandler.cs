@@ -18,7 +18,11 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
         return new SemanticTokensRegistrationOptions
         {
             DocumentSelector = config.GetDocumentSelector(),
-            Legend = new() { TokenModifiers = capability.TokenModifiers, TokenTypes = capability.TokenTypes },
+            Legend = new()
+            {
+                TokenModifiers = capability?.TokenModifiers ?? [],
+                TokenTypes = capability?.TokenTypes ?? [],
+            },
             Full = new SemanticTokensCapabilityRequestFull { Delta = true },
             Range = true,
         };
