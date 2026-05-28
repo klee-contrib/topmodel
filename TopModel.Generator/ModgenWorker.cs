@@ -30,7 +30,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
 #nullable disable
 
-    private IEnumerable<CustomModule> _customModules;
+    private IList<CustomModule> _customModules;
     private Microsoft.Extensions.Logging.ILogger _logger;
     private string _modgenRoot;
     private IServiceCollection _services;
@@ -69,10 +69,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
         _topModelLock = new TopModelLock(Config, _logger);
         _modgenRoot = Path.GetFullPath(".modgen", Config.ModelRoot);
-        AddDevCustomGenerators();
-        _customModules = Config
-            .CustomGenerators.Select(cg => new CustomModule(cg, ConfigFullName, _modgenRoot, _logger, _topModelLock))
-            .ToList();
+        InitCustomModules();
         _services = new ServiceCollection()
             .AddTransient(typeof(ILogger<>), typeof(Logger<>))
             .AddTransient<ILoggerFactory, LoggerFactory>()
@@ -259,31 +256,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
 
         return md5.Hash != null ? BitConverter.ToString(md5.Hash).Replace("-", string.Empty).ToLower() : null;
-    }
-
-    private void AddDevCustomGenerators()
-    {
-        if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
-        {
-            var generatorsPath = Path.GetFullPath(
-                Path.Combine(
-                    new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!,
-                    Path.Combine("..", "..", "..", "..")
-                )
-            );
-            var modules = Directory
-                .GetFileSystemEntries(generatorsPath)
-                .Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
-            var customGeneratorsToAdd = modules.Select(m =>
-                Path.GetRelativePath(new FileInfo(ConfigFullName).DirectoryName!, m)
-            );
-
-            Config.CustomGenerators.AddRange(
-                customGeneratorsToAdd.Where(cg =>
-                    !Config.CustomGenerators.Select(c => c.Replace('\\', '/')).Contains(cg.Replace('\\', '/'))
-                )
-            );
-        }
     }
 
     private async Task AddRemoteModule(string configKey, CancellationToken cancellationToken)
@@ -476,6 +448,46 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                 Directory.Delete(module, recursive: true);
             }
         }
+    }
+
+    private void InitCustomModules()
+    {
+        var customModules = Config
+            .CustomGenerators.Select(cg => new CustomModule(cg, ConfigFullName, _modgenRoot, _logger, _topModelLock))
+            .ToList();
+
+        if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
+        {
+            var generatorsPath = Path.GetFullPath(
+                Path.Combine(
+                    new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!,
+                    Path.Combine("..", "..", "..", "..")
+                )
+            );
+            var modules = Directory
+                .GetFileSystemEntries(generatorsPath)
+                .Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
+            var customGeneratorsToAdd = modules.Select(m =>
+                Path.GetRelativePath(new FileInfo(ConfigFullName).DirectoryName!, m)
+            );
+
+            customModules.AddRange(
+                customGeneratorsToAdd
+                    .Where(cg =>
+                        !Config.CustomGenerators.Select(c => c.Replace('\\', '/')).Contains(cg.Replace('\\', '/'))
+                    )
+                    .Select(cg => new CustomModule(
+                        cg,
+                        ConfigFullName,
+                        _modgenRoot,
+                        _logger,
+                        _topModelLock,
+                        noBuild: true
+                    ))
+            );
+        }
+
+        _customModules = customModules;
     }
 
     private async Task InitModules(CancellationToken cancellationToken)

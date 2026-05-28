@@ -13,7 +13,8 @@ public class CustomModule(
     string fullName,
     string modgenRoot,
     Microsoft.Extensions.Logging.ILogger logger,
-    TopModelLock topModelLock
+    TopModelLock topModelLock,
+    bool noBuild = false
 )
 {
     public bool HasError { get; private set; } = false;
@@ -25,6 +26,11 @@ public class CustomModule(
 
     public async Task BuildAsync(CancellationToken cancellationToken)
     {
+        if (noBuild)
+        {
+            return;
+        }
+
         Directory.CreateDirectory(modgenRoot);
 
         var customDir = Path.GetFullPath(
