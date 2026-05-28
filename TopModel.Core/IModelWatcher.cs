@@ -15,6 +15,8 @@ public interface IModelWatcher
 
     bool Disabled { get; }
 
+    CancellationToken? CancellationToken { get; set; }
+
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
     void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null);

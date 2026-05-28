@@ -75,6 +75,11 @@ public abstract class TranslationGeneratorBase<T>(
                 .GroupBy(f => f.key),
             resources =>
             {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 var properties = resources.Select(r => (r.value.p.ResourceProperty)).Distinct();
                 var tag = resources.First().value.tag;
                 HandleResourceFile(resources.Key.ModuleFilePath, tag, resources.Key.Lang, properties);
@@ -118,6 +123,11 @@ public abstract class TranslationGeneratorBase<T>(
                 .GroupBy(f => f.key),
             resources =>
             {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 var properties = resources.Select(r => r.p.CommentResourceProperty).Distinct();
                 HandleCommentResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
 
@@ -137,10 +147,17 @@ public abstract class TranslationGeneratorBase<T>(
         Parallel.ForEach(
             modules.GroupBy(m => m.MainFilePath),
             g =>
+            {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 HandleMainResourceFile(
                     g.Key,
                     g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)
-                )
+                );
+            }
         );
     }
 

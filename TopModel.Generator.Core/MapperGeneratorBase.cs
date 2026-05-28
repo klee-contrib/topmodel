@@ -96,6 +96,11 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
             fromMappers.Keys.Concat(toMappers.Keys).Distinct(),
             fileName =>
             {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 var (fileFromMappers, fromTags) = fromMappers.TryGetValue(fileName, out var value)
                     ? value
                     : (Array.Empty<(Class, FromMapper)>(), Array.Empty<string>());

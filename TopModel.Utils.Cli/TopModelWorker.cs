@@ -36,4 +36,6 @@ public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
     public abstract void Init();
 
     public abstract Task Run(CancellationToken cancellationToken);
+
+    public abstract Task WaitForFinished(CancellationToken cancellationToken);
 }

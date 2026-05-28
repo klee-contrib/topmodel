@@ -17,6 +17,8 @@ public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
 
     public bool Disabled => false;
 
+    public CancellationToken? CancellationToken { get; set; }
+
     /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {

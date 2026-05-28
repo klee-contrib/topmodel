@@ -156,4 +156,7 @@
   <data name="ConfigChanged" xml:space="preserve">
     <value>Modifié</value>
   </data>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>Arrêt du processus demandé...</value>
+  </data>
 </root>

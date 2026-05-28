@@ -15,4 +15,5 @@ public enum CliMessage
     WatchOptionDescription,
     CheckOptionDescription,
     ConfigChanged,
+    CancellationRequested,
 }

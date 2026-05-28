@@ -22,6 +22,8 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
     public bool Disabled => Config.Disable?.Contains(Name) ?? false;
 
+    public CancellationToken? CancellationToken { get; set; }
+
     /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors) { }
 

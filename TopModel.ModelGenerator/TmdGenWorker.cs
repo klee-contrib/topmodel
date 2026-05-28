@@ -132,4 +132,9 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             mainLogger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
         }
     }
+
+    public override Task WaitForFinished(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }

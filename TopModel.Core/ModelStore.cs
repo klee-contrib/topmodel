@@ -288,10 +288,20 @@ public class ModelStore(
 
                 foreach (var level in levels)
                 {
+                    if (ct.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     Parallel.ForEach(
                         level,
                         fileGroup =>
                         {
+                            if (ct.IsCancellationRequested)
+                            {
+                                return;
+                            }
+
                             foreach (var error in ResolveReferences(fileGroup))
                             {
                                 referenceErrors.Add(error);
@@ -299,6 +309,8 @@ public class ModelStore(
                         }
                     );
                 }
+
+                ct.ThrowIfCancellationRequested();
 
                 foreach (var error in GetGlobalErrors())
                 {
@@ -332,6 +344,8 @@ public class ModelStore(
                 hasError |= referenceErrors.Any(r => r.IsError);
                 OnResolve?.Invoke(hasError);
 
+                ct.ThrowIfCancellationRequested();
+
                 if (hasError)
                 {
                     foreach (var file in files)
@@ -352,11 +366,21 @@ public class ModelStore(
                 Parallel.ForEach(
                     _modelWatchers,
                     modelWatcher =>
+                    {
+                        if (ct.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        modelWatcher.CancellationToken = ct;
                         modelWatcher.OnFilesChanged(
                             levels.SelectMany(level => level.SelectMany(fg => fg)),
                             _storeConfig
-                        )
+                        );
+                    }
                 );
+
+                ct.ThrowIfCancellationRequested();
 
                 var generatedFiles = _modelWatchers
                     .Where(m => m.GeneratedFiles != null)

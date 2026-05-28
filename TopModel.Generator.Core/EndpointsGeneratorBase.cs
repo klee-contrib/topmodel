@@ -42,6 +42,11 @@ public abstract class EndpointsGeneratorBase<T>(
                 .GroupBy(file => file.filePath),
             file =>
             {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 var endpoints = file.SelectMany(f => f.file.Endpoints)
                     .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
                     .Distinct()

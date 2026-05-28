@@ -35,12 +35,19 @@ public abstract class ClassGroupGeneratorBase<T>(
                 )
                 .GroupBy(f => f.key),
             file =>
+            {
+                if (CancellationToken?.IsCancellationRequested ?? false)
+                {
+                    return;
+                }
+
                 HandleFile(
                     file.Key.FileType,
                     file.Key.FileName,
                     file.First().tag,
                     file.Select(f => f.classe).Distinct()
-                )
+                );
+            }
         );
     }
 }

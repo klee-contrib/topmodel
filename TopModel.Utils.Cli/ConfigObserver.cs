@@ -19,64 +19,86 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     private FileSystemWatcher? ConfigWatcher;
     private TWorker? Worker;
 
+    private CancellationTokenSource? ctsWorker;
+
     public bool HasError => Worker?.HasError ?? true;
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
+        ctsWorker?.Dispose();
         Worker?.Dispose();
         ConfigWatcher?.Dispose();
         fsCache.Dispose();
     }
 
-    public async Task Start(CancellationToken cancellationToken)
+    public async Task Start(bool watchMode, CancellationToken cancellationToken)
     {
-        StartWatchConfig(cancellationToken);
-        await Run(cancellationToken);
-    }
+        if (watchMode)
+        {
+            StartWatchConfig(cancellationToken);
+        }
 
-    private async Task ReadConfig(CancellationToken cancellationToken)
-    {
-        try
-        {
-            fileChecker.CheckConfigFile(configInfo.FullName);
-            using var text = configInfo.OpenText();
-            var config = fileChecker
-                .DeserializeConfig(await text.ReadToEndAsync(cancellationToken))
-                .Init(configInfo.DirectoryName!);
-            Worker = new TWorker
-            {
-                Config = (TConfig)config,
-                ConfigFullName = configInfo.FullName,
-                ConfigDirectoryName = configInfo.DirectoryName!,
-                ConfigIndex = configIndex,
-                LoggerProvider = loggerProvider,
-                FileChecker = fileChecker,
-            };
-            configurator?.Invoke(Worker);
-            Worker.Init();
-        }
-        catch (LegitException me)
-        {
-            AnsiConsole.WriteLine($"[red]{me.Message}[/]");
-        }
+        await Run(cancellationToken);
     }
 
     private async Task Restart(CancellationToken cancellationToken)
     {
-        Worker?.Dispose();
-        Worker = null;
+        if (ctsWorker != null)
+        {
+            await ctsWorker.CancelAsync();
+        }
+
+        if (Worker != null)
+        {
+            await Worker.WaitForFinished(cancellationToken);
+        }
+
         AnsiConsole.WriteLine();
         AnsiConsole.LogConfig(configInfo.FullName, configIndex, changed: true);
+
         await Run(cancellationToken);
     }
 
     private async Task Run(CancellationToken cancellationToken)
     {
-        await ReadConfig(cancellationToken);
-        if (Worker != null)
+        ctsWorker?.Dispose();
+        ctsWorker = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        try
         {
-            await Worker.Run(cancellationToken);
+            fileChecker.CheckConfigFile(configInfo.FullName);
+            using (var text = configInfo.OpenText())
+            {
+                var config = fileChecker
+                    .DeserializeConfig(await text.ReadToEndAsync(ctsWorker.Token))
+                    .Init(configInfo.DirectoryName!);
+                Worker?.Dispose();
+                Worker = new TWorker
+                {
+                    Config = (TConfig)config,
+                    ConfigFullName = configInfo.FullName,
+                    ConfigDirectoryName = configInfo.DirectoryName!,
+                    ConfigIndex = configIndex,
+                    LoggerProvider = loggerProvider,
+                    FileChecker = fileChecker,
+                };
+            }
+
+            configurator?.Invoke(Worker);
+            Worker.Init();
+            await Worker.Run(ctsWorker.Token);
+        }
+        catch (LegitException me)
+        {
+            AnsiConsole.WriteLine($"[red]{me.Message}[/]");
+        }
+        catch (OperationCanceledException)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
         }
     }
 

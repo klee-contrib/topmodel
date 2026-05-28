@@ -39,6 +39,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 #nullable enable
 
     private bool hasInstalled = false;
+    private ModelStore? modelStore;
 
     public string? UpdateMode { get; set; }
 
@@ -105,16 +106,28 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     public override async Task Run(CancellationToken cancellationToken)
     {
         await InitModules(cancellationToken);
-        if (HasError)
+
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
-        await PrepareConfiguration();
-        if (HasError)
+
+        PrepareConfiguration(cancellationToken);
+
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
+
         await RunGeneration(cancellationToken);
+    }
+
+    public override async Task WaitForFinished(CancellationToken cancellationToken)
+    {
+        if (modelStore != null)
+        {
+            await modelStore.WaitForUpdates(cancellationToken);
+        }
     }
 
     public async Task WriteSchema(CancellationToken cancellationToken)
@@ -495,25 +508,25 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         AnsiConsole.WriteLine();
 
         HandleUpdate();
-        if (HasError)
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
         await BuildCustomModulesAsync(cancellationToken);
-        if (HasError)
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
         LoadCustomModulesAssemblies();
-        if (HasError)
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
         await AddRemoteModules(cancellationToken);
-        if (HasError)
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
@@ -532,7 +545,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
 
         await LoadModules(cancellationToken);
-        if (HasError)
+        if (HasError || cancellationToken.IsCancellationRequested)
         {
             return;
         }
@@ -588,7 +601,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         )?.Version;
     }
 
-    private async Task PrepareConfiguration()
+    private void PrepareConfiguration(CancellationToken cancellationToken)
     {
         foreach (var generator in _generators)
         {
@@ -598,6 +611,11 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             {
                 for (var j = 0; j < genConfigMaps.Count(); j++)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     var genConfigMap = genConfigMaps.ElementAt(j);
                     var number = j + 1;
 
@@ -653,7 +671,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                         var instance = Activator.CreateInstance(generator);
                         instance!.GetType().GetMethod("Register")!.Invoke(instance, [_services, genConfig, number]);
                     }
-                    catch (ModelException me)
+                    catch (LegitException me)
                     {
                         HasError = true;
                         AnsiConsole.MarkupLine($"[red]{me.Message.EscapeMarkup()}[/]");
@@ -689,10 +707,8 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         var provider = _services.BuildServiceProvider();
         _providers.Add(provider);
 
-        var modelStore = provider.GetRequiredService<ModelStore>();
-
+        modelStore = provider.GetRequiredService<ModelStore>();
         modelStore.DisableLockfile = ExcludedTags.Any();
-
         modelStore.OnResolve += he =>
         {
             HasError = he;

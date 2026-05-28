@@ -36,7 +36,15 @@ public abstract class ClassGeneratorBase<T>(ILogger<ClassGeneratorBase<T>> logge
                                 .Tags.Intersect(classe.Tags)
                                 .Select(tag => (tag, fileName: GetFileName(classe, tag)))
                                 .DistinctBy(t => t.fileName),
-                            l => HandleClass(l.fileName, classe, l.tag)
+                            l =>
+                            {
+                                if (CancellationToken?.IsCancellationRequested ?? false)
+                                {
+                                    return;
+                                }
+
+                                HandleClass(l.fileName, classe, l.tag);
+                            }
                         )
                 )
         );

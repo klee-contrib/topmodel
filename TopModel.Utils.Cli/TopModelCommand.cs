@@ -38,6 +38,7 @@ public class TopModelCommand<TDescription> : IDisposable
         {
             eventArgs.Cancel = true;
             _cts.Cancel();
+            AnsiConsole.LogWarning(CliMessage.CancellationRequested);
         };
     }
 
@@ -181,7 +182,7 @@ public class TopModelCommand<TDescription> : IDisposable
         {
             foreach (var configObserver in configObservers)
             {
-                await configObserver.Start(_cts.Token);
+                await configObserver.Start(watchMode, _cts.Token);
             }
 
             if (watchMode)
