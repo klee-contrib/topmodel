@@ -371,7 +371,7 @@ public class ModelStore(
 
                 pendingFileChanges.Clear();
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 logger.LogError(e, e.Message);
             }

@@ -126,8 +126,10 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             generatedFiles.AddRange(await generator.Generate(StoreConfig, cancellationToken));
         }
 
-        tmdLock.UpdateFiles(generatedFiles);
-
-        mainLogger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
+        if (!cancellationToken.IsCancellationRequested)
+        {
+            tmdLock.UpdateFiles(generatedFiles);
+            mainLogger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
+        }
     }
 }

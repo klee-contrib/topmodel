@@ -9,9 +9,9 @@ using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders;
 
-public class FileChecker(string? configSchemaPath = null)
+public class FileChecker()
     : AbstractFileChecker<ModelConfig>(
-        configSchemaPath,
+        "schema.config.json",
         new StringListTypeConverter(),
         new LocatedStringTypeConverter(),
         new ReferenceTypeConverter()

@@ -30,7 +30,7 @@ public abstract class TmdGenerator(ILogger<TmdGenerator> logger)
 
             return files;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             logger.LogError(ex, ex.Message);
             return [];

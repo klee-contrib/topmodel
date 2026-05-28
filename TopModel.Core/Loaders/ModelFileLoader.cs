@@ -97,7 +97,7 @@ public class ModelFileLoader(
                 return (fullPath, modelFile, ModelFileStatus.NotFound);
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             logger.LogError(e, e.Message);
             RemoveFromCache(fullPath);

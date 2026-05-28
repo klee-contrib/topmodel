@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace TopModel.Utils.Cli;
 
-public class TopModelCommand<TDescription>
+public class TopModelCommand<TDescription> : IDisposable
     where TDescription : struct, Enum
 {
     private readonly Option<bool> CheckOption = new("--check", "-c")
@@ -24,6 +24,8 @@ public class TopModelCommand<TDescription>
 
     private readonly RootCommand _command;
 
+    private readonly CancellationTokenSource _cts = new();
+
     private List<FileInfo> _configs = [];
 
     public TopModelCommand(TDescription description, IReadOnlyList<string> args, params IEnumerable<Option> options)
@@ -31,66 +33,93 @@ public class TopModelCommand<TDescription>
         _command = new RootCommand(description.GetMessage()) { FileOption, WatchOption, CheckOption };
         _command.Options.AddRange(options);
         Args = _command.Parse(args);
+
+        Console.CancelKeyPress += (sender, eventArgs) =>
+        {
+            eventArgs.Cancel = true;
+            _cts.Cancel();
+        };
     }
+
+    public CancellationToken CancellationToken => _cts.Token;
 
     public ParseResult Args { get; }
 
-    public async Task<bool> FindConfigs(
-        string nugetPackageName,
-        Regex configFilePattern,
-        CancellationToken cancellationToken
-    )
+    /// <summary>
+    /// Vérifie la version de l'outil et récupère les configs à traiter.
+    /// </summary>
+    /// <param name="nugetPackageName">Nom de l'outil dans Nuget.</param>
+    /// <param name="configFilePattern">Pattern pour les fichiers de config.</param>
+    /// <returns>True si aucun fichier de config n'a été trouvé.</returns>
+    public async Task<bool> CheckVersionAndFindConfigs(string nugetPackageName, Regex configFilePattern)
     {
-        var version = Assembly
-            .GetEntryAssembly()!
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
-            .InformationalVersion;
-
-        AnsiConsole.MarkupLine($"========= {nugetPackageName} v{version} =========");
-        AnsiConsole.WriteLine();
-
-        var prerelease = version.Contains('-');
-        var latestVersion = await NugetUtils.GetLatestVersionAsync(
-            nugetPackageName,
-            cancellationToken,
-            prerelease: prerelease
-        );
-        if (latestVersion != null && latestVersion.Version != version)
+        try
         {
-            AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
-            AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
+            var version = Assembly
+                .GetEntryAssembly()!
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+                .InformationalVersion;
+
+            AnsiConsole.MarkupLine($"========= {nugetPackageName} v{version} =========");
             AnsiConsole.WriteLine();
-        }
 
-        var files = Args.GetValue(FileOption) ?? [];
-        if (files.Any())
-        {
-            foreach (var file in files)
+            var prerelease = version.Contains('-');
+            var latestVersion = await NugetUtils.GetLatestVersionAsync(
+                nugetPackageName,
+                _cts.Token,
+                prerelease: prerelease
+            );
+            if (latestVersion != null && latestVersion.Version != version)
             {
-                if (!file.Exists)
+                AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
+                AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
+                AnsiConsole.WriteLine();
+            }
+
+            var files = Args.GetValue(FileOption) ?? [];
+            if (files.Any())
+            {
+                foreach (var file in files)
                 {
-                    AnsiConsole.LogError(CliMessage.ConfigFileNotFound, file.FullName);
-                }
-                else
-                {
-                    _configs.Add(file);
+                    if (!file.Exists)
+                    {
+                        AnsiConsole.LogError(CliMessage.ConfigFileNotFound, file.FullName);
+                    }
+                    else
+                    {
+                        _configs.Add(file);
+                    }
                 }
             }
-        }
-        else
-        {
-            _configs = ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory(), configFilePattern).ToList();
-        }
+            else
+            {
+                _configs = ConfigUtils.FindConfigFiles(Directory.GetCurrentDirectory(), configFilePattern).ToList();
+            }
 
-        if (_configs.Count == 0)
+            if (_configs.Count == 0)
+            {
+                AnsiConsole.LogError(CliMessage.NoConfigFileFound);
+                return true;
+            }
+
+            return false;
+        }
+        catch (OperationCanceledException)
         {
-            AnsiConsole.LogError(CliMessage.NoConfigFileFound);
             return true;
         }
-
-        return false;
     }
 
+    /// <inheritdoc cref="IDisposable.Dispose" />
+    public void Dispose()
+    {
+        _cts.Dispose();
+    }
+
+    /// <summary>
+    /// Regarde si on a demandé l'aide ou le numéro de version (--help ou --version).
+    /// </summary>
+    /// <returns>True si c'est le cas.</returns>
     public async Task<bool> IsHelpOrVersionRequested()
     {
         var helpOption = _command.Options.OfType<HelpOption>().Single();
@@ -105,13 +134,17 @@ public class TopModelCommand<TDescription>
         return false;
     }
 
-    public async Task<int> RunConfigs<TConfig, TFileChecker, TWorker>(
-        TFileChecker fileChecker,
-        CancellationToken ct,
-        Action<TWorker>? configurator = null
-    )
+    /// <summary>
+    /// Lance les configs trouvées.
+    /// </summary>
+    /// <typeparam name="TConfig">Type de la config.</typeparam>
+    /// <typeparam name="TFileChecker">Type de désérialiseur / vérificateur de schéma.</typeparam>
+    /// <typeparam name="TWorker">Type du worker associé aux configs.</typeparam>
+    /// <param name="configurator">Configurateur pour le worker.</param>
+    /// <returns>Exit Code.</returns>
+    public async Task<int> RunConfigs<TConfig, TFileChecker, TWorker>(Action<TWorker>? configurator = null)
         where TConfig : ConfigBase
-        where TFileChecker : AbstractFileChecker<TConfig>
+        where TFileChecker : AbstractFileChecker<TConfig>, new()
         where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
     {
         var loggerProvider = new LoggerProvider();
@@ -133,6 +166,8 @@ public class TopModelCommand<TDescription>
 
         IList<ConfigObserver<TConfig, TFileChecker, TWorker>> configObservers = [];
 
+        var fileChecker = new TFileChecker();
+
         for (var i = 0; i < _configs.Count; i++)
         {
             var config = _configs[i];
@@ -146,12 +181,12 @@ public class TopModelCommand<TDescription>
         {
             foreach (var configObserver in configObservers)
             {
-                await configObserver.Start(ct);
+                await configObserver.Start(_cts.Token);
             }
 
             if (watchMode)
             {
-                ct.WaitHandle.WaitOne();
+                _cts.Token.WaitHandle.WaitOne();
             }
 
             if (configObservers.Any(w => w.HasError))
@@ -173,6 +208,10 @@ public class TopModelCommand<TDescription>
             }
 
             return 0;
+        }
+        catch (OperationCanceledException)
+        {
+            return 1;
         }
         finally
         {
