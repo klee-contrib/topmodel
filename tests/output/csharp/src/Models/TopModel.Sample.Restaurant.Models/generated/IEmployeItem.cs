@@ -33,4 +33,9 @@ public interface IEmployeItem
     /// Restaurant où travaille l'employé.
     /// </summary>
     int? RestaurantId { get; set; }
+
+    /// <summary>
+    /// Liste des autres employés.
+    /// </summary>
+    ICollection<IEmployeItem> AutresEmployes { get; set; }
 }

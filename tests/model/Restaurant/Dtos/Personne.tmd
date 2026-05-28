@@ -28,6 +28,10 @@ class:
         include:
           - Matricule
           - Restaurant
+    - composition: EmployeItem
+      name: AutresEmployes
+      domain: DO_LISTE
+      comment: Liste des autres employés
 ---
 class:
   name: EmployeRead

@@ -23,5 +23,8 @@ export const EmployeItemEntity = entity({
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.employe.restaurantId")
+    ),
+    autresEmployes: e.recursiveList(f => f
+        .label("restaurant.employeItem.autresEmployes")
     )
 });

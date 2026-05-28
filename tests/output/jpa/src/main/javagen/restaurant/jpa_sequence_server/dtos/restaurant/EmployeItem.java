@@ -4,6 +4,8 @@
 
 package restaurant.jpa_sequence_server.dtos.restaurant;
 
+import java.util.List;
+
 import jakarta.annotation.Generated;
 
 /**
@@ -38,6 +40,11 @@ public interface EmployeItem {
 	Integer getRestaurantId();
 
 	/**
+	 * Liste des autres employés.
+	 */
+	List<EmployeItem> getAutresEmployes();
+
+	/**
 	 * Identifiant de l'employé.
 	 * @param id value to set.
 	 */
@@ -66,4 +73,10 @@ public interface EmployeItem {
 	 * @param restaurantId value to set.
 	 */
 	void setRestaurantId(Integer restaurantId);
+
+	/**
+	 * Liste des autres employés.
+	 * @param autresEmployes value to set.
+	 */
+	void setAutresEmployes(List<EmployeItem> autresEmployes);
 }

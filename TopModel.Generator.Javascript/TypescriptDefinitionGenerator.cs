@@ -348,17 +348,20 @@ public class TypescriptDefinitionGenerator(
 
                 if (
                     property.Composition != null
-                    && (Config.IsListComposition(property) || type == property.Composition!.NamePascal)
+                    && (
+                        Config.IsListComposition(property) && property.Composition!.Name != classe.Name
+                        || type == property.Composition!.NamePascal
+                    )
                 )
                 {
-                    fw.Write($"{property.Composition!.NamePascal}Entity");
+                    fw.Write($"{property.Composition!.NamePascal}Entity, ");
                 }
-                else
+                else if (!Config.IsListComposition(property))
                 {
-                    fw.Write(property.Domain!.Name);
+                    fw.Write($"{property.Domain!.Name}, ");
                 }
 
-                fw.Write(", f => f");
+                fw.Write("f => f");
 
                 if (
                     property.Composition == null && type != Config.GetImplementation(property.Domain)?.Type

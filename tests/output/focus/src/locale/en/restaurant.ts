@@ -74,6 +74,7 @@ export const restaurant = {
         telephone: "Telephone"
     },
     employeItem: {
+        autresEmployes: "AutresEmployes",
         id: "Id",
         nom: "Nom",
         prenom: "Prenom"
