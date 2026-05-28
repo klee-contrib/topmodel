@@ -1,5 +1,9 @@
 # Changelog Javascript
 
+## 4.2.3
+
+- [`5d0b5ce`](https://github.com/klee-contrib/topmodel/commit/5d0b5ce0e4fe60ca22ff13efbfcc5856651a0b66) - [JS] Fix génération liste récursive en mode focus
+
 ## 4.2.2
 
 - [`6917bf`](https://github.com/klee-contrib/topmodel/commit/6917bf9abfeddccf949f2482ab5a16c4a24c6f29) - Trie des valeurs selon la defaultProperty ou la orderProperty
