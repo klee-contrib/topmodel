@@ -440,6 +440,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
     {
         var configFilePath = Config.GetDataFlowConfigFilePath(module);
         var packageName = Config.ResolveVariables(Config.DataFlowsPath!, module: module).ToPackageName();
+        flows = flows.OrderBy(f => f.Name);
         using var fw = this.OpenJavaWriter(configFilePath, packageName);
         fw.AddImports(
             [
