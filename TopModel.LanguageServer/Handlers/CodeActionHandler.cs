@@ -27,17 +27,17 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         CancellationToken cancellationToken
     )
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = ModelStore.Files.SingleOrDefault(f =>
+        var modelFile = ModelStore?.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
             if (
-                modelFile.Uses.Except(ModelStore.GetUselessImports(modelFile)).Any()
-                || ModelStore.GetUselessImports(modelFile).Any()
+                modelFile.Uses.Except(ModelStore!.GetUselessImports(modelFile)).Any()
+                || ModelStore!.GetUselessImports(modelFile).Any()
             )
             {
                 codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
@@ -74,7 +74,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
                         break;
                     case ErrorType.TMD9008:
-                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(diagnostic, modelFile));
                         break;
                     default:
                         break;
@@ -199,7 +199,7 @@ class:
         var line = text[diagnostic.Range.Start.Line];
         var domainName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
 
-        return ModelStore
+        return ModelStore!
             .Files.Where(f => f.Domains.Count > 0)
             .Select(f =>
             {
@@ -300,7 +300,7 @@ domain:
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore
+        return ModelStore!
             .Annotations.Where(c => c.Name == decoratorName)
             .Select(annotationToImport =>
                 GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex)
@@ -314,7 +314,7 @@ domain:
     )
     {
         var (className, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore
+        return ModelStore!
             .Classes.Where(c => c.Name == className)
             .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
     }
@@ -326,7 +326,7 @@ domain:
     )
     {
         var (dataFlowName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore
+        return ModelStore!
             .DataFlows.Where(c => c.Name == dataFlowName)
             .Select(decoratorToImport =>
                 GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
@@ -340,7 +340,7 @@ domain:
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore
+        return ModelStore!
             .Decorators.Where(c => c.Name == decoratorName)
             .Select(decoratorToImport =>
                 GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
@@ -354,7 +354,7 @@ domain:
     )
     {
         var (endpointName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore
+        return ModelStore!
             .Endpoints.Where(c => c.Name == endpointName)
             .Select(endpointToImport =>
                 GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex)
@@ -362,7 +362,6 @@ domain:
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingWithReverseImport(
-        CodeActionParams request,
         Diagnostic diagnostic,
         ModelFile modelFile
     )
@@ -378,7 +377,7 @@ domain:
         var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
-        return ModelStore
+        return ModelStore!
             .Classes.Where(c => c.Name == className)
             .Select(targetClass =>
                 GetFileImportAction(diagnostic, targetClass.ModelFile, modelFile, useIndex, reverse: true)
@@ -387,14 +386,14 @@ domain:
 
     protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
-        var uses = modelFile.Uses.Except(ModelStore.GetUselessImports(modelFile));
+        var uses = modelFile.Uses.Except(ModelStore!.GetUselessImports(modelFile));
         var start = modelFile.Uses[0].ToRange()!.Start;
         var end = modelFile.Uses[^1].ToRange()!.End;
         if (!uses.Any())
         {
             var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath()).ToList();
             start = new Position(fileText.FindIndex(line => line.StartsWith("uses")), 0);
-            end.Line = end.Line + 1;
+            end.Line++;
             end.Character = 0;
             return new CodeAction()
             {

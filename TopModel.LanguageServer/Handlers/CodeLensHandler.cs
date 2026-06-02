@@ -18,9 +18,9 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
 
     public override async Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore?.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
@@ -31,7 +31,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                         Range = clazz.GetLocation().ToRange()!,
                         Command = new Command()
                         {
-                            Title = $"{ModelStore.GetClassReferences(clazz).Count()} references",
+                            Title = $"{ModelStore!.GetClassReferences(clazz).Count()} references",
                             Name = "topmodel.findRef",
                             Arguments = [clazz.GetLocation()!.Start.Line - 1],
                         },
@@ -42,7 +42,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                             Range = annotation.GetLocation().ToRange()!,
                             Command = new Command()
                             {
-                                Title = $"{ModelStore.GetAnnotationReferences(annotation).Count()} references",
+                                Title = $"{ModelStore!.GetAnnotationReferences(annotation).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [annotation.GetLocation()!.Start.Line - 1],
                             },
@@ -54,7 +54,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                             Range = domain.GetLocation().ToRange()!,
                             Command = new Command()
                             {
-                                Title = $"{ModelStore.GetDomainReferences(domain).Count()} references",
+                                Title = $"{ModelStore!.GetDomainReferences(domain).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [domain.GetLocation()!.Start.Line - 1],
                             },
@@ -66,7 +66,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                                 Range = decorator.GetLocation().ToRange()!,
                                 Command = new Command()
                                 {
-                                    Title = $"{ModelStore.GetDecoratorReferences(decorator).Count()} references",
+                                    Title = $"{ModelStore!.GetDecoratorReferences(decorator).Count()} references",
                                     Name = "topmodel.findRef",
                                     Arguments = [decorator.GetLocation()!.Start.Line - 1],
                                 },
@@ -77,7 +77,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                                     Range = dataFlow.GetLocation().ToRange()!,
                                     Command = new Command()
                                     {
-                                        Title = $"{ModelStore.GetDataFlowReferences(dataFlow).Count()} references",
+                                        Title = $"{ModelStore!.GetDataFlowReferences(dataFlow).Count()} references",
                                         Name = "topmodel.findRef",
                                         Arguments = [dataFlow.GetLocation()!.Start.Line - 1],
                                     },
@@ -90,7 +90,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                             Range = endpoint.GetLocation().ToRange()!,
                             Command = new()
                             {
-                                Title = $"{ModelStore.GetEndpointReferences(endpoint).Count()} references",
+                                Title = $"{ModelStore!.GetEndpointReferences(endpoint).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [endpoint.GetLocation()!.Start.Line - 1],
                             },

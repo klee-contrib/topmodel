@@ -1,16 +1,12 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer.Handlers;
 
-public class SemanticTokensHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : SemanticTokensHandlerBase
+public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHandlerBase
 {
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
         SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities
@@ -43,22 +39,27 @@ public class SemanticTokensHandler(LSWorkerStore workerStore, ILanguageServerFac
         CancellationToken cancellationToken
     )
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath()
-        );
-        if (file != null)
+        var files = workerStore.GetFiles(identifier.TextDocument);
+
+        if (files.Any())
         {
-            foreach (var reference in file.Uses)
+            foreach (var reference in files.First().File.Uses)
             {
-                if (ModelStore.Files.Any(f => f.Name == reference.ReferenceName))
+                if (files.All(f => f.Store.Files.Any(f => f.Name == reference.ReferenceName)))
                 {
                     builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
                 }
             }
 
-            foreach (var reference in file.References.Keys.OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column))
+            foreach (
+                var reference in files
+                    .SelectMany(f => f.File.References.Keys)
+                    .DistinctBy(k => new { k.Start, k.End })
+                    .OrderBy(r => r.Start.Line)
+                    .ThenBy(r => r.Start.Column)
+            )
             {
                 var type = reference switch
                 {

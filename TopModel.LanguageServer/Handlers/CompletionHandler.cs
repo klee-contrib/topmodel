@@ -40,7 +40,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
     public override async Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
         var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
@@ -50,7 +50,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             return new();
         }
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore?.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file == null || currentLine == string.Empty)
@@ -338,7 +338,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     private CompletionList CompleteAnnotation(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableAnnotations = new HashSet<Annotation>(ModelStore.GetAvailableAnnotations(file));
+        var availableAnnotations = new HashSet<Annotation>(ModelStore!.GetAvailableAnnotations(file));
 
         return new(
             ModelStore
@@ -380,7 +380,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableClasses = new HashSet<Class>(ModelStore.GetAvailableClasses(file));
+        var availableClasses = new HashSet<Class>(ModelStore!.GetAvailableClasses(file));
 
         return new(
             ModelStore
@@ -421,7 +421,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDataFlows = new HashSet<DataFlow>(ModelStore.GetAvailableDataFlows(file));
+        var availableDataFlows = new HashSet<DataFlow>(ModelStore!.GetAvailableDataFlows(file));
 
         return new(
             ModelStore
@@ -462,7 +462,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDecorators = new HashSet<Decorator>(ModelStore.GetAvailableDecorators(file));
+        var availableDecorators = new HashSet<Decorator>(ModelStore!.GetAvailableDecorators(file));
 
         return new(
             ModelStore
@@ -505,7 +505,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore
+            ModelStore!
                 .Domains.Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                 .OrderBy(domain => domain.Key)
                 .Select(domain => new CompletionItem
@@ -522,7 +522,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     private CompletionList CompleteEndpoint(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableEndpoints = new HashSet<Endpoint>(ModelStore.GetAvailableEndpoints(file));
+        var availableEndpoints = new HashSet<Endpoint>(ModelStore!.GetAvailableEndpoints(file));
 
         return new(
             ModelStore
@@ -564,7 +564,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore
+            ModelStore!
                 .Files.Select(f => f.Name)
                 .Except(file.Uses.Select(u => u.ReferenceName))
                 .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
@@ -621,7 +621,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedClasses = ModelStore.GetReferencedClasses(file);
+            var referencedClasses = ModelStore!.GetReferencedClasses(file);
             if (referencedClasses.TryGetValue(className, out var referencedClass))
             {
                 return CompleteProperty(request, referencedClass, includeExtends: false);
@@ -636,7 +636,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedEndpoints = ModelStore.GetReferencedEndpoints(file);
+            var referencedEndpoints = ModelStore!.GetReferencedEndpoints(file);
             if (referencedEndpoints.TryGetValue(endpointName, out var referencedEndpoint))
             {
                 return CompleteProperty(request, referencedEndpoint, includeExtends: false);
@@ -651,7 +651,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedDecorators = ModelStore.GetReferencedDecorators(file);
+            var referencedDecorators = ModelStore!.GetReferencedDecorators(file);
             if (referencedDecorators.TryGetValue(decoratorName, out var referencedDecorator))
             {
                 return CompleteProperty(request, referencedDecorator, includeExtends: false);
@@ -728,7 +728,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                                 .Trim();
                         }
 
-                        var referencedClasses = ModelStore.GetReferencedClasses(file);
+                        var referencedClasses = ModelStore!.GetReferencedClasses(file);
                         if (referencedClasses.TryGetValue(className, out var aliasedClass))
                         {
                             classe = aliasedClass;
@@ -785,7 +785,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore
+            ModelStore!
                 .Files.SelectMany(f => f.Tags)
                 .Distinct()
                 .Where(t => !file.Tags.Contains(t) && t.ShouldMatch(searchText))

@@ -18,9 +18,9 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         CancellationToken cancellationToken
     )
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore?.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
@@ -70,7 +70,7 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
             if (matchedUse != null)
             {
-                var usedFile = ModelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+                var usedFile = ModelStore!.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
                 if (usedFile != null)
                 {
                     return new(

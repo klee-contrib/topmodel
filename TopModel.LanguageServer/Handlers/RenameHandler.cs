@@ -2,53 +2,56 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer.Handlers;
 
 public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : RenameHandlerBase
 {
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
-        if (file != null)
+        var files = workerStore.GetFiles(request.TextDocument);
+
+        if (!files.Any())
         {
-            var references = ModelStore.GetReferencesForPositionInFile(request.Position, file, includeTransitive: true);
-            if (
-                references != null
-                && references.All(r =>
-                    r.Reference.ReferenceName == references.Objet.GetName()
-                    || r.Reference is ClassReference
-                    || r.Reference is EndpointReference
-                )
+            return null;
+        }
+
+        var allReferences = files.Select(f =>
+            f.Store.GetReferencesForPositionInFile(request.Position, f.File, includeTransitive: true)
+        );
+        var objetName = allReferences.First().Objet.GetName();
+        var references = allReferences.SelectMany(r => r);
+        if (
+            references.All(r =>
+                r.Reference.ReferenceName == objetName
+                || r.Reference is ClassReference
+                || r.Reference is EndpointReference
             )
+        )
+        {
+            return new WorkspaceEdit
             {
-                return new WorkspaceEdit
-                {
-                    Changes = references
-                        .Where(r => r.Reference.ReferenceName == references.Objet.GetName())
-                        .Select(r => new Location
-                        {
-                            Uri = new Uri(facade.GetFilePath(r.File)),
-                            Range = r.Reference.ToRange()!,
-                        })
-                        .Select(c => new
-                        {
-                            c.Uri,
-                            TextEdit = new TextEdit { NewText = request.NewName, Range = c.Range },
-                        })
-                        .GroupBy(t => t.Uri, t => t)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit)),
-                };
-            }
+                Changes = references
+                    .Where(r => r.Reference.ReferenceName == objetName)
+                    .Select(r => new Location
+                    {
+                        Uri = new Uri(facade.GetFilePath(r.File)),
+                        Range = r.Reference.ToRange()!,
+                    })
+                    .DistinctBy(r => new
+                    {
+                        r.Uri.Path,
+                        r.Range.Start.Line,
+                        r.Range.Start.Character,
+                    })
+                    .Select(c => new { c.Uri, TextEdit = new TextEdit { NewText = request.NewName, Range = c.Range } })
+                    .GroupBy(t => t.Uri, t => t)
+                    .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit)),
+            };
         }
 
         return null;
