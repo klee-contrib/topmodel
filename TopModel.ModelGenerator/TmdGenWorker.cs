@@ -11,25 +11,16 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 {
     private readonly Dictionary<string, string> _passwords = [];
 
-#nullable disable
-
-    private IServiceCollection _services;
-
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public override void Dispose() { }
-
-#nullable enable
-
     public override void Init()
     {
-        _services = new ServiceCollection()
+        Services
             .AddLogging(builder => builder.AddProvider(LoggerProvider))
             .AddSingleton<IFileWriterProvider>(new GeneratedFileWriterProvider(Config));
 
         foreach (var conf in Config.OpenApi)
         {
             ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
-            _services.AddSingleton<TmdGenerator>(p => new OpenApiTmdGenerator(
+            Services.AddSingleton<TmdGenerator>(p => new OpenApiTmdGenerator(
                 p.GetRequiredService<ILogger<OpenApiTmdGenerator>>(),
                 conf,
                 p.GetRequiredService<IFileWriterProvider>()
@@ -46,7 +37,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
             if (conf.Source.DbType == DbType.ORACLE)
             {
-                _services.AddSingleton<TmdGenerator>(p => new DatabaseOraTmdGenerator(
+                Services.AddSingleton<TmdGenerator>(p => new DatabaseOraTmdGenerator(
                     p.GetRequiredService<ILogger<DatabaseOraTmdGenerator>>(),
                     conf,
                     p.GetRequiredService<IFileWriterProvider>()
@@ -60,7 +51,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             }
             else if (conf.Source.DbType == DbType.POSTGRESQL)
             {
-                _services.AddSingleton<TmdGenerator>(p => new DatabasePgTmdGenerator(
+                Services.AddSingleton<TmdGenerator>(p => new DatabasePgTmdGenerator(
                     p.GetRequiredService<ILogger<DatabasePgTmdGenerator>>(),
                     conf,
                     p.GetRequiredService<IFileWriterProvider>()
@@ -74,7 +65,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             }
             else if (conf.Source.DbType == DbType.MYSQL)
             {
-                _services.AddSingleton<TmdGenerator>(p => new DatabaseMySqlTmdGenerator(
+                Services.AddSingleton<TmdGenerator>(p => new DatabaseMySqlTmdGenerator(
                     p.GetRequiredService<ILogger<DatabaseMySqlTmdGenerator>>(),
                     conf,
                     p.GetRequiredService<IFileWriterProvider>()
@@ -88,7 +79,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             }
             else if (conf.Source.DbType == DbType.MSSQL)
             {
-                _services.AddSingleton<TmdGenerator>(p => new DatabaseMsSqlTmdGenerator(
+                Services.AddSingleton<TmdGenerator>(p => new DatabaseMsSqlTmdGenerator(
                     p.GetRequiredService<ILogger<DatabaseMsSqlTmdGenerator>>(),
                     conf,
                     p.GetRequiredService<IFileWriterProvider>()
@@ -105,12 +96,10 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 
     public override async Task Run(CancellationToken cancellationToken)
     {
-        await using var provider = _services.BuildServiceProvider();
-
-        var mainLogger = provider.GetRequiredService<ILogger<TmdGenerator>>();
+        var mainLogger = ServiceProvider.GetRequiredService<ILogger<TmdGenerator>>();
         using var scope = mainLogger.BeginScope(StoreConfig);
 
-        var generators = provider.GetRequiredService<IEnumerable<TmdGenerator>>();
+        var generators = ServiceProvider.GetRequiredService<IEnumerable<TmdGenerator>>();
 
         mainLogger.LogInformation(string.Empty);
         mainLogger.LogInformation(

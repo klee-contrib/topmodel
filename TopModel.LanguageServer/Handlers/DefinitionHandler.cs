@@ -6,20 +6,21 @@ using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : DefinitionHandlerBase
+public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : DefinitionHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<LocationOrLocationLinks?> Handle(
         DefinitionParams request,
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
@@ -69,7 +70,7 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
 
             if (matchedUse != null)
             {
-                var usedFile = modelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+                var usedFile = ModelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
                 if (usedFile != null)
                 {
                     return new(
@@ -98,6 +99,6 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
         ClientCapabilities clientCapabilities
     )
     {
-        return new DefinitionRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new DefinitionRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 }

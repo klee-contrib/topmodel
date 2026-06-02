@@ -1,60 +1,34 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Server;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.LanguageServer;
+using TopModel.LanguageServer.Handlers;
+using TopModel.Utils.Cli;
 
-var server = await LanguageServer.From(options =>
+var fixedArgs = !args.Contains("-w") && !args.Contains("--watch") ? args.Concat(["-w"]) : args;
+
+using var command = new TopModelCommand<CliMessage>("TopModel LS", fixedArgs);
+
+if (
+    await command.CheckVersionAndFindConfigs(
+        "TopModel.LanguageServer",
+        new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$")
+    )
+)
+{
+    return 1;
+}
+
+using var server = await LanguageServer.From(options =>
     options
         .WithInput(Console.OpenStandardInput())
         .WithOutput(Console.OpenStandardOutput())
         .ConfigureLogging(logging => logging.AddLanguageProtocolLogging().SetMinimumLevel(LogLevel.Information))
-        .WithServices(services =>
-        {
-            var fileChecker = new FileChecker();
-            var file = new FileInfo(args.Length > 0 ? args[0] : "topmodel.config");
-            using var text = file.OpenText();
-            var config = fileChecker.DeserializeConfig(text.ReadToEnd()).Init(file.DirectoryName!);
-
-            foreach (var (configName, genConfigMaps) in config.Generators)
-            {
-                for (var j = 0; j < genConfigMaps.Count(); j++)
-                {
-                    var genConfigMap = genConfigMaps.ElementAt(j);
-                    var number = j + 1;
-
-                    var genConfig = fileChecker.GetWatcherConfigBase(genConfigMap);
-                    genConfig.InitVariables(config.App, number);
-                    genConfig.Name ??= $"{configName}@{number}";
-                    try
-                    {
-                        config.Configs.Add(genConfig.Name, genConfig);
-                    }
-                    catch (ArgumentException)
-                    {
-                        // On ignore l'erreur, tant pis si le nom est déjà utilisé.
-                    }
-
-                    foreach (var referencedTag in genConfig.ReferencedTags)
-                    {
-                        if (config.Configs.TryGetValue(referencedTag.Value, out var referencedConfig))
-                        {
-                            genConfig.ReferencedTagConfigs.Add(referencedTag.Key, referencedConfig);
-                        }
-                        else
-                        {
-                            // On ignore l'erreur, tant pis pour la configuration manquante.
-                        }
-                    }
-                }
-            }
-
-            services
-                .AddModelStore(fileChecker, config)
-                .AddSingleton<IModelWatcher, ModelWatcher>()
-                .AddSingleton<ModelFileCache>();
-        })
+        .WithServices(services => services.AddSingleton<ModelFileCache>().AddSingleton<LSWorkerStore>())
         .WithHandler<TextDocumentSyncHandler>()
         .WithHandler<HoverHandler>()
         .WithHandler<SemanticTokensHandler>()
@@ -69,14 +43,20 @@ var server = await LanguageServer.From(options =>
         .WithHandler<DocumentLinkHandler>()
         .AddHandler<MermaidHandler>("mermaid")
         .OnInitialize(
-            async (server, _, __) =>
+            async (provider, _, _) =>
             {
-                var modelStore = server.Services.GetRequiredService<ModelStore>();
-                modelStore.KeepFileErrorsInReferenceResolution = true;
-                await modelStore.LoadFromConfig(watch: true, ct: __);
+                var workerStore = provider.GetRequiredService<LSWorkerStore>();
+                await command.RunConfigs<ModelConfig, FileChecker, LSWorker>(
+                    worker =>
+                    {
+                        worker.Services.AddSingleton(provider.GetRequiredService<ILanguageServerFacade>());
+                        workerStore.AddWorker(worker);
+                    },
+                    worker => workerStore.RemoveWorker(worker)
+                );
             }
         )
 );
 
 await server.WaitForExit;
-server.Dispose();
+return 0;

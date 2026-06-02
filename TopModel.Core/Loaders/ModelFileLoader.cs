@@ -24,7 +24,13 @@ public class ModelFileLoader(
 )
 {
     private static Dictionary<
-        (string App, string ModelRoot, bool PluralizeTableNames, bool UseLegacyRoleNames),
+        (
+            string App,
+            string ModelRoot,
+            bool DefaultAssociationUseClass,
+            bool PluralizeTableNames,
+            bool UseLegacyRoleNames
+        ),
         Dictionary<string, ModelFile>
     > GlobalCache { get; } = [];
 
@@ -48,7 +54,13 @@ public class ModelFileLoader(
     {
         get
         {
-            var key = (config.App, config.ModelRoot, config.PluralizeTableNames, config.UseLegacyRoleNames);
+            var key = (
+                config.App,
+                config.ModelRoot,
+                config.DefaultAssociationUseClass,
+                config.PluralizeTableNames,
+                config.UseLegacyRoleNames
+            );
 
             if (!GlobalCache.TryGetValue(key, out var cache))
             {

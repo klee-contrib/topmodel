@@ -6,14 +6,10 @@ using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class CompletionHandler(
-    ModelStore modelStore,
-    ILanguageServerFacade facade,
-    ModelFileCache fileCache,
-    ModelConfig config
-) : CompletionHandlerBase
+public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade, ModelFileCache fileCache)
+    : CompletionHandlerBase
 {
     private static readonly char[] Separators =
     [
@@ -35,6 +31,8 @@ public class CompletionHandler(
         '"',
     ];
 
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     public override Task<CompletionItem> Handle(CompletionItem request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -42,7 +40,7 @@ public class CompletionHandler(
 
     public override async Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
         var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
@@ -52,7 +50,7 @@ public class CompletionHandler(
             return new();
         }
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file == null || currentLine == string.Empty)
@@ -129,7 +127,7 @@ public class CompletionHandler(
         ClientCapabilities clientCapabilities
     )
     {
-        return new CompletionRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new CompletionRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 
     private static (string Key, int Line, int End, bool IsKey) GetCurrentKey(string[] text, int line, int position)
@@ -340,10 +338,10 @@ public class CompletionHandler(
     private CompletionList CompleteAnnotation(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableAnnotations = new HashSet<Annotation>(modelStore.GetAvailableAnnotations(file));
+        var availableAnnotations = new HashSet<Annotation>(ModelStore.GetAvailableAnnotations(file));
 
         return new(
-            modelStore
+            ModelStore
                 .Annotations.Where(annotation => annotation.Name.ToLower().ShouldMatch(searchText))
                 .OrderBy(annotation => annotation.Name)
                 .Select(annotation => new CompletionItem
@@ -382,10 +380,10 @@ public class CompletionHandler(
     private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableClasses = new HashSet<Class>(modelStore.GetAvailableClasses(file));
+        var availableClasses = new HashSet<Class>(ModelStore.GetAvailableClasses(file));
 
         return new(
-            modelStore
+            ModelStore
                 .Classes.Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
                 .Select(classe => new CompletionItem
                 {
@@ -423,10 +421,10 @@ public class CompletionHandler(
     private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDataFlows = new HashSet<DataFlow>(modelStore.GetAvailableDataFlows(file));
+        var availableDataFlows = new HashSet<DataFlow>(ModelStore.GetAvailableDataFlows(file));
 
         return new(
-            modelStore
+            ModelStore
                 .DataFlows.Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
                 .OrderBy(dataFlow => dataFlow.Name)
                 .Select(dataFlow => new CompletionItem
@@ -464,10 +462,10 @@ public class CompletionHandler(
     private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDecorators = new HashSet<Decorator>(modelStore.GetAvailableDecorators(file));
+        var availableDecorators = new HashSet<Decorator>(ModelStore.GetAvailableDecorators(file));
 
         return new(
-            modelStore
+            ModelStore
                 .Decorators.Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
                 .OrderBy(decorator => decorator.Name)
                 .Select(decorator => new CompletionItem
@@ -507,7 +505,7 @@ public class CompletionHandler(
     {
         var searchText = GetSearchText(request);
         return new(
-            modelStore
+            ModelStore
                 .Domains.Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                 .OrderBy(domain => domain.Key)
                 .Select(domain => new CompletionItem
@@ -524,10 +522,10 @@ public class CompletionHandler(
     private CompletionList CompleteEndpoint(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableEndpoints = new HashSet<Endpoint>(modelStore.GetAvailableEndpoints(file));
+        var availableEndpoints = new HashSet<Endpoint>(ModelStore.GetAvailableEndpoints(file));
 
         return new(
-            modelStore
+            ModelStore
                 .Endpoints.Where(endpoint => endpoint.Name.ToLower().ShouldMatch(searchText))
                 .Select(endpoint => new CompletionItem
                 {
@@ -566,7 +564,7 @@ public class CompletionHandler(
     {
         var searchText = GetSearchText(request);
         return new(
-            modelStore
+            ModelStore
                 .Files.Select(f => f.Name)
                 .Except(file.Uses.Select(u => u.ReferenceName))
                 .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
@@ -623,7 +621,7 @@ public class CompletionHandler(
             )
         )
         {
-            var referencedClasses = modelStore.GetReferencedClasses(file);
+            var referencedClasses = ModelStore.GetReferencedClasses(file);
             if (referencedClasses.TryGetValue(className, out var referencedClass))
             {
                 return CompleteProperty(request, referencedClass, includeExtends: false);
@@ -638,7 +636,7 @@ public class CompletionHandler(
             )
         )
         {
-            var referencedEndpoints = modelStore.GetReferencedEndpoints(file);
+            var referencedEndpoints = ModelStore.GetReferencedEndpoints(file);
             if (referencedEndpoints.TryGetValue(endpointName, out var referencedEndpoint))
             {
                 return CompleteProperty(request, referencedEndpoint, includeExtends: false);
@@ -653,7 +651,7 @@ public class CompletionHandler(
             )
         )
         {
-            var referencedDecorators = modelStore.GetReferencedDecorators(file);
+            var referencedDecorators = ModelStore.GetReferencedDecorators(file);
             if (referencedDecorators.TryGetValue(decoratorName, out var referencedDecorator))
             {
                 return CompleteProperty(request, referencedDecorator, includeExtends: false);
@@ -730,7 +728,7 @@ public class CompletionHandler(
                                 .Trim();
                         }
 
-                        var referencedClasses = modelStore.GetReferencedClasses(file);
+                        var referencedClasses = ModelStore.GetReferencedClasses(file);
                         if (referencedClasses.TryGetValue(className, out var aliasedClass))
                         {
                             classe = aliasedClass;
@@ -787,7 +785,7 @@ public class CompletionHandler(
     {
         var searchText = GetSearchText(request);
         return new(
-            modelStore
+            ModelStore
                 .Files.SelectMany(f => f.Tags)
                 .Distinct()
                 .Where(t => !file.Tags.Contains(t) && t.ShouldMatch(searchText))

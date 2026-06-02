@@ -5,16 +5,18 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.Model;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : HoverHandlerBase
+public class HoverHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : HoverHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
@@ -57,6 +59,6 @@ public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, M
         ClientCapabilities clientCapabilities
     )
     {
-        return new HoverRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new HoverRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 }

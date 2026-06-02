@@ -152,12 +152,12 @@
         "lint": "oxlint src",
         "package": "vsce package",
         "extension-watch": "npm run build-extension -- --sourcemap --watch",
+        "postinstall": "node postinstall.mjs",
         "preview-watch": "esbuild ./src/topmodel-preview.ts --bundle --outfile=out/topmodel-preview.js --platform=browser --format=iife --watch",
         "start": "concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
         "vscode:prepublish": "npm run build"
     },
     "dependencies": {
-        "ajv": "8.20.0",
         "mermaid": "11.15.0",
         "mobx": "6.15.3",
         "open": "11.0.0",

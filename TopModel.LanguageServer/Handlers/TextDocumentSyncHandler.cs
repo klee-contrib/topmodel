@@ -4,12 +4,10 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
-using TopModel.Core;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
-    : TextDocumentSyncHandlerBase
+public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache fileCache) : TextDocumentSyncHandlerBase
 {
     /// <inheritdoc cref="ITextDocumentIdentifier.GetTextDocumentAttributes" />
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
@@ -28,7 +26,7 @@ public class TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileC
         var filePath = request.TextDocument.Uri.GetFileSystemPath();
         var content = request.ContentChanges.Single().Text;
         fileCache.UpdateFile(filePath, content);
-        await modelStore.OnModelFileChange(filePath, content, cancellationToken);
+        await workerStore.OnModelFileChange(filePath, content, cancellationToken);
         return Unit.Value;
     }
 
@@ -49,7 +47,7 @@ public class TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileC
     {
         return new TextDocumentSyncRegistrationOptions
         {
-            DocumentSelector = config.GetDocumentSelector(),
+            DocumentSelector = TextDocumentSelector.TmdFiles,
             Change = TextDocumentSyncKind.Full,
             Save = new SaveOptions { IncludeText = true },
         };

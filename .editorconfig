@@ -137,6 +137,8 @@ dotnet_diagnostic.S6967.severity = none
 
 dotnet_diagnostic.SYSLIB1045.severity = none
 
+dotnet_diagnostic.VSTHRD200.severity = none
+
 # C#
 
 csharp_prefer_braces = true:silent
