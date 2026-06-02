@@ -1,4 +1,5 @@
-﻿using Meziantou.Framework.Globbing;
+﻿using System.Collections.Concurrent;
+using Meziantou.Framework.Globbing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -23,7 +24,7 @@ public class ModelFileLoader(
     DomainLoader domainLoader
 )
 {
-    private static Dictionary<
+    private static ConcurrentDictionary<
         (
             string App,
             string ModelRoot,
@@ -31,10 +32,10 @@ public class ModelFileLoader(
             bool PluralizeTableNames,
             bool UseLegacyRoleNames
         ),
-        Dictionary<string, ModelFile>
+        ConcurrentDictionary<string, ModelFile>
     > GlobalCache { get; } = [];
 
-    private static Dictionary<
+    private static ConcurrentDictionary<
         string,
         (
             FileSystemWatcher FileWatcher,
@@ -50,7 +51,7 @@ public class ModelFileLoader(
         )
     > FileWatchers { get; } = [];
 
-    private Dictionary<string, ModelFile> Cache
+    private ConcurrentDictionary<string, ModelFile> Cache
     {
         get
         {
@@ -100,7 +101,7 @@ public class ModelFileLoader(
 
             if (modelFile != null)
             {
-                Cache.Add(fullPath, modelFile);
+                Cache.TryAdd(fullPath, modelFile);
                 return (fullPath, modelFile, ModelFileStatus.Ok);
             }
             else
@@ -153,7 +154,7 @@ public class ModelFileLoader(
             if (fw.Configs.Count == 0)
             {
                 fw.FileWatcher.Dispose();
-                FileWatchers.Remove(config.ModelRoot);
+                FileWatchers.TryRemove(config.ModelRoot, out _);
             }
         };
     }
@@ -331,6 +332,6 @@ public class ModelFileLoader(
 
     private void RemoveFromCache(string fullPath)
     {
-        Cache.Remove(fullPath.Replace('\\', '/'));
+        Cache.TryRemove(fullPath.Replace('\\', '/'), out _);
     }
 }

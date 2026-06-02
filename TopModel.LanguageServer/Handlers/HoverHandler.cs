@@ -14,7 +14,12 @@ public class HoverHandler(LSWorkerStore workerStore, ILanguageServerFacade facad
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        if (ModelStore == null)
+        {
+            return null;
+        }
+
+        await workerStore.WaitForUpdates(cancellationToken);
 
         var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()

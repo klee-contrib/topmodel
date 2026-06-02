@@ -49,9 +49,10 @@ public static class ModelExtensions
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
-    public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(
+    public static IEnumerable<(Reference Reference, ModelFile File)> GetClassReferences(
         this ModelStore modelStore,
-        Class classe
+        Class classe,
+        bool includeTransitive = false
     )
     {
         return modelStore
@@ -60,18 +61,28 @@ public static class ModelExtensions
                 || p is AssociationProperty ap && ap.Association == classe
                 || p is CompositionProperty cp && cp.Composition == classe
             )
-            .Select(p =>
+            .SelectMany<IProperty, (Reference Reference, ModelFile File)>(p =>
             {
-                return (
-                    Reference: p switch
-                    {
-                        AssociationProperty ap => ap.Reference,
-                        CompositionProperty cp => cp.Reference,
-                        AliasProperty alp => alp.Reference!.ClassReference!,
-                        _ => null!, // Impossible
-                    },
-                    File: p.GetFile()
-                );
+                return
+                [
+                    (
+                        Reference: p switch
+                        {
+                            AssociationProperty ap => ap.Reference,
+                            CompositionProperty cp => cp.Reference,
+                            AliasProperty alp => alp.Reference!.ClassReference!,
+                            _ => null!, // Impossible
+                        },
+                        File: p.GetFile()
+                    ),
+                    .. includeTransitive
+                    && (
+                        p is AssociationProperty { ClassName: null }
+                        || p is AliasProperty a && (a.Prefix == classe.Name || a.Suffix == classe.Name)
+                    )
+                        ? modelStore.GetPropertyReferences(p, includeTransitive)
+                        : [],
+                ];
             })
             .Concat(
                 modelStore
@@ -79,23 +90,23 @@ public static class ModelExtensions
                     .Where(alp => alp.CompositionReference != null && alp.Composition == classe)
                     .Select(p =>
                     {
-                        return (Reference: p.CompositionReference!, File: p.GetFile());
+                        return (Reference: p.CompositionReference! as Reference, File: p.GetFile());
                     })
             )
             .Concat(
                 modelStore
                     .Classes.Where(c => c.Extends == classe)
-                    .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile()))
+                    .Select(c => (Reference: c.ExtendsReference! as Reference, File: c.GetFile()))
             )
             .Concat(
                 modelStore
                     .DataFlows.Where(d => d.Class == classe)
-                    .Select(d => (Reference: d.ClassReference, File: d.GetFile()))
+                    .Select(d => (Reference: d.ClassReference as Reference, File: d.GetFile()))
             )
             .Concat(
                 modelStore.DataFlows.SelectMany(d =>
                     d.Sources.Where(s => s.Class == classe)
-                        .Select(s => (Reference: s.ClassReference, File: d.GetFile()))
+                        .Select(s => (Reference: s.ClassReference as Reference, File: d.GetFile()))
                 )
             )
             .Concat(
@@ -103,7 +114,7 @@ public static class ModelExtensions
                     c.FromMappers.SelectMany(c => c.ClassParams)
                         .Concat(c.ToMappers)
                         .Where(m => m.Class == classe)
-                        .Select(m => (Reference: m.ClassReference, File: c.GetFile()))
+                        .Select(m => (Reference: m.ClassReference as Reference, File: c.GetFile()))
                 )
             )
             .Where(r => r.Reference is not null)

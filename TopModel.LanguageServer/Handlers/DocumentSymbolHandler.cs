@@ -17,9 +17,9 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore, ILanguageServerFac
         CancellationToken cancellationToken
     )
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri);
+        var file = ModelStore?.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri);
         if (file == null)
         {
             return new();

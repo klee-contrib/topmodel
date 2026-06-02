@@ -44,7 +44,7 @@ public static class OmnisharpExtensions
         return (matchedReference, matchedReference != null ? references[matchedReference] : null);
     }
 
-    public static References? GetReferencesForPositionInFile(
+    public static References GetReferencesForPositionInFile(
         this ModelStore modelStore,
         Position position,
         ModelFile file,
@@ -110,7 +110,7 @@ public static class OmnisharpExtensions
                         Class classe =>
                         [
                             (Reference: classe.Name.GetLocation()!, File: classe.GetFile()!),
-                            .. modelStore.GetClassReferences(classe),
+                            .. modelStore.GetClassReferences(classe, includeTransitive),
                         ],
                         Domain domain =>
                         [
