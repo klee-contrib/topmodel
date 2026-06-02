@@ -25,15 +25,14 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     private static readonly ProxyGenerator proxyGenerator = new();
     private readonly IList<ModgenDependency> _deps = [];
     private readonly IList<Type> _generators = [];
-    private readonly IList<IDisposable> _providers = [];
     private readonly Dictionary<string, string> _resolvedConfigKeys = [];
 
 #nullable disable
 
     private IList<CustomModule> _customModules;
+    private IDisposable _logScope;
     private Microsoft.Extensions.Logging.ILogger _logger;
     private string _modgenRoot;
-    private IServiceCollection _services;
     private TopModelLock _topModelLock;
 
 #nullable enable
@@ -52,55 +51,24 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     /// <inheritdoc cref="IDisposable.Dispose" />
     public override void Dispose()
     {
-        foreach (var provider in _providers)
-        {
-            provider.Dispose();
-        }
+        base.Dispose();
+        _logScope?.Dispose();
     }
 
     public override void Init()
     {
         _logger = LoggerProvider.CreateLogger("TopModel.Generator");
-
-        var scope = _logger.BeginScope(StoreConfig);
-        if (scope != null)
-        {
-            _providers.Add(scope);
-        }
+        _logScope = _logger.BeginScope(StoreConfig);
 
         _topModelLock = new TopModelLock(Config, _logger);
         _modgenRoot = Path.GetFullPath(".modgen", Config.ModelRoot);
         InitCustomModules();
-        _services = new ServiceCollection()
+        Services
             .AddTransient(typeof(ILogger<>), typeof(Logger<>))
             .AddTransient<ILoggerFactory, LoggerFactory>()
             .AddSingleton<ILoggerProvider>(LoggerProvider)
             .AddSingleton<IFileWriterProvider>(new GeneratedFileWriterProvider(Config))
             .AddModelStore(FileChecker, Config);
-    }
-
-    public async Task LoadModules(CancellationToken cancellationToken)
-    {
-        if (_deps.Count > 0)
-        {
-            Directory.CreateDirectory(_modgenRoot);
-        }
-
-        foreach (var dep in _deps)
-        {
-            await LoadModule(dep, cancellationToken);
-        }
-
-        _topModelLock.Write();
-        if (_resolvedConfigKeys.Any())
-        {
-            _logger.LogInformation(
-                GeneratorMessage.GeneratorsInUse,
-                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", _resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
-            );
-        }
-
-        CheckDependenciesToUpdate();
     }
 
     public override async Task Run(CancellationToken cancellationToken)
@@ -130,57 +98,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
     }
 
-    public async Task WriteSchema(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
-        var schema = JsonNode
-            .Parse(
-                await File.ReadAllTextAsync(
-                    Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"),
-                    cancellationToken
-                )
-            )!
-            .AsObject();
-
-        schema.Remove("additionalProperties");
-        schema.Add("additionalProperties", value: false);
-
-        foreach (var generator in _generators)
-        {
-            var (configType, configName) = ModuleUtils.GetIGenRegInterfaceAndName(generator);
-
-            var configSchema = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
-            configSchema.Add(
-                "items",
-                JsonNode.Parse(
-                    await File.ReadAllTextAsync(
-                        configType.Assembly.GetFilePath($"{configName}.config.json"),
-                        cancellationToken
-                    )
-                )
-            );
-            schema["properties"]!.AsObject().Add(configName, configSchema);
-        }
-
-        await File.WriteAllTextAsync(
-            ConfigFullName + ".schema.json",
-            schema.Root.ToJsonString(
-                new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }
-            ),
-            cancellationToken
-        );
-        var configFile = await File.ReadAllTextAsync(ConfigFullName, cancellationToken);
-        if (!configFile.StartsWith("# yaml-language-server"))
-        {
-            var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
-            configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
-            await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
-        }
-
-        _logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
-    }
-
-    static async Task<List<PackageDependency>> DownloadMissingDependenciesCascade(
+    private static async Task<List<PackageDependency>> DownloadMissingDependenciesCascade(
         string moduleFolder,
         IEnumerable<PackageDependency> dependencies,
         string framework,
@@ -237,7 +155,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         return installedDependencies;
     }
 
-    static string? GetFolderHash(string path)
+    private static string? GetFolderHash(string path)
     {
         if (!Directory.Exists(path))
         {
@@ -247,7 +165,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         return GetHash(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), path);
     }
 
-    static string? GetHash(IEnumerable<string> f, string path)
+    private static string? GetHash(IEnumerable<string> f, string path)
     {
         var md5 = MD5.Create();
         var files = f.Order().ToList();
@@ -601,6 +519,30 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         )?.Version;
     }
 
+    private async Task LoadModules(CancellationToken cancellationToken)
+    {
+        if (_deps.Count > 0)
+        {
+            Directory.CreateDirectory(_modgenRoot);
+        }
+
+        foreach (var dep in _deps)
+        {
+            await LoadModule(dep, cancellationToken);
+        }
+
+        _topModelLock.Write();
+        if (_resolvedConfigKeys.Any())
+        {
+            _logger.LogInformation(
+                GeneratorMessage.GeneratorsInUse,
+                $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", _resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}"
+            );
+        }
+
+        CheckDependenciesToUpdate();
+    }
+
     private void PrepareConfiguration(CancellationToken cancellationToken)
     {
         foreach (var generator in _generators)
@@ -669,7 +611,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                         }
 
                         var instance = Activator.CreateInstance(generator);
-                        instance!.GetType().GetMethod("Register")!.Invoke(instance, [_services, genConfig, number]);
+                        instance!.GetType().GetMethod("Register")!.Invoke(instance, [Services, genConfig, number]);
                     }
                     catch (LegitException me)
                     {
@@ -704,10 +646,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
     private async Task RunGeneration(CancellationToken cancellationToken)
     {
-        var provider = _services.BuildServiceProvider();
-        _providers.Add(provider);
-
-        modelStore = provider.GetRequiredService<ModelStore>();
+        modelStore = ServiceProvider.GetRequiredService<ModelStore>();
         modelStore.DisableLockfile = ExcludedTags.Any();
         modelStore.OnResolve += he =>
         {
@@ -715,5 +654,55 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         };
 
         await modelStore.LoadFromConfig(WatchMode, _topModelLock, StoreConfig, cancellationToken);
+    }
+
+    private async Task WriteSchema(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
+        var schema = JsonNode
+            .Parse(
+                await File.ReadAllTextAsync(
+                    Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"),
+                    cancellationToken
+                )
+            )!
+            .AsObject();
+
+        schema.Remove("additionalProperties");
+        schema.Add("additionalProperties", value: false);
+
+        foreach (var generator in _generators)
+        {
+            var (configType, configName) = ModuleUtils.GetIGenRegInterfaceAndName(generator);
+
+            var configSchema = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
+            configSchema.Add(
+                "items",
+                JsonNode.Parse(
+                    await File.ReadAllTextAsync(
+                        configType.Assembly.GetFilePath($"{configName}.config.json"),
+                        cancellationToken
+                    )
+                )
+            );
+            schema["properties"]!.AsObject().Add(configName, configSchema);
+        }
+
+        await File.WriteAllTextAsync(
+            ConfigFullName + ".schema.json",
+            schema.Root.ToJsonString(
+                new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }
+            ),
+            cancellationToken
+        );
+        var configFile = await File.ReadAllTextAsync(ConfigFullName, cancellationToken);
+        if (!configFile.StartsWith("# yaml-language-server"))
+        {
+            var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
+            configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
+            await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
+        }
+
+        _logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
     }
 }

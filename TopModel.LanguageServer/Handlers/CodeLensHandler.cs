@@ -5,11 +5,12 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.Utils;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : CodeLensHandlerBase
+public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : CodeLensHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -17,9 +18,9 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
 
     public override async Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
@@ -30,7 +31,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                         Range = clazz.GetLocation().ToRange()!,
                         Command = new Command()
                         {
-                            Title = $"{modelStore.GetClassReferences(clazz).Count()} references",
+                            Title = $"{ModelStore.GetClassReferences(clazz).Count()} references",
                             Name = "topmodel.findRef",
                             Arguments = [clazz.GetLocation()!.Start.Line - 1],
                         },
@@ -41,7 +42,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                             Range = annotation.GetLocation().ToRange()!,
                             Command = new Command()
                             {
-                                Title = $"{modelStore.GetAnnotationReferences(annotation).Count()} references",
+                                Title = $"{ModelStore.GetAnnotationReferences(annotation).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [annotation.GetLocation()!.Start.Line - 1],
                             },
@@ -53,7 +54,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                             Range = domain.GetLocation().ToRange()!,
                             Command = new Command()
                             {
-                                Title = $"{modelStore.GetDomainReferences(domain).Count()} references",
+                                Title = $"{ModelStore.GetDomainReferences(domain).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [domain.GetLocation()!.Start.Line - 1],
                             },
@@ -65,7 +66,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                                 Range = decorator.GetLocation().ToRange()!,
                                 Command = new Command()
                                 {
-                                    Title = $"{modelStore.GetDecoratorReferences(decorator).Count()} references",
+                                    Title = $"{ModelStore.GetDecoratorReferences(decorator).Count()} references",
                                     Name = "topmodel.findRef",
                                     Arguments = [decorator.GetLocation()!.Start.Line - 1],
                                 },
@@ -76,7 +77,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                                     Range = dataFlow.GetLocation().ToRange()!,
                                     Command = new Command()
                                     {
-                                        Title = $"{modelStore.GetDataFlowReferences(dataFlow).Count()} references",
+                                        Title = $"{ModelStore.GetDataFlowReferences(dataFlow).Count()} references",
                                         Name = "topmodel.findRef",
                                         Arguments = [dataFlow.GetLocation()!.Start.Line - 1],
                                     },
@@ -89,7 +90,7 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                             Range = endpoint.GetLocation().ToRange()!,
                             Command = new()
                             {
-                                Title = $"{modelStore.GetEndpointReferences(endpoint).Count()} references",
+                                Title = $"{ModelStore.GetEndpointReferences(endpoint).Count()} references",
                                 Name = "topmodel.findRef",
                                 Arguments = [endpoint.GetLocation()!.Start.Line - 1],
                             },
@@ -106,6 +107,6 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
         ClientCapabilities clientCapabilities
     )
     {
-        return new CodeLensRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new CodeLensRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 }

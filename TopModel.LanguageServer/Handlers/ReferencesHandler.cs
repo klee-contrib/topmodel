@@ -4,22 +4,23 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class ReferencesHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : ReferencesHandlerBase
+public class ReferencesHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : ReferencesHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<LocationContainer?> Handle(ReferenceParams request, CancellationToken cancellationToken)
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
         {
-            var references = modelStore.GetReferencesForPositionInFile(request.Position, file);
+            var references = ModelStore.GetReferencesForPositionInFile(request.Position, file);
             if (references != null)
             {
                 return new(
@@ -40,6 +41,6 @@ public class ReferencesHandler(ModelStore modelStore, ILanguageServerFacade faca
         ClientCapabilities clientCapabilities
     )
     {
-        return new ReferenceRegistrationOptions() { DocumentSelector = config.GetDocumentSelector() };
+        return new ReferenceRegistrationOptions() { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 }

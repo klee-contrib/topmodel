@@ -9,7 +9,8 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     TFileChecker fileChecker,
     LoggerProvider loggerProvider,
     int configIndex,
-    Action<TWorker>? configurator = null
+    Action<TWorker>? configurator = null,
+    Action<TWorker>? onDispose = null
 ) : IDisposable
     where TConfig : ConfigBase
     where TFileChecker : AbstractFileChecker<TConfig>
@@ -23,11 +24,17 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
 
     public bool HasError => Worker?.HasError ?? true;
 
+    public bool NoLog { get; set; }
+
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
         ctsWorker?.Dispose();
-        Worker?.Dispose();
+        if (Worker != null)
+        {
+            onDispose?.Invoke(Worker);
+            Worker.Dispose();
+        }
         ConfigWatcher?.Dispose();
         fsCache.Dispose();
     }
@@ -52,10 +59,15 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         if (Worker != null)
         {
             await Worker.WaitForFinished(cancellationToken);
+            onDispose?.Invoke(Worker);
+            Worker.Dispose();
         }
 
-        AnsiConsole.WriteLine();
-        AnsiConsole.LogConfig(configInfo.FullName, configIndex, changed: true);
+        if (!NoLog)
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.LogConfig(configInfo.FullName, configIndex, changed: true);
+        }
 
         await Run(cancellationToken);
     }
@@ -73,7 +85,6 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
                 var config = fileChecker
                     .DeserializeConfig(await text.ReadToEndAsync(ctsWorker.Token))
                     .Init(configInfo.DirectoryName!);
-                Worker?.Dispose();
                 Worker = new TWorker
                 {
                     Config = (TConfig)config,
@@ -91,7 +102,10 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         }
         catch (LegitException me)
         {
-            AnsiConsole.WriteLine($"[red]{me.Message}[/]");
+            if (!NoLog)
+            {
+                AnsiConsole.WriteLine($"[red]{me.Message}[/]");
+            }
         }
         catch (OperationCanceledException)
         {

@@ -5,19 +5,22 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 using TopModel.Core.Utils;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade) : WorkspaceSymbolsHandlerBase
+public class WorkspaceSymbolHandler(LSWorkerStore workerStore, ILanguageServerFacade facade)
+    : WorkspaceSymbolsHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Container<WorkspaceSymbol>?> Handle(
         WorkspaceSymbolParams request,
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        return modelStore
+        return ModelStore
             .Classes.Select(c =>
             {
                 return new WorkspaceSymbol
@@ -32,7 +35,7 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                 };
             })
             .Concat(
-                modelStore
+                ModelStore
                     .Files.Where(e => e.Endpoints.Count > 0)
                     .SelectMany(f => f.Endpoints)
                     .Select(e =>
@@ -50,7 +53,7 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                     })
             )
             .Concat(
-                modelStore.Domains.Select(d =>
+                ModelStore.Domains.Select(d =>
                 {
                     return new WorkspaceSymbol
                     {
@@ -65,7 +68,7 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                 })
             )
             .Concat(
-                modelStore.Annotations.Select(d =>
+                ModelStore.Annotations.Select(d =>
                 {
                     return new WorkspaceSymbol
                     {
@@ -80,7 +83,7 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                 })
             )
             .Concat(
-                modelStore.Decorators.Select(d =>
+                ModelStore.Decorators.Select(d =>
                 {
                     return new WorkspaceSymbol
                     {
@@ -95,7 +98,7 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                 })
             )
             .Concat(
-                modelStore.DataFlows.Select(d =>
+                ModelStore.DataFlows.Select(d =>
                 {
                     return new WorkspaceSymbol
                     {

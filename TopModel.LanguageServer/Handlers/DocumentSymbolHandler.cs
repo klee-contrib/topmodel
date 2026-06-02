@@ -5,20 +5,21 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.Utils;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : DocumentSymbolHandlerBase
+public class DocumentSymbolHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : DocumentSymbolHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<SymbolInformationOrDocumentSymbolContainer?> Handle(
         DocumentSymbolParams request,
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri);
+        var file = ModelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri);
         if (file == null)
         {
             return new();
@@ -145,6 +146,6 @@ public class DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade 
         ClientCapabilities clientCapabilities
     )
     {
-        return new DocumentSymbolRegistrationOptions { DocumentSelector = config.GetDocumentSelector() };
+        return new DocumentSymbolRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
     }
 }

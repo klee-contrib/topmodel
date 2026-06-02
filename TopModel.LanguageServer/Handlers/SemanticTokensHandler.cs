@@ -5,11 +5,12 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    : SemanticTokensHandlerBase
+public class SemanticTokensHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : SemanticTokensHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
         SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities
@@ -17,7 +18,7 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = config.GetDocumentSelector(),
+            DocumentSelector = TextDocumentSelector.TmdFiles,
             Legend = new()
             {
                 TokenModifiers = capability?.TokenModifiers ?? [],
@@ -42,16 +43,16 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var file = modelStore.Files.SingleOrDefault(f =>
+        var file = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath()
         );
         if (file != null)
         {
             foreach (var reference in file.Uses)
             {
-                if (modelStore.Files.Any(f => f.Name == reference.ReferenceName))
+                if (ModelStore.Files.Any(f => f.Name == reference.ReferenceName))
                 {
                     builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
                 }

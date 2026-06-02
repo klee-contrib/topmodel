@@ -23,16 +23,25 @@ public class TopModelCommand<TDescription> : IDisposable
     };
 
     private readonly RootCommand _command;
-
+    private readonly IList<IDisposable> _configObservers = [];
     private readonly CancellationTokenSource _cts = new();
-
+    private readonly bool _noLog;
     private List<FileInfo> _configs = [];
 
-    public TopModelCommand(TDescription description, IReadOnlyList<string> args, params IEnumerable<Option> options)
+    public TopModelCommand(TDescription description, IEnumerable<string> args, params IEnumerable<Option> options)
+        : this(description.GetMessage(), args, noLog: false, options) { }
+
+    public TopModelCommand(
+        string description,
+        IEnumerable<string> args,
+        bool noLog = true,
+        params IEnumerable<Option> options
+    )
     {
-        _command = new RootCommand(description.GetMessage()) { FileOption, WatchOption, CheckOption };
+        _noLog = noLog;
+        _command = new RootCommand(description) { FileOption, WatchOption, CheckOption };
         _command.Options.AddRange(options);
-        Args = _command.Parse(args);
+        Args = _command.Parse(args.ToList());
 
         Console.CancelKeyPress += (sender, eventArgs) =>
         {
@@ -56,25 +65,28 @@ public class TopModelCommand<TDescription> : IDisposable
     {
         try
         {
-            var version = Assembly
-                .GetEntryAssembly()!
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
-                .InformationalVersion;
-
-            AnsiConsole.MarkupLine($"========= {nugetPackageName} v{version} =========");
-            AnsiConsole.WriteLine();
-
-            var prerelease = version.Contains('-');
-            var latestVersion = await NugetUtils.GetLatestVersionAsync(
-                nugetPackageName,
-                _cts.Token,
-                prerelease: prerelease
-            );
-            if (latestVersion != null && latestVersion.Version != version)
+            if (!_noLog)
             {
-                AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
-                AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
+                var version = Assembly
+                    .GetEntryAssembly()!
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+                    .InformationalVersion;
+
+                AnsiConsole.MarkupLine($"========= {nugetPackageName} v{version} =========");
                 AnsiConsole.WriteLine();
+
+                var prerelease = version.Contains('-');
+                var latestVersion = await NugetUtils.GetLatestVersionAsync(
+                    nugetPackageName,
+                    _cts.Token,
+                    prerelease: prerelease
+                );
+                if (latestVersion != null && latestVersion.Version != version)
+                {
+                    AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
+                    AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
+                    AnsiConsole.WriteLine();
+                }
             }
 
             var files = Args.GetValue(FileOption) ?? [];
@@ -84,7 +96,10 @@ public class TopModelCommand<TDescription> : IDisposable
                 {
                     if (!file.Exists)
                     {
-                        AnsiConsole.LogError(CliMessage.ConfigFileNotFound, file.FullName);
+                        if (!_noLog)
+                        {
+                            AnsiConsole.LogError(CliMessage.ConfigFileNotFound, file.FullName);
+                        }
                     }
                     else
                     {
@@ -99,7 +114,10 @@ public class TopModelCommand<TDescription> : IDisposable
 
             if (_configs.Count == 0)
             {
-                AnsiConsole.LogError(CliMessage.NoConfigFileFound);
+                if (!_noLog)
+                {
+                    AnsiConsole.LogError(CliMessage.NoConfigFileFound);
+                }
                 return true;
             }
 
@@ -115,6 +133,10 @@ public class TopModelCommand<TDescription> : IDisposable
     public void Dispose()
     {
         _cts.Dispose();
+        foreach (var configObserver in _configObservers)
+        {
+            configObserver.Dispose();
+        }
     }
 
     /// <summary>
@@ -142,8 +164,12 @@ public class TopModelCommand<TDescription> : IDisposable
     /// <typeparam name="TFileChecker">Type de désérialiseur / vérificateur de schéma.</typeparam>
     /// <typeparam name="TWorker">Type du worker associé aux configs.</typeparam>
     /// <param name="configurator">Configurateur pour le worker.</param>
+    /// <param name="onDispose">Appelé lorsque que le worker est arrêté/redémarré.</param>
     /// <returns>Exit Code.</returns>
-    public async Task<int> RunConfigs<TConfig, TFileChecker, TWorker>(Action<TWorker>? configurator = null)
+    public async Task<int> RunConfigs<TConfig, TFileChecker, TWorker>(
+        Action<TWorker>? configurator = null,
+        Action<TWorker>? onDispose = null
+    )
         where TConfig : ConfigBase
         where TFileChecker : AbstractFileChecker<TConfig>, new()
         where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
@@ -153,36 +179,55 @@ public class TopModelCommand<TDescription> : IDisposable
         var watchMode = Args.GetValue(WatchOption);
         var checkMode = Args.GetValue(CheckOption);
 
-        if (watchMode)
+        if (!_noLog)
         {
-            AnsiConsole.LogInformation(CliMessage.WatchModeEnabled);
+            if (watchMode)
+            {
+                AnsiConsole.LogInformation(CliMessage.WatchModeEnabled);
+            }
+
+            if (checkMode)
+            {
+                AnsiConsole.LogInformation(CliMessage.CheckModeEnabled);
+            }
+
+            AnsiConsole.LogInformation(CliMessage.ConfigFilesFound);
         }
-
-        if (checkMode)
-        {
-            AnsiConsole.LogInformation(CliMessage.CheckModeEnabled);
-        }
-
-        AnsiConsole.LogInformation(CliMessage.ConfigFilesFound);
-
-        IList<ConfigObserver<TConfig, TFileChecker, TWorker>> configObservers = [];
 
         var fileChecker = new TFileChecker();
 
         for (var i = 0; i < _configs.Count; i++)
         {
             var config = _configs[i];
-            AnsiConsole.LogConfig(config.FullName, i);
-            configObservers.Add(
-                new ConfigObserver<TConfig, TFileChecker, TWorker>(config, fileChecker, loggerProvider, i, configurator)
+            if (!_noLog)
+            {
+                AnsiConsole.LogConfig(config.FullName, i);
+            }
+            _configObservers.Add(
+                new ConfigObserver<TConfig, TFileChecker, TWorker>(
+                    config,
+                    fileChecker,
+                    loggerProvider,
+                    i,
+                    configurator,
+                    onDispose
+                )
+                {
+                    NoLog = _noLog,
+                }
             );
         }
 
         try
         {
-            foreach (var configObserver in configObservers)
+            foreach (var configObserver in _configObservers)
             {
-                await configObserver.Start(watchMode, _cts.Token);
+                await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(watchMode, _cts.Token);
+            }
+
+            if (_noLog)
+            {
+                return 0;
             }
 
             if (watchMode)
@@ -190,7 +235,7 @@ public class TopModelCommand<TDescription> : IDisposable
                 _cts.Token.WaitHandle.WaitOne();
             }
 
-            if (configObservers.Any(w => w.HasError))
+            if (_configObservers.Any(w => ((ConfigObserver<TConfig, TFileChecker, TWorker>)w).HasError))
             {
                 return 1;
             }
@@ -213,13 +258,6 @@ public class TopModelCommand<TDescription> : IDisposable
         catch (OperationCanceledException)
         {
             return 1;
-        }
-        finally
-        {
-            foreach (var configObserver in configObservers)
-            {
-                configObserver.Dispose();
-            }
         }
     }
 }

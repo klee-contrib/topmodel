@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace TopModel.Utils.Cli;
 
 public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
@@ -30,8 +32,18 @@ public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
 
     public TConfig Config { get; init; }
 
+    public IServiceCollection Services { get; } = new ServiceCollection();
+
+    public ServiceProvider ServiceProvider
+    {
+        get { return field ??= Services.BuildServiceProvider(); }
+    }
+
     /// <inheritdoc cref="IDisposable.Dispose" />
-    public abstract void Dispose();
+    public virtual void Dispose()
+    {
+        ServiceProvider.Dispose();
+    }
 
     public abstract void Init();
 

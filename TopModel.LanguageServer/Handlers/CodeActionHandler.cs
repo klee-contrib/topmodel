@@ -10,15 +10,13 @@ using TopModel.Core.Utils;
 using TopModel.Utils;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
-namespace TopModel.LanguageServer;
+namespace TopModel.LanguageServer.Handlers;
 
-public class CodeActionHandler(
-    ModelStore modelStore,
-    ILanguageServerFacade facade,
-    ModelFileCache modelFileCache,
-    ModelConfig config
-) : CodeActionHandlerBase
+public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade, ModelFileCache modelFileCache)
+    : CodeActionHandlerBase
 {
+    private ModelStore? ModelStore => workerStore.ModelStore;
+
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -29,17 +27,17 @@ public class CodeActionHandler(
         CancellationToken cancellationToken
     )
     {
-        await modelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = modelStore.Files.SingleOrDefault(f =>
+        var modelFile = ModelStore.Files.SingleOrDefault(f =>
             facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
         );
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
         {
             if (
-                modelFile.Uses.Except(modelStore.GetUselessImports(modelFile)).Any()
-                || modelStore.GetUselessImports(modelFile).Any()
+                modelFile.Uses.Except(ModelStore.GetUselessImports(modelFile)).Any()
+                || ModelStore.GetUselessImports(modelFile).Any()
             )
             {
                 codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
@@ -94,7 +92,7 @@ public class CodeActionHandler(
     {
         return new()
         {
-            DocumentSelector = config.GetDocumentSelector(),
+            DocumentSelector = TextDocumentSelector.TmdFiles,
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>
             {
@@ -201,7 +199,7 @@ class:
         var line = text[diagnostic.Range.Start.Line];
         var domainName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
 
-        return modelStore
+        return ModelStore
             .Files.Where(f => f.Domains.Count > 0)
             .Select(f =>
             {
@@ -302,7 +300,7 @@ domain:
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore
+        return ModelStore
             .Annotations.Where(c => c.Name == decoratorName)
             .Select(annotationToImport =>
                 GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex)
@@ -316,7 +314,7 @@ domain:
     )
     {
         var (className, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore
+        return ModelStore
             .Classes.Where(c => c.Name == className)
             .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
     }
@@ -328,7 +326,7 @@ domain:
     )
     {
         var (dataFlowName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore
+        return ModelStore
             .DataFlows.Where(c => c.Name == dataFlowName)
             .Select(decoratorToImport =>
                 GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
@@ -342,7 +340,7 @@ domain:
     )
     {
         var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore
+        return ModelStore
             .Decorators.Where(c => c.Name == decoratorName)
             .Select(decoratorToImport =>
                 GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
@@ -356,7 +354,7 @@ domain:
     )
     {
         var (endpointName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return modelStore
+        return ModelStore
             .Endpoints.Where(c => c.Name == endpointName)
             .Select(endpointToImport =>
                 GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex)
@@ -380,7 +378,7 @@ domain:
         var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
-        return modelStore
+        return ModelStore
             .Classes.Where(c => c.Name == className)
             .Select(targetClass =>
                 GetFileImportAction(diagnostic, targetClass.ModelFile, modelFile, useIndex, reverse: true)
@@ -389,7 +387,7 @@ domain:
 
     protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
-        var uses = modelFile.Uses.Except(modelStore.GetUselessImports(modelFile));
+        var uses = modelFile.Uses.Except(ModelStore.GetUselessImports(modelFile));
         var start = modelFile.Uses[0].ToRange()!.Start;
         var end = modelFile.Uses[^1].ToRange()!.End;
         if (!uses.Any())
