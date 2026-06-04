@@ -449,19 +449,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             return;
         }
 
-        if (Directory.Exists(_modgenRoot))
-        {
-            var usedPrefixes = _deps.Select(d => $"{d.ConfigKey}.").ToHashSet(StringComparer.OrdinalIgnoreCase);
-            foreach (var dir in Directory.GetDirectories(_modgenRoot))
-            {
-                if (!usedPrefixes.Any(p => Path.GetFileName(dir).StartsWith(p)))
-                {
-                    Directory.Delete(dir, recursive: true);
-                    _logger.LogInformation($"Supprimé: {dir.ToRelative()}");
-                }
-            }
-        }
-
         await LoadModules(cancellationToken);
         if (HasError || cancellationToken.IsCancellationRequested)
         {
