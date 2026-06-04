@@ -96,7 +96,7 @@ public class EmployeWrite implements Serializable {
 
 	/**
 	 * Restaurant où travaille l'employé.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Employe#getRestaurantId() Employe#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Employe#getRestaurant() Employe#getRestaurant()}
 	 */
 	@NotNull
 	@Column("res_id")

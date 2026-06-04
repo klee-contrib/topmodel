@@ -58,14 +58,14 @@ public class LigneCommande {
 	 */
 	@NotNull
 	@Column("com_id")
-	private Integer commandeId;
+	private Integer commande;
 
 	/**
 	 * Plat commandé.
 	 */
 	@NotNull
 	@Column("pla_id")
-	private Integer platId;
+	private Integer plat;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -112,21 +112,21 @@ public class LigneCommande {
 	}
 
 	/**
-	 * Getter for commandeId.
+	 * Getter for commande.
 	 *
-	 * @return value of {@link #commandeId commandeId}.
+	 * @return value of {@link #commande commande}.
 	 */
-	public Integer getCommandeId() {
-		return this.commandeId;
+	public Integer getCommande() {
+		return this.commande;
 	}
 
 	/**
-	 * Getter for platId.
+	 * Getter for plat.
 	 *
-	 * @return value of {@link #platId platId}.
+	 * @return value of {@link #plat plat}.
 	 */
-	public Integer getPlatId() {
-		return this.platId;
+	public Integer getPlat() {
+		return this.plat;
 	}
 
 	/**
@@ -171,19 +171,19 @@ public class LigneCommande {
 	}
 
 	/**
-	 * Set the value of {@link #commandeId commandeId}.
-	 * @param commandeId value to set.
+	 * Set the value of {@link #commande commande}.
+	 * @param commande value to set.
 	 */
-	public void setCommandeId(Integer commandeId) {
-		this.commandeId = commandeId;
+	public void setCommande(Integer commande) {
+		this.commande = commande;
 	}
 
 	/**
-	 * Set the value of {@link #platId platId}.
-	 * @param platId value to set.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public void setPlatId(Integer platId) {
-		this.platId = platId;
+	public void setPlat(Integer plat) {
+		this.plat = plat;
 	}
 
 	/**

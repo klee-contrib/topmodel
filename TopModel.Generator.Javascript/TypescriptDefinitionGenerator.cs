@@ -90,7 +90,9 @@ public class TypescriptDefinitionGenerator(
                 classe
                     .Properties.Where(p =>
                         Config.EntityMode != EntityMode.FOCUS
-                        || p.Composition == null && Config.GetType(p) != Config.GetImplementation(p.Domain)?.Type
+                        || p.Composition == null
+                            && Config.GetType(p, forceAssociationPropertyType: true)
+                                != Config.GetImplementation(p.Domain)?.Type
                         || p.Composition != null
                             && Config.GetType(p) != p.Composition!.NamePascal
                             && !Config.IsListComposition(p)
@@ -146,7 +148,7 @@ public class TypescriptDefinitionGenerator(
             foreach (var property in classe.Properties)
             {
                 fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
-                var type = Config.GetType(property);
+                var type = Config.GetType(property, forceAssociationPropertyType: true);
 
                 if (Config.EntityMode == EntityMode.TYPED)
                 {
@@ -173,7 +175,7 @@ public class TypescriptDefinitionGenerator(
                 }
                 else
                 {
-                    fw.Write($"{Config.GetType(property)};");
+                    fw.Write($"{Config.GetType(property, forceAssociationPropertyType: true)};");
                 }
 
                 fw.Write("\r\n");
@@ -207,7 +209,7 @@ public class TypescriptDefinitionGenerator(
                 fw.Write(": {\r\n");
                 fw.Write("        type: ");
 
-                var type = Config.GetType(property);
+                var type = Config.GetType(property, forceAssociationPropertyType: true);
                 switch (property)
                 {
                     case { Composition: Class cpc } when cpc.NamePascal == type:
@@ -321,7 +323,7 @@ public class TypescriptDefinitionGenerator(
             foreach (var property in classe.Properties)
             {
                 fw.Write(1, $"{property.NameCamel}: e.");
-                var type = Config.GetType(property);
+                var type = Config.GetType(property, forceAssociationPropertyType: true);
 
                 switch (property)
                 {

@@ -61,7 +61,7 @@ public class LigneCommandeRead implements Serializable {
 
 	/**
 	 * Commande à laquelle appartient la ligne.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getCommandeId() LigneCommande#getCommandeId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getCommande() LigneCommande#getCommande()}
 	 */
 	@NotNull
 	@Column("com_id")
@@ -69,7 +69,7 @@ public class LigneCommandeRead implements Serializable {
 
 	/**
 	 * Plat commandé.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getPlatId() LigneCommande#getPlatId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
 	@NotNull
 	@Column("pla_id")

@@ -89,7 +89,7 @@ public class MenuRead implements Serializable {
 
 	/**
 	 * Restaurant proposant ce menu.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Menu#getRestaurantId() Menu#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Menu#getRestaurant() Menu#getRestaurant()}
 	 */
 	@NotNull
 	@Column("res_id")

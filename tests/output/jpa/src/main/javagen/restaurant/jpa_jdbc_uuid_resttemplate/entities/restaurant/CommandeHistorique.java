@@ -57,7 +57,7 @@ public class CommandeHistorique {
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClientId() Commande#getClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -72,7 +72,7 @@ public class CommandeHistorique {
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getReservationId() Commande#getReservationId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	@Column("rev_id")
 	private Integer reservationId;
@@ -87,7 +87,7 @@ public class CommandeHistorique {
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;

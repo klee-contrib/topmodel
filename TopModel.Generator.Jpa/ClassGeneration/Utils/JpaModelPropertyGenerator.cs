@@ -134,7 +134,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         var javaField = new JavaField(
             Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
-            !Config.UseJdbc ? property.NameCamel : property.PropertyNameCamel
+            property.NameCamel
         )
         {
             Comment = { property.Comment },
@@ -205,7 +205,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual string GetGetterName(IProperty property)
     {
-        var propertyName = !Config.UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+        var propertyName = property.NameCamel;
         var propertyType = Config.GetType(property);
         var getterPrefix = propertyType == "boolean" ? "is" : "get";
         if (property.Class.PreservePropertyCasing)
@@ -270,7 +270,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     public virtual string GetSetterName(IProperty property)
     {
-        var propertyName = !Config.UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+        var propertyName = property.NameCamel;
         if (property.Class.PreservePropertyCasing)
         {
             return propertyName.WithPrefix("set");

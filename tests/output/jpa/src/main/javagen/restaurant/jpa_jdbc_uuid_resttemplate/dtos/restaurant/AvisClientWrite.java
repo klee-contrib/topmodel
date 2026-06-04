@@ -51,7 +51,7 @@ public class AvisClientWrite implements Serializable {
 
 	/**
 	 * Client ayant donné l'avis.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.AvisClient#getClientId() AvisClient#getClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -59,7 +59,7 @@ public class AvisClientWrite implements Serializable {
 
 	/**
 	 * Restaurant concerné par l'avis.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.AvisClient#getRestaurantId() AvisClient#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
 	 */
 	@NotNull
 	@Column("res_id")

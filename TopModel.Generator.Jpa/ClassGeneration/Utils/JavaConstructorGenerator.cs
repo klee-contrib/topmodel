@@ -31,7 +31,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 
         foreach (var property in properties)
         {
-            var propName = !Config.UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+            var propName = property.NameCamel;
             var parameter = new JavaMethodParameter(
                 Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
                 propName

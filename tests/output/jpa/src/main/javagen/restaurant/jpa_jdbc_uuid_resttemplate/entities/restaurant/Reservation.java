@@ -63,7 +63,7 @@ public class Reservation {
 	 */
 	@NotNull
 	@Column("per_id")
-	private Integer clientId;
+	private Integer client;
 
 	/**
 	 * Table réservée.
@@ -76,7 +76,7 @@ public class Reservation {
 	 */
 	@NotNull
 	@Column("res_id")
-	private Integer restaurantId;
+	private Integer restaurant;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -132,12 +132,12 @@ public class Reservation {
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Getter for client.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return value of {@link #client client}.
 	 */
-	public Integer getClientId() {
-		return this.clientId;
+	public Integer getClient() {
+		return this.client;
 	}
 
 	/**
@@ -150,12 +150,12 @@ public class Reservation {
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Integer getRestaurantId() {
-		return this.restaurantId;
+	public Integer getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -208,11 +208,11 @@ public class Reservation {
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
 	 */
-	public void setClientId(Integer clientId) {
-		this.clientId = clientId;
+	public void setClient(Integer client) {
+		this.client = client;
 	}
 
 	/**
@@ -224,11 +224,11 @@ public class Reservation {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantId(Integer restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(Integer restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**

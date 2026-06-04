@@ -76,7 +76,7 @@ public class Menu {
 	 */
 	@NotNull
 	@Column("res_id")
-	private Integer restaurantId;
+	private Integer restaurant;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -150,12 +150,12 @@ public class Menu {
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Integer getRestaurantId() {
-		return this.restaurantId;
+	public Integer getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -224,11 +224,11 @@ public class Menu {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantId(Integer restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(Integer restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**

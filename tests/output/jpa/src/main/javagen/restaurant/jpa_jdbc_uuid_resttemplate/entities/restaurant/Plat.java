@@ -64,14 +64,14 @@ public class Plat {
 	 */
 	@NotNull
 	@Column("cat_code")
-	private String categoriePlatCode;
+	private String categoriePlat;
 
 	/**
 	 * Restaurant proposant ce plat.
 	 */
 	@NotNull
 	@Column("res_id")
-	private Integer restaurantId;
+	private Integer restaurant;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -127,21 +127,21 @@ public class Plat {
 	}
 
 	/**
-	 * Getter for categoriePlatCode.
+	 * Getter for categoriePlat.
 	 *
-	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
+	 * @return value of {@link #categoriePlat categoriePlat}.
 	 */
-	public String getCategoriePlatCode() {
-		return this.categoriePlatCode;
+	public String getCategoriePlat() {
+		return this.categoriePlat;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Integer getRestaurantId() {
-		return this.restaurantId;
+	public Integer getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -194,19 +194,19 @@ public class Plat {
 	}
 
 	/**
-	 * Set the value of {@link #categoriePlatCode categoriePlatCode}.
-	 * @param categoriePlatCode value to set.
+	 * Set the value of {@link #categoriePlat categoriePlat}.
+	 * @param categoriePlat value to set.
 	 */
-	public void setCategoriePlatCode(String categoriePlatCode) {
-		this.categoriePlatCode = categoriePlatCode;
+	public void setCategoriePlat(String categoriePlat) {
+		this.categoriePlat = categoriePlat;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantId(Integer restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(Integer restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**

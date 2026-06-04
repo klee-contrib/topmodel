@@ -79,7 +79,7 @@ public class CommandeRead implements Serializable {
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;
@@ -95,7 +95,7 @@ public class CommandeRead implements Serializable {
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClientId() Commande#getClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@Valid
 	@NotNull

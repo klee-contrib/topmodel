@@ -60,7 +60,7 @@ public class ReservationWrite implements Serializable {
 
 	/**
 	 * Client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Reservation#getClientId() Reservation#getClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Reservation#getClient() Reservation#getClient()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -75,7 +75,7 @@ public class ReservationWrite implements Serializable {
 
 	/**
 	 * Restaurant concerné par la réservation.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Reservation#getRestaurantId() Reservation#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Reservation#getRestaurant() Reservation#getRestaurant()}
 	 */
 	@NotNull
 	@Column("res_id")

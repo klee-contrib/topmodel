@@ -303,7 +303,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public virtual string GetGetterName(IProperty property)
     {
-        var propertyName = !UseJdbc ? property.NameCamel : property.PropertyNameCamel;
+        var propertyName = property.NameCamel;
         var propertyType = GetType(property);
         var getterPrefix = propertyType == "boolean" ? "is" : "get";
         if (property.Class.PreservePropertyCasing)

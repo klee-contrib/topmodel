@@ -29,7 +29,7 @@ public class Promotion {
 	 */
 	@Id
 	@Column("pla_id")
-	private Integer platId;
+	private Integer plat;
 
 	/**
 	 * Libellé de la promotion.
@@ -70,7 +70,7 @@ public class Promotion {
 	 * Restaurant concerné par la promotion (null si globale).
 	 */
 	@Column("res_id")
-	private Integer restaurantId;
+	private Integer restaurant;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -81,12 +81,12 @@ public class Promotion {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for platId.
+	 * Getter for plat.
 	 *
-	 * @return value of {@link #platId platId}.
+	 * @return value of {@link #plat plat}.
 	 */
-	public Integer getPlatId() {
-		return this.platId;
+	public Integer getPlat() {
+		return this.plat;
 	}
 
 	/**
@@ -135,12 +135,12 @@ public class Promotion {
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Getter for restaurant.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return value of {@link #restaurant restaurant}.
 	 */
-	public Integer getRestaurantId() {
-		return this.restaurantId;
+	public Integer getRestaurant() {
+		return this.restaurant;
 	}
 
 	/**
@@ -153,11 +153,11 @@ public class Promotion {
 	}
 
 	/**
-	 * Set the value of {@link #platId platId}.
-	 * @param platId value to set.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public void setPlatId(Integer platId) {
-		this.platId = platId;
+	public void setPlat(Integer plat) {
+		this.plat = plat;
 	}
 
 	/**
@@ -201,11 +201,11 @@ public class Promotion {
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Set the value of {@link #restaurant restaurant}.
+	 * @param restaurant value to set.
 	 */
-	public void setRestaurantId(Integer restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(Integer restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	/**

@@ -122,7 +122,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClientId() Commande#getClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@NotNull
 	@Column("per_id")
@@ -137,7 +137,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getReservationId() Commande#getReservationId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	@Column("rev_id")
 	private List<Integer> commandeReservationId;
@@ -152,7 +152,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column("avi_id")
 	private List<Integer> commandeAvisClientId;

@@ -43,16 +43,16 @@ public class CategoriePlatRegion {
 	 * Catégorie de plat.
 	 */
 	@Id
-	private String categoriePlatCode;
+	private String categoriePlat;
 
 	/**
 	 * All args constructor for 'CategoriePlatRegion'.
 	 * @param regionCode Région.
-	 * @param categoriePlatCode Catégorie de plat.
+	 * @param categoriePlat Catégorie de plat.
 	 */
-	private CategoriePlatRegion(String regionCode, String categoriePlatCode) {
+	private CategoriePlatRegion(String regionCode, String categoriePlat) {
 		this.regionCode = regionCode;
-		this.categoriePlatCode = categoriePlatCode;
+		this.categoriePlat = categoriePlat;
 	}
 
 	/**
@@ -65,11 +65,11 @@ public class CategoriePlatRegion {
 	}
 
 	/**
-	 * Getter for categoriePlatCode.
+	 * Getter for categoriePlat.
 	 *
-	 * @return value of {@link #categoriePlatCode categoriePlatCode}.
+	 * @return value of {@link #categoriePlat categoriePlat}.
 	 */
-	public String getCategoriePlatCode() {
-		return this.categoriePlatCode;
+	public String getCategoriePlat() {
+		return this.categoriePlat;
 	}
 }

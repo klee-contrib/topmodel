@@ -59,7 +59,7 @@ public class Commande {
 	 */
 	@NotNull
 	@Column("per_id")
-	private Integer clientId;
+	private Integer client;
 
 	/**
 	 * Table associée à la commande.
@@ -71,7 +71,7 @@ public class Commande {
 	 * Réservation associée à la commande.
 	 */
 	@Column("rev_id")
-	private Integer reservationId;
+	private Integer reservation;
 
 	/**
 	 * Statut de la commande.
@@ -84,7 +84,7 @@ public class Commande {
 	 * Avis laissé par le client sur la commande.
 	 */
 	@Column("avi_id")
-	private Integer avisClientId;
+	private Integer avisClient;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -131,12 +131,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Getter for client.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return value of {@link #client client}.
 	 */
-	public Integer getClientId() {
-		return this.clientId;
+	public Integer getClient() {
+		return this.client;
 	}
 
 	/**
@@ -149,12 +149,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for reservationId.
+	 * Getter for reservation.
 	 *
-	 * @return value of {@link #reservationId reservationId}.
+	 * @return value of {@link #reservation reservation}.
 	 */
-	public Integer getReservationId() {
-		return this.reservationId;
+	public Integer getReservation() {
+		return this.reservation;
 	}
 
 	/**
@@ -167,12 +167,12 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for avisClientId.
+	 * Getter for avisClient.
 	 *
-	 * @return value of {@link #avisClientId avisClientId}.
+	 * @return value of {@link #avisClient avisClient}.
 	 */
-	public Integer getAvisClientId() {
-		return this.avisClientId;
+	public Integer getAvisClient() {
+		return this.avisClient;
 	}
 
 	/**
@@ -217,11 +217,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Set the value of {@link #client client}.
+	 * @param client value to set.
 	 */
-	public void setClientId(Integer clientId) {
-		this.clientId = clientId;
+	public void setClient(Integer client) {
+		this.client = client;
 	}
 
 	/**
@@ -233,11 +233,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #reservationId reservationId}.
-	 * @param reservationId value to set.
+	 * Set the value of {@link #reservation reservation}.
+	 * @param reservation value to set.
 	 */
-	public void setReservationId(Integer reservationId) {
-		this.reservationId = reservationId;
+	public void setReservation(Integer reservation) {
+		this.reservation = reservation;
 	}
 
 	/**
@@ -249,11 +249,11 @@ public class Commande {
 	}
 
 	/**
-	 * Set the value of {@link #avisClientId avisClientId}.
-	 * @param avisClientId value to set.
+	 * Set the value of {@link #avisClient avisClient}.
+	 * @param avisClient value to set.
 	 */
-	public void setAvisClientId(Integer avisClientId) {
-		this.avisClientId = avisClientId;
+	public void setAvisClient(Integer avisClient) {
+		this.avisClient = avisClient;
 	}
 
 	/**

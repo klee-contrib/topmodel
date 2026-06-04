@@ -69,7 +69,7 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Promotion#getRestaurantId() Promotion#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
 	 */
 	@Column("res_id")
 	private Integer restaurantId;

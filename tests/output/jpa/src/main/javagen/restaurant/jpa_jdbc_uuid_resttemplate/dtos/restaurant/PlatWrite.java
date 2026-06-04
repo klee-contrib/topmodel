@@ -63,7 +63,7 @@ public class PlatWrite implements Serializable {
 
 	/**
 	 * Catégorie du plat.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Plat#getCategoriePlatCode() Plat#getCategoriePlatCode()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Plat#getCategoriePlat() Plat#getCategoriePlat()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -72,7 +72,7 @@ public class PlatWrite implements Serializable {
 
 	/**
 	 * Restaurant proposant ce plat.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Plat#getRestaurantId() Plat#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Plat#getRestaurant() Plat#getRestaurant()}
 	 */
 	@NotNull
 	@Column("res_id")

@@ -56,7 +56,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Plat commandé.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getPlatId() LigneCommande#getPlatId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
 	@NotNull
 	@Column("pla_id")

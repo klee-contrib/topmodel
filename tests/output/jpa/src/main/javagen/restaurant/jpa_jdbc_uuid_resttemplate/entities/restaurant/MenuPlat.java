@@ -28,13 +28,13 @@ public class MenuPlat {
 	 * Menu contenant ce plat.
 	 */
 	@Id
-	private Integer menuId;
+	private Integer menu;
 
 	/**
 	 * Plat du menu.
 	 */
 	@Id
-	private Integer platId;
+	private Integer plat;
 
 	/**
 	 * Ordre d'affichage du plat dans le menu.
@@ -52,21 +52,21 @@ public class MenuPlat {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for menuId.
+	 * Getter for menu.
 	 *
-	 * @return value of {@link #menuId menuId}.
+	 * @return value of {@link #menu menu}.
 	 */
-	public Integer getMenuId() {
-		return this.menuId;
+	public Integer getMenu() {
+		return this.menu;
 	}
 
 	/**
-	 * Getter for platId.
+	 * Getter for plat.
 	 *
-	 * @return value of {@link #platId platId}.
+	 * @return value of {@link #plat plat}.
 	 */
-	public Integer getPlatId() {
-		return this.platId;
+	public Integer getPlat() {
+		return this.plat;
 	}
 
 	/**
@@ -88,19 +88,19 @@ public class MenuPlat {
 	}
 
 	/**
-	 * Set the value of {@link #menuId menuId}.
-	 * @param menuId value to set.
+	 * Set the value of {@link #menu menu}.
+	 * @param menu value to set.
 	 */
-	public void setMenuId(Integer menuId) {
-		this.menuId = menuId;
+	public void setMenu(Integer menu) {
+		this.menu = menu;
 	}
 
 	/**
-	 * Set the value of {@link #platId platId}.
-	 * @param platId value to set.
+	 * Set the value of {@link #plat plat}.
+	 * @param plat value to set.
 	 */
-	public void setPlatId(Integer platId) {
-		this.platId = platId;
+	public void setPlat(Integer plat) {
+		this.plat = plat;
 	}
 
 	/**

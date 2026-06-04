@@ -70,7 +70,7 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClientId() Commande#getAvisClientId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;
