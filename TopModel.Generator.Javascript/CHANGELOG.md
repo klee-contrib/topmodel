@@ -1,5 +1,9 @@
 # Changelog Javascript
 
+## 4.2.4
+
+- [`b7e0953`](https://github.com/klee-contrib/topmodel/commit/b7e095352b94eb7c105ab2b936f93602a17a9f0e) - [JS] Fix bug import de types pour la génération des enums
+
 ## 4.2.3
 
 - [`5d0b5ce`](https://github.com/klee-contrib/topmodel/commit/5d0b5ce0e4fe60ca22ff13efbfcc5856651a0b66) - [JS] Fix génération liste récursive en mode focus
