@@ -44,8 +44,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
     public bool SchemaMode { get; set; }
 
-    public bool WatchMode { get; set; }
-
     public IEnumerable<string> ExcludedTags { get; set; } = [];
 
     /// <inheritdoc cref="IDisposable.Dispose" />

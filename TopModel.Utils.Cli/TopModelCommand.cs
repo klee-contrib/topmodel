@@ -208,6 +208,7 @@ public class TopModelCommand<TDescription> : IDisposable
                     config,
                     fileChecker,
                     loggerProvider,
+                    watchMode,
                     i,
                     configurator,
                     onDispose
@@ -222,7 +223,7 @@ public class TopModelCommand<TDescription> : IDisposable
         {
             foreach (var configObserver in _configObservers)
             {
-                await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(watchMode, _cts.Token);
+                await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(_cts.Token);
             }
 
             if (_noLog)

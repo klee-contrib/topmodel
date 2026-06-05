@@ -8,6 +8,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     FileInfo configInfo,
     TFileChecker fileChecker,
     LoggerProvider loggerProvider,
+    bool watchMode,
     int configIndex,
     Action<TWorker>? configurator = null,
     Action<TWorker>? onDispose = null
@@ -39,7 +40,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         fsCache.Dispose();
     }
 
-    public async Task Start(bool watchMode, CancellationToken cancellationToken)
+    public async Task Start(CancellationToken cancellationToken)
     {
         if (watchMode)
         {
@@ -93,6 +94,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
                     ConfigIndex = configIndex,
                     LoggerProvider = loggerProvider,
                     FileChecker = fileChecker,
+                    WatchMode = watchMode,
                 };
             }
 

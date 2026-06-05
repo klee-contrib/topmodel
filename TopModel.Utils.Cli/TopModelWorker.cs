@@ -32,6 +32,8 @@ public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
 
     public TConfig Config { get; init; }
 
+    public bool WatchMode { get; set; }
+
     public IServiceCollection Services { get; } = new ServiceCollection();
 
     public ServiceProvider ServiceProvider
