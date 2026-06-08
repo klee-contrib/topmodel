@@ -10,6 +10,7 @@ using TopModel.LanguageServer.Handlers;
 using TopModel.Utils.Cli;
 
 var fixedArgs = !args.Contains("-w") && !args.Contains("--watch") ? args.Concat(["-w"]) : args;
+fixedArgs = !args.Contains("-p") && !args.Contains("--parallel") ? args.Concat(["-p"]) : args;
 
 using var command = new TopModelCommand<CliMessage>("TopModel LS", fixedArgs);
 

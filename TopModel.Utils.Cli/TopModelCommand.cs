@@ -17,6 +17,10 @@ public class TopModelCommand<TDescription> : IDisposable
     {
         Description = CliMessage.FileOptionDescription.GetMessage(),
     };
+    private readonly Option<bool> ParallelOption = new("--parallel", "-p")
+    {
+        Description = CliMessage.ParallelOptionDescription.GetMessage(),
+    };
     private readonly Option<bool> WatchOption = new("--watch", "-w")
     {
         Description = CliMessage.WatchOptionDescription.GetMessage(),
@@ -39,7 +43,7 @@ public class TopModelCommand<TDescription> : IDisposable
     )
     {
         _noLog = noLog;
-        _command = new RootCommand(description) { FileOption, WatchOption, CheckOption };
+        _command = new RootCommand(description) { FileOption, WatchOption, CheckOption, ParallelOption };
         _command.Options.AddRange(options);
         Args = _command.Parse(args.ToList());
 
@@ -178,6 +182,7 @@ public class TopModelCommand<TDescription> : IDisposable
 
         var watchMode = Args.GetValue(WatchOption);
         var checkMode = Args.GetValue(CheckOption);
+        var parallelMode = Args.GetValue(ParallelOption);
 
         if (!_noLog)
         {
@@ -189,6 +194,11 @@ public class TopModelCommand<TDescription> : IDisposable
             if (checkMode)
             {
                 AnsiConsole.LogInformation(CliMessage.CheckModeEnabled);
+            }
+
+            if (parallelMode)
+            {
+                AnsiConsole.LogInformation(CliMessage.ParallelModeEnabled);
             }
 
             AnsiConsole.LogInformation(CliMessage.ConfigFilesFound);
@@ -209,6 +219,7 @@ public class TopModelCommand<TDescription> : IDisposable
                     fileChecker,
                     loggerProvider,
                     watchMode,
+                    parallelMode,
                     i,
                     configurator,
                     onDispose
@@ -221,9 +232,23 @@ public class TopModelCommand<TDescription> : IDisposable
 
         try
         {
-            foreach (var configObserver in _configObservers)
+            if (parallelMode)
             {
-                await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(_cts.Token);
+                await Parallel.ForEachAsync(
+                    _configObservers,
+                    _cts.Token,
+                    async (configObserver, cancellationToken) =>
+                    {
+                        await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(cancellationToken);
+                    }
+                );
+            }
+            else
+            {
+                foreach (var configObserver in _configObservers)
+                {
+                    await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(_cts.Token);
+                }
             }
 
             if (_noLog)

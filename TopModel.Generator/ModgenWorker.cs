@@ -638,7 +638,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             HasError = he;
         };
 
-        await modelStore.LoadFromConfig(WatchMode, _topModelLock, StoreConfig, cancellationToken);
+        await modelStore.LoadFromConfig(WatchMode, ParallelMode, _topModelLock, StoreConfig, cancellationToken);
     }
 
     private async Task WriteSchema(CancellationToken cancellationToken)

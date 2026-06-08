@@ -140,6 +140,7 @@ public class ModelStore(
 
     public async Task LoadFromConfig(
         bool watch = false,
+        bool parallel = false,
         TopModelLock? topModelLock = null,
         LoggingScope? storeConfig = null,
         CancellationToken ct = default
@@ -167,7 +168,7 @@ public class ModelStore(
 
         if (watch)
         {
-            _disposer = modelFileLoader.Watch(ApplyUpdates);
+            _disposer = modelFileLoader.Watch(parallel, ApplyUpdates);
         }
 
         _modelFiles.Clear();
@@ -278,7 +279,6 @@ public class ModelStore(
                             pendingFileChanges.Values.Select(pu => pu.FileName),
                             pendingFileChanges.ToDictionary(pu => pu.Value.FileName, pu => pu.Value.Status)
                         )
-                        .Distinct()
                         .ToDictionary(f => f.Name, f => f);
 
                 var levels = CoreUtils.SortWithCyclesByLevel(
@@ -420,21 +420,23 @@ public class ModelStore(
         fileNames = fileNames.Where(IsValid);
 
         foreach (
-            var file in _modelFiles.Values.Where(f =>
-                fileNames.Contains(f.Name)
-                || f.Uses.Any(d => fileNames.Contains(d.ReferenceName) && f.Uses.All(d => IsValid(d.ReferenceName)))
+            var file in _modelFiles.Where(f =>
+                !foundFiles.Contains(f.Key)
+                && (
+                    fileNames.Contains(f.Key)
+                    || f.Value.Uses.Any(d =>
+                        fileNames.Contains(d.ReferenceName) && f.Value.Uses.All(d => IsValid(d.ReferenceName))
+                    )
+                )
             )
         )
         {
-            if (!foundFiles.Contains(file.Name))
-            {
-                foundFiles.Add(file.Name);
-                yield return file;
+            foundFiles.Add(file.Key);
+            yield return file.Value;
 
-                foreach (var use in GetAffectedFiles([file.Name], statuses, foundFiles))
-                {
-                    yield return use;
-                }
+            foreach (var use in GetAffectedFiles([file.Key], statuses, foundFiles))
+            {
+                yield return use;
             }
         }
     }

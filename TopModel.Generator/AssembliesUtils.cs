@@ -5,6 +5,8 @@ namespace TopModel.Generator;
 
 public static class AssembliesUtils
 {
+    private static readonly object _lock = new();
+
     private static readonly Dictionary<string, Assembly> loadedAssemblies = AppDomain
         .CurrentDomain.GetAssemblies()
         .ToDictionary(a => a.ManifestModule.Name);
@@ -14,14 +16,17 @@ public static class AssembliesUtils
     {
         var assembliesToLoad = fileInfos.Where(f => !f.Name.EndsWith(".resources.dll")).DistinctBy(a => a.Name);
 
-        foreach (var assembly in assembliesToLoad)
+        lock (_lock)
         {
-            if (LoadedAssemblies.Contains(assembly.Name))
+            foreach (var assembly in assembliesToLoad)
             {
-                yield return loadedAssemblies[assembly.Name];
-                continue;
+                if (LoadedAssemblies.Contains(assembly.Name))
+                {
+                    yield return loadedAssemblies[assembly.Name];
+                    continue;
+                }
+                yield return LoadAssemblyFromFileInfo(assembly);
             }
-            yield return LoadAssemblyFromFileInfo(assembly);
         }
     }
 

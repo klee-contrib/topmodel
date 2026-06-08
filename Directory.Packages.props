@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="AsyncKeyedLock" Version="8.0.2" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="Dapper" Version="2.1.72" />
     <PackageVersion Include="Kinetix.Tools.Analyzers" Version="1.11.6" />

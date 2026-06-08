@@ -19,7 +19,7 @@ public class CodeLensHandler(LSWorkerStore workerStore) : CodeLensHandlerBase
 
         var files = workerStore.GetFiles(request.TextDocument);
 
-        var clic = new CodeLensContainer(
+        return new CodeLensContainer(
             files
                 .SelectMany(f =>
                     f.File.Classes.Select(c =>
@@ -77,7 +77,6 @@ public class CodeLensHandler(LSWorkerStore workerStore) : CodeLensHandlerBase
                     )
                 )
                 .SelectMany(r => r.References.Select(item => (r.Location, Reference: item)))
-                .Distinct()
                 .GroupBy(r => r.Location)
                 .Select(reference => new CodeLens
                 {
@@ -90,8 +89,6 @@ public class CodeLensHandler(LSWorkerStore workerStore) : CodeLensHandlerBase
                     },
                 })
         );
-
-        return clic;
     }
 
     protected override CodeLensRegistrationOptions CreateRegistrationOptions(

@@ -36,18 +36,29 @@ public class LSWorkerStore(ILanguageServerFacade facade)
 
     public async Task OnModelFileChange(string filePath, string content, CancellationToken ct = default)
     {
-        foreach (var worker in _workers)
+        var affectedWorkers = _workers.Where(worker =>
         {
             var relativePath = filePath.ToRelative(worker.Config.ModelRoot);
-            if (
+            return (
                 !relativePath.StartsWith("..")
                 && !Path.IsPathRooted(relativePath)
                 && worker.ModelConfig.ModelFilePaths.IsMatch(relativePath[2..])
-            )
+            );
+        });
+
+        foreach (var worker in affectedWorkers)
+        {
+            worker.ModelFileLoader.RemoveFromCache(filePath);
+        }
+
+        await Parallel.ForEachAsync(
+            affectedWorkers,
+            ct,
+            async (worker, ct) =>
             {
                 await worker.ModelStore.OnModelFileChange(filePath, content, ct);
             }
-        }
+        );
     }
 
     public void RemoveWorker(LSWorker worker)

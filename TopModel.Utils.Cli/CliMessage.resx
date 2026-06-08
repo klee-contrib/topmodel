@@ -133,7 +133,7 @@
     <value>You can run `dotnet tool update -g {0}` to update.</value>
   </data>
   <data name="WatchModeEnabled" xml:space="preserve">
-    <value>[darkcyan]watch[/] mode enabled.</value>
+    <value>[darkcyan]Watch[/] mode enabled.</value>
   </data>
   <data name="CheckModeEnabled" xml:space="preserve">
     <value>[darkcyan]Check[/] mode enabled.</value>
@@ -158,5 +158,11 @@
   </data>
   <data name="CancellationRequested" xml:space="preserve">
     <value>Process stop requested...</value>
+  </data>
+  <data name="ParallelOptionDescription" xml:space="preserve">
+    <value>Runs the provided configs in parallel.</value>
+  </data>
+  <data name="ParallelModeEnabled" xml:space="preserve">
+    <value>[olive]Parallel[/] mode enabled.</value>
   </data>
 </root>

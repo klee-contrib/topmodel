@@ -9,6 +9,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     TFileChecker fileChecker,
     LoggerProvider loggerProvider,
     bool watchMode,
+    bool parallelMode,
     int configIndex,
     Action<TWorker>? configurator = null,
     Action<TWorker>? onDispose = null
@@ -95,6 +96,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
                     LoggerProvider = loggerProvider,
                     FileChecker = fileChecker,
                     WatchMode = watchMode,
+                    ParallelMode = parallelMode,
                 };
             }
 

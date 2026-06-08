@@ -159,4 +159,10 @@
   <data name="CancellationRequested" xml:space="preserve">
     <value>Arrêt du processus demandé...</value>
   </data>
+  <data name="ParallelOptionDescription" xml:space="preserve">
+    <value>Lance les configurations données en parallèle.</value>
+  </data>
+  <data name="ParallelModeEnabled" xml:space="preserve">
+    <value>Mode [olive]parallèle[/] activé.</value>
+  </data>
 </root>

@@ -9,11 +9,13 @@ public enum CliMessage
     DotnetUpdateCommand,
     WatchModeEnabled,
     CheckModeEnabled,
+    ParallelModeEnabled,
     OneFileModifiedInCheckMode,
     MultipleFilesModifiedInCheckMode,
     FileOptionDescription,
     WatchOptionDescription,
     CheckOptionDescription,
+    ParallelOptionDescription,
     ConfigChanged,
     CancellationRequested,
 }

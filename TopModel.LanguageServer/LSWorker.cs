@@ -13,6 +13,8 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
 
     public ModelConfig ModelConfig => ServiceProvider.GetRequiredService<ModelConfig>();
 
+    public ModelFileLoader ModelFileLoader => ServiceProvider.GetRequiredService<ModelFileLoader>();
+
     public ModelStore ModelStore => ServiceProvider.GetRequiredService<ModelStore>();
 
     public override void Init()
@@ -57,7 +59,7 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
 
         _modelStore = ServiceProvider.GetRequiredService<ModelStore>();
         _modelStore.KeepFileErrorsInReferenceResolution = true;
-        await _modelStore.LoadFromConfig(WatchMode, ct: cancellationToken);
+        await _modelStore.LoadFromConfig(WatchMode, ParallelMode, ct: cancellationToken);
 
         var facade = ServiceProvider.GetRequiredService<ILanguageServerFacade>();
         facade.Workspace.SendSemanticTokensRefresh(new());

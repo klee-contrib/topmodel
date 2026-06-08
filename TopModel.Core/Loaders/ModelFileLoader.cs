@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using AsyncKeyedLock;
 using Meziantou.Framework.Globbing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,14 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
+
+using CacheKey = (
+    string App,
+    string ModelRoot,
+    bool DefaultAssociationUseClass,
+    bool PluralizeTableNames,
+    bool UseLegacyRoleNames
+);
 
 public class ModelFileLoader(
     ModelConfig config,
@@ -26,18 +35,7 @@ public class ModelFileLoader(
     DomainLoader domainLoader
 )
 {
-    private static ConcurrentDictionary<
-        (
-            string App,
-            string ModelRoot,
-            bool DefaultAssociationUseClass,
-            bool PluralizeTableNames,
-            bool UseLegacyRoleNames
-        ),
-        ConcurrentDictionary<string, ModelFile>
-    > GlobalCache { get; } = [];
-
-    private static ConcurrentDictionary<
+    private static readonly ConcurrentDictionary<
         string,
         (
             FileSystemWatcher FileWatcher,
@@ -51,28 +49,39 @@ public class ModelFileLoader(
                 > ApplyUpdates
             )> Configs
         )
-    > FileWatchers { get; } = [];
+    > _fileWatchers = [];
+    private static readonly ConcurrentDictionary<CacheKey, ConcurrentDictionary<string, ModelFile>> _globalCache = [];
+    private static readonly AsyncKeyedLocker<(CacheKey CacheKey, string FullPath)> _lockFile = new();
+    private static readonly AsyncKeyedLocker<string> _lockRoot = new();
+
+    private bool _parallelWatch;
+
+    private CacheKey CacheKey =>
+        (
+            config.App,
+            config.ModelRoot,
+            config.DefaultAssociationUseClass,
+            config.PluralizeTableNames,
+            config.UseLegacyRoleNames
+        );
 
     private ConcurrentDictionary<string, ModelFile> Cache
     {
         get
         {
-            var key = (
-                config.App,
-                config.ModelRoot,
-                config.DefaultAssociationUseClass,
-                config.PluralizeTableNames,
-                config.UseLegacyRoleNames
-            );
-
-            if (!GlobalCache.TryGetValue(key, out var cache))
+            if (!_globalCache.TryGetValue(CacheKey, out var cache))
             {
-                GlobalCache[key] = [];
-                cache = GlobalCache[key];
+                _globalCache[CacheKey] = [];
+                cache = _globalCache[CacheKey];
             }
 
             return cache;
         }
+    }
+
+    public void RemoveFromCache(string fullPath)
+    {
+        Cache.TryRemove(fullPath.Replace('\\', '/'), out _);
     }
 
     internal async Task<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)> LoadModelFile(
@@ -84,11 +93,9 @@ public class ModelFileLoader(
     {
         fullPath = fullPath.Replace('\\', '/');
 
-        if (content != null)
-        {
-            RemoveFromCache(fullPath);
-        }
-        else if (Cache.TryGetValue(fullPath, out var file))
+        using var fileLock = await _lockFile.LockAsync((CacheKey, fullPath), ct);
+
+        if (Cache.TryGetValue(fullPath, out var file))
         {
             return (fullPath, CloneFile(file), ModelFileStatus.Ok);
         }
@@ -121,6 +128,7 @@ public class ModelFileLoader(
     }
 
     internal Action Watch(
+        bool parallel,
         Func<
             IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
             CancellationToken,
@@ -128,8 +136,13 @@ public class ModelFileLoader(
         > applyUpdates
     )
     {
+        _parallelWatch = parallel;
+
         var watchConfig = (config.ModelFilePaths, applyUpdates);
-        if (!FileWatchers.TryGetValue(config.ModelRoot, out var fw))
+
+        using var rootLock = _lockRoot.Lock(config.ModelRoot, default);
+
+        if (!_fileWatchers.TryGetValue(config.ModelRoot, out var fw))
         {
             var fileWatcher = new FileSystemWatcher(config.ModelRoot, "*.tmd")
             {
@@ -137,8 +150,8 @@ public class ModelFileLoader(
                 EnableRaisingEvents = true,
             };
 
-            FileWatchers[config.ModelRoot] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
-            fw = FileWatchers[config.ModelRoot];
+            _fileWatchers[config.ModelRoot] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
+            fw = _fileWatchers[config.ModelRoot];
 
             fileWatcher.Changed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
             fileWatcher.Created += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
@@ -156,7 +169,7 @@ public class ModelFileLoader(
             if (fw.Configs.Count == 0)
             {
                 fw.FileWatcher.Dispose();
-                FileWatchers.TryRemove(config.ModelRoot, out _);
+                _fileWatchers.TryRemove(config.ModelRoot, out _);
             }
         };
     }
@@ -517,17 +530,38 @@ public class ModelFileLoader(
                             files.Add(await LoadModelFile(e.FullPath, e.ChangeType, ct: default));
                         }
 
-                        foreach (var (modelFilePaths, applyUpdates) in FileWatchers[modelRoot].Configs)
+                        if (_parallelWatch)
                         {
-                            if (!modelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
-                            {
-                                continue;
-                            }
+                            await Parallel.ForEachAsync(
+                                _fileWatchers[modelRoot].Configs,
+                                async (c, ct) =>
+                                {
+                                    if (!c.ModelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
+                                    {
+                                        return;
+                                    }
 
-                            await applyUpdates(
-                                files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
-                                default
+                                    await c.ApplyUpdates(
+                                        files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
+                                        ct
+                                    );
+                                }
                             );
+                        }
+                        else
+                        {
+                            foreach (var (modelFilePaths, applyUpdates) in _fileWatchers[modelRoot].Configs)
+                            {
+                                if (!modelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
+                                {
+                                    continue;
+                                }
+
+                                await applyUpdates(
+                                    files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
+                                    default
+                                );
+                            }
                         }
                     }
                 )
@@ -646,10 +680,5 @@ public class ModelFileLoader(
         }
 
         return file;
-    }
-
-    private void RemoveFromCache(string fullPath)
-    {
-        Cache.TryRemove(fullPath.Replace('\\', '/'), out _);
     }
 }
