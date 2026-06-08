@@ -2,7 +2,6 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 
@@ -10,8 +9,6 @@ namespace TopModel.LanguageServer.Handlers;
 
 public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : DefinitionHandlerBase
 {
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<LocationOrLocationLinks?> Handle(
         DefinitionParams request,
@@ -20,74 +17,72 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore?.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
-        if (file != null)
+        var files = workerStore.GetFiles(request.TextDocument);
+        if (!files.Any())
         {
-            var (reference, objet) = file.GetObjetAtPosition(request.Position);
+            return new();
+        }
 
-            if (reference != null && objet != null)
+        var references = files
+            .Select(f => f.File.GetObjetAtPosition(request.Position))
+            .Select(r => (r.Reference, r.Objet, SelectionRange: r.Objet?.GetLocation()?.ToRange()!))
+            .Where(r => r.Reference != null && r.Objet != null && r.SelectionRange != null)
+            .DistinctBy(r => r.Reference)
+            .Select(r => new LocationLink
             {
-                var selectionRange = objet.GetLocation().ToRange();
-                if (selectionRange == null)
+                OriginSelectionRange = r.Reference.ToRange(),
+                TargetRange = r.Objet switch
                 {
-                    return new();
-                }
-
-                return new(
-                    new LocationLink
+                    Class or Endpoint or Domain => r.SelectionRange with
                     {
-                        OriginSelectionRange = reference.ToRange(),
-                        TargetRange = objet switch
+                        End = new() { Line = r.SelectionRange.Start.Line + 2, Character = 200 },
+                    },
+                    Decorator or DecoratorInstance or Annotation or AnnotationInstance or DataFlow =>
+                        r.SelectionRange with
                         {
-                            Class or Endpoint or Domain => selectionRange with
-                            {
-                                End = new() { Line = selectionRange.Start.Line + 2, Character = 200 },
-                            },
-                            Decorator or DecoratorInstance or Annotation or AnnotationInstance or DataFlow =>
-                                selectionRange with
-                                {
-                                    End = new() { Line = selectionRange.Start.Line + 1, Character = 200 },
-                                },
-                            _ => selectionRange with
-                            {
-                                End = new() { Line = selectionRange.Start.Line, Character = 200 },
-                            },
+                            End = new() { Line = r.SelectionRange.Start.Line + 1, Character = 200 },
                         },
-                        TargetSelectionRange = selectionRange,
-                        TargetUri = facade.GetFilePath(objet.GetFile()),
-                    }
-                );
-            }
+                    _ => r.SelectionRange with
+                    {
+                        End = new() { Line = r.SelectionRange.Start.Line, Character = 200 },
+                    },
+                },
+                TargetSelectionRange = r.SelectionRange,
+                TargetUri = facade.GetFilePath(r.Objet.GetFile()),
+            });
 
-            var matchedUse = file.Uses.SingleOrDefault(use =>
+        if (references.Any())
+        {
+            return new(references.Select(r => new LocationOrLocationLink(r)));
+        }
+
+        var matchedUse = files
+            .First()
+            .File.Uses.SingleOrDefault(use =>
                 use.Start.Line - 1 <= request.Position.Line
                 && request.Position.Line <= use.End.Line - 1
                 && use.Start.Column - 1 <= request.Position.Character
                 && request.Position.Character <= use.End.Column - 1
             );
 
-            if (matchedUse != null)
+        if (matchedUse != null)
+        {
+            var usedFile = files.First().Store.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+            if (usedFile != null)
             {
-                var usedFile = ModelStore!.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
-                if (usedFile != null)
-                {
-                    return new(
-                        new LocationLink
-                        {
-                            OriginSelectionRange = reference.ToRange(),
-                            TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
-                            TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                0,
-                                0,
-                                0,
-                                0
-                            ),
-                            TargetUri = facade.GetFilePath(usedFile),
-                        }
-                    );
-                }
+                return new(
+                    new LocationLink
+                    {
+                        TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
+                        TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                            0,
+                            0,
+                            0,
+                            0
+                        ),
+                        TargetUri = facade.GetFilePath(usedFile),
+                    }
+                );
             }
         }
 

@@ -77,5 +77,7 @@ public interface IProperty : IAnnotationContainer
 
     internal string TruePropertyNamePascal { get; }
 
+    IProperty CloneDefinition();
+
     IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null);
 }

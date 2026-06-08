@@ -50,7 +50,7 @@ public class Endpoint : IPropertyContainer
 
     public bool PreservePropertyCasing { get; set; }
 
-    public IDictionary<string, string> CustomProperties { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 
@@ -62,13 +62,13 @@ public class Endpoint : IPropertyContainer
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
 #nullable disable
 

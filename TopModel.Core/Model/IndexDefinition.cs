@@ -8,7 +8,7 @@ public class IndexDefinition
 
     public bool Unique { get; init; }
 
-    public IList<Reference> PropertyReferences { get; } = [];
+    public IList<Reference> PropertyReferences { get; internal set; } = [];
 
     public required Class Class { get; init; }
 }

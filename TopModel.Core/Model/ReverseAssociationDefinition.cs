@@ -14,12 +14,11 @@ internal class ReverseAssociationDefinition : IAnnotationContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
     public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
-
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 #nullable disable
     internal Reference Location { get; set; }
 

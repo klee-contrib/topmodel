@@ -10,12 +10,12 @@ public class Converter : IVariableContainer
     /// <summary>
     /// Domains sources du convertisseur
     /// </summary>
-    public IList<DomainReference> DomainsFromReferences { get; set; } = [];
+    public IList<DomainReference> DomainsFromReferences { get; internal set; } = [];
 
     /// <summary>
     /// Domains cibles du convertisseur
     /// </summary>
-    public IList<DomainReference> DomainsToReferences { get; set; } = [];
+    public IList<DomainReference> DomainsToReferences { get; internal set; } = [];
 
     /// <summary>
     /// Domains sources du convertisseur
@@ -31,7 +31,7 @@ public class Converter : IVariableContainer
 
 #nullable enable
 
-    public IDictionary<string, ConverterImplementation> Implementations { get; set; } =
+    public IDictionary<string, ConverterImplementation> Implementations { get; internal set; } =
         new Dictionary<string, ConverterImplementation>();
 
     public IEnumerable<ParameterReference> VariableReferences =>

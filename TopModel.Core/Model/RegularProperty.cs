@@ -40,13 +40,13 @@ internal class RegularProperty : IProperty
 
     public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
     public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
     public Class Class { get; set; }
 
@@ -73,6 +73,27 @@ internal class RegularProperty : IProperty
     string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
     string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
+
+    /// <inheritdoc cref="IProperty.CloneDefinition" />
+    public IProperty CloneDefinition()
+    {
+        return new RegularProperty
+        {
+            AnnotationReferences = AnnotationReferences,
+            Comment = Comment,
+            CustomProperties = CustomProperties,
+            DefaultValue = DefaultValue,
+            DomainReference = DomainReference,
+            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
+            Label = Label,
+            Location = Location,
+            Name = Name,
+            PrimaryKey = PrimaryKey,
+            Readonly = Readonly,
+            Required = Required,
+            Trigram = Trigram,
+        };
+    }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)

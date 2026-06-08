@@ -93,7 +93,7 @@ public class Class : IPropertyContainer
 
     public IList<ClassMappings> ToMappers { get; } = [];
 
-    public IDictionary<string, string> CustomProperties { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
     public string PluralName
     {
@@ -117,15 +117,15 @@ public class Class : IPropertyContainer
 
     public Reference? LocalePropertyReference { get; set; }
 
-    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; } =
+    public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; internal set; } =
         new Dictionary<Reference, IDictionary<Reference, string>>();
 
     public IEnumerable<ClassDependency> ClassDependencies =>

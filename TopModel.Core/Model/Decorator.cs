@@ -20,7 +20,7 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
 #nullable enable
 
-    public IDictionary<string, DecoratorImplementation> Implementations { get; set; } =
+    public IDictionary<string, DecoratorImplementation> Implementations { get; internal set; } =
         new Dictionary<string, DecoratorImplementation>();
 
 #nullable disable
@@ -75,13 +75,13 @@ public class Decorator : IPropertyContainer, IVariableContainer
             )
             .Where(pr => pr.ReferenceName.IsValidTransform());
 
-    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationReference> PropertyAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
     internal Reference Location { get; set; }
 

@@ -13,7 +13,7 @@ public class DataFlowSource
 
     public DataFlowSourceMode Mode { get; set; }
 
-    public IList<IProperty> JoinProperties { get; set; } = [];
+    public IList<IProperty> JoinProperties { get; } = [];
 
     public IList<Reference> JoinPropertyReferences { get; set; } = [];
 

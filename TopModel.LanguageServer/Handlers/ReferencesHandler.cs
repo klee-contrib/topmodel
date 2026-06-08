@@ -17,18 +17,10 @@ public class ReferencesHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             files
                 .SelectMany(f =>
                     f.Store.GetReferencesForPositionInFile(request.Position, f.File)
-                        .Select(r => new Location
-                        {
-                            Uri = new Uri(facade.GetFilePath(r.File)),
-                            Range = r.Reference.ToRange()!,
-                        })
+                        .Select(r => new { Uri = facade.GetFilePath(r.File), r.Reference })
                 )
-                .DistinctBy(r => new
-                {
-                    r.Uri.Path,
-                    r.Range.Start.Line,
-                    r.Range.Start.Character,
-                })
+                .Distinct()
+                .Select(r => new Location { Range = r.Reference.ToRange()!, Uri = new Uri(r.Uri) })
         );
     }
 

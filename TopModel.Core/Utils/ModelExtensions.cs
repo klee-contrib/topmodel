@@ -215,6 +215,7 @@ public static class ModelExtensions
             ModelFile file => file,
             Class classe => classe.ModelFile,
             Endpoint endpoint => endpoint.ModelFile,
+            IProperty { SourceDecorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
@@ -399,6 +400,21 @@ public static class ModelExtensions
             foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
             {
                 yield return result;
+            }
+        }
+
+        if (property.Decorator != null)
+        {
+            foreach (
+                var p in modelStore.Properties.Where(p =>
+                    p.SourceDecorator == property.Decorator && p.Name == property.Name
+                )
+            )
+            {
+                foreach (var result in modelStore.GetPropertyReferencesCore(p, collectBackward: false, collectForward))
+                {
+                    yield return result;
+                }
             }
         }
 

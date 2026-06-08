@@ -37,16 +37,16 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
-    public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
+    public IList<AnnotationInstance> ExcludedAnnotations { get; internal set; } = [];
 
-    public IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<string, DomainReference> AsDomainReferences { get; set; } =
+    public IDictionary<string, DomainReference> AsDomainReferences { get; internal set; } =
         new Dictionary<string, DomainReference>();
 
-    public IDictionary<string, DomainImplementation> Implementations { get; set; } =
+    public IDictionary<string, DomainImplementation> Implementations { get; internal set; } =
         new Dictionary<string, DomainImplementation>();
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];

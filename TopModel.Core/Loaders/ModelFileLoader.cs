@@ -1,8 +1,10 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Meziantou.Framework.Globbing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using OneOf;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
@@ -88,7 +90,7 @@ public class ModelFileLoader(
         }
         else if (Cache.TryGetValue(fullPath, out var file))
         {
-            return (fullPath, file, ModelFileStatus.Ok);
+            return (fullPath, CloneFile(file), ModelFileStatus.Ok);
         }
 
         try
@@ -102,7 +104,7 @@ public class ModelFileLoader(
             if (modelFile != null)
             {
                 Cache.TryAdd(fullPath, modelFile);
-                return (fullPath, modelFile, ModelFileStatus.Ok);
+                return (fullPath, CloneFile(modelFile), ModelFileStatus.Ok);
             }
             else
             {
@@ -159,6 +161,319 @@ public class ModelFileLoader(
         };
     }
 
+    [return: NotNullIfNotNull(nameof(file))]
+    private static ModelFile? CloneFile(ModelFile? file)
+    {
+        if (file == null)
+        {
+            return null;
+        }
+
+        var newFile = new ModelFile
+        {
+            Comments = file.Comments,
+            Name = file.Name,
+            Namespace = file.Namespace,
+            Options = file.Options,
+            Path = file.Path,
+            Tags = file.Tags,
+            Uses = file.Uses,
+        };
+
+        newFile.Annotations.AddRange(
+            file.Annotations.Select(a =>
+            {
+                var na = new Annotation
+                {
+                    Description = a.Description,
+                    Global = a.Global,
+                    Implementations = a.Implementations,
+                    Location = a.Location,
+                    ModelFile = newFile,
+                    Name = a.Name,
+                    Namespace = a.Namespace,
+                    Target = a.Target,
+                };
+
+                na.TemplateParameters.AddRange(
+                    a.TemplateParameters.Select(tp => new TemplateParameter
+                    {
+                        Annotation = na,
+                        Comment = tp.Comment,
+                        DefaultValue = tp.DefaultValue,
+                        Name = tp.Name,
+                        Required = tp.Required,
+                    })
+                );
+
+                return na;
+            })
+        );
+
+        newFile.Classes.AddRange(
+            file.Classes.Select(c =>
+            {
+                var nc = new Class
+                {
+                    Abstract = c.Abstract,
+                    AnnotationReferences = c.AnnotationReferences,
+                    Comment = c.Comment,
+                    CustomProperties = c.CustomProperties,
+                    DecoratorReferences = c.DecoratorReferences,
+                    DefaultPropertyReference = c.DefaultPropertyReference,
+                    EnumOverride = c.EnumOverride,
+                    ExcludedAnnotationReferences = c.ExcludedAnnotationReferences,
+                    ExtendsReference = c.ExtendsReference,
+                    FlagPropertyReference = c.FlagPropertyReference,
+                    Label = c.Label,
+                    LocalePropertyReference = c.LocalePropertyReference,
+                    Location = c.Location,
+                    ModelFile = newFile,
+                    Name = c.Name,
+                    Namespace = c.Namespace,
+                    OrderPropertyReference = c.OrderPropertyReference,
+                    OwnTags = c.OwnTags,
+                    PluralName = c.PluralName,
+                    PreservePropertyCasing = c.PreservePropertyCasing,
+                    PropertyAnnotationReferences = c.PropertyAnnotationReferences,
+                    Readonly = c.Readonly,
+                    Reference = c.Reference,
+                    SqlName = c.SqlName,
+                    Translation = c.Translation,
+                    Trigram = c.Trigram,
+                    ValueReferences = c.ValueReferences,
+                };
+
+                nc.FromMappers.AddRange(
+                    c.FromMappers.Select(fm =>
+                    {
+                        var nfm = new FromMapper
+                        {
+                            Class = nc,
+                            Comment = fm.Comment,
+                            Reference = fm.Reference,
+                        };
+
+                        nfm.Params.AddRange(
+                            fm.Params.Select(p =>
+                                p.Match<OneOf<ClassMappings, PropertyMapping>>(
+                                    pc => new ClassMappings
+                                    {
+                                        ClassReference = pc.ClassReference,
+                                        Comment = pc.Comment,
+                                        MappingReferences = pc.MappingReferences,
+                                        Name = pc.Name,
+                                        Required = pc.Required,
+                                    },
+                                    pp => new PropertyMapping
+                                    {
+                                        FromMapper = nfm,
+                                        Property = pp.Property.CloneDefinition(),
+                                        TargetPropertyReference = pp.TargetPropertyReference,
+                                    }
+                                )
+                            )
+                        );
+
+                        foreach (var pp in nfm.PropertyParams)
+                        {
+                            foreach (var prop in pp.Properties)
+                            {
+                                prop.PropertyMapping = pp;
+                            }
+                        }
+
+                        return nfm;
+                    })
+                );
+
+                nc.Indexes.AddRange(
+                    c.Indexes.Select(i => new IndexDefinition
+                    {
+                        Class = nc,
+                        PropertyReferences = i.PropertyReferences,
+                        Unique = i.Unique,
+                    })
+                );
+
+                nc.Properties.AddRange(c.Properties.Select(p => p.CloneDefinition()));
+                foreach (var prop in nc.Properties)
+                {
+                    prop.Class = nc;
+                }
+
+                nc.ToMappers.AddRange(
+                    c.ToMappers.Select(tm => new ClassMappings
+                    {
+                        ClassReference = tm.ClassReference,
+                        Comment = tm.Comment,
+                        MappingReferences = tm.MappingReferences,
+                        Name = tm.Name,
+                        Required = tm.Required,
+                        To = true,
+                    })
+                );
+
+                return nc;
+            })
+        );
+
+        newFile.Converters.AddRange(
+            file.Converters.Select(c => new Converter
+            {
+                DomainsFromReferences = c.DomainsFromReferences,
+                DomainsToReferences = c.DomainsToReferences,
+                Implementations = c.Implementations,
+                Location = c.Location,
+                ModelFile = newFile,
+            })
+        );
+
+        newFile.DataFlows.AddRange(
+            file.DataFlows.Select(df =>
+            {
+                var ndf = new DataFlow
+                {
+                    ActivePropertyReference = df.ActivePropertyReference,
+                    ClassReference = df.ClassReference,
+                    DependsOnReference = df.DependsOnReference,
+                    Hooks = df.Hooks,
+                    Location = df.Location,
+                    ModelFile = newFile,
+                    Name = df.Name,
+                    Target = df.Target,
+                    Type = df.Type,
+                };
+
+                ndf.Sources.AddRange(
+                    df.Sources.Select(s => new DataFlowSource
+                    {
+                        ClassReference = s.ClassReference,
+                        DataFlow = ndf,
+                        InnerJoin = s.InnerJoin,
+                        JoinPropertyReferences = s.JoinPropertyReferences,
+                        Mode = s.Mode,
+                        Source = s.Source,
+                    })
+                );
+
+                return ndf;
+            })
+        );
+
+        newFile.Decorators.AddRange(
+            file.Decorators.Select(d =>
+            {
+                var nd = new Decorator
+                {
+                    AnnotationReferences = d.AnnotationReferences,
+                    DecoratorReferences = d.DecoratorReferences,
+                    Description = d.Description,
+                    ExcludedAnnotationReferences = d.ExcludedAnnotationReferences,
+                    Implementations = d.Implementations,
+                    Location = d.Location,
+                    ModelFile = newFile,
+                    Name = d.Name,
+                    Namespace = d.Namespace,
+                    PreservePropertyCasing = d.PreservePropertyCasing,
+                    PropertyAnnotationReferences = d.PropertyAnnotationReferences,
+                    Target = d.Target,
+                };
+
+                nd.TemplateParameters.AddRange(
+                    d.TemplateParameters.Select(tp => new TemplateParameter
+                    {
+                        Comment = tp.Comment,
+                        Decorator = nd,
+                        DefaultValue = tp.DefaultValue,
+                        Name = tp.Name,
+                        Required = tp.Required,
+                    })
+                );
+
+                nd.Properties.AddRange(d.Properties.Select(p => p.CloneDefinition()));
+                foreach (var prop in nd.Properties)
+                {
+                    prop.Decorator = nd;
+                }
+
+                return nd;
+            })
+        );
+
+        newFile.Domains.AddRange(
+            file.Domains.Select(d =>
+            {
+                var nd = new Domain
+                {
+                    AnnotationReferences = d.AnnotationReferences,
+                    AsDomainReferences = d.AsDomainReferences,
+                    AutoGeneratedValue = d.AutoGeneratedValue,
+                    BodyParam = d.BodyParam,
+                    Collection = d.Collection,
+                    ExcludedAnnotationReferences = d.ExcludedAnnotationReferences,
+                    Implementations = d.Implementations,
+                    Label = d.Label,
+                    Length = d.Length,
+                    Location = d.Location,
+                    MediaType = d.MediaType,
+                    ModelFile = newFile,
+                    Name = d.Name,
+                    Scale = d.Scale,
+                };
+
+                nd.TemplateParameters.AddRange(
+                    d.TemplateParameters.Select(tp => new TemplateParameter
+                    {
+                        Comment = tp.Comment,
+                        DefaultValue = tp.DefaultValue,
+                        Domain = nd,
+                        Name = tp.Name,
+                        Required = tp.Required,
+                    })
+                );
+
+                return nd;
+            })
+        );
+
+        newFile.Endpoints.AddRange(
+            file.Endpoints.Select(e =>
+            {
+                var ne = new Endpoint
+                {
+                    AnnotationReferences = e.AnnotationReferences,
+                    CustomProperties = e.CustomProperties,
+                    DecoratorReferences = e.DecoratorReferences,
+                    Description = e.Description,
+                    ExcludedAnnotationReferences = e.ExcludedAnnotationReferences,
+                    Location = e.Location,
+                    Method = e.Method,
+                    ModelFile = newFile,
+                    Name = e.Name,
+                    Namespace = e.Namespace,
+                    OwnTags = e.OwnTags,
+                    PreservePropertyCasing = e.PreservePropertyCasing,
+                    PropertyAnnotationReferences = e.PropertyAnnotationReferences,
+                    Returns = e.Returns?.CloneDefinition(),
+                    Route = e.Route,
+                };
+
+                ne.Params.AddRange(e.Params.Select(p => p.CloneDefinition()));
+                foreach (var prop in ne.Params)
+                {
+                    prop.Endpoint = ne;
+                }
+
+                ne.Returns?.Endpoint = ne;
+
+                return ne;
+            })
+        );
+
+        return newFile;
+    }
+
     private void OnFileChanged(string modelRoot, IMemoryCache cache, FileSystemEventArgs e)
     {
         cache.Set(
@@ -187,7 +502,7 @@ public class ModelFileLoader(
 
                         logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
 
-                        var files = new List<(string, ModelFile?, ModelFileStatus)>();
+                        var files = new List<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>();
 
                         if (e is RenamedEventArgs re)
                         {
@@ -209,7 +524,10 @@ public class ModelFileLoader(
                                 continue;
                             }
 
-                            await applyUpdates(files, default);
+                            await applyUpdates(
+                                files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
+                                default
+                            );
                         }
                     }
                 )

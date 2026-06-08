@@ -37,17 +37,9 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
             {
                 Changes = references
                     .Where(r => r.Reference.ReferenceName == objetName)
-                    .Select(r => new Location
-                    {
-                        Uri = new Uri(facade.GetFilePath(r.File)),
-                        Range = r.Reference.ToRange()!,
-                    })
-                    .DistinctBy(r => new
-                    {
-                        r.Uri.Path,
-                        r.Range.Start.Line,
-                        r.Range.Start.Character,
-                    })
+                    .Select(r => new { Uri = facade.GetFilePath(r.File), r.Reference })
+                    .Distinct()
+                    .Select(c => new Location { Uri = c.Uri, Range = c.Reference.ToRange()! })
                     .Select(c => new { c.Uri, TextEdit = new TextEdit { NewText = request.NewName, Range = c.Range } })
                     .GroupBy(t => t.Uri, t => t)
                     .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit)),

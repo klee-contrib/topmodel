@@ -1,59 +1,59 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
 using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer.Handlers;
 
-public class HoverHandler(LSWorkerStore workerStore, ILanguageServerFacade facade) : HoverHandlerBase
+public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
 {
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
     {
-        if (ModelStore == null)
-        {
-            return null;
-        }
-
         await workerStore.WaitForUpdates(cancellationToken);
 
-        var file = ModelStore.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
-        if (file != null)
-        {
-            var (reference, objet) = file.GetObjetAtPosition(request.Position);
+        var files = workerStore.GetFiles(request.TextDocument);
 
-            if (reference != null && objet != null)
+        var references = files
+            .Select(f => f.File.GetObjetAtPosition(request.Position))
+            .Where(r => r.Reference != null && r.Objet != null)
+            .Select(r => new
             {
-                return new Hover
+                r.Reference,
+                Contents = r.Objet switch
                 {
-                    Range = reference.ToRange(),
-                    Contents = new(
-                        new MarkedString(
-                            objet switch
-                            {
-                                Class c => c.Comment,
-                                Endpoint e => e.Description,
-                                IProperty p => p.Comment,
-                                Domain d => d.Label,
-                                Decorator d => d.Description,
-                                DecoratorInstance { Decorator: Decorator d } => d.Description,
-                                Annotation a => a.Description,
-                                AnnotationInstance { Annotation: Annotation a } => a.Description,
-                                DataFlow d => $"Flux de données '{d.Name}'",
-                                TemplateParameter tp => tp.Description,
-                                Variable v => v.Description,
-                                _ => string.Empty,
-                            }
+                    Class c => c.Comment,
+                    Endpoint e => e.Description,
+                    IProperty p => p.Comment,
+                    Domain d => d.Label,
+                    Decorator d => d.Description,
+                    DecoratorInstance { Decorator: Decorator d } => d.Description,
+                    Annotation a => a.Description,
+                    AnnotationInstance { Annotation: Annotation a } => a.Description,
+                    DataFlow d => $"Flux de données '{d.Name}'",
+                    TemplateParameter tp => tp.Description,
+                    Variable v => v.Description,
+                    _ => string.Empty,
+                },
+            })
+            .ToList();
+
+        var reference = references.GroupBy(r => r.Reference).FirstOrDefault();
+
+        if (reference != null)
+        {
+            return new Hover
+            {
+                Range = reference.Key.ToRange(),
+                Contents = new(
+                    new MarkedString(
+                        string.Join(
+                            $"{Environment.NewLine}{Environment.NewLine}",
+                            reference.Distinct().Select(r => r.Contents)
                         )
-                    ),
-                };
-            }
+                    )
+                ),
+            };
         }
 
         return null;

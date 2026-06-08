@@ -313,6 +313,54 @@ internal class AliasProperty : IProperty
         }
     }
 
+    /// <inheritdoc cref="IProperty.CloneDefinition" />
+    public IProperty CloneDefinition()
+    {
+        var alp = new AliasProperty
+        {
+            AnnotationReferences = AnnotationReferences,
+            As = As,
+            Comment = _comment!,
+            CompositionReference = CompositionReference,
+            CustomProperties = _customProperties,
+            DefaultValue = _defaultValue,
+            DiscardAssociations = DiscardAssociations,
+            DomainReference = DomainReference,
+            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
+            Label = _label,
+            Location = Location,
+            Name = _name!,
+            Prefix = Prefix,
+            PreservePrimaryKey = PreservePrimaryKey,
+            PreserveTrigram = PreserveTrigram,
+            Reference = Reference,
+            Suffix = Suffix,
+            Trigram = Trigram,
+        };
+
+        if (_primaryKey != null)
+        {
+            alp.PrimaryKey = _primaryKey.Value;
+        }
+
+        if (_required.HasValue)
+        {
+            alp.Required = _required.Value;
+        }
+
+        if (_readonly.HasValue)
+        {
+            alp.Readonly = _readonly.Value;
+        }
+
+        if (_useClass.HasValue)
+        {
+            alp.UseClass = _useClass.Value;
+        }
+
+        return alp;
+    }
+
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {

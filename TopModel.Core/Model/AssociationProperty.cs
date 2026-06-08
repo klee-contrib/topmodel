@@ -83,13 +83,13 @@ internal class AssociationProperty : IProperty
 
     public virtual IList<AnnotationInstance> Annotations { get; private set; } = [];
 
-    public virtual IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public virtual IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
     public virtual IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
 
-    public virtual IList<AnnotationReference> ExcludedAnnotationReferences { get; } = [];
+    public virtual IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<string, string> CustomProperties { get; private set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
     public string Name => this.GetAssociationName();
 
@@ -145,6 +145,54 @@ internal class AssociationProperty : IProperty
     string IProperty.TrueNamePascal => this.GetAssociationName(pascalCase: true);
 
     string IProperty.TruePropertyNamePascal => this.GetAssociationName(pascalCase: true, forcePropertyName: true);
+
+    /// <inheritdoc cref="IProperty.CloneDefinition" />
+    public IProperty CloneDefinition()
+    {
+        var ap = new AssociationProperty
+        {
+            AnnotationReferences = AnnotationReferences,
+            As = As,
+            ClassName = ClassName,
+            Comment = Comment,
+            CustomProperties = CustomProperties,
+            DefaultAssociationUseClass = DefaultAssociationUseClass,
+            DefaultValue = DefaultValue,
+            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
+            Label = Label,
+            Location = Location,
+            Multiple = Multiple,
+            PrimaryKey = PrimaryKey,
+            PropertyReference = PropertyReference,
+            Readonly = Readonly,
+            Reference = Reference,
+            Required = Required,
+            Role = Role,
+            Trigram = Trigram,
+            UseLegacyRoleName = UseLegacyRoleName,
+        };
+
+        if (_useClass.HasValue)
+        {
+            ap.UseClass = _useClass.Value;
+        }
+
+        if (WithReverse != null)
+        {
+            ap.WithReverse = new ReverseAssociationDefinition
+            {
+                AnnotationReferences = WithReverse.AnnotationReferences,
+                ClassName = WithReverse.ClassName,
+                Comment = WithReverse.Comment,
+                ExcludedAnnotationReferences = WithReverse.ExcludedAnnotationReferences,
+                Label = WithReverse.Label,
+                Location = WithReverse.Location,
+                Property = ap,
+            };
+        }
+
+        return ap;
+    }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
