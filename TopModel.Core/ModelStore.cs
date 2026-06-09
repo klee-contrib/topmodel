@@ -273,13 +273,31 @@ public class ModelStore(
             {
                 var referenceErrors = new ConcurrentBag<ModelError>();
 
-                var affectedFiles = pendingFileChanges.Values.Any(pu => pu.HasDomains)
-                    ? _modelFiles
-                    : GetAffectedFiles(
-                            pendingFileChanges.Values.Select(pu => pu.FileName),
-                            pendingFileChanges.ToDictionary(pu => pu.Value.FileName, pu => pu.Value.Status)
+                var statuses = pendingFileChanges.ToDictionary(pu => pu.Value.FileName, pu => pu.Value.Status);
+
+                bool IsValid(string fileName)
+                {
+                    return KeepFileErrorsInReferenceResolution
+                        || !statuses.TryGetValue(fileName, out var status)
+                        || status != ModelFileStatus.Errored;
+                }
+
+                var affectedFiles = _modelFiles;
+                if (!pendingFileChanges.Values.Any(pu => pu.HasDomains))
+                {
+                    var usesMap = _modelFiles
+                        .Where(f => IsValid(f.Key) && f.Value.Uses.All(d => IsValid(d.ReferenceName)))
+                        .SelectMany(f => f.Value.Uses.Select(u => (Use: u.ReferenceName, Source: f.Key)))
+                        .GroupBy(f => f.Use)
+                        .ToDictionary(f => f.Key, f => f.Select(g => g.Source).Distinct());
+
+                    affectedFiles = GetAffectedFiles(
+                            pendingFileChanges.Values.Select(pu => pu.FileName).Where(IsValid),
+                            usesMap
                         )
+                        .Distinct()
                         .ToDictionary(f => f.Name, f => f);
+                }
 
                 var levels = CoreUtils.SortWithCyclesByLevel(
                     affectedFiles.Values,
@@ -404,38 +422,26 @@ public class ModelStore(
 
     private IEnumerable<ModelFile> GetAffectedFiles(
         IEnumerable<string> fileNames,
-        IDictionary<string, ModelFileStatus> statuses,
+        IDictionary<string, IEnumerable<string>> usesMap,
         HashSet<string>? foundFiles = null
     )
     {
         foundFiles ??= [];
 
-        bool IsValid(string fileName)
+        foreach (var fileName in fileNames.Except(foundFiles))
         {
-            return KeepFileErrorsInReferenceResolution
-                || !statuses.TryGetValue(fileName, out var status)
-                || status != ModelFileStatus.Errored;
-        }
+            foundFiles.Add(fileName);
+            yield return _modelFiles[fileName];
 
-        fileNames = fileNames.Where(IsValid);
-
-        foreach (
-            var file in _modelFiles.Where(f =>
-                !foundFiles.Contains(f.Key)
-                && (
-                    fileNames.Contains(f.Key)
-                    || f.Value.Uses.Any(d => fileNames.Contains(d.ReferenceName))
-                        && f.Value.Uses.All(d => IsValid(d.ReferenceName))
+            foreach (
+                var file in GetAffectedFiles(
+                    usesMap.TryGetValue(fileName, out var uses) ? uses : [],
+                    usesMap,
+                    foundFiles
                 )
             )
-        )
-        {
-            foundFiles.Add(file.Key);
-            yield return file.Value;
-
-            foreach (var use in GetAffectedFiles([file.Key], statuses, foundFiles))
             {
-                yield return use;
+                yield return file;
             }
         }
     }

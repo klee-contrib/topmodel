@@ -36,7 +36,7 @@ public class ModelFileLoader(
 )
 {
     private static readonly ConcurrentDictionary<
-        string,
+        CacheKey,
         (
             FileSystemWatcher FileWatcher,
             IMemoryCache Cache,
@@ -142,7 +142,7 @@ public class ModelFileLoader(
 
         using var rootLock = _lockRoot.Lock(config.ModelRoot, default);
 
-        if (!_fileWatchers.TryGetValue(config.ModelRoot, out var fw))
+        if (!_fileWatchers.TryGetValue(CacheKey, out var fw))
         {
             var fileWatcher = new FileSystemWatcher(config.ModelRoot, "*.tmd")
             {
@@ -150,13 +150,13 @@ public class ModelFileLoader(
                 EnableRaisingEvents = true,
             };
 
-            _fileWatchers[config.ModelRoot] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
-            fw = _fileWatchers[config.ModelRoot];
+            _fileWatchers[CacheKey] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
+            fw = _fileWatchers[CacheKey];
 
-            fileWatcher.Changed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
-            fileWatcher.Created += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
-            fileWatcher.Deleted += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
-            fileWatcher.Renamed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Changed += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
+            fileWatcher.Created += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
+            fileWatcher.Deleted += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
+            fileWatcher.Renamed += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
         }
         else
         {
@@ -169,7 +169,7 @@ public class ModelFileLoader(
             if (fw.Configs.Count == 0)
             {
                 fw.FileWatcher.Dispose();
-                _fileWatchers.TryRemove(config.ModelRoot, out _);
+                _fileWatchers.TryRemove(CacheKey, out _);
             }
         };
     }
@@ -487,8 +487,13 @@ public class ModelFileLoader(
         return newFile;
     }
 
-    private void OnFileChanged(string modelRoot, IMemoryCache cache, FileSystemEventArgs e)
+    private void OnFileChanged(CacheKey cacheKey, IMemoryCache cache, FileSystemEventArgs e)
     {
+        if (cacheKey != CacheKey)
+        {
+            return;
+        }
+
         cache.Set(
             e.FullPath.Replace('\\', '/'),
             e,
@@ -533,7 +538,7 @@ public class ModelFileLoader(
                         if (_parallelWatch)
                         {
                             await Parallel.ForEachAsync(
-                                _fileWatchers[modelRoot].Configs,
+                                _fileWatchers[cacheKey].Configs,
                                 async (c, ct) =>
                                 {
                                     if (!c.ModelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
@@ -550,7 +555,7 @@ public class ModelFileLoader(
                         }
                         else
                         {
-                            foreach (var (modelFilePaths, applyUpdates) in _fileWatchers[modelRoot].Configs)
+                            foreach (var (modelFilePaths, applyUpdates) in _fileWatchers[cacheKey].Configs)
                             {
                                 if (!modelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
                                 {
