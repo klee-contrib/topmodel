@@ -14,6 +14,19 @@ public static class OmnisharpExtensions
         return facade.Workspace.ClientSettings.RootPath + file.Path[1..].Replace('/', Path.DirectorySeparatorChar);
     }
 
+    public static IEnumerable<T> GetInAll<T>(
+        this IEnumerable<(ModelFile File, ModelStore Store)> files,
+        Func<(ModelFile File, ModelStore Store), IEnumerable<T>> selector,
+        Func<T, object> getName
+    )
+    {
+        return files
+            .SelectMany(selector)
+            .GroupBy(getName)
+            .Where(g => g.Count() == files.Count())
+            .Select(g => g.First());
+    }
+
     public static string? GetName(this object objet)
     {
         return objet switch

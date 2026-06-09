@@ -7,6 +7,8 @@ namespace TopModel.Core.FileModel;
 
 public class ModelFile
 {
+    private List<IProperty> _properties;
+
     public Namespace Namespace { get; set; }
 
     public IList<string> Tags { get; set; } = [];
@@ -38,15 +40,22 @@ public class ModelFile
 
     public IList<DataFlow> DataFlows { get; } = [];
 
-    public IList<IProperty> Properties =>
-        Classes
-            .SelectMany(c => c.Properties)
-            .Concat(Classes.SelectMany(c => c.FromMapperProperties))
-            .Concat(Endpoints.SelectMany(e => e.Params))
-            .Concat(Endpoints.Select(e => e.Returns))
-            .Concat(Decorators.SelectMany(e => e.Properties))
-            .Where(p => p != null && p is not ReverseAssociationProperty)
-            .ToList();
+    public IList<IProperty> Properties
+    {
+        get
+        {
+            _properties ??= Classes
+                .SelectMany(c => c.Properties)
+                .Concat(Classes.SelectMany(c => c.FromMapperProperties))
+                .Concat(Endpoints.SelectMany(e => e.Params))
+                .Concat(Endpoints.Select(e => e.Returns))
+                .Concat(Decorators.SelectMany(e => e.Properties))
+                .Where(p => p != null && p is not ReverseAssociationProperty)
+                .ToList();
+
+            return _properties;
+        }
+    }
 
     public IList<IProperty> ReverseProperties =>
         Classes.SelectMany(c => c.Properties).Where(p => p is ReverseAssociationProperty).ToList();
@@ -374,6 +383,11 @@ public class ModelFile
             .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
             .DistinctBy(t => t.Item1)
             .ToDictionary(t => t.Item1, t => t.Item2);
+
+    public void ResetPropertyList()
+    {
+        _properties = null;
+    }
 
     public override string ToString()
     {

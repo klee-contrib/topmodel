@@ -65,6 +65,11 @@ internal class DecoratorResolver(
                 }
             }
         }
+
+        foreach (var modelFile in modelFiles)
+        {
+            modelFile.ResetPropertyList();
+        }
     }
 
     /// <summary>

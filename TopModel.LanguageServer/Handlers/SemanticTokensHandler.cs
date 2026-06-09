@@ -56,7 +56,7 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
             foreach (
                 var reference in files
                     .SelectMany(f => f.File.References.Keys)
-                    .DistinctBy(k => new { k.Start, k.End })
+                    .Distinct()
                     .OrderBy(r => r.Start.Line)
                     .ThenBy(r => r.Start.Column)
             )

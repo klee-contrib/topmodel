@@ -1,15 +1,13 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer.Handlers;
 
-public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade, ModelFileCache fileCache)
-    : CompletionHandlerBase
+public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCache) : CompletionHandlerBase
 {
     private static readonly char[] Separators =
     [
@@ -31,8 +29,6 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         '"',
     ];
 
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     public override Task<CompletionItem> Handle(CompletionItem request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -50,10 +46,9 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             return new();
         }
 
-        var file = ModelStore?.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
-        if (file == null || currentLine == string.Empty)
+        var files = workerStore.GetFiles(request.TextDocument);
+
+        if (!files.Any() || currentLine == string.Empty)
         {
             return new();
         }
@@ -67,7 +62,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
         var currentKey = GetCurrentKey(request).Key;
         var parentKey = GetParentKey(request).Key;
-        var useIndex = GetUseIndex(file, text);
+        var useIndex = GetUseIndex(files.First().File, text);
         if (
             parentKey == "asDomains" && currentLine[..reqChar].Contains(':')
             || currentKey == "domain"
@@ -75,50 +70,50 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             || rootObject == "converter" && (currentKey == "to" || currentKey == "from")
         )
         {
-            return CompleteDomain(request);
+            return CompleteDomain(request, files);
         }
 
         List<string> classCompleteKeys = ["association", "composition", "class", "extends"];
 
         if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
         {
-            return CompleteClass(request, file, useIndex);
+            return CompleteClass(request, files, useIndex);
         }
 
         if (currentKey == "endpoint")
         {
-            return CompleteEndpoint(request, file, useIndex);
+            return CompleteEndpoint(request, files, useIndex);
         }
 
         // Tags
         if (currentKey == "tags")
         {
-            return CompleteTag(request, file);
+            return CompleteTag(request, files);
         }
 
         // Use
         if (currentKey == "uses")
         {
-            return CompleteFile(request, file);
+            return CompleteFile(request, files);
         }
         // Décorateur
         else if (currentKey.Contains("decorator"))
         {
-            return CompleteDecorator(request, file, useIndex);
+            return CompleteDecorator(request, files, useIndex);
         }
         // Annotation
         else if (currentKey.ToLowerInvariant().Contains("annotation"))
         {
-            return CompleteAnnotation(request, file, useIndex);
+            return CompleteAnnotation(request, files, useIndex);
         }
         // DataFlow
         else if (currentKey == "dependsOn")
         {
-            return CompleteDataFlow(request, file, useIndex);
+            return CompleteDataFlow(request, files, useIndex);
         }
         else
         {
-            return CompleteProperty(request, text, currentLine, file);
+            return CompleteProperty(request, text, currentLine, files);
         }
     }
 
@@ -335,14 +330,23 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         return 0;
     }
 
-    private CompletionList CompleteAnnotation(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteAnnotation(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files,
+        int useIndex
+    )
     {
         var searchText = GetSearchText(request);
-        var availableAnnotations = new HashSet<Annotation>(ModelStore!.GetAvailableAnnotations(file));
+        var availableAnnotations = new HashSet<Annotation>(
+            files.GetInAll(f => f.Store.GetAvailableAnnotations(f.File), f => (f.Name, f.ModelFile.Path))
+        );
 
         return new(
-            ModelStore
-                .Annotations.Where(annotation => annotation.Name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.Annotations.Where(annotation => annotation.Name.ToLower().ShouldMatch(searchText)),
+                    f => (f.Name, f.ModelFile.Path)
+                )
                 .OrderBy(annotation => annotation.Name)
                 .Select(annotation => new CompletionItem
                 {
@@ -361,7 +365,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                             new TextEdit
                             {
                                 NewText =
-                                    file.Uses.Count > 0
+                                    files.First().File.Uses.Count > 0
                                         ? $"  - {annotation.ModelFile.Name}{Environment.NewLine}"
                                         : $"uses:{Environment.NewLine}  - {annotation.ModelFile.Name}{Environment.NewLine}",
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
@@ -377,14 +381,23 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteClass(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files,
+        int useIndex
+    )
     {
         var searchText = GetSearchText(request);
-        var availableClasses = new HashSet<Class>(ModelStore!.GetAvailableClasses(file));
+        var availableClasses = new HashSet<Class>(
+            files.GetInAll(f => f.Store.GetAvailableClasses(f.File), f => (f.Name, f.ModelFile.Path))
+        );
 
         return new(
-            ModelStore
-                .Classes.Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.Classes.Where(classe => classe.Name.ToLower().ShouldMatch(searchText)),
+                    f => (f.Name, f.ModelFile.Path)
+                )
                 .Select(classe => new CompletionItem
                 {
                     Kind = CompletionItemKind.Class,
@@ -402,7 +415,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                             new TextEdit
                             {
                                 NewText =
-                                    file.Uses.Count > 0
+                                    files.First().File.Uses.Count > 0
                                         ? $"  - {classe.ModelFile.Name}{Environment.NewLine}"
                                         : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
@@ -418,14 +431,23 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteDataFlow(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files,
+        int useIndex
+    )
     {
         var searchText = GetSearchText(request);
-        var availableDataFlows = new HashSet<DataFlow>(ModelStore!.GetAvailableDataFlows(file));
+        var availableDataFlows = new HashSet<DataFlow>(
+            files.GetInAll(f => f.Store.GetAvailableDataFlows(f.File), f => (f.Name, f.ModelFile.Path))
+        );
 
         return new(
-            ModelStore
-                .DataFlows.Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.DataFlows.Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText)),
+                    f => (f.Name, f.ModelFile.Path)
+                )
                 .OrderBy(dataFlow => dataFlow.Name)
                 .Select(dataFlow => new CompletionItem
                 {
@@ -443,7 +465,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                             new TextEdit
                             {
                                 NewText =
-                                    file.Uses.Count > 0
+                                    files.First().File.Uses.Count > 0
                                         ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}"
                                         : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
@@ -459,14 +481,23 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteDecorator(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files,
+        int useIndex
+    )
     {
         var searchText = GetSearchText(request);
-        var availableDecorators = new HashSet<Decorator>(ModelStore!.GetAvailableDecorators(file));
+        var availableDecorators = new HashSet<Decorator>(
+            files.GetInAll(f => f.Store.GetAvailableDecorators(f.File), f => (f.Name, f.ModelFile.Path))
+        );
 
         return new(
-            ModelStore
-                .Decorators.Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.Decorators.Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText)),
+                    f => (f.Name, f.ModelFile.Path)
+                )
                 .OrderBy(decorator => decorator.Name)
                 .Select(decorator => new CompletionItem
                 {
@@ -485,7 +516,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                             new TextEdit
                             {
                                 NewText =
-                                    file.Uses.Count > 0
+                                    files.First().File.Uses.Count > 0
                                         ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}"
                                         : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
@@ -501,12 +532,18 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteDomain(CompletionParams request)
+    private CompletionList CompleteDomain(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files
+    )
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore!
-                .Domains.Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.Domains.Where(domain => domain.Key.ToLower().ShouldMatch(searchText)),
+                    f => (f.Key, f.Value.ModelFile.Path)
+                )
                 .OrderBy(domain => domain.Key)
                 .Select(domain => new CompletionItem
                 {
@@ -519,14 +556,23 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteEndpoint(CompletionParams request, ModelFile file, int useIndex)
+    private CompletionList CompleteEndpoint(
+        CompletionParams request,
+        IEnumerable<(ModelFile File, ModelStore Store)> files,
+        int useIndex
+    )
     {
         var searchText = GetSearchText(request);
-        var availableEndpoints = new HashSet<Endpoint>(ModelStore!.GetAvailableEndpoints(file));
+        var availableEndpoints = new HashSet<Endpoint>(
+            files.GetInAll(f => f.Store.GetAvailableEndpoints(f.File), f => (f.Name, f.ModelFile.Path))
+        );
 
         return new(
-            ModelStore
-                .Endpoints.Where(endpoint => endpoint.Name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f => f.Store.Endpoints.Where(endpoint => endpoint.Name.ToLower().ShouldMatch(searchText)),
+                    f => (f.Name, f.ModelFile.Path)
+                )
                 .Select(endpoint => new CompletionItem
                 {
                     Kind = CompletionItemKind.Class,
@@ -544,7 +590,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                             new TextEdit
                             {
                                 NewText =
-                                    file.Uses.Count > 0
+                                    files.First().File.Uses.Count > 0
                                         ? $"  - {endpoint.ModelFile.Name}{Environment.NewLine}"
                                         : $"uses:{Environment.NewLine}  - {endpoint.ModelFile.Name}{Environment.NewLine}",
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
@@ -560,14 +606,18 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteFile(CompletionParams request, ModelFile file)
+    private CompletionList CompleteFile(CompletionParams request, IEnumerable<(ModelFile File, ModelStore Store)> files)
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore!
-                .Files.Select(f => f.Name)
-                .Except(file.Uses.Select(u => u.ReferenceName))
-                .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
+            files
+                .GetInAll(
+                    f =>
+                        f.Store.Files.Select(f => f.Name)
+                            .Except(f.File.Uses.Select(u => u.ReferenceName))
+                            .Where(name => name != f.File.Name && name.ToLower().ShouldMatch(searchText)),
+                    f => f
+                )
                 .Select(name => new CompletionItem
                 {
                     Kind = CompletionItemKind.File,
@@ -579,7 +629,12 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteProperty(CompletionParams request, string[] text, string currentLine, ModelFile file)
+    private CompletionList CompleteProperty(
+        CompletionParams request,
+        string[] text,
+        string currentLine,
+        IEnumerable<(ModelFile File, ModelStore Store)> files
+    )
     {
         // Alias, propriété d'association ou propriété de flux de données
         string? className = null;
@@ -621,7 +676,10 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedClasses = ModelStore!.GetReferencedClasses(file);
+            var r = files.GetInAll(f => f.Store.GetReferencedClasses(f.File), f => (f.Key, f.Value.ModelFile.Path));
+
+            var referencedClasses = r.ToDictionary(f => f.Key, f => f.Value);
+
             if (referencedClasses.TryGetValue(className, out var referencedClass))
             {
                 return CompleteProperty(request, referencedClass, includeExtends: false);
@@ -636,7 +694,10 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedEndpoints = ModelStore!.GetReferencedEndpoints(file);
+            var referencedEndpoints = files
+                .GetInAll(f => f.Store.GetReferencedEndpoints(f.File), f => (f.Key, f.Value.ModelFile.Path))
+                .ToDictionary(f => f.Key, f => f.Value);
+
             if (referencedEndpoints.TryGetValue(endpointName, out var referencedEndpoint))
             {
                 return CompleteProperty(request, referencedEndpoint, includeExtends: false);
@@ -651,7 +712,10 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             )
         )
         {
-            var referencedDecorators = ModelStore!.GetReferencedDecorators(file);
+            var referencedDecorators = files
+                .GetInAll(f => f.Store.GetReferencedDecorators(f.File), f => (f.Key, f.Value.ModelFile.Path))
+                .ToDictionary(f => f.Key, f => f.Value);
+
             if (referencedDecorators.TryGetValue(decoratorName, out var referencedDecorator))
             {
                 return CompleteProperty(request, referencedDecorator, includeExtends: false);
@@ -670,7 +734,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
             }
 
             className = nameLine.Split(':')[1].Trim();
-            var classe = file.Classes.SingleOrDefault(c => c.Name == className);
+            var classe = files.First().File.Classes.SingleOrDefault(c => c.Name == className);
             if (classe != null)
             {
                 var includeExtends = false;
@@ -728,7 +792,10 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                                 .Trim();
                         }
 
-                        var referencedClasses = ModelStore!.GetReferencedClasses(file);
+                        var referencedClasses = files
+                            .GetInAll(f => f.Store.GetReferencedClasses(f.File), f => (f.Key, f.Value.ModelFile.Path))
+                            .ToDictionary(f => f.Key, f => f.Value);
+
                         if (referencedClasses.TryGetValue(className, out var aliasedClass))
                         {
                             classe = aliasedClass;
@@ -781,14 +848,14 @@ public class CompletionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         );
     }
 
-    private CompletionList CompleteTag(CompletionParams request, ModelFile file)
+    private CompletionList CompleteTag(CompletionParams request, IEnumerable<(ModelFile File, ModelStore Store)> files)
     {
         var searchText = GetSearchText(request);
         return new(
-            ModelStore!
-                .Files.SelectMany(f => f.Tags)
+            files
+                .SelectMany(f => f.Store.Files.SelectMany(f => f.Tags))
                 .Distinct()
-                .Where(t => !file.Tags.Contains(t) && t.ShouldMatch(searchText))
+                .Where(t => !files.First().File.Tags.Contains(t) && t.ShouldMatch(searchText))
                 .Select(tag => new CompletionItem
                 {
                     Kind = CompletionItemKind.Keyword,

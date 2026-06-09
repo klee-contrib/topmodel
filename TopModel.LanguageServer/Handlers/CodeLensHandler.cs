@@ -77,6 +77,7 @@ public class CodeLensHandler(LSWorkerStore workerStore) : CodeLensHandlerBase
                     )
                 )
                 .SelectMany(r => r.References.Select(item => (r.Location, Reference: item)))
+                .Distinct()
                 .GroupBy(r => r.Location)
                 .Select(reference => new CodeLens
                 {

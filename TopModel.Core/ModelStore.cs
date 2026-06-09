@@ -245,7 +245,7 @@ public class ModelStore(
                     UpdateFile(fileName, modelFile);
                     hasDomains |= modelFile.Domains.Count > 0 || modelFile.Converters.Count > 0;
                 }
-                else
+                else if (status != ModelFileStatus.Errored || !KeepFileErrorsInReferenceResolution)
                 {
                     RemoveFile(fileName);
                     pendingFileDeletes.Add(fileName);
@@ -312,7 +312,7 @@ public class ModelStore(
 
                 ct.ThrowIfCancellationRequested();
 
-                foreach (var error in GetGlobalErrors())
+                foreach (var error in GetGlobalErrors(affectedFiles.Values))
                 {
                     referenceErrors.Add(error);
                 }
@@ -424,9 +424,8 @@ public class ModelStore(
                 !foundFiles.Contains(f.Key)
                 && (
                     fileNames.Contains(f.Key)
-                    || f.Value.Uses.Any(d =>
-                        fileNames.Contains(d.ReferenceName) && f.Value.Uses.All(d => IsValid(d.ReferenceName))
-                    )
+                    || f.Value.Uses.Any(d => fileNames.Contains(d.ReferenceName))
+                        && f.Value.Uses.All(d => IsValid(d.ReferenceName))
                 )
             )
         )
@@ -462,54 +461,65 @@ public class ModelStore(
         ];
     }
 
-    private IEnumerable<ModelError> GetGlobalErrors()
+    private IEnumerable<ModelError> GetGlobalErrors(IEnumerable<ModelFile> files)
     {
-        foreach (var g in Files.SelectMany(f => f.Domains).GroupBy(f => (string)f.Name).Where(g => g.Count() > 1))
+        var hasDomain = files.Any(f => f.Domains.Any());
+        var hasConverter = files.Any(f => f.Converters.Any());
+
+        if (hasDomain)
         {
-            foreach (var domain in g.Skip(1))
+            foreach (var g in Files.SelectMany(f => f.Domains).GroupBy(f => (string)f.Name).Where(g => g.Count() > 1))
             {
-                yield return new ModelError(localizer, ErrorType.TMD6001, [domain.ToString()], domain);
-            }
-        }
-
-        foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files, localizer)))
-        {
-            yield return error;
-        }
-
-        foreach (var domain in Domains.Values)
-        {
-            domain.ConvertersFrom.Clear();
-            domain.ConvertersTo.Clear();
-        }
-
-        foreach (var converter in Converters)
-        {
-            var dup = Converters.FirstOrDefault(c =>
-                Converters.IndexOf(c) < Converters.IndexOf(converter)
-                && c.Conversions.Intersect(converter.Conversions).Any()
-            );
-            if (dup != null)
-            {
-                foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
+                foreach (var domain in g.Skip(1))
                 {
-                    yield return new ModelError(localizer, ErrorType.TMD6002, [from.Name, to.Name], converter);
+                    yield return new ModelError(localizer, ErrorType.TMD6001, [domain.ToString()], domain);
                 }
             }
 
-            foreach (var from in converter.From)
+            foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files, localizer)))
             {
-                from.ConvertersFrom.Add(converter);
+                yield return error;
+            }
+        }
+
+        if (hasDomain || hasConverter)
+        {
+            foreach (var domain in Domains.Values)
+            {
+                domain.ConvertersFrom.Clear();
+                domain.ConvertersTo.Clear();
             }
 
-            foreach (var to in converter.To)
+            foreach (var converter in Converters)
             {
-                to.ConvertersTo.Add(converter);
+                var dup = Converters.FirstOrDefault(c =>
+                    Converters.IndexOf(c) < Converters.IndexOf(converter)
+                    && c.Conversions.Intersect(converter.Conversions).Any()
+                );
+                if (dup != null)
+                {
+                    foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
+                    {
+                        yield return new ModelError(localizer, ErrorType.TMD6002, [from.Name, to.Name], converter);
+                    }
+                }
+
+                foreach (var from in converter.From)
+                {
+                    from.ConvertersFrom.Add(converter);
+                }
+
+                foreach (var to in converter.To)
+                {
+                    to.ConvertersTo.Add(converter);
+                }
             }
         }
 
         foreach (
-            var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c))
+            var classe in files
+                .SelectMany(c => c.Classes)
+                .Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c))
         )
         {
             var otherClasses = Classes.Where(u => u.Trigram == classe.Trigram && u != classe);
@@ -532,9 +542,13 @@ public class ModelStore(
             yield return new ModelError(localizer, ErrorType.TMD0010, [decorator.Name], decorator, isError: false);
         }
 
-        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
+        foreach (
+            var endpointFiles in Files
+                .GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module })
+                .Where(g => g.Any(f => files.Contains(f)))
+        )
         {
-            var endpoints = files.SelectMany(f => f.Endpoints);
+            var endpoints = endpointFiles.SelectMany(f => f.Endpoints);
 
             foreach (var endpoint in endpoints.GetDuplicates(p => p.Name))
             {
@@ -548,14 +562,14 @@ public class ModelStore(
             }
 
             if (
-                files
+                endpointFiles
                     .Where(file => file.Endpoints.Any())
                     .Select(file => file.Options.Endpoints.Prefix)
                     .Distinct()
                     .Count() > 1
             )
             {
-                foreach (var file in files)
+                foreach (var file in endpointFiles)
                 {
                     if (file.Options.Endpoints.Prefix != null)
                     {
@@ -578,7 +592,7 @@ public class ModelStore(
             }
         }
 
-        foreach (var file in Files.Where(f => !f.Endpoints.Any()))
+        foreach (var file in files.Where(f => !f.Endpoints.Any()))
         {
             if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
             {
@@ -592,7 +606,7 @@ public class ModelStore(
             }
         }
 
-        foreach (var classe in Classes.Where(c => c.Extends != null))
+        foreach (var classe in files.SelectMany(f => f.Classes).Where(c => c.Extends != null))
         {
             foreach (var genConfig in config.Configs.Values.Where(c => c.Classes.Contains(classe)))
             {
@@ -607,7 +621,9 @@ public class ModelStore(
             }
         }
 
-        foreach (var endpoint in Endpoints.Where(e => e.Properties.Any(p => p.Composition != null)))
+        foreach (
+            var endpoint in files.SelectMany(f => f.Endpoints).Where(e => e.Properties.Any(p => p.Composition != null))
+        )
         {
             foreach (var genConfig in config.Configs.Values.Where(c => c.Endpoints.Contains(endpoint)))
             {

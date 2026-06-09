@@ -94,6 +94,11 @@ internal class PropertyResolver(
                 }
             }
         }
+
+        foreach (var modelFile in modelFiles)
+        {
+            modelFile.ResetPropertyList();
+        }
     }
 
     /// <summary>
@@ -331,6 +336,11 @@ internal class PropertyResolver(
                 alp.Decorator?.Properties.Remove(alp);
             }
         }
+
+        foreach (var modelFile in modelFiles)
+        {
+            modelFile.ResetPropertyList();
+        }
     }
 
     /// <summary>
@@ -479,6 +489,11 @@ internal class PropertyResolver(
             {
                 classe.Properties.Remove(rap);
             }
+        }
+
+        foreach (var modelFile in modelFiles)
+        {
+            modelFile.ResetPropertyList();
         }
 
         foreach (var prop in modelFiles.SelectMany(mf => mf.Properties).Where(p => p.SourceDecorator is null))
@@ -668,6 +683,11 @@ internal class PropertyResolver(
 
                     break;
             }
+        }
+
+        foreach (var modelFile in modelFiles)
+        {
+            modelFile.ResetPropertyList();
         }
     }
 

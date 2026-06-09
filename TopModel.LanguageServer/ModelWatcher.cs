@@ -9,6 +9,8 @@ namespace TopModel.LanguageServer;
 
 public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
 {
+    private readonly HashSet<string> _filesWithErrors = [];
+
     public string Name => "Errors";
 
     public int Number { get; init; }
@@ -22,11 +24,22 @@ public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
     /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
-        foreach (var fileErrors in errors)
+        var diagnosticsToSend = errors.Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any()).ToList();
+
+        foreach (var fileDiagnostics in diagnosticsToSend)
         {
             var diagnostics = new List<Diagnostic>();
 
-            foreach (var error in fileErrors.Value)
+            if (fileDiagnostics.Value.Any())
+            {
+                _filesWithErrors.Add(fileDiagnostics.Key.Name);
+            }
+            else
+            {
+                _filesWithErrors.Remove(fileDiagnostics.Key.Name);
+            }
+
+            foreach (var error in fileDiagnostics.Value)
             {
                 var loc = error.Location;
                 diagnostics.Add(
@@ -46,7 +59,7 @@ public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
                 new()
                 {
                     Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
-                    Uri = new Uri(facade.GetFilePath(fileErrors.Key)),
+                    Uri = new Uri(facade.GetFilePath(fileDiagnostics.Key)),
                 }
             );
         }
