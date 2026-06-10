@@ -424,7 +424,12 @@ public class ModelStore(
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                logger.LogError(e, e.Message);
+                while (e is AggregateException)
+                {
+                    e = e.InnerException!;
+                }
+
+                logger.LogError(e, $"Une erreur s'est produite lors de la mise à jour : {e.Message}");
             }
         }
     }
