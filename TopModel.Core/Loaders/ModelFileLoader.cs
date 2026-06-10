@@ -77,7 +77,8 @@ public class ModelFileLoader(
             ModelFile? modelFile = null;
             if (changeType != WatcherChangeTypes.Deleted && File.Exists(fullPath))
             {
-                modelFile = await ReadModelFile(fullPath, config, content, ct);
+                content ??= await File.ReadAllTextAsync(fullPath, ct);
+                modelFile = ReadModelFile(fullPath, config, content);
             }
 
             if (modelFile != null)
@@ -572,15 +573,9 @@ public class ModelFileLoader(
         );
     }
 
-    private async Task<ModelFile?> ReadModelFile(
-        string filePath,
-        ModelFileLoadConfig config,
-        string? content = null,
-        CancellationToken ct = default
-    )
+    private ModelFile? ReadModelFile(string filePath, ModelFileLoadConfig config, string content)
     {
         var fileName = config.GetFileName(filePath);
-        content ??= await File.ReadAllTextAsync(filePath, ct);
 
         fileChecker.CheckModelFile(filePath, content);
 

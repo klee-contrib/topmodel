@@ -15,8 +15,6 @@ namespace TopModel.LanguageServer.Handlers;
 public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade facade, ModelFileCache modelFileCache)
     : CodeActionHandlerBase
 {
-    private ModelStore? ModelStore => workerStore.ModelStore;
-
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -29,52 +27,51 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         await workerStore.WaitForUpdates(cancellationToken);
 
-        var modelFile = ModelStore?.Files.SingleOrDefault(f =>
-            facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath()
-        );
+        var files = workerStore.GetFiles(request.TextDocument);
+
         var codeActions = new List<CommandOrCodeAction>();
-        if (modelFile != null)
+        if (files.Any())
         {
-            if (
-                modelFile.Uses.Except(ModelStore!.GetUselessImports(modelFile)).Any()
-                || ModelStore!.GetUselessImports(modelFile).Any()
-            )
+            var (firstFile, firstStore) = files.First();
+
+            var uselessImports = firstStore.GetUselessImports(firstFile).ToList();
+            if (firstFile.Uses.Any() || uselessImports.Any())
             {
-                codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
+                codeActions.Add(GetCodeActionOrganizeImports(request, firstFile, uselessImports));
             }
 
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
                 if (diagnostic.Severity == DiagnosticSeverity.Warning)
                 {
-                    codeActions.Add(GetCodeActionIgnoreWarning(request, diagnostic, modelFile));
+                    codeActions.Add(GetCodeActionIgnoreWarning(request, diagnostic, firstFile));
                 }
 
                 var modelErrorType = Enum.Parse<ErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
                     case ErrorType.TMD0002:
-                        codeActions.AddRange(GetCodeActionMissingClassImport(request, diagnostic, modelFile));
-                        codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingClassImport(request, diagnostic, files));
+                        codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, firstFile));
                         break;
                     case ErrorType.TMD0003:
-                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic));
+                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, files));
                         break;
                     case ErrorType.TMD0005:
-                        codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, files));
                         break;
                     case ErrorType.TMD0006:
-                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, files));
                         break;
                     case ErrorType.TMD2001:
-                        codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
-                        codeActions.AddRange(GetCodeActionAddAnnotation(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, files));
+                        codeActions.AddRange(GetCodeActionAddAnnotation(request, diagnostic, firstFile));
                         break;
                     case ErrorType.TMD4002:
-                        codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, files));
                         break;
                     case ErrorType.TMD9008:
-                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingWithReverseImport(diagnostic, files));
                         break;
                     default:
                         break;
@@ -105,7 +102,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddAnnotation(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile firstFile
     )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
@@ -125,7 +122,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(facade.GetFilePath(firstFile))] =
                         [
                             new()
                             {
@@ -150,7 +147,7 @@ annotation:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile firstFile
     )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
@@ -168,7 +165,7 @@ annotation:
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(facade.GetFilePath(firstFile))] =
                         [
                             new()
                             {
@@ -192,15 +189,20 @@ class:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(
         CodeActionParams request,
-        Diagnostic diagnostic
+        Diagnostic diagnostic,
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
         var text = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text[diagnostic.Range.Start.Line];
         var domainName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
 
-        return ModelStore!
-            .Files.Where(f => f.Domains.Count > 0)
+        var stores = files.Select(f => f.Store);
+        return stores
+            .SelectMany(store => store.Files.Where(f => f.Domains.Count > 0).Select(file => (store, file)))
+            .GroupBy(f => (f.file.Name, f.file.Path))
+            .Where(g => g.Count() == stores.Count())
+            .Select(g => g.First().file)
             .Select(f =>
             {
                 var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
@@ -239,7 +241,7 @@ domain:
     protected CommandOrCodeAction GetCodeActionIgnoreWarning(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        ModelFile firstFile
     )
     {
         var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
@@ -277,7 +279,7 @@ domain:
                 {
                     Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [new Uri(facade.GetFilePath(modelFile))] =
+                        [new Uri(facade.GetFilePath(firstFile))] =
                         [
                             new()
                             {
@@ -296,99 +298,104 @@ domain:
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore!
-            .Annotations.Where(c => c.Name == decoratorName)
-            .Select(annotationToImport =>
-                GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex)
-            );
+        var firstFile = files.First().File;
+        var (annotationName, useIndex) = GetImport(request, diagnostic, firstFile);
+
+        return files
+            .GetInAll(f => f.Store.Annotations.Where(c => c.Name == annotationName), f => (f.Name, f.ModelFile.Path))
+            .Select(annotation => GetFileImportAction(diagnostic, firstFile, annotation.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (className, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore!
-            .Classes.Where(c => c.Name == className)
-            .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
+        var firstFile = files.First().File;
+        var (className, useIndex) = GetImport(request, diagnostic, firstFile);
+        return files
+            .GetInAll(f => f.Store.Classes.Where(c => c.Name == className), f => (f.Name, f.ModelFile.Path))
+            .Select(classe => GetFileImportAction(diagnostic, firstFile, classe.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDataFlowImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (dataFlowName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore!
-            .DataFlows.Where(c => c.Name == dataFlowName)
-            .Select(decoratorToImport =>
-                GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
-            );
+        var firstFile = files.First().File;
+        var (dataFlowName, useIndex) = GetImport(request, diagnostic, firstFile);
+        return files
+            .GetInAll(f => f.Store.DataFlows.Where(c => c.Name == dataFlowName), f => (f.Name, f.ModelFile.Path))
+            .Select(dataFlow => GetFileImportAction(diagnostic, firstFile, dataFlow.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore!
-            .Decorators.Where(c => c.Name == decoratorName)
-            .Select(decoratorToImport =>
-                GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex)
-            );
+        var firstFile = files.First().File;
+        var (decoratorName, useIndex) = GetImport(request, diagnostic, firstFile);
+        return files
+            .GetInAll(f => f.Store.Decorators.Where(c => c.Name == decoratorName), f => (f.Name, f.ModelFile.Path))
+            .Select(decorator => GetFileImportAction(diagnostic, firstFile, decorator.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingEndpointImport(
         CodeActionParams request,
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (endpointName, useIndex) = GetImport(request, diagnostic, modelFile);
-        return ModelStore!
-            .Endpoints.Where(c => c.Name == endpointName)
-            .Select(endpointToImport =>
-                GetFileImportAction(diagnostic, modelFile, endpointToImport.ModelFile, useIndex)
-            );
+        var firstFile = files.First().File;
+        var (endpointName, useIndex) = GetImport(request, diagnostic, firstFile);
+        return files
+            .GetInAll(f => f.Store.Endpoints.Where(c => c.Name == endpointName), f => (f.Name, f.ModelFile.Path))
+            .Select(endpoint => GetFileImportAction(diagnostic, firstFile, endpoint.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingWithReverseImport(
         Diagnostic diagnostic,
-        ModelFile modelFile
+        IEnumerable<(ModelFile File, ModelStore Store)> files
     )
     {
-        var (_, objet) = modelFile.GetObjetAtPosition(diagnostic.Range.Start);
+        var firstFile = files.First().File;
 
-        if (objet is not Class)
+        var objets = files.Select(f => f.File.GetObjetAtPosition(diagnostic.Range.Start).Objet);
+
+        if (objets.Any(o => o is not Class))
         {
             return [];
         }
 
+        var objet = objets.First()!;
         var targetFile = objet.GetFile();
         var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
-        return ModelStore!
-            .Classes.Where(c => c.Name == className)
+        return files
+            .GetInAll(f => f.Store.Classes.Where(c => c.Name == className), f => (f.Name, f.ModelFile.Path))
             .Select(targetClass =>
-                GetFileImportAction(diagnostic, targetClass.ModelFile, modelFile, useIndex, reverse: true)
+                GetFileImportAction(diagnostic, targetClass.ModelFile, firstFile, useIndex, reverse: true)
             );
     }
 
-    protected CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
+    protected CodeAction GetCodeActionOrganizeImports(
+        CodeActionParams request,
+        ModelFile firstFile,
+        IList<Reference> uselessImports
+    )
     {
-        var uses = modelFile.Uses.Except(ModelStore!.GetUselessImports(modelFile));
-        var start = modelFile.Uses[0].ToRange()!.Start;
-        var end = modelFile.Uses[^1].ToRange()!.End;
+        var uses = firstFile.Uses.Except(uselessImports);
+        var start = firstFile.Uses[0].ToRange()!.Start;
+        var end = firstFile.Uses[^1].ToRange()!.End;
         if (!uses.Any())
         {
             var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath()).ToList();
