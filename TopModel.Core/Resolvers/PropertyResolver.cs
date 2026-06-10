@@ -125,6 +125,12 @@ internal class PropertyResolver(
                     )
                     .ToList()
         );
+
+        if (sortedAliases.Count == 0)
+        {
+            yield break;
+        }
+
         foreach (var alp in sortedAliases)
         {
             IPropertyContainer propertyContainer;

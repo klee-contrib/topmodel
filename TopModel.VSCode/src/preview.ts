@@ -1,21 +1,21 @@
 import { autorun, makeAutoObservable } from "mobx";
-import path = require("path");
 import {
-    WebviewPanel,
     ExtensionContext,
-    Uri,
-    window,
-    workspace,
-    ViewColumn,
-    TextEditor,
-    TextDocumentChangeEvent,
-    SymbolInformation,
     Position,
     Range,
+    SymbolInformation,
+    TextDocumentChangeEvent,
+    TextEditor,
+    Uri,
+    ViewColumn,
+    WebviewPanel,
+    window,
+    workspace,
 } from "vscode";
 import { Application } from "./application";
-import { Mermaid } from "./types";
 import { t } from "./i18n";
+import { Mermaid } from "./types";
+import path = require("path");
 
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
@@ -89,7 +89,7 @@ export class TopModelPreviewPanel {
         if (this.currentFsPath) {
             return (
                 this.applications.find((c) => {
-                    if (this.currentFsPath.includes(c.modelRootFolder || "")) {
+                    if (c.modelRootFolders.some((folder) => this.currentFsPath.includes(folder))) {
                         return c;
                     }
                 }) ?? this.applications[0]
@@ -296,7 +296,7 @@ export class TopModelPreviewPanel {
     }
 
     get appTitle() {
-        return "[" + this.currentApplication.config.app + "]";
+        return "[" + this.currentApplication.workspaceFolder.name + "]";
     }
 
     get moduleTitle() {

@@ -148,6 +148,21 @@ public class ModelStore(
             .ToDictionary(c => c.Key, c => c.First());
     }
 
+    public IEnumerable<Reference> GetUselessImports(ModelFile modelFile)
+    {
+        var referencedFiles = modelFile.References.Values.Select(r => r.GetFile().Name).ToHashSet();
+        return modelFile.Uses.Where(use =>
+            use.ReferenceName == modelFile.Name
+            || !referencedFiles.Contains(use.ReferenceName)
+                && _modelFiles.ContainsKey(use.ReferenceName)
+                && !(
+                    _modelFiles.TryGetValue(use.ReferenceName, out var mf)
+                    && mf.Properties.OfType<AssociationProperty>()
+                        .Any(ap => ap.Association?.ModelFile == modelFile && ap.ReverseProperty != null)
+                )
+        );
+    }
+
     public async Task LoadFromConfig(
         bool watch = false,
         bool parallel = false,
@@ -843,12 +858,7 @@ public class ModelStore(
             referencedDecorators
         );
 
-        foreach (var error in domainResolver.ResolveDomainVariables())
-        {
-            yield return error;
-        }
-
-        foreach (var error in domainResolver.ResolveAsDomains())
+        foreach (var error in domainResolver.ResolveDomains())
         {
             yield return error;
         }
@@ -947,7 +957,7 @@ public class ModelStore(
 
         foreach (var modelFile in modelFiles)
         {
-            foreach (var use in this.GetUselessImports(modelFile))
+            foreach (var use in GetUselessImports(modelFile))
             {
                 yield return new ModelError(
                     ErrorType.TMD1003,

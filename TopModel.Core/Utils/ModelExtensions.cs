@@ -371,21 +371,6 @@ public static class ModelExtensions
         return modelStore.GetPropertyReferencesCore(property, includeTransitive, includeTransitive).Distinct();
     }
 
-    public static IEnumerable<Reference> GetUselessImports(this ModelStore modelStore, ModelFile modelFile)
-    {
-        var referencedFiles = modelFile.References.Values.Select(r => r.GetFile().Name).ToHashSet();
-        return modelFile.Uses.Where(use =>
-            use.ReferenceName == modelFile.Name
-            || (!referencedFiles.Contains(use.ReferenceName))
-                && modelStore.Files.Any(d => d.Name == use.ReferenceName)
-                && !modelStore.Files.Any(mf =>
-                    mf.Name == use.ReferenceName
-                    && mf.Properties.OfType<AssociationProperty>()
-                        .Any(ap => ap.Association?.ModelFile == modelFile && ap.ReverseProperty != null)
-                )
-        );
-    }
-
     private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(
         this ModelStore modelStore,
         IProperty property,

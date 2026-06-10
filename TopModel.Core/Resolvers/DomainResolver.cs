@@ -14,49 +14,6 @@ internal class DomainResolver(
 )
 {
     /// <summary>
-    /// Résout les `asDomains` sur les domaines.
-    /// </summary>
-    /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveAsDomains()
-    {
-        foreach (var domain in modelFiles.SelectMany(mf => mf.Domains))
-        {
-            foreach (var (asName, domainReference) in domain.AsDomainReferences)
-            {
-                if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
-                {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0003,
-                        [domainReference.ReferenceName],
-                        domain,
-                        domainReference
-                    );
-                    continue;
-                }
-
-                domain.AsDomains[asName] = asDomain;
-            }
-
-            foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    domain,
-                    templateParam.GetLocation()
-                );
-            }
-
-            if (domain.Collection && !domain.Generic)
-            {
-                yield return new ModelError(localizer, ErrorType.TMD6004, [], domain, domain.GetLocation());
-            }
-        }
-    }
-
-    /// <summary>
     /// Résout les convertisseurs.
     /// </summary>
     /// <returns>Erreurs.</returns>
@@ -113,14 +70,47 @@ internal class DomainResolver(
     }
 
     /// <summary>
-    /// Résout les variables dans les domaines.
+    /// Résout les domaines (as et variables).
     /// </summary>
     /// <param name="config">Config.</param>
     /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveDomainVariables()
+    public IEnumerable<ModelError> ResolveDomains()
     {
         foreach (var domain in modelFiles.SelectMany(mf => mf.Domains))
         {
+            foreach (var (asName, domainReference) in domain.AsDomainReferences)
+            {
+                if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD0003,
+                        [domainReference.ReferenceName],
+                        domain,
+                        domainReference
+                    );
+                    continue;
+                }
+
+                domain.AsDomains[asName] = asDomain;
+            }
+
+            foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    domain,
+                    templateParam.GetLocation()
+                );
+            }
+
+            if (domain.Collection && !domain.Generic)
+            {
+                yield return new ModelError(localizer, ErrorType.TMD6004, [], domain, domain.GetLocation());
+            }
+
             domain.Variables.Clear();
 
             foreach (var varName in domain.VariableReferences)

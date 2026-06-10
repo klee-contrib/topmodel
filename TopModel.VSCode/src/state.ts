@@ -56,7 +56,7 @@ export class State {
                 return t("loading");
             case "WARNING":
             case "READY":
-                let tooltip = t("started", [this.applications.map((app) => app.config.app).join(", ")]);
+                let tooltip = t("started", [this.applications.map((app) => app.workspaceFolder.name).join(", ")]);
 
                 if (this.tools.modgen.updateAvailable) {
                     tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.modgen.name])}`;

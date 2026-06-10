@@ -1,3 +1,4 @@
+import { groupBy } from "es-toolkit";
 import * as fs from "fs";
 import { configure } from "mobx";
 import { ExtensionContext, Uri, window, workspace } from "vscode";
@@ -20,7 +21,20 @@ export async function activate(ctx: ExtensionContext) {
         const installed = await checkDotnetInstall();
         if (installed) {
             const confs = await findConfFiles();
-            const applications = confs.map((conf) => new Application(conf.file.fsPath, conf.config, ctx, confs));
+
+            const applications = Object.entries(
+                groupBy(
+                    confs,
+                    (conf) =>
+                        workspace.workspaceFolders?.find((w) =>
+                            conf.file.fsPath.toLowerCase().includes(w.uri.fsPath.toLowerCase()),
+                        )!.name!,
+                ),
+            ).map(
+                ([workspaceName, confs]) =>
+                    new Application(workspace.workspaceFolders!.find((w) => w.name === workspaceName)!, confs, ctx),
+            );
+
             state = new State(ctx);
             state.applications.push(...applications);
         }
