@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.3.0
+version: 4.4.0
 modules:
   jpa:
     version: 4.2.5
@@ -14,8 +14,8 @@ modules:
     version: 4.1.5
     hash: 70f84ebe636e884a18bbb458d7078d3b
   javascript:
-    version: 4.2.2
-    hash: b68d1c5f74a603161e2cd1ce3fbbb624
+    version: 4.2.4
+    hash: 25eb883fb25fd86a73efc139de65c5bd
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
   - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs

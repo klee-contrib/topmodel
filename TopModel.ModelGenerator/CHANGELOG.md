@@ -1,5 +1,9 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 4.1.0
+
+Intégration des évolutions sur la gestion des configs de `modgen`, mais `tmdgen` pouvant déjà relancer la génération en mode `--watch`, la seule nouveauté est le mode `--parallel`.
+
 ## 4.0.0
 
 - [`4a2d5a6`](https://github.com/klee-contrib/topmodel/commit/4a2d5a6fc0b8878075648c224de3c8d352c8a5a7) - [tmdgen - openapi] Enums générées par défaut en enum: true, + config useEnumClasses pour readonly: true à la place

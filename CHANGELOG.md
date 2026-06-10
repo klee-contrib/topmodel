@@ -8,6 +8,27 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.4.0
+
+(Beaucoup trop de PRs/commits pour tous les lister 😅) - Refonte du lancement des configs et --parallel
+
+Cette version inclus un refactoring important de TopModel autour de la façon dont sont lancées chacune des configurations trouvées au lancement de `modgen` :
+
+- `--watch` relance désormais la génération de la config de zéro si le fichier de config associé change.
+- `--parallel` permet de lancer l'ensemble des configurations trouvées en parallèle (au lieu d'une par une). A noter que les logs sont totalement mélangés si vous activez cette option, mais cela devrait tout de même fournir une accélération notable de votre génération multi-config.
+
+Ce refactoring prend tout son sens lorsqu'on l'applique dans le Language Server de l'extension VSCode :
+
+- Une seule instance du serveur est désormais lancée pour l'ensemble des configurations de votre workspace (qui est exactement équivalent à lancer `modgen --watch --parallel` sur l'ensemble du workspace), et le serveur est capable de répondre à des requêtes de n'importe quel fichier issu de n'importe quelle config, y compris si un fichier fait partie de plusieurs configurations (le serveur aggrégera les réponses aux requêtes pour chaque configuration). De plus, le serveur relance tout seul une configuration si son fichier de configuration change.
+
+  Auparavant, l'extension lançait autant de serveur qu'il y avait de configs, et essayait de n'en lancer qu'un seul (au hasard) si des fichiers étaient partagés entre deux configurations. De plus, chaque changement de configuration provoquait une tentative de redémarrage du serveur associé (et l'extension essayait de valider que la config était valide avant de lancer).
+
+  On remplace donc beaucoup de comportements approximatifs par des implémentations robustes et déterministes, gérées aux bons endroits.
+
+Beaucoup d'optimisations et de refontes internes ont été réalisées pour faire fonctionner ces évolutions, dont vous bénéficierez également même si vous faites des projets simples avec une seule configuration (ce qui est ce que la plupart des gens font 😅).
+
+Néanmoins, on ne peut quand même pas faire de miracles, et TopModel prendra toujours un peu de temps à traiter une vingtaine de configs avec 1500 fichiers chacune en même temps... Sachant que l'extension VSCode va maintenant elle aussi bien prendre en compte cette complexité... Si vous constatez des ralentissements dans ce genre de cas de figures suite à la montée de version, n'oubliez pas que vous avez `modelFilePaths` dans chaque configuration pour restreindre le nombre de fichier traité...
+
 ## 4.3.0
 
 - [`d600829`](https://github.com/klee-contrib/topmodel/commit/d600829c1e511a83e497f75abab25120aeca964a) - [Core] `discardAssociations: true` sur un alias
