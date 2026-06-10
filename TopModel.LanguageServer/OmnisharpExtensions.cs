@@ -11,7 +11,12 @@ public static class OmnisharpExtensions
 {
     public static string GetFilePath(this ILanguageServerFacade facade, ModelFile file)
     {
-        return facade.Workspace.ClientSettings.RootPath + file.Path[1..].Replace('/', Path.DirectorySeparatorChar);
+        return facade.GetFilePath(file.Path);
+    }
+
+    public static string GetFilePath(this ILanguageServerFacade facade, string path)
+    {
+        return facade.Workspace.ClientSettings.RootPath + path[1..].Replace('/', Path.DirectorySeparatorChar);
     }
 
     public static IEnumerable<T> GetInAll<T>(

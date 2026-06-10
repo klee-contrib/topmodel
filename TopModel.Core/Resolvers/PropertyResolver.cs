@@ -383,12 +383,12 @@ internal class PropertyResolver(
                 break;
             }
 
-            if (ap.Multiple && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
+            if (ap.Multiple && ap.Property?.Domain != null && !ap.Property.Domain.AsDomains.ContainsKey(ap.As))
             {
                 yield return new ModelError(
                     localizer,
                     ErrorType.TMD9003,
-                    [ap.Property?.Domain.Name ?? string.Empty, ap.As],
+                    [ap.Property.Domain.Name ?? string.Empty, ap.As],
                     ap,
                     ap.Reference
                 );

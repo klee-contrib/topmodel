@@ -6,8 +6,18 @@ using Spectre.Console;
 
 namespace TopModel.Utils.Cli;
 
-public class TopModelCommand<TDescription> : IDisposable
+/// <summary>
+/// Commande TopModel.
+/// </summary>
+/// <typeparam name="TDescription">Enum pour les messages de CLI.</typeparam>
+/// <typeparam name="TConfig">Type de la config.</typeparam>
+/// <typeparam name="TFileChecker">Type de désérialiseur / vérificateur de schéma.</typeparam>
+/// <typeparam name="TWorker">Type du worker associé aux configs.</typeparam>
+public class TopModelCommand<TDescription, TConfig, TFileChecker, TWorker> : IDisposable
     where TDescription : struct, Enum
+    where TConfig : ConfigBase
+    where TFileChecker : AbstractFileChecker<TConfig>, new()
+    where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
 {
     private readonly Option<bool> CheckOption = new("--check", "-c")
     {
@@ -27,7 +37,7 @@ public class TopModelCommand<TDescription> : IDisposable
     };
 
     private readonly RootCommand _command;
-    private readonly IList<IDisposable> _configObservers = [];
+    private readonly IList<IConfigObserver> _configObservers = [];
     private readonly CancellationTokenSource _cts = new();
     private readonly bool _noLog;
     private List<FileInfo> _configs = [];
@@ -55,9 +65,15 @@ public class TopModelCommand<TDescription> : IDisposable
         };
     }
 
+    public ParseResult Args { get; }
+
     public CancellationToken CancellationToken => _cts.Token;
 
-    public ParseResult Args { get; }
+    public TFileChecker FileChecker { get; } = new TFileChecker();
+
+    public LoggerProvider LoggerProvider { get; } = new();
+
+    public Action? OnConfigRestart { get; set; }
 
     /// <summary>
     /// Vérifie la version de l'outil et récupère les configs à traiter.
@@ -164,22 +180,11 @@ public class TopModelCommand<TDescription> : IDisposable
     /// <summary>
     /// Lance les configs trouvées.
     /// </summary>
-    /// <typeparam name="TConfig">Type de la config.</typeparam>
-    /// <typeparam name="TFileChecker">Type de désérialiseur / vérificateur de schéma.</typeparam>
-    /// <typeparam name="TWorker">Type du worker associé aux configs.</typeparam>
     /// <param name="configurator">Configurateur pour le worker.</param>
     /// <param name="onDispose">Appelé lorsque que le worker est arrêté/redémarré.</param>
     /// <returns>Exit Code.</returns>
-    public async Task<int> RunConfigs<TConfig, TFileChecker, TWorker>(
-        Action<TWorker>? configurator = null,
-        Action<TWorker>? onDispose = null
-    )
-        where TConfig : ConfigBase
-        where TFileChecker : AbstractFileChecker<TConfig>, new()
-        where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
+    public async Task<int> RunConfigs(Action<TWorker>? configurator = null, Action<TWorker>? onDispose = null)
     {
-        var loggerProvider = new LoggerProvider();
-
         var watchMode = Args.GetValue(WatchOption);
         var checkMode = Args.GetValue(CheckOption);
         var parallelMode = Args.GetValue(ParallelOption);
@@ -204,8 +209,6 @@ public class TopModelCommand<TDescription> : IDisposable
             AnsiConsole.LogInformation(CliMessage.ConfigFilesFound);
         }
 
-        var fileChecker = new TFileChecker();
-
         for (var i = 0; i < _configs.Count; i++)
         {
             var config = _configs[i];
@@ -216,13 +219,14 @@ public class TopModelCommand<TDescription> : IDisposable
             _configObservers.Add(
                 new ConfigObserver<TConfig, TFileChecker, TWorker>(
                     config,
-                    fileChecker,
-                    loggerProvider,
+                    FileChecker,
+                    LoggerProvider,
                     watchMode,
                     parallelMode,
                     i,
                     configurator,
-                    onDispose
+                    onDispose,
+                    OnConfigRestart
                 )
                 {
                     NoLog = _noLog,
@@ -239,7 +243,7 @@ public class TopModelCommand<TDescription> : IDisposable
                     _cts.Token,
                     async (configObserver, cancellationToken) =>
                     {
-                        await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(cancellationToken);
+                        await configObserver.Start(cancellationToken);
                     }
                 );
             }
@@ -247,7 +251,7 @@ public class TopModelCommand<TDescription> : IDisposable
             {
                 foreach (var configObserver in _configObservers)
                 {
-                    await ((ConfigObserver<TConfig, TFileChecker, TWorker>)configObserver).Start(_cts.Token);
+                    await configObserver.Start(_cts.Token);
                 }
             }
 
@@ -266,14 +270,14 @@ public class TopModelCommand<TDescription> : IDisposable
                 return 1;
             }
 
-            if (checkMode && loggerProvider.Changes > 0)
+            if (checkMode && LoggerProvider.Changes > 0)
             {
                 AnsiConsole.WriteLine();
                 AnsiConsole.LogError(
-                    loggerProvider.Changes == 1
+                    LoggerProvider.Changes == 1
                         ? CliMessage.OneFileModifiedInCheckMode
                         : CliMessage.MultipleFilesModifiedInCheckMode,
-                    loggerProvider.Changes
+                    LoggerProvider.Changes
                 );
 
                 return 1;

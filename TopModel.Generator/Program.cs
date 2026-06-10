@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using TopModel.Core;
@@ -20,7 +21,7 @@ var updateOption = new Option<string>("--update", "-u")
     Description = GeneratorMessage.UpdateOptionDescription.GetMessage(),
 };
 
-using var command = new TopModelCommand<GeneratorMessage>(
+using var command = new TopModelCommand<GeneratorMessage, ModelConfig, FileChecker, ModgenWorker>(
     GeneratorMessage.RootCommandDescription,
     args,
     excludeOption,
@@ -53,8 +54,16 @@ if (updateMode != null)
     await NugetUtils.ClearAsync(command.CancellationToken);
 }
 
-return await command.RunConfigs<ModelConfig, FileChecker, ModgenWorker>(worker =>
+var modelFileLoader = new ServiceCollection()
+    .AddLogging(builder => builder.AddProvider(command.LoggerProvider))
+    .AddModelFileLoader(command.FileChecker)
+    .BuildServiceProvider()
+    .GetRequiredService<ModelFileLoader>();
+
+return await command.RunConfigs(worker =>
 {
+    worker.Services.AddSingleton(modelFileLoader);
+
     worker.UpdateMode = updateMode;
     worker.ExcludedTags = excludedTags;
     worker.SchemaMode = schemaMode;

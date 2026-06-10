@@ -9,7 +9,7 @@ namespace TopModel.Core.Loaders;
 public class DataFlowLoader : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var dataFlow = new DataFlow() { ModelFile = modelFile, Location = location };
         modelFile.DataFlows.Add(dataFlow);

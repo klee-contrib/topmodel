@@ -5,10 +5,9 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
+public class PropertyLoader(FileChecker fileChecker)
 {
-    /// <inheritdoc cref="ILoader.Load" />
-    public IProperty Load(Parser parser, ModelFile modelFile)
+    public IProperty Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
@@ -102,8 +101,8 @@ public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig)
                 var ap = new AssociationProperty
                 {
                     Location = new Reference(s),
-                    DefaultAssociationUseClass = modelConfig.DefaultAssociationUseClass,
-                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames,
+                    DefaultAssociationUseClass = config.DefaultAssociationUseClass,
+                    UseLegacyRoleName = config.UseLegacyRoleNames,
                 };
 
                 while (parser.Current is not MappingEnd)

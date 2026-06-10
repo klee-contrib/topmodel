@@ -66,7 +66,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             .AddTransient<ILoggerFactory, LoggerFactory>()
             .AddSingleton<ILoggerProvider>(LoggerProvider)
             .AddSingleton<IFileWriterProvider>(new GeneratedFileWriterProvider(Config))
-            .AddModelStore(FileChecker, Config);
+            .AddModelStore(Config);
     }
 
     public override async Task Run(CancellationToken cancellationToken)

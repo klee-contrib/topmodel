@@ -1,30 +1,50 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Document;
+﻿using System.Collections.Concurrent;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
+using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
+public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 {
     private readonly HashSet<string> _filesWithErrors = [];
 
-    public string Name => "Errors";
+    private readonly ConcurrentBag<KeyValuePair<ModelFile, IEnumerable<ModelError>>> _pendingErrors = [];
 
-    public int Number { get; init; }
+    private bool _hasChange;
 
-    public IEnumerable<string>? GeneratedFiles => null;
-
-    public bool Disabled => false;
-
-    public CancellationToken? CancellationToken { get; set; }
-
-    /// <inheritdoc cref="IModelWatcher.OnErrors" />
-    public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
+    /// <inheritdoc cref="IModelReporter.RegisterChange" />
+    public void RegisterChange()
     {
-        var diagnosticsToSend = errors.Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any()).ToList();
+        _hasChange = true;
+    }
+
+    /// <inheritdoc cref="IModelReporter.RegisterErrors" />
+    public void RegisterErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
+    {
+        foreach (var error in errors)
+        {
+            _pendingErrors.Add(error);
+        }
+    }
+
+    /// <inheritdoc cref="IModelReporter.Report" />
+    public void Report(bool refresh = false)
+    {
+        if (_hasChange)
+        {
+            facade.SendNotification("filesChanged");
+            _hasChange = false;
+        }
+
+        var diagnosticsToSend = _pendingErrors
+            .GroupBy(e => (e.Key.Name, e.Key.Path))
+            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Location)))
+            .Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any())
+            .ToList();
 
         foreach (var fileDiagnostics in diagnosticsToSend)
         {
@@ -59,21 +79,16 @@ public class ModelWatcher(ILanguageServerFacade facade) : IModelWatcher
                 new()
                 {
                     Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
-                    Uri = new Uri(facade.GetFilePath(fileDiagnostics.Key)),
+                    Uri = new Uri(facade.GetFilePath(fileDiagnostics.Key.Path)),
                 }
             );
+
+            _pendingErrors.Clear();
         }
-    }
 
-    /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
-    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
-    {
-        facade.SendNotification("filesChanged");
-    }
-
-    /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
-    public void OnFilesDeleted(IEnumerable<string> fileNames)
-    {
-        facade.SendNotification("filesChanged");
+        if (refresh)
+        {
+            facade.Workspace.SendSemanticTokensRefresh(new());
+        }
     }
 }

@@ -4,6 +4,12 @@ using Spectre.Console;
 
 namespace TopModel.Utils.Cli;
 
+#pragma warning disable MA0048
+public interface IConfigObserver : IDisposable
+{
+    Task Start(CancellationToken cancellationToken);
+}
+
 public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     FileInfo configInfo,
     TFileChecker fileChecker,
@@ -12,8 +18,9 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     bool parallelMode,
     int configIndex,
     Action<TWorker>? configurator = null,
-    Action<TWorker>? onDispose = null
-) : IDisposable
+    Action<TWorker>? onDispose = null,
+    Action? onRestart = null
+) : IConfigObserver
     where TConfig : ConfigBase
     where TFileChecker : AbstractFileChecker<TConfig>
     where TWorker : TopModelWorker<TConfig, TFileChecker>, new()
@@ -41,6 +48,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         fsCache.Dispose();
     }
 
+    /// <inheritdoc cref="IConfigObserver.Start" />
     public async Task Start(CancellationToken cancellationToken)
     {
         if (watchMode)
@@ -72,6 +80,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         }
 
         await Run(cancellationToken);
+        onRestart?.Invoke();
     }
 
     private async Task Run(CancellationToken cancellationToken)

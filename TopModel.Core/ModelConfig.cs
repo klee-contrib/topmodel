@@ -69,13 +69,6 @@ public class ModelConfig : ConfigBase
                 }
             );
 
-    public string GetFileName(string filePath)
-    {
-        return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)
-            .Replace(".tmd", string.Empty)
-            .Replace('\\', '/');
-    }
-
     public override ModelConfig Init(string rootDir)
     {
         ConfigRoot = rootDir;

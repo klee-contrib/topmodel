@@ -2,7 +2,10 @@
 using TopModel.ModelGenerator;
 using TopModel.Utils.Cli;
 
-using var command = new TopModelCommand<ModelGeneratorMessage>(ModelGeneratorMessage.RootCommandDescription, args);
+using var command = new TopModelCommand<ModelGeneratorMessage, ModelGeneratorConfig, TmdGenFileChecker, TmdGenWorker>(
+    ModelGeneratorMessage.RootCommandDescription,
+    args
+);
 
 if (await command.IsHelpOrVersionRequested())
 {
@@ -14,4 +17,4 @@ if (await command.CheckVersionAndFindConfigs("TopModel.ModelGenerator", new Rege
     return 1;
 }
 
-return await command.RunConfigs<ModelGeneratorConfig, TmdGenFileChecker, TmdGenWorker>();
+return await command.RunConfigs();

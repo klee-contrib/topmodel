@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
+using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Server;
 using TopModel.Core;
 using TopModel.Core.Loaders;
@@ -8,10 +8,19 @@ using TopModel.LanguageServer;
 using TopModel.LanguageServer.Handlers;
 using TopModel.Utils.Cli;
 
-var fixedArgs = !args.Contains("-w") && !args.Contains("--watch") ? args.Concat(["-w"]) : args;
-fixedArgs = !args.Contains("-p") && !args.Contains("--parallel") ? args.Concat(["-p"]) : args;
+IList<string> fixedArgs = [.. args];
 
-using var command = new TopModelCommand<CliMessage>("TopModel LS", fixedArgs);
+if (!args.Contains("-w") && !args.Contains("--watch"))
+{
+    fixedArgs.Add("-w");
+}
+
+if (!args.Contains("-p") && !args.Contains("--parallel"))
+{
+    fixedArgs.Add("-p");
+}
+
+using var command = new TopModelCommand<CliMessage, ModelConfig, FileChecker, LSWorker>("TopModel LS", fixedArgs);
 
 if (
     await command.CheckVersionAndFindConfigs(
@@ -27,8 +36,14 @@ using var server = await LanguageServer.From(options =>
     options
         .WithInput(Console.OpenStandardInput())
         .WithOutput(Console.OpenStandardOutput())
-        //.ConfigureLogging(logging => logging.AddLanguageProtocolLogging().SetMinimumLevel(LogLevel.Information))
-        .WithServices(services => services.AddSingleton<ModelFileCache>().AddSingleton<LSWorkerStore>())
+        .ConfigureLogging(logging => logging.AddLanguageProtocolLogging().SetMinimumLevel(LogLevel.Information))
+        .WithServices(services =>
+            services
+                .AddModelFileLoader(command.FileChecker)
+                .AddSingleton<ModelFileCache>()
+                .AddSingleton<LSWorkerStore>()
+                .AddSingleton<IModelReporter, LSReporter>()
+        )
         .WithHandler<TextDocumentSyncHandler>()
         .WithHandler<HoverHandler>()
         .WithHandler<SemanticTokensHandler>()
@@ -45,15 +60,25 @@ using var server = await LanguageServer.From(options =>
         .OnInitialize(
             async (provider, _, _) =>
             {
+                var lsReporter = provider.GetRequiredService<LSReporter>();
+                command.OnConfigRestart = () => lsReporter.Report(refresh: true);
+
                 var workerStore = provider.GetRequiredService<LSWorkerStore>();
-                await command.RunConfigs<ModelConfig, FileChecker, LSWorker>(
+                await command.RunConfigs(
                     worker =>
                     {
-                        worker.Services.AddSingleton(provider.GetRequiredService<ILanguageServerFacade>());
+                        worker.Services.AddSingleton<IModelReporter>(provider.GetRequiredService<LSReporter>());
+                        worker.Services.AddSingleton(provider.GetRequiredService<ModelFileLoader>());
                         workerStore.AddWorker(worker);
                     },
                     worker => workerStore.RemoveWorker(worker)
                 );
+            }
+        )
+        .OnInitialized(
+            async (provider, _, _, _) =>
+            {
+                provider.GetRequiredService<LSReporter>().Report();
             }
         )
 );

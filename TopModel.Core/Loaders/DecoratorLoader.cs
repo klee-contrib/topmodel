@@ -9,7 +9,7 @@ namespace TopModel.Core.Loaders;
 public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var decorator = new Decorator()
         {
@@ -116,7 +116,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        decorator.Properties.Add(propertyLoader.Load(parser, modelFile));
+                        decorator.Properties.Add(propertyLoader.Load(parser, modelFile, config));
                     });
                     break;
                 case "parameters":

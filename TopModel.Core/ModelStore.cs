@@ -18,7 +18,8 @@ public class ModelStore(
     ModelConfig config,
     IEnumerable<IModelWatcher> modelWatchers,
     TranslationStore translationStore,
-    IStringLocalizer<ErrorType> localizer
+    IStringLocalizer<ErrorType> localizer,
+    IModelReporter? modelReporter = null
 ) : IDisposable
 {
     private readonly AsyncLock _lockInit = new();
@@ -66,6 +67,15 @@ public class ModelStore(
 
     public IEnumerable<IVariableContainer> VariableContainers =>
         Files.SelectMany(mf => mf.VariableContainers).Distinct();
+
+    public ModelFileLoadConfig ModelFileLoadConfig =>
+        new(
+            config.App,
+            config.ModelRoot,
+            config.DefaultAssociationUseClass,
+            config.PluralizeTableNames,
+            config.UseLegacyRoleNames
+        );
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
@@ -168,7 +178,7 @@ public class ModelStore(
 
         if (watch)
         {
-            _disposer = modelFileLoader.Watch(parallel, ApplyUpdates);
+            _disposer = modelFileLoader.Watch(parallel, ModelFileLoadConfig, config.ModelFilePaths, ApplyUpdates);
         }
 
         _modelFiles.Clear();
@@ -182,7 +192,12 @@ public class ModelStore(
                 .ToAsyncEnumerable()
                 .Select(
                     async (filePath, ct) =>
-                        await modelFileLoader.LoadModelFile(filePath, WatcherChangeTypes.Created, ct: ct)
+                        await modelFileLoader.LoadModelFile(
+                            ModelFileLoadConfig,
+                            filePath,
+                            WatcherChangeTypes.Created,
+                            ct: ct
+                        )
                 )
                 .ToListAsync(cancellationToken: ct);
 
@@ -194,7 +209,15 @@ public class ModelStore(
     public async Task OnModelFileChange(string filePath, string content, CancellationToken ct = default)
     {
         await ApplyUpdates(
-            [await modelFileLoader.LoadModelFile(filePath, WatcherChangeTypes.Changed, content, ct)],
+            [
+                await modelFileLoader.LoadModelFile(
+                    ModelFileLoadConfig,
+                    filePath,
+                    WatcherChangeTypes.Changed,
+                    content,
+                    ct
+                ),
+            ],
             ct
         );
     }
@@ -230,11 +253,10 @@ public class ModelStore(
 
             var pendingFileChanges =
                 new Dictionary<string, (string FileName, ModelFileStatus Status, bool HasDomains)>();
-            var pendingFileDeletes = new HashSet<string>();
 
             foreach (var (filePath, modelFile, status) in files)
             {
-                var fileName = config.GetFileName(filePath);
+                var fileName = ModelFileLoadConfig.GetFileName(filePath);
 
                 var existingFile = Files.SingleOrDefault(f => f.Name == fileName);
                 var hasDomains =
@@ -248,18 +270,9 @@ public class ModelStore(
                 else if (status != ModelFileStatus.Errored || !KeepFileErrorsInReferenceResolution)
                 {
                     RemoveFile(fileName);
-                    pendingFileDeletes.Add(fileName);
                 }
 
                 pendingFileChanges[filePath] = (fileName, status, hasDomains);
-            }
-
-            if (pendingFileDeletes.Count > 0)
-            {
-                foreach (var modelWatcher in _modelWatchers)
-                {
-                    modelWatcher.OnFilesDeleted(pendingFileDeletes);
-                }
             }
 
             if (pendingFileChanges.Count == 0)
@@ -335,18 +348,12 @@ public class ModelStore(
                     referenceErrors.Add(error);
                 }
 
-                Parallel.ForEach(
-                    _modelWatchers,
-                    modelWatcher =>
-                    {
-                        modelWatcher.OnErrors(
-                            affectedFiles
-                                .Values.Select(file =>
-                                    (file, errors: referenceErrors.Where(e => e.File == file && !e.IsIgnored(config)))
-                                )
-                                .ToDictionary(i => i.file, i => i.errors)
-                        );
-                    }
+                modelReporter?.RegisterErrors(
+                    affectedFiles
+                        .Values.Select(file =>
+                            (file, errors: referenceErrors.Where(e => e.File == file && !e.IsIgnored(config)))
+                        )
+                        .ToDictionary(i => i.file, i => i.errors)
                 );
 
                 foreach (var error in referenceErrors.Where(e => e.IsError))
@@ -380,6 +387,8 @@ public class ModelStore(
                 }
 
                 logger.LogInformation("Modèle chargé avec succès.");
+
+                modelReporter?.RegisterChange();
 
                 Parallel.ForEach(
                     _modelWatchers,

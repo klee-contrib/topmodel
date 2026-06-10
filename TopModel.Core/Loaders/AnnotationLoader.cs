@@ -9,7 +9,7 @@ namespace TopModel.Core.Loaders;
 public class AnnotationLoader(FileChecker fileChecker) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var annotation = new Annotation()
         {

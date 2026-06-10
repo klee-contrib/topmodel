@@ -3,11 +3,12 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Loaders;
 using TopModel.Utils;
 
 namespace TopModel.LanguageServer;
 
-public class LSWorkerStore(ILanguageServerFacade facade)
+public class LSWorkerStore(ILanguageServerFacade facade, IModelReporter modelReporter, ModelFileLoader modelFileLoader)
 {
     private readonly IList<LSWorker> _workers = [];
 
@@ -48,7 +49,7 @@ public class LSWorkerStore(ILanguageServerFacade facade)
 
         foreach (var worker in affectedWorkers)
         {
-            worker.ModelFileLoader.RemoveFromCache(filePath);
+            modelFileLoader.RemoveFromCache(worker.ModelStore.ModelFileLoadConfig, filePath);
         }
 
         await Parallel.ForEachAsync(
@@ -59,6 +60,8 @@ public class LSWorkerStore(ILanguageServerFacade facade)
                 await worker.ModelStore.OnModelFileChange(filePath, content, ct);
             }
         );
+
+        modelReporter.Report();
     }
 
     public void RemoveWorker(LSWorker worker)

@@ -14,16 +14,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-using CacheKey = (
-    string App,
-    string ModelRoot,
-    bool DefaultAssociationUseClass,
-    bool PluralizeTableNames,
-    bool UseLegacyRoleNames
-);
-
 public class ModelFileLoader(
-    ModelConfig config,
     ILogger<ModelFileLoader> logger,
     AnnotationLoader annotationLoader,
     ClassLoader classLoader,
@@ -32,15 +23,17 @@ public class ModelFileLoader(
     DecoratorLoader decoratorLoader,
     ConverterLoader converterLoader,
     EndpointLoader endpointLoader,
-    DomainLoader domainLoader
+    DomainLoader domainLoader,
+    IModelReporter? modelReporter = null
 )
 {
-    private static readonly ConcurrentDictionary<
-        CacheKey,
+    private readonly ConcurrentDictionary<
+        string,
         (
             FileSystemWatcher FileWatcher,
             IMemoryCache Cache,
             IList<(
+                ModelFileLoadConfig Config,
                 GlobCollection ModelFilePaths,
                 Func<
                     IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
@@ -50,41 +43,20 @@ public class ModelFileLoader(
             )> Configs
         )
     > _fileWatchers = [];
-    private static readonly ConcurrentDictionary<CacheKey, ConcurrentDictionary<string, ModelFile>> _globalCache = [];
-    private static readonly AsyncKeyedLocker<(CacheKey CacheKey, string FullPath)> _lockFile = new();
-    private static readonly AsyncKeyedLocker<string> _lockRoot = new();
+    private readonly ConcurrentDictionary<ModelFileLoadConfig, ConcurrentDictionary<string, ModelFile>> _globalCache =
+    [];
+    private readonly AsyncKeyedLocker<(ModelFileLoadConfig Config, string FullPath)> _lockFile = new();
+    private readonly AsyncKeyedLocker<string> _lockRoot = new();
 
     private bool _parallelWatch;
 
-    private CacheKey CacheKey =>
-        (
-            config.App,
-            config.ModelRoot,
-            config.DefaultAssociationUseClass,
-            config.PluralizeTableNames,
-            config.UseLegacyRoleNames
-        );
-
-    private ConcurrentDictionary<string, ModelFile> Cache
+    public void RemoveFromCache(ModelFileLoadConfig config, string fullPath)
     {
-        get
-        {
-            if (!_globalCache.TryGetValue(CacheKey, out var cache))
-            {
-                _globalCache[CacheKey] = [];
-                cache = _globalCache[CacheKey];
-            }
-
-            return cache;
-        }
-    }
-
-    public void RemoveFromCache(string fullPath)
-    {
-        Cache.TryRemove(fullPath.Replace('\\', '/'), out _);
+        GetCache(config).TryRemove(fullPath.Replace('\\', '/'), out _);
     }
 
     internal async Task<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)> LoadModelFile(
+        ModelFileLoadConfig config,
         string fullPath,
         WatcherChangeTypes changeType,
         string? content = null,
@@ -93,9 +65,9 @@ public class ModelFileLoader(
     {
         fullPath = fullPath.Replace('\\', '/');
 
-        using var fileLock = await _lockFile.LockAsync((CacheKey, fullPath), ct);
+        using var fileLock = await _lockFile.LockAsync((config, fullPath), ct);
 
-        if (Cache.TryGetValue(fullPath, out var file))
+        if (GetCache(config).TryGetValue(fullPath, out var file))
         {
             return (fullPath, CloneFile(file), ModelFileStatus.Ok);
         }
@@ -105,30 +77,32 @@ public class ModelFileLoader(
             ModelFile? modelFile = null;
             if (changeType != WatcherChangeTypes.Deleted && File.Exists(fullPath))
             {
-                modelFile = await ReadModelFile(fullPath, content, ct);
+                modelFile = await ReadModelFile(fullPath, config, content, ct);
             }
 
             if (modelFile != null)
             {
-                Cache.TryAdd(fullPath, modelFile);
+                GetCache(config).TryAdd(fullPath, modelFile);
                 return (fullPath, CloneFile(modelFile), ModelFileStatus.Ok);
             }
             else
             {
-                RemoveFromCache(fullPath);
+                RemoveFromCache(config, fullPath);
                 return (fullPath, modelFile, ModelFileStatus.NotFound);
             }
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
             logger.LogError(e, e.Message);
-            RemoveFromCache(fullPath);
+            RemoveFromCache(config, fullPath);
             return (fullPath, null, ModelFileStatus.Errored);
         }
     }
 
     internal Action Watch(
         bool parallel,
+        ModelFileLoadConfig config,
+        GlobCollection modelFilePaths,
         Func<
             IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
             CancellationToken,
@@ -138,11 +112,11 @@ public class ModelFileLoader(
     {
         _parallelWatch = parallel;
 
-        var watchConfig = (config.ModelFilePaths, applyUpdates);
+        var watchConfig = (config, modelFilePaths, applyUpdates);
 
         using var rootLock = _lockRoot.Lock(config.ModelRoot, default);
 
-        if (!_fileWatchers.TryGetValue(CacheKey, out var fw))
+        if (!_fileWatchers.TryGetValue(config.ModelRoot, out var fw))
         {
             var fileWatcher = new FileSystemWatcher(config.ModelRoot, "*.tmd")
             {
@@ -150,13 +124,13 @@ public class ModelFileLoader(
                 EnableRaisingEvents = true,
             };
 
-            _fileWatchers[CacheKey] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
-            fw = _fileWatchers[CacheKey];
+            _fileWatchers[config.ModelRoot] = (fileWatcher, new MemoryCache(new MemoryCacheOptions()), [watchConfig]);
+            fw = _fileWatchers[config.ModelRoot];
 
-            fileWatcher.Changed += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
-            fileWatcher.Created += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
-            fileWatcher.Deleted += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
-            fileWatcher.Renamed += (s, e) => OnFileChanged(CacheKey, fw.Cache, e);
+            fileWatcher.Changed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Created += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Deleted += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
+            fileWatcher.Renamed += (s, e) => OnFileChanged(config.ModelRoot, fw.Cache, e);
         }
         else
         {
@@ -169,7 +143,7 @@ public class ModelFileLoader(
             if (fw.Configs.Count == 0)
             {
                 fw.FileWatcher.Dispose();
-                _fileWatchers.TryRemove(CacheKey, out _);
+                _fileWatchers.TryRemove(config.ModelRoot, out _);
             }
         };
     }
@@ -487,13 +461,19 @@ public class ModelFileLoader(
         return newFile;
     }
 
-    private void OnFileChanged(CacheKey cacheKey, IMemoryCache cache, FileSystemEventArgs e)
+    private ConcurrentDictionary<string, ModelFile> GetCache(ModelFileLoadConfig config)
     {
-        if (cacheKey != CacheKey)
+        if (!_globalCache.TryGetValue(config, out var cache))
         {
-            return;
+            _globalCache[config] = [];
+            cache = _globalCache[config];
         }
 
+        return cache;
+    }
+
+    private void OnFileChanged(string modelRoot, IMemoryCache cache, FileSystemEventArgs e)
+    {
         cache.Set(
             e.FullPath.Replace('\\', '/'),
             e,
@@ -520,54 +500,73 @@ public class ModelFileLoader(
 
                         logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
 
-                        var files = new List<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>();
+                        foreach (var (config, _, _) in _fileWatchers[modelRoot].Configs)
+                        {
+                            if (e is RenamedEventArgs re)
+                            {
+                                RemoveFromCache(config, re.OldFullPath);
+                            }
 
-                        if (e is RenamedEventArgs re)
-                        {
-                            RemoveFromCache(re.OldFullPath);
-                            RemoveFromCache(re.FullPath);
-                            files.Add(await LoadModelFile(re.OldFullPath, WatcherChangeTypes.Deleted, ct: default));
-                            files.Add(await LoadModelFile(re.FullPath, WatcherChangeTypes.Created, ct: default));
+                            RemoveFromCache(config, e.FullPath);
                         }
-                        else
+
+                        async Task HandleChange(
+                            (
+                                ModelFileLoadConfig Config,
+                                GlobCollection ModelFilePaths,
+                                Func<
+                                    IEnumerable<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>,
+                                    CancellationToken,
+                                    Task
+                                > ApplyUpdates
+                            ) c
+                        )
                         {
-                            RemoveFromCache(e.FullPath);
-                            files.Add(await LoadModelFile(e.FullPath, e.ChangeType, ct: default));
+                            var files = new List<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>();
+
+                            if (e is RenamedEventArgs re)
+                            {
+                                files.Add(
+                                    await LoadModelFile(
+                                        c.Config,
+                                        re.OldFullPath,
+                                        WatcherChangeTypes.Deleted,
+                                        ct: default
+                                    )
+                                );
+                                files.Add(
+                                    await LoadModelFile(c.Config, re.FullPath, WatcherChangeTypes.Created, ct: default)
+                                );
+                            }
+                            else
+                            {
+                                files.Add(await LoadModelFile(c.Config, e.FullPath, e.ChangeType, ct: default));
+                            }
+
+                            if (!c.ModelFilePaths.IsMatch(e.FullPath.ToRelative(modelRoot)[2..]))
+                            {
+                                return;
+                            }
+
+                            await c.ApplyUpdates(files.Select(f => (f.FullPath, f.ModelFile, f.Status)), default);
                         }
 
                         if (_parallelWatch)
                         {
                             await Parallel.ForEachAsync(
-                                _fileWatchers[cacheKey].Configs,
-                                async (c, ct) =>
-                                {
-                                    if (!c.ModelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
-                                    {
-                                        return;
-                                    }
-
-                                    await c.ApplyUpdates(
-                                        files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
-                                        ct
-                                    );
-                                }
+                                _fileWatchers[modelRoot].Configs,
+                                async (c, ct) => await HandleChange(c)
                             );
                         }
                         else
                         {
-                            foreach (var (modelFilePaths, applyUpdates) in _fileWatchers[cacheKey].Configs)
+                            foreach (var c in _fileWatchers[modelRoot].Configs)
                             {
-                                if (!modelFilePaths.IsMatch(e.FullPath.ToRelative(config.ModelRoot)[2..]))
-                                {
-                                    continue;
-                                }
-
-                                await applyUpdates(
-                                    files.Select(f => (f.FullPath, CloneFile(f.ModelFile), f.Status)),
-                                    default
-                                );
+                                await HandleChange(c);
                             }
                         }
+
+                        modelReporter?.Report();
                     }
                 )
         );
@@ -575,6 +574,7 @@ public class ModelFileLoader(
 
     private async Task<ModelFile?> ReadModelFile(
         string filePath,
+        ModelFileLoadConfig config,
         string? content = null,
         CancellationToken ct = default
     )
@@ -659,7 +659,7 @@ public class ModelFileLoader(
                 ),
             };
 
-            loader.Load(parser, file, location);
+            loader.Load(parser, file, config, location);
             parser.Consume<MappingEnd>();
             parser.Consume<DocumentEnd>();
         }

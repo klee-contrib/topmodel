@@ -8,7 +8,7 @@ namespace TopModel.Core.Loaders;
 public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var endpoint = new Endpoint()
         {
@@ -45,13 +45,13 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        var property = propertyLoader.Load(parser, modelFile);
+                        var property = propertyLoader.Load(parser, modelFile, config);
                         property.Endpoint = endpoint;
                         endpoint.Params.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = propertyLoader.Load(parser, modelFile);
+                    endpoint.Returns = propertyLoader.Load(parser, modelFile, config);
                     endpoint.Returns.Endpoint = endpoint;
                     break;
                 case "decorators":

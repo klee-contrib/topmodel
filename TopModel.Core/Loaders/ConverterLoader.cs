@@ -9,7 +9,7 @@ namespace TopModel.Core.Loaders;
 public class ConverterLoader(FileChecker fileChecker) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var converter = new Converter() { ModelFile = modelFile, Location = location };
         modelFile.Converters.Add(converter);

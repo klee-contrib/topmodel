@@ -6,10 +6,10 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
+public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var classe = new Class()
         {
@@ -157,7 +157,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.Properties.Add(propertyLoader.Load(parser, modelFile));
+                        classe.Properties.Add(propertyLoader.Load(parser, modelFile, config));
                     });
                     break;
                 case "unique":
@@ -319,7 +319,8 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
                                                                 case "property":
                                                                     param.Property = propertyLoader.Load(
                                                                         parser,
-                                                                        modelFile
+                                                                        modelFile,
+                                                                        config
                                                                     );
                                                                     param.Property.PropertyMapping = param;
                                                                     break;
@@ -396,7 +397,7 @@ public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, Prope
         });
 
         classe.Label ??= classe.Name;
-        classe.SqlName ??= (modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
+        classe.SqlName ??= (config.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
 
         foreach (var prop in classe.Properties)
         {

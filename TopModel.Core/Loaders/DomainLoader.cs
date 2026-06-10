@@ -10,7 +10,7 @@ namespace TopModel.Core.Loaders;
 public class DomainLoader(FileChecker fileChecker) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
         var domain = new Domain() { ModelFile = modelFile, Location = location };
         modelFile.Domains.Add(domain);

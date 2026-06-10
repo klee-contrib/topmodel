@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.Utils.Cli;
@@ -19,7 +17,7 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
 
     public override void Init()
     {
-        Services.AddLogging().AddModelStore(FileChecker, Config).AddSingleton<IModelWatcher, ModelWatcher>();
+        Services.AddLogging().AddModelStore(Config);
     }
 
     public override async Task Run(CancellationToken cancellationToken)
@@ -60,9 +58,6 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
         _modelStore = ServiceProvider.GetRequiredService<ModelStore>();
         _modelStore.KeepFileErrorsInReferenceResolution = true;
         await _modelStore.LoadFromConfig(WatchMode, ParallelMode, ct: cancellationToken);
-
-        var facade = ServiceProvider.GetRequiredService<ILanguageServerFacade>();
-        facade.Workspace.SendSemanticTokensRefresh(new());
     }
 
     public override async Task WaitForFinished(CancellationToken cancellationToken)
