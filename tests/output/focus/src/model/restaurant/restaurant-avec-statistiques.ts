@@ -5,6 +5,8 @@
 import {e, entity, EntityToType} from "@focus4/entities";
 import {DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX, DO_QUANTITE, DO_TELEPHONE} from "../../domains";
 
+import {TableReadEntity} from "./table-read";
+
 export type RestaurantAvecStatistiques = EntityToType<RestaurantAvecStatistiquesEntityType>;
 export type RestaurantAvecStatistiquesEntityType = typeof RestaurantAvecStatistiquesEntity;
 
@@ -38,6 +40,9 @@ export const RestaurantAvecStatistiquesEntity = entity({
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
+    ),
+    tables: e.list(TableReadEntity, f => f
+        .label("restaurant.restaurantAvecStatistiques.tables")
     ),
     nombrePlats: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.restaurantAvecStatistiques.nombrePlats")

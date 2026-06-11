@@ -112,72 +112,109 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
         }
 
-        foreach (var param in mapper.ClassParams.Where(p => p.Mappings.Count > 0))
+        foreach (var p in mapper.Params)
         {
-            var mappings = param.Mappings.ToList();
-            var indent = 0;
-            if (!param.Required)
-            {
-                fromMapperMethod.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
-                indent++;
-            }
-
-            foreach (var mapping in mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value)))
-            {
-                var propertyTarget = mapping.Key;
-                var propertySource = mapping.Value;
-                var (getter, checkSourceNull, imports) = GetSourceGetter(
-                    propertySource,
-                    propertyTarget,
-                    param.Name.ToCamelCase(),
-                    tag
-                );
-                fromMapperMethod.Imports.AddRange(imports);
-
-                if (getter != string.Empty)
+            p.Switch(
+                param =>
                 {
-                    if (checkSourceNull)
+                    var mappings = param.Mappings.ToList();
+                    var indent = 0;
+                    if (!param.Required)
                     {
-                        fromMapperMethod.AddBodyLine(
-                            indent,
-                            $"if ({param.Name}.{Config.GetGetterName(propertySource)}() != null) {{"
-                        );
+                        fromMapperMethod.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
+                        indent++;
                     }
 
-                    fromMapperMethod.AddBodyLine(
-                        indent + (checkSourceNull ? 1 : 0),
-                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
-                    );
-
-                    if (checkSourceNull)
+                    foreach (var mapping in mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value)))
                     {
-                        fromMapperMethod.AddBodyLine(indent, $"}} else {{");
-                        fromMapperMethod.AddBodyLine(
-                            indent + 1,
-                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                        var propertyTarget = mapping.Key;
+                        var propertySource = mapping.Value;
+                        var (getter, checkSourceNull, imports) = GetSourceGetter(
+                            propertySource,
+                            propertyTarget,
+                            param.Name.ToCamelCase(),
+                            tag
                         );
-                        fromMapperMethod.AddBodyLine(indent, $"}}");
+                        fromMapperMethod.Imports.AddRange(imports);
+
+                        if (getter != string.Empty)
+                        {
+                            if (checkSourceNull)
+                            {
+                                fromMapperMethod.AddBodyLine(
+                                    indent,
+                                    $"if ({param.Name}.{Config.GetGetterName(propertySource)}() != null) {{"
+                                );
+                            }
+
+                            fromMapperMethod.AddBodyLine(
+                                indent + (checkSourceNull ? 1 : 0),
+                                $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                            );
+
+                            if (checkSourceNull)
+                            {
+                                fromMapperMethod.AddBodyLine(indent, $"}} else {{");
+                                fromMapperMethod.AddBodyLine(
+                                    indent + 1,
+                                    $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                                );
+                                fromMapperMethod.AddBodyLine(indent, $"}}");
+                                fromMapperMethod.AddBodyLine();
+                            }
+                        }
+                    }
+
+                    if (!param.Required)
+                    {
+                        fromMapperMethod.AddBodyLine(indent - 1, "}");
                         fromMapperMethod.AddBodyLine();
                     }
+                },
+                param =>
+                {
+                    var propertyTarget = param.TargetProperty;
+                    var propertySource = param.Property;
+
+                    if (!FilterMapping(propertySource, propertyTarget))
+                    {
+                        return;
+                    }
+
+                    var (getter, checkSourceNull, imports) = GetSourceGetter(
+                        propertySource,
+                        propertyTarget,
+                        paramName: null,
+                        tag
+                    );
+                    fromMapperMethod.Imports.AddRange(imports);
+
+                    checkSourceNull &= !propertySource.Required;
+
+                    if (getter != string.Empty)
+                    {
+                        if (checkSourceNull)
+                        {
+                            fromMapperMethod.AddBodyLine($"if ({param.NameCamel} != null) {{");
+                        }
+
+                        fromMapperMethod.AddBodyLine(
+                            (checkSourceNull ? 1 : 0),
+                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                        );
+
+                        if (checkSourceNull)
+                        {
+                            fromMapperMethod.AddBodyLine($"}} else {{");
+                            fromMapperMethod.AddBodyLine(
+                                1,
+                                $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                            );
+                            fromMapperMethod.AddBodyLine($"}}");
+                            fromMapperMethod.AddBodyLine();
+                        }
+                    }
                 }
-            }
-
-            if (!param.Required)
-            {
-                fromMapperMethod.AddBodyLine(indent - 1, "}");
-                fromMapperMethod.AddBodyLine();
-            }
-        }
-
-        foreach (var param in mapper.PropertyParams)
-        {
-            if (param.TargetProperty is { Association.IsPersistent: true } && classe.IsPersistent)
-            {
-                continue;
-            }
-
-            fromMapperMethod.AddBodyLine(
-                $"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});"
             );
         }
 
@@ -199,13 +236,13 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
     protected virtual (string Getter, bool CheckSourceNull, IEnumerable<string> Imports) GetSourceGetter(
         IProperty source,
         IProperty target,
-        string paramName,
+        string? paramName,
         string tag
     )
     {
         var imports = new List<string>();
         var checkSourceNull = false;
-        var getter = $"{paramName}.{Config.GetGetterName(source)}()";
+        var getter = paramName == null ? source.NameCamel : $"{paramName}.{Config.GetGetterName(source)}()";
 
         var converter = source.Domain.GetConverter(target.Domain);
         if (converter != null && Config.GetImplementation(converter) != null)
@@ -480,7 +517,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             Config.UseJdbc
             && (
                 propertyTarget.Class.IsPersistent && propertyTarget.AssociationMultiple
-                || propertySource.Class.IsPersistent && propertySource.AssociationMultiple
+                || (propertySource.Class?.IsPersistent ?? false) && propertySource.AssociationMultiple
                 || propertySource.Composition != null
                 || propertyTarget.Composition != null
             )

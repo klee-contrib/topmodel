@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.0.0
+version: 4.1.0
 generatedFiles:
   - ./model/01_Common/01_Region.tmd
   - ./model/01_Common/02_Departement.tmd

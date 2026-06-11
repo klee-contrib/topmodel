@@ -16,6 +16,7 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 /**
  * Restaurant avec ses statistiques.
@@ -104,6 +105,13 @@ public class RestaurantAvecStatistiques implements Serializable {
 	@PastOrPresent
 	@Column("res_date_creation")
 	private LocalDateTime dateCreation;
+
+	/**
+	 * Tables du restaurant.
+	 */
+	@Valid
+	@NotNull
+	private List<TableRead> tables;
 
 	/**
 	 * Nombre de plats du restaurant.
@@ -216,6 +224,15 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
+	 * Getter for tables.
+	 *
+	 * @return value of {@link #tables tables}.
+	 */
+	public List<TableRead> getTables() {
+		return this.tables;
+	}
+
+	/**
 	 * Getter for nombrePlats.
 	 *
 	 * @return value of {@link #nombrePlats nombrePlats}.
@@ -320,6 +337,14 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Set the value of {@link #tables tables}.
+	 * @param tables value to set.
+	 */
+	public void setTables(List<TableRead> tables) {
+		this.tables = tables;
 	}
 
 	/**

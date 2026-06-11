@@ -14,9 +14,11 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 
 import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;
 import restaurant.jpa_identity_feign.entities.restaurant.RestaurantMappers;
+import restaurant.jpa_identity_feign.entities.restaurant.TableRestaurant;
 
 /**
  * Restaurant avec ses statistiques.
@@ -102,6 +104,13 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private LocalDateTime dateCreation;
 
 	/**
+	 * Tables du restaurant.
+	 */
+	@Valid
+	@NotNull
+	private List<TableRead> tables;
+
+	/**
 	 * Nombre de plats du restaurant.
 	 */
 	@NotNull
@@ -128,14 +137,15 @@ public class RestaurantAvecStatistiques implements Serializable {
 	/**
 	 * Crée une nouvelle instance de 'RestaurantAvecStatistiques'.
 	 * @param restaurant Instance de 'Restaurant'.
+	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
 	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques'.
 	 */
-	public RestaurantAvecStatistiques(Restaurant restaurant, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
-		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, nombrePlats, nombreTables, noteMoyenne, this);
+	public RestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
+		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, nombreTables, noteMoyenne, this);
 	}
 
 	/**
@@ -226,6 +236,15 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
+	}
+
+	/**
+	 * Getter for tables.
+	 *
+	 * @return value of {@link #tables tables}.
+	 */
+	public List<TableRead> getTables() {
+		return this.tables;
 	}
 
 	/**
@@ -336,6 +355,14 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #tables tables}.
+	 * @param tables value to set.
+	 */
+	public void setTables(List<TableRead> tables) {
+		this.tables = tables;
+	}
+
+	/**
 	 * Set the value of {@link #nombrePlats nombrePlats}.
 	 * @param nombrePlats value to set.
 	 */
@@ -373,6 +400,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 		AVIS_CLIENTS(List.class),
 		TABLE_IDS(List.class),
 		DATE_CREATION(LocalDateTime.class),
+		TABLES(List.class),
 		NOMBRE_PLATS(Integer.class),
 		NOMBRE_TABLES(Integer.class),
 		NOTE_MOYENNE(BigDecimal.class);

@@ -257,13 +257,15 @@ public static class Mappers
     /// Crée une nouvelle instance de 'RestaurantAvecStatistiques'.
     /// </summary>
     /// <param name="restaurant">Instance de 'Restaurant'.</param>
+    /// <param name="tables">Tables.</param>
     /// <param name="nombrePlats">Nombre de plats.</param>
     /// <param name="nombreTables">Nombre de tables.</param>
     /// <param name="noteMoyenne">Note moyenne.</param>
     /// <returns>Une nouvelle instance de 'RestaurantAvecStatistiques'.</returns>
-    public static RestaurantAvecStatistiques CreateRestaurantAvecStatistiques(Restaurant restaurant, int? nombrePlats = null, int? nombreTables = null, decimal? noteMoyenne = null)
+    public static RestaurantAvecStatistiques CreateRestaurantAvecStatistiques(Restaurant restaurant, ICollection<TableRestaurant> tables, int? nombrePlats = null, int? nombreTables = null, decimal? noteMoyenne = null)
     {
         ArgumentNullException.ThrowIfNull(restaurant);
+        ArgumentNullException.ThrowIfNull(tables);
 
         return new RestaurantAvecStatistiques
         {
@@ -277,6 +279,7 @@ public static class Mappers
             AvisClients = restaurant.AvisClients.Select(p => p.Id!.Value).ToList(),
             TableIds = restaurant.TableIds,
             DateCreation = restaurant.DateCreation,
+            Tables = tables.Select(CreateTableRead).ToList(),
             NombrePlats = nombrePlats,
             NombreTables = nombreTables,
             NoteMoyenne = noteMoyenne

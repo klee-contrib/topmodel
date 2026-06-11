@@ -79,6 +79,12 @@ public partial record RestaurantAvecStatistiques
     public DateTime? DateCreation { get; set; }
 
     /// <summary>
+    /// Tables du restaurant.
+    /// </summary>
+    [Required]
+    public ICollection<TableRead> Tables { get; set; } = [];
+
+    /// <summary>
     /// Nombre de plats du restaurant.
     /// </summary>
     [Required]

@@ -157,7 +157,8 @@ export const restaurant = {
     restaurantAvecStatistiques: {
         nombrePlats: "NombrePlats",
         nombreTables: "NombreTables",
-        noteMoyenne: "NoteMoyenne"
+        noteMoyenne: "NoteMoyenne",
+        tables: "Tables"
     },
     statistiquesRestaurant: {
         chiffreAffaires: "ChiffreAffaires",

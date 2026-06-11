@@ -62,6 +62,12 @@ class:
   properties:
     - alias:
         class: Restaurant
+
+    - composition: TableRead
+      name: Tables
+      domain: DO_LISTE
+      comment: Tables du restaurant.
+
     - name: NombrePlats
       domain: DO_QUANTITE
       required: true
@@ -82,6 +88,11 @@ class:
     from:
       - params:
           - class: Restaurant
+          - property:
+              composition: TableRestaurant
+              name: Tables
+              domain: DO_LISTE
+              comment: Tables
           - property:
               name: NombrePlats
               domain: DO_QUANTITE

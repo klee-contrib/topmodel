@@ -5,6 +5,7 @@
 package restaurant.jpa_sequence_server.entities.restaurant;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -534,19 +535,21 @@ public class RestaurantMappers {
 	/**
 	 * Crée une nouvelle instance de la classe 'RestaurantAvecStatistiques' en mappant les champs sources.
 	 * @param restaurant Instance de 'Restaurant' source.
+	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
 	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques' sur laquelle les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
-		return mapRestaurantAvecStatistiques(restaurant, nombrePlats, nombreTables, noteMoyenne, new RestaurantAvecStatistiques());
+	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
+		return mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, nombreTables, noteMoyenne, new RestaurantAvecStatistiques());
 	}
 
 	/**
 	 * Mappe les champs sources sur l'instance de la classe 'RestaurantAvecStatistiques' passée en paramètre.
 	 * @param restaurant Instance de 'Restaurant' source.
+	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
 	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
@@ -554,13 +557,17 @@ public class RestaurantMappers {
 	 *
 	 * @return L'instance de 'RestaurantAvecStatistiques' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
+	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		if (restaurant == null) {
 			throw new IllegalArgumentException("restaurant cannot be null");
+		}
+
+		if (tables == null) {
+			throw new IllegalArgumentException("tables cannot be null");
 		}
 
 		target.setId(restaurant.getId());
@@ -593,6 +600,7 @@ public class RestaurantMappers {
 
 		target.setTableIds(restaurant.getTableIds());
 		target.setDateCreation(restaurant.getDateCreation());
+		target.setTables(tables.stream().filter(Objects::nonNull).map(RestaurantMappers::createTableRead).collect(Collectors.toList()));
 		target.setNombrePlats(nombrePlats);
 		target.setNombreTables(nombreTables);
 		target.setNoteMoyenne(noteMoyenne);
