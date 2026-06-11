@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.2.6
+
+- [`7b5b1e7`](https://github.com/klee-contrib/topmodel/commit/7b5b1e7f3f2bb881eb07b0f0a6aa5d31416c911f) - [JPA] Check génération mapping de property param dans un mapper from
+
 ## 4.2.5
 
 - [`3fb4d72`](https://github.com/klee-contrib/topmodel/commit/3fb4d72e) - [JPA] Feign client : replace `@ModelAttribute` by `@SpringQueryMap`
