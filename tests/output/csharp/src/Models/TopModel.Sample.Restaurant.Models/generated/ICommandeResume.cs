@@ -7,7 +7,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Résumé d'une commande pour liste.
 /// </summary>
-public interface ICommandeResume
+public partial interface ICommandeResume
 {
     /// <summary>
     /// Identifiant de la commande.

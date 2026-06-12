@@ -12,10 +12,10 @@ export type ClientWriteEntityType = typeof ClientWriteEntity;
 
 export const ClientWriteEntity = entity({
     nom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.nom")
+        .label("restaurant.personneBase.nom")
     ),
     prenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.prenom")
+        .label("restaurant.personneBase.prenom")
     ),
     departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().defaultValue("75").optional()
         .label("restaurant.personne.departementCode")

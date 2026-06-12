@@ -79,6 +79,12 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "preservePropertyCasing":
                     classe.PreservePropertyCasing = value!.Value == "true";
                     break;
+                case "implements":
+                    parser.ConsumeSequence(() =>
+                    {
+                        classe.ImplementReferences.Add(new ClassReference(parser.Consume<Scalar>()));
+                    });
+                    break;
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {

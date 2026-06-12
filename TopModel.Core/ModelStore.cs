@@ -868,6 +868,11 @@ public class ModelStore(
             yield return error;
         }
 
+        foreach (var error in classResolver.ResolveImplements())
+        {
+            yield return error;
+        }
+
         foreach (var error in decoratorResolver.ResolveDecorators())
         {
             yield return error;

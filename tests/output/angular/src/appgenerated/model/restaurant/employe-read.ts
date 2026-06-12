@@ -12,13 +12,13 @@ export type EmployeReadEntityType = typeof EmployeReadEntity;
 
 export const EmployeReadEntity = entity({
     id: e.field(DO_ID, f => f.optional()
-        .label("restaurant.personne.id")
+        .label("restaurant.personneBase.id")
     ),
     nom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.nom")
+        .label("restaurant.personneBase.nom")
     ),
     prenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.prenom")
+        .label("restaurant.personneBase.prenom")
     ),
     departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
         .label("restaurant.personne.departementCode")
@@ -27,7 +27,7 @@ export const EmployeReadEntity = entity({
         .label("common.dateCreation.dateCreation")
     ),
     telephone: e.field(DO_TELEPHONE, f => f.optional()
-        .label("restaurant.employe.telephone")
+        .label("restaurant.employeBase.telephone")
     ),
     dateNaissance: e.field(DO_DATE_HEURE, f => f.optional()
         .label("restaurant.employe.dateNaissance")

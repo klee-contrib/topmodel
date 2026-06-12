@@ -13,7 +13,7 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// Employé du restaurant.
 /// </summary>
 [Table("employe")]
-public partial record Employe : Personne
+public partial record Employe : Personne, IEmployeBase
 {
     /// <summary>
     /// Numéro de téléphone de l'employé.

@@ -37,10 +37,10 @@ export const ReservationReadEntity = entity({
         .label("common.dateCreation.dateCreation")
     ),
     clientNom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.nom")
+        .label("restaurant.personneBase.nom")
     ),
     clientPrenom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.personne.prenom")
+        .label("restaurant.personneBase.prenom")
     ),
     clientEmail: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")

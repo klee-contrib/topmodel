@@ -7,7 +7,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'un plat en liste.
 /// </summary>
-public interface IPlatItemReadonly
+public partial interface IPlatItemReadonly
 {
     /// <summary>
     /// Identifiant du plat.

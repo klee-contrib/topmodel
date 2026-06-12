@@ -3,16 +3,14 @@ module: Restaurant
 tags:
   - back
 uses:
-  - Restaurant/Entities/Restaurant
   - meta/decorators
+  - Restaurant/Entities/Restaurant
+
 ---
 class:
-  name: Personne
-  trigram: PER
-  comment: Classe de base représentant une personne
-  decorators:
-    - DateCreation
-
+  name: PersonneBase
+  type: interface
+  comment: Définition d'une personne
   properties:
     - name: Id
       domain: DO_ID
@@ -30,23 +28,41 @@ class:
       required: true
       comment: Prénom de la personne
       label: Prénom
+---
+class:
+  name: Personne
+  trigram: PER
+  comment: Classe de base représentant une personne
+  implements:
+    - PersonneBase
+  decorators:
+    - DateCreation
 
+  properties:
     - association: Departement
       defaultValue: 75
       useClass: false
       comment: Département de résidence de la personne.
 ---
 class:
-  name: Employe
-  extends: Personne
-  trigram: EMP
-  comment: Employé du restaurant
-
+  name: EmployeBase
+  type: interface
+  extends: PersonneBase
+  comment: Définition d'une personne
   properties:
     - name: Telephone
       domain: DO_TELEPHONE
       comment: Numéro de téléphone de l'employé.
+---
+class:
+  name: Employe
+  extends: Personne
+  trigram: EMP
+  comment: Employé du restaurant
+  implements:
+    - EmployeBase
 
+  properties:
     - name: DateNaissance
       domain: DO_DATE_HEURE
       comment: Date de naissance
@@ -74,6 +90,18 @@ class:
     - [Telephone]
     - properties: [Matricule]
       unique: true
+---
+class:
+  name: Prestataire
+  trigram: PST
+  comment: Prestaire du restaurant
+  implements:
+    - EmployeBase
+
+  properties: []
+  indexes:
+    - [Nom, Prenom]
+    - [Telephone]
 ---
 class:
   name: Client

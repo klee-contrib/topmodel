@@ -166,6 +166,15 @@ COMMENT ON COLUMN PLAT.RES_ID IS 'Restaurant proposant ce plat';
 COMMENT ON COLUMN PLAT.PLA_DATE_CREATION IS 'Date de création de l''enregistrement';
 
 /**
+  * Commentaires pour la table PRESTATAIRE
+ **/
+COMMENT ON TABLE PRESTATAIRE IS 'Prestaire du restaurant';
+COMMENT ON COLUMN PRESTATAIRE.PST_ID IS 'Identifiant de la personne';
+COMMENT ON COLUMN PRESTATAIRE.PST_NOM IS 'Nom de la personne';
+COMMENT ON COLUMN PRESTATAIRE.PST_PRENOM IS 'Prénom de la personne';
+COMMENT ON COLUMN PRESTATAIRE.PST_TELEPHONE IS 'Numéro de téléphone de l''employé.';
+
+/**
   * Commentaires pour la table PROMOTION
  **/
 COMMENT ON TABLE PROMOTION IS 'Promotion sur un plat';

@@ -153,6 +153,9 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
+  <data name="TMD3006" xml:space="preserve">
+    <value>Class '{0}' is not an interface and thus cannot be implemented.</value>
+  </data>
   <data name="TMD3007" xml:space="preserve">
     <value>Class '{0}' cannot inherit class '{1}' because interfaces can only inherit another interface, and vice versa.</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Index for properties '{1}' already exists on class '{0}'.</value>
+  </data>
+  <data name="TMD3022" xml:space="preserve">
+    <value>Interface '{0}' already exists on class '{1}' (or its parent).</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Domain '{0}' already exists.</value>
@@ -213,5 +219,4 @@
   <data name="TMD9013" xml:space="preserve">
     <value>Cannot define value on association '{0}' of class '{1}' because it is multiple or doesn't target a readonly enum class. </value>
   </data>
-
 </root>

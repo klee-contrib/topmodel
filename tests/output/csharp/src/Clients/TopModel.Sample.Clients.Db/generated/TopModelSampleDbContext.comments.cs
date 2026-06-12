@@ -143,6 +143,13 @@ public partial class TopModelSampleDbContext : DbContext
         plat.Property("RestaurantId").HasComment("Restaurant proposant ce plat");
         plat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
+        var prestataire = modelBuilder.Entity<Prestataire>();
+        prestataire.ToTable(t => t.HasComment("Prestaire du restaurant"));
+        prestataire.Property(p => p.Id).HasComment("Identifiant de la personne");
+        prestataire.Property(p => p.Nom).HasComment("Nom de la personne");
+        prestataire.Property(p => p.Prenom).HasComment("Prénom de la personne");
+        prestataire.Property(p => p.Telephone).HasComment("Numéro de téléphone de l'employé.");
+
         var promotion = modelBuilder.Entity<Promotion>();
         promotion.ToTable(t => t.HasComment("Promotion sur un plat"));
         promotion.Property("PlatId").HasComment("Plat concerné par la promotion.");

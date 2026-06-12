@@ -397,7 +397,7 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 parser.Consume<MappingEnd>();
 
-                var alp = new AliasProperty { Location = new Reference(s) };
+                var alp = new AliasProperty { Location = new Reference(s), Reference = aliasReference };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -503,8 +503,6 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
                 }
-
-                alp.Reference = aliasReference;
 
                 if (alp.PrimaryKey)
                 {

@@ -60,7 +60,7 @@ internal class CompositionProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
-    public Decorator? SourceDecorator { get; set; }
+    public IProperty? SourceProperty { get; private set; }
 
     public DomainReference? DomainReference { get; set; }
 
@@ -96,12 +96,12 @@ internal class CompositionProperty : IProperty
         };
     }
 
-    /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(IPropertyContainer container)
+    /// <inheritdoc cref="IProperty.CloneForContainer" />
+    public IProperty CloneForContainer(IPropertyContainer container)
     {
         return new CompositionProperty
         {
-            SourceDecorator = SourceDecorator ?? Decorator,
+            SourceProperty = SourceProperty ?? this,
             Class = container as Class,
             Comment = Comment,
             Composition = Composition,

@@ -114,11 +114,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 }
             }
 
-            foreach (var decoratorAnnotation in prop.SourceDecorator?.PropertyAnnotations ?? [])
+            foreach (var containerAnnotation in prop.SourceContainer?.PropertyAnnotations ?? [])
             {
-                if (!annotations.Any(a => a.Annotation == decoratorAnnotation.Annotation))
+                if (!annotations.Any(a => a.Annotation == containerAnnotation.Annotation))
                 {
-                    annotations.Add(decoratorAnnotation);
+                    annotations.Add(containerAnnotation);
                 }
             }
         }
@@ -276,8 +276,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual IEnumerable<string> GetClassImplements(Class classe, string tag)
     {
         return classe
-            .Decorators.SelectMany(d =>
-                GetDecoratorImplementationValues(i => i.Implements, classe, d.Decorator, d.Parameters, tag)
+            .Implements.Select(i => GetTypeName(i))
+            .Concat(
+                classe.Decorators.SelectMany(d =>
+                    GetDecoratorImplementationValues(i => i.Implements, classe, d.Decorator, d.Parameters, tag)
+                )
             )
             .Distinct();
     }

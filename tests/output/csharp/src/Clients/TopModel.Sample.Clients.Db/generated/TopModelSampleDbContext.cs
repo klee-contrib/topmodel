@@ -85,6 +85,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<Plat> Plats { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Prestataire.
+    /// </summary>
+    public DbSet<Prestataire> Prestataires { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Promotion.
     /// </summary>
     public DbSet<Promotion> Promotions { get; set; }
@@ -166,6 +171,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Employe>().HasIndex(p => p.Matricule).IsUnique();
         modelBuilder.Entity<LigneCommande>().HasIndex("CommandeId", "PlatId").IsUnique();
         modelBuilder.Entity<MenuPlat>().HasIndex("MenuId", "Ordre").IsUnique();
+        modelBuilder.Entity<Prestataire>().HasIndex(p => new { p.Nom, p.Prenom });
+        modelBuilder.Entity<Prestataire>().HasIndex(p => p.Telephone);
         modelBuilder.Entity<Reservation>().HasIndex(p => new { p.TableId, p.DateReservation }).IsUnique();
         modelBuilder.Entity<TableRestaurant>().HasIndex(p => new { p.RestaurantId, p.Numero }).IsUnique();
 

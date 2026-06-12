@@ -4,9 +4,9 @@
 
 version: 4.4.2
 custom:
-  ../../TopModel.Generator.Csharp: b42fe15694017e89a8e4261f886e2f09
+  ../../TopModel.Generator.Csharp: 3bcab94d29d9ac7e1624449e1ea983d5
   ../../TopModel.Generator.Javascript: c0f2b45b81e95b88ad34c551ec81a2a3
-  ../../TopModel.Generator.Jpa: 4ae11bfd09798be77c8be4cf327e0a2f
+  ../../TopModel.Generator.Jpa: 85121b72678fed4a05369fdd4e95c993
   ../../TopModel.Generator.Sql: 7f489125a3e1efc2c5f708df4596d6de
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: ca8b922adec54ee5ed7ec9d4eaec289b
@@ -68,6 +68,8 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Commande.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/CommandeHistorique.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Employe.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/IEmployeBase.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/IPersonneBase.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/LigneCommande.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/LigneCommandeHistorique.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Mappers.cs
@@ -75,6 +77,7 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/MenuPlat.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Personne.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Plat.cs
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Prestataire.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Promotion.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Reservation.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Restaurant.cs
@@ -197,13 +200,16 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/ClientDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/CommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/CommandeHistoriqueDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/EmployeBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/EmployeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/LigneCommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/LigneCommandeHistoriqueDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/MenuDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/MenuPlatDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PersonneBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PlatDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PrestataireDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/PromotionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/daos/restaurant/ReservationDAO.java
@@ -262,6 +268,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Departement.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Employe_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Employe.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/EmployeBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/LigneCommande_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/LigneCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/LigneCommandeHistorique_.java
@@ -272,8 +279,11 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/MenuPlat.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Personne_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Personne.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/PersonneBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Plat_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Plat.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Prestataire_.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Prestataire.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Promotion_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Promotion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_identity_feign/entities/restaurant/Region_.java
@@ -301,12 +311,15 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/ClientDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/CommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/CommandeHistoriqueDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/EmployeBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/EmployeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/LigneCommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/LigneCommandeHistoriqueDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/MenuDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PersonneBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PlatDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PrestataireDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/PromotionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/daos/restaurant/ReservationDAO.java
@@ -356,12 +369,15 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/CommandeHistorique.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Departement.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Employe.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/EmployeBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/LigneCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/LigneCommandeHistorique.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Menu.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/MenuPlat.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Personne.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/PersonneBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Plat.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Prestataire.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Promotion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Region.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_uuid_resttemplate/entities/restaurant/Reservation.java
@@ -387,13 +403,16 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/ClientDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/CommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/CommandeHistoriqueDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/EmployeBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/EmployeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/LigneCommandeDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/LigneCommandeHistoriqueDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/MenuDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/MenuPlatDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PersonneBaseDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PersonneDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PlatDAO.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PrestataireDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/PromotionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/RegionDAO.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/daos/restaurant/ReservationDAO.java
@@ -452,6 +471,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Departement.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Employe_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Employe.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/EmployeBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/LigneCommande_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/LigneCommande.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/LigneCommandeHistorique_.java
@@ -462,8 +482,11 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/MenuPlat.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Personne_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Personne.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/PersonneBase.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Plat_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Plat.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Prestataire_.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Prestataire.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Promotion_.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Promotion.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_sequence_server/entities/restaurant/Region_.java
@@ -517,6 +540,7 @@ generatedFiles:
   - ../output/ssdt/src/tables/MENU.sql
   - ../output/ssdt/src/tables/PERSONNE.sql
   - ../output/ssdt/src/tables/PLAT.sql
+  - ../output/ssdt/src/tables/PRESTATAIRE.sql
   - ../output/ssdt/src/tables/PROMOTION.sql
   - ../output/ssdt/src/tables/REGION.sql
   - ../output/ssdt/src/tables/RESERVATION.sql
@@ -525,3 +549,4 @@ generatedFiles:
   - ../output/ssdt/src/tables/TRANSLATION.sql
   - ../output/translation/i18n/de/out/common_de.properties
   - ../output/translation/i18n/de/out/restaurant_de.properties
+  - ../output/translation/i18n/en/out/restaurant_en.properties

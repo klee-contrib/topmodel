@@ -31,7 +31,7 @@ import restaurant.jpa_sequence_server.enums.restaurant.DepartementCode;
 @EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Personne {
+public class Personne implements PersonneBase {
 
 	/**
 	 * Identifiant de la personne.

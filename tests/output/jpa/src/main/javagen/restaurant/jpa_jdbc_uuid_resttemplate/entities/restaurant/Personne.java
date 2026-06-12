@@ -24,7 +24,7 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.DepartementCode;
 @Table(name = "personne")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Personne {
+public class Personne implements PersonneBase {
 
 	/**
 	 * Identifiant de la personne.

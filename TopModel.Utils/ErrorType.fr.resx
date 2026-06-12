@@ -153,6 +153,9 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
+  <data name="TMD3006" xml:space="preserve">
+    <value>La classe '{0}' n'est pas une interface et donc ne peut pas être implémentée.</value>
+  </data>
   <data name="TMD3007" xml:space="preserve">
     <value>La classe '{0}' ne peut pas hériter de la classe '{1}' car seule une interface peut hériter d'une interface, et inversement.</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Un index a déjà été défini sur la classe '{0}' pour les propriétés suivantes : '{1}'.</value>
+  </data>
+  <data name="TMD3022" xml:space="preserve">
+    <value>L'interface '{0}' a déjà été renseignée sur la classe '{1}' (ou son parent).</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>
@@ -213,5 +219,4 @@
   <data name="TMD9013" xml:space="preserve">
     <value>Il est impossible de définir une valeur pour l'association '{0}' de la classe '{1}' car elle est multiple ou ne cible pas une classe enum readonly.</value>
   </data>
-
 </root>
