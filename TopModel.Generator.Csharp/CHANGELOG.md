@@ -1,3 +1,7 @@
+## 4.1.5
+
+- [`67daa99`](https://github.com/klee-contrib/topmodel/commit/67daa99638450a72db864eafb465c43d7bcdd586) - [js/csharp] Fix retours à la ligne \r\n restants en dur
+
 ## 4.1.4
 
 - [`d600829`](https://github.com/klee-contrib/topmodel/commit/d600829c1e511a83e497f75abab25120aeca964a) - [C#] Fixes `[ReferencedType]` manquants et values dans DbContext avec association `useClass: true`

@@ -1,4 +1,6 @@
-# Changelog Javascript
+## 4.2.5
+
+- [`67daa99`](https://github.com/klee-contrib/topmodel/commit/67daa99638450a72db864eafb465c43d7bcdd586) - [js/csharp] Fix retours à la ligne \r\n restants en dur
 
 ## 4.2.4
 
