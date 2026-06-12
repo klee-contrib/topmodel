@@ -111,7 +111,7 @@ internal class AssociationProperty : IProperty
 
     public bool PrimaryKey { get; set; }
 
-    public Decorator? SourceDecorator { get; set; }
+    public IProperty? SourceProperty { get; private set; }
 
     public Reference? PropertyReference { get; set; }
 
@@ -194,12 +194,12 @@ internal class AssociationProperty : IProperty
         return ap;
     }
 
-    /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(IPropertyContainer container)
+    /// <inheritdoc cref="IProperty.CloneForContainer" />
+    public IProperty CloneForContainer(IPropertyContainer container)
     {
         var ap = new AssociationProperty
         {
-            SourceDecorator = SourceDecorator ?? Decorator,
+            SourceProperty = SourceProperty ?? this,
             Association = Association,
             Class = container as Class,
             Comment = Comment,

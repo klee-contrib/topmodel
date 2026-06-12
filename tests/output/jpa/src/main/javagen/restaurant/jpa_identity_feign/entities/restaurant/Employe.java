@@ -31,7 +31,7 @@ import jakarta.persistence.UniqueConstraint;
 		@Index(name = "IDX_EMP_EMP_TELEPHONE", columnList = "EMP_TELEPHONE")
 	}
 )
-public class Employe extends Personne {
+public class Employe extends Personne implements EmployeBase {
 
 	/**
 	 * Numéro de téléphone de l'employé.

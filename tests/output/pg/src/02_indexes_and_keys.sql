@@ -424,6 +424,20 @@ alter table LIGNE_COMMANDE add constraint UK_LIGNE_COMMANDE_COM_ID_PLA_ID unique
 alter table MENU_PLAT add constraint UK_MENU_PLAT_MEN_ID_MPL_ORDRE unique (MEN_ID, MPL_ORDRE);
 
 /**
+  * Création de l'index IDX_PST_PST_NOM_PST_PRENOM sur PRESTATAIRE.
+ **/
+create index IDX_PST_PST_NOM_PST_PRENOM on PRESTATAIRE (
+	PST_NOM ASC, PST_PRENOM ASC
+);
+
+/**
+  * Création de l'index IDX_PST_PST_TELEPHONE sur PRESTATAIRE.
+ **/
+create index IDX_PST_PST_TELEPHONE on PRESTATAIRE (
+	PST_TELEPHONE ASC
+);
+
+/**
   * Création de l'index UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION sur RESERVATION.
  **/
 alter table RESERVATION add constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION unique (TAB_ID, REV_DATE_RESERVATION);

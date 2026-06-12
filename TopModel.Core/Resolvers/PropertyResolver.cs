@@ -206,6 +206,12 @@ internal class PropertyResolver(
                 container
                     .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.ReferenceName)!)
                     .Concat(
+                        (container as Class)?.ImplementReferences.Select(c =>
+                            containers.FirstOrDefault(d => d.Name == c.ReferenceName)!
+                        )
+                            ?? []
+                    )
+                    .Concat(
                         container
                             .OwnProperties.Concat(container is Class cl ? cl.FromMapperOwnProperties : [])
                             .OfType<AliasProperty>()
@@ -233,15 +239,29 @@ internal class PropertyResolver(
 
                 foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    endpoint.Params.Add(prop.CloneForDecorator(endpoint));
+                    endpoint.Params.Add(prop.CloneForContainer(endpoint));
                 }
             }
             else
             {
                 container.Properties.Clear();
+
+                var classe = container as Class;
+
+                if (classe != null)
+                {
+                    foreach (var prop in classe.Implements.SelectMany(d => d.ExtendedProperties))
+                    {
+                        if (!classe.ExtendedProperties.Any(p => p.SourceProperty == prop))
+                        {
+                            classe.Properties.Add(prop.CloneForContainer(classe));
+                        }
+                    }
+                }
+
                 container.Properties.AddRange(container.OwnProperties);
 
-                if (container is Class classe)
+                if (classe != null)
                 {
                     foreach (
                         var ap in sortedContainers
@@ -263,7 +283,7 @@ internal class PropertyResolver(
 
                 foreach (var prop in container.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    container.Properties.Add(prop.CloneForDecorator(container));
+                    container.Properties.Add(prop.CloneForContainer(container));
                 }
             }
 

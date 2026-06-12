@@ -123,10 +123,10 @@
   <data name="restaurant.commande.montantTotal" xml:space="preserve">
     <value>Montant total</value>
   </data>
-  <data name="restaurant.personne.nom" xml:space="preserve">
+  <data name="restaurant.personneBase.nom" xml:space="preserve">
     <value>Nom</value>
   </data>
-  <data name="restaurant.personne.prenom" xml:space="preserve">
+  <data name="restaurant.personneBase.prenom" xml:space="preserve">
     <value>Prénom</value>
   </data>
 </root>

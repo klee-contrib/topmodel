@@ -199,6 +199,13 @@ public class ModelFile
             )
             .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
             .Concat(
+                Classes.SelectMany(c =>
+                    c.ImplementReferences.Select(r =>
+                        (r as Reference, c.Implements.FirstOrDefault(i => i.Name == r.ReferenceName) as object)
+                    )
+                )
+            )
+            .Concat(
                 Endpoints.SelectMany(e =>
                     e.Route.Variables.Select(pr =>
                         (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.ReferenceName) as object)

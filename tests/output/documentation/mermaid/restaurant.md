@@ -138,6 +138,13 @@ class Personne{
  DO_DATE_HEURE DateCreation
 }
 Personne "0..1" --> "0..*" Departement
+%% Prestaire du restaurant
+class Prestataire{
+ DO_ID Id
+ DO_LIBELLE Nom
+ DO_LIBELLE Prenom
+ DO_TELEPHONE Telephone
+}
 %% Restaurant
 class Restaurant{
  DO_ID Id

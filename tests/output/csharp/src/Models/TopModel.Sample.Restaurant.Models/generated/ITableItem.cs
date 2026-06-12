@@ -7,7 +7,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'une table en liste.
 /// </summary>
-public interface ITableItem
+public partial interface ITableItem
 {
     /// <summary>
     /// Identifiant de la table.

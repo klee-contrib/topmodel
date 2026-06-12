@@ -62,7 +62,7 @@ internal class RegularProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public Decorator? SourceDecorator { get; set; }
+    public IProperty? SourceProperty { get; private set; }
 
 #nullable disable
 
@@ -95,12 +95,12 @@ internal class RegularProperty : IProperty
         };
     }
 
-    /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(IPropertyContainer container)
+    /// <inheritdoc cref="IProperty.CloneForContainer" />
+    public IProperty CloneForContainer(IPropertyContainer container)
     {
         return new RegularProperty
         {
-            SourceDecorator = SourceDecorator ?? Decorator,
+            SourceProperty = SourceProperty ?? this,
             Class = container as Class,
             Comment = Comment,
             Decorator = container as Decorator,

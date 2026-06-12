@@ -10,7 +10,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'une table en lecture.
 /// </summary>
-public partial record TableRead
+public partial record TableRead : ITableItem
 {
     /// <summary>
     /// Identifiant de la table.

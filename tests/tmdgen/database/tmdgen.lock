@@ -18,3 +18,4 @@ generatedFiles:
   - ./model/03_Restaurant/10_Reservation.tmd
   - ./model/03_Restaurant/11_Commande.tmd
   - ./model/03_Restaurant/12_LigneCommande.tmd
+  - ./model/05_Autres/01_Prestataire.tmd

@@ -31,10 +31,11 @@ internal class ClassResolver(
                         ErrorType.TMD0001,
                         [property.Name],
                         modelFile,
-                        property.Decorator is not null
-                            ? classe.DecoratorReferences.FirstOrDefault(dr =>
-                                dr.ReferenceName == property.Decorator.Name
-                            )
+                        property.SourceContainer != null
+                            ? classe
+                                .DecoratorReferences.Cast<Reference>()
+                                .Concat(classe.ImplementReferences)
+                                .FirstOrDefault(r => r.ReferenceName == property.SourceContainer.Name)
                             : property.GetLocation()
                     );
                 }
@@ -340,6 +341,63 @@ internal class ClassResolver(
             }
 
             classe.Extends = extends;
+        }
+    }
+
+    public IEnumerable<ModelError> ResolveImplements()
+    {
+        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
+        {
+            classe.Implements.Clear();
+
+            foreach (var implementReference in classe.ImplementReferences)
+            {
+                if (!referencedClasses.TryGetValue(implementReference.ReferenceName, out var implements))
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD0002,
+                        [implementReference.ReferenceName],
+                        classe,
+                        implementReference
+                    );
+                    continue;
+                }
+
+                if (implements.Type != ClassType.Interface)
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD3006,
+                        [implementReference.ReferenceName],
+                        classe,
+                        implementReference
+                    );
+                    continue;
+                }
+
+                var existing = new List<Class>(classe.Implements);
+                var parentClass = classe.Extends;
+                while (parentClass != null)
+                {
+                    existing.AddRange(parentClass.Implements);
+                    parentClass = parentClass.Extends;
+                }
+
+                if (existing.Contains(implements))
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD3022,
+                        [implementReference.ReferenceName, classe.Name],
+                        classe,
+                        implementReference
+                    );
+                    continue;
+                }
+
+                classe.Implements.Add(implements);
+            }
         }
     }
 

@@ -67,7 +67,9 @@ export const restaurant = {
         dateNaissance: "DateNaissance",
         matricule: "Matricule",
         restaurantId: "Restaurant",
-        salaire: "Salaire",
+        salaire: "Salaire"
+    },
+    employeBase: {
         telephone: "Telephone"
     },
     employeItem: {
@@ -96,10 +98,12 @@ export const restaurant = {
         plats: "Plats"
     },
     personne: {
-        departementCode: "DepartementCode",
+        departementCode: "DepartementCode"
+    },
+    personneBase: {
         id: "Id",
-        nom: "Last name",
-        prenom: "First name"
+        nom: "Nom",
+        prenom: "Prénom"
     },
     personneItem: {
         id: "Id",

@@ -47,7 +47,9 @@ public interface IProperty : IAnnotationContainer
 
     Decorator Decorator { get; set; }
 
-    Decorator? SourceDecorator { get; set; }
+    IProperty? SourceProperty { get; }
+
+    IPropertyContainer? SourceContainer => SourceProperty?.Parent;
 
     PropertyMapping PropertyMapping { get; set; }
 
@@ -55,7 +57,7 @@ public interface IProperty : IAnnotationContainer
         Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
 
     IProperty ResourceProperty =>
-        SourceDecorator != null ? SourceDecorator.Properties.First(p => p.Name == Name).ResourceProperty
+        SourceContainer != null ? SourceContainer.Properties.First(p => p.Name == Name).ResourceProperty
         : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label ? alp.OriginalProperty!.ResourceProperty
         : this;
 
@@ -63,7 +65,7 @@ public interface IProperty : IAnnotationContainer
         $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.PropertyNameCamel}";
 
     IProperty CommentResourceProperty =>
-        SourceDecorator != null ? SourceDecorator.Properties.First(p => p.Name == Name).CommentResourceProperty
+        SourceContainer != null ? SourceContainer.Properties.First(p => p.Name == Name).CommentResourceProperty
         : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
             ? alp.OriginalProperty!.CommentResourceProperty
         : this;
@@ -79,5 +81,5 @@ public interface IProperty : IAnnotationContainer
 
     IProperty CloneDefinition();
 
-    IProperty CloneForDecorator(IPropertyContainer container);
+    IProperty CloneForContainer(IPropertyContainer container);
 }

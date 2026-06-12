@@ -225,7 +225,7 @@ internal class AliasProperty : IProperty
         set => _customProperties = value;
     }
 
-    public Decorator? SourceDecorator { get; set; }
+    public IProperty? SourceProperty { get; private set; }
 
     public IProperty? OriginalProperty => _property;
 
@@ -361,12 +361,12 @@ internal class AliasProperty : IProperty
         return alp;
     }
 
-    /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(IPropertyContainer container)
+    /// <inheritdoc cref="IProperty.CloneForContainer" />
+    public IProperty CloneForContainer(IPropertyContainer container)
     {
         var alp = new AliasProperty
         {
-            SourceDecorator = SourceDecorator ?? Decorator,
+            SourceProperty = SourceProperty ?? this,
             Class = container as Class,
             Comment = _comment!,
             Decorator = container as Decorator,
@@ -438,7 +438,7 @@ internal class AliasProperty : IProperty
             PropertyReference = includeReference,
             Class = Class,
             Decorator = Decorator,
-            SourceDecorator = SourceDecorator,
+            SourceProperty = SourceProperty,
             DomainReference = DomainReference,
             CompositionReference = CompositionReference,
             Endpoint = Endpoint,

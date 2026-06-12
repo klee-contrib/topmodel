@@ -212,6 +212,7 @@ public class ModelFileLoader(
                     ExcludedAnnotationReferences = c.ExcludedAnnotationReferences,
                     ExtendsReference = c.ExtendsReference,
                     FlagPropertyReference = c.FlagPropertyReference,
+                    ImplementReferences = c.ImplementReferences,
                     Label = c.Label,
                     LocalePropertyReference = c.LocalePropertyReference,
                     Location = c.Location,

@@ -224,6 +224,22 @@ create table PLAT (
 create sequence SEQ_PLAT as INT start 1000 increment 50 owned by PLAT.PLA_ID;
 
 /**
+  * Création de la table PRESTATAIRE
+ **/
+create table PRESTATAIRE (
+	PST_ID int not null,
+	PST_NOM varchar(100) not null,
+	PST_PRENOM varchar(100) not null,
+	PST_TELEPHONE varchar(20),
+	constraint PK_PRESTATAIRE primary key (PST_ID)
+);
+
+/**
+  * Création de la séquence pour la clé primaire de la table PRESTATAIRE
+ **/
+create sequence SEQ_PRESTATAIRE as INT start 1000 increment 50 owned by PRESTATAIRE.PST_ID;
+
+/**
   * Création de la table PROMOTION
  **/
 create table PROMOTION (

@@ -75,7 +75,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
 
         List<string> classCompleteKeys = ["association", "composition", "class", "extends"];
 
-        if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
+        if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey || currentKey == "implements")
         {
             return CompleteClass(request, files, useIndex);
         }

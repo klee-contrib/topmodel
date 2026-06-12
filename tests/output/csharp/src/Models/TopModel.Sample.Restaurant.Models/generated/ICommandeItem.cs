@@ -7,7 +7,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Détail d'une commande en liste.
 /// </summary>
-public interface ICommandeItem
+public partial interface ICommandeItem
 {
     /// <summary>
     /// Identifiant de la commande.

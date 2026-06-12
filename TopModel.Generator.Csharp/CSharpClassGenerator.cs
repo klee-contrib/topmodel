@@ -70,28 +70,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         var extends = Config.GetClassExtends(item, tag);
         var implements = Config.GetClassImplements(item, tag);
 
-        if (item.Type == ClassType.Interface)
+        w.WriteClassDeclaration(Config.GetTypeName(item), extends, Config.UseRecords, item.Type, implements.ToArray());
+
+        if (item.Type != ClassType.Interface)
         {
-            w.Write($"public interface {Config.GetTypeName(item)}");
-
-            if (implements.Any())
-            {
-                w.Write($" : {string.Join(", ", implements)}");
-            }
-
-            w.WriteLine();
-            w.WriteLine("{");
-        }
-        else
-        {
-            w.WriteClassDeclaration(
-                Config.GetTypeName(item),
-                extends,
-                Config.UseRecords,
-                isAbstract: item.Type == ClassType.Abstract,
-                implements.ToArray()
-            );
-
             GenerateConstProperties(w, item);
 
             if (Config.EnumCols && Config.IsPersistent(item, tag))
@@ -580,6 +562,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 usings.Add(GetNamespace(item.Extends, tag));
             }
+
+            usings.AddRange(item.Implements.Select(implements => GetNamespace(implements, tag)));
         }
 
         usings.AddRange(Config.GetDecoratorImports(item, tag));

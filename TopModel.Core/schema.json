@@ -1152,7 +1152,7 @@
             "type": {
               "type": "string",
               "description": "Permet de définir la classe comme étant une interface ou une classe abstraite.",
-              "enum": ["regular", "abstract", "interface"]
+              "enum": [ "regular", "abstract", "interface" ]
             },
             "readonly": {
               "type": "boolean",
@@ -1175,6 +1175,13 @@
                 }
               ],
               "description": "Force la catégorisation de cette classe en tant qu'enum et détermine comment elle doit être considérée dans le modèle.\n\nUne classe doit avoir au moins une `value`, au moins une propriété, et ne peut pas avoir de clé primaire multiple pour être une enum.\n\nCette propriété peut valoir `class` pour représenter l'enum comme une classe (avec des enums pour la clé primaire et les clés d'unicité), ou `true` pour la représenter intégralement comme une enum.\n\nSi la classe peut être une enum et que le domaine de sa clé primaire est auto-généré, alors elle sera par défaut une enum de type `class`."
+            },
+            "implements": {
+              "type": "array",
+              "description": "Classes de type interface à implémenter par cette classe.",
+              "items": {
+                "type": "string"
+              }
             },
             "decorators": {
               "type": "array",

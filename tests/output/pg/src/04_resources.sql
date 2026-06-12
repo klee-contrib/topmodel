@@ -24,12 +24,12 @@ INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restauran
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.commande.montantTotal', 'en', 'Total amount');
 
 /**		Initialisation des traductions des propriétés de la table PERSONNE		**/
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.nom', 'fr', 'Nom');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.prenom', 'fr', 'Prénom');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.nom', 'de', 'Nom');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.prenom', 'de', 'Prénom');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.nom', 'en', 'Last name');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.prenom', 'en', 'First name');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.nom', 'fr', 'Nom');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.prenom', 'fr', 'Prénom');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.nom', 'de', 'Nom');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.prenom', 'de', 'Prénom');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.nom', 'en', 'Nom');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.prenom', 'en', 'Prénom');
 
 /**		Initialisation des traductions des valeurs de la table CATEGORIE_PLAT		**/
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Entree', 'fr', 'Entrée');

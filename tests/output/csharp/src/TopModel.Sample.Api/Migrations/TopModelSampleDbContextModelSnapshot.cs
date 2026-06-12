@@ -30,6 +30,12 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("tra_resource_key")
                         .HasComment("Clé de traduction.");
 
+                    b.Property<string>("Lang")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("tra_lang")
+                        .HasComment("Langue de traduction");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -37,7 +43,9 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("tra_value")
                         .HasComment("Valeur de la clé de traduction.");
 
-                    b.HasKey("ResourceKey");
+                    b.HasKey("ResourceKey", "Lang");
+
+                    b.HasIndex("ResourceKey");
 
                     b.ToTable("translation", t =>
                         {
@@ -48,72 +56,254 @@ namespace TopModel.Sample.Api.Migrations
                         new
                         {
                             ResourceKey = "restaurant.categoriePlat.values.Boisson",
+                            Lang = "fr",
                             Value = "Boisson"
                         },
                         new
                         {
                             ResourceKey = "restaurant.categoriePlat.values.Dessert",
+                            Lang = "fr",
                             Value = "Dessert"
                         },
                         new
                         {
                             ResourceKey = "restaurant.categoriePlat.values.Entree",
+                            Lang = "fr",
                             Value = "Entrée"
                         },
                         new
                         {
                             ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            Lang = "fr",
                             Value = "Plat principal"
                         },
                         new
                         {
                             ResourceKey = "restaurant.departement.values.HautsDeSeine",
+                            Lang = "fr",
                             Value = "Hauts de Seine"
                         },
                         new
                         {
                             ResourceKey = "restaurant.departement.values.Paris",
+                            Lang = "fr",
                             Value = "Paris"
                         },
                         new
                         {
                             ResourceKey = "restaurant.departement.values.SeineEtMarne",
+                            Lang = "fr",
                             Value = "Seine et Marne"
                         },
                         new
                         {
                             ResourceKey = "restaurant.departement.values.SeineSaintDenis",
+                            Lang = "fr",
                             Value = "Seine Saint Denis"
                         },
                         new
                         {
                             ResourceKey = "restaurant.region.values.Idf",
+                            Lang = "fr",
                             Value = "Île de France"
                         },
                         new
                         {
                             ResourceKey = "restaurant.statutCommande.values.Annulee",
+                            Lang = "fr",
                             Value = "Annulée"
                         },
                         new
                         {
                             ResourceKey = "restaurant.statutCommande.values.EnAttente",
+                            Lang = "fr",
                             Value = "En attente"
                         },
                         new
                         {
                             ResourceKey = "restaurant.statutCommande.values.EnPreparation",
+                            Lang = "fr",
                             Value = "En préparation"
                         },
                         new
                         {
                             ResourceKey = "restaurant.statutCommande.values.Prete",
+                            Lang = "fr",
                             Value = "Prête"
                         },
                         new
                         {
                             ResourceKey = "restaurant.statutCommande.values.Servie",
+                            Lang = "fr",
                             Value = "Servie"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Boisson",
+                            Lang = "de",
+                            Value = "Boisson"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Dessert",
+                            Lang = "de",
+                            Value = "Dessert"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Entree",
+                            Lang = "de",
+                            Value = "Entrée"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            Lang = "de",
+                            Value = "Plat principal"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.HautsDeSeine",
+                            Lang = "de",
+                            Value = "Hauts de Seine"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.Paris",
+                            Lang = "de",
+                            Value = "Paris"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineEtMarne",
+                            Lang = "de",
+                            Value = "Seine et Marne"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineSaintDenis",
+                            Lang = "de",
+                            Value = "Seine Saint Denis"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.region.values.Idf",
+                            Lang = "de",
+                            Value = "Île de France"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Annulee",
+                            Lang = "de",
+                            Value = "Annulée"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnAttente",
+                            Lang = "de",
+                            Value = "En attente"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnPreparation",
+                            Lang = "de",
+                            Value = "En préparation"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Prete",
+                            Lang = "de",
+                            Value = "Prête"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Servie",
+                            Lang = "de",
+                            Value = "Servie"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Boisson",
+                            Lang = "en",
+                            Value = "Drink"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Dessert",
+                            Lang = "en",
+                            Value = "Dessert"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Entree",
+                            Lang = "en",
+                            Value = "Starter"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            Lang = "en",
+                            Value = "Main course"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.HautsDeSeine",
+                            Lang = "en",
+                            Value = "Hauts de Seine"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.Paris",
+                            Lang = "en",
+                            Value = "Paris"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineEtMarne",
+                            Lang = "en",
+                            Value = "Seine et Marne"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.departement.values.SeineSaintDenis",
+                            Lang = "en",
+                            Value = "Seine Saint Denis"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.region.values.Idf",
+                            Lang = "en",
+                            Value = "Île de France"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Annulee",
+                            Lang = "en",
+                            Value = "Cancelled"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnAttente",
+                            Lang = "en",
+                            Value = "Pending"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.EnPreparation",
+                            Lang = "en",
+                            Value = "In preparation"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Prete",
+                            Lang = "en",
+                            Value = "Ready"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.statutCommande.values.Servie",
+                            Lang = "en",
+                            Value = "Served"
                         });
                 });
 
@@ -147,6 +337,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("avi_date_avis")
                         .HasComment("Date de l'avis");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("avi_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
 
                     b.Property<int>("NombreVues")
                         .HasColumnType("integer")
@@ -237,6 +432,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("com_date_commande")
                         .HasComment("Date et heure de la commande");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("com_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<DateTime?>("DateLivraison")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("com_date_livraison")
@@ -303,6 +503,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("com_date_commande")
                         .HasComment("Date et heure de la commande");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("com_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<DateTime?>("DateLivraison")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("com_date_livraison")
@@ -353,6 +558,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("com_id")
                         .HasComment("Commande à laquelle appartient la ligne");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lig_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<int>("PlatId")
                         .HasColumnType("integer")
                         .HasColumnName("pla_id")
@@ -398,6 +608,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("com_id")
                         .HasComment("Commande à laquelle appartient la ligne");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lig_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<int>("PlatId")
                         .HasColumnType("integer")
                         .HasColumnName("pla_id")
@@ -437,6 +652,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Identifiant du menu");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("men_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
 
                     b.Property<DateTime?>("DateDebut")
                         .HasColumnType("timestamp with time zone")
@@ -498,6 +718,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("pla_id")
                         .HasComment("Plat du menu");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("mpl_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<int>("Ordre")
                         .HasColumnType("integer")
                         .HasColumnName("mpl_ordre")
@@ -525,6 +750,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Identifiant de la personne");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("per_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
 
                     b.Property<string>("DepartementCode")
                         .HasMaxLength(10)
@@ -575,6 +805,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("cat_code")
                         .HasComment("Catégorie du plat");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("pla_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<string>("Description")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -615,6 +850,48 @@ namespace TopModel.Sample.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Prestataire", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("pst_id")
+                        .HasComment("Identifiant de la personne");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("pst_nom")
+                        .HasComment("Nom de la personne");
+
+                    b.Property<string>("Prenom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("pst_prenom")
+                        .HasComment("Prénom de la personne");
+
+                    b.Property<string>("Telephone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("pst_telephone")
+                        .HasComment("Numéro de téléphone de l'employé.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Telephone");
+
+                    b.HasIndex("Nom", "Prenom");
+
+                    b.ToTable("prestataire", t =>
+                        {
+                            t.HasComment("Prestaire du restaurant");
+                        });
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Promotion", b =>
                 {
                     b.Property<int>("PlatId")
@@ -626,6 +903,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("pro_active")
                         .HasComment("Indique si la promotion est active");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("pro_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
 
                     b.Property<DateTime>("DateDebut")
                         .HasColumnType("timestamp with time zone")
@@ -690,6 +972,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_confirmee")
                         .HasComment("Indique si la réservation est confirmée");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("rev_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<DateTime>("DateReservation")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("rev_date_reservation")
@@ -741,6 +1028,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("res_adresse")
                         .HasComment("Adresse du restaurant");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("res_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -777,6 +1069,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("tab_capacite")
                         .HasComment("Capacité de la table (nombre de places)");
 
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("tab_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
                     b.Property<bool>("Disponible")
                         .HasColumnType("boolean")
                         .HasColumnName("tab_disponible")
@@ -799,7 +1096,7 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasIndex("RestaurantId", "Numero")
                         .IsUnique();
 
-                    b.ToTable("table", t =>
+                    b.ToTable("table_restaurant", t =>
                         {
                             t.HasComment("Table du restaurant");
                         });

@@ -13,7 +13,7 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// Classe de base représentant une personne.
 /// </summary>
 [Table("personne")]
-public partial record Personne
+public partial record Personne : IPersonneBase
 {
     /// <summary>
     /// Identifiant de la personne.

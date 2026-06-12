@@ -123,6 +123,9 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         var implements = Config.GetClassImplements(classe, tag).ToList();
         javaEnum.Values.AddRange(GetEnumValues(classe));
         javaEnum.Implements.AddRange(implements);
+        javaEnum.Imports.AddRange(
+            classe.Implements.Select(implement => implement.GetImport(Config, Config.GetBestClassTag(implement, tag)))
+        );
         javaEnum.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
         javaEnum.AddRange(GetConstuctors(classe, tag));
         javaEnum.AddRange(GetFields(classe, tag));

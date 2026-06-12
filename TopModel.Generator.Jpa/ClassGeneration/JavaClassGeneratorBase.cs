@@ -263,6 +263,9 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         javaClass.Extends = extends;
         var implements = Config.GetClassImplements(classe, tag).ToList();
         javaClass.Implements.AddRange(implements);
+        javaClass.Imports.AddRange(
+            classe.Implements.Select(implement => implement.GetImport(Config, Config.GetBestClassTag(implement, tag)))
+        );
         javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
         javaClass.AddRange(GetConstuctors(classe, tag));
         javaClass.AddRange(GetFields(classe, tag));

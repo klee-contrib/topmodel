@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
@@ -139,7 +140,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         string name,
         string? inheritedClass,
         bool isRecord,
-        bool isAbstract = false,
+        ClassType classType = ClassType.Regular,
         string[]? ifList = null,
         string? parameters = null,
         string? baseParameters = null
@@ -154,14 +155,18 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
 
         sb.Append("public ");
 
-        if (isAbstract)
+        if (classType == ClassType.Abstract)
         {
             sb.Append("abstract ");
         }
 
         sb.Append("partial ");
 
-        if (isRecord)
+        if (classType == ClassType.Interface)
+        {
+            sb.Append("interface ");
+        }
+        else if (isRecord)
         {
             sb.Append("record ");
         }

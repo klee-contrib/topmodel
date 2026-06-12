@@ -152,6 +152,11 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
+    /// Seule une interface peut être implémentée.
+    /// </summary>
+    TMD3006,
+
+    /// <summary>
     /// Classes interfaces ne peuvent être héritées qu'entre elles.
     /// </summary>
     TMD3007,
@@ -225,6 +230,11 @@ public enum ErrorType
     /// Index déjà défini.
     /// </summary>
     TMD3021,
+
+    /// <summary>
+    /// Doublon d'interface.
+    /// </summary>
+    TMD3022,
 
     #endregion
 

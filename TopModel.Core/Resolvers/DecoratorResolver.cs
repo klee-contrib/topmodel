@@ -14,7 +14,7 @@ internal class DecoratorResolver(
 )
 {
     /// <summary>
-    /// Résout les décorateurs sur les classes et les endpoints.
+    /// Résout les décorateurs sur les classes, les endpoints et les autres décorateurs.
     /// </summary>
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDecorators()

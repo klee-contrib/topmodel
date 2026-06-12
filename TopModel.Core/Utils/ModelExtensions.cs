@@ -70,7 +70,7 @@ public static class ModelExtensions
                         {
                             AssociationProperty ap => ap.Reference,
                             CompositionProperty cp => cp.Reference,
-                            AliasProperty alp => alp.Reference!.ClassReference!,
+                            AliasProperty alp => alp.Reference?.ClassReference!,
                             _ => null!, // Impossible
                         },
                         File: p.GetFile()
@@ -97,6 +97,16 @@ public static class ModelExtensions
                 modelStore
                     .Classes.Where(c => c.Extends == classe)
                     .Select(c => (Reference: c.ExtendsReference! as Reference, File: c.GetFile()))
+            )
+            .Concat(
+                modelStore
+                    .Classes.Where(c => c.Implements.Contains(classe))
+                    .Select(c =>
+                        (
+                            Reference: c.ImplementReferences.First(dr => dr.ReferenceName == classe.Name) as Reference,
+                            File: c.GetFile()
+                        )
+                    )
             )
             .Concat(
                 modelStore
@@ -215,7 +225,7 @@ public static class ModelExtensions
             ModelFile file => file,
             Class classe => classe.ModelFile,
             Endpoint endpoint => endpoint.ModelFile,
-            IProperty { SourceDecorator: Decorator decorator } => decorator.ModelFile,
+            IProperty { SourceContainer: IPropertyContainer container } => container.ModelFile,
             IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
@@ -392,7 +402,7 @@ public static class ModelExtensions
         {
             foreach (
                 var p in modelStore.Properties.Where(p =>
-                    p.SourceDecorator == property.Decorator && p.Name == property.Name
+                    p.SourceContainer == property.Decorator && p.Name == property.Name
                 )
             )
             {
@@ -410,6 +420,23 @@ public static class ModelExtensions
                 if (mapping.TargetPropertyReference != null && mapping.TargetProperty == property)
                 {
                     yield return (mapping.TargetPropertyReference, mapping.TargetProperty.GetFile());
+                }
+            }
+
+            if (property.Class.Type == ClassType.Interface)
+            {
+                foreach (
+                    var p in modelStore.Properties.Where(p =>
+                        p.SourceContainer == property.Class && p.Name == property.Name
+                    )
+                )
+                {
+                    foreach (
+                        var result in modelStore.GetPropertyReferencesCore(p, collectBackward: false, collectForward)
+                    )
+                    {
+                        yield return result;
+                    }
                 }
             }
         }

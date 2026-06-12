@@ -32,6 +32,8 @@ public class Class : IPropertyContainer
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 
+    public IList<Class> Implements { get; } = [];
+
     public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
@@ -60,7 +62,7 @@ public class Class : IPropertyContainer
     public IList<IProperty> Properties { get; } = [];
 
     public IList<IProperty> ExtendedProperties =>
-        Extends != null ? [.. Properties, .. Extends.ExtendedProperties] : Properties;
+        Extends != null ? [.. Extends.ExtendedProperties, .. Properties] : Properties;
 
     public bool PreservePropertyCasing { get; set; }
 
@@ -121,6 +123,8 @@ public class Class : IPropertyContainer
     public Reference? LocalePropertyReference { get; set; }
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
+
+    public IList<ClassReference> ImplementReferences { get; internal set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
 
