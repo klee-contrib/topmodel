@@ -242,8 +242,8 @@ public class ModelFileLoader(
                             Reference = fm.Reference,
                         };
 
-                        nfm.Params.AddRange(
-                            fm.Params.Select(p =>
+                        nfm.OwnParams.AddRange(
+                            fm.OwnParams.Select(p =>
                                 p.Match<OneOf<ClassMappings, PropertyMapping>>(
                                     pc => new ClassMappings
                                     {
@@ -263,12 +263,9 @@ public class ModelFileLoader(
                             )
                         );
 
-                        foreach (var pp in nfm.PropertyParams)
+                        foreach (var pp in nfm.OwnPropertyParams)
                         {
-                            foreach (var prop in pp.Properties)
-                            {
-                                prop.PropertyMapping = pp;
-                            }
+                            pp.Property.PropertyMapping = pp;
                         }
 
                         return nfm;
@@ -284,8 +281,8 @@ public class ModelFileLoader(
                     })
                 );
 
-                nc.Properties.AddRange(c.Properties.Select(p => p.CloneDefinition()));
-                foreach (var prop in nc.Properties)
+                nc.OwnProperties.AddRange(c.OwnProperties.Select(p => p.CloneDefinition()));
+                foreach (var prop in nc.OwnProperties)
                 {
                     prop.Class = nc;
                 }
@@ -379,8 +376,8 @@ public class ModelFileLoader(
                     })
                 );
 
-                nd.Properties.AddRange(d.Properties.Select(p => p.CloneDefinition()));
-                foreach (var prop in nd.Properties)
+                nd.OwnProperties.AddRange(d.OwnProperties.Select(p => p.CloneDefinition()));
+                foreach (var prop in nd.OwnProperties)
                 {
                     prop.Decorator = nd;
                 }
@@ -443,17 +440,17 @@ public class ModelFileLoader(
                     OwnTags = e.OwnTags,
                     PreservePropertyCasing = e.PreservePropertyCasing,
                     PropertyAnnotationReferences = e.PropertyAnnotationReferences,
-                    Returns = e.Returns?.CloneDefinition(),
+                    OwnReturns = e.OwnReturns?.CloneDefinition(),
                     Route = e.Route,
                 };
 
-                ne.Params.AddRange(e.Params.Select(p => p.CloneDefinition()));
-                foreach (var prop in ne.Params)
+                ne.OwnParams.AddRange(e.OwnParams.Select(p => p.CloneDefinition()));
+                foreach (var prop in ne.OwnParams)
                 {
                     prop.Endpoint = ne;
                 }
 
-                ne.Returns?.Endpoint = ne;
+                ne.OwnReturns?.Endpoint = ne;
 
                 return ne;
             })

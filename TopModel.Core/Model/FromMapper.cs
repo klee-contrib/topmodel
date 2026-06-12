@@ -16,5 +16,9 @@ public class FromMapper
 #nullable disable
     public Class Class { get; set; }
 
+    internal IList<OneOf<ClassMappings, PropertyMapping>> OwnParams { get; } = [];
+
+    internal IEnumerable<PropertyMapping> OwnPropertyParams => OwnParams.Where(p => p.IsT1).Select(p => p.AsT1);
+
     internal LocatedString Reference { get; set; }
 }

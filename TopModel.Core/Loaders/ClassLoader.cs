@@ -157,7 +157,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.Properties.Add(propertyLoader.Load(parser, modelFile, config));
+                        classe.OwnProperties.Add(propertyLoader.Load(parser, modelFile, config));
                     });
                     break;
                 case "unique":
@@ -262,7 +262,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                     if (parser.Current is Scalar { Value: "class" })
                                                     {
                                                         var param = new ClassMappings();
-                                                        mapper.Params.Add(param);
+                                                        mapper.OwnParams.Add(param);
 
                                                         Scalar classScalar = null!;
                                                         while (parser.Current is not MappingEnd)
@@ -310,7 +310,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                     else if (parser.Current is Scalar { Value: "property" })
                                                     {
                                                         var param = new PropertyMapping { FromMapper = mapper };
-                                                        mapper.Params.Add(param);
+                                                        mapper.OwnParams.Add(param);
                                                         while (parser.Current is not MappingEnd)
                                                         {
                                                             var prop = parser.Consume<Scalar>();
@@ -399,7 +399,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
         classe.Label ??= classe.Name;
         classe.SqlName ??= (config.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
 
-        foreach (var prop in classe.Properties)
+        foreach (var prop in classe.OwnProperties)
         {
             prop.Class = classe;
         }

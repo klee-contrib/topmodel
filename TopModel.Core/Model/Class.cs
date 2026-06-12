@@ -135,6 +135,11 @@ public class Class : IPropertyContainer
 
     internal LocatedString? EnumOverride { get; set; }
 
+    internal IList<IProperty> OwnProperties { get; } = [];
+
+    internal IEnumerable<IProperty> FromMapperOwnProperties =>
+        FromMappers.SelectMany(fm => fm.OwnPropertyParams.Select(pp => pp.Property));
+
 #nullable disable
     internal Reference Location { get; set; }
 

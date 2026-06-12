@@ -47,12 +47,12 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                     {
                         var property = propertyLoader.Load(parser, modelFile, config);
                         property.Endpoint = endpoint;
-                        endpoint.Params.Add(property);
+                        endpoint.OwnParams.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = propertyLoader.Load(parser, modelFile, config);
-                    endpoint.Returns.Endpoint = endpoint;
+                    endpoint.OwnReturns = propertyLoader.Load(parser, modelFile, config);
+                    endpoint.OwnReturns.Endpoint = endpoint;
                     break;
                 case "decorators":
                     parser.ConsumeSequence(() =>

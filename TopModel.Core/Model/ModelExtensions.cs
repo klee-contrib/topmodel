@@ -439,4 +439,17 @@ public static class ModelExtensions
             return null;
         }
     }
+
+    extension(IPropertyContainer container)
+    {
+        internal IList<IProperty> OwnProperties =>
+            container switch
+            {
+                Class c => c.OwnProperties,
+                Endpoint e => e.OwnParams.Concat([e.OwnReturns!]).Where(p => p != null).ToList(),
+                Decorator d => d.OwnProperties,
+                PropertyMapping p => [p.Property],
+                _ => throw new InvalidOperationException(),
+            };
+    }
 }

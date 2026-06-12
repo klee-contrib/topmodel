@@ -79,5 +79,5 @@ public interface IProperty : IAnnotationContainer
 
     IProperty CloneDefinition();
 
-    IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null);
+    IProperty CloneForDecorator(IPropertyContainer container);
 }

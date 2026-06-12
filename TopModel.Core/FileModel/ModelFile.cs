@@ -384,6 +384,15 @@ public class ModelFile
             .DistinctBy(t => t.Item1)
             .ToDictionary(t => t.Item1, t => t.Item2);
 
+    internal IEnumerable<IProperty> OwnProperties =>
+        Classes
+            .SelectMany(c => c.OwnProperties)
+            .Concat(Classes.SelectMany(c => c.FromMapperOwnProperties))
+            .Concat(Endpoints.SelectMany(e => e.OwnParams))
+            .Concat(Endpoints.Select(e => e.OwnReturns))
+            .Concat(Decorators.SelectMany(e => e.OwnProperties))
+            .Where(p => p != null);
+
     public void ResetPropertyList()
     {
         _properties = null;

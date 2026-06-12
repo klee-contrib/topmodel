@@ -362,16 +362,16 @@ internal class AliasProperty : IProperty
     }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
+    public IProperty CloneForDecorator(IPropertyContainer container)
     {
         var alp = new AliasProperty
         {
             SourceDecorator = SourceDecorator ?? Decorator,
-            Class = classe,
+            Class = container as Class,
             Comment = _comment!,
-            Decorator = decorator,
+            Decorator = container as Decorator,
             DefaultValue = _defaultValue,
-            Endpoint = endpoint,
+            Endpoint = container as Endpoint,
             Label = _label,
             Location = Location,
             As = As,

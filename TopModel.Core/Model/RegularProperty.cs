@@ -96,18 +96,18 @@ internal class RegularProperty : IProperty
     }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
+    public IProperty CloneForDecorator(IPropertyContainer container)
     {
         return new RegularProperty
         {
             SourceDecorator = SourceDecorator ?? Decorator,
-            Class = classe,
+            Class = container as Class,
             Comment = Comment,
-            Decorator = decorator,
+            Decorator = container as Decorator,
             DefaultValue = DefaultValue,
             Domain = Domain,
             DomainParameters = DomainParameters,
-            Endpoint = endpoint,
+            Endpoint = container as Endpoint,
             Label = Label,
             Location = Location,
             Name = Name,

@@ -116,7 +116,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        decorator.Properties.Add(propertyLoader.Load(parser, modelFile, config));
+                        decorator.OwnProperties.Add(propertyLoader.Load(parser, modelFile, config));
                     });
                     break;
                 case "parameters":
@@ -133,7 +133,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
             }
         });
 
-        foreach (var prop in decorator.Properties)
+        foreach (var prop in decorator.OwnProperties)
         {
             prop.Decorator = decorator;
         }

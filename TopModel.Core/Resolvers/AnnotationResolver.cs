@@ -93,8 +93,9 @@ public class AnnotationResolver(
 
         foreach (
             var container in modelFiles
-                .SelectMany(mf => mf.AnnotationContainers)
-                .Where(ac => ac is not IProperty p || p.SourceDecorator is null)
+                .SelectMany<ModelFile, IAnnotationContainer>(mf =>
+                    [.. mf.Domains, .. mf.Decorators, .. mf.Classes, .. mf.Endpoints, .. mf.OwnProperties]
+                )
                 .OrderBy(ac => ac is Domain or Decorator ? 0 : 1)
         )
         {

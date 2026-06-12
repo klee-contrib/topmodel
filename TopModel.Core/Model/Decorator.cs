@@ -83,6 +83,8 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
+    internal IList<IProperty> OwnProperties { get; } = [];
+
     internal Reference Location { get; set; }
 
     public override string ToString()

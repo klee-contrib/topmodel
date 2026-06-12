@@ -70,6 +70,10 @@ public class Endpoint : IPropertyContainer
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
+    internal IProperty? OwnReturns { get; set; }
+
+    internal IList<IProperty> OwnParams { get; set; } = [];
+
 #nullable disable
 
     internal Reference Location { get; set; }

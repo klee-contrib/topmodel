@@ -14,65 +14,6 @@ internal class DecoratorResolver(
 )
 {
     /// <summary>
-    /// Recopie les propriétés de décorateurs sur les classes et les endpoints.
-    /// </summary>
-    public void CopyDecoratorProperties()
-    {
-        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
-        {
-            if (decorator.Decorators.Count > 0)
-            {
-                foreach (var prop in decorator.Properties.Where(p => p.SourceDecorator is not null).ToList())
-                {
-                    decorator.Properties.Remove(prop);
-                }
-
-                foreach (var prop in decorator.Decorators.SelectMany(d => d.Decorator.Properties))
-                {
-                    decorator.Properties.Add(prop.CloneForDecorator(decorator: decorator));
-                }
-            }
-        }
-
-        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
-        {
-            if (classe.Decorators.Count > 0)
-            {
-                foreach (var prop in classe.Properties.Where(p => p.SourceDecorator is not null).ToList())
-                {
-                    classe.Properties.Remove(prop);
-                }
-
-                foreach (var prop in classe.Decorators.SelectMany(d => d.Decorator.Properties))
-                {
-                    classe.Properties.Add(prop.CloneForDecorator(classe: classe));
-                }
-            }
-        }
-
-        foreach (var endpoint in modelFiles.SelectMany(mf => mf.Endpoints))
-        {
-            if (endpoint.Decorators.Count > 0)
-            {
-                foreach (var prop in endpoint.Params.Where(p => p.SourceDecorator is not null).ToList())
-                {
-                    endpoint.Params.Remove(prop);
-                }
-
-                foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
-                {
-                    endpoint.Params.Add(prop.CloneForDecorator(endpoint: endpoint));
-                }
-            }
-        }
-
-        foreach (var modelFile in modelFiles)
-        {
-            modelFile.ResetPropertyList();
-        }
-    }
-
-    /// <summary>
     /// Résout les décorateurs sur les classes et les endpoints.
     /// </summary>
     /// <returns>Erreurs.</returns>

@@ -873,37 +873,27 @@ public class ModelStore(
             yield return error;
         }
 
-        foreach (var error in propertyResolver.ResolveNonAliasProperties())
-        {
-            yield return error;
-        }
-
         foreach (var error in annotationResolver.ResolveAnnotations())
         {
             yield return error;
         }
 
-        propertyResolver.ResetAliases();
-
-        // Résolution des alias des décorateurs
-        foreach (
-            var error in propertyResolver.ResolveAliases(alp => alp.Decorator is not null && alp.Reference is not null)
-        )
+        foreach (var error in propertyResolver.ResolveOwnProperties())
         {
             yield return error;
         }
 
-        decoratorResolver.CopyDecoratorProperties();
-
-        // Résolution des alias des classes et endpoints.
-        foreach (
-            var error in propertyResolver.ResolveAliases(alp => alp.Decorator is null && alp.Reference is not null)
-        )
+        foreach (var error in propertyResolver.ResolveProperties())
         {
             yield return error;
         }
 
-        foreach (var error in propertyResolver.ResolveAssociationProperties())
+        foreach (var error in propertyResolver.ResolvePropertyReferences())
+        {
+            yield return error;
+        }
+
+        foreach (var error in classResolver.ResolveSpecialProperties())
         {
             yield return error;
         }
@@ -914,11 +904,6 @@ public class ModelStore(
         }
 
         foreach (var error in classResolver.ResolveValues())
-        {
-            yield return error;
-        }
-
-        foreach (var error in classResolver.ResolveSpecialProperties())
         {
             yield return error;
         }

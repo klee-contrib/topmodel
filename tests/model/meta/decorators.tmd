@@ -26,13 +26,6 @@ annotation:
         - org.springframework.data.annotation.CreatedDate
       when:
         - persisted
----
-annotation:
-  name: PastOrPresent
-  description: Valide qu'une date est dans le passé ou le présent.
-  target:
-    - property
-  java:
     - text: "@PastOrPresent"
       imports:
         - jakarta.validation.constraints.PastOrPresent
@@ -52,5 +45,4 @@ decorator:
       comment: Date de création de l'enregistrement
       label: Date de création
       annotations:
-        - PastOrPresent
         - CreatedDate

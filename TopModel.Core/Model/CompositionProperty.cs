@@ -97,18 +97,18 @@ internal class CompositionProperty : IProperty
     }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
+    public IProperty CloneForDecorator(IPropertyContainer container)
     {
         return new CompositionProperty
         {
             SourceDecorator = SourceDecorator ?? Decorator,
-            Class = classe,
+            Class = container as Class,
             Comment = Comment,
             Composition = Composition,
-            Decorator = decorator,
+            Decorator = container as Decorator,
             Domain = Domain,
             DomainParameters = DomainParameters,
-            Endpoint = endpoint,
+            Endpoint = container as Endpoint,
             Location = Location,
             Name = Name,
             Required = Required,

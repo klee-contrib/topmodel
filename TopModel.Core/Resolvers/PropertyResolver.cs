@@ -16,82 +16,260 @@ internal class PropertyResolver(
 )
 {
     /// <summary>
-    /// Réinitialise les alias déjà résolus sur les classes/endpoints/décorateurs/mappers (pour le watch).
+    /// Résolutions des références sur les propriétés propres de chaque container, à l'exception de celles qui sont sur d'autres propriétés.
     /// </summary>
-    public void ResetAliases()
+    /// <returns>Erreurs.</returns>
+    public IEnumerable<ModelError> ResolveOwnProperties()
     {
-        foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
+        foreach (var prop in modelFiles.SelectMany(mf => mf.OwnProperties))
         {
-            foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
+            switch (prop)
             {
-                if (alp.OriginalAliasProperty is not null)
-                {
-                    var index = classe.Properties.IndexOf(alp);
-                    classe.Properties.RemoveAt(index);
-                    if (!classe.Properties.Contains(alp.OriginalAliasProperty))
+                case RegularProperty rp:
+                    if (
+                        rp.DomainReference == null
+                        || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain)
+                    )
                     {
-                        classe.Properties.Insert(index, alp.OriginalAliasProperty);
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD0003,
+                            [rp.DomainReference?.ReferenceName ?? string.Empty],
+                            rp,
+                            rp.DomainReference
+                        );
+                        break;
                     }
-                }
-            }
 
-            foreach (var alp in classe.FromMapperProperties.OfType<AliasProperty>().ToList())
-            {
-                if (alp.OriginalAliasProperty is not null)
-                {
-                    var index = alp.PropertyMapping.FromMapper.Params.IndexOf(alp.PropertyMapping);
-                    alp.PropertyMapping.FromMapper.Params.RemoveAt(index);
-                    if (!alp.PropertyMapping.FromMapper.Params.Contains(alp.OriginalAliasProperty.PropertyMapping))
+                    foreach (var error in CheckDomainParameters(rp, rp.DomainReference, domain))
                     {
-                        alp.PropertyMapping.FromMapper.Params.Insert(
-                            index,
-                            new PropertyMapping
-                            {
-                                FromMapper = alp.PropertyMapping.FromMapper,
-                                Property = alp.OriginalAliasProperty,
-                                TargetProperty = alp.PropertyMapping.TargetProperty,
-                                TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference,
-                            }
+                        yield return error;
+                    }
+
+                    rp.Domain = domain;
+                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(
+                        pr => pr.Key.ReferenceName,
+                        pr => pr.Value.Value
+                    );
+                    break;
+
+                case AssociationProperty ap:
+                    if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD0002,
+                            [ap.Reference.ReferenceName],
+                            ap,
+                            ap.Reference
+                        );
+                        break;
+                    }
+
+                    ap.Association = association;
+
+                    if (ap.WithReverse != null && ap.Class != null)
+                    {
+                        if (!modelFiles.SelectMany(mf => mf.Classes).Contains(association))
+                        {
+                            yield return new ModelError(localizer, ErrorType.TMD9008, [], ap, ap.Reference);
+                            break;
+                        }
+                        ap.ReverseProperty = new ReverseAssociationProperty
+                        {
+                            Class = association,
+                            ReverseProperty = ap,
+                        };
+                    }
+
+                    break;
+
+                case CompositionProperty cp:
+                    if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD0002,
+                            [cp.Reference.ReferenceName],
+                            cp,
+                            cp.Reference
+                        );
+                        break;
+                    }
+
+                    if (composition.Enum == EnumMode.Enum)
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD9010,
+                            [cp.Reference.ReferenceName],
+                            cp,
+                            cp.Reference
+                        );
+                        break;
+                    }
+
+                    cp.Composition = composition;
+
+                    if (cp.DomainReference != null)
+                    {
+                        if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD0003,
+                                [cp.DomainReference.ReferenceName],
+                                cp,
+                                cp.DomainReference
+                            );
+                            break;
+                        }
+
+                        foreach (var error in CheckDomainParameters(cp, cp.DomainReference, cpDomain))
+                        {
+                            yield return error;
+                        }
+
+                        cp.Domain = cpDomain;
+                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(
+                            pr => pr.Key.ReferenceName,
+                            pr => pr.Value.Value
                         );
                     }
-                }
+
+                    break;
+
+                case AliasProperty alp:
+                    if (alp.DomainReference != null)
+                    {
+                        if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD0003,
+                                [alp.DomainReference.ReferenceName],
+                                alp,
+                                alp.DomainReference
+                            );
+                            break;
+                        }
+
+                        foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
+                        {
+                            yield return error;
+                        }
+
+                        alp.Domain = aliasDomain;
+                        alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
+                            pr => pr.Key.ReferenceName,
+                            pr => pr.Value.Value
+                        );
+                    }
+
+                    if (alp.CompositionReference != null)
+                    {
+                        if (
+                            !referencedClasses.TryGetValue(
+                                alp.CompositionReference.ReferenceName,
+                                out var aliasComposition
+                            )
+                        )
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD0002,
+                                [alp.CompositionReference.ReferenceName],
+                                alp,
+                                alp.CompositionReference
+                            );
+                            break;
+                        }
+
+                        alp.Composition = aliasComposition;
+                    }
+
+                    break;
             }
         }
+    }
 
-        foreach (var endpoint in modelFiles.SelectMany(mf => mf.Endpoints))
+    /// <summary>
+    /// Construit la liste finale des propriétés des containers, pour prendre en compte les propriétés recopiées et les alias.
+    /// </summary>
+    /// <returns>Erreurs.</returns>
+    public IEnumerable<ModelError> ResolveProperties()
+    {
+        var containers = modelFiles.SelectMany(mf => mf.PropertyContainers);
+        var sortedContainers = CoreUtils.Sort(
+            containers,
+            container =>
+                container
+                    .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+                    .Concat(
+                        container
+                            .OwnProperties.Concat(container is Class cl ? cl.FromMapperOwnProperties : [])
+                            .OfType<AliasProperty>()
+                            .Select(a =>
+                                containers.FirstOrDefault(c =>
+                                    c != container
+                                    && (
+                                        c.Name == a.Reference?.ClassReference?.ReferenceName
+                                        || c.Name == a.Reference?.EndpointReference?.ReferenceName
+                                        || c.Name == a.Reference?.DecoratorReference?.ReferenceName
+                                    )
+                                )!
+                            )
+                    )
+                    .Where(c => c != null)
+        );
+
+        foreach (var container in sortedContainers)
         {
-            foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
+            if (container is Endpoint endpoint)
             {
-                if (alp.OriginalAliasProperty is not null)
+                endpoint.Params.Clear();
+                endpoint.Params.AddRange(endpoint.OwnParams);
+                endpoint.Returns = endpoint.OwnReturns;
+
+                foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    var index = endpoint.Params.IndexOf(alp);
-                    endpoint.Params.RemoveAt(endpoint.Params.IndexOf(alp));
-                    if (!endpoint.Params.Contains(alp.OriginalAliasProperty))
+                    endpoint.Params.Add(prop.CloneForDecorator(endpoint));
+                }
+            }
+            else
+            {
+                container.Properties.Clear();
+                container.Properties.AddRange(container.OwnProperties);
+
+                if (container is Class classe)
+                {
+                    foreach (
+                        var ap in sortedContainers
+                            .OfType<Class>()
+                            .SelectMany(c => c.OwnProperties)
+                            .OfType<AssociationProperty>()
+                            .Where(ap => ap.ReverseProperty?.Class == container)
+                    )
                     {
-                        endpoint.Params.Insert(index, alp.OriginalAliasProperty);
+                        container.Properties.Add(ap.ReverseProperty!);
                     }
+
+                    foreach (var fromMapper in classe.FromMappers)
+                    {
+                        fromMapper.Params.Clear();
+                        fromMapper.Params.AddRange(fromMapper.OwnParams);
+                    }
+                }
+
+                foreach (var prop in container.Decorators.SelectMany(d => d.Decorator.Properties))
+                {
+                    container.Properties.Add(prop.CloneForDecorator(container));
                 }
             }
 
-            if (endpoint.Returns is AliasProperty ralp && ralp.OriginalAliasProperty is not null)
+            foreach (var error in ResolveAliases(container))
             {
-                endpoint.Returns = ralp.OriginalAliasProperty;
-            }
-        }
-
-        foreach (var decorator in modelFiles.SelectMany(mf => mf.Decorators))
-        {
-            foreach (var alp in decorator.Properties.OfType<AliasProperty>().ToList())
-            {
-                if (alp.OriginalAliasProperty is not null)
-                {
-                    var index = decorator.Properties.IndexOf(alp);
-                    decorator.Properties.RemoveAt(decorator.Properties.IndexOf(alp));
-                    if (!decorator.Properties.Contains(alp.OriginalAliasProperty))
-                    {
-                        decorator.Properties.Insert(index, alp.OriginalAliasProperty);
-                    }
-                }
+                yield return error;
             }
         }
 
@@ -102,36 +280,188 @@ internal class PropertyResolver(
     }
 
     /// <summary>
-    /// Résout les alias d'un fichier.
+    /// Résout les références vers d'autres propriétés.
     /// </summary>
-    /// <param name="filter">Aliases à prendre en compte dans le fichier.</param>
     /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveAliases(Func<AliasProperty, bool> filter)
+    public IEnumerable<ModelError> ResolvePropertyReferences()
     {
-        var aliasedProperties = modelFiles.SelectMany(mf => mf.Properties).OfType<AliasProperty>().Where(filter);
-        var sortedAliases = CoreUtils.Sort(
-            aliasedProperties,
-            a =>
-                aliasedProperties
-                    .Where(b =>
-                        (a.Class != b.Class || a.Endpoint != b.Endpoint || a.Decorator != b.Decorator)
-                        && (
-                            b.Class?.Name != null && b.Class?.Name == a.Reference?.ClassReference?.ReferenceName
-                            || b.Endpoint?.Name != null
-                                && b.Endpoint?.Name == a.Reference?.EndpointReference?.ReferenceName
-                            || b.Decorator?.Name != null
-                                && b.Decorator?.Name == a.Reference?.DecoratorReference?.ReferenceName
-                        )
-                    )
-                    .ToList()
-        );
-
-        if (sortedAliases.Count == 0)
+        foreach (
+            var ap in modelFiles
+                .SelectMany(mf => mf.Properties.OfType<AssociationProperty>())
+                .Where(ap => ap.Association != null)
+        )
         {
-            yield break;
+            if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9002,
+                    [ap.Reference.ReferenceName],
+                    ap,
+                    ap.Reference
+                );
+                continue;
+            }
+
+            if (
+                ap.PropertyReference == null
+                && ap.Association.Properties.Count(p => p.PrimaryKey) > 1
+                && ap.PropertyReference == null
+            )
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9002,
+                    [ap.Reference.ReferenceName],
+                    ap,
+                    ap.Reference
+                );
+                continue;
+            }
+
+            if (
+                (
+                    ap.Class == null
+                    || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1
+                ) && ap.Multiple
+            )
+            {
+                yield return new ModelError(localizer, ErrorType.TMD9006, [], ap, ap.Reference);
+
+                if (ap.WithReverse != null)
+                {
+                    yield return new ModelError(localizer, ErrorType.TMD9007, [], ap, ap.Reference);
+                }
+            }
+
+            if (ap.Multiple && ap.Property?.Domain != null && !ap.Property.Domain.AsDomains.ContainsKey(ap.As))
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9003,
+                    [ap.Property.Domain.Name ?? string.Empty, ap.As],
+                    ap,
+                    ap.Reference
+                );
+            }
+
+            if (
+                ap.WithReverse != null
+                && !ap.Multiple
+                && !ap.Unique
+                && !(ap.Class?.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
+            )
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9004,
+                    [ap.Class?.PrimaryKey.FirstOrDefault()?.Domain?.Name ?? string.Empty, ap.As],
+                    ap,
+                    ap.Reference
+                );
+            }
+
+            if (ap.PropertyReference != null)
+            {
+                var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p =>
+                    p.Name == ap.PropertyReference!.ReferenceName
+                );
+                if (referencedProperty == null)
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD0004,
+                        [ap.PropertyReference.ReferenceName, ap.Association.Name],
+                        ap,
+                        ap.PropertyReference
+                    );
+                }
+                else
+                {
+                    ap.Property = referencedProperty;
+                }
+            }
         }
 
-        foreach (var alp in sortedAliases)
+        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties.OfType<AliasProperty>()))
+        {
+            if (alp.Composition != null && alp.Property is not CompositionProperty and not AssociationProperty)
+            {
+                yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
+            }
+
+            if (alp.AssociationMultiple && alp.Class?.IsPersistent == true)
+            {
+                yield return new ModelError(
+                    localizer,
+                    ErrorType.TMD9012,
+                    [alp.OriginalProperty?.Name ?? string.Empty, alp.OriginalProperty?.Class.Name ?? string.Empty],
+                    alp,
+                    alp.PropertyReference ?? alp.Reference?.ContainerReference
+                );
+            }
+        }
+
+        foreach (
+            var cp in modelFiles.SelectMany(mf =>
+                mf.Properties.Where(p =>
+                    p.Composition == null
+                    && p.Domain != null
+                    && !(p.DomainChain.LastOrDefault().Domain?.NonGeneric ?? false)
+                )
+            )
+        )
+        {
+            yield return new ModelError(
+                localizer,
+                ErrorType.TMD9011,
+                [cp.DomainChain.LastOrDefault().Domain?.Name ?? string.Empty, cp.Name],
+                cp,
+                cp.DomainReference
+            );
+        }
+    }
+
+    private IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
+    {
+        foreach (
+            var extraParameter in domainRef.ParameterReferences.Keys.Where(pr =>
+                !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
+            )
+        )
+        {
+            yield return new ModelError(
+                localizer,
+                ErrorType.TMD0007,
+                [extraParameter.ReferenceName, domain.Name],
+                property,
+                extraParameter
+            );
+        }
+
+        foreach (
+            var missingParameter in domain.TemplateParameters.Where(tp =>
+                tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
+            )
+        )
+        {
+            yield return new ModelError(
+                localizer,
+                ErrorType.TMD0008,
+                [missingParameter.Name, domain.Name],
+                property,
+                domainRef
+            );
+        }
+    }
+
+    private IEnumerable<ModelError> ResolveAliases(IPropertyContainer container)
+    {
+        foreach (
+            var alp in container
+                .OwnProperties.Concat(container is Class cl ? cl.FromMapperOwnProperties : [])
+                .OfType<AliasProperty>()
+        )
         {
             IPropertyContainer propertyContainer;
 
@@ -341,392 +671,6 @@ internal class PropertyResolver(
             {
                 alp.Decorator?.Properties.Remove(alp);
             }
-        }
-
-        foreach (var modelFile in modelFiles)
-        {
-            modelFile.ResetPropertyList();
-        }
-    }
-
-    /// <summary>
-    /// Résout les propriétés cible (la FK) pour les associations.
-    /// </summary>
-    /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveAssociationProperties()
-    {
-        foreach (
-            var ap in modelFiles
-                .SelectMany(mf => mf.Properties.OfType<AssociationProperty>())
-                .Where(ap => ap.Association != null)
-        )
-        {
-            if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9002,
-                    [ap.Reference.ReferenceName],
-                    ap,
-                    ap.Reference
-                );
-                break;
-            }
-
-            if (
-                ap.PropertyReference == null
-                && ap.Association.Properties.Count(p => p.PrimaryKey) > 1
-                && ap.PropertyReference == null
-            )
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9002,
-                    [ap.Reference.ReferenceName],
-                    ap,
-                    ap.Reference
-                );
-                break;
-            }
-
-            if (ap.Multiple && ap.Property?.Domain != null && !ap.Property.Domain.AsDomains.ContainsKey(ap.As))
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9003,
-                    [ap.Property.Domain.Name ?? string.Empty, ap.As],
-                    ap,
-                    ap.Reference
-                );
-                continue;
-            }
-
-            if (
-                ap.WithReverse != null
-                && !ap.Multiple
-                && !ap.Unique
-                && !(ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
-            )
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9004,
-                    [ap.Class.PrimaryKey.FirstOrDefault()?.Domain?.Name ?? string.Empty, ap.As],
-                    ap,
-                    ap.Reference
-                );
-                continue;
-            }
-
-            if (ap.PropertyReference != null)
-            {
-                var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p =>
-                    p.Name == ap.PropertyReference!.ReferenceName
-                );
-                if (referencedProperty == null)
-                {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0004,
-                        [ap.PropertyReference.ReferenceName, ap.Association.Name],
-                        ap,
-                        ap.PropertyReference
-                    );
-                }
-                else
-                {
-                    ap.Property = referencedProperty;
-                }
-            }
-        }
-
-        foreach (var alp in modelFiles.SelectMany(mf => mf.Properties.OfType<AliasProperty>()))
-        {
-            if (alp.Composition != null && alp.Property is not CompositionProperty and not AssociationProperty)
-            {
-                yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
-            }
-
-            if (alp.AssociationMultiple && alp.Class?.IsPersistent == true)
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9012,
-                    [alp.OriginalProperty?.Name ?? string.Empty, alp.OriginalProperty?.Class.Name ?? string.Empty],
-                    alp,
-                    alp.PropertyReference ?? alp.Reference?.ContainerReference
-                );
-            }
-        }
-
-        foreach (
-            var cp in modelFiles.SelectMany(mf =>
-                mf.Properties.Where(p =>
-                    p.Composition == null
-                    && p.Domain != null
-                    && !(p.DomainChain.LastOrDefault().Domain?.NonGeneric ?? false)
-                )
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD9011,
-                [cp.DomainChain.LastOrDefault().Domain?.Name ?? string.Empty, cp.Name],
-                cp,
-                cp.DomainReference
-            );
-        }
-    }
-
-    /// <summary>
-    /// Résolutions des références sur les propriétés (hors alias).
-    /// On ne touche pas aux propriétés liées à une classe et un décorateur en même temps car
-    /// ces propriétés sont déjà résolues sur les décorateurs avant d'être recopiées sur les classes.
-    /// </summary>
-    /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveNonAliasProperties()
-    {
-        var classes = modelFiles.SelectMany(mf => mf.Classes);
-
-        foreach (var classe in classes)
-        {
-            foreach (var rap in classe.Properties.OfType<ReverseAssociationProperty>().ToList())
-            {
-                classe.Properties.Remove(rap);
-            }
-        }
-
-        foreach (var modelFile in modelFiles)
-        {
-            modelFile.ResetPropertyList();
-        }
-
-        foreach (var prop in modelFiles.SelectMany(mf => mf.Properties).Where(p => p.SourceDecorator is null))
-        {
-            switch (prop)
-            {
-                case RegularProperty rp:
-                    if (
-                        rp.DomainReference == null
-                        || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain)
-                    )
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0003,
-                            [rp.DomainReference?.ReferenceName ?? string.Empty],
-                            rp,
-                            rp.DomainReference
-                        );
-                        break;
-                    }
-
-                    foreach (var error in CheckDomainParameters(rp, rp.DomainReference, domain))
-                    {
-                        yield return error;
-                    }
-
-                    rp.Domain = domain;
-                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(
-                        pr => pr.Key.ReferenceName,
-                        pr => pr.Value.Value
-                    );
-                    break;
-
-                case AssociationProperty ap:
-                    if (
-                        (
-                            ap.Class == null
-                            || (ap.Class.Extends == null || !ap.Class.IsPersistent) && ap.Class.PrimaryKey.Count() != 1
-                        ) && ap.Multiple
-                    )
-                    {
-                        yield return new ModelError(localizer, ErrorType.TMD9006, [], ap, ap.Reference);
-
-                        if (ap.WithReverse != null)
-                        {
-                            yield return new ModelError(localizer, ErrorType.TMD9007, [], ap, ap.Reference);
-                        }
-
-                        break;
-                    }
-
-                    if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0002,
-                            [ap.Reference.ReferenceName],
-                            ap,
-                            ap.Reference
-                        );
-                        break;
-                    }
-
-                    ap.Association = association;
-
-                    if (ap.WithReverse != null && ap.Class != null)
-                    {
-                        if (!classes.Contains(association))
-                        {
-                            yield return new ModelError(localizer, ErrorType.TMD9008, [], ap, ap.Reference);
-                            break;
-                        }
-                        ap.ReverseProperty = new ReverseAssociationProperty
-                        {
-                            Class = association,
-                            ReverseProperty = ap,
-                        };
-                        association.Properties.Add(ap.ReverseProperty);
-                    }
-
-                    break;
-
-                case CompositionProperty cp:
-                    if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0002,
-                            [cp.Reference.ReferenceName],
-                            cp,
-                            cp.Reference
-                        );
-                        break;
-                    }
-
-                    if (composition.Enum == EnumMode.Enum)
-                    {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD9010,
-                            [cp.Reference.ReferenceName],
-                            cp,
-                            cp.Reference
-                        );
-                        break;
-                    }
-
-                    cp.Composition = composition;
-
-                    if (cp.DomainReference != null)
-                    {
-                        if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
-                        {
-                            yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD0003,
-                                [cp.DomainReference.ReferenceName],
-                                cp,
-                                cp.DomainReference
-                            );
-                            break;
-                        }
-
-                        foreach (var error in CheckDomainParameters(cp, cp.DomainReference, cpDomain))
-                        {
-                            yield return error;
-                        }
-
-                        cp.Domain = cpDomain;
-                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(
-                            pr => pr.Key.ReferenceName,
-                            pr => pr.Value.Value
-                        );
-                    }
-
-                    break;
-
-                case AliasProperty alp:
-                    if (alp.DomainReference != null)
-                    {
-                        if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
-                        {
-                            yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD0003,
-                                [alp.DomainReference.ReferenceName],
-                                alp,
-                                alp.DomainReference
-                            );
-                            break;
-                        }
-
-                        foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
-                        {
-                            yield return error;
-                        }
-
-                        alp.Domain = aliasDomain;
-                        alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
-                            pr => pr.Key.ReferenceName,
-                            pr => pr.Value.Value
-                        );
-                    }
-
-                    if (alp.CompositionReference != null)
-                    {
-                        if (
-                            !referencedClasses.TryGetValue(
-                                alp.CompositionReference.ReferenceName,
-                                out var aliasComposition
-                            )
-                        )
-                        {
-                            yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD0002,
-                                [alp.CompositionReference.ReferenceName],
-                                alp,
-                                alp.CompositionReference
-                            );
-                            break;
-                        }
-
-                        alp.Composition = aliasComposition;
-                    }
-
-                    break;
-            }
-        }
-
-        foreach (var modelFile in modelFiles)
-        {
-            modelFile.ResetPropertyList();
-        }
-    }
-
-    private IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
-    {
-        foreach (
-            var extraParameter in domainRef.ParameterReferences.Keys.Where(pr =>
-                !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0007,
-                [extraParameter.ReferenceName, domain.Name],
-                property,
-                extraParameter
-            );
-        }
-
-        foreach (
-            var missingParameter in domain.TemplateParameters.Where(tp =>
-                tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0008,
-                [missingParameter.Name, domain.Name],
-                property,
-                domainRef
-            );
         }
     }
 }

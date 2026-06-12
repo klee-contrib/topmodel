@@ -195,17 +195,17 @@ internal class AssociationProperty : IProperty
     }
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
-    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
+    public IProperty CloneForDecorator(IPropertyContainer container)
     {
         var ap = new AssociationProperty
         {
             SourceDecorator = SourceDecorator ?? Decorator,
             Association = Association,
-            Class = classe,
+            Class = container as Class,
             Comment = Comment,
-            Decorator = decorator,
+            Decorator = container as Decorator,
             DefaultValue = DefaultValue,
-            Endpoint = endpoint,
+            Endpoint = container as Endpoint,
             Label = Label,
             Location = Location,
             Required = Required,
