@@ -143,7 +143,7 @@ public class TypescriptDefinitionGenerator(
         }
         if (Config.EntityMode != EntityMode.FOCUS)
         {
-            fw.Write("{\r\n");
+            fw.WriteLine("{");
 
             foreach (var property in classe.Properties)
             {
@@ -178,10 +178,11 @@ public class TypescriptDefinitionGenerator(
                     fw.Write($"{Config.GetType(property, forceAssociationPropertyType: true)};");
                 }
 
-                fw.Write("\r\n");
+                fw.WriteLine();
             }
 
-            fw.Write("}\r\n\r\n");
+            fw.WriteLine("}");
+            fw.WriteLine();
         }
 
         if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED)
@@ -193,20 +194,20 @@ public class TypescriptDefinitionGenerator(
                 fw.Write($": {classe.NamePascal}EntityType");
             }
 
-            fw.Write(" = {\r\n");
+            fw.WriteLine(" = {");
 
             if (classe.Extends != null)
             {
                 fw.Write("    ...");
                 fw.Write(classe.Extends.NamePascal);
-                fw.Write("Entity,\r\n");
+                fw.WriteLine("Entity,");
             }
 
             foreach (var property in classe.Properties)
             {
                 fw.Write("    ");
                 fw.Write(property.NameCamel);
-                fw.Write(": {\r\n");
+                fw.WriteLine(": {");
                 fw.Write("        type: ");
 
                 var type = Config.GetType(property, forceAssociationPropertyType: true);
@@ -231,7 +232,7 @@ public class TypescriptDefinitionGenerator(
                         break;
                 }
 
-                fw.Write("\r\n");
+                fw.WriteLine();
 
                 if (
                     property.Composition == null

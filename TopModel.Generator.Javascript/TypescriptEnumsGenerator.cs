@@ -74,12 +74,12 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
             fw.Write(import.Import);
             fw.Write("} from \"");
             fw.Write(import.Path);
-            fw.Write("\";\r\n");
+            fw.WriteLine("\";");
         }
 
         if (imports.Count > 0)
         {
-            fw.Write("\r\n");
+            fw.WriteLine();
         }
 
         var first = true;
@@ -119,7 +119,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
 
             if (enumClass.FlagProperty != null)
             {
-                fw.Write($"export enum {enumClass.NamePascal}Flag {{\r\n");
+                fw.WriteLine($"export enum {enumClass.NamePascal}Flag {{");
 
                 var flagValues = enumClass
                     .Values.Where(refValue =>
@@ -137,7 +137,8 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                     }
                 }
 
-                fw.WriteLine("\r\n}");
+                fw.WriteLine();
+                fw.WriteLine("}");
             }
 
             fw.Write("export interface ");
@@ -153,7 +154,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 fw.Write($" extends {enumClass.Extends.NamePascal}");
             }
 
-            fw.Write(" {\r\n");
+            fw.WriteLine(" {");
 
             foreach (var property in enumClass.Properties)
             {
@@ -162,10 +163,10 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                 fw.Write(": ");
                 fw.Write(Config.GetType(property, forceAssociationPropertyType: true));
-                fw.Write(";\r\n");
+                fw.WriteLine(";");
             }
 
-            fw.Write("}\r\n");
+            fw.WriteLine("}");
 
             if (enumClass.Enum != EnumMode.Class || enumClass.Readonly)
             {

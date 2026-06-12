@@ -211,7 +211,8 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
             }
         }
 
-        sb.Append("\r\n{");
+        sb.AppendLine();
+        sb.Append('{');
         WriteLine(sb.ToString());
     }
 
@@ -389,7 +390,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
 
         if (value.Contains(Environment.NewLine))
         {
-            sb.Append("\r\n");
+            sb.AppendLine();
             foreach (var line in value.Split(Environment.NewLine))
             {
                 sb.Append("///");
@@ -398,7 +399,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
                     sb.Append($" {line}");
                 }
 
-                sb.Append("\r\n");
+                sb.AppendLine();
             }
 
             sb.Append("/// ");
@@ -455,7 +456,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         }
 
         var sb = new StringBuilder();
-        sb.Append("/// <summary>\r\n");
+        sb.AppendLine("/// <summary>");
 
         foreach (var line in summary.Split(Environment.NewLine))
         {
@@ -465,7 +466,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
                 sb.Append($" {line}");
             }
 
-            sb.Append("\r\n");
+            sb.AppendLine();
         }
 
         sb.Append("/// </summary>");

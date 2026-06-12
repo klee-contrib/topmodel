@@ -117,7 +117,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteLine("[RegisterImpl]");
 
-        if (classList.All(c => !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly && !Config.PersistedReferencesResources))
+        if (
+            classList.All(c =>
+                !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly && !Config.PersistedReferencesResources
+            )
+        )
         {
             w.WriteClassDeclaration(implementationName, inheritedClass: null, isRecord: false, [interfaceName]);
         }
@@ -184,7 +188,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     + Config.GetTypeName(classe)
                     + $">{(Config.UseAsyncReferenceAccessors ? ">" : string.Empty)} "
                     + serviceName
-                    + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)})\r\n{{"
+                    + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)}){Environment.NewLine}{{"
             );
             WriteReferenceAccessorBody(w, classe);
             w.WriteLine(1, "}");
@@ -240,7 +244,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             $"Accesseurs de listes de référence {(fileType.StartsWith("db") ? "persistées" : "non persistées")}"
         );
         w.WriteLine("[RegisterContract]");
-        w.WriteLine("public partial interface " + interfaceName + "\r\n{");
+        w.WriteLine($"public partial interface {interfaceName}");
+        w.WriteLine("{");
 
         var count = 0;
         foreach (var classe in classList)
@@ -325,7 +330,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 2,
                 $@"return new List<{Config.GetTypeName(classe)}>
 {{
-    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
+    {string.Join($",{Environment.NewLine}    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
 }};"
             );
             return;
