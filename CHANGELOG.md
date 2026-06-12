@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.4.1
+
+- [`e7d91ce`](https://github.com/klee-contrib/topmodel/commit/e7d91ce47a26483207cb0707e383d0bea55ea2f4) - [Core] Refonte résolution des propriétés de décorateurs/aliases
+
+  Le nouveau mécanisme est plus robuste et devrait être moins soumis à des bugs aléatoires en mode watch (et dans l'extension VSCode).
+
 ## 4.4.0
 
 (Beaucoup trop de PRs/commits pour tous les lister 😅) - Refonte du lancement des configs et --parallel
