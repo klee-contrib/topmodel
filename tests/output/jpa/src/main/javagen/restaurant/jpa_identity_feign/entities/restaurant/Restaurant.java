@@ -22,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Restaurant.
@@ -85,6 +86,7 @@ public class Restaurant {
 	/**
 	 * Association réciproque de TableRestaurant.RestaurantId.
 	 */
+	@Transient
 	private List<Integer> tableIds;
 
 	/**

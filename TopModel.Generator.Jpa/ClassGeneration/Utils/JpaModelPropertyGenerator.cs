@@ -1,4 +1,4 @@
-﻿using TopModel.Core.Model;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -333,6 +333,18 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             if (ShouldWriteEnumAnnotation(property))
             {
                 yield return EnumAnnotation;
+            }
+
+            if (
+                !Config.UseJdbc
+                && property.Class.IsPersistent
+                && property.AssociationMultiple
+                && !property.UseClassForAssociation
+            )
+            {
+                // Association réciproque multiple non matérialisée (ex. useClass: false) : il n'existe aucune
+                // colonne correspondante en base, on l'exclut donc du mapping JPA pour éviter une colonne fantôme.
+                yield return new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient");
             }
         }
 

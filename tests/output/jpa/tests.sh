@@ -1,1 +1,1 @@
-mvn clean compile --quiet
+mvn clean test --quiet

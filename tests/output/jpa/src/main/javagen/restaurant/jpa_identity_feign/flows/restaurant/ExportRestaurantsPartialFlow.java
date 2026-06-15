@@ -4,7 +4,7 @@
 
 package restaurant.jpa_identity_feign.flows.restaurant;
 
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 import restaurant.jpa_identity_feign.dtos.restaurant.RestaurantRead;
 import restaurant.jpa_identity_feign.entities.restaurant.Restaurant;

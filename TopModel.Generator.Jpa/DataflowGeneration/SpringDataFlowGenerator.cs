@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -46,7 +46,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 "org.springframework.context.annotation.Bean",
                 "org.springframework.batch.core.job.flow.Flow",
                 "org.springframework.beans.factory.annotation.Qualifier",
-                "org.springframework.batch.core.Step",
+                "org.springframework.batch.core.step.Step",
             ]
         );
 
@@ -190,7 +190,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         var query =
             $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources[0].Class.SqlName}";
-        fw.AddImport("org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder");
+        fw.AddImport("org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder");
 
         string rowMapperImport;
         string rowMapperInstance;
@@ -206,7 +206,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
 
         fw.AddImport(rowMapperImport);
-        fw.AddImport("org.springframework.batch.item.ItemReader");
+        fw.AddImport("org.springframework.batch.infrastructure.item.ItemReader");
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Reader"")");
         fw.WriteLine(
             1,
@@ -229,7 +229,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.AddImport("org.springframework.batch.core.step.builder.StepBuilder");
         fw.AddImport("org.springframework.batch.core.repository.JobRepository");
         fw.AddImport("org.springframework.transaction.PlatformTransactionManager");
-        fw.AddImport("org.springframework.batch.item.ItemWriter");
+        fw.AddImport("org.springframework.batch.infrastructure.item.ItemWriter");
         fw.AddImport(dataFlow.Sources[0].Class.GetImport(Config, tag));
         fw.AddImport(dataFlow.Class.GetImport(Config, tag));
 
@@ -240,13 +240,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
         foreach (var listener in Config.DataFlowsListeners)
         {
-            fw.AddImport("org.springframework.batch.core.StepListener");
+            fw.AddImport("org.springframework.batch.core.listener.StepListener");
             fw.WriteLine(1, @$"		@Qualifier(""{listener}"") StepListener {listener.ToCamelCase()}, //");
         }
 
         foreach (var source in dataFlow.Sources.Where(s => s.Mode == DataFlowSourceMode.QueryAll))
         {
-            fw.AddImport("org.springframework.batch.item.ItemReader");
+            fw.AddImport("org.springframework.batch.infrastructure.item.ItemReader");
             fw.WriteLine(
                 1,
                 @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Reader"") ItemReader<{dataFlow.Sources[0].Class.NamePascal}> reader, //"
@@ -319,7 +319,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
         else if (processors.Count > 1)
         {
-            fw.AddImport("org.springframework.batch.item.support.CompositeItemProcessor");
+            fw.AddImport("org.springframework.batch.infrastructure.item.support.CompositeItemProcessor");
             fw.WriteLine(3, $".processor(new CompositeItemProcessor<>({string.Join(", ", processors)})) //");
         }
 
@@ -393,7 +393,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                     "org.springframework.context.annotation.Bean"
                 )
             );
-        javaMethod.Imports.Add("org.springframework.batch.item.database.builder.JpaItemWriterBuilder");
+        javaMethod.Imports.Add("org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder");
         fw.Write(1, javaMethod);
     }
 
@@ -446,12 +446,12 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             [
                 "org.springframework.context.annotation.Configuration",
                 "org.springframework.context.annotation.Bean",
-                "org.springframework.batch.core.Job",
+                "org.springframework.batch.core.job.Job",
                 "org.springframework.batch.core.repository.JobRepository",
                 "org.springframework.beans.factory.annotation.Qualifier",
                 "org.springframework.batch.core.job.flow.Flow",
                 "org.springframework.batch.core.job.builder.JobBuilder",
-                "org.springframework.batch.core.launch.support.RunIdIncrementer",
+                "org.springframework.batch.core.job.parameters.RunIdIncrementer",
                 "org.springframework.core.task.TaskExecutor",
                 "org.springframework.context.annotation.Import",
             ]
@@ -510,7 +510,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             fw.WriteLine(@$"public interface {dataFlow.Name.ToPascalCase()}PartialFlow {{");
             foreach (var source in dataFlow.Sources.Where(s => s.Mode == DataFlowSourceMode.Partial))
             {
-                fw.AddImport("org.springframework.batch.item.ItemReader");
+                fw.AddImport("org.springframework.batch.infrastructure.item.ItemReader");
                 fw.WriteDocStart(1, "Remplacer l'implémentation du reader par défaut");
                 fw.WriteReturns(1, "ItemReader reader au sens de spring-batch");
                 fw.WriteDocEnd(1);
@@ -520,7 +520,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
             if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
             {
-                fw.AddImport("org.springframework.batch.core.Step");
+                fw.AddImport("org.springframework.batch.core.step.Step");
                 fw.WriteLine();
                 fw.WriteDocStart(
                     1,
@@ -533,7 +533,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
             if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
             {
-                fw.AddImport("org.springframework.batch.core.Step");
+                fw.AddImport("org.springframework.batch.core.step.Step");
                 fw.WriteLine();
                 fw.WriteDocStart(1, "Etape après toutes les opérations de ce flux (après la dernière écriture)");
                 fw.WriteReturns(1, "Step étape au sens de spring-batch");
@@ -548,7 +548,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 var processorName = GetProcessorName(dataFlow, hook, index).ToCamelCase();
                 var processorSourceClass = GetProcessorSourceClass(hook, dataFlow)!;
                 var processorTargetClass = GetProcessorTargetClass(hook, dataFlow)!;
-                fw.AddImport("org.springframework.batch.item.ItemProcessor");
+                fw.AddImport("org.springframework.batch.infrastructure.item.ItemProcessor");
                 fw.AddImport(processorSourceClass.GetImport(Config, tag));
                 fw.AddImport(processorTargetClass.GetImport(Config, tag));
                 fw.WriteLine();

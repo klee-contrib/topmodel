@@ -10,6 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: demo
+          POSTGRES_USER: demo
+          POSTGRES_DB: demo
+        ports:
+          - 5962:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
 
@@ -42,6 +57,12 @@ jobs:
           java-version: "25"
           distribution: "temurin"
           cache: maven
+
+      - name: Init database
+        run: |
+          for f in tests/output/pg/src/*.sql; do
+            PGPASSWORD=demo psql -h localhost -p 5962 -U demo -d demo -f "$f"
+          done
 
       - name: build jpa samples
         run: mvn test
