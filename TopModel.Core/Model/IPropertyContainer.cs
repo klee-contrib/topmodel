@@ -46,4 +46,6 @@ public interface IPropertyContainer : IAnnotationContainer
     IList<AnnotationReference> PropertyAnnotationReferences { get; }
 
     bool PreservePropertyCasing { get; }
+
+    IList<PropertySource> PropertySourceOrder { get; }
 }

@@ -236,6 +236,11 @@ public enum ErrorType
     /// </summary>
     TMD3022,
 
+    /// <summary>
+    /// SourcePropertyOrder manquant.
+    /// </summary>
+    TMD3023,
+
     #endregion
 
     #region Erreurs de dataflows (4)

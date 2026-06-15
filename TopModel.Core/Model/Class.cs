@@ -140,6 +140,9 @@ public class Class : IPropertyContainer
             .GetClassDependencies(this)
             .Concat(Extends != null ? [new ClassDependency(Extends, this)] : Array.Empty<ClassDependency>());
 
+    public IList<PropertySource> PropertySourceOrder { get; internal set; } =
+    [PropertySource.Properties, PropertySource.Implements, PropertySource.Decorators];
+
     internal LocatedString? EnumOverride { get; set; }
 
     internal IList<IProperty> OwnProperties { get; } = [];
