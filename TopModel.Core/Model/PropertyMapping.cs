@@ -42,4 +42,6 @@ public class PropertyMapping : IPropertyContainer
     public IList<AnnotationInstance> PropertyAnnotations => throw new NotSupportedException();
 
     public IList<AnnotationReference> PropertyAnnotationReferences => throw new NotSupportedException();
+
+    public IList<PropertySource> PropertySourceOrder => [PropertySource.Properties];
 }

@@ -16,8 +16,8 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
             Location = location,
             Namespace = modelFile.Namespace,
         };
-
         modelFile.Endpoints.Add(endpoint);
+
         parser.ConsumeMapping(prop =>
         {
             parser.TryConsume<Scalar>(out var value);
@@ -41,6 +41,9 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                     break;
                 case "preservePropertyCasing":
                     endpoint.PreservePropertyCasing = value!.Value == "true";
+                    break;
+                case "propertySourceOrder":
+                    endpoint.PropertySourceOrder = fileChecker.Deserialize<IList<PropertySource>>(parser);
                     break;
                 case "params":
                     parser.ConsumeSequence(() =>

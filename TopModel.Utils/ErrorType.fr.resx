@@ -168,6 +168,9 @@
   <data name="TMD3022" xml:space="preserve">
     <value>L'interface '{0}' a déjà été renseignée sur la classe '{1}' (ou son parent).</value>
   </data>
+  <data name="TMD3023" xml:space="preserve">
+    <value>La classe '{0}' va hériter de propriétés depuis '{1}', qui n'est pas spécifié dans 'propertySourceOrder'.</value>
+  </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>
   </data>

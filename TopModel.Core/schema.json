@@ -1001,6 +1001,17 @@
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Ordre des propriétés du décorateur, par source. Par défaut, les propriétés des autres décorateurs sont en dernier.",
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [ "properties", "decorators" ]
+              }
+            },
             "decorators": {
               "type": "array",
               "description": "Décorateurs du décorateur.",
@@ -1148,6 +1159,17 @@
             "preservePropertyCasing": {
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
+            },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Ordre des propriétés de la classe, par source. Par défaut, les propriétés des interfaces puis des décorateurs sont en dernier.",
+              "minItems": 2,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [ "properties", "decorators", "implements" ]
+              }
             },
             "type": {
               "type": "string",
@@ -1487,6 +1509,17 @@
             "preservePropertyCasing": {
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
+            },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Ordre des paramètres de l'endpoint, par source. Par défaut, les propriétés de décorateurs sont en dernier.",
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [ "params", "decorators" ]
+              }
             },
             "returns": {
               "$ref": "#/definitions/property"

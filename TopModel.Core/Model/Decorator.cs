@@ -83,6 +83,9 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
+    public IList<PropertySource> PropertySourceOrder { get; internal set; } =
+    [PropertySource.Properties, PropertySource.Decorators];
+
     internal IList<IProperty> OwnProperties { get; } = [];
 
     internal Reference Location { get; set; }

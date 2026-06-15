@@ -79,6 +79,9 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "preservePropertyCasing":
                     classe.PreservePropertyCasing = value!.Value == "true";
                     break;
+                case "propertySourceOrder":
+                    classe.PropertySourceOrder = fileChecker.Deserialize<IList<PropertySource>>(parser);
+                    break;
                 case "implements":
                     parser.ConsumeSequence(() =>
                     {

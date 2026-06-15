@@ -18,6 +18,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
             Namespace = modelFile.Namespace,
         };
         modelFile.Decorators.Add(decorator);
+
         parser.ConsumeMapping(prop =>
         {
             _ = parser.TryConsume<Scalar>(out var value);
@@ -32,6 +33,9 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                     break;
                 case "preservePropertyCasing":
                     decorator.PreservePropertyCasing = value!.Value == "true";
+                    break;
+                case "propertySourceOrder":
+                    decorator.PropertySourceOrder = fileChecker.Deserialize<IList<PropertySource>>(parser);
                     break;
                 case "target":
                     decorator.Target = value!.Value.ParseEnum<Target>();

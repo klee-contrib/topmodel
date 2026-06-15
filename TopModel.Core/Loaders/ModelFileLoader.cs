@@ -224,6 +224,7 @@ public class ModelFileLoader(
                     PluralName = c.PluralName,
                     PreservePropertyCasing = c.PreservePropertyCasing,
                     PropertyAnnotationReferences = c.PropertyAnnotationReferences,
+                    PropertySourceOrder = c.PropertySourceOrder,
                     Readonly = c.Readonly,
                     Reference = c.Reference,
                     SqlName = c.SqlName,
@@ -363,6 +364,7 @@ public class ModelFileLoader(
                     Namespace = d.Namespace,
                     PreservePropertyCasing = d.PreservePropertyCasing,
                     PropertyAnnotationReferences = d.PropertyAnnotationReferences,
+                    PropertySourceOrder = d.PropertySourceOrder,
                     Target = d.Target,
                 };
 
@@ -441,6 +443,7 @@ public class ModelFileLoader(
                     OwnTags = e.OwnTags,
                     PreservePropertyCasing = e.PreservePropertyCasing,
                     PropertyAnnotationReferences = e.PropertyAnnotationReferences,
+                    PropertySourceOrder = e.PropertySourceOrder,
                     OwnReturns = e.OwnReturns?.CloneDefinition(),
                     Route = e.Route,
                 };

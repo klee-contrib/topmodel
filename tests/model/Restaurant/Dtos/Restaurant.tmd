@@ -124,6 +124,7 @@ class:
 class:
   name: TableRead
   comment: Détail d'une table en lecture
+  propertySourceOrder: [implements, properties]
   implements:
     - TableItem
 

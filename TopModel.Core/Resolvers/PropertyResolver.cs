@@ -234,12 +234,21 @@ internal class PropertyResolver(
             if (container is Endpoint endpoint)
             {
                 endpoint.Params.Clear();
-                endpoint.Params.AddRange(endpoint.OwnParams);
                 endpoint.Returns = endpoint.OwnReturns;
 
-                foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
+                foreach (var propertySource in endpoint.PropertySourceOrder)
                 {
-                    endpoint.Params.Add(prop.CloneForContainer(endpoint));
+                    if (propertySource == PropertySource.Params)
+                    {
+                        endpoint.Params.AddRange(endpoint.OwnParams);
+                    }
+                    else if (propertySource == PropertySource.Decorators)
+                    {
+                        foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
+                        {
+                            endpoint.Params.Add(prop.CloneForContainer(endpoint));
+                        }
+                    }
                 }
             }
             else
@@ -250,40 +259,71 @@ internal class PropertyResolver(
 
                 if (classe != null)
                 {
-                    foreach (var prop in classe.Implements.SelectMany(d => d.ExtendedProperties))
-                    {
-                        if (!classe.ExtendedProperties.Any(p => p.SourceProperty == prop))
-                        {
-                            classe.Properties.Add(prop.CloneForContainer(classe));
-                        }
-                    }
-                }
-
-                container.Properties.AddRange(container.OwnProperties);
-
-                if (classe != null)
-                {
-                    foreach (
-                        var ap in sortedContainers
-                            .OfType<Class>()
-                            .SelectMany(c => c.OwnProperties)
-                            .OfType<AssociationProperty>()
-                            .Where(ap => ap.ReverseProperty?.Class == container)
+                    if (
+                        classe.Implements.SelectMany(i => i.Properties).Any()
+                        && !classe.PropertySourceOrder.Contains(PropertySource.Implements)
                     )
                     {
-                        container.Properties.Add(ap.ReverseProperty!);
+                        yield return new ModelError(localizer, ErrorType.TMD3023, [classe.Name, "implements"], classe);
                     }
 
-                    foreach (var fromMapper in classe.FromMappers)
+                    if (
+                        classe.Decorators.SelectMany(i => i.Decorator.Properties).Any()
+                        && !classe.PropertySourceOrder.Contains(PropertySource.Decorators)
+                    )
                     {
-                        fromMapper.Params.Clear();
-                        fromMapper.Params.AddRange(fromMapper.OwnParams);
+                        yield return new ModelError(localizer, ErrorType.TMD3023, [classe.Name, "decorators"], classe);
                     }
                 }
 
-                foreach (var prop in container.Decorators.SelectMany(d => d.Decorator.Properties))
+                foreach (var propertySource in container.PropertySourceOrder)
                 {
-                    container.Properties.Add(prop.CloneForContainer(container));
+                    if (propertySource == PropertySource.Properties)
+                    {
+                        container.Properties.AddRange(container.OwnProperties);
+
+                        if (classe != null)
+                        {
+                            foreach (
+                                var ap in sortedContainers
+                                    .OfType<Class>()
+                                    .SelectMany(c => c.OwnProperties)
+                                    .OfType<AssociationProperty>()
+                                    .Where(ap => ap.ReverseProperty?.Class == container)
+                            )
+                            {
+                                container.Properties.Add(ap.ReverseProperty!);
+                            }
+                        }
+                    }
+
+                    if (classe != null)
+                    {
+                        foreach (var fromMapper in classe.FromMappers)
+                        {
+                            fromMapper.Params.Clear();
+                            fromMapper.Params.AddRange(fromMapper.OwnParams);
+                        }
+
+                        if (propertySource == PropertySource.Implements)
+                        {
+                            foreach (var prop in classe.Implements.SelectMany(d => d.ExtendedProperties))
+                            {
+                                if (!classe.ExtendedProperties.Any(p => p.SourceProperty == prop))
+                                {
+                                    classe.Properties.Add(prop.CloneForContainer(classe));
+                                }
+                            }
+                        }
+                    }
+
+                    if (propertySource == PropertySource.Decorators)
+                    {
+                        foreach (var prop in container.Decorators.SelectMany(d => d.Decorator.Properties))
+                        {
+                            container.Properties.Add(prop.CloneForContainer(container));
+                        }
+                    }
                 }
             }
 

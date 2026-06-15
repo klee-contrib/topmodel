@@ -33,6 +33,7 @@ class:
   name: Personne
   trigram: PER
   comment: Classe de base représentant une personne
+  propertySourceOrder: [implements, properties, decorators]
   implements:
     - PersonneBase
   decorators:
@@ -59,6 +60,7 @@ class:
   extends: Personne
   trigram: EMP
   comment: Employé du restaurant
+  propertySourceOrder: [implements, properties]
   implements:
     - EmployeBase
 
