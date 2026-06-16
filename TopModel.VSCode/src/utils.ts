@@ -1,3 +1,5 @@
+import { SERVER_EXE } from "./const";
+
 const cp = require("child_process");
 const exec = cp.exec;
 
@@ -40,6 +42,30 @@ export function killProcessTree(pid?: number): Promise<void> {
                     // déjà mort
                 }
                 resolve();
+            }
+        } catch {
+            resolve();
+        }
+    });
+}
+
+/**
+ * Tue tous les processus du language server (modls) de la machine, quelle que soit la fenêtre
+ * VSCode qui les a lancés.
+ *
+ * Indispensable avant `dotnet tool update` du language server : tant qu'un process modls tourne
+ * (y compris celui d'une autre fenêtre), il garde verrouillés les fichiers de l'outil et fait
+ * échouer la mise à jour. Les autres fenêtres détectent la mort de leur process et le redémarrent.
+ */
+export function killAllLanguageServers(): Promise<void> {
+    return new Promise<void>((resolve) => {
+        try {
+            if (isWindows) {
+                // /T : arbre de processus, /F : force, /IM : par nom d'image.
+                cp.execFile("taskkill", ["/T", "/F", "/IM", `${SERVER_EXE}.exe`], () => resolve());
+            } else {
+                // -x : correspondance exacte du nom de processus.
+                cp.execFile("pkill", ["-x", SERVER_EXE], () => resolve());
             }
         } catch {
             resolve();

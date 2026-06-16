@@ -1,14 +1,12 @@
-import { ChildProcess, spawn } from "child_process";
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, Uri, window, workspace } from "vscode";
-import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
+import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
 import { Application } from "./application";
-import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
+import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
-import { Status, TopModelConfig } from "./types";
-import { killProcessTree } from "./utils";
+import { Status } from "./types";
+import { killAllLanguageServers } from "./utils";
 
 const open = require("open").default;
 
@@ -20,15 +18,9 @@ export class State {
     };
     topModelStatusBar: StatusBarItem;
     applications: Application[] = [];
-    client?: LanguageClient;
-    clientStatus: Status = "LOADING";
     error?: string;
     preview?: TopModelPreviewPanel;
     private _versionMismatchNotified = false;
-    /** Référence au processus modls pour pouvoir le tuer de façon fiable (libération du verrou fichiers). */
-    private serverProcess?: ChildProcess;
-    /** Fichiers de configuration alimentant le language server, conservés pour les redémarrages. */
-    private confs: { config: TopModelConfig; file: Uri }[] = [];
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
@@ -40,7 +32,7 @@ export class State {
     }
 
     get status(): Status {
-        if (this.clientStatus === "ERROR" || this.error) {
+        if (this.appStatus === "ERROR" || this.error) {
             return "ERROR";
         }
 
@@ -48,9 +40,9 @@ export class State {
             return "INSTALLING";
         }
 
-        // Tant que le client LSP ou un outil n'est pas prêt, on reste en chargement (spinner)
+        // Tant qu'un client LSP ou un outil n'est pas prêt, on reste en chargement (spinner)
         // sans repasser par WARNING/READY : cela évite que la double-coche clignote au démarrage.
-        if (this.clientStatus !== "READY" || this.toolsStatus === "LOADING") {
+        if (this.appStatus !== "READY" || this.toolsStatus === "LOADING") {
             return "LOADING";
         }
 
@@ -123,6 +115,19 @@ export class State {
         return text;
     }
 
+    /** Agrège le statut des clients LSP de tous les workspace folders. */
+    get appStatus(): Status {
+        if (this.applications.some((a) => a.clientStatus === "ERROR")) {
+            return "ERROR";
+        }
+
+        if (this.applications.some((a) => a.clientStatus === "LOADING")) {
+            return "LOADING";
+        }
+
+        return "READY";
+    }
+
     get toolsStatus(): Status {
         const { status: mStatus, updateAvailable: mUpdate } = this.tools.modgen;
         const { installed: tInstalled, status: tStatus, updateAvailable: tUpdate } = this.tools.tmdgen;
@@ -167,88 +172,37 @@ export class State {
     }
 
     /**
-     * Initialise (et installe si nécessaire) le tool modls, puis démarre un unique client LSP
-     * couvrant l'ensemble du workspace, alimenté par tous les fichiers de configuration trouvés.
+     * Initialise (et installe si nécessaire) le tool modls, partagé par tous les workspace folders.
+     * Les clients LSP eux-mêmes (un par workspace folder) sont démarrés par les {@link Application}.
      */
-    public async initLanguageServer(confs: { config: TopModelConfig; file: Uri }[]) {
-        this.confs = confs;
-
-        // La mise à jour de modls doit arrêter le serveur (qui verrouille ses fichiers) avant
-        // `dotnet tool update`, puis le redémarrer. On câble ces hooks avant l'init du tool :
-        // si une mise à jour est déclenchée au démarrage, le serveur sera démarré par onAfterUpdate
-        // et le start explicite plus bas sera ignoré (idempotence via startLanguageServer).
-        this.tools.ls.onBeforeUpdate = () => this.stopLanguageServer();
+    public async installLanguageServerTool(): Promise<boolean> {
+        // La mise à jour de modls doit arrêter les serveurs (qui verrouillent leurs fichiers) avant
+        // `dotnet tool update`, puis les redémarrer. On câble ces hooks avant l'init du tool.
+        // On arrête proprement nos propres clients, puis on tue tous les modls de la machine (ceux
+        // des autres fenêtres VSCode comprises) afin de libérer l'ensemble des verrous fichiers.
+        this.tools.ls.onBeforeUpdate = async () => {
+            await this.stopLanguageServer();
+            await killAllLanguageServers();
+        };
         this.tools.ls.onAfterUpdate = () => this.startLanguageServer();
 
         await this.tools.ls.init(this.context);
-        if (!this.tools.ls.installed) {
-            this.clientStatus = "ERROR";
-            return false;
-        }
-
-        await this.startLanguageServer();
-        return true;
+        return this.tools.ls.installed === true;
     }
 
-    /**
-     * Démarre le client LSP s'il ne tourne pas déjà (idempotent).
-     * Le processus modls est lancé par nos soins afin d'en conserver le PID et de pouvoir
-     * le tuer de façon fiable lors de l'arrêt ou d'une mise à jour.
-     */
+    /** Démarre le language server de chaque workspace folder (idempotent). */
     public async startLanguageServer() {
-        if (this.client) {
-            return;
-        }
-
-        if (this.confs.length === 0) {
-            this.clientStatus = "READY";
-            return;
-        }
-
-        try {
-            this.clientStatus = "LOADING";
-            const args = this.confs.flatMap((conf) => ["-f", conf.file.fsPath]);
-            const cwd = workspace.workspaceFolders?.[0]?.uri.fsPath;
-            const serverOptions: ServerOptions = () => {
-                const proc = spawn(SERVER_EXE, args, { cwd });
-                this.serverProcess = proc;
-                return Promise.resolve(proc);
-            };
-            this.client = new LanguageClient("TopModel", "TopModel", serverOptions, {});
-            await this.client.start();
-            this.clientStatus = "READY";
-        } catch (error) {
-            this.clientStatus = "ERROR";
-            this.error = String(error);
-        }
+        await Promise.all(this.applications.map((app) => app.startLanguageServer()));
     }
 
-    /**
-     * Arrête le client LSP et garantit la mort du processus modls (et de sa descendance),
-     * sans quoi les fichiers de l'outil resteraient verrouillés.
-     */
+    /** Arrête le language server de chaque workspace folder (libération des verrous fichiers). */
     public async stopLanguageServer() {
-        const proc = this.serverProcess;
-        this.serverProcess = undefined;
-
-        if (this.client) {
-            try {
-                await this.client.dispose();
-            } catch (error) {
-                console.error(error);
-            }
-            this.client = undefined;
-        }
-
-        if (proc && proc.exitCode === null) {
-            await killProcessTree(proc.pid);
-        }
+        await Promise.all(this.applications.map((app) => app.stopLanguageServer()));
     }
 
-    /** Arrête puis redémarre le language server (commande utilisateur). */
+    /** Arrête puis redémarre le language server de chaque workspace folder (commande utilisateur). */
     public async restartLanguageServer() {
-        await this.stopLanguageServer();
-        await this.startLanguageServer();
+        await Promise.all(this.applications.map((app) => app.restartLanguageServer()));
     }
 
     private async notifyVersionMismatch() {
@@ -301,7 +255,7 @@ export class State {
     private registerPreviewCommand() {
         commands.registerCommand(COMMANDS.preview, () => {
             if (!this.preview) {
-                this.preview = new TopModelPreviewPanel(this.context, this.applications, this.client);
+                this.preview = new TopModelPreviewPanel(this.context, this.applications);
                 this.preview.panel.onDidDispose(
                     () => (this.preview = undefined),
                     undefined,

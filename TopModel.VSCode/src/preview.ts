@@ -12,7 +12,6 @@ import {
     window,
     workspace,
 } from "vscode";
-import { LanguageClient } from "vscode-languageclient/node";
 import { Application } from "./application";
 import { t } from "./i18n";
 import { Mermaid } from "./types";
@@ -31,7 +30,6 @@ export class TopModelPreviewPanel {
     constructor(
         context: ExtensionContext,
         private readonly applications: Application[],
-        private readonly client?: LanguageClient,
     ) {
         makeAutoObservable(this);
         autorun(() => this.refresh());
@@ -110,7 +108,7 @@ export class TopModelPreviewPanel {
         if (message.type === "click:class") {
             const className = message.className;
             const symbolInformations: SymbolInformation[] =
-                (await this.client?.sendRequest("workspace/symbol", {
+                (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
                     query: className,
                 })) ?? [];
             const symbol = symbolInformations.find((s) => s.name === className);
@@ -130,8 +128,8 @@ export class TopModelPreviewPanel {
     }
 
     async refresh() {
-        if (this.client && this.currentApplication) {
-            const data = await this.client.sendRequest("mermaid", {
+        if (this.currentApplication?.client) {
+            const data = await this.currentApplication.client.sendRequest("mermaid", {
                 uri: this.currentFsPath,
                 scope: this.currentScope,
             });

@@ -24,22 +24,26 @@ export async function activate(ctx: ExtensionContext) {
 
             const confs = await findConfFiles();
 
-            await state.initLanguageServer(confs);
+            const toolInstalled = await state.installLanguageServerTool();
+            if (toolInstalled) {
+                const applications = Object.entries(
+                    groupBy(
+                        confs,
+                        (conf) =>
+                            workspace.workspaceFolders?.find((w) =>
+                                conf.file.fsPath.toLowerCase().includes(w.uri.fsPath.toLowerCase()),
+                            )!.name!,
+                    ),
+                ).map(
+                    ([workspaceName, confs]) =>
+                        new Application(workspace.workspaceFolders!.find((w) => w.name === workspaceName)!, confs),
+                );
 
-            const applications = Object.entries(
-                groupBy(
-                    confs,
-                    (conf) =>
-                        workspace.workspaceFolders?.find((w) =>
-                            conf.file.fsPath.toLowerCase().includes(w.uri.fsPath.toLowerCase()),
-                        )!.name!,
-                ),
-            ).map(
-                ([workspaceName, confs]) =>
-                    new Application(workspace.workspaceFolders!.find((w) => w.name === workspaceName)!, confs),
-            );
+                state.applications.push(...applications);
 
-            state.applications.push(...applications);
+                // Un client LSP par workspace folder, démarré une fois le tool modls disponible.
+                await state.startLanguageServer();
+            }
         }
     } catch (error: any) {
         handleError(error);
