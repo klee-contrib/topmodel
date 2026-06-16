@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Version>4.4.1</Version>
+    <Description>Language Server TopModel.</Description>
     <OutputType>Exe</OutputType>
-    <PublishDir>../TopModel.VSCode/language-server</PublishDir>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>modls</ToolCommandName>
     <ResourceLanguages>en</ResourceLanguages>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OmniSharp.Extensions.LanguageServer" />
@@ -15,7 +17,4 @@
     <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
     <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>
-  <Target Name="PostPublish" AfterTargets="Publish">
-    <Delete Files="$(PublishDir)/System.Reactive.xml" />
-  </Target>
 </Project>
