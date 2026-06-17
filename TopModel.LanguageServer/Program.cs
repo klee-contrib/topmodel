@@ -22,6 +22,11 @@ if (!args.Contains("-p") && !args.Contains("--parallel"))
 
 using var command = new TopModelCommand<CliMessage, ModelConfig, FileChecker, LSWorker>("TopModel LS", fixedArgs);
 
+if (await command.IsHelpOrVersionRequested())
+{
+    return 0;
+}
+
 if (
     await command.CheckVersionAndFindConfigs(
         "TopModel.LanguageServer",
