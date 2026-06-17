@@ -17,7 +17,7 @@ public partial record PlatBoisson : Plat
     /// <summary>
     /// Volume de la boisson.
     /// </summary>
-    [Column("volume")]
+    [Column("pbo_volume")]
     [Required]
     [Domain(Domains.Quantite)]
     public int? Volume { get; set; }

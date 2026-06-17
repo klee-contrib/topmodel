@@ -17,7 +17,7 @@ create table [dbo].[MENU] (
 	[LIE_ID] int not null,
 	[MEN_DATE_CREATION] timestamp not null,
 	constraint [PK_MENU] primary key clustered ([MEN_ID] ASC),
-	constraint [FK_MENU_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]))
+	constraint [FK_MENU_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
 go
 
 /* Index on foreign key column for MENU.LIE_ID */

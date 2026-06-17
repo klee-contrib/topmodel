@@ -404,7 +404,7 @@ public static class ModelExtensions
         /// Association vers la classe parente pour une classe dérivée.
         /// </summary>
         public IProperty? ParentAssociationProperty =>
-            classe.Extends != null && classe.InheritanceStrategy == InheritanceStrategy.JoinedTables
+            classe.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.JoinedTables
                 ? new AssociationProperty
                 {
                     Association = classe.Extends,
@@ -412,6 +412,20 @@ public static class ModelExtensions
                     Comment = "Association vers la clé primaire de la classe parente",
                     Required = true,
                     PrimaryKey = !classe.PrimaryKey.Any(),
+                }
+                : null;
+
+        /// <summary>
+        /// Association vers la classe parente pour une classe dérivée.
+        /// </summary>
+        public IProperty? DefaultDiscriminatorProperty =>
+            classe.InheritanceStrategy == InheritanceStrategy.SingleTable && classe.DiscriminatorProperty == null
+                ? new RegularProperty
+                {
+                    Name = "Discriminator",
+                    Class = classe,
+                    Required = true,
+                    Comment = "Discriminateur pour les instances de la hiérarchie de classe",
                 }
                 : null;
 

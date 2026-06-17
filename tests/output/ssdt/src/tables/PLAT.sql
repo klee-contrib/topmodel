@@ -15,9 +15,11 @@ create table [dbo].[PLAT] (
 	[CAT_CODE] varchar not null,
 	[LIE_ID] int not null,
 	[PLA_DATE_CREATION] timestamp not null,
+	[PBO_VOLUME] int,
+	[PPR_VEGETARIEN] boolean,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]))
+	constraint [FK_PLAT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */
@@ -50,4 +52,8 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Volume de la boisson', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PBO_VOLUME'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Si le plat est végétarien.', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PPR_VEGETARIEN'
 go

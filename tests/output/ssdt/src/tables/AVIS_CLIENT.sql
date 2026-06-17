@@ -18,7 +18,7 @@ create table [dbo].[AVIS_CLIENT] (
 	[AVI_DATE_CREATION] timestamp not null,
 	constraint [PK_AVIS_CLIENT] primary key clustered ([AVI_ID] ASC),
 	constraint [FK_AVIS_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_AVIS_CLIENT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
+	constraint [FK_AVIS_CLIENT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
 	constraint [UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS] unique nonclustered ([PER_ID] ASC, [LIE_ID] ASC, [AVI_DATE_AVIS] ASC))
 go
 

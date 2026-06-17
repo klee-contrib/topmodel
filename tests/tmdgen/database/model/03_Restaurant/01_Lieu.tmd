@@ -89,31 +89,42 @@ class:
       comment: Date de création de l'enregistrement
 ---
 class:
-  name: Restaurant
-  sqlName: restaurant
-  comment: Restaurant
-  trigram: RES
+  name: Lieu
+  sqlName: lieu
+  comment: Lieu
   properties:
-    - name: Id
+    - name: LieId
       domain: DO_ID
       required: true
       primaryKey: true
       comment: Identifiant du restaurant
 
-    - name: Nom
+    - name: LieNom
       domain: DO_LIBELLE
       required: true
       comment: Nom du restaurant
 
-    - name: Adresse
+    - name: LieAdresse
       domain: DO_LIBELLE
       comment: Adresse du restaurant
 
-    - name: Telephone
+    - name: LieDiscriminator
+      domain: DO_LIBELLE
+      required: true
+      comment: Discriminateur pour les instances de la hiérarchie de classe
+
+    - name: ResTelephone
       domain: DO_LIBELLE
       comment: Numéro de téléphone
 
-    - name: DateCreation
+    - name: ResDateCreation
       domain: DO_DATE_TIME
-      required: true
       comment: Date de création de l'enregistrement
+
+    - name: FrnTelephone
+      domain: DO_LIBELLE
+      comment: Numéro de téléphone
+
+    - name: FrnBio
+      domain: DO_BOOLEAN
+      comment: Si le fournisseur fait du bio.

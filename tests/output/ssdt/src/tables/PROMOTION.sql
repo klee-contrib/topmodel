@@ -17,7 +17,7 @@ create table [dbo].[PROMOTION] (
 	[PRO_DATE_CREATION] timestamp not null,
 	constraint [PK_PROMOTION] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PROMOTION_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
-	constraint [FK_PROMOTION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]))
+	constraint [FK_PROMOTION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
 go
 
 /* Index on foreign key column for PROMOTION.LIE_ID */

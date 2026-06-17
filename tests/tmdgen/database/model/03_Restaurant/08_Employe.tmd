@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/01_Lieu
   - 03_Restaurant/05_Personne
 ---
 class:
@@ -38,7 +38,7 @@ class:
       domain: DO_ENTIER
       comment: Salaire de l'employé
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant où travaille l'employé
       required: true
 

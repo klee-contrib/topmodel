@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/01_Lieu
 ---
 class:
   name: LigneCommandeHistorique
@@ -88,7 +88,7 @@ class:
       domain: DO_DATE_TIME
       comment: Date de fin de validité du menu
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant proposant ce menu
       required: true
 
@@ -101,29 +101,28 @@ class:
   name: Plat
   sqlName: plat
   comment: Plat du menu
-  trigram: PLA
   properties:
-    - name: Id
+    - name: PlaId
       domain: DO_ID
       required: true
       primaryKey: true
       comment: Identifiant du plat
 
-    - name: Nom
+    - name: PlaNom
       domain: DO_LIBELLE
       required: true
       comment: Nom du plat
 
-    - name: Description
+    - name: PlaDescription
       domain: DO_LIBELLE
       comment: Description du plat
 
-    - name: Prix
+    - name: PlaPrix
       domain: DO_ENTIER
       required: true
       comment: Prix du plat
 
-    - name: Disponible
+    - name: PlaDisponible
       domain: DO_BOOLEAN
       required: true
       comment: Indique si le plat est disponible
@@ -132,14 +131,22 @@ class:
       comment: Catégorie du plat
       required: true
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant proposant ce plat
       required: true
 
-    - name: DateCreation
+    - name: PlaDateCreation
       domain: DO_DATE_TIME
       required: true
       comment: Date de création de l'enregistrement
+
+    - name: PboVolume
+      domain: DO_ENTIER
+      comment: Volume de la boisson
+
+    - name: PprVegetarien
+      domain: DO_BOOLEAN
+      comment: Si le plat est végétarien.
 ---
 class:
   name: TableRestaurant
@@ -168,7 +175,7 @@ class:
       required: true
       comment: Indique si la table est disponible
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant auquel appartient la table
       required: true
 
@@ -178,4 +185,4 @@ class:
       comment: Date de création de l'enregistrement
 
   unique:
-    - [RestaurantId, Numero]
+    - [LieuLieId, Numero]

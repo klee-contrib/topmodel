@@ -1431,7 +1431,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("Volume")
                         .HasColumnType("integer")
-                        .HasColumnName("volume")
+                        .HasColumnName("pbo_volume")
                         .HasComment("Volume de la boisson");
 
                     b.ToTable("plat");
@@ -1463,7 +1463,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<bool>("Vegetarien")
                         .HasColumnType("boolean")
-                        .HasColumnName("vegetarien")
+                        .HasColumnName("ppr_vegetarien")
                         .HasComment("Si le plat est végétarien.");
 
                     b.ToTable("plat");

@@ -16,24 +16,48 @@ public static class ScriptUtils
 
     extension(Class classe)
     {
-        public IEnumerable<IProperty> AllProperties
-        {
-            get
-            {
-                // On enlève les multiples (directes ou reverse) + les reverses de oneToOne.
-                foreach (
-                    var prop in classe.Properties.Where(p =>
-                        !p.AssociationMultiple && (!p.IsReverseProperty || p.ReverseProperty!.AssociationMultiple)
-                    )
-                )
-                {
-                    yield return prop;
-                }
+        public bool HasTable =>
+            classe.IsPersistent
+            && classe.Type != ClassType.Interface
+            && (classe.Type != ClassType.Abstract || classe.InheritanceStrategy != InheritanceStrategy.DistinctTables)
+            && (classe.Extends == null || classe.Extends.InheritanceStrategy != InheritanceStrategy.SingleTable);
+    }
 
-                if (classe.ParentAssociationProperty != null)
-                {
-                    yield return classe.ParentAssociationProperty!;
-                }
+    public static IEnumerable<IProperty> GetAllProperties(this SqlConfig config, Class classe)
+    {
+        if (classe.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.DistinctTables)
+        {
+            foreach (var prop in config.GetAllProperties(classe.Extends))
+            {
+                yield return prop;
+            }
+        }
+
+        // On enlève les multiples (directes ou reverse) + les reverses de oneToOne.
+        foreach (
+            var prop in classe.Properties.Where(p =>
+                !p.AssociationMultiple && (!p.IsReverseProperty || p.ReverseProperty!.AssociationMultiple)
+            )
+        )
+        {
+            yield return prop;
+        }
+
+        if (classe.ParentAssociationProperty != null)
+        {
+            yield return classe.ParentAssociationProperty!;
+        }
+
+        if (classe.DefaultDiscriminatorProperty != null)
+        {
+            yield return classe.DefaultDiscriminatorProperty!;
+        }
+
+        if (classe.InheritanceStrategy == InheritanceStrategy.SingleTable)
+        {
+            foreach (var prop in config.Classes.Where(c => c.Extends == classe).SelectMany(config.GetAllProperties))
+            {
+                yield return prop;
             }
         }
     }
@@ -143,7 +167,7 @@ public static class ScriptUtils
             );
             writer.WriteLine("go");
 
-            foreach (var p in classe.AllProperties)
+            foreach (var p in config.GetAllProperties(classe))
             {
                 writer.WriteLine(
                     $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}'"
@@ -157,7 +181,7 @@ public static class ScriptUtils
                 $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
             );
 
-            foreach (var p in classe.AllProperties)
+            foreach (var p in config.GetAllProperties(classe))
             {
                 writer.WriteLine(
                     $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"

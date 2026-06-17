@@ -35,22 +35,15 @@ public class PostgresTablesGenerator(ILogger<PostgresTablesGenerator> logger, IF
         }
     }
 
-    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)
+    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer)
     {
         writer.Write(
-            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()}"
+            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()} start {Config.Procedural?.Identity.Start ?? 1} increment {Config.Procedural?.Identity.Increment ?? 1}"
         );
 
-        if (Config.Procedural!.Identity.Start != null)
+        if (classe.HasTable)
         {
-            writer.Write($"{$" start {Config.Procedural!.Identity.Start}"}");
+            writer.Write($" owned by {classe.SqlName}.{classe.PrimaryKey.Single().SqlName}");
         }
-
-        if (Config.Procedural!.Identity.Increment != null)
-        {
-            writer.Write($"{$" increment {Config.Procedural!.Identity.Increment}"}");
-        }
-
-        writer.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
     }
 }

@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/01_Lieu
   - 03_Restaurant/02_Plat
 ---
 class:
@@ -46,7 +46,7 @@ class:
       required: true
       comment: Indique si la promotion est active
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant concerné par la promotion (null si globale)
 
     - name: DateCreation

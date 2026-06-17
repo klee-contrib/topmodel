@@ -12,7 +12,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && classe.Type != ClassType.Interface)
+        if (classe.HasTable)
         {
             yield return (
                 "index-and-keys",
@@ -23,7 +23,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
     protected virtual IEnumerable<IProperty> GetForeignKeys(Class classe)
     {
-        foreach (var property in classe.AllProperties)
+        foreach (var property in Config.GetAllProperties(classe))
         {
             if (property is { Association.IsPersistent: true } ap)
             {
@@ -132,7 +132,15 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         writer.WriteLine("alter table " + propertySource.Class.SqlName);
 
         writer.WriteLine($"\tadd constraint {propertySource.ForeignKeyName} foreign key ({propertySource.SqlName})");
-        writer.Write("\t\treferences " + association.SqlName + " (");
+        writer.Write(
+            "\t\treferences "
+                + (
+                    association.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
+                        ? association.Extends
+                        : association
+                ).SqlName
+                + " ("
+        );
 
         writer.Write(propertyTarget.SqlName);
 

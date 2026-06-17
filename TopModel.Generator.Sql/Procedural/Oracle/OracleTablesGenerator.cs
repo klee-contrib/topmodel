@@ -42,18 +42,10 @@ public class OracleTablesGenerator(ILogger<OracleTablesGenerator> logger, IFileW
         throw new NotSupportedException("Non implémenté");
     }
 
-    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer, string tableName)
+    protected override void WriteSequenceDeclaration(Class classe, IFileWriter writer)
     {
-        writer.Write($"create sequence {Config.GetSequenceName(classe)}");
-
-        if (Config.Procedural!.Identity.Start != null)
-        {
-            writer.Write($"{$" start with {Config.Procedural!.Identity.Start}"}");
-        }
-
-        if (Config.Procedural!.Identity.Increment != null)
-        {
-            writer.Write($"{$" increment by {Config.Procedural!.Identity.Increment} nocycle"}");
-        }
+        writer.Write(
+            $"create sequence {Config.GetSequenceName(classe)} start with {Config.Procedural?.Identity.Start ?? 1} increment by {Config.Procedural?.Identity.Increment ?? 1} nocycle"
+        );
     }
 }

@@ -16,9 +16,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent
-            && classe.Type != ClassType.Interface
-            && classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName);
+        return classe.HasTable && classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName);
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -110,7 +108,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         var sb = new StringBuilder();
 
         // Colonnes
-        foreach (var property in table.AllProperties)
+        foreach (var property in Config.GetAllProperties(table))
         {
             if (
                 (!property.PrimaryKey || Config.ShouldQuoteValue(property))

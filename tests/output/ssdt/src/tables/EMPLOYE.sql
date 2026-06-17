@@ -15,7 +15,7 @@ create table [dbo].[EMPLOYE] (
 	[LIE_ID] int not null,
 	[PER_ID] int,
 	constraint [PK_EMPLOYE] primary key clustered ([PER_ID] ASC),
-	constraint [FK_EMPLOYE_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
+	constraint [FK_EMPLOYE_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
 	constraint [FK_EMPLOYE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]),
 	constraint [UK_EMPLOYE_EMP_MATRICULE] unique nonclustered ([EMP_MATRICULE] ASC))
 go

@@ -12,10 +12,16 @@
   * Création de la table ASSIETTE
  **/
 create table ASSIETTE (
-	AST_TAILLE int not null,
 	VSL_ID int not null,
+	VSL_DESCRIPTION varchar(100) not null,
+	AST_TAILLE int not null,
 	constraint PK_ASSIETTE primary key (VSL_ID)
 );
+
+/**
+  * Création de la séquence pour la clé primaire de la table VAISSELLE
+ **/
+create sequence SEQ_VAISSELLE as INT start 1000 increment 50;
 
 /**
   * Création de la table AVIS_CLIENT
@@ -111,6 +117,7 @@ create table COMMANDE_HISTORIQUE (
  **/
 create table COUVERT (
 	VSL_ID int not null,
+	VSL_DESCRIPTION varchar(100) not null,
 	constraint PK_COUVERT primary key (VSL_ID)
 );
 
@@ -139,22 +146,17 @@ create table EMPLOYE (
 );
 
 /**
-  * Création de la table FOURNISSEUR
- **/
-create table FOURNISSEUR (
-	FRN_TELEPHONE varchar(20),
-	FRN_BIO boolean,
-	LIE_ID int not null,
-	constraint PK_FOURNISSEUR primary key (LIE_ID)
-);
-
-/**
   * Création de la table LIEU
  **/
 create table LIEU (
 	LIE_ID int not null,
 	LIE_NOM varchar(100) not null,
 	LIE_ADRESSE varchar(100),
+	LIE_DISCRIMINATOR varchar(128) not null,
+	RES_TELEPHONE varchar(20),
+	RES_DATE_CREATION timestamp,
+	FRN_TELEPHONE varchar(20),
+	FRN_BIO boolean,
 	constraint PK_LIEU primary key (LIE_ID)
 );
 
@@ -257,6 +259,8 @@ create table PLAT (
 	CAT_CODE varchar(10) not null,
 	LIE_ID int not null,
 	PLA_DATE_CREATION timestamp not null,
+	PBO_VOLUME int,
+	PPR_VEGETARIEN boolean,
 	constraint PK_PLAT primary key (PLA_ID)
 );
 
@@ -264,40 +268,6 @@ create table PLAT (
   * Création de la séquence pour la clé primaire de la table PLAT
  **/
 create sequence SEQ_PLAT as INT start 1000 increment 50 owned by PLAT.PLA_ID;
-
-/**
-  * Création de la table PLAT_BOISSON
- **/
-create table PLAT_BOISSON (
-	VOLUME int not null,
-	PLA_ID int not null,
-	constraint PK_PLAT_BOISSON primary key (PLA_ID)
-);
-
-/**
-  * Création de la table PLAT_DESSERT
- **/
-create table PLAT_DESSERT (
-	PLA_ID int not null,
-	constraint PK_PLAT_DESSERT primary key (PLA_ID)
-);
-
-/**
-  * Création de la table PLAT_ENTREE
- **/
-create table PLAT_ENTREE (
-	PLA_ID int not null,
-	constraint PK_PLAT_ENTREE primary key (PLA_ID)
-);
-
-/**
-  * Création de la table PLAT_PRINCIPAL
- **/
-create table PLAT_PRINCIPAL (
-	VEGETARIEN boolean not null,
-	PLA_ID int not null,
-	constraint PK_PLAT_PRINCIPAL primary key (PLA_ID)
-);
 
 /**
   * Création de la table PRESTATAIRE
@@ -362,16 +332,6 @@ create table RESERVATION (
 create sequence SEQ_RESERVATION as INT start 1000 increment 50 owned by RESERVATION.REV_ID;
 
 /**
-  * Création de la table RESTAURANT
- **/
-create table RESTAURANT (
-	RES_TELEPHONE varchar(20),
-	RES_DATE_CREATION timestamp not null,
-	LIE_ID int not null,
-	constraint PK_RESTAURANT primary key (LIE_ID)
-);
-
-/**
   * Création de la table TABLE_RESTAURANT
  **/
 create table TABLE_RESTAURANT (
@@ -400,24 +360,11 @@ create table TRANSLATION (
 );
 
 /**
-  * Création de la table VAISSELLE
- **/
-create table VAISSELLE (
-	VSL_ID int not null,
-	VSL_DESCRIPTION varchar(100) not null,
-	constraint PK_VAISSELLE primary key (VSL_ID)
-);
-
-/**
-  * Création de la séquence pour la clé primaire de la table VAISSELLE
- **/
-create sequence SEQ_VAISSELLE as INT start 1000 increment 50 owned by VAISSELLE.VSL_ID;
-
-/**
   * Création de la table VERRE
  **/
 create table VERRE (
-	VRR_A_PIED boolean not null,
 	VSL_ID int not null,
+	VSL_DESCRIPTION varchar(100) not null,
+	VRR_A_PIED boolean not null,
 	constraint PK_VERRE primary key (VSL_ID)
 );

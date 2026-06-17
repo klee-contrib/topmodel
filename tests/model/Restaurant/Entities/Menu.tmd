@@ -100,6 +100,7 @@ class:
 ---
 class:
   name: PlatBoisson
+  trigram: PBO
   comment: Boisson
   extends: Plat
   discriminatorValue: BOISSON
@@ -111,6 +112,7 @@ class:
 ---
 class:
   name: PlatEntree
+  trigram: PEN
   comment: Entrée
   extends: Plat
   discriminatorValue: ENTREE
@@ -118,6 +120,7 @@ class:
 ---
 class:
   name: PlatPrincipal
+  trigram: PPR
   pluralName: PlatPrincipaux
   comment: Plat principal
   extends: Plat
@@ -130,6 +133,7 @@ class:
 ---
 class:
   name: PlatDessert
+  trigram: PDE
   comment: Dessert
   extends: Plat
   discriminatorValue: DESSERT
