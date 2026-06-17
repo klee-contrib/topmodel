@@ -15,7 +15,7 @@ public abstract class AbstractSqlValuesGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && classe.Type != ClassType.Interface && classe.Values.Count > 0)
+        if (classe.HasTable && classe.Values.Count > 0)
         {
             yield return ("values", Config.Procedural!.ValuesFileName);
         }

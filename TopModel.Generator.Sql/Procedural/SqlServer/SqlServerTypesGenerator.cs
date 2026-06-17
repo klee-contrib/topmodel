@@ -22,7 +22,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && classe.Type != ClassType.Interface)
+        if (classe.HasTable)
         {
             yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
         }
@@ -72,7 +72,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         var t = 0;
 
-        foreach (var property in classe.AllProperties)
+        foreach (var property in Config.GetAllProperties(classe))
         {
             var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 

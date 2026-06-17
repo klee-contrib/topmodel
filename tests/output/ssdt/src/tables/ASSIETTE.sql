@@ -7,15 +7,16 @@
 -- ===========================================================================================
 
 create table [dbo].[ASSIETTE] (
-	[AST_TAILLE] int not null,
 	[VSL_ID] int,
-	constraint [PK_ASSIETTE] primary key clustered ([VSL_ID] ASC),
-	constraint [FK_ASSIETTE_VSL_ID] foreign key ([VSL_ID]) references [dbo].[VAISSELLE] ([VSL_ID]))
+	[VSL_DESCRIPTION] varchar not null,
+	[AST_TAILLE] int not null,
+	constraint [PK_ASSIETTE] primary key clustered ([VSL_ID] ASC))
 go
 
-/* Index on foreign key column for ASSIETTE.VSL_ID */
-create nonclustered index [IDX_AST_VSL_ID_FK]
-	on [dbo].[ASSIETTE] ([VSL_ID] ASC)
+/**
+  * Création de la séquence pour la clé primaire de la table VAISSELLE
+ **/
+create sequence SEQ_VAISSELLE as INT start with 1 increment by 1
 go
 
 /**
@@ -23,7 +24,9 @@ go
  **/
 EXECUTE sp_addextendedproperty 'MS_Description', 'Assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Taille de l''assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'AST_TAILLE'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_DESCRIPTION'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Taille de l''assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'AST_TAILLE'
 go

@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Restaurant
+  - 03_Restaurant/01_Lieu
   - 03_Restaurant/07_Client
 ---
 class:
@@ -50,7 +50,7 @@ class:
       comment: Client ayant donné l'avis
       required: true
 
-    - association: Restaurant
+    - association: Lieu
       comment: Restaurant concerné par l'avis
       required: true
 
@@ -60,4 +60,4 @@ class:
       comment: Date de création de l'enregistrement
 
   unique:
-    - [ClientPersonneId, RestaurantId, DateAvis]
+    - [ClientPersonneId, LieuLieId, DateAvis]

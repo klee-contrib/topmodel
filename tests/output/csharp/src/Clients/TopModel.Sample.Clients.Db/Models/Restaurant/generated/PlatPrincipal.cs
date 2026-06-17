@@ -17,7 +17,7 @@ public partial record PlatPrincipal : Plat
     /// <summary>
     /// Si le plat est végétarien.
     /// </summary>
-    [Column("vegetarien")]
+    [Column("ppr_vegetarien")]
     [Required]
     [Domain(Domains.Booleen)]
     public bool? Vegetarien { get; set; }

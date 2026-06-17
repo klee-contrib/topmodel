@@ -7,15 +7,10 @@
 -- ===========================================================================================
 
 create table [dbo].[VERRE] (
-	[VRR_A_PIED] boolean not null,
 	[VSL_ID] int,
-	constraint [PK_VERRE] primary key clustered ([VSL_ID] ASC),
-	constraint [FK_VERRE_VSL_ID] foreign key ([VSL_ID]) references [dbo].[VAISSELLE] ([VSL_ID]))
-go
-
-/* Index on foreign key column for VERRE.VSL_ID */
-create nonclustered index [IDX_VRR_VSL_ID_FK]
-	on [dbo].[VERRE] ([VSL_ID] ASC)
+	[VSL_DESCRIPTION] varchar not null,
+	[VRR_A_PIED] boolean not null,
+	constraint [PK_VERRE] primary key clustered ([VSL_ID] ASC))
 go
 
 /**
@@ -23,7 +18,9 @@ go
  **/
 EXECUTE sp_addextendedproperty 'MS_Description', 'Verre.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Si le verre est à pied ou non.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VRR_A_PIED'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_DESCRIPTION'
+go
+EXECUTE sp_addextendedproperty 'MS_Description', 'Si le verre est à pied ou non.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VRR_A_PIED'
 go

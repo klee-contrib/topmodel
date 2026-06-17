@@ -6,7 +6,7 @@ version: 4.1.0
 generatedFiles:
   - ./model/01_Common/01_Region.tmd
   - ./model/01_Common/02_Departement.tmd
-  - ./model/03_Restaurant/01_Restaurant.tmd
+  - ./model/03_Restaurant/01_Lieu.tmd
   - ./model/03_Restaurant/02_Plat.tmd
   - ./model/03_Restaurant/03_CategoriePlatRegion.tmd
   - ./model/03_Restaurant/04_MenuPlat.tmd
@@ -18,4 +18,4 @@ generatedFiles:
   - ./model/03_Restaurant/10_Reservation.tmd
   - ./model/03_Restaurant/11_Commande.tmd
   - ./model/03_Restaurant/12_LigneCommande.tmd
-  - ./model/05_Autres/01_Prestataire.tmd
+  - ./model/05_Autres/01_Assiette.tmd

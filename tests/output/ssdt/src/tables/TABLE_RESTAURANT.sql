@@ -14,7 +14,7 @@ create table [dbo].[TABLE_RESTAURANT] (
 	[LIE_ID] int not null,
 	[TAB_DATE_CREATION] timestamp not null,
 	constraint [PK_TABLE_RESTAURANT] primary key clustered ([TAB_ID] ASC),
-	constraint [FK_TABLE_RESTAURANT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
+	constraint [FK_TABLE_RESTAURANT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
 	constraint [UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO] unique nonclustered ([LIE_ID] ASC, [TAB_NUMERO] ASC))
 go
 

@@ -7,7 +7,7 @@ custom:
   ../../TopModel.Generator.Csharp: b907694b4d9bba1c2c165d5d21a6f8cc
   ../../TopModel.Generator.Javascript: c0f2b45b81e95b88ad34c551ec81a2a3
   ../../TopModel.Generator.Jpa: 85121b72678fed4a05369fdd4e95c993
-  ../../TopModel.Generator.Sql: 7f489125a3e1efc2c5f708df4596d6de
+  ../../TopModel.Generator.Sql: 9b318b50b059fa35e2689890c62a318a
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: ca8b922adec54ee5ed7ec9d4eaec289b
 generatedFiles:
@@ -626,26 +626,19 @@ generatedFiles:
   - ../output/ssdt/src/tables/COUVERT.sql
   - ../output/ssdt/src/tables/DEPARTEMENT.sql
   - ../output/ssdt/src/tables/EMPLOYE.sql
-  - ../output/ssdt/src/tables/FOURNISSEUR.sql
   - ../output/ssdt/src/tables/LIEU.sql
   - ../output/ssdt/src/tables/LIGNE_COMMANDE_HISTORIQUE.sql
   - ../output/ssdt/src/tables/LIGNE_COMMANDE.sql
   - ../output/ssdt/src/tables/MENU_PLAT.sql
   - ../output/ssdt/src/tables/MENU.sql
   - ../output/ssdt/src/tables/PERSONNE.sql
-  - ../output/ssdt/src/tables/PLAT_BOISSON.sql
-  - ../output/ssdt/src/tables/PLAT_DESSERT.sql
-  - ../output/ssdt/src/tables/PLAT_ENTREE.sql
-  - ../output/ssdt/src/tables/PLAT_PRINCIPAL.sql
   - ../output/ssdt/src/tables/PLAT.sql
   - ../output/ssdt/src/tables/PRESTATAIRE.sql
   - ../output/ssdt/src/tables/PROMOTION.sql
   - ../output/ssdt/src/tables/REGION.sql
   - ../output/ssdt/src/tables/RESERVATION.sql
-  - ../output/ssdt/src/tables/RESTAURANT.sql
   - ../output/ssdt/src/tables/TABLE_RESTAURANT.sql
   - ../output/ssdt/src/tables/TRANSLATION.sql
-  - ../output/ssdt/src/tables/VAISSELLE.sql
   - ../output/ssdt/src/tables/VERRE.sql
   - ../output/translation/i18n/de/out/common_de.properties
   - ../output/translation/i18n/de/out/restaurant_de.properties

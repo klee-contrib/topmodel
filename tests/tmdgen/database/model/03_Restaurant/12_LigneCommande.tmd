@@ -51,4 +51,4 @@ class:
       comment: Date de création de l'enregistrement
 
   unique:
-    - [CommandeComId, PlatId]
+    - [CommandeComId, PlatPlaId]

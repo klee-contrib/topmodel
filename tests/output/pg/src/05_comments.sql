@@ -12,8 +12,9 @@
   * Commentaires pour la table ASSIETTE
  **/
 COMMENT ON TABLE ASSIETTE IS 'Assiette.';
+COMMENT ON COLUMN ASSIETTE.VSL_ID IS 'Id de la vaisselle';
+COMMENT ON COLUMN ASSIETTE.VSL_DESCRIPTION IS 'Description de la vaisselle.';
 COMMENT ON COLUMN ASSIETTE.AST_TAILLE IS 'Taille de l''assiette.';
-COMMENT ON COLUMN ASSIETTE.VSL_ID IS 'Association vers la clé primaire de la classe parente';
 
 /**
   * Commentaires pour la table AVIS_CLIENT
@@ -86,7 +87,8 @@ COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_CREATION IS 'Date de création de
   * Commentaires pour la table COUVERT
  **/
 COMMENT ON TABLE COUVERT IS 'Couvert.';
-COMMENT ON COLUMN COUVERT.VSL_ID IS 'Association vers la clé primaire de la classe parente';
+COMMENT ON COLUMN COUVERT.VSL_ID IS 'Id de la vaisselle';
+COMMENT ON COLUMN COUVERT.VSL_DESCRIPTION IS 'Description de la vaisselle.';
 
 /**
   * Commentaires pour la table DEPARTEMENT
@@ -109,20 +111,17 @@ COMMENT ON COLUMN EMPLOYE.LIE_ID IS 'Restaurant où travaille l''employé';
 COMMENT ON COLUMN EMPLOYE.PER_ID IS 'Association vers la clé primaire de la classe parente';
 
 /**
-  * Commentaires pour la table FOURNISSEUR
- **/
-COMMENT ON TABLE FOURNISSEUR IS 'Restaurant';
-COMMENT ON COLUMN FOURNISSEUR.FRN_TELEPHONE IS 'Numéro de téléphone';
-COMMENT ON COLUMN FOURNISSEUR.FRN_BIO IS 'Si le fournisseur fait du bio.';
-COMMENT ON COLUMN FOURNISSEUR.LIE_ID IS 'Association vers la clé primaire de la classe parente';
-
-/**
   * Commentaires pour la table LIEU
  **/
 COMMENT ON TABLE LIEU IS 'Lieu';
 COMMENT ON COLUMN LIEU.LIE_ID IS 'Identifiant du restaurant';
 COMMENT ON COLUMN LIEU.LIE_NOM IS 'Nom du restaurant';
 COMMENT ON COLUMN LIEU.LIE_ADRESSE IS 'Adresse du restaurant';
+COMMENT ON COLUMN LIEU.LIE_DISCRIMINATOR IS 'Discriminateur pour les instances de la hiérarchie de classe';
+COMMENT ON COLUMN LIEU.RES_TELEPHONE IS 'Numéro de téléphone';
+COMMENT ON COLUMN LIEU.RES_DATE_CREATION IS 'Date de création de l''enregistrement';
+COMMENT ON COLUMN LIEU.FRN_TELEPHONE IS 'Numéro de téléphone';
+COMMENT ON COLUMN LIEU.FRN_BIO IS 'Si le fournisseur fait du bio.';
 
 /**
   * Commentaires pour la table LIGNE_COMMANDE
@@ -193,32 +192,8 @@ COMMENT ON COLUMN PLAT.PLA_DISPONIBLE IS 'Indique si le plat est disponible';
 COMMENT ON COLUMN PLAT.CAT_CODE IS 'Catégorie du plat';
 COMMENT ON COLUMN PLAT.LIE_ID IS 'Restaurant proposant ce plat';
 COMMENT ON COLUMN PLAT.PLA_DATE_CREATION IS 'Date de création de l''enregistrement';
-
-/**
-  * Commentaires pour la table PLAT_BOISSON
- **/
-COMMENT ON TABLE PLAT_BOISSON IS 'Boisson';
-COMMENT ON COLUMN PLAT_BOISSON.VOLUME IS 'Volume de la boisson';
-COMMENT ON COLUMN PLAT_BOISSON.PLA_ID IS 'Association vers la clé primaire de la classe parente';
-
-/**
-  * Commentaires pour la table PLAT_DESSERT
- **/
-COMMENT ON TABLE PLAT_DESSERT IS 'Dessert';
-COMMENT ON COLUMN PLAT_DESSERT.PLA_ID IS 'Association vers la clé primaire de la classe parente';
-
-/**
-  * Commentaires pour la table PLAT_ENTREE
- **/
-COMMENT ON TABLE PLAT_ENTREE IS 'Entrée';
-COMMENT ON COLUMN PLAT_ENTREE.PLA_ID IS 'Association vers la clé primaire de la classe parente';
-
-/**
-  * Commentaires pour la table PLAT_PRINCIPAL
- **/
-COMMENT ON TABLE PLAT_PRINCIPAL IS 'Plat principal';
-COMMENT ON COLUMN PLAT_PRINCIPAL.VEGETARIEN IS 'Si le plat est végétarien.';
-COMMENT ON COLUMN PLAT_PRINCIPAL.PLA_ID IS 'Association vers la clé primaire de la classe parente';
+COMMENT ON COLUMN PLAT.PBO_VOLUME IS 'Volume de la boisson';
+COMMENT ON COLUMN PLAT.PPR_VEGETARIEN IS 'Si le plat est végétarien.';
 
 /**
   * Commentaires pour la table PRESTATAIRE
@@ -265,14 +240,6 @@ COMMENT ON COLUMN RESERVATION.LIE_ID IS 'Restaurant concerné par la réservatio
 COMMENT ON COLUMN RESERVATION.REV_DATE_CREATION IS 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table RESTAURANT
- **/
-COMMENT ON TABLE RESTAURANT IS 'Restaurant';
-COMMENT ON COLUMN RESTAURANT.RES_TELEPHONE IS 'Numéro de téléphone';
-COMMENT ON COLUMN RESTAURANT.RES_DATE_CREATION IS 'Date de création de l''enregistrement';
-COMMENT ON COLUMN RESTAURANT.LIE_ID IS 'Association vers la clé primaire de la classe parente';
-
-/**
   * Commentaires pour la table TABLE_RESTAURANT
  **/
 COMMENT ON TABLE TABLE_RESTAURANT IS 'Table du restaurant';
@@ -292,15 +259,9 @@ COMMENT ON COLUMN TRANSLATION.TRA_VALUE IS 'Valeur de la clé de traduction.';
 COMMENT ON COLUMN TRANSLATION.TRA_LANG IS 'Langue de traduction';
 
 /**
-  * Commentaires pour la table VAISSELLE
- **/
-COMMENT ON TABLE VAISSELLE IS 'Vaisselle de restaurant';
-COMMENT ON COLUMN VAISSELLE.VSL_ID IS 'Id de la vaisselle';
-COMMENT ON COLUMN VAISSELLE.VSL_DESCRIPTION IS 'Description de la vaisselle.';
-
-/**
   * Commentaires pour la table VERRE
  **/
 COMMENT ON TABLE VERRE IS 'Verre.';
+COMMENT ON COLUMN VERRE.VSL_ID IS 'Id de la vaisselle';
+COMMENT ON COLUMN VERRE.VSL_DESCRIPTION IS 'Description de la vaisselle.';
 COMMENT ON COLUMN VERRE.VRR_A_PIED IS 'Si le verre est à pied ou non.';
-COMMENT ON COLUMN VERRE.VSL_ID IS 'Association vers la clé primaire de la classe parente';
