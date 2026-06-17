@@ -93,6 +93,14 @@ class Plat{
 Plat "1" --> "0..*" CategoriePlat
 Plat "1" --> "0..*" Restaurant
 Plat "0..1" --> "1" Promotion
+%% Boisson
+class PlatBoisson{
+ DO_QUANTITE Volume
+}
+%% Plat principal
+class PlatPrincipal{
+ DO_BOOLEEN Vegetarien
+}
 %% Promotion sur un plat
 class Promotion{
  DO_LIBELLE Libelle
@@ -145,11 +153,23 @@ class Prestataire{
  DO_LIBELLE Prenom
  DO_TELEPHONE Telephone
 }
+%% Assiette.
+class Assiette{
+ DO_QUANTITE Taille
+}
 %% Restaurant
-class Restaurant{
+class Fournisseur{
+ DO_TELEPHONE Telephone
+ DO_BOOLEEN Bio
+}
+%% Lieu
+class Lieu{
  DO_ID Id
  DO_LIBELLE Nom
  DO_LIBELLE Adresse
+}
+%% Restaurant
+class Restaurant{
  DO_TELEPHONE Telephone
  DO_DATE_HEURE DateCreation
 }
@@ -167,13 +187,23 @@ class TableRestaurant{
  DO_DATE_HEURE DateCreation
 }
 TableRestaurant "1" --> "0..*" Restaurant
+%% Vaisselle de restaurant
+class Vaisselle{
+ DO_ID Id
+ DO_LIBELLE Description
+}
+%% Verre.
+class Verre{
+ DO_BOOLEEN APied
+}
 %% Catégorie de plat
 class CategoriePlat{
 &lt;&lt;Enum&gt;&gt;
+AUTRE Autre
 BOISSON Boisson
 DESSERT Dessert
 ENTREE Entrée
-PLAT Plat principal
+PRINCIPAL Plat principal
 }
 CategoriePlatRegion "1" --> "0..*" Region
 CategoriePlatRegion "1" --> "0..*" CategoriePlat
@@ -205,8 +235,17 @@ class TypeTerrasse{
 EXT
 INT
 }
+Plat <|--  PlatBoisson
+Plat <|--  PlatDessert
+Plat <|--  PlatEntree
+Plat <|--  PlatPrincipal
 Personne <|--  Client
 Personne <|--  Employe
+Vaisselle <|--  Assiette
+Vaisselle <|--  Couvert
+Lieu <|--  Fournisseur
+Lieu <|--  Restaurant
+Vaisselle <|--  Verre
 
 
 ```

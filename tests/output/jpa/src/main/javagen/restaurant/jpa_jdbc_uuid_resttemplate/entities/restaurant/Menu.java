@@ -75,7 +75,7 @@ public class Menu {
 	 * Restaurant proposant ce menu.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

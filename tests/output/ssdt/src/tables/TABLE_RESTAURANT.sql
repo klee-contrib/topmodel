@@ -11,16 +11,16 @@ create table [dbo].[TABLE_RESTAURANT] (
 	[TAB_NUMERO] varchar not null,
 	[TAB_CAPACITE] int not null,
 	[TAB_DISPONIBLE] boolean not null default true,
-	[RES_ID] int not null,
+	[LIE_ID] int not null,
 	[TAB_DATE_CREATION] timestamp not null,
 	constraint [PK_TABLE_RESTAURANT] primary key clustered ([TAB_ID] ASC),
-	constraint [FK_TABLE_RESTAURANT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
-	constraint [UK_TABLE_RESTAURANT_RES_ID_TAB_NUMERO] unique nonclustered ([RES_ID] ASC, [TAB_NUMERO] ASC))
+	constraint [FK_TABLE_RESTAURANT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
+	constraint [UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO] unique nonclustered ([LIE_ID] ASC, [TAB_NUMERO] ASC))
 go
 
-/* Index on foreign key column for TABLE_RESTAURANT.RES_ID */
-create nonclustered index [IDX_TAB_RES_ID_FK]
-	on [dbo].[TABLE_RESTAURANT] ([RES_ID] ASC)
+/* Index on foreign key column for TABLE_RESTAURANT.LIE_ID */
+create nonclustered index [IDX_TAB_LIE_ID_FK]
+	on [dbo].[TABLE_RESTAURANT] ([LIE_ID] ASC)
 go
 
 /**
@@ -36,7 +36,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Capacité de la table (nombre 
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si la table est disponible', 'SCHEMA', 'dbo', 'TABLE', 'TABLE_RESTAURANT', 'COLUMN', 'TAB_DISPONIBLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant auquel appartient la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE_RESTAURANT', 'COLUMN', 'RES_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant auquel appartient la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE_RESTAURANT', 'COLUMN', 'LIE_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'TABLE_RESTAURANT', 'COLUMN', 'TAB_DATE_CREATION'
 go

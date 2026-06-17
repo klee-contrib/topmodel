@@ -71,7 +71,7 @@ public interface PersonneController {
 
 	/**
 	 * Liste les avis clients avec filtres.
-	 * @param resRestaurantId Identifiant du restaurant.
+	 * @param resId Identifiant du restaurant.
 	 * @param noteMin Note sur 5.
 	 * @param approuve Indique si l'avis est approuvé par le restaurant.
 	 * @param dateDebut Date de l'avis.
@@ -81,7 +81,7 @@ public interface PersonneController {
 	 */
 	@GetMapping(path = "avis")
 	@Operation(description = "Liste les avis clients avec filtres")
-	List<AvisClientRead> getAvisClients(@Parameter(description = "Identifiant du restaurant") @RequestParam(value = "resRestaurantId", required = true) Integer resRestaurantId, @Parameter(description = "Note sur 5") @RequestParam(value = "noteMin", required = true) Integer noteMin, @Parameter(description = "Indique si l'avis est approuvé par le restaurant") @RequestParam(value = "approuve", required = true) Boolean approuve, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	List<AvisClientRead> getAvisClients(@Parameter(description = "Identifiant du restaurant") @RequestParam(value = "resId", required = true) Integer resId, @Parameter(description = "Note sur 5") @RequestParam(value = "noteMin", required = true) Integer noteMin, @Parameter(description = "Indique si l'avis est approuvé par le restaurant") @RequestParam(value = "approuve", required = true) Boolean approuve, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @Parameter(description = "Date de l'avis") @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'un client.

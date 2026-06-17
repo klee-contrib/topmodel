@@ -14,12 +14,12 @@ create table [dbo].[RESERVATION] (
 	[REV_CONFIRMEE] boolean not null default false,
 	[PER_ID] int not null,
 	[TAB_ID] int,
-	[RES_ID] int not null,
+	[LIE_ID] int not null,
 	[REV_DATE_CREATION] timestamp not null,
 	constraint [PK_RESERVATION] primary key clustered ([REV_ID] ASC),
 	constraint [FK_RESERVATION_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
 	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_RESTAURANT] ([TAB_ID]),
-	constraint [FK_RESERVATION_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_RESERVATION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
 	constraint [UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION] unique nonclustered ([TAB_ID] ASC, [REV_DATE_RESERVATION] ASC))
 go
 
@@ -33,9 +33,9 @@ create nonclustered index [IDX_REV_TAB_ID_FK]
 	on [dbo].[RESERVATION] ([TAB_ID] ASC)
 go
 
-/* Index on foreign key column for RESERVATION.RES_ID */
-create nonclustered index [IDX_REV_RES_ID_FK]
-	on [dbo].[RESERVATION] ([RES_ID] ASC)
+/* Index on foreign key column for RESERVATION.LIE_ID */
+create nonclustered index [IDX_REV_LIE_ID_FK]
+	on [dbo].[RESERVATION] ([LIE_ID] ASC)
 go
 
 /**
@@ -57,7 +57,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant fait la réservat
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Table réservée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'TAB_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'RES_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'LIE_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_CREATION'
 go

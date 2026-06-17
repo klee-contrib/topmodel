@@ -18,6 +18,11 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record CategoriePlat
 {
     /// <summary>
+    /// Autre.
+    /// </summary>
+    public const int AutreOrdre = 5;
+
+    /// <summary>
     /// Boisson.
     /// </summary>
     public const int BoissonOrdre = 1;
@@ -35,13 +40,18 @@ public partial record CategoriePlat
     /// <summary>
     /// Plat principal.
     /// </summary>
-    public const int PlatOrdre = 3;
+    public const int PrincipalOrdre = 3;
 
     /// <summary>
     /// Valeurs possibles de la liste de référence CategoriePlat.
     /// </summary>
     public enum Codes
     {
+        /// <summary>
+        /// Autre.
+        /// </summary>
+        AUTRE,
+
         /// <summary>
         /// Boisson.
         /// </summary>
@@ -60,8 +70,13 @@ public partial record CategoriePlat
         /// <summary>
         /// Plat principal.
         /// </summary>
-        PLAT
+        PRINCIPAL
     }
+
+    /// <summary>
+    /// Autre.
+    /// </summary>
+    public static CategoriePlat Autre { get; } = new() { Code = Codes.AUTRE, Libelle = "restaurant.categoriePlat.values.Autre", Ordre = AutreOrdre };
 
     /// <summary>
     /// Boisson.
@@ -81,12 +96,12 @@ public partial record CategoriePlat
     /// <summary>
     /// Plat principal.
     /// </summary>
-    public static CategoriePlat Plat { get; } = new() { Code = Codes.PLAT, Libelle = "restaurant.categoriePlat.values.Plat", Ordre = PlatOrdre, PrixMoyen = 10 };
+    public static CategoriePlat Principal { get; } = new() { Code = Codes.PRINCIPAL, Libelle = "restaurant.categoriePlat.values.Principal", Ordre = PrincipalOrdre, PrixMoyen = 10 };
 
     /// <summary>
     /// Liste des valeurs.
     /// </summary>
-    public static IList<CategoriePlat> Values { get; } = [Boisson, Entree, Plat, Dessert];
+    public static IList<CategoriePlat> Values { get; } = [Boisson, Entree, Principal, Dessert, Autre];
 
     /// <summary>
     /// Code de la catégorie.
@@ -128,8 +143,9 @@ public partial record CategoriePlat
     {
         return code switch
         {
+            Codes.AUTRE => Autre,
             Codes.ENTREE => Entree,
-            Codes.PLAT => Plat,
+            Codes.PRINCIPAL => Principal,
             Codes.DESSERT => Dessert,
             Codes.BOISSON => Boisson,
             _ => throw new InvalidOperationException()

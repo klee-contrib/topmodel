@@ -14,13 +14,7 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(Restaurant.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Restaurant_ {
-
-	public static volatile SingularAttribute<Restaurant, Integer> id;
-
-	public static volatile SingularAttribute<Restaurant, String> nom;
-
-	public static volatile SingularAttribute<Restaurant, String> adresse;
+public class Restaurant_ extends Lieu_ {
 
 	public static volatile SingularAttribute<Restaurant, String> telephone;
 
@@ -35,12 +29,6 @@ public class Restaurant_ {
 	public static volatile ListAttribute<Restaurant, Integer> tableIds;
 
 	public static volatile SingularAttribute<Restaurant, LocalDateTime> dateCreation;
-
-	public static final String ID = "id";
-
-	public static final String NOM = "nom";
-
-	public static final String ADRESSE = "adresse";
 
 	public static final String TELEPHONE = "telephone";
 

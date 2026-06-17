@@ -297,6 +297,7 @@ public class ModelFile
                         c.OrderPropertyReference,
                         c.FlagPropertyReference,
                         c.LocalePropertyReference,
+                        c.DiscriminatorPropertyReference,
                     }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName)))
                 )
             )

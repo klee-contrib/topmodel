@@ -13,11 +13,11 @@ create table [dbo].[PLAT] (
 	[PLA_PRIX] decimal not null,
 	[PLA_DISPONIBLE] boolean not null default true,
 	[CAT_CODE] varchar not null,
-	[RES_ID] int not null,
+	[LIE_ID] int not null,
 	[PLA_DATE_CREATION] timestamp not null,
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]))
+	constraint [FK_PLAT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]))
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */
@@ -25,9 +25,9 @@ create nonclustered index [IDX_PLA_CAT_CODE_FK]
 	on [dbo].[PLAT] ([CAT_CODE] ASC)
 go
 
-/* Index on foreign key column for PLAT.RES_ID */
-create nonclustered index [IDX_PLA_RES_ID_FK]
-	on [dbo].[PLAT] ([RES_ID] ASC)
+/* Index on foreign key column for PLAT.LIE_ID */
+create nonclustered index [IDX_PLA_LIE_ID_FK]
+	on [dbo].[PLAT] ([LIE_ID] ASC)
 go
 
 /**
@@ -47,7 +47,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si le plat est disponi
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'RES_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
 go

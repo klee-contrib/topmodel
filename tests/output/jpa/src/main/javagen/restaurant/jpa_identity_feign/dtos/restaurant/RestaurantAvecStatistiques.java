@@ -34,14 +34,14 @@ public class RestaurantAvecStatistiques implements Serializable {
 
 	/**
 	 * Identifiant du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getId() Restaurant#getId()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Lieu#getId() Lieu#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Nom du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getNom() Restaurant#getNom()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Lieu#getNom() Lieu#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -49,7 +49,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 
 	/**
 	 * Adresse du restaurant.
-	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Restaurant#getAdresse() Restaurant#getAdresse()}
+	 * Alias of {@link restaurant.jpa_identity_feign.entities.restaurant.Lieu#getAdresse() Lieu#getAdresse()}
 	 */
 	@Size(max = 100)
 	private String adresse;

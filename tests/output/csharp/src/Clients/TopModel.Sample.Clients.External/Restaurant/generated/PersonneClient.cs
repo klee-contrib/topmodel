@@ -63,19 +63,19 @@ public partial class PersonneClient(HttpClient _client)
     /// <summary>
     /// Liste les avis clients avec filtres.
     /// </summary>
-    /// <param name="resRestaurantId">Identifiant du restaurant.</param>
+    /// <param name="resId">Identifiant du restaurant.</param>
     /// <param name="noteMin">Note sur 5.</param>
     /// <param name="approuve">Indique si l'avis est approuvé par le restaurant.</param>
     /// <param name="dateDebut">Date de l'avis.</param>
     /// <param name="dateFin">Date de l'avis.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des avis correspondant aux critères.</returns>
-    public async Task<ICollection<AvisClientRead>> GetAvisClients(int? resRestaurantId = null, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<ICollection<AvisClientRead>> GetAvisClients(int? resId = null, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["resRestaurantId"] = resRestaurantId?.ToString(),
+            ["resId"] = resId?.ToString(),
             ["noteMin"] = noteMin?.ToString(),
             ["approuve"] = approuve.ToString(),
             ["dateDebut"] = dateDebut?.ToString("o"),

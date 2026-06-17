@@ -15,6 +15,11 @@ namespace TopModel.Sample.Clients.Db;
 public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbContext> options) : DbContext(options)
 {
     /// <summary>
+    /// Accès à l'entité Assiette.
+    /// </summary>
+    public DbSet<Assiette> Assiettes { get; set; }
+
+    /// <summary>
     /// Accès à l'entité AvisClient.
     /// </summary>
     public DbSet<AvisClient> AvisClients { get; set; }
@@ -45,6 +50,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<CommandeHistorique> CommandeHistoriques { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Couvert.
+    /// </summary>
+    public DbSet<Couvert> Couverts { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Departement.
     /// </summary>
     public DbSet<Departement> Departements { get; set; }
@@ -53,6 +63,16 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// Accès à l'entité Employe.
     /// </summary>
     public DbSet<Employe> Employes { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Fournisseur.
+    /// </summary>
+    public DbSet<Fournisseur> Fournisseurs { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Lieu.
+    /// </summary>
+    public DbSet<Lieu> Lieux { get; set; }
 
     /// <summary>
     /// Accès à l'entité LigneCommande.
@@ -83,6 +103,26 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// Accès à l'entité Plat.
     /// </summary>
     public DbSet<Plat> Plats { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité PlatBoisson.
+    /// </summary>
+    public DbSet<PlatBoisson> PlatBoissons { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité PlatDessert.
+    /// </summary>
+    public DbSet<PlatDessert> PlatDesserts { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité PlatEntree.
+    /// </summary>
+    public DbSet<PlatEntree> PlatEntrees { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité PlatPrincipal.
+    /// </summary>
+    public DbSet<PlatPrincipal> PlatPrincipaux { get; set; }
 
     /// <summary>
     /// Accès à l'entité Prestataire.
@@ -118,6 +158,16 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// Accès à l'entité Translation.
     /// </summary>
     public DbSet<Translation> Translations { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Vaisselle.
+    /// </summary>
+    public DbSet<Vaisselle> Vaisselles { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Verre.
+    /// </summary>
+    public DbSet<Verre> Verres { get; set; }
 
     /// <summary>
     /// Personalisation du modèle.
@@ -165,6 +215,23 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
         modelBuilder.Entity<Translation>().HasKey(p => new { p.ResourceKey, p.Lang });
 
+        modelBuilder.Entity<Lieu>()
+            .HasDiscriminator<string>("lie_discriminator")
+            .HasValue<Fournisseur>("fournisseur")
+            .HasValue<Models.Restaurant.Restaurant>("restaurant");
+        modelBuilder.Entity<Plat>()
+            .HasDiscriminator<CategoriePlat.Codes?>("CategoriePlatCode")
+            .HasValue<Plat>(CategoriePlat.Autre.Code)
+            .HasValue<PlatBoisson>(CategoriePlat.Boisson.Code)
+            .HasValue<PlatDessert>(CategoriePlat.Dessert.Code)
+            .HasValue<PlatEntree>(CategoriePlat.Entree.Code)
+            .HasValue<PlatPrincipal>(CategoriePlat.Principal.Code);
+        modelBuilder.Entity<Vaisselle>().UseTpcMappingStrategy();
+        modelBuilder.HasSequence("seq_vaisselle");
+        modelBuilder.Entity<Assiette>().Property(p => p.Id).UseSequence("seq_vaisselle");
+        modelBuilder.Entity<Couvert>().Property(p => p.Id).UseSequence("seq_vaisselle");
+        modelBuilder.Entity<Verre>().Property(p => p.Id).UseSequence("seq_vaisselle");
+
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();
         modelBuilder.Entity<Employe>().HasIndex(p => p.Telephone);
@@ -177,25 +244,25 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<TableRestaurant>().HasIndex(p => new { p.RestaurantId, p.Numero }).IsUnique();
 
         modelBuilder.Entity<AvisClient>().Property("ClientId").HasColumnName("per_id");
-        modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasColumnName("cat_code");
         modelBuilder.Entity<Commande>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
         modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");
         modelBuilder.Entity<Commande>().Property("AvisClientId").HasColumnName("avi_id");
         modelBuilder.Entity<CommandeHistorique>().Property("StatutCommande").HasColumnName("stc_code");
-        modelBuilder.Entity<Employe>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<Employe>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<LigneCommande>().Property("CommandeId").HasColumnName("com_id");
         modelBuilder.Entity<LigneCommande>().Property("PlatId").HasColumnName("pla_id");
-        modelBuilder.Entity<Menu>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<Menu>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<MenuPlat>().Property("MenuId").HasColumnName("men_id");
         modelBuilder.Entity<MenuPlat>().Property("PlatId").HasColumnName("pla_id");
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasColumnName("cat_code");
-        modelBuilder.Entity<Plat>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<Plat>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<Promotion>().Property("PlatId").HasColumnName("pla_id");
-        modelBuilder.Entity<Promotion>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<Promotion>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<Reservation>().Property("ClientId").HasColumnName("per_id");
-        modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("res_id");
+        modelBuilder.Entity<Reservation>().Property("RestaurantId").HasColumnName("lie_id");
 
         modelBuilder.Entity<Translation>().HasIndex(p => p.ResourceKey);
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Libelle);

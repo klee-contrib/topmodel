@@ -55,7 +55,7 @@ public class TableWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurantId;
 
 	/**

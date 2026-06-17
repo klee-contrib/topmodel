@@ -167,7 +167,7 @@ public enum ErrorType
     TMD3008,
 
     /// <summary>
-    /// Impossible de définir un 'extends' sur la classe '{classe}' car elle a une clé primaire composite.
+    /// Héritage classe persistée invalide.
     /// </summary>
     TMD3009,
 
@@ -240,6 +240,11 @@ public enum ErrorType
     /// SourcePropertyOrder manquant.
     /// </summary>
     TMD3023,
+
+    /// <summary>
+    /// Classe abstraite avec mauvaise stratégie d'héritage.
+    /// </summary>
+    TMD3024,
 
     #endregion
 

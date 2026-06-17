@@ -9,6 +9,11 @@ package restaurant.jpa_sequence_server.enums.restaurant;
  */
 public enum CategoriePlatCode {
 	/**
+	 * Autre.
+	 */
+	AUTRE,
+
+	/**
 	 * Boisson.
 	 */
 	BOISSON,
@@ -26,5 +31,5 @@ public enum CategoriePlatCode {
 	/**
 	 * Plat principal.
 	 */
-	PLAT
+	PRINCIPAL
 }

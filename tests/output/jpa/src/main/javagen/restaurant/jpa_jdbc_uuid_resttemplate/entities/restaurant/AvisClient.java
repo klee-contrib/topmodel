@@ -76,7 +76,7 @@ public class AvisClient {
 	 * Restaurant concerné par l'avis.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

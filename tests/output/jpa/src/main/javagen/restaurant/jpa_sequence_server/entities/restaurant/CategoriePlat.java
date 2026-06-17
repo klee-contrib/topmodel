@@ -40,6 +40,9 @@ import restaurant.jpa_sequence_server.enums.restaurant.CategoriePlatOrdre;
 public class CategoriePlat {
 
 	@Transient
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
+
+	@Transient
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
 
 	@Transient
@@ -49,12 +52,12 @@ public class CategoriePlat {
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
 	@Transient
-	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT, "restaurant.categoriePlat.values.Plat", CategoriePlatOrdre.Plat, new BigDecimal(10));
+	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.PRINCIPAL, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
 	 */
-	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PLAT, DESSERT);
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PRINCIPAL, DESSERT, AUTRE);
 
 	/**
 	 * Code de la catégorie.
@@ -147,10 +150,11 @@ public class CategoriePlat {
 	 */
 	public static CategoriePlat getValue(CategoriePlatCode code) {
 		return switch (code) {
+			case AUTRE -> AUTRE;
 			case BOISSON -> BOISSON;
 			case DESSERT -> DESSERT;
 			case ENTREE -> ENTREE;
-			case PLAT -> PLAT;
+			case PRINCIPAL -> PRINCIPAL;
 		};
 	}
 

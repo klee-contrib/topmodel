@@ -88,7 +88,7 @@ public class AvisClientRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurantId;
 
 	/**

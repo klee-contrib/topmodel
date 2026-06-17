@@ -78,7 +78,7 @@ public class ReservationWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Reservation#getRestaurant() Reservation#getRestaurant()}
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurantId;
 
 	/**

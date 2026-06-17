@@ -9,6 +9,15 @@
 -- ===========================================================================================
 
 /**
+  * Création de la table ASSIETTE
+ **/
+create table ASSIETTE (
+	AST_TAILLE int not null,
+	VSL_ID int not null,
+	constraint PK_ASSIETTE primary key (VSL_ID)
+);
+
+/**
   * Création de la table AVIS_CLIENT
  **/
 create table AVIS_CLIENT (
@@ -19,7 +28,7 @@ create table AVIS_CLIENT (
 	AVI_APPROUVE boolean not null,
 	AVI_NOMBRE_VUES int not null,
 	PER_ID int not null,
-	RES_ID int not null,
+	LIE_ID int not null,
 	AVI_DATE_CREATION timestamp not null,
 	constraint PK_AVIS_CLIENT primary key (AVI_ID)
 );
@@ -98,6 +107,14 @@ create table COMMANDE_HISTORIQUE (
 );
 
 /**
+  * Création de la table COUVERT
+ **/
+create table COUVERT (
+	VSL_ID int not null,
+	constraint PK_COUVERT primary key (VSL_ID)
+);
+
+/**
   * Création de la table DEPARTEMENT
  **/
 create table DEPARTEMENT (
@@ -116,10 +133,35 @@ create table EMPLOYE (
 	EMP_MATRICULE varchar(10) not null,
 	EMP_DATE_EMBAUCHE timestamp not null,
 	EMP_SALAIRE decimal,
-	RES_ID int not null,
+	LIE_ID int not null,
 	PER_ID int not null,
 	constraint PK_EMPLOYE primary key (PER_ID)
 );
+
+/**
+  * Création de la table FOURNISSEUR
+ **/
+create table FOURNISSEUR (
+	FRN_TELEPHONE varchar(20),
+	FRN_BIO boolean,
+	LIE_ID int not null,
+	constraint PK_FOURNISSEUR primary key (LIE_ID)
+);
+
+/**
+  * Création de la table LIEU
+ **/
+create table LIEU (
+	LIE_ID int not null,
+	LIE_NOM varchar(100) not null,
+	LIE_ADRESSE varchar(100),
+	constraint PK_LIEU primary key (LIE_ID)
+);
+
+/**
+  * Création de la séquence pour la clé primaire de la table LIEU
+ **/
+create sequence SEQ_LIEU as INT start 1000 increment 50 owned by LIEU.LIE_ID;
 
 /**
   * Création de la table LIGNE_COMMANDE
@@ -165,7 +207,7 @@ create table MENU (
 	MEN_DISPONIBLE boolean not null,
 	MEN_DATE_DEBUT timestamp,
 	MEN_DATE_FIN timestamp,
-	RES_ID int not null,
+	LIE_ID int not null,
 	MEN_DATE_CREATION timestamp not null,
 	constraint PK_MENU primary key (MEN_ID)
 );
@@ -213,7 +255,7 @@ create table PLAT (
 	PLA_PRIX decimal not null,
 	PLA_DISPONIBLE boolean not null,
 	CAT_CODE varchar(10) not null,
-	RES_ID int not null,
+	LIE_ID int not null,
 	PLA_DATE_CREATION timestamp not null,
 	constraint PK_PLAT primary key (PLA_ID)
 );
@@ -222,6 +264,40 @@ create table PLAT (
   * Création de la séquence pour la clé primaire de la table PLAT
  **/
 create sequence SEQ_PLAT as INT start 1000 increment 50 owned by PLAT.PLA_ID;
+
+/**
+  * Création de la table PLAT_BOISSON
+ **/
+create table PLAT_BOISSON (
+	VOLUME int not null,
+	PLA_ID int not null,
+	constraint PK_PLAT_BOISSON primary key (PLA_ID)
+);
+
+/**
+  * Création de la table PLAT_DESSERT
+ **/
+create table PLAT_DESSERT (
+	PLA_ID int not null,
+	constraint PK_PLAT_DESSERT primary key (PLA_ID)
+);
+
+/**
+  * Création de la table PLAT_ENTREE
+ **/
+create table PLAT_ENTREE (
+	PLA_ID int not null,
+	constraint PK_PLAT_ENTREE primary key (PLA_ID)
+);
+
+/**
+  * Création de la table PLAT_PRINCIPAL
+ **/
+create table PLAT_PRINCIPAL (
+	VEGETARIEN boolean not null,
+	PLA_ID int not null,
+	constraint PK_PLAT_PRINCIPAL primary key (PLA_ID)
+);
 
 /**
   * Création de la table PRESTATAIRE
@@ -249,7 +325,7 @@ create table PROMOTION (
 	PRO_DATE_DEBUT timestamp not null,
 	PRO_DATE_FIN timestamp not null,
 	PRO_ACTIVE boolean not null,
-	RES_ID int,
+	LIE_ID int,
 	PRO_DATE_CREATION timestamp not null,
 	constraint PK_PROMOTION primary key (PLA_ID)
 );
@@ -275,7 +351,7 @@ create table RESERVATION (
 	REV_CONFIRMEE boolean not null,
 	PER_ID int not null,
 	TAB_ID int,
-	RES_ID int not null,
+	LIE_ID int not null,
 	REV_DATE_CREATION timestamp not null,
 	constraint PK_RESERVATION primary key (REV_ID)
 );
@@ -289,18 +365,11 @@ create sequence SEQ_RESERVATION as INT start 1000 increment 50 owned by RESERVAT
   * Création de la table RESTAURANT
  **/
 create table RESTAURANT (
-	RES_ID int not null,
-	RES_NOM varchar(100) not null,
-	RES_ADRESSE varchar(100),
 	RES_TELEPHONE varchar(20),
 	RES_DATE_CREATION timestamp not null,
-	constraint PK_RESTAURANT primary key (RES_ID)
+	LIE_ID int not null,
+	constraint PK_RESTAURANT primary key (LIE_ID)
 );
-
-/**
-  * Création de la séquence pour la clé primaire de la table RESTAURANT
- **/
-create sequence SEQ_RESTAURANT as INT start 1000 increment 50 owned by RESTAURANT.RES_ID;
 
 /**
   * Création de la table TABLE_RESTAURANT
@@ -310,7 +379,7 @@ create table TABLE_RESTAURANT (
 	TAB_NUMERO varchar(10) not null,
 	TAB_CAPACITE int not null,
 	TAB_DISPONIBLE boolean not null,
-	RES_ID int not null,
+	LIE_ID int not null,
 	TAB_DATE_CREATION timestamp not null,
 	constraint PK_TABLE_RESTAURANT primary key (TAB_ID)
 );
@@ -328,4 +397,27 @@ create table TRANSLATION (
 	TRA_VALUE varchar(100) not null,
 	TRA_LANG varchar(100) not null,
 	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY,TRA_LANG)
+);
+
+/**
+  * Création de la table VAISSELLE
+ **/
+create table VAISSELLE (
+	VSL_ID int not null,
+	VSL_DESCRIPTION varchar(100) not null,
+	constraint PK_VAISSELLE primary key (VSL_ID)
+);
+
+/**
+  * Création de la séquence pour la clé primaire de la table VAISSELLE
+ **/
+create sequence SEQ_VAISSELLE as INT start 1000 increment 50 owned by VAISSELLE.VSL_ID;
+
+/**
+  * Création de la table VERRE
+ **/
+create table VERRE (
+	VRR_A_PIED boolean not null,
+	VSL_ID int not null,
+	constraint PK_VERRE primary key (VSL_ID)
 );

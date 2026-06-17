@@ -64,7 +64,7 @@ public interface PersonneClient {
 
 	/**
 	 * Liste les avis clients avec filtres.
-	 * @param resRestaurantId Identifiant du restaurant.
+	 * @param resId Identifiant du restaurant.
 	 * @param noteMin Note sur 5.
 	 * @param approuve Indique si l'avis est approuvé par le restaurant.
 	 * @param dateDebut Date de l'avis.
@@ -73,7 +73,7 @@ public interface PersonneClient {
 	 * @return Liste des avis correspondant aux critères.
 	 */
 	@GetExchange("/avis")
-	ResponseEntity<List<AvisClientRead>> getAvisClients(@RequestParam(value = "resRestaurantId", required = true) Integer resRestaurantId, @RequestParam(value = "noteMin", required = true) Integer noteMin, @RequestParam(value = "approuve", required = true) Boolean approuve, @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	ResponseEntity<List<AvisClientRead>> getAvisClients(@RequestParam(value = "resId", required = true) Integer resId, @RequestParam(value = "noteMin", required = true) Integer noteMin, @RequestParam(value = "approuve", required = true) Boolean approuve, @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'un client.

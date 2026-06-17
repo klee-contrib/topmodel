@@ -13,18 +13,20 @@ class:
 
   properties:
     - alias:
+        class: Lieu
+
+    - alias:
         class: Restaurant
-        include:
-          - Id
-          - Nom
-          - Adresse
-          - Telephone
+        include: Telephone
 ---
 class:
   name: RestaurantRead
   comment: Détail d'un restaurant en lecture
 
   properties:
+    - alias:
+        class: Lieu
+
     - alias:
         class: Restaurant
         exclude: TableIds
@@ -60,6 +62,8 @@ class:
   comment: Restaurant avec ses statistiques
 
   properties:
+    - alias:
+        class: Lieu
     - alias:
         class: Restaurant
 

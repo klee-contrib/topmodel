@@ -9,6 +9,20 @@
 -- ===========================================================================================
 
 /**
+  * Création de l'index de clef étrangère pour ASSIETTE.VSL_ID
+ **/
+create index IDX_AST_VSL_ID_FK on ASSIETTE (
+	VSL_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour ASSIETTE.VSL_ID
+ **/
+alter table ASSIETTE
+	add constraint FK_ASSIETTE_VSL_ID foreign key (VSL_ID)
+		references VAISSELLE (VSL_ID);
+
+/**
   * Création de l'index de clef étrangère pour AVIS_CLIENT.PER_ID
  **/
 create index IDX_AVI_PER_ID_FK on AVIS_CLIENT (
@@ -23,18 +37,18 @@ alter table AVIS_CLIENT
 		references CLIENT (PER_ID);
 
 /**
-  * Création de l'index de clef étrangère pour AVIS_CLIENT.RES_ID
+  * Création de l'index de clef étrangère pour AVIS_CLIENT.LIE_ID
  **/
-create index IDX_AVI_RES_ID_FK on AVIS_CLIENT (
-	RES_ID ASC
+create index IDX_AVI_LIE_ID_FK on AVIS_CLIENT (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour AVIS_CLIENT.RES_ID
+  * Génération de la contrainte de clef étrangère pour AVIS_CLIENT.LIE_ID
  **/
 alter table AVIS_CLIENT
-	add constraint FK_AVIS_CLIENT_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_AVIS_CLIENT_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
 
 /**
   * Création de l'index de clef étrangère pour CATEGORIE_PLAT_REGION.REG_CODE
@@ -142,6 +156,20 @@ alter table COMMANDE
 		references AVIS_CLIENT (AVI_ID);
 
 /**
+  * Création de l'index de clef étrangère pour COUVERT.VSL_ID
+ **/
+create index IDX_CVT_VSL_ID_FK on COUVERT (
+	VSL_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour COUVERT.VSL_ID
+ **/
+alter table COUVERT
+	add constraint FK_COUVERT_VSL_ID foreign key (VSL_ID)
+		references VAISSELLE (VSL_ID);
+
+/**
   * Création de l'index de clef étrangère pour DEPARTEMENT.REG_CODE
  **/
 create index IDX_DEP_REG_CODE_FK on DEPARTEMENT (
@@ -156,18 +184,18 @@ alter table DEPARTEMENT
 		references REGION (REG_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour EMPLOYE.RES_ID
+  * Création de l'index de clef étrangère pour EMPLOYE.LIE_ID
  **/
-create index IDX_EMP_RES_ID_FK on EMPLOYE (
-	RES_ID ASC
+create index IDX_EMP_LIE_ID_FK on EMPLOYE (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour EMPLOYE.RES_ID
+  * Génération de la contrainte de clef étrangère pour EMPLOYE.LIE_ID
  **/
 alter table EMPLOYE
-	add constraint FK_EMPLOYE_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_EMPLOYE_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
 
 /**
   * Création de l'index de clef étrangère pour EMPLOYE.PER_ID
@@ -182,6 +210,20 @@ create index IDX_EMP_PER_ID_FK on EMPLOYE (
 alter table EMPLOYE
 	add constraint FK_EMPLOYE_PER_ID foreign key (PER_ID)
 		references PERSONNE (PER_ID);
+
+/**
+  * Création de l'index de clef étrangère pour FOURNISSEUR.LIE_ID
+ **/
+create index IDX_FRN_LIE_ID_FK on FOURNISSEUR (
+	LIE_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour FOURNISSEUR.LIE_ID
+ **/
+alter table FOURNISSEUR
+	add constraint FK_FOURNISSEUR_LIE_ID foreign key (LIE_ID)
+		references LIEU (LIE_ID);
 
 /**
   * Création de l'index de clef étrangère pour LIGNE_COMMANDE.COM_ID
@@ -226,18 +268,18 @@ alter table LIGNE_COMMANDE_HISTORIQUE
 		references COMMANDE_HISTORIQUE (COM_ID);
 
 /**
-  * Création de l'index de clef étrangère pour MENU.RES_ID
+  * Création de l'index de clef étrangère pour MENU.LIE_ID
  **/
-create index IDX_MEN_RES_ID_FK on MENU (
-	RES_ID ASC
+create index IDX_MEN_LIE_ID_FK on MENU (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour MENU.RES_ID
+  * Génération de la contrainte de clef étrangère pour MENU.LIE_ID
  **/
 alter table MENU
-	add constraint FK_MENU_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_MENU_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
 
 /**
   * Création de l'index de clef étrangère pour MENU_PLAT.MEN_ID
@@ -296,18 +338,74 @@ alter table PLAT
 		references CATEGORIE_PLAT (CAT_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour PLAT.RES_ID
+  * Création de l'index de clef étrangère pour PLAT.LIE_ID
  **/
-create index IDX_PLA_RES_ID_FK on PLAT (
-	RES_ID ASC
+create index IDX_PLA_LIE_ID_FK on PLAT (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour PLAT.RES_ID
+  * Génération de la contrainte de clef étrangère pour PLAT.LIE_ID
  **/
 alter table PLAT
-	add constraint FK_PLAT_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_PLAT_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
+
+/**
+  * Création de l'index de clef étrangère pour PLAT_BOISSON.PLA_ID
+ **/
+create index IDX_PLAT_BOISSON_PLA_ID_FK on PLAT_BOISSON (
+	PLA_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PLAT_BOISSON.PLA_ID
+ **/
+alter table PLAT_BOISSON
+	add constraint FK_PLAT_BOISSON_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
+
+/**
+  * Création de l'index de clef étrangère pour PLAT_DESSERT.PLA_ID
+ **/
+create index IDX_PLAT_DESSERT_PLA_ID_FK on PLAT_DESSERT (
+	PLA_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PLAT_DESSERT.PLA_ID
+ **/
+alter table PLAT_DESSERT
+	add constraint FK_PLAT_DESSERT_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
+
+/**
+  * Création de l'index de clef étrangère pour PLAT_ENTREE.PLA_ID
+ **/
+create index IDX_PLAT_ENTREE_PLA_ID_FK on PLAT_ENTREE (
+	PLA_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PLAT_ENTREE.PLA_ID
+ **/
+alter table PLAT_ENTREE
+	add constraint FK_PLAT_ENTREE_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
+
+/**
+  * Création de l'index de clef étrangère pour PLAT_PRINCIPAL.PLA_ID
+ **/
+create index IDX_PLAT_PRINCIPAL_PLA_ID_FK on PLAT_PRINCIPAL (
+	PLA_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PLAT_PRINCIPAL.PLA_ID
+ **/
+alter table PLAT_PRINCIPAL
+	add constraint FK_PLAT_PRINCIPAL_PLA_ID foreign key (PLA_ID)
+		references PLAT (PLA_ID);
 
 /**
   * Génération de la contrainte de clef étrangère pour PROMOTION.PLA_ID
@@ -317,18 +415,18 @@ alter table PROMOTION
 		references PLAT (PLA_ID);
 
 /**
-  * Création de l'index de clef étrangère pour PROMOTION.RES_ID
+  * Création de l'index de clef étrangère pour PROMOTION.LIE_ID
  **/
-create index IDX_PRO_RES_ID_FK on PROMOTION (
-	RES_ID ASC
+create index IDX_PRO_LIE_ID_FK on PROMOTION (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROMOTION.RES_ID
+  * Génération de la contrainte de clef étrangère pour PROMOTION.LIE_ID
  **/
 alter table PROMOTION
-	add constraint FK_PROMOTION_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_PROMOTION_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
 
 /**
   * Création de l'index de clef étrangère pour RESERVATION.PER_ID
@@ -359,37 +457,65 @@ alter table RESERVATION
 		references TABLE_RESTAURANT (TAB_ID);
 
 /**
-  * Création de l'index de clef étrangère pour RESERVATION.RES_ID
+  * Création de l'index de clef étrangère pour RESERVATION.LIE_ID
  **/
-create index IDX_REV_RES_ID_FK on RESERVATION (
-	RES_ID ASC
+create index IDX_REV_LIE_ID_FK on RESERVATION (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour RESERVATION.RES_ID
+  * Génération de la contrainte de clef étrangère pour RESERVATION.LIE_ID
  **/
 alter table RESERVATION
-	add constraint FK_RESERVATION_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+	add constraint FK_RESERVATION_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
 
 /**
-  * Création de l'index de clef étrangère pour TABLE_RESTAURANT.RES_ID
+  * Création de l'index de clef étrangère pour RESTAURANT.LIE_ID
  **/
-create index IDX_TAB_RES_ID_FK on TABLE_RESTAURANT (
-	RES_ID ASC
+create index IDX_RES_LIE_ID_FK on RESTAURANT (
+	LIE_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour TABLE_RESTAURANT.RES_ID
+  * Génération de la contrainte de clef étrangère pour RESTAURANT.LIE_ID
  **/
-alter table TABLE_RESTAURANT
-	add constraint FK_TABLE_RESTAURANT_RES_ID foreign key (RES_ID)
-		references RESTAURANT (RES_ID);
+alter table RESTAURANT
+	add constraint FK_RESTAURANT_LIE_ID foreign key (LIE_ID)
+		references LIEU (LIE_ID);
 
 /**
-  * Création de l'index UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS sur AVIS_CLIENT.
+  * Création de l'index de clef étrangère pour TABLE_RESTAURANT.LIE_ID
  **/
-alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_RES_ID_AVI_DATE_AVIS unique (PER_ID, RES_ID, AVI_DATE_AVIS);
+create index IDX_TAB_LIE_ID_FK on TABLE_RESTAURANT (
+	LIE_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour TABLE_RESTAURANT.LIE_ID
+ **/
+alter table TABLE_RESTAURANT
+	add constraint FK_TABLE_RESTAURANT_LIE_ID foreign key (LIE_ID)
+		references RESTAURANT (LIE_ID);
+
+/**
+  * Création de l'index de clef étrangère pour VERRE.VSL_ID
+ **/
+create index IDX_VRR_VSL_ID_FK on VERRE (
+	VSL_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour VERRE.VSL_ID
+ **/
+alter table VERRE
+	add constraint FK_VERRE_VSL_ID foreign key (VSL_ID)
+		references VAISSELLE (VSL_ID);
+
+/**
+  * Création de l'index UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS sur AVIS_CLIENT.
+ **/
+alter table AVIS_CLIENT add constraint UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS unique (PER_ID, LIE_ID, AVI_DATE_AVIS);
 
 /**
   * Création de l'index UK_CATEGORIE_PLAT_CAT_ORDRE sur CATEGORIE_PLAT.
@@ -443,9 +569,9 @@ create index IDX_PST_PST_TELEPHONE on PRESTATAIRE (
 alter table RESERVATION add constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION unique (TAB_ID, REV_DATE_RESERVATION);
 
 /**
-  * Création de l'index UK_TABLE_RESTAURANT_RES_ID_TAB_NUMERO sur TABLE_RESTAURANT.
+  * Création de l'index UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO sur TABLE_RESTAURANT.
  **/
-alter table TABLE_RESTAURANT add constraint UK_TABLE_RESTAURANT_RES_ID_TAB_NUMERO unique (RES_ID, TAB_NUMERO);
+alter table TABLE_RESTAURANT add constraint UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO unique (LIE_ID, TAB_NUMERO);
 
 /**
   * Création de l'index IDX_CAT_CAT_LIBELLE sur CATEGORIE_PLAT.

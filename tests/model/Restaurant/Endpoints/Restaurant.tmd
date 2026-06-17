@@ -36,8 +36,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
 
   returns:
     composition: RestaurantRead
@@ -68,8 +69,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
     - composition: RestaurantWrite
       comment: Restaurant à mettre à jour
       name: restaurant
@@ -87,8 +89,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
 ---
 endpoint:
   name: GetRestaurantPlats
@@ -98,8 +101,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
     - alias:
         class: Plat
         property: Disponible
@@ -203,8 +207,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
     - alias:
         class: TableRestaurant
         property: Disponible
@@ -223,8 +228,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
     - alias:
         class: Menu
         property: Id
@@ -242,12 +248,12 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Nom
       name: nom
       comment: Nom du restaurant (recherche partielle)
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Adresse
       name: adresse
       comment: Adresse du restaurant (recherche partielle)
@@ -274,8 +280,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
+      trigram: res
     - alias:
         class: Commande
         property: DateCommande

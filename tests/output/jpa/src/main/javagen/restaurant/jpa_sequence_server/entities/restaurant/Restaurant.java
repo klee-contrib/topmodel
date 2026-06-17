@@ -17,11 +17,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -32,28 +28,7 @@ import jakarta.persistence.Transient;
 @Table(name = "RESTAURANT")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Restaurant {
-
-	/**
-	 * Identifiant du restaurant.
-	 */
-	@Id
-	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_RESTAURANT")
-	@SequenceGenerator(sequenceName = "SEQ_RESTAURANT", name = "SEQ_RESTAURANT", initialValue = 1000, allocationSize = 50)
-	private Integer id;
-
-	/**
-	 * Nom du restaurant.
-	 */
-	@Column(name = "RES_NOM", nullable = false, length = 100, columnDefinition = "varchar")
-	private String nom;
-
-	/**
-	 * Adresse du restaurant.
-	 */
-	@Column(name = "RES_ADRESSE", length = 100, columnDefinition = "varchar")
-	private String adresse;
+public class Restaurant extends Lieu {
 
 	/**
 	 * Numéro de téléphone.
@@ -97,33 +72,6 @@ public class Restaurant {
 	@CreatedDate
 	@Column(name = "RES_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
-
-	/**
-	 * Getter for id.
-	 *
-	 * @return value of {@link #id id}.
-	 */
-	public Integer getId() {
-		return this.id;
-	}
-
-	/**
-	 * Getter for nom.
-	 *
-	 * @return value of {@link #nom nom}.
-	 */
-	public String getNom() {
-		return this.nom;
-	}
-
-	/**
-	 * Getter for adresse.
-	 *
-	 * @return value of {@link #adresse adresse}.
-	 */
-	public String getAdresse() {
-		return this.adresse;
-	}
 
 	/**
 	 * Getter for telephone.
@@ -204,30 +152,6 @@ public class Restaurant {
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
-	 */
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	/**
-	 * Set the value of {@link #adresse adresse}.
-	 * @param adresse value to set.
-	 */
-	public void setAdresse(String adresse) {
-		this.adresse = adresse;
-	}
-
-	/**
 	 * Set the value of {@link #telephone telephone}.
 	 * @param telephone value to set.
 	 */
@@ -287,9 +211,6 @@ public class Restaurant {
 	 * Enumération des champs de la classe {@link restaurant.jpa_sequence_server.entities.restaurant.Restaurant Restaurant}.
 	 */
 	public enum Fields {
-		ID(Integer.class),
-		NOM(String.class),
-		ADRESSE(String.class),
 		TELEPHONE(String.class),
 		MENUS(List.class),
 		PLATS(List.class),

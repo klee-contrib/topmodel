@@ -72,10 +72,20 @@ public class DbContextGenerator(
         foreach (var classe in classes)
         {
             cw.WriteLine(2, $"var {classe.NameCamel} = modelBuilder.Entity<{GetClassName(classe, tag)}>();");
-            cw.WriteLine(
-                2,
-                $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
-            );
+
+            if (
+                classe.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
+                && (
+                    classe.Type != ClassType.Abstract
+                    || classe.InheritanceStrategy != InheritanceStrategy.DistinctTables
+                )
+            )
+            {
+                cw.WriteLine(
+                    2,
+                    $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));"
+                );
+            }
 
             foreach (var property in classe.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty))
             {
@@ -320,6 +330,84 @@ public class DbContextGenerator(
             w.WriteLine();
         }
 
+        var hasTphOrTpc = false;
+        foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.SingleTable))
+        {
+            hasTphOrTpc = true;
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>()");
+            if (classe.DiscriminatorProperty != null)
+            {
+                if (classe.DiscriminatorProperty.UseClassForAssociation)
+                {
+                    w.WriteLine(
+                        3,
+                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, forceAssociationPropertyType: true)}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
+                    );
+                }
+                else
+                {
+                    w.WriteLine(3, $".HasDiscriminator(p => p.{classe.DiscriminatorProperty.NamePascal})");
+                }
+            }
+            else
+            {
+                w.WriteLine(
+                    3,
+                    $".HasDiscriminator<string>(\"{(Config.UseLowerCaseSqlNames
+                    ? classe.DefaultDiscriminatorName.ToLower()
+                    : classe.DefaultDiscriminatorName)}\")"
+                );
+            }
+
+            var subClasses = (classe.Type == ClassType.Regular ? new[] { classe } : [])
+                .Concat(classes.Where(c => c.Extends == classe))
+                .ToList();
+
+            foreach (var subClasse in subClasses)
+            {
+                var rawValue =
+                    subClasse.DiscriminatorValue
+                    ?? (Config.UseLowerCaseSqlNames ? subClasse.SqlName.ToLower() : subClasse.SqlName);
+
+                w.Write(
+                    3,
+                    $".HasValue<{GetClassName(subClasse, tag)}>({(classe.DiscriminatorProperty == null
+                        ? $"\"{rawValue}\""
+                        : GetValue(classe.DiscriminatorProperty, rawValue, tag, contextNs))})"
+                );
+                w.WriteLine(subClasses[^1] == subClasse ? ";" : string.Empty);
+            }
+        }
+
+        foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.DistinctTables))
+        {
+            hasTphOrTpc = true;
+            var seqName = Config.UseLowerCaseSqlNames ? $"seq_{classe.SqlName.ToLower()}" : $"SEQ_{classe.SqlName}";
+
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().UseTpcMappingStrategy();");
+            w.WriteLine(2, $"modelBuilder.HasSequence(\"{seqName}\");");
+
+            foreach (var subClasse in classes.Where(c => c.Extends == classe))
+            {
+                var key = classe.PrimaryKey.Single();
+                w.Write(2, $"modelBuilder.Entity<{GetClassName(subClasse, tag)}>().Property(");
+                if (key.UseClassForAssociation)
+                {
+                    w.Write($"\"{key.PropertyNamePascal}\"");
+                }
+                else
+                {
+                    w.Write($"p => p.{key.NamePascal}");
+                }
+                w.WriteLine($").UseSequence(\"{seqName}\");");
+            }
+        }
+
+        if (hasTphOrTpc)
+        {
+            w.WriteLine();
+        }
+
         if (Config.UseEFMigrations)
         {
             var hasIndex = false;
@@ -440,18 +528,7 @@ public class DbContextGenerator(
 
                         foreach (var refProp in refValue.Value.ToList())
                         {
-                            var targetClass = refProp.Key.Association ?? refProp.Key.Class;
-
-                            var value = Config.GetValue(refProp.Key, refProp.Value);
-                            if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
-                            {
-                                value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
-                            }
-
-                            if (refProp.Key.ReadonlyEnumClassAssociation != null)
-                            {
-                                value += $".{refProp.Key.AssociationProperty!.NamePascal}";
-                            }
+                            var value = GetValue(refProp.Key, refProp.Value, tag, contextNs);
 
                             if (
                                 classe.Reference
@@ -529,6 +606,23 @@ public class DbContextGenerator(
         w.WriteLine(1, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
 
         w.WriteLine("}");
+    }
+
+    private string? GetValue(IProperty property, string rawValue, string tag, string contextNs)
+    {
+        var targetClass = property.Association ?? property.Class;
+        var value = Config.GetValue(property, rawValue);
+        if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
+        {
+            value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";
+        }
+
+        if (property.ReadonlyEnumClassAssociation != null)
+        {
+            value += $".{property.AssociationProperty!.NamePascal}";
+        }
+
+        return value;
     }
 
     private string GetClassName(Class classe, string tag)

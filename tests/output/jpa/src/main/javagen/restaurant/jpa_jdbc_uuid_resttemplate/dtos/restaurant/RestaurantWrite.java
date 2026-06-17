@@ -33,7 +33,7 @@ public class RestaurantWrite implements Serializable {
 	 */
 	@NotNull
 	@Size(max = 100)
-	@Column("res_nom")
+	@Column("lie_nom")
 	private String nom;
 
 	/**
@@ -41,7 +41,7 @@ public class RestaurantWrite implements Serializable {
 	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.dtos.restaurant.RestaurantRead#getAdresse() RestaurantRead#getAdresse()}
 	 */
 	@Size(max = 100)
-	@Column("res_adresse")
+	@Column("lie_adresse")
 	private String adresse;
 
 	/**

@@ -75,7 +75,7 @@ public class Reservation {
 	 * Restaurant concerné par la réservation.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

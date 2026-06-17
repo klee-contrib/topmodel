@@ -32,16 +32,19 @@ INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restauran
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personneBase.prenom', 'en', 'Prénom');
 
 /**		Initialisation des traductions des valeurs de la table CATEGORIE_PLAT		**/
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Autre', 'fr', 'Autre');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Entree', 'fr', 'Entrée');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Plat', 'fr', 'Plat principal');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Principal', 'fr', 'Plat principal');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Dessert', 'fr', 'Dessert');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Boisson', 'fr', 'Boisson');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Autre', 'de', 'Autre');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Entree', 'de', 'Entrée');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Plat', 'de', 'Plat principal');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Principal', 'de', 'Plat principal');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Dessert', 'de', 'Dessert');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Boisson', 'de', 'Boisson');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Autre', 'en', 'Autre');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Entree', 'en', 'Starter');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Plat', 'en', 'Main course');
+INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Principal', 'en', 'Plat principal');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Dessert', 'en', 'Dessert');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Boisson', 'en', 'Drink');
 

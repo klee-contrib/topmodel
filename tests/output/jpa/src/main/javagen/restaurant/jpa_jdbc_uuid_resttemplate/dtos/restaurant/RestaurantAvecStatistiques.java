@@ -32,27 +32,27 @@ public class RestaurantAvecStatistiques implements Serializable {
 
 	/**
 	 * Identifiant du restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getId() Restaurant#getId()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Lieu#getId() Lieu#getId()}
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer id;
 
 	/**
 	 * Nom du restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getNom() Restaurant#getNom()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Lieu#getNom() Lieu#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
-	@Column("res_nom")
+	@Column("lie_nom")
 	private String nom;
 
 	/**
 	 * Adresse du restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Restaurant#getAdresse() Restaurant#getAdresse()}
+	 * Alias of {@link restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant.Lieu#getAdresse() Lieu#getAdresse()}
 	 */
 	@Size(max = 100)
-	@Column("res_adresse")
+	@Column("lie_adresse")
 	private String adresse;
 
 	/**

@@ -140,9 +140,9 @@ endpoint:
 
   params:
     - alias:
-        class: Restaurant
+        class: Lieu
         property: Id
-      name: restaurantId
+      trigram: res
     - alias:
         class: AvisClient
         property: Note

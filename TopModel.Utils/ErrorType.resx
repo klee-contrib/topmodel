@@ -162,6 +162,9 @@
   <data name="TMD3008" xml:space="preserve">
     <value>Abstract class '{0}' cannot inherit non-abstract class '{1}'.</value>
   </data>
+  <data name="TMD3009" xml:space="preserve">
+    <value>Persisted class '{0}' cannot inherit from class '{1}' because it is not a persisted class with a simple primary key.</value>
+  </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Index for properties '{1}' already exists on class '{0}'.</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="TMD3023" xml:space="preserve">
     <value>Class '{0}' will inherit properties from '{1}', which is missing from 'propertySourceOrder'.</value>
+  </data>
+  <data name="TMD3024" xml:space="preserve">
+    <value>Persisted abstract class '{0}' cannot use 'joined-tables' as inheritance strategy.</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Domain '{0}' already exists.</value>

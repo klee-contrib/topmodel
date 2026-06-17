@@ -62,8 +62,9 @@ class:
     - [Ordre]
 
   values:
+    Autre: { Code: AUTRE, Libelle: Autre, Ordre: 5 }
     Entree: { Code: ENTREE, Libelle: Entrée, Ordre: 2 }
-    Plat: { Code: PLAT, Libelle: Plat principal, Ordre: 3, PrixMoyen: 10 }
+    Principal: { Code: PRINCIPAL, Libelle: Plat principal, Ordre: 3, PrixMoyen: 10 }
     Dessert: { Code: DESSERT, Libelle: Dessert, Ordre: 4 }
     Boisson: { Code: BOISSON, Libelle: Boisson, Ordre: 1, PrixMoyen: 2 }
 ---

@@ -57,7 +57,7 @@ export async function deleteClient(perId: number, options: RequestInit = {}): Pr
 
 /**
  * Liste les avis clients avec filtres
- * @param resRestaurantId Identifiant du restaurant
+ * @param resId Identifiant du restaurant
  * @param noteMin Note sur 5
  * @param approuve Indique si l'avis est approuvé par le restaurant
  * @param dateDebut Date de l'avis
@@ -65,10 +65,10 @@ export async function deleteClient(perId: number, options: RequestInit = {}): Pr
  * @param options Options pour 'fetch'.
  * @returns Liste des avis correspondant aux critères
  */
-export async function getAvisClients(resRestaurantId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<AvisClientRead[]> {
+export async function getAvisClients(resId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<AvisClientRead[]> {
     const query = new URLSearchParams();
-    if (resRestaurantId !== undefined) {
-        query.append("resRestaurantId", `${resRestaurantId}`)
+    if (resId !== undefined) {
+        query.append("resId", `${resId}`)
     }
     if (noteMin !== undefined) {
         query.append("noteMin", `${noteMin}`)

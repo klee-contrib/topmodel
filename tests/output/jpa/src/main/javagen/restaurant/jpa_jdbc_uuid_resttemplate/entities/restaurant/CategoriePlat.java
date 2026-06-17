@@ -26,6 +26,9 @@ import restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant.CategoriePlatOrdre
 public class CategoriePlat {
 
 	@Transient
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.Autre, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
+
+	@Transient
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
 
 	@Transient
@@ -35,12 +38,12 @@ public class CategoriePlat {
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
 	@Transient
-	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.Plat, "restaurant.categoriePlat.values.Plat", CategoriePlatOrdre.Plat, new BigDecimal(10));
+	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.Principal, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
 	 */
-	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PLAT, DESSERT);
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PRINCIPAL, DESSERT, AUTRE);
 
 	/**
 	 * Code de la catégorie.

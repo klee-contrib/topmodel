@@ -1,2 +1,0 @@
-DROP SCHEMA public;
-CREATE SCHEMA demo;

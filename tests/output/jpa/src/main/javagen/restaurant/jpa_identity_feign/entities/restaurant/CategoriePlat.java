@@ -39,6 +39,9 @@ import restaurant.jpa_identity_feign.enums.restaurant.CategoriePlatCode;
 public class CategoriePlat {
 
 	@Transient
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "Autre", 5, null);
+
+	@Transient
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "Boisson", 1, new BigDecimal(2));
 
 	@Transient
@@ -48,12 +51,12 @@ public class CategoriePlat {
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "Entrée", 2, null);
 
 	@Transient
-	public static final CategoriePlat PLAT = new CategoriePlat(CategoriePlatCode.PLAT, "Plat principal", 3, new BigDecimal(10));
+	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.PRINCIPAL, "Plat principal", 3, new BigDecimal(10));
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
 	 */
-	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PLAT, DESSERT);
+	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PRINCIPAL, DESSERT, AUTRE);
 
 	/**
 	 * Code de la catégorie.
@@ -146,10 +149,11 @@ public class CategoriePlat {
 	 */
 	public static CategoriePlat getValue(CategoriePlatCode code) {
 		return switch (code) {
+			case AUTRE -> AUTRE;
 			case BOISSON -> BOISSON;
 			case DESSERT -> DESSERT;
 			case ENTREE -> ENTREE;
-			case PLAT -> PLAT;
+			case PRINCIPAL -> PRINCIPAL;
 		};
 	}
 
