@@ -2,8 +2,8 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-export type CategoriePlatCode = "BOISSON" | "DESSERT" | "ENTREE" | "PLAT";
-export type CategoriePlatOrdre = 1 | 2 | 3 | 4;
+export type CategoriePlatCode = "AUTRE" | "BOISSON" | "DESSERT" | "ENTREE" | "PRINCIPAL";
+export type CategoriePlatOrdre = 1 | 2 | 3 | 4 | 5;
 export interface CategoriePlat {
     code: CategoriePlatCode;
     libelle: string;
@@ -23,8 +23,8 @@ export const categoriePlatList: CategoriePlat[] = [
         ordre: 2
     },
     {
-        code: "PLAT",
-        libelle: "restaurant.categoriePlat.values.Plat",
+        code: "PRINCIPAL",
+        libelle: "restaurant.categoriePlat.values.Principal",
         ordre: 3,
         prixMoyen: 10
     },
@@ -32,6 +32,11 @@ export const categoriePlatList: CategoriePlat[] = [
         code: "DESSERT",
         libelle: "restaurant.categoriePlat.values.Dessert",
         ordre: 4
+    },
+    {
+        code: "AUTRE",
+        libelle: "restaurant.categoriePlat.values.Autre",
+        ordre: 5
     },
 ];
 export const categoriePlat = {list: categoriePlatList, valueKey: "code", labelKey: "libelle"} as const;

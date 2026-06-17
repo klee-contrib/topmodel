@@ -38,7 +38,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute("DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
             }
 
-            if (Config.IsPersistent(item, tag))
+            if (
+                Config.IsPersistent(item, tag)
+                && (item.InheritanceStrategy != InheritanceStrategy.DistinctTables || item.Type == ClassType.Regular)
+                && item.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
+            )
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (Config.DbSchema != null)
@@ -547,6 +551,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     && Config.AvailableClasses.Contains(property.PersistentClass)
                     && !Config.NoPersistence(tag)
                 )
+                || Config.IsPersistent(item, tag)
+                    && (
+                        item.InheritanceStrategy != InheritanceStrategy.DistinctTables || item.Type == ClassType.Regular
+                    )
+                    && item.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
             )
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");

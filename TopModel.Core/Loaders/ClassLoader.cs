@@ -58,6 +58,9 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "type":
                     classe.Type = Enum.Parse<ClassType>(value!.Value, ignoreCase: true);
                     break;
+                case "inheritanceStrategy":
+                    classe.InheritanceStrategy = fileChecker.Deserialize<InheritanceStrategy>(value!.Value);
+                    break;
                 case "orderProperty":
                     classe.OrderPropertyReference = new Reference(value!);
                     break;
@@ -69,6 +72,12 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                     break;
                 case "localeProperty":
                     classe.LocalePropertyReference = new Reference(value!);
+                    break;
+                case "discriminatorProperty":
+                    classe.DiscriminatorPropertyReference = new Reference(value!);
+                    break;
+                case "discriminatorValue":
+                    classe.DiscriminatorValue = value!.Value;
                     break;
                 case "translation":
                     classe.Translation = value!.Value == "true";

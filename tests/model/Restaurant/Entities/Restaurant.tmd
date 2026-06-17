@@ -3,16 +3,18 @@ module: Restaurant
 tags:
   - back
 uses:
+  - meta/decorators
   - Restaurant/Entities/Menu
   - Restaurant/Entities/Personne
-  - meta/decorators
+
 ---
 class:
-  name: Restaurant
-  trigram: RES
-  comment: Restaurant
-  decorators:
-    - DateCreation
+  name: Lieu
+  pluralName: Lieux
+  type: abstract
+  inheritanceStrategy: single-table
+  trigram: LIE
+  comment: Lieu
 
   properties:
     - name: Id
@@ -28,10 +30,34 @@ class:
     - name: Adresse
       domain: DO_LIBELLE
       comment: Adresse du restaurant
+---
+class:
+  name: Restaurant
+  trigram: RES
+  comment: Restaurant
+  extends: Lieu
+  decorators:
+    - DateCreation
 
+  properties:
     - name: Telephone
       domain: DO_TELEPHONE
       comment: Numéro de téléphone
+---
+class:
+  name: Fournisseur
+  trigram: FRN
+  comment: Restaurant
+  extends: Lieu
+
+  properties:
+    - name: Telephone
+      domain: DO_TELEPHONE
+      comment: Numéro de téléphone
+
+    - name: Bio
+      domain: DO_BOOLEEN
+      comment: Si le fournisseur fait du bio.
 ---
 class:
   name: TableRestaurant
@@ -72,3 +98,48 @@ class:
 
   unique:
     - [RestaurantId, Numero]
+---
+class:
+  name: Vaisselle
+  type: abstract
+  trigram: VSL
+  inheritanceStrategy: distinct-tables
+  comment: Vaisselle de restaurant
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Id de la vaisselle
+    - name: Description
+      domain: DO_LIBELLE
+      required: true
+      comment: Description de la vaisselle.
+---
+class:
+  name: Assiette
+  extends: Vaisselle
+  trigram: AST
+  comment: Assiette.
+  properties:
+    - name: Taille
+      required: true
+      domain: DO_QUANTITE
+      comment: Taille de l'assiette.
+---
+class:
+  name: Couvert
+  extends: Vaisselle
+  trigram: CVT
+  comment: Couvert.
+  properties: []
+---
+class:
+  name: Verre
+  extends: Vaisselle
+  trigram: VRR
+  comment: Verre.
+  properties:
+    - name: APied
+      required: true
+      domain: DO_BOOLEEN
+      comment: Si le verre est à pied ou non.

@@ -28,7 +28,7 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "TABLE_RESTAURANT",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"RES_ID", "TAB_NUMERO"})
+		@UniqueConstraint(columnNames = {"LIE_ID", "TAB_NUMERO"})
 	}
 )
 public class TableRestaurant {
@@ -62,7 +62,7 @@ public class TableRestaurant {
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@Column(name = "RES_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "LIE_ID", nullable = false, columnDefinition = "int")
 	private Integer restaurantId;
 
 	/**

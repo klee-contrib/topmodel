@@ -744,6 +744,8 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
                     "defaultProperty",
                     "flagProperty",
                     "orderProperty",
+                    "localeProperty",
+                    "discriminatorProperty",
                     "target",
                     "unique",
                     "indexes",

@@ -15,10 +15,11 @@ public partial class TopModelSampleDbContext : DbContext
     partial void AddEnResources(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Translation>().HasData(
+            new Translation { ResourceKey = "restaurant.categoriePlat.values.Autre", Lang = "en", Value = "Autre" },
             new Translation { ResourceKey = "restaurant.categoriePlat.values.Boisson", Lang = "en", Value = "Drink" },
             new Translation { ResourceKey = "restaurant.categoriePlat.values.Dessert", Lang = "en", Value = "Dessert" },
             new Translation { ResourceKey = "restaurant.categoriePlat.values.Entree", Lang = "en", Value = "Starter" },
-            new Translation { ResourceKey = "restaurant.categoriePlat.values.Plat", Lang = "en", Value = "Main course" },
+            new Translation { ResourceKey = "restaurant.categoriePlat.values.Principal", Lang = "en", Value = "Plat principal" },
             new Translation { ResourceKey = "restaurant.departement.values.HautsDeSeine", Lang = "en", Value = "Hauts de Seine" },
             new Translation { ResourceKey = "restaurant.departement.values.Paris", Lang = "en", Value = "Paris" },
             new Translation { ResourceKey = "restaurant.departement.values.SeineEtMarne", Lang = "en", Value = "Seine et Marne" },

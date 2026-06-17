@@ -12,34 +12,8 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// <summary>
 /// Restaurant.
 /// </summary>
-[Table("restaurant")]
-public partial record Restaurant
+public partial record Restaurant : Lieu
 {
-    /// <summary>
-    /// Identifiant du restaurant.
-    /// </summary>
-    [Column("res_id")]
-    [Domain(Domains.Id)]
-    [Key]
-    public int? Id { get; set; }
-
-    /// <summary>
-    /// Nom du restaurant.
-    /// </summary>
-    [Column("res_nom")]
-    [Required]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string? Nom { get; set; }
-
-    /// <summary>
-    /// Adresse du restaurant.
-    /// </summary>
-    [Column("res_adresse")]
-    [Domain(Domains.Libelle)]
-    [StringLength(100)]
-    public string? Adresse { get; set; }
-
     /// <summary>
     /// Numéro de téléphone.
     /// </summary>

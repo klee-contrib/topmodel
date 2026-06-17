@@ -16,6 +16,10 @@ public partial class TopModelSampleDbContext : DbContext
 {
     partial void AddComments(ModelBuilder modelBuilder)
     {
+        var assiette = modelBuilder.Entity<Assiette>();
+        assiette.ToTable(t => t.HasComment("Assiette."));
+        assiette.Property(p => p.Taille).HasComment("Taille de l'assiette.");
+
         var avisClient = modelBuilder.Entity<AvisClient>();
         avisClient.ToTable(t => t.HasComment("Avis d'un client sur un restaurant"));
         avisClient.Property(p => p.Id).HasComment("Identifiant de l'avis");
@@ -70,6 +74,9 @@ public partial class TopModelSampleDbContext : DbContext
         commandeHistorique.Property(p => p.AvisClientId).HasComment("Avis laissé par le client sur la commande.");
         commandeHistorique.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
+        var couvert = modelBuilder.Entity<Couvert>();
+        couvert.ToTable(t => t.HasComment("Couvert."));
+
         var departement = modelBuilder.Entity<Departement>();
         departement.ToTable(t => t.HasComment("Département"));
         departement.Property(p => p.Code).HasComment("Code du département.");
@@ -84,6 +91,16 @@ public partial class TopModelSampleDbContext : DbContext
         employe.Property(p => p.DateEmbauche).HasComment("Date d'embauche");
         employe.Property(p => p.Salaire).HasComment("Salaire de l'employé");
         employe.Property("RestaurantId").HasComment("Restaurant où travaille l'employé");
+
+        var fournisseur = modelBuilder.Entity<Fournisseur>();
+        fournisseur.Property(p => p.Telephone).HasComment("Numéro de téléphone");
+        fournisseur.Property(p => p.Bio).HasComment("Si le fournisseur fait du bio.");
+
+        var lieu = modelBuilder.Entity<Lieu>();
+        lieu.ToTable(t => t.HasComment("Lieu"));
+        lieu.Property(p => p.Id).HasComment("Identifiant du restaurant");
+        lieu.Property(p => p.Nom).HasComment("Nom du restaurant");
+        lieu.Property(p => p.Adresse).HasComment("Adresse du restaurant");
 
         var ligneCommande = modelBuilder.Entity<LigneCommande>();
         ligneCommande.ToTable(t => t.HasComment("Ligne d'une commande"));
@@ -143,6 +160,16 @@ public partial class TopModelSampleDbContext : DbContext
         plat.Property("RestaurantId").HasComment("Restaurant proposant ce plat");
         plat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
+        var platBoisson = modelBuilder.Entity<PlatBoisson>();
+        platBoisson.Property(p => p.Volume).HasComment("Volume de la boisson");
+
+        var platDessert = modelBuilder.Entity<PlatDessert>();
+
+        var platEntree = modelBuilder.Entity<PlatEntree>();
+
+        var platPrincipal = modelBuilder.Entity<PlatPrincipal>();
+        platPrincipal.Property(p => p.Vegetarien).HasComment("Si le plat est végétarien.");
+
         var prestataire = modelBuilder.Entity<Prestataire>();
         prestataire.ToTable(t => t.HasComment("Prestaire du restaurant"));
         prestataire.Property(p => p.Id).HasComment("Identifiant de la personne");
@@ -180,10 +207,6 @@ public partial class TopModelSampleDbContext : DbContext
         reservation.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var restaurant = modelBuilder.Entity<Models.Restaurant.Restaurant>();
-        restaurant.ToTable(t => t.HasComment("Restaurant"));
-        restaurant.Property(p => p.Id).HasComment("Identifiant du restaurant");
-        restaurant.Property(p => p.Nom).HasComment("Nom du restaurant");
-        restaurant.Property(p => p.Adresse).HasComment("Adresse du restaurant");
         restaurant.Property(p => p.Telephone).HasComment("Numéro de téléphone");
         restaurant.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
@@ -201,5 +224,13 @@ public partial class TopModelSampleDbContext : DbContext
         translation.Property(p => p.ResourceKey).HasComment("Clé de traduction.");
         translation.Property(p => p.Value).HasComment("Valeur de la clé de traduction.");
         translation.Property(p => p.Lang).HasComment("Langue de traduction");
+
+        var vaisselle = modelBuilder.Entity<Vaisselle>();
+        vaisselle.Property(p => p.Id).HasComment("Id de la vaisselle");
+        vaisselle.Property(p => p.Description).HasComment("Description de la vaisselle.");
+
+        var verre = modelBuilder.Entity<Verre>();
+        verre.ToTable(t => t.HasComment("Verre."));
+        verre.Property(p => p.APied).HasComment("Si le verre est à pied ou non.");
     }
 }

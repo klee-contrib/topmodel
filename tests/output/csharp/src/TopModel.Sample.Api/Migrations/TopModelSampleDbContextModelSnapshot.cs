@@ -22,6 +22,8 @@ namespace TopModel.Sample.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("seq_vaisselle");
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Common.Translation", b =>
                 {
                     b.Property<string>("ResourceKey")
@@ -55,6 +57,12 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasData(
                         new
                         {
+                            ResourceKey = "restaurant.categoriePlat.values.Autre",
+                            Lang = "fr",
+                            Value = "Autre"
+                        },
+                        new
+                        {
                             ResourceKey = "restaurant.categoriePlat.values.Boisson",
                             Lang = "fr",
                             Value = "Boisson"
@@ -73,7 +81,7 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
-                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            ResourceKey = "restaurant.categoriePlat.values.Principal",
                             Lang = "fr",
                             Value = "Plat principal"
                         },
@@ -139,6 +147,12 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
+                            ResourceKey = "restaurant.categoriePlat.values.Autre",
+                            Lang = "de",
+                            Value = "Autre"
+                        },
+                        new
+                        {
                             ResourceKey = "restaurant.categoriePlat.values.Boisson",
                             Lang = "de",
                             Value = "Boisson"
@@ -157,7 +171,7 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
-                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            ResourceKey = "restaurant.categoriePlat.values.Principal",
                             Lang = "de",
                             Value = "Plat principal"
                         },
@@ -220,6 +234,12 @@ namespace TopModel.Sample.Api.Migrations
                             ResourceKey = "restaurant.statutCommande.values.Servie",
                             Lang = "de",
                             Value = "Servie"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.categoriePlat.values.Autre",
+                            Lang = "en",
+                            Value = "Autre"
                         },
                         new
                         {
@@ -241,9 +261,9 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
-                            ResourceKey = "restaurant.categoriePlat.values.Plat",
+                            ResourceKey = "restaurant.categoriePlat.values.Principal",
                             Lang = "en",
-                            Value = "Main course"
+                            Value = "Plat principal"
                         },
                         new
                         {
@@ -355,7 +375,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant concerné par l'avis");
 
                     b.HasKey("Id");
@@ -543,6 +563,46 @@ namespace TopModel.Sample.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Lieu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("lie_id")
+                        .HasComment("Identifiant du restaurant");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Adresse")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("lie_adresse")
+                        .HasComment("Adresse du restaurant");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("lie_nom")
+                        .HasComment("Nom du restaurant");
+
+                    b.Property<string>("lie_discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("lieu", t =>
+                        {
+                            t.HasComment("Lieu");
+                        });
+
+                    b.HasDiscriminator<string>("lie_discriminator").HasValue("Lieu");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.LigneCommande", b =>
                 {
                     b.Property<int>("Id")
@@ -693,7 +753,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant proposant ce menu");
 
                     b.HasKey("Id");
@@ -835,7 +895,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant proposant ce plat");
 
                     b.HasKey("Id");
@@ -848,6 +908,10 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             t.HasComment("Plat du menu");
                         });
+
+                    b.HasDiscriminator<string>("CategoriePlatCode").HasValue("AUTRE");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Prestataire", b =>
@@ -933,7 +997,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int?>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant concerné par la promotion (null si globale)");
 
                     b.HasKey("PlatId");
@@ -989,7 +1053,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant concerné par la réservation");
 
                     b.Property<int?>("TableId")
@@ -1009,48 +1073,6 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("reservation", t =>
                         {
                             t.HasComment("Réservation d'une table");
-                        });
-                });
-
-            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("res_id")
-                        .HasComment("Identifiant du restaurant");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Adresse")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("res_adresse")
-                        .HasComment("Adresse du restaurant");
-
-                    b.Property<DateTime>("DateCreation")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("res_date_creation")
-                        .HasComment("Date de création de l'enregistrement");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("res_nom")
-                        .HasComment("Nom du restaurant");
-
-                    b.Property<string>("Telephone")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("res_telephone")
-                        .HasComment("Numéro de téléphone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("restaurant", t =>
-                        {
-                            t.HasComment("Restaurant");
                         });
                 });
 
@@ -1088,7 +1110,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant auquel appartient la table");
 
                     b.HasKey("Id");
@@ -1100,6 +1122,31 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             t.HasComment("Table du restaurant");
                         });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Vaisselle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("vsl_id")
+                        .HasDefaultValueSql("nextval('seq_vaisselle')")
+                        .HasComment("Id de la vaisselle");
+
+                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"), "seq_vaisselle");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("vsl_description")
+                        .HasComment("Description de la vaisselle.");
+
+                    b.HasKey("Id");
+
+                    b.ToTable((string)null);
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("TopModel.Sample.Restaurant.Models.CategoriePlat", b =>
@@ -1155,8 +1202,8 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
-                            Code = "PLAT",
-                            Libelle = "restaurant.categoriePlat.values.Plat",
+                            Code = "PRINCIPAL",
+                            Libelle = "restaurant.categoriePlat.values.Principal",
                             Ordre = 3,
                             PrixMoyen = 10m
                         },
@@ -1165,6 +1212,12 @@ namespace TopModel.Sample.Api.Migrations
                             Code = "DESSERT",
                             Libelle = "restaurant.categoriePlat.values.Dessert",
                             Ordre = 4
+                        },
+                        new
+                        {
+                            Code = "AUTRE",
+                            Libelle = "restaurant.categoriePlat.values.Autre",
+                            Ordre = 5
                         });
                 });
 
@@ -1266,6 +1319,46 @@ namespace TopModel.Sample.Api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Fournisseur", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Lieu");
+
+                    b.Property<bool?>("Bio")
+                        .HasColumnType("boolean")
+                        .HasColumnName("frn_bio")
+                        .HasComment("Si le fournisseur fait du bio.");
+
+                    b.Property<string>("Telephone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("frn_telephone")
+                        .HasComment("Numéro de téléphone");
+
+                    b.ToTable("lieu");
+
+                    b.HasDiscriminator().HasValue("fournisseur");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Lieu");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("res_date_creation")
+                        .HasComment("Date de création de l'enregistrement");
+
+                    b.Property<string>("Telephone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("res_telephone")
+                        .HasComment("Numéro de téléphone");
+
+                    b.ToTable("lieu");
+
+                    b.HasDiscriminator().HasValue("restaurant");
+                });
+
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Client", b =>
                 {
                     b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Personne");
@@ -1305,7 +1398,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("integer")
-                        .HasColumnName("res_id")
+                        .HasColumnName("lie_id")
                         .HasComment("Restaurant où travaille l'employé");
 
                     b.Property<decimal?>("Salaire")
@@ -1329,6 +1422,92 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("employe", t =>
                         {
                             t.HasComment("Employé du restaurant");
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.PlatBoisson", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Plat");
+
+                    b.Property<int>("Volume")
+                        .HasColumnType("integer")
+                        .HasColumnName("volume")
+                        .HasComment("Volume de la boisson");
+
+                    b.ToTable("plat");
+
+                    b.HasDiscriminator().HasValue("BOISSON");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.PlatDessert", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Plat");
+
+                    b.ToTable("plat");
+
+                    b.HasDiscriminator().HasValue("DESSERT");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.PlatEntree", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Plat");
+
+                    b.ToTable("plat");
+
+                    b.HasDiscriminator().HasValue("ENTREE");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.PlatPrincipal", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Plat");
+
+                    b.Property<bool>("Vegetarien")
+                        .HasColumnType("boolean")
+                        .HasColumnName("vegetarien")
+                        .HasComment("Si le plat est végétarien.");
+
+                    b.ToTable("plat");
+
+                    b.HasDiscriminator().HasValue("PRINCIPAL");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Assiette", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Vaisselle");
+
+                    b.Property<int>("Taille")
+                        .HasColumnType("integer")
+                        .HasColumnName("ast_taille")
+                        .HasComment("Taille de l'assiette.");
+
+                    b.ToTable("assiette", t =>
+                        {
+                            t.HasComment("Assiette.");
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Couvert", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Vaisselle");
+
+                    b.ToTable("couvert", t =>
+                        {
+                            t.HasComment("Couvert.");
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Verre", b =>
+                {
+                    b.HasBaseType("TopModel.Sample.Clients.Db.Models.Restaurant.Vaisselle");
+
+                    b.Property<bool>("APied")
+                        .HasColumnType("boolean")
+                        .HasColumnName("vrr_a_pied")
+                        .HasComment("Si le verre est à pied ou non.");
+
+                    b.ToTable("verre", t =>
+                        {
+                            t.HasComment("Verre.");
                         });
                 });
 

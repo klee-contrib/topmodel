@@ -12,17 +12,17 @@ create table [dbo].[EMPLOYE] (
 	[EMP_MATRICULE] varchar not null,
 	[EMP_DATE_EMBAUCHE] timestamp not null,
 	[EMP_SALAIRE] decimal,
-	[RES_ID] int not null,
+	[LIE_ID] int not null,
 	[PER_ID] int,
 	constraint [PK_EMPLOYE] primary key clustered ([PER_ID] ASC),
-	constraint [FK_EMPLOYE_RES_ID] foreign key ([RES_ID]) references [dbo].[RESTAURANT] ([RES_ID]),
+	constraint [FK_EMPLOYE_LIE_ID] foreign key ([LIE_ID]) references [dbo].[RESTAURANT] ([LIE_ID]),
 	constraint [FK_EMPLOYE_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]),
 	constraint [UK_EMPLOYE_EMP_MATRICULE] unique nonclustered ([EMP_MATRICULE] ASC))
 go
 
-/* Index on foreign key column for EMPLOYE.RES_ID */
-create nonclustered index [IDX_EMP_RES_ID_FK]
-	on [dbo].[EMPLOYE] ([RES_ID] ASC)
+/* Index on foreign key column for EMPLOYE.LIE_ID */
+create nonclustered index [IDX_EMP_LIE_ID_FK]
+	on [dbo].[EMPLOYE] ([LIE_ID] ASC)
 go
 
 /* Index on foreign key column for EMPLOYE.PER_ID */
@@ -50,7 +50,7 @@ EXECUTE sp_addextendedproperty 'MS_Description', 'Date d''embauche', 'SCHEMA', '
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Salaire de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_SALAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant où travaille l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'RES_ID'
+EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant où travaille l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'LIE_ID'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'PER_ID'
 go

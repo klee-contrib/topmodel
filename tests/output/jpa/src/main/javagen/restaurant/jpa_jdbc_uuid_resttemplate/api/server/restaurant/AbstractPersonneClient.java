@@ -110,17 +110,17 @@ public abstract class AbstractPersonneClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode getAvisClients.
-	 * @param resRestaurantId Identifiant du restaurant
+	 * @param resId Identifiant du restaurant
 	 * @param noteMin Note sur 5
 	 * @param approuve Indique si l'avis est approuvé par le restaurant
 	 * @param dateDebut Date de l'avis
 	 * @param dateFin Date de l'avis
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getAvisClientsUriComponentsBuilder(Integer resRestaurantId, Integer noteMin, Boolean approuve, LocalDateTime dateDebut, LocalDateTime dateFin) {
+	protected UriComponentsBuilder getAvisClientsUriComponentsBuilder(Integer resId, Integer noteMin, Boolean approuve, LocalDateTime dateDebut, LocalDateTime dateFin) {
 		String uri = host + "/api/restaurants/avis";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("resRestaurantId", resRestaurantId);
+		uriBuilder.queryParam("resId", resId);
 		uriBuilder.queryParam("noteMin", noteMin);
 		uriBuilder.queryParam("approuve", approuve);
 		uriBuilder.queryParam("dateDebut", dateDebut);
@@ -130,16 +130,16 @@ public abstract class AbstractPersonneClient {
 
 	/**
 	 * Liste les avis clients avec filtres.
-	 * @param resRestaurantId Identifiant du restaurant
+	 * @param resId Identifiant du restaurant
 	 * @param noteMin Note sur 5
 	 * @param approuve Indique si l'avis est approuvé par le restaurant
 	 * @param dateDebut Date de l'avis
 	 * @param dateFin Date de l'avis
 	 * @return Liste des avis correspondant aux critères
 	 */
-	public ResponseEntity<List<AvisClientRead>> getAvisClients(Integer resRestaurantId, Integer noteMin, Boolean approuve, LocalDateTime dateDebut, LocalDateTime dateFin){
+	public ResponseEntity<List<AvisClientRead>> getAvisClients(Integer resId, Integer noteMin, Boolean approuve, LocalDateTime dateDebut, LocalDateTime dateFin){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getAvisClientsUriComponentsBuilder(resRestaurantId, noteMin, approuve, dateDebut, dateFin);
+		UriComponentsBuilder uri = this.getAvisClientsUriComponentsBuilder(resId, noteMin, approuve, dateDebut, dateFin);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<AvisClientRead>>() {});
 	}
 

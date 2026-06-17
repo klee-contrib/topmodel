@@ -32,7 +32,7 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "AVIS_CLIENT",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"PER_ID", "RES_ID", "AVI_DATE_AVIS"})
+		@UniqueConstraint(columnNames = {"PER_ID", "LIE_ID", "AVI_DATE_AVIS"})
 	}
 )
 public class AvisClient {
@@ -86,7 +86,7 @@ public class AvisClient {
 	/**
 	 * Restaurant concerné par l'avis.
 	 */
-	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 

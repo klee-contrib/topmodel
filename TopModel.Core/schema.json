@@ -1128,6 +1128,11 @@
               "type": "string",
               "description": "Nom de la classe parente de cette classe. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
             },
+            "inheritanceStrategy": {
+              "type": "string",
+              "description": "Pour une classe persistée, la stratégie d'héritage à utiliser si cette classe est dérivée. Par défaut : `joined-tables`.",
+              "enum": [ "joined-tables", "single-table", "distinct-tables" ]
+            },
             "label": {
               "type": "string",
               "description": "Un libellé qui décrit la classe. N'est utilisé nulle part."
@@ -1151,6 +1156,14 @@
             "localeProperty": {
               "type": "string",
               "description": "Pour une classe de traduction, propriété de la classe qui sera identifiée comme la locale. Doit faire partie de la clé primaire de la classe. Renseigné par défaut par la propriété 'Locale', si elle existe sur la classe."
+            },
+            "discriminatorProperty": {
+              "type": "string",
+              "description": "Pour une classe avec stratégie d'héritage 'single-table', la propriété de la classe a utiliser comme discriminateur. Si non renseigné, une colonne technique `{trigram}_discriminator` sera ajoutée en base de données, avec le nom SQL de chaque classe de la hiérarchie comme valeurs."
+            },
+            "discriminatorValue": {
+              "type": "string",
+              "description": "Pour une classe dans une stratégie d'héritage 'single-table', la valeur du discriminateur pour cette classe. Si non renseigné, le nom SQL de la table sera utilisé."
             },
             "translation": {
               "type": "boolean",

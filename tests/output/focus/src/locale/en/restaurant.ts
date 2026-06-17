@@ -19,8 +19,9 @@ export const restaurant = {
         ordre: "Ordre",
         prixMoyen: "PrixMoyen",
         values: {
+            Autre: "Autre",
             Entree: "Starter",
-            Plat: "Main course",
+            Principal: "Plat principal",
             Dessert: "Dessert",
             Boisson: "Drink"
         }
@@ -74,6 +75,11 @@ export const restaurant = {
     },
     employeItem: {
         autresEmployes: "AutresEmployes"
+    },
+    lieu: {
+        adresse: "Adresse",
+        id: "Id",
+        nom: "Nom"
     },
     ligneCommande: {
         commandeId: "Commande",
@@ -147,11 +153,8 @@ export const restaurant = {
         tableId: "TableId"
     },
     restaurant: {
-        adresse: "Adresse",
         avisClients: "AvisClients",
-        id: "Id",
         menus: "Menus",
-        nom: "Nom",
         plats: "Plats",
         promotions: "Promotions",
         tableIds: "TableIds",

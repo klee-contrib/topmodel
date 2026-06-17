@@ -56,7 +56,7 @@ public class TableRestaurant {
 	 * Restaurant auquel appartient la table.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurantId;
 
 	/**

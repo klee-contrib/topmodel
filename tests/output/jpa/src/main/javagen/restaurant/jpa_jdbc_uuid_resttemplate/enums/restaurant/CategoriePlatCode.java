@@ -10,6 +10,11 @@ package restaurant.jpa_jdbc_uuid_resttemplate.enums.restaurant;
 public class CategoriePlatCode {
 
 	/**
+	 * Autre.
+	 */
+	public static final String Autre = "AUTRE";
+
+	/**
 	 * Boisson.
 	 */
 	public static final String Boisson = "BOISSON";
@@ -27,7 +32,7 @@ public class CategoriePlatCode {
 	/**
 	 * Plat principal.
 	 */
-	public static final String Plat = "PLAT";
+	public static final String Principal = "PRINCIPAL";
 
 	private CategoriePlatCode() {
 		// private constructor to hide implicite public one

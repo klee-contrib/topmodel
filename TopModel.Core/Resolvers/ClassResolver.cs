@@ -23,6 +23,27 @@ internal class ClassResolver(
         {
             foreach (var classe in modelFile.Classes)
             {
+                if (classe.IsPersistent)
+                {
+                    if (
+                        classe.Type == ClassType.Abstract
+                        && classe.InheritanceStrategy == InheritanceStrategy.JoinedTables
+                    )
+                    {
+                        yield return new ModelError(localizer, ErrorType.TMD3024, [classe.Name], classe);
+                    }
+
+                    if (classe.Extends != null && classe.Extends.PrimaryKey.Count() != 1)
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD3009,
+                            [classe.Name, classe.Extends.Name],
+                            classe,
+                            classe.ExtendsReference!
+                        );
+                    }
+                }
                 // Doublons de propriétés.
                 foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
                 {
@@ -329,17 +350,6 @@ internal class ClassResolver(
                 continue;
             }
 
-            if (extends.PrimaryKey.Count() > 1)
-            {
-                yield return new ModelError(
-                    ErrorType.TMD3009,
-                    classe,
-                    $"Impossible de définir la classe '{extends}' comme 'extends' sur la classe '{classe}' car elle a une clé primaire composite.",
-                    classe.ExtendsReference!
-                );
-                continue;
-            }
-
             classe.Extends = extends;
         }
     }
@@ -537,6 +547,27 @@ internal class ClassResolver(
             {
                 // Si la classe a une propriété "Locale", alors on la considère par défaut comme propriété de locale.
                 classe.LocaleProperty = TryGetProperty("Locale");
+            }
+
+            if (
+                classe.DiscriminatorPropertyReference != null
+                && classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+            )
+            {
+                classe.DiscriminatorProperty = TryGetProperty(
+                    classe.DiscriminatorPropertyReference.ReferenceName.ToPascalCase()
+                );
+
+                if (classe.DiscriminatorProperty == null)
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD0004,
+                        [classe.DiscriminatorPropertyReference.ReferenceName, classe.Name],
+                        classe,
+                        classe.DiscriminatorPropertyReference
+                    );
+                }
             }
 
             if (classe.Translation)

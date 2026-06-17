@@ -503,6 +503,11 @@ public static class ModelExtensions
             {
                 yield return (property.Class.LocalePropertyReference, property.Class.GetFile());
             }
+
+            if (property.Class.DiscriminatorPropertyReference?.ReferenceName == property.Name)
+            {
+                yield return (property.Class.DiscriminatorPropertyReference, property.Class.GetFile());
+            }
         }
 
         foreach (var classe in modelStore.Classes)

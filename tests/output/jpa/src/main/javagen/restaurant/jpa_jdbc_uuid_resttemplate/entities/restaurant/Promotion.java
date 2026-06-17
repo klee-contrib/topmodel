@@ -69,7 +69,7 @@ public class Promotion {
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
 	 */
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

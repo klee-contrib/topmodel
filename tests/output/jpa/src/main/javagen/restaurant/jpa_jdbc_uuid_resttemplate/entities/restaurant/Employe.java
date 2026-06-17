@@ -56,7 +56,7 @@ public class Employe extends Personne implements EmployeBase {
 	 * Restaurant où travaille l'employé.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

@@ -162,6 +162,9 @@
   <data name="TMD3008" xml:space="preserve">
     <value>La classe '{0}' abstraite ne peut pas hériter de la classe '{1}' non abstraite.</value>
   </data>
+  <data name="TMD3009" xml:space="preserve">
+    <value>La classe '{0}' persistée ne peut pas hériter de la classe '{1}' car ce n'est pas une classe persistée avec une clé primaire simple.</value>
+  </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Un index a déjà été défini sur la classe '{0}' pour les propriétés suivantes : '{1}'.</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="TMD3023" xml:space="preserve">
     <value>La classe '{0}' va hériter de propriétés depuis '{1}', qui n'est pas spécifié dans 'propertySourceOrder'.</value>
+  </data>
+  <data name="TMD3024" xml:space="preserve">
+    <value>La classe '{0}' abstraite et persistée doit spécifier une stratégie d'héritage différente de 'joined-tables'.</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>

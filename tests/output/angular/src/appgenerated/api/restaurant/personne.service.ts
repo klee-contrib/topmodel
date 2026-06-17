@@ -49,14 +49,14 @@ export class PersonneService {
 
     /**
      * @description Liste les avis clients avec filtres
-     * @param resRestaurantId Identifiant du restaurant
+     * @param resId Identifiant du restaurant
      * @param noteMin Note sur 5
      * @param approuve Indique si l'avis est approuvé par le restaurant
      * @param dateDebut Date de l'avis
      * @param dateFin Date de l'avis
      * @returns Liste des avis correspondant aux critères
      */
-    getAvisClients(resRestaurantId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<AvisClientRead[]> {
+    getAvisClients(resId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<AvisClientRead[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -69,7 +69,7 @@ export class PersonneService {
             }
           }
         };
-        addParam('resRestaurantId', resRestaurantId);
+        addParam('resId', resId);
         addParam('noteMin', noteMin);
         addParam('approuve', approuve);
         addParam('dateDebut', dateDebut);

@@ -12,10 +12,10 @@ export type RestaurantWriteEntityType = typeof RestaurantWriteEntity;
 
 export const RestaurantWriteEntity = entity({
     nom: e.field(DO_LIBELLE, f => f
-        .label("restaurant.restaurant.nom")
+        .label("restaurant.lieu.nom")
     ),
     adresse: e.field(DO_LIBELLE, f => f.optional()
-        .label("restaurant.restaurant.adresse")
+        .label("restaurant.lieu.adresse")
     ),
     telephone: e.field(DO_TELEPHONE, f => f.optional()
         .label("restaurant.restaurant.telephone")

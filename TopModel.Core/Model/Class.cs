@@ -51,6 +51,8 @@ public class Class : IPropertyContainer
 
     public bool Readonly { get; set; }
 
+    public InheritanceStrategy InheritanceStrategy { get; set; } = InheritanceStrategy.JoinedTables;
+
     public IProperty? OrderProperty { get; set; }
 
     public IProperty? DefaultProperty { get; set; }
@@ -58,6 +60,12 @@ public class Class : IPropertyContainer
     public IProperty? FlagProperty { get; set; }
 
     public IProperty? LocaleProperty { get; set; }
+
+    public IProperty? DiscriminatorProperty { get; set; }
+
+    public string DefaultDiscriminatorName => CoreUtils.GetSqlTrigram(Trigram) + "DISCRIMINATOR";
+
+    public string? DiscriminatorValue { get; set; }
 
     public IList<IProperty> Properties { get; } = [];
 
@@ -121,6 +129,8 @@ public class Class : IPropertyContainer
     public Reference? FlagPropertyReference { get; set; }
 
     public Reference? LocalePropertyReference { get; set; }
+
+    public Reference? DiscriminatorPropertyReference { get; set; }
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 

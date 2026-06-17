@@ -52,7 +52,7 @@ public class PersonneController : Controller
     /// <summary>
     /// Liste les avis clients avec filtres
     /// </summary>
-    /// <param name="resRestaurantId">Identifiant du restaurant</param>
+    /// <param name="resId">Identifiant du restaurant</param>
     /// <param name="noteMin">Note sur 5</param>
     /// <param name="approuve">Indique si l'avis est approuvé par le restaurant</param>
     /// <param name="dateDebut">Date de l'avis</param>
@@ -60,7 +60,7 @@ public class PersonneController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des avis correspondant aux critères</returns>
     [HttpGet("api/restaurants/avis")]
-    public async Task<ICollection<AvisClientRead>> GetAvisClients([Required] int? resRestaurantId = null, [Required] int? noteMin = null, bool approuve = false, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<ICollection<AvisClientRead>> GetAvisClients([Required] int? resId = null, [Required] int? noteMin = null, bool approuve = false, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

@@ -70,7 +70,7 @@ public class Plat {
 	 * Restaurant proposant ce plat.
 	 */
 	@NotNull
-	@Column("res_id")
+	@Column("lie_id")
 	private Integer restaurant;
 
 	/**

@@ -3,9 +3,9 @@ module: Restaurant
 tags:
   - back
 uses:
+  - meta/decorators
   - Restaurant/Entities/Restaurant
   - Restaurant/References
-  - meta/decorators
 ---
 class:
   name: Menu
@@ -57,6 +57,9 @@ class:
   name: Plat
   trigram: PLA
   comment: Plat du menu
+  inheritanceStrategy: single-table
+  discriminatorProperty: CategoriePlat
+  discriminatorValue: AUTRE
   decorators:
     - DateCreation
 
@@ -94,6 +97,43 @@ class:
       required: true
       withReverse: true
       comment: Restaurant proposant ce plat
+---
+class:
+  name: PlatBoisson
+  comment: Boisson
+  extends: Plat
+  discriminatorValue: BOISSON
+  properties:
+    - name: Volume
+      domain: DO_QUANTITE
+      required: true
+      comment: Volume de la boisson
+---
+class:
+  name: PlatEntree
+  comment: Entrée
+  extends: Plat
+  discriminatorValue: ENTREE
+  properties: []
+---
+class:
+  name: PlatPrincipal
+  pluralName: PlatPrincipaux
+  comment: Plat principal
+  extends: Plat
+  discriminatorValue: PRINCIPAL
+  properties:
+    - name: Vegetarien
+      domain: DO_BOOLEEN
+      required: true
+      comment: Si le plat est végétarien.
+---
+class:
+  name: PlatDessert
+  comment: Dessert
+  extends: Plat
+  discriminatorValue: DESSERT
+  properties: []
 ---
 class:
   name: MenuPlat

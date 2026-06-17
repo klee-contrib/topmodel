@@ -85,7 +85,7 @@ public class Menu {
 	/**
 	 * Restaurant proposant ce menu.
 	 */
-	@JoinColumn(name = "RES_ID", referencedColumnName = "RES_ID")
+	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 

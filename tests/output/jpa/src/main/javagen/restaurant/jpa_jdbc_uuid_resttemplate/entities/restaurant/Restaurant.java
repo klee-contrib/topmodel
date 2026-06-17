@@ -7,7 +7,6 @@ package restaurant.jpa_jdbc_uuid_resttemplate.entities.restaurant;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -22,27 +21,7 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "restaurant")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class Restaurant {
-
-	/**
-	 * Identifiant du restaurant.
-	 */
-	@Id
-	@Column("res_id")
-	private Integer id;
-
-	/**
-	 * Nom du restaurant.
-	 */
-	@NotNull
-	@Column("res_nom")
-	private String nom;
-
-	/**
-	 * Adresse du restaurant.
-	 */
-	@Column("res_adresse")
-	private String adresse;
+public class Restaurant extends Lieu {
 
 	/**
 	 * Numéro de téléphone.
@@ -57,33 +36,6 @@ public class Restaurant {
 	@CreatedDate
 	@Column("res_date_creation")
 	private LocalDateTime dateCreation;
-
-	/**
-	 * Getter for id.
-	 *
-	 * @return value of {@link #id id}.
-	 */
-	public Integer getId() {
-		return this.id;
-	}
-
-	/**
-	 * Getter for nom.
-	 *
-	 * @return value of {@link #nom nom}.
-	 */
-	public String getNom() {
-		return this.nom;
-	}
-
-	/**
-	 * Getter for adresse.
-	 *
-	 * @return value of {@link #adresse adresse}.
-	 */
-	public String getAdresse() {
-		return this.adresse;
-	}
 
 	/**
 	 * Getter for telephone.
@@ -101,30 +53,6 @@ public class Restaurant {
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
-	}
-
-	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
-	 */
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	/**
-	 * Set the value of {@link #adresse adresse}.
-	 * @param adresse value to set.
-	 */
-	public void setAdresse(String adresse) {
-		this.adresse = adresse;
 	}
 
 	/**
