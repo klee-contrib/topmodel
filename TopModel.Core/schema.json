@@ -99,7 +99,7 @@
             },
             "readonly": {
               "type": "boolean",
-              "description": "Précise si la propriété doit être en lecture seule, qui ne pourra être définie qu'à l'initialisation de sa classe. Pour une classe abstraite, aucun setter ne sera géré. `readonly: true` sur la classe parente forcera `readonly: true` sur chaque propriété."
+              "description": "Précise si la propriété doit être en lecture seule, qui ne pourra être définie qu'à l'initialisation de sa classe. Pour une classe de type interface, aucun setter ne sera géré. `readonly: true` sur la classe parente forcera `readonly: true` sur chaque propriété."
             },
             "domain": {
               "$ref": "#/definitions/domain"
@@ -186,7 +186,7 @@
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est une interface (`type: interface`)."
             },
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
@@ -544,7 +544,7 @@
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est une interface (`type: interface`)."
             },
             "required": {
               "type": "boolean",
@@ -1009,7 +1009,10 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [ "properties", "decorators" ]
+                "enum": [
+                  "properties",
+                  "decorators"
+                ]
               }
             },
             "decorators": {
@@ -1131,7 +1134,11 @@
             "inheritanceStrategy": {
               "type": "string",
               "description": "Pour une classe persistée, la stratégie d'héritage à utiliser si cette classe est dérivée. Par défaut : `joined-tables`.",
-              "enum": [ "joined-tables", "single-table", "distinct-tables" ]
+              "enum": [
+                "joined-tables",
+                "single-table",
+                "distinct-tables"
+              ]
             },
             "label": {
               "type": "string",
@@ -1181,13 +1188,21 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [ "properties", "decorators", "implements" ]
+                "enum": [
+                  "properties",
+                  "decorators",
+                  "implements"
+                ]
               }
             },
             "type": {
               "type": "string",
               "description": "Permet de définir la classe comme étant une interface ou une classe abstraite.",
-              "enum": [ "regular", "abstract", "interface" ]
+              "enum": [
+                "regular",
+                "abstract",
+                "interface"
+              ]
             },
             "readonly": {
               "type": "boolean",
@@ -1319,7 +1334,6 @@
                     "null"
                   ]
                 }
-
               }
             },
             "customProperties": {
@@ -1531,7 +1545,10 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [ "params", "decorators" ]
+                "enum": [
+                  "params",
+                  "decorators"
+                ]
               }
             },
             "returns": {

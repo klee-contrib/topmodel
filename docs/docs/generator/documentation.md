@@ -6,11 +6,11 @@ Le module de générateurs `documentation` produit des **documents Markdown** d�
 
 Il est composé de trois générateurs indépendants :
 
-| Nom              | Objets ciblés                     | Fichiers générés                                                                                                                                                                                                                                                                                               |
-| ---------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DocClassGen`    | Classes persistées non abstraites | Un ou plusieurs fichiers Markdown contenant le **dictionnaire de données** sous forme de tableau : une ligne par propriété de chaque table persistée. La granularité dépend des variables présentes dans `classesFilePath`.                                                                                    |
-| `DocEndpointGen` | Endpoints                         | Un ou plusieurs fichiers Markdown listant **les endpoints** du modèle, avec leur module, leur verbe HTTP, leur route, leur description et éventuellement les rôles déduits des annotations configurées via `authorizationAnnotations`. La granularité dépend des variables présentes dans `endpointsFilePath`. |
-| `DocMermaidGen`  | Classes persistées non abstraites | Un ou plusieurs fichiers Markdown contenant un **diagramme de classes Mermaid**. La granularité dépend des variables présentes dans `mermaidFilePath`.                                                                                                                                                         |
+| Nom              | Objets ciblés      | Fichiers générés                                                                                                                                                                                                                                                                                               |
+| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DocClassGen`    | Classes persistées | Un ou plusieurs fichiers Markdown contenant le **dictionnaire de données** sous forme de tableau : une ligne par propriété de chaque table persistée. La granularité dépend des variables présentes dans `classesFilePath`.                                                                                    |
+| `DocEndpointGen` | Endpoints          | Un ou plusieurs fichiers Markdown listant **les endpoints** du modèle, avec leur module, leur verbe HTTP, leur route, leur description et éventuellement les rôles déduits des annotations configurées via `authorizationAnnotations`. La granularité dépend des variables présentes dans `endpointsFilePath`. |
+| `DocMermaidGen`  | Classes persistées | Un ou plusieurs fichiers Markdown contenant un **diagramme de classes Mermaid**. La granularité dépend des variables présentes dans `mermaidFilePath`.                                                                                                                                                         |
 
 Chaque générateur est activé par défaut et peut être désactivé individuellement via la propriété [`disable`](#disable), en utilisant son **nom court** (`DocClassGen`, `DocEndpointGen`, `DocMermaidGen`).
 
@@ -34,7 +34,7 @@ Le titre (niveau 1) des fichiers générés reflète automatiquement le mode cho
 
 ## Dictionnaire de données
 
-Le générateur `DocumentationClassDocGenerator` (`DocClassGen`) produit un ou plusieurs fichiers (par défaut un unique `classes.md`) contenant un tableau listant, pour chaque classe persistée non abstraite :
+Le générateur `DocumentationClassDocGenerator` (`DocClassGen`) produit un ou plusieurs fichiers (par défaut un unique `classes.md`) contenant un tableau listant, pour chaque classe persistée :
 
 - le schéma de base de données (déduit de la configuration `schemas`, voir plus bas) ;
 - le nom SQL de la table ;
@@ -64,7 +64,7 @@ Le découpage en plusieurs fichiers (par module ou par fichier de modèle) est p
 
 ## Diagrammes Mermaid
 
-Le générateur `DocumentationMermaidGenerator` (`DocMermaidGen`) produit un ou plusieurs fichiers Markdown contenant un diagramme de classes Mermaid, généré pour l'ensemble des classes persistées non abstraites.
+Le générateur `DocumentationMermaidGenerator` (`DocMermaidGen`) produit un ou plusieurs fichiers Markdown contenant un diagramme de classes Mermaid, généré pour l'ensemble des classes persistées.
 
 Le découpage en plusieurs fichiers (par module — mode par défaut — ou par fichier de modèle) est piloté par les variables `{module}` / `{fileName}` de `mermaidFilePath` (voir [Découpage des fichiers générés](#découpage-des-fichiers-générés)).
 

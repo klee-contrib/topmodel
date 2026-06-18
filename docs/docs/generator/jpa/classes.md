@@ -2,15 +2,15 @@
 
 Plusieurs générateurs du module `TopModel.Generator.Jpa` sont dédiés à la génération des classes Java à partir du modèle :
 
-| Nom                    | Condition d'activation                          | Objets ciblés                                                       | Fichiers générés                                                                                                                               |
-| ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `JavaDtoGen`           | Toujours                                        | Classes non abstraites, non persistées, qui ne sont pas des enums   | POJO contenant les propriétés définies dans le modèle avec les annotations de validation. La classe implémente `Serializable`.                 |
-| `JdbcEntityGen`        | `useJdbc: true`                                 | Classes non abstraites, persistées, qui ne sont pas en `enum: true` | POJO annoté avec les annotations `org.springframework.data.*` (persistance Spring Data JDBC, sans associations JPA).                           |
-| `JpaEntityGen`         | `useJdbc: false`                                | Classes non abstraites, persistées, non `readonly`                  | POJO annoté avec les annotations JPA (Jakarta Persistence).                                                                                    |
-| `JavaEnumClassPropGen` | `uniqueValueGeneration` autorise les enums      | Classes non abstraites avec `enum: class`                           | Enum Java nommée `[NomDeLaClasse][NomDeLaPropriété]`, listant les valeurs possibles de la clé primaire de la classe.                           |
-| `JavaEnumEnumGen`      | Toujours                                        | Classes non abstraites avec `enum: true`                            | Enum Java contenant toutes les valeurs définies dans les `values`, dont la clé est la `primaryKey` ou la première propriété de la classe.      |
-| `JavaUniqValPropGen`   | `uniqueValueGeneration` autorise les constantes | Classes non abstraites qui ne sont pas en `enum: true`              | Classe utilitaire `[NomDeLaClasse][NomDeLaPropriété]` exposant, en `public static final`, les valeurs connues d'une propriété à clé d'unicité. |
-| `JpaInterfaceGen`      | Toujours                                        | Classes avec `abstract: true`                                       | Interface ne contenant que des `getters` (et `setters` si la propriété n'est pas `readonly`) des propriétés définies dans le modèle.           |
+| Nom                    | Condition d'activation                          | Objets ciblés                                       | Fichiers générés                                                                                                                               |
+| ---------------------- | ----------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JavaDtoGen`           | Toujours                                        | Classes non persistées, qui ne sont pas des enums   | POJO contenant les propriétés définies dans le modèle avec les annotations de validation. La classe implémente `Serializable`.                 |
+| `JdbcEntityGen`        | `useJdbc: true`                                 | Classes persistées, qui ne sont pas en `enum: true` | POJO annoté avec les annotations `org.springframework.data.*` (persistance Spring Data JDBC, sans associations JPA).                           |
+| `JpaEntityGen`         | `useJdbc: false`                                | Classes persistées, non `readonly`                  | POJO annoté avec les annotations JPA (Jakarta Persistence).                                                                                    |
+| `JavaEnumClassPropGen` | `uniqueValueGeneration` autorise les enums      | Classes avec `enum: class`                          | Enum Java nommée `[NomDeLaClasse][NomDeLaPropriété]`, listant les valeurs possibles de la clé primaire de la classe.                           |
+| `JavaEnumEnumGen`      | Toujours                                        | Classes avec `enum: true`                           | Enum Java contenant toutes les valeurs définies dans les `values`, dont la clé est la `primaryKey` ou la première propriété de la classe.      |
+| `JavaUniqValPropGen`   | `uniqueValueGeneration` autorise les constantes | Classes qui ne sont pas en `enum: true`             | Classe utilitaire `[NomDeLaClasse][NomDeLaPropriété]` exposant, en `public static final`, les valeurs connues d'une propriété à clé d'unicité. |
+| `JpaInterfaceGen`      | Toujours                                        | Interfaces (classes avec `type: interface`)         | Interface ne contenant que des `getters` (et `setters` si la propriété n'est pas `readonly`) des propriétés définies dans le modèle.           |
 
 Le choix entre les deux modes d'enum (`enum: class` ou `enum: true`) se fait **classe par classe**, directement sur la classe dans le modèle.
 
@@ -246,7 +246,6 @@ En plus — ou à la place — des enums, TopModel peut générer une **classe u
 
 Ce générateur s'applique aux classes :
 
-- non abstraites,
 - qui ne sont pas en `enum: true` (une classe en `enum: true` est déjà intégralement générée comme enum Java),
 - et qui possèdent au moins une propriété ciblée par une clé d'unicité simple avec des `values` renseignées.
 
@@ -363,9 +362,9 @@ private String nom;
 
 - Ne pas composer avec une entité persistée.
 
-## Classes abstraites
+## Interfaces
 
-Pour générer des interfaces à partir d'une classe du modèle, vous pouvez passer la propriété `abstract` d'une classe à `true`.
+Pour générer des interfaces à partir d'une classe du modèle, vous pouvez passer la propriété `type` d'une classe à `inteface`.
 Ainsi, le fichier généré sera non plus une classe mais une interface contenant un `getter` (et un `setter` si la propriété n'est pas `readonly`) pour chacune des propriétés.
 
 Le cas d'usage typique est celui des [projections de Spring JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#projections).
@@ -375,7 +374,7 @@ Le cas d'usage typique est celui des [projections de Spring JPA](https://docs.sp
 class:
   name: IUtilisateur
   comment: Interface de projection
-  abstract: true
+  type: interface
 ```
 
 ## FieldsEnum

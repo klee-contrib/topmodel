@@ -255,5 +255,5 @@ Un alias hérite des annotations de la propriété source, ainsi que de son type
 
 ## Autres informations de propriétés
 
-- `readonly` : Une propriété readonly ne devrait être renseignable qu'à la création d'une classe (une notion qui n'est représentable qu'en C# malheureusement..), mais en revanche, dans une [classe abstraite](/model/classes#classe-abstraite), elle n'aura pas de setter.
+- `readonly` : Une propriété readonly ne devrait être renseignable qu'à la création d'une classe (une notion qui n'est représentable qu'en C# malheureusement..), mais en revanche, dans une [interface](/model/classes#interfaces-et-classes-abstraites), elle n'aura pas de setter.
 - `trigram` : toutes les propriétés non composées peuvent surcharger le trigramme de la classe (ou de la classe associée dans une association).
