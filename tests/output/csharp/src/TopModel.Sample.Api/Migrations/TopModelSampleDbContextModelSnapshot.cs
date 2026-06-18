@@ -1336,7 +1336,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.ToTable("lieu");
 
-                    b.HasDiscriminator().HasValue("fournisseur");
+                    b.HasDiscriminator().HasValue("FOURNISSEUR");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", b =>
@@ -1356,7 +1356,7 @@ namespace TopModel.Sample.Api.Migrations
 
                     b.ToTable("lieu");
 
-                    b.HasDiscriminator().HasValue("restaurant");
+                    b.HasDiscriminator().HasValue("RESTAURANT");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Client", b =>

@@ -217,8 +217,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<Lieu>()
             .HasDiscriminator<string>("lie_discriminator")
-            .HasValue<Fournisseur>("fournisseur")
-            .HasValue<Models.Restaurant.Restaurant>("restaurant");
+            .HasValue<Fournisseur>("FOURNISSEUR")
+            .HasValue<Models.Restaurant.Restaurant>("RESTAURANT");
         modelBuilder.Entity<Plat>()
             .HasDiscriminator<CategoriePlat.Codes?>("CategoriePlatCode")
             .HasValue<Plat>(CategoriePlat.Autre.Code)
