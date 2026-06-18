@@ -51,7 +51,7 @@ Les mappers `from` sont générés sous deux formes :
 
 Les deux méthodes prennent en entrée la liste des paramètres d'entrée définis dans le mapper : d'abord les `classParams` (instances d'autres classes), puis les `propertyParams` (valeurs scalaires additionnelles). La méthode `mapXXX` prend également une instance de la classe cible en dernier paramètre.
 
-**Remarque :** la méthode `createXXX` n'est pas générée pour les classes abstraites (seule la méthode `mapXXX` l'est).
+**Remarque :** la méthode `createXXX` n'est pas générée pour les classes abstraites et les interfaces (`type` `abstract` ou `interface`) (seule la méthode `mapXXX` l'est).
 
 ### Contrôles de nullité
 

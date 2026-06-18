@@ -1,8 +1,8 @@
 # Génération du métamodèle
 
-| Nom               | Condition d'activation                | Objets ciblés                     | Fichiers générés                                                                                      |
-| ----------------- | ------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `JpaMetaModelGen` | `metaModel: true` && `useJdbc: false` | Entités persistées non abstraites | Classes représentant le métamodèle des entités persistées. Une classe par entité avec le suffixe `_`. |
+| Nom               | Condition d'activation                | Objets ciblés      | Fichiers générés                                                                                      |
+| ----------------- | ------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `JpaMetaModelGen` | `metaModel: true` && `useJdbc: false` | Entités persistées | Classes représentant le métamodèle des entités persistées. Une classe par entité avec le suffixe `_`. |
 
 Le métamodèle JPA est une représentation typée et statique des entités, de leurs propriétés et de leurs relations. Il permet d'utiliser le `CriteriaBuilder` sans manipuler de chaînes de caractères pour désigner une entité ou l'une de ses propriétés, et offre ainsi une vérification à la compilation.
 
@@ -11,10 +11,7 @@ Le métamodèle JPA est une représentation typée et statique des entités, de 
 Une classe de métamodèle est générée pour chaque classe du modèle qui est à la fois :
 
 - **persistée** ;
-- **non abstraite** ;
 - **non marquée comme enum** (ni en mode `enum`, ni en mode `class`).
-
-Les classes abstraites ou les listes de référence de type enum sont donc ignorées.
 
 ## Fichier généré
 

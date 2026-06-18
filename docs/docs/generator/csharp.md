@@ -37,7 +37,7 @@ Les mappers sont générés comme des méthodes statiques dans une classe statiq
 Chaque mapper `to` sera généré avec 2 surcharges :
 
 - Une surcharge qui permet de créer une nouvelle instance. Cette surcharge prendra en paramètres (optionnels si `requiredNonNullable` est désactivé) l'ensemble des propriétés obligatoires de la classe cible pour lesquels il n'existe pas de mapping depuis la classe source.
-- Une surcharge qui permet de mapper vers une instance existante, passée en unique paramètre. Cette surcharge ne sera pas générée pour une classe abstraite.
+- Une surcharge qui permet de mapper vers une instance existante, passée en unique paramètre. Cette surcharge ne sera pas générée pour une classe abstraite ou une interface (`type` `abstract` ou `interface`).
 
 De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 
@@ -276,7 +276,6 @@ _(en preview, documentation à venir)_
 - `kinetix`
 
   Active les fonctionnalités Kinetix dans la génération.
-
   - Génération des accesseurs de liste de références
   - Annotations de domaines et de classe de références dans les classes
 
@@ -347,7 +346,6 @@ _(en preview, documentation à venir)_
   Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.
 
   Si >= 8 :
-
   - Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, DbContext, accesseurs de références).
   - Utilise les initialiseurs de collection quand c'est possible.
 
