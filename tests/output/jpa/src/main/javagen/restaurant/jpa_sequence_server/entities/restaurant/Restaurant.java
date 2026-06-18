@@ -14,18 +14,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
  * Restaurant.
  */
 @Entity
-@Table(name = "RESTAURANT")
+@DiscriminatorValue("RESTAURANT")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Restaurant extends Lieu {

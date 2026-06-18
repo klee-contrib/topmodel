@@ -6,14 +6,14 @@ package restaurant.jpa_identity_feign.entities.restaurant;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 /**
  * Plat principal.
  */
 @Entity
-@Table(name = "PLAT_PRINCIPAL")
+@DiscriminatorValue("PRINCIPAL")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatPrincipal extends Plat {
 

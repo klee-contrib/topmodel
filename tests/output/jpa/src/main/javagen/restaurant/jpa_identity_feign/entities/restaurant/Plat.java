@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -31,8 +33,10 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "PLAT")
+@DiscriminatorValue("AUTRE")
+@DiscriminatorColumn(name = "CAT_CODE")
 @EntityListeners(AuditingEntityListener.class)
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Plat {
 
@@ -71,8 +75,8 @@ public class Plat {
 	/**
 	 * Catégorie du plat.
 	 */
-	@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CategoriePlat.class)
+	@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE", insertable = false, updatable = false)
 	private CategoriePlat categoriePlat;
 
 	/**

@@ -6,14 +6,14 @@ package restaurant.jpa_sequence_server.entities.restaurant;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 /**
  * Restaurant.
  */
 @Entity
-@Table(name = "FOURNISSEUR")
+@DiscriminatorValue("FOURNISSEUR")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Fournisseur extends Lieu {
 

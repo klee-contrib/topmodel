@@ -42,52 +42,86 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             yield return new JavaAnnotation("Inheritance", imports: "jakarta.persistence.Inheritance").AddAttribute(
                 "strategy",
-                "InheritanceType.JOINED",
+                $"InheritanceType.{classe.InheritanceStrategy switch { InheritanceStrategy.SingleTable => "SINGLE_TABLE", InheritanceStrategy.DistinctTables => "TABLE_PER_CLASS", _ => "JOINED" }}",
                 "jakarta.persistence.InheritanceType"
             );
+
+            if (classe.InheritanceStrategy == InheritanceStrategy.SingleTable)
+            {
+                var discriminatorAnnotation = new JavaAnnotation(
+                    "DiscriminatorColumn",
+                    imports: "jakarta.persistence.DiscriminatorColumn"
+                ).AddAttribute(
+                    "name",
+                    $"\"{classe.DiscriminatorProperty?.SqlName ?? classe.DefaultDiscriminatorName}\""
+                );
+
+                yield return discriminatorAnnotation;
+            }
         }
 
-        var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
-            "name",
-            $@"""{classe.SqlName}"""
-        );
-
-        var uks = classe.Indexes.Where(idx =>
-            idx.Unique
-            && (
-                idx.Properties.Count > 1
-                || !classe.Properties.Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
-            )
-        );
-
-        var ukAnnotations = uks.Select(uk =>
-                new JavaAnnotation("UniqueConstraint", imports: "jakarta.persistence.UniqueConstraint").AddAttribute(
-                    "columnNames",
-                    uk.Properties.Select(u => $@"""{u.SqlName}""").ToArray()
-                )
-            )
-            .ToList();
-
-        if (ukAnnotations.Count > 0)
+        if (
+            classe.InheritanceStrategy == InheritanceStrategy.SingleTable && classe.Type != ClassType.Abstract
+            || classe.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
+        )
         {
-            tableAnnotation.AddAttribute("uniqueConstraints", ukAnnotations);
-        }
-
-        var nonUniqueIndexes = classe.Indexes.Where(i => !i.Unique).ToList();
-        if (nonUniqueIndexes.Count > 0)
-        {
-            tableAnnotation.AddAttribute(
-                "indexes",
-                nonUniqueIndexes.Select(idx =>
-                {
-                    return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
-                        .AddAttribute("name", $@"""{idx.SqlName}""")
-                        .AddAttribute("columnList", $@"""{string.Join(", ", idx.Properties.Select(c => c.SqlName))}""");
-                })
+            yield return new JavaAnnotation(
+                "DiscriminatorValue",
+                $"\"{classe.DiscriminatorValue ?? classe.SqlName}\"",
+                "jakarta.persistence.DiscriminatorValue"
             );
         }
 
-        yield return tableAnnotation;
+        if (
+            (classe.InheritanceStrategy != InheritanceStrategy.DistinctTables || classe.Type == ClassType.Regular)
+            && classe.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
+        )
+        {
+            var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
+                "name",
+                $@"""{classe.SqlName}"""
+            );
+
+            var uks = classe.Indexes.Where(idx =>
+                idx.Unique
+                && (
+                    idx.Properties.Count > 1
+                    || !classe.Properties.Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
+                )
+            );
+
+            var ukAnnotations = uks.Select(uk =>
+                    new JavaAnnotation(
+                        "UniqueConstraint",
+                        imports: "jakarta.persistence.UniqueConstraint"
+                    ).AddAttribute("columnNames", uk.Properties.Select(u => $@"""{u.SqlName}""").ToArray())
+                )
+                .ToList();
+
+            if (ukAnnotations.Count > 0)
+            {
+                tableAnnotation.AddAttribute("uniqueConstraints", ukAnnotations);
+            }
+
+            var nonUniqueIndexes = classe.Indexes.Where(i => !i.Unique).ToList();
+            if (nonUniqueIndexes.Count > 0)
+            {
+                tableAnnotation.AddAttribute(
+                    "indexes",
+                    nonUniqueIndexes.Select(idx =>
+                    {
+                        return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
+                            .AddAttribute("name", $@"""{idx.SqlName}""")
+                            .AddAttribute(
+                                "columnList",
+                                $@"""{string.Join(", ", idx.Properties.Select(c => c.SqlName))}"""
+                            );
+                    })
+                );
+            }
+
+            yield return tableAnnotation;
+        }
 
         if (classe.PrimaryKey.Count() > 1)
         {
