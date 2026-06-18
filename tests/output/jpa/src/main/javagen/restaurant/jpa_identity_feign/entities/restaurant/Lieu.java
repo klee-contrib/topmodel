@@ -6,6 +6,7 @@ package restaurant.jpa_identity_feign.entities.restaurant;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +20,8 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "LIEU")
-@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "LIE_DISCRIMINATOR")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class Lieu {
 

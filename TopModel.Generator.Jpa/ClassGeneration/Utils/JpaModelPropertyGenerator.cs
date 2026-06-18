@@ -70,6 +70,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             column.AddAttribute("columnDefinition", @$"""jsonb""");
         }
 
+        if (property == property.Class?.DiscriminatorProperty)
+        {
+            column.AddAttribute("insertable", "false").AddAttribute("updatable", "false");
+        }
+
         return column;
     }
 
@@ -510,6 +515,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
             .AddAttribute("name", $@"""{fk}""")
             .AddAttribute("referencedColumnName", $@"""{apk}""");
+
+        if (property == property.Class?.DiscriminatorProperty)
+        {
+            joinColumn.AddAttribute("insertable", "false").AddAttribute("updatable", "false");
+        }
+
         yield return joinColumn;
     }
 
@@ -537,6 +548,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
                 .AddAttribute("name", $@"""{pk}""")
                 .AddAttribute("referencedColumnName", $@"""{pk}""");
+
+            if (property == property.Class?.DiscriminatorProperty)
+            {
+                joinColumn.AddAttribute("insertable", "false").AddAttribute("updatable", "false");
+            }
+
             yield return joinColumn;
         }
 
@@ -571,6 +588,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                 .AddAttribute("name", $@"""{fk}""")
                 .AddAttribute("referencedColumnName", $@"""{apk}""")
                 .AddAttribute("unique", "true");
+
+            if (property == property.Class?.DiscriminatorProperty)
+            {
+                joinColumn.AddAttribute("insertable", "false").AddAttribute("updatable", "false");
+            }
+
             yield return joinColumn;
         }
     }
