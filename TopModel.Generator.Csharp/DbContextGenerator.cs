@@ -365,10 +365,7 @@ public class DbContextGenerator(
 
             foreach (var subClasse in subClasses)
             {
-                var rawValue =
-                    subClasse.DiscriminatorValue
-                    ?? (Config.UseLowerCaseSqlNames ? subClasse.SqlName.ToLower() : subClasse.SqlName);
-
+                var rawValue = subClasse.DiscriminatorValue ?? subClasse.SqlName;
                 w.Write(
                     3,
                     $".HasValue<{GetClassName(subClasse, tag)}>({(classe.DiscriminatorProperty == null
@@ -608,6 +605,19 @@ public class DbContextGenerator(
         w.WriteLine("}");
     }
 
+    private string GetClassName(Class classe, string tag)
+    {
+        var classNs = Config.GetNamespace(classe, tag);
+        if (classNs.Split(".").Contains(Config.GetTypeName(classe)))
+        {
+            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{Config.GetTypeName(classe)}";
+        }
+        else
+        {
+            return Config.GetTypeName(classe);
+        }
+    }
+
     private string? GetValue(IProperty property, string rawValue, string tag, string contextNs)
     {
         var targetClass = property.Association ?? property.Class;
@@ -623,18 +633,5 @@ public class DbContextGenerator(
         }
 
         return value;
-    }
-
-    private string GetClassName(Class classe, string tag)
-    {
-        var classNs = Config.GetNamespace(classe, tag);
-        if (classNs.Split(".").Contains(Config.GetTypeName(classe)))
-        {
-            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{Config.GetTypeName(classe)}";
-        }
-        else
-        {
-            return Config.GetTypeName(classe);
-        }
     }
 }
