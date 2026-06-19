@@ -210,7 +210,8 @@ public abstract class AbstractSqlTablesGenerator(
 
         var classeForSequence =
             classe.Extends?.InheritanceStrategy != InheritanceStrategy.DistinctTables ? classe
-            : Config.Classes.Where(c => c.Extends == classe.Extends).OrderBy(c => c.SqlName).First() == classe
+            : classe.Extends.Type == ClassType.Abstract
+            && Config.Classes.Where(c => c.Extends == classe.Extends).OrderBy(c => c.SqlName).First() == classe
                 ? classe.Extends
             : null;
 

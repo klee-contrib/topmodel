@@ -524,10 +524,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             && AvailableClasses.Contains(a)
         )
         {
-            var refName = property
-                .UniqueValuedProperty!.Class.Values.SingleOrDefault(rv =>
-                    rv.Value[property.UniqueValuedProperty] == value
-                )
+            var refName = GetAllValues(property.UniqueValuedProperty!.Class)
+                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty] == value)
                 ?.Name;
             if (refName != null)
             {
@@ -555,10 +553,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             && AvailableClasses.Contains(property.UniqueValuedProperty!.Class)
         )
         {
-            var refName = property
-                .UniqueValuedProperty!.Class.Values.SingleOrDefault(rv =>
-                    rv.Value[property.UniqueValuedProperty] == value
-                )
+            var refName = GetAllValues(property.UniqueValuedProperty!.Class)
+                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty] == value)
                 ?.Name;
             if (refName != null)
             {
@@ -599,7 +595,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <returns>Oui/non.</returns>
     public virtual bool ShouldQuoteValue(IProperty property)
     {
-        return GetImplementation(property.Domain)?.Type?.ToLower() == "string";
+        return property.Domain == null || GetImplementation(property.Domain)?.Type?.ToLower() == "string";
     }
 
     protected virtual string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)

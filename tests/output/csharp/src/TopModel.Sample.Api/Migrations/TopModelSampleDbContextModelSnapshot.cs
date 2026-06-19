@@ -846,6 +846,16 @@ namespace TopModel.Sample.Api.Migrations
                         });
 
                     b.UseTptMappingStrategy();
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartementCode = "75",
+                            Nom = "Michel",
+                            Prenom = "Jean"
+                        });
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Plat", b =>
@@ -1337,6 +1347,14 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("lieu");
 
                     b.HasDiscriminator().HasValue("FOURNISSEUR");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            Nom = "Pomona",
+                            Bio = true
+                        });
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", b =>
@@ -1357,6 +1375,14 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("lieu");
 
                     b.HasDiscriminator().HasValue("RESTAURANT");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nom = "Burger King",
+                            DateCreation = new DateTime(1954, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Client", b =>
@@ -1423,6 +1449,18 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             t.HasComment("Employé du restaurant");
                         });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Nom = "Christophe",
+                            Prenom = "Michel",
+                            DateEmbauche = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Matricule = "123456",
+                            RestaurantId = 1
+                        });
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.PlatBoisson", b =>
@@ -1484,6 +1522,14 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             t.HasComment("Assiette.");
                         });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Grande assiette",
+                            Taille = 29
+                        });
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Couvert", b =>
@@ -1493,6 +1539,18 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("couvert", t =>
                         {
                             t.HasComment("Couvert.");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            Description = "Fourchette"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Couteau"
                         });
                 });
 

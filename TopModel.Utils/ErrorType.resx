@@ -177,6 +177,9 @@
   <data name="TMD3024" xml:space="preserve">
     <value>Persisted abstract class '{0}' cannot use 'joined-tables' as inheritance strategy.</value>
   </data>
+  <data name="TMD3025" xml:space="preserve">
+    <value>Class '{0}' cannot define values since its type is not `regular`.</value>
+  </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Domain '{0}' already exists.</value>
   </data>

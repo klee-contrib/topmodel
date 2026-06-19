@@ -46,15 +46,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 "jakarta.persistence.InheritanceType"
             );
 
-            if (classe.InheritanceStrategy == InheritanceStrategy.SingleTable)
+            if (classe.InheritanceStrategy == InheritanceStrategy.SingleTable && classe.DiscriminatorProperty != null)
             {
                 var discriminatorAnnotation = new JavaAnnotation(
                     "DiscriminatorColumn",
                     imports: "jakarta.persistence.DiscriminatorColumn"
-                ).AddAttribute(
-                    "name",
-                    $"\"{classe.DiscriminatorProperty?.SqlName ?? classe.DefaultDiscriminatorName}\""
-                );
+                ).AddAttribute("name", $"\"{classe.DiscriminatorProperty.SqlName}\"");
 
                 yield return discriminatorAnnotation;
             }

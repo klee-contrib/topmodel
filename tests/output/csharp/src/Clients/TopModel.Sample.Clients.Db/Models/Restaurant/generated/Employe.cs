@@ -16,6 +16,11 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record Employe : Personne, IEmployeBase
 {
     /// <summary>
+    /// Michel.
+    /// </summary>
+    public const string MichelMatricule = "123456";
+
+    /// <summary>
     /// Numéro de téléphone de l'employé.
     /// </summary>
     [Column("emp_telephone")]

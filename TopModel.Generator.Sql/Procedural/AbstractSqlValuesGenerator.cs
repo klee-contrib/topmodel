@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -15,7 +14,13 @@ public abstract class AbstractSqlValuesGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.HasTable && classe.Values.Count > 0)
+        if (
+            classe.HasTable && classe.Values.Count > 0
+            || (
+                classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+                && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
+            )
+        )
         {
             yield return ("values", Config.Procedural!.ValuesFileName);
         }
@@ -33,15 +38,7 @@ public abstract class AbstractSqlValuesGenerator(
 
         WriteInsertStart(writerInsert);
 
-        // Construit la liste des Reference Class ordonnée.
-        var orderList = CoreUtils.Sort(
-            classes.OrderBy(c => c.SqlName),
-            c =>
-                c.Properties.Select(a => a.Association!)
-                    .Where(a => a != null && a != c && a.Values.Count > 0 && a.IsPersistent)
-        );
-
-        foreach (var classe in orderList)
+        foreach (var classe in classes.SortInserts())
         {
             WriteInsert(writerInsert, classe);
         }
@@ -62,7 +59,7 @@ public abstract class AbstractSqlValuesGenerator(
     {
         writer.WriteLine();
         writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.SqlName + "\t\t**/");
-        foreach (var initItem in modelClass.Values)
+        foreach (var initItem in Config.GetAllValues(modelClass))
         {
             writer.WriteLine(Config.GetInsertLine(modelClass, initItem));
         }

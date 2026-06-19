@@ -246,6 +246,11 @@ public enum ErrorType
     /// </summary>
     TMD3024,
 
+    /// <summary>
+    /// Values sur classe non regular.
+    /// </summary>
+    TMD3025,
+
     #endregion
 
     #region Erreurs de dataflows (4)

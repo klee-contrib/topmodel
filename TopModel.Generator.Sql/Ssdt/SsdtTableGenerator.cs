@@ -49,6 +49,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
         var classeForSequence =
             classe.Extends?.InheritanceStrategy == InheritanceStrategy.DistinctTables
+            && classe.Extends.Type == ClassType.Abstract
             && Config.Classes.Where(c => c.Extends == classe.Extends).OrderBy(c => c.SqlName).First() == classe
                 ? classe.Extends
                 : null;

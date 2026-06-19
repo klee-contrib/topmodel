@@ -155,7 +155,8 @@ public class SqlConfig : GeneratorConfigBase
     public override bool ShouldQuoteValue(IProperty property)
     {
         var type = GetImplementation(property.Domain)?.Type?.ToLower();
-        return (type ?? string.Empty).Contains("varchar")
+        return property.Domain == null
+            || (type ?? string.Empty).Contains("varchar")
             || type == "text"
             || type == "uniqueidentifier"
             || type == "uuid"

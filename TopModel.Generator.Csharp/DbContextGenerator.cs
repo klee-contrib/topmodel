@@ -333,9 +333,14 @@ public class DbContextGenerator(
         var hasTphOrTpc = false;
         foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.SingleTable))
         {
+            if (classe.DiscriminatorProperty == null)
+            {
+                continue;
+            }
+
             hasTphOrTpc = true;
             w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>()");
-            if (classe.DiscriminatorProperty != null)
+            if (classe.Properties.Contains(classe.DiscriminatorProperty))
             {
                 if (classe.DiscriminatorProperty.UseClassForAssociation)
                 {
@@ -354,8 +359,8 @@ public class DbContextGenerator(
                 w.WriteLine(
                     3,
                     $".HasDiscriminator<string>(\"{(Config.UseLowerCaseSqlNames
-                    ? classe.DefaultDiscriminatorName.ToLower()
-                    : classe.DefaultDiscriminatorName)}\")"
+                    ? classe.DiscriminatorProperty.SqlName.ToLower()
+                    : classe.DiscriminatorProperty.SqlName)}\")"
                 );
             }
 
