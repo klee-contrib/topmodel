@@ -16,6 +16,16 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record Personne : IPersonneBase
 {
     /// <summary>
+    /// Jean.
+    /// </summary>
+    public const int JeanId = 1;
+
+    /// <summary>
+    /// Michel.
+    /// </summary>
+    public const int MichelId = 2;
+
+    /// <summary>
     /// Identifiant de la personne.
     /// </summary>
     [Column("per_id")]

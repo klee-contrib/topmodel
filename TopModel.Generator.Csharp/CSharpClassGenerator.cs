@@ -113,7 +113,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var consts = new List<(IProperty Prop, string Name, string Code, string Label)>();
 
-        foreach (var refValue in item.Values)
+        foreach (var refValue in Config.GetAllValues(item))
         {
             var label = refValue.GetLabel(item);
 

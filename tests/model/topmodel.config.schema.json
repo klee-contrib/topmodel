@@ -1091,8 +1091,8 @@
                 "SqlCommentsGen",
                 "SsdtTableGen",
                 "SsdtTableTypeGen",
-                "SsdtRefListGen",
-                "SsdtMainRefListGen"
+                "SsdtValuesGen",
+                "SsdtMainValuesGen"
               ]
             }
           },

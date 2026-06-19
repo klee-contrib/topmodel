@@ -32,11 +32,11 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 
             if (config.Ssdt.InitListScriptFolder != null)
             {
-                services.AddGenerator<SsdtReferenceListGenerator, SqlConfig>(config, number);
+                services.AddGenerator<SsdtValuesGenerator, SqlConfig>(config, number);
 
                 if (config.Ssdt.InitListMainScriptName != null)
                 {
-                    services.AddGenerator<SsdtMainReferenceListGenerator, SqlConfig>(config, number);
+                    services.AddGenerator<SsdtMainValuesGenerator, SqlConfig>(config, number);
                 }
             }
         }

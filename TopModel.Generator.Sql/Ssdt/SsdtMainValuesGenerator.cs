@@ -1,24 +1,27 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Ssdt;
 
 /// <summary>
-/// Scripter écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs de listes de références.
+/// Scripter écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs.
 /// </summary>
-public class SsdtMainReferenceListGenerator(
-    ILogger<SsdtMainReferenceListGenerator> logger,
-    IFileWriterProvider writerProvider
-) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
+public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IFileWriterProvider writerProvider)
+    : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    public override string Name => "SsdtMainRefListGen";
+    public override string Name => "SsdtMainValuesGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && classe.Type != ClassType.Interface && classe.Values.Count > 0)
+        if (
+            classe.HasTable && classe.Values.Count > 0
+            || (
+                classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+                && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
+            )
+        )
         {
             yield return (
                 "main",
@@ -35,14 +38,8 @@ public class SsdtMainReferenceListGenerator(
         // Entête du fichier.
         WriteHeader(writer);
 
-        // Construit la liste des Reference Class ordonnée.
-        var orderList = CoreUtils.Sort(
-            classes.OrderBy(c => c.SqlName),
-            c => c.Properties.Select(a => a.Association!).Where(a => a != null && a != c && a.Values.Count > 0)
-        );
-
         // Appel des scripts d'insertion.
-        WriteScriptCalls(writer, orderList);
+        WriteScriptCalls(writer, classes.SortInserts());
     }
 
     /// <summary>

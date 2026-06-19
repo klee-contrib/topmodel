@@ -177,6 +177,9 @@
   <data name="TMD3024" xml:space="preserve">
     <value>La classe '{0}' abstraite et persistée doit spécifier une stratégie d'héritage différente de 'joined-tables'.</value>
   </data>
+  <data name="TMD3025" xml:space="preserve">
+    <value>La classe '{0}' ne peut pas définir de valeurs car elle n'est pas de type `regular`.</value>
+  </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>
   </data>

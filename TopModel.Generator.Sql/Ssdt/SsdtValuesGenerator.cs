@@ -6,16 +6,20 @@ using TopModel.Utils;
 namespace TopModel.Generator.Sql.Ssdt;
 
 /// <summary>
-/// Scripter permettant d'écrire les scripts d'initialisation des valeurs de listes de référence.
+/// Scripter permettant d'écrire les scripts d'initialisation des valeurs.
 /// </summary>
-public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logger, IFileWriterProvider writerProvider)
+public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    public override string Name => "SsdtRefListGen";
+    public override string Name => "SsdtValuesGen";
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && classe.Type != ClassType.Interface && classe.Values.Count > 0;
+        return classe.HasTable && classe.Values.Count > 0
+            || (
+                classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+                && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
+            );
     }
 
     protected override string GetFileName(Class classe, string tag)
@@ -68,7 +72,7 @@ public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logg
     /// <param name="item">Liste de références.</param>
     private void WriteInsertLines(IFileWriter writer, Class item)
     {
-        foreach (var initItem in item.Values)
+        foreach (var initItem in Config.GetAllValues(item))
         {
             writer.WriteLine(Config.GetInsertLine(item, initItem));
         }

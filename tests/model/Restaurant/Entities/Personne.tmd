@@ -44,6 +44,9 @@ class:
       defaultValue: 75
       useClass: false
       comment: Département de résidence de la personne.
+
+  values:
+    Jean: { Id: 1, Nom: Michel, Prenom: Jean, DateCreation: 2026-01-01 }
 ---
 class:
   name: EmployeBase
@@ -92,6 +95,9 @@ class:
     - [Telephone]
     - properties: [Matricule]
       unique: true
+
+  values:
+    Michel: { Id: 2, Nom: Christophe, Prenom: Michel, Matricule: 123456, DateCreation: 2026-01-01, DateEmbauche: 2026-01-01, Restaurant: 1 }
 ---
 class:
   name: Prestataire

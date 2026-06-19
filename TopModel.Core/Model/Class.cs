@@ -63,8 +63,6 @@ public class Class : IPropertyContainer
 
     public IProperty? DiscriminatorProperty { get; set; }
 
-    public string DefaultDiscriminatorName => CoreUtils.GetSqlTrigram(Trigram) + "DISCRIMINATOR";
-
     public string? DiscriminatorValue { get; set; }
 
     public IList<IProperty> Properties { get; } = [];

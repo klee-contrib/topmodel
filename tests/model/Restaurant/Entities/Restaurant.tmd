@@ -43,6 +43,9 @@ class:
     - name: Telephone
       domain: DO_TELEPHONE
       comment: Numéro de téléphone
+
+  values:
+    BK: { Id: 1, Nom: Burger King, DateCreation: 1954-01-01 }
 ---
 class:
   name: Fournisseur
@@ -58,6 +61,9 @@ class:
     - name: Bio
       domain: DO_BOOLEEN
       comment: Si le fournisseur fait du bio.
+
+  values:
+    Pomona: { Id: 2, Nom: Pomona, Bio: true }
 ---
 class:
   name: TableRestaurant
@@ -125,6 +131,8 @@ class:
       required: true
       domain: DO_QUANTITE
       comment: Taille de l'assiette.
+  values:
+    Grande: { Id: 1, Description: Grande assiette, Taille: 29 }
 ---
 class:
   name: Couvert
@@ -132,6 +140,9 @@ class:
   trigram: CVT
   comment: Couvert.
   properties: []
+  values:
+    Fourchette: { Id: 2, Description: Fourchette }
+    Couteau: { Id: 3, Description: Couteau }
 ---
 class:
   name: Verre

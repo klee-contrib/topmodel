@@ -416,20 +416,6 @@ public static class ModelExtensions
                 : null;
 
         /// <summary>
-        /// Association vers la classe parente pour une classe dérivée.
-        /// </summary>
-        public IProperty? DefaultDiscriminatorProperty =>
-            classe.InheritanceStrategy == InheritanceStrategy.SingleTable && classe.DiscriminatorProperty == null
-                ? new RegularProperty
-                {
-                    Name = "Discriminator",
-                    Class = classe,
-                    Required = true,
-                    Comment = "Discriminateur pour les instances de la hiérarchie de classe",
-                }
-                : null;
-
-        /// <summary>
         /// Récupère le potentiel mapper de la classe courante vers la classe cible.
         /// </summary>
         /// <param name="targetClass">Classe cible.</param>
