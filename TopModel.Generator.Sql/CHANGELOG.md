@@ -1,3 +1,7 @@
+## 4.1.6
+
+- [`bf0e850`](https://github.com/klee-contrib/topmodel/commit/bf0e850ee4f617938582a1079b1d53f1b3ddf303) - [SQL] Retrait des classes enum: true des classes disponibles
+
 ## 4.1.5
 
 - [`84fd3b7`](https://github.com/klee-contrib/topmodel/commit/84fd3b7df7f45da85ae3bad3ff5ba49b42444b49) - [SQL] Fix génération des indexes de clés de traductions
