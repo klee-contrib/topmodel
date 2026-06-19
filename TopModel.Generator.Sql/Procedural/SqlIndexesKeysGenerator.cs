@@ -115,6 +115,11 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         var propertyTarget = propertySource.AssociationProperty!;
         var association = propertySource.Association!;
 
+        if (!Config.AvailableClasses.Contains(association))
+        {
+            return;
+        }
+
         writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine(

@@ -128,13 +128,6 @@ create index IDX_COM_STC_CODE_FK on COMMANDE (
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour COMMANDE.STC_CODE
- **/
-alter table COMMANDE
-	add constraint FK_COMMANDE_STC_CODE foreign key (STC_CODE)
-		references STATUT_COMMANDE (STC_CODE);
-
-/**
   * Création de l'index de clef étrangère pour COMMANDE.AVI_ID
  **/
 create index IDX_COM_AVI_ID_FK on COMMANDE (
@@ -459,11 +452,4 @@ create index IDX_DEP_DEP_LIBELLE on DEPARTEMENT (
  **/
 create index IDX_REG_REG_LIBELLE on REGION (
 	REG_LIBELLE ASC
-);
-
-/**
-  * Création de l'index IDX_STC_STC_LIBELLE sur STATUT_COMMANDE.
- **/
-create index IDX_STC_STC_LIBELLE on STATUT_COMMANDE (
-	STC_LIBELLE ASC
 );

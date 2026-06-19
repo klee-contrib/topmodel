@@ -31,23 +31,6 @@ INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restauran
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.nom', 'en', 'Last name');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.personne.prenom', 'en', 'First name');
 
-/**		Initialisation des traductions des valeurs de la table STATUT_COMMANDE		**/
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnAttente', 'fr', 'En attente');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnPreparation', 'fr', 'En préparation');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Prete', 'fr', 'Prête');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Servie', 'fr', 'Servie');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Annulee', 'fr', 'Annulée');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnAttente', 'de', 'En attente');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnPreparation', 'de', 'En préparation');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Prete', 'de', 'Prête');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Servie', 'de', 'Servie');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Annulee', 'de', 'Annulée');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnAttente', 'en', 'Pending');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.EnPreparation', 'en', 'In preparation');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Prete', 'en', 'Ready');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Servie', 'en', 'Served');
-INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.statutCommande.values.Annulee', 'en', 'Cancelled');
-
 /**		Initialisation des traductions des valeurs de la table CATEGORIE_PLAT		**/
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Entree', 'fr', 'Entrée');
 INSERT INTO TRANSLATION(TRA_RESOURCE_KEY, TRA_LANG, TRA_VALUE) VALUES('restaurant.categoriePlat.values.Plat', 'fr', 'Plat principal');

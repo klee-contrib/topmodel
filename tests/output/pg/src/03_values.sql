@@ -26,14 +26,3 @@ INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('75', 'restauran
 INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('92', 'restaurant.departement.values.HautsDeSeine', 'IDF');
 INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('93', 'restaurant.departement.values.SeineSaintDenis', 'IDF');
 INSERT INTO DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) VALUES('94', 'restaurant.departement.values.SeineEtMarne', 'IDF');
-
-/**		Initialisation de la table STATUT_COMMANDE		**/
-INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('EN_ATT', 'restaurant.statutCommande.values.EnAttente');
-INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('EN_PREP', 'restaurant.statutCommande.values.EnPreparation');
-INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('PRETE', 'restaurant.statutCommande.values.Prete');
-INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('SERVIE', 'restaurant.statutCommande.values.Servie');
-INSERT INTO STATUT_COMMANDE(STC_CODE, STC_LIBELLE) VALUES('ANNULE', 'restaurant.statutCommande.values.Annulee');
-
-/**		Initialisation de la table TYPE_TERRASSE		**/
-INSERT INTO TYPE_TERRASSE(CODE) VALUES('INT');
-INSERT INTO TYPE_TERRASSE(CODE) VALUES('EXT');

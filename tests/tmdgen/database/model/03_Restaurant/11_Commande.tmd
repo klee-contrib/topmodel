@@ -7,7 +7,6 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Restaurant
   - 03_Restaurant/02_Plat
   - 03_Restaurant/07_Client
   - 03_Restaurant/09_AvisClient
@@ -17,24 +16,23 @@ class:
   name: Commande
   sqlName: commande
   comment: Commande d'un client
-  trigram: COM
   properties:
-    - name: Id
+    - name: ComId
       domain: DO_ID
       required: true
       primaryKey: true
       comment: Identifiant de la commande
 
-    - name: DateCommande
+    - name: ComDateCommande
       domain: DO_DATE_TIME
       required: true
       comment: Date et heure de la commande
 
-    - name: DateLivraison
+    - name: ComDateLivraison
       domain: DO_DATE_TIME
       comment: Date et heure de livraison
 
-    - name: MontantTotal
+    - name: ComMontantTotal
       domain: DO_ENTIER
       required: true
       comment: Montant total de la commande
@@ -49,14 +47,15 @@ class:
     - association: Reservation
       comment: Réservation associée à la commande
 
-    - association: StatutCommande
-      comment: Statut de la commande
+    - name: StcCode
+      domain: DO_LIBELLE
       required: true
+      comment: Statut de la commande
 
     - association: AvisClient
       comment: Avis laissé par le client sur la commande.
 
-    - name: DateCreation
+    - name: ComDateCreation
       domain: DO_DATE_TIME
       required: true
       comment: Date de création de l'enregistrement

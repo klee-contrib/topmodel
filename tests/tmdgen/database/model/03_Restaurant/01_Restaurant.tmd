@@ -117,31 +117,3 @@ class:
       domain: DO_DATE_TIME
       required: true
       comment: Date de création de l'enregistrement
----
-class:
-  name: StatutCommande
-  sqlName: statut_commande
-  comment: Statut d'une commande
-  trigram: STC
-  properties:
-    - name: Code
-      domain: DO_LIBELLE
-      required: true
-      primaryKey: true
-      comment: Code du statut
-
-    - name: Libelle
-      domain: DO_LIBELLE
-      required: true
-      comment: Libellé du statut
----
-class:
-  name: TypeTerrasse
-  sqlName: type_terrasse
-  comment: Type de terrasse
-  properties:
-    - name: Code
-      domain: DO_LIBELLE
-      required: true
-      primaryKey: true
-      comment: Code du type de terrase

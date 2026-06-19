@@ -18,9 +18,3 @@
 /* Insertion dans la table DEPARTEMENT. */
 :r .\DEPARTEMENT.insert.sql
 
-/* Insertion dans la table STATUT_COMMANDE. */
-:r .\STATUT_COMMANDE.insert.sql
-
-/* Insertion dans la table TYPE_TERRASSE. */
-:r .\TYPE_TERRASSE.insert.sql
-

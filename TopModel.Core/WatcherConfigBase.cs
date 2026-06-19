@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿#pragma warning disable CS0618, S1133
+
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
@@ -120,6 +122,7 @@ public class WatcherConfigBase
         {
             _classes ??= Files
                 .SelectMany(f => f.Value.Classes.Where(c => Tags.Intersect(c.Tags).Any()))
+                .Where(FilterClass)
                 .Distinct()
                 .ToHashSet();
 
@@ -132,7 +135,11 @@ public class WatcherConfigBase
     /// </summary>
     public virtual IEnumerable<Class> AvailableClasses =>
         Classes
-            .Concat(ReferencedTagConfigs.SelectMany(rtc => rtc.Value.Classes.Where(c => c.Tags.Contains(rtc.Key))))
+            .Concat(
+                ReferencedTagConfigs.SelectMany(rtc =>
+                    rtc.Value.Classes.Where(c => FilterClass(c) && c.Tags.Contains(rtc.Key))
+                )
+            )
             .Distinct();
 
     /// <summary>
@@ -144,6 +151,7 @@ public class WatcherConfigBase
         {
             _endpoints ??= Files
                 .SelectMany(f => f.Value.Endpoints.Where(c => Tags.Intersect(c.Tags).Any()))
+                .Where(FilterEndpoint)
                 .Distinct()
                 .ToHashSet();
 
@@ -151,7 +159,28 @@ public class WatcherConfigBase
         }
     }
 
+    [Obsolete("Surcharger 'FilterClass' à la place.")]
     protected virtual bool PersistentOnly => false;
+
+    /// <summary>
+    /// Précise si une classe doit être incluse dans cette config.
+    /// </summary>
+    /// <param name="classe">La classe.</param>
+    /// <returns>Oui ou non.</returns>
+    public virtual bool FilterClass(Class classe)
+    {
+        return true;
+    }
+
+    /// <summary>
+    /// Précise si un endpoint doit être inclus dans cette config.
+    /// </summary>
+    /// <param name="endpoint">L'endpoint.</param>
+    /// <returns>Oui ou non.</returns>
+    public virtual bool FilterEndpoint(Endpoint endpoint)
+    {
+        return true;
+    }
 
     /// <summary>
     /// Récupère les implémentations de l'annotation pour la config.
@@ -351,7 +380,10 @@ public class WatcherConfigBase
             foreach (
                 var domain in handledFiles
                     .SelectMany(f => f.Properties)
-                    .Where(p => !PersistentOnly || (p.Class?.IsPersistent ?? false))
+                    .Where(p =>
+                        (!PersistentOnly || (p.Class?.IsPersistent ?? false))
+                        && (p.Class != null && FilterClass(p.Class) || p.Endpoint != null && FilterEndpoint(p.Endpoint))
+                    )
                     .Select(p => p.Domain)
                     .Where(domain => domain != null && GetImplementation(domain) == null)
                     .Distinct()

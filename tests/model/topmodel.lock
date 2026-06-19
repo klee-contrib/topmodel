@@ -7,7 +7,7 @@ custom:
   ../../TopModel.Generator.Csharp: 7651dc9f000bbe1f68e194dee0069c03
   ../../TopModel.Generator.Javascript: c0f2b45b81e95b88ad34c551ec81a2a3
   ../../TopModel.Generator.Jpa: 2c06265f3efbd8bb71bfad8d1eb073c3
-  ../../TopModel.Generator.Sql: bdc0e49e9a9aa3b3abd9c69fbbe5f0d4
+  ../../TopModel.Generator.Sql: 8f7f9661a183f25dde07a91a7c4186a2
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: 950cd4b8b59bcf41532329bb1556984d
 generatedFiles:
@@ -497,8 +497,6 @@ generatedFiles:
   - ../output/ssdt/src/init/DEPARTEMENT.insert.sql
   - ../output/ssdt/src/init/main.sql
   - ../output/ssdt/src/init/REGION.insert.sql
-  - ../output/ssdt/src/init/STATUT_COMMANDE.insert.sql
-  - ../output/ssdt/src/init/TYPE_TERRASSE.insert.sql
   - ../output/ssdt/src/tables/AVIS_CLIENT.sql
   - ../output/ssdt/src/tables/CATEGORIE_PLAT_REGION.sql
   - ../output/ssdt/src/tables/CATEGORIE_PLAT.sql
@@ -517,9 +515,7 @@ generatedFiles:
   - ../output/ssdt/src/tables/REGION.sql
   - ../output/ssdt/src/tables/RESERVATION.sql
   - ../output/ssdt/src/tables/RESTAURANT.sql
-  - ../output/ssdt/src/tables/STATUT_COMMANDE.sql
   - ../output/ssdt/src/tables/TABLE_RESTAURANT.sql
   - ../output/ssdt/src/tables/TRANSLATION.sql
-  - ../output/ssdt/src/tables/TYPE_TERRASSE.sql
   - ../output/translation/i18n/de/out/common_de.properties
   - ../output/translation/i18n/de/out/restaurant_de.properties

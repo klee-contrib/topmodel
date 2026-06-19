@@ -287,15 +287,6 @@ create table RESTAURANT (
 create sequence SEQ_RESTAURANT as INT start 1000 increment 50 owned by RESTAURANT.RES_ID;
 
 /**
-  * Création de la table STATUT_COMMANDE
- **/
-create table STATUT_COMMANDE (
-	STC_CODE varchar(10) not null,
-	STC_LIBELLE varchar(100) not null,
-	constraint PK_STATUT_COMMANDE primary key (STC_CODE)
-);
-
-/**
   * Création de la table TABLE_RESTAURANT
  **/
 create table TABLE_RESTAURANT (
@@ -321,12 +312,4 @@ create table TRANSLATION (
 	TRA_VALUE varchar(100) not null,
 	TRA_LANG varchar(100) not null,
 	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY,TRA_LANG)
-);
-
-/**
-  * Création de la table TYPE_TERRASSE
- **/
-create table TYPE_TERRASSE (
-	CODE varchar(10) not null,
-	constraint PK_TYPE_TERRASSE primary key (CODE)
 );

@@ -211,13 +211,6 @@ COMMENT ON COLUMN RESTAURANT.RES_TELEPHONE IS 'Numéro de téléphone';
 COMMENT ON COLUMN RESTAURANT.RES_DATE_CREATION IS 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table STATUT_COMMANDE
- **/
-COMMENT ON TABLE STATUT_COMMANDE IS 'Statut d''une commande';
-COMMENT ON COLUMN STATUT_COMMANDE.STC_CODE IS 'Code du statut';
-COMMENT ON COLUMN STATUT_COMMANDE.STC_LIBELLE IS 'Libellé du statut';
-
-/**
   * Commentaires pour la table TABLE_RESTAURANT
  **/
 COMMENT ON TABLE TABLE_RESTAURANT IS 'Table du restaurant';
@@ -235,9 +228,3 @@ COMMENT ON TABLE TRANSLATION IS 'Table pour stocker les traductions en SQL.';
 COMMENT ON COLUMN TRANSLATION.TRA_RESOURCE_KEY IS 'Clé de traduction.';
 COMMENT ON COLUMN TRANSLATION.TRA_VALUE IS 'Valeur de la clé de traduction.';
 COMMENT ON COLUMN TRANSLATION.TRA_LANG IS 'Langue de traduction';
-
-/**
-  * Commentaires pour la table TYPE_TERRASSE
- **/
-COMMENT ON TABLE TYPE_TERRASSE IS 'Type de terrasse';
-COMMENT ON COLUMN TYPE_TERRASSE.CODE IS 'Code du type de terrase';

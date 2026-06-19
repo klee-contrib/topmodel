@@ -63,8 +63,6 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public virtual int IdentifierLengthLimit => 128;
 
-    protected override bool PersistentOnly => true;
-
     protected override bool UseValueNameForValues => false;
 
     public static bool IsBoolean(IProperty property)
@@ -90,6 +88,16 @@ public class SqlConfig : GeneratorConfigBase
                 $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
             )
             : identifier;
+    }
+
+    public override bool FilterClass(Class classe)
+    {
+        return classe.IsPersistent && classe.Enum != EnumMode.Enum;
+    }
+
+    public override bool FilterEndpoint(Endpoint endpoint)
+    {
+        return false;
     }
 
     /// <summary>

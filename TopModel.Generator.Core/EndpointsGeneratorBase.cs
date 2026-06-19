@@ -16,7 +16,7 @@ public abstract class EndpointsGeneratorBase<T>(
             .Files.Values.SelectMany(file =>
                 Config.Tags.Intersect(file.AllTags.Where(FilterTag)).Select(tag => (file, path: GetFilePath(file, tag)))
             )
-            .Where(i => i.file.Endpoints.Any())
+            .Where(i => i.file.Endpoints.Any(Config.FilterEndpoint))
             .Select(i => i.path)
             .Distinct()
             .ToList();
@@ -47,7 +47,7 @@ public abstract class EndpointsGeneratorBase<T>(
                     return;
                 }
 
-                var endpoints = file.SelectMany(f => f.file.Endpoints)
+                var endpoints = file.SelectMany(f => f.file.Endpoints.Where(Config.FilterEndpoint))
                     .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
                     .Distinct()
                     .OrderBy(e => e.Name, StringComparer.Ordinal)
