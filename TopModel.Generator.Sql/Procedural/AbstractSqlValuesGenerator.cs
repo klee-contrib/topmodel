@@ -40,7 +40,7 @@ public abstract class AbstractSqlValuesGenerator(
 
         foreach (var classe in classes.SortInserts())
         {
-            WriteInsert(writerInsert, classe);
+            WriteInsert(writerInsert, classe, tag);
         }
 
         WriteInsertEnd(writerInsert);
@@ -55,13 +55,13 @@ public abstract class AbstractSqlValuesGenerator(
     /// </summary>
     /// <param name="writer">Writer.</param>
     /// <param name="modelClass">Modele de la classe.</param>
-    private void WriteInsert(IFileWriter writer, Class modelClass)
+    private void WriteInsert(IFileWriter writer, Class modelClass, string tag)
     {
         writer.WriteLine();
         writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.SqlName + "\t\t**/");
         foreach (var initItem in Config.GetAllValues(modelClass))
         {
-            writer.WriteLine(Config.GetInsertLine(modelClass, initItem));
+            writer.WriteLine(Config.GetInsertLine(modelClass, initItem, tag));
         }
     }
 }

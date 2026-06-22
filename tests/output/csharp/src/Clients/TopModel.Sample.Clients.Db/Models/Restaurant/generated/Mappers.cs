@@ -652,9 +652,10 @@ public static class Mappers
     /// Mappe 'PromotionWrite' vers 'Promotion'.
     /// </summary>
     /// <param name="source">Instance de 'PromotionWrite'.</param>
+    /// <param name="plat">Plat concerné par la promotion.</param>
     /// <param name="dateCreation">Date de création de l'enregistrement.</param>
     /// <returns>Une nouvelle instance de 'Promotion'.</returns>
-    public static Promotion ToPromotion(this PromotionWrite source, DateTime? dateCreation = null)
+    public static Promotion ToPromotion(this PromotionWrite source, Plat? plat = null, DateTime? dateCreation = null)
     {
         return new Promotion
         {
@@ -663,6 +664,7 @@ public static class Mappers
             DateDebut = source.DateDebut,
             DateFin = source.DateFin,
             Active = source.Active,
+            Plat = plat,
             DateCreation = dateCreation
         };
     }

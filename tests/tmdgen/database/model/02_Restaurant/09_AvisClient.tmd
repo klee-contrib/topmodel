@@ -7,8 +7,8 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Lieu
-  - 03_Restaurant/07_Client
+  - 02_Restaurant/01_Lieu
+  - 02_Restaurant/07_Client
 ---
 class:
   name: AvisClient

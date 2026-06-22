@@ -9,7 +9,7 @@
 create table [dbo].[AVIS_CLIENT] (
 	[AVI_ID] int identity,
 	[AVI_NOTE] int not null,
-	[AVI_COMMENTAIRE] varchar,
+	[AVI_COMMENTAIRE] varchar(100),
 	[AVI_DATE_AVIS] timestamp not null,
 	[AVI_APPROUVE] boolean not null default false,
 	[AVI_NOMBRE_VUES] int not null default 0,

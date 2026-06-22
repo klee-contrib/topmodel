@@ -7,9 +7,9 @@
 -- ===========================================================================================
 
 create table [dbo].[REGION] (
-	[REG_CODE] varchar,
-	[REG_LIBELLE] varchar not null,
-	[REG_NOM_RESPONSABLE] varchar,
+	[REG_CODE] varchar(10),
+	[REG_LIBELLE] varchar(100) not null,
+	[REG_NOM_RESPONSABLE] varchar(100),
 	constraint [PK_REGION] primary key clustered ([REG_CODE] ASC))
 go
 

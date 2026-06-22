@@ -8,7 +8,7 @@
 
 create table [dbo].[COUVERT] (
 	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar not null,
+	[VSL_DESCRIPTION] varchar(100) not null,
 	constraint [PK_COUVERT] primary key clustered ([VSL_ID] ASC))
 go
 

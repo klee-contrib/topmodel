@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -32,9 +31,8 @@ public class Prestataire implements EmployeBase {
 	 * Identifiant de la personne.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PST_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PRESTATAIRE")
-	@SequenceGenerator(sequenceName = "SEQ_PRESTATAIRE", name = "SEQ_PRESTATAIRE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

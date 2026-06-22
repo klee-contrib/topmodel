@@ -415,6 +415,17 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     }
 
     /// <summary>
+    /// Récupère le nom de la séquence associée à une propriété, si elle existe.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Nom de la séquence.</returns>
+    public virtual string? GetSequenceName(IProperty property, string tag)
+    {
+        return property.Domain?.GeneratedValue?.SequenceName?.Value.ParseTemplate(property, this, tag);
+    }
+
+    /// <summary>
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>

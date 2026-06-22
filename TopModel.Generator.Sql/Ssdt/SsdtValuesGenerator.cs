@@ -37,7 +37,7 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
         WriteHeader(writer, tableName);
 
         // Ecrit les inserts.
-        WriteInsertLines(writer, classe);
+        WriteInsertLines(writer, classe, tag);
 
         WriteFooter(writer);
     }
@@ -70,11 +70,11 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="item">Liste de références.</param>
-    private void WriteInsertLines(IFileWriter writer, Class item)
+    private void WriteInsertLines(IFileWriter writer, Class item, string tag)
     {
         foreach (var initItem in Config.GetAllValues(item))
         {
-            writer.WriteLine(Config.GetInsertLine(item, initItem));
+            writer.WriteLine(Config.GetInsertLine(item, initItem, tag));
         }
     }
 }

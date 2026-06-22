@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -30,9 +29,8 @@ public abstract class Lieu {
 	 * Identifiant du restaurant.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "LIE_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LIEU")
-	@SequenceGenerator(sequenceName = "SEQ_LIEU", name = "SEQ_LIEU", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

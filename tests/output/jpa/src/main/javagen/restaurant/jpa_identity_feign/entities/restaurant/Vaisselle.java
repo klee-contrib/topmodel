@@ -28,7 +28,7 @@ public abstract class Vaisselle {
 	@Id
 	@Column(name = "VSL_ID", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_VAISSELLE")
-	@SequenceGenerator(sequenceName = "SEQ_VAISSELLE", name = "SEQ_VAISSELLE", initialValue = 1, allocationSize = 1)
+	@SequenceGenerator(sequenceName = "SEQ_VAISSELLE", name = "SEQ_VAISSELLE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

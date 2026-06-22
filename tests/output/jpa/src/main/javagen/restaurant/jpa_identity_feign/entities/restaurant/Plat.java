@@ -26,6 +26,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -44,8 +45,9 @@ public class Plat {
 	 * Identifiant du plat.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PLAT")
+	@SequenceGenerator(sequenceName = "SEQ_PLAT", name = "SEQ_PLAT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

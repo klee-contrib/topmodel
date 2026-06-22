@@ -8,9 +8,9 @@
 
 create table [dbo].[PERSONNE] (
 	[PER_ID] int identity,
-	[PER_NOM] varchar not null,
-	[PER_PRENOM] varchar not null,
-	[DEP_CODE] varchar default N'75',
+	[PER_NOM] varchar(100) not null,
+	[PER_PRENOM] varchar(100) not null,
+	[DEP_CODE] varchar(10) default N'75',
 	[PER_DATE_CREATION] timestamp not null,
 	constraint [PK_PERSONNE] primary key clustered ([PER_ID] ASC),
 	constraint [FK_PERSONNE_DEP_CODE] foreign key ([DEP_CODE]) references [dbo].[DEPARTEMENT] ([DEP_CODE]))

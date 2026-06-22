@@ -25,6 +25,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -40,8 +41,9 @@ public class Menu {
 	 * Identifiant du menu.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "MEN_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MENU")
+	@SequenceGenerator(sequenceName = "SEQ_MENU", name = "SEQ_MENU", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

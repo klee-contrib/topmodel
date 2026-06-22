@@ -8,9 +8,9 @@
 
 create table [dbo].[PRESTATAIRE] (
 	[PST_ID] int identity,
-	[PST_NOM] varchar not null,
-	[PST_PRENOM] varchar not null,
-	[PST_TELEPHONE] varchar,
+	[PST_NOM] varchar(100) not null,
+	[PST_PRENOM] varchar(100) not null,
+	[PST_TELEPHONE] varchar(20),
 	constraint [PK_PRESTATAIRE] primary key clustered ([PST_ID] ASC))
 go
 

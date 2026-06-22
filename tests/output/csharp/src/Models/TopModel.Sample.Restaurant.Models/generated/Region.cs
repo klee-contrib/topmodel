@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Région.
 /// </summary>
-[Reference]
+[Reference(true)]
 [DefaultProperty(nameof(Libelle))]
 [Table("region")]
 public partial record Region

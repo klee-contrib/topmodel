@@ -40,7 +40,7 @@ public abstract class AbstractSqlTablesGenerator(
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
-            WriteTableDeclaration(classe, writer);
+            WriteTableDeclaration(classe, writer, tag);
         }
     }
 
@@ -50,14 +50,8 @@ public abstract class AbstractSqlTablesGenerator(
     /// Gère l'auto-incrémentation des clés primaires.
     /// </summary>
     /// <param name="writer">Flux d'écriture création bases.</param>
-    protected abstract void WriteIdentityColumn(IFileWriter writer);
-
-    protected virtual void WriteSequenceDeclaration(Class classe, IFileWriter writer)
-    {
-        writer.Write(
-            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()} start with {Config.Procedural?.Identity.Start ?? 1} increment by {Config.Procedural?.Identity.Increment ?? 1}"
-        );
-    }
+    /// <param name="generatedValue">Définition de l'identité.</param>
+    protected abstract void WriteIdentityColumn(IFileWriter writer, GeneratedValueDefinition generatedValue);
 
     private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(Config.TableTablespace);
 
@@ -126,19 +120,7 @@ public abstract class AbstractSqlTablesGenerator(
         writer.WriteLine($"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => pk.SqlName))})");
     }
 
-    private void WriteSequence(Class classe, IFileWriter writer)
-    {
-        writer.WriteLine();
-        writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de la séquence pour la clé primaire de la table {classe.SqlName}");
-        writer.WriteLine(" **/");
-
-        WriteSequenceDeclaration(classe, writer);
-
-        writer.WriteLine(Config.BatchSeparator);
-    }
-
-    private void WriteTableDeclaration(Class classe, IFileWriter writer)
+    private void WriteTableDeclaration(Class classe, IFileWriter writer, string tag)
     {
         var fkPropertiesList = new List<IProperty>();
 
@@ -152,49 +134,7 @@ public abstract class AbstractSqlTablesGenerator(
 
         foreach (var property in Config.GetAllProperties(classe))
         {
-            var persistentType =
-                property is { Composition: null, Domain: not null } ? Config.GetType(property)
-                : property is { Composition: null, Domain: null } ? $"varchar({Config.IdentifierLengthLimit})"
-                : JsonType;
-
-            if (persistentType.ToLower().Equals("varchar") && property.Domain?.Length != null)
-            {
-                persistentType = $"{persistentType}({property.Domain.Length})";
-            }
-
-            if (
-                (persistentType.ToLower().Equals("numeric") || persistentType.ToLower().Equals("decimal"))
-                && property.Domain?.Length != null
-            )
-            {
-                persistentType =
-                    $"{persistentType}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
-            }
-
-            writer.Write("\t" + Config.CheckIdentifierLength(property.SqlName) + " " + persistentType);
-            if (
-                property.Association == null
-                && property.PrimaryKey
-                && property.GeneratedValue != null
-                && persistentType.Contains("int")
-                && Config.Procedural!.Identity.Mode == IdentityMode.IDENTITY
-                && (classe.Extends == null || classe.Extends.InheritanceStrategy != InheritanceStrategy.DistinctTables)
-            )
-            {
-                WriteIdentityColumn(writer);
-            }
-
-            if (property.Required && (property.Class == classe || property.Class.Extends != classe))
-            {
-                writer.Write(" not null");
-            }
-
-            var defaultValue = Config.GetValue(property);
-            if (defaultValue != "null")
-            {
-                writer.Write($" default {defaultValue}");
-            }
-
+            Config.WriteColumn(writer, classe, property);
             writer.Write(",");
             writer.WriteLine();
 
@@ -208,16 +148,6 @@ public abstract class AbstractSqlTablesGenerator(
         WritePrimaryKeyConstraint(writer, classe, Config.GetAllProperties(classe));
         WriteEndTableDeclaration(writer);
 
-        var classeForSequence =
-            classe.Extends?.InheritanceStrategy != InheritanceStrategy.DistinctTables ? classe
-            : classe.Extends.Type == ClassType.Abstract
-            && Config.Classes.Where(c => c.Extends == classe.Extends).OrderBy(c => c.SqlName).First() == classe
-                ? classe.Extends
-            : null;
-
-        if (classeForSequence != null && Config.UsesSequence(classeForSequence))
-        {
-            WriteSequence(classeForSequence, writer);
-        }
+        Config.WriteSequence(writer, classe, tag);
     }
 }

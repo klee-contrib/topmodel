@@ -7,8 +7,8 @@
 -- ===========================================================================================
 
 create table [dbo].[CATEGORIE_PLAT] (
-	[CAT_CODE] varchar,
-	[CAT_LIBELLE] varchar not null,
+	[CAT_CODE] varchar(10),
+	[CAT_LIBELLE] varchar(100) not null,
 	[CAT_ORDRE] int not null,
 	[CAT_PRIX_MOYEN] decimal,
 	constraint [PK_CATEGORIE_PLAT] primary key clustered ([CAT_CODE] ASC),

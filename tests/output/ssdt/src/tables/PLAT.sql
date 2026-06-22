@@ -7,12 +7,12 @@
 -- ===========================================================================================
 
 create table [dbo].[PLAT] (
-	[PLA_ID] int identity,
-	[PLA_NOM] varchar not null,
-	[PLA_DESCRIPTION] varchar,
+	[PLA_ID] int,
+	[PLA_NOM] varchar(100) not null,
+	[PLA_DESCRIPTION] varchar(100),
 	[PLA_PRIX] decimal not null,
 	[PLA_DISPONIBLE] boolean not null default true,
-	[CAT_CODE] varchar not null,
+	[CAT_CODE] varchar(10) not null,
 	[LIE_ID] int not null,
 	[PLA_DATE_CREATION] timestamp not null,
 	[PBO_VOLUME] int,
@@ -20,6 +20,12 @@ create table [dbo].[PLAT] (
 	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
 	constraint [FK_PLAT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
+go
+
+/**
+  * Création de la séquence pour la clé primaire de la table PLAT
+ **/
+create sequence SEQ_PLAT as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */

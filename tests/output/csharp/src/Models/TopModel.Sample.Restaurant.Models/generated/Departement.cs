@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Département.
 /// </summary>
-[Reference]
+[Reference(true)]
 [DefaultProperty(nameof(Libelle))]
 [Table("departement")]
 public partial record Departement

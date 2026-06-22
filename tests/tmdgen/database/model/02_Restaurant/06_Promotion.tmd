@@ -7,8 +7,8 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/01_Lieu
-  - 03_Restaurant/02_Plat
+  - 02_Restaurant/01_Lieu
+  - 02_Restaurant/02_Plat
 ---
 class:
   name: Promotion

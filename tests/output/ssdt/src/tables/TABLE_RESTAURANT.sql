@@ -8,7 +8,7 @@
 
 create table [dbo].[TABLE_RESTAURANT] (
 	[TAB_ID] int identity,
-	[TAB_NUMERO] varchar not null,
+	[TAB_NUMERO] varchar(10) not null,
 	[TAB_CAPACITE] int not null,
 	[TAB_DISPONIBLE] boolean not null default true,
 	[LIE_ID] int not null,

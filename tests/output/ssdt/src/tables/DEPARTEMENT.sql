@@ -7,9 +7,9 @@
 -- ===========================================================================================
 
 create table [dbo].[DEPARTEMENT] (
-	[DEP_CODE] varchar,
-	[DEP_LIBELLE] varchar not null,
-	[REG_CODE] varchar not null,
+	[DEP_CODE] varchar(10),
+	[DEP_LIBELLE] varchar(100) not null,
+	[REG_CODE] varchar(10) not null,
 	constraint [PK_DEPARTEMENT] primary key clustered ([DEP_CODE] ASC),
 	constraint [FK_DEPARTEMENT_REG_CODE] foreign key ([REG_CODE]) references [dbo].[REGION] ([REG_CODE]))
 go

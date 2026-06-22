@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Catégorie de plat.
 /// </summary>
-[Reference]
+[Reference(true)]
 [DefaultProperty(nameof(Libelle))]
 [Table("categorie_plat")]
 public partial record CategoriePlat

@@ -9,7 +9,7 @@ export type PromotionRead = EntityToType<PromotionReadEntityType>;
 export type PromotionReadEntityType = typeof PromotionReadEntity;
 
 export const PromotionReadEntity = entity({
-    platId: e.field(DO_SEQ_ID, f => f.optional()
+    platId: e.field(DO_SEQ_ID, f => f
         .label("restaurant.promotion.platId")
     ),
     libelle: e.field(DO_LIBELLE, f => f

@@ -23,7 +23,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             if (item.Reference && Config.Kinetix)
             {
-                if (item.ReferenceKey?.GeneratedValue != null)
+                if (item.ReferenceKey?.GeneratedValue == null)
                 {
                     w.WriteAttribute("Reference", "true");
                 }

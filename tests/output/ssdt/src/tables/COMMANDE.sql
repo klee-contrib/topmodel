@@ -14,7 +14,7 @@ create table [dbo].[COMMANDE] (
 	[PER_ID] int not null,
 	[TAB_ID] int,
 	[REV_ID] int,
-	[STC_CODE] varchar not null default N'EN_ATT',
+	[STC_CODE] varchar(10) not null default N'EN_ATT',
 	[AVI_ID] int,
 	[COM_DATE_CREATION] timestamp not null,
 	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),

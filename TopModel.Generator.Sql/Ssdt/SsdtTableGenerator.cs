@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -47,17 +46,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         // Fin du create table.
         WriteCreateTableClosing(writer, classe, useCompression);
 
-        var classeForSequence =
-            classe.Extends?.InheritanceStrategy == InheritanceStrategy.DistinctTables
-            && classe.Extends.Type == ClassType.Abstract
-            && Config.Classes.Where(c => c.Extends == classe.Extends).OrderBy(c => c.SqlName).First() == classe
-                ? classe.Extends
-                : null;
-
-        if (classeForSequence != null)
-        {
-            WriteSequence(classeForSequence, writer);
-        }
+        Config.WriteSequence(writer, classe, tag);
 
         // Indexes sur les clés étrangères.
         WriteIndexes(writer, classe, Config.GetAllProperties(classe));
@@ -70,70 +59,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     }
 
     /// <summary>
-    /// Ecrit le SQL pour une colonne.
-    /// </summary>
-    /// <param name="sb">Flux.</param>
-    /// <param name="property">Propriété.</param>
-    protected virtual void WriteColumn(StringBuilder sb, Class table, IProperty property)
-    {
-        var persistentType =
-            property is { Composition: null, Domain: not null } ? Config.GetType(property)
-            : property is { Composition: null, Domain: null } ? $"varchar({Config.IdentifierLengthLimit})"
-            : Config.TargetDBMS == TargetDBMS.Postgre ? "jsonb"
-            : "json";
-
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            sb.Append('[');
-        }
-
-        sb.Append(property.SqlName);
-
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            sb.Append(']');
-        }
-
-        sb.Append($" {persistentType}");
-
-        if (
-            property.Association == null
-            && property.PrimaryKey
-            && property.GeneratedValue != null
-            && Config.GetType(property).Contains("int")
-            && !Config.Ssdt!.DisableIdentity
-            && (table.Extends == null || table.Extends.InheritanceStrategy != InheritanceStrategy.DistinctTables)
-        )
-        {
-            if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-            {
-                sb.Append(" identity");
-            }
-            else
-            {
-                sb.Append(" not null generated always as identity");
-            }
-        }
-
-        if (property.Required && !property.PrimaryKey && (property.Class == table || property.Class.Extends != table))
-        {
-            sb.Append(" not null");
-        }
-
-        var defaultValue = Config.GetValue(property);
-        if (defaultValue != "null")
-        {
-            sb.Append($" default {defaultValue}");
-        }
-    }
-
-    /// <summary>
     /// Ecrit la création de la propriété de description de la table.
     /// </summary>
     /// <param name="writer">Writer.</param>
     /// <param name="classe">Classe de la table.</param>
     protected virtual void WriteComments(IFileWriter writer, Class classe)
     {
+        writer.WriteLine();
         writer.WriteComments(classe, Config);
     }
 
@@ -156,7 +88,6 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         }
 
         writer.WriteLine(Config.TargetDBMS == TargetDBMS.Sqlserver ? "go" : ";");
-        writer.WriteLine();
     }
 
     /// <summary>
@@ -181,34 +112,25 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="sb">Flux d'écriture.</param>
     /// <param name="property">Propriété portant la clef étrangère.</param>
-    protected virtual void WriteForeignKeyConstraint(StringBuilder sb, IProperty property)
+    protected virtual void WriteForeignKeyConstraint(IFileWriter writer, IProperty property)
     {
         var referenceClass = property.Association!;
+        var referencedSqlName = (
+            referenceClass.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
+                ? referenceClass.Extends
+                : referenceClass
+        ).SqlName;
 
         if (Config.TargetDBMS == TargetDBMS.Sqlserver)
         {
-            var propertyConcat = "[" + property.SqlName + "]";
-            sb.Append("constraint [")
-                .Append(property.ForeignKeyName)
-                .Append("] foreign key (")
-                .Append(propertyConcat)
-                .Append(") ");
-            sb.Append("references [dbo].[")
-                .Append(
-                    (
-                        referenceClass.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
-                            ? referenceClass.Extends
-                            : referenceClass
-                    ).SqlName
-                )
-                .Append("] (");
-            sb.Append('[').Append(property.AssociationProperty!.SqlName).Append(']');
-            sb.Append(')');
+            writer.Write(
+                $"constraint [{property.ForeignKeyName}] foreign key ([{property.SqlName}]) references [dbo].[{referencedSqlName}] ([{property.AssociationProperty!.SqlName}])"
+            );
         }
         else
         {
-            sb.Append(
-                $"constraint FK_{property.ForeignKeyName} foreign key ({property.SqlName}) references {referenceClass.SqlName} ({property.AssociationProperty!.SqlName})"
+            writer.Write(
+                $"constraint {property.ForeignKeyName} foreign key ({property.SqlName}) references {referencedSqlName} ({property.AssociationProperty!.SqlName})"
             );
         }
     }
@@ -247,8 +169,6 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             writer.Write(string.Join(", ", propertyNames.Select(n => $"{n} asc")));
             writer.WriteLine(");");
         }
-
-        writer.WriteLine();
     }
 
     protected virtual void WriteIndex(IFileWriter writer, IndexDefinition index)
@@ -270,12 +190,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             )
         )
         {
+            writer.WriteLine();
             writer.WriteLine($"/* Index on foreign key column for {classe.SqlName}.{property.SqlName} */");
             WriteIndex(writer, property.IndexForeignKeyName!, classe.SqlName, property.SqlName);
         }
 
         foreach (var index in classe.Indexes.Where(idx => !idx.Unique))
         {
+            writer.WriteLine();
             writer.WriteLine($"/* Index {index.SqlName} on {classe.SqlName} */");
             WriteIndex(writer, index);
         }
@@ -290,6 +212,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         {
             var index = new IndexDefinition { Class = classe };
             index.Properties.Add(classe.DefaultProperty);
+            writer.WriteLine();
             WriteIndex(writer, index);
         }
     }
@@ -301,43 +224,39 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="table">Table.</param>
     protected virtual void WriteInsideInstructions(IFileWriter writer, Class table)
     {
-        // Construction d'une liste de toutes les instructions.
-        var definitions = new List<string>();
-        var sb = new StringBuilder();
+        var properties = Config.GetAllProperties(table).ToList();
 
-        foreach (var property in Config.GetAllProperties(table))
+        foreach (var property in properties)
         {
-            sb.Clear();
-            WriteColumn(sb, table, property);
-            definitions.Add(sb.ToString());
+            Config.WriteColumn(writer, table, property);
+            if (properties[^1] != property)
+            {
+                writer.WriteLine(",");
+            }
         }
 
         // Primary Key
-        sb.Clear();
-        WritePkLine(sb, table, Config.GetAllProperties(table));
-
-        definitions.Add(sb.ToString());
+        WritePkLine(writer, table, properties);
 
         // Foreign key constraints
         foreach (
-            var property in Config
-                .GetAllProperties(table)
-                .Where(ap =>
-                    (ap.Association?.IsPersistent ?? false) && Config.AvailableClasses.Contains(ap.Association)
-                )
+            var property in properties.Where(ap =>
+                (ap.Association?.IsPersistent ?? false) && Config.AvailableClasses.Contains(ap.Association)
+            )
         )
         {
-            sb.Clear();
-            WriteForeignKeyConstraint(sb, property);
-            definitions.Add(sb.ToString());
+            writer.WriteLine(",");
+            writer.Write("\t");
+            WriteForeignKeyConstraint(writer, property);
         }
 
         // Unique constraints (clés unique déclarées via "unique:" et index uniques via "indexes:")
-        definitions.AddRange(WriteUniqueKeyConstraints(table));
-
-        // Ecriture de la liste concaténée.
-        var separator = "," + Environment.NewLine;
-        writer.Write(string.Join(separator, definitions.Select(x => "\t" + x)));
+        foreach (var index in table.Indexes.Where(idx => idx.Unique))
+        {
+            writer.WriteLine(",");
+            writer.Write("\t");
+            WriteUniqueKeyConstraint(writer, index);
+        }
     }
 
     /// <summary>
@@ -345,7 +264,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    protected virtual void WritePkLine(StringBuilder sb, Class classe, IEnumerable<IProperty> properties)
+    protected virtual void WritePkLine(IFileWriter writer, Class classe, IEnumerable<IProperty> properties)
     {
         var pkCount = 0;
 
@@ -354,13 +273,16 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             return;
         }
 
+        writer.WriteLine(",");
+        writer.Write("\t");
+
         if (Config.TargetDBMS == TargetDBMS.Sqlserver)
         {
-            sb.Append("constraint [PK_").Append(classe.SqlName).Append("] primary key clustered (");
+            writer.Write($"constraint [PK_{classe.SqlName}] primary key clustered (");
         }
         else
         {
-            sb.Append($"constraint PK_{classe.SqlName} primary key (");
+            writer.Write($"constraint PK_{classe.SqlName} primary key (");
         }
 
         foreach (var pk in properties.Where(p => p.PrimaryKey))
@@ -368,52 +290,33 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             ++pkCount;
             if (Config.TargetDBMS == TargetDBMS.Sqlserver)
             {
-                sb.Append($"[{pk.SqlName}] ASC");
+                writer.Write($"[{pk.SqlName}] ASC");
             }
             else
             {
-                sb.Append(pk.SqlName);
+                writer.Write(pk.SqlName);
             }
 
             if (pkCount < properties.Count(p => p.PrimaryKey))
             {
-                sb.Append(", ");
+                writer.Write(", ");
             }
         }
 
-        sb.Append(')');
+        writer.Write(")");
     }
 
     /// <summary>
-    /// Calcule la liste des déclarations de contraintes d'unicité.
+    /// Ecrit un index unique.
     /// </summary>
-    /// <param name="classe">Classe de la table.</param>
-    /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
-    protected virtual IList<string> WriteUniqueKeyConstraints(Class classe)
+    /// <param name="writer">Writer.</param>
+    /// <param name="idw">Index unique de la table.</param>
+    protected virtual void WriteUniqueKeyConstraint(IFileWriter writer, IndexDefinition idx)
     {
-        var constraints = classe
-            .Indexes.Where(idx => idx.Unique)
-            .Select(idx =>
-                Config.TargetDBMS == TargetDBMS.Sqlserver
-                    ? $"constraint [{idx.SqlName}] unique nonclustered ({string.Join(", ", idx.Properties.Select(p => $"[{p.SqlName}] ASC"))})"
-                    : $"constraint {idx.SqlName} unique ({string.Join(", ", idx.Properties.Select(p => $"{p.SqlName}"))})"
-            )
-            .ToList();
-
-        return constraints;
-    }
-
-    private void WriteSequence(Class classe, IFileWriter writer)
-    {
-        writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de la séquence pour la clé primaire de la table {classe.SqlName}");
-        writer.WriteLine(" **/");
-
         writer.Write(
-            $"create sequence {Config.GetSequenceName(classe)} as {Config.GetType(classe.PrimaryKey.Single()).ToUpper()} start with 1 increment by 1"
+            Config.TargetDBMS == TargetDBMS.Sqlserver
+                ? $"constraint [{idx.SqlName}] unique nonclustered ({string.Join(", ", idx.Properties.Select(p => $"[{p.SqlName}] ASC"))})"
+                : $"constraint {idx.SqlName} unique ({string.Join(", ", idx.Properties.Select(p => $"{p.SqlName}"))})"
         );
-
-        writer.WriteLine(Config.BatchSeparator);
-        writer.WriteLine();
     }
 }
