@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.SequenceGenerator;
 
 /**
  * Vaisselle de restaurant.
@@ -25,8 +26,9 @@ public abstract class Vaisselle {
 	 * Id de la vaisselle.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "VSL_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_VAISSELLE")
+	@SequenceGenerator(sequenceName = "SEQ_VAISSELLE", name = "SEQ_VAISSELLE", initialValue = 1, allocationSize = 1)
 	private Integer id;
 
 	/**

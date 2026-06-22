@@ -330,19 +330,7 @@ internal class ClassResolver(
             {
                 yield return new ModelError(
                     localizer,
-                    ErrorType.TMD3007,
-                    [classe.Name, classe.ExtendsReference.ReferenceName],
-                    classe,
-                    classe.ExtendsReference!
-                );
-                continue;
-            }
-
-            if (classe.Type == ClassType.Abstract && extends.Type == ClassType.Regular)
-            {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD3008,
+                    ErrorType.TMD3006,
                     [classe.Name, classe.ExtendsReference.ReferenceName],
                     classe,
                     classe.ExtendsReference!
@@ -378,7 +366,19 @@ internal class ClassResolver(
                 {
                     yield return new ModelError(
                         localizer,
-                        ErrorType.TMD3006,
+                        ErrorType.TMD3007,
+                        [implementReference.ReferenceName],
+                        classe,
+                        implementReference
+                    );
+                    continue;
+                }
+
+                if (classe.Type == ClassType.Interface)
+                {
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD3008,
                         [implementReference.ReferenceName],
                         classe,
                         implementReference

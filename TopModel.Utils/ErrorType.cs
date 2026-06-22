@@ -152,17 +152,17 @@ public enum ErrorType
     TMD3005,
 
     /// <summary>
-    /// Seule une interface peut être implémentée.
+    /// Classes interfaces ne peuvent être héritées qu'entre elles.
     /// </summary>
     TMD3006,
 
     /// <summary>
-    /// Classes interfaces ne peuvent être héritées qu'entre elles.
+    /// Seule une interface peut être implémentée.
     /// </summary>
     TMD3007,
 
     /// <summary>
-    /// Classe abstraite ne peut pas hériter de classe non abstraite.
+    /// Interface avec implements.
     /// </summary>
     TMD3008,
 
