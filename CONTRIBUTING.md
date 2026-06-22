@@ -31,7 +31,7 @@ TopModel est décomposé en différents modules :
 
 - **TopModel.ModelGenerator** : Générateur de fichiers `.tmd` à partir de sources externes (OpenAPI, PostgreSQL, Oracle, etc.) - outil `tmdgen`
 - **TopModel.Utils** : Utilitaires partagés entre les différents modules
-- **TopModel.LanguageServer** : Language Server Protocol (LSP) utilisé par l'extension VSCode pour fournir l'auto-complétion, la validation et l'auto-import
+- **TopModel.LanguageServer** : Language Server Protocol (LSP) utilisé par l'extension VSCode pour fournir l'auto-complétion, la validation et l'auto-import. Publié comme tool .NET global (`modls`, package NuGet `TopModel.LanguageServer`)
 - **TopModel.VSCode** : Extension VSCode qui intègre TopModel dans l'éditeur
 
 ## Debbugger l'extension VSCode et le Language Server
@@ -44,9 +44,16 @@ TopModel est décomposé en différents modules :
 
 ### Etapes
 
-- Lancer la commande `dotnet publish -c debug` dans le dossier TopModel.LanguageServer. Cela permet de builder le language server et de le mettre à disposition de l'extension.
+- Le language server est consommé par l'extension comme tool .NET global (`modls`). Pour tester une version locale, l'empaqueter et l'installer depuis la source locale :
+
+```bash
+# Depuis la racine du dépôt
+dotnet pack
+dotnet tool update --global --add-source ./.nupkg TopModel.LanguageServer --prerelease
+```
+
 - Ouvrir le projet TopModel.VSCode avec VsCode
-- Lancer la commande `npm ci` pour installer les dépendances
+- Lancer la commande `npm ci` pour installer les dépendances (copie aussi les schémas JSON via `copy-schemas.mjs`)
 - Lancer la commande `npm run start` pour lancer le build de l'extension en mode watch
 - Le fichier `.vscode/launch.json` contient la configuration pour lancer le debug de l'extension. Il suffit de démarrer une session de debug avec la touche `F5`
 

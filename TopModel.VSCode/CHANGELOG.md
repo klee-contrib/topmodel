@@ -1,5 +1,11 @@
 # VSCode
 
+## 4.5.0
+
+- Le Language Server est désormais distribué comme un tool .NET global (`modls`, package NuGet `TopModel.LanguageServer`) publié séparément de l'extension, au lieu d'être embarqué. Il est installé/mis à jour automatiquement comme `modgen` et `tmdgen`.
+- Ajout d'une vérification de l'alignement des versions entre `modls`, `modgen` et `tmdgen`, avec proposition de mise à jour en cas de désalignement.
+- Affichage d'une erreur au démarrage de l'extension si le language server `modls` n'est pas installé.
+
 ## 3.6.7
 
 - [`311757`](https://github.com/klee-contrib/topmodel/commit/311757821e8b7c11ff0a6cd5b1779e210ff2ae76) - VSCode fix texte status bar en cas d'erreur

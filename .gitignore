@@ -2,6 +2,7 @@
 bin
 obj
 TopModel.VSCode/out
+TopModel.VSCode/schemas
 node_modules
 language-server
 .nupkg

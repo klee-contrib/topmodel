@@ -1,4 +1,4 @@
-export const SERVER_EXE = "dotnet";
+export const SERVER_EXE = "modls";
 
 export const COMMANDS = {
     modgen: "topmodel.modgen",
@@ -7,6 +7,7 @@ export const COMMANDS = {
     findRef: "topmodel.findRef",
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
+    restartLanguageServer: "topmodel.modls.restart",
 };
 
 // Stockage de l'ensemble des commandes disponibles.

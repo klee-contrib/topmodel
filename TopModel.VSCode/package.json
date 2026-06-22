@@ -20,7 +20,7 @@
         "directory": "TopModel.VSCode",
         "type": "git"
     },
-    "version": "4.6.0",
+    "version": "4.6.1",
     "license": "MIT",
     "engines": {
         "vscode": "^1.118.0"
@@ -55,6 +55,16 @@
                 "category": "TopModel.Generator"
             },
             {
+                "command": "topmodel.modls.update",
+                "title": "Update TopModel.LanguageServer",
+                "category": "TopModel.LanguageServer"
+            },
+            {
+                "command": "topmodel.modls.restart",
+                "title": "Restart Language Server",
+                "category": "TopModel.LanguageServer"
+            },
+            {
                 "command": "topmodel.modgen",
                 "title": "Run Model Generation",
                 "category": "TopModel.Generator"
@@ -82,15 +92,15 @@
         "yamlValidation": [
             {
                 "fileMatch": "topmodel*.config",
-                "url": "./language-server/schema.config.json"
+                "url": "./schemas/schema.config.json"
             },
             {
                 "fileMatch": "tmdgen*.config",
-                "url": "./language-server/schema.tmdgen.config.json"
+                "url": "./schemas/schema.tmdgen.config.json"
             },
             {
                 "fileMatch": "*.tmd",
-                "url": "./language-server/schema.json"
+                "url": "./schemas/schema.json"
             }
         ],
         "languages": [
@@ -146,9 +156,10 @@
     },
     "main": "./out/main.js",
     "scripts": {
+        "copy-schemas": "node copy-schemas.mjs",
         "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "build-preview-assets": "esbuild ./src/topmodel-preview.ts --bundle --outfile=out/topmodel-preview.js --platform=browser --format=iife --minify",
-        "build": "npm run build-extension && npm run build-preview-assets",
+        "build": "npm run copy-schemas && npm run build-extension && npm run build-preview-assets",
         "lint": "oxlint src",
         "package": "vsce package",
         "extension-watch": "npm run build-extension -- --sourcemap --watch",
@@ -170,8 +181,8 @@
         "@types/node": "25.7.0",
         "@types/vscode": "1.118.0",
         "@vscode/vsce": "3.9.1",
-        "concurrently": "9.2.1",
-        "esbuild": "0.28.0",
+        "concurrently": "10.0.3",
+        "esbuild": "0.28.1",
         "glob": "13.0.6",
         "oxlint": "1.64.0",
         "typescript": "6.0.3"

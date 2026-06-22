@@ -4,4 +4,5 @@ src/**
 **/.eslintrc.json
 **/*.map
 **/*.ts
+**/*.mjs
 node_modules

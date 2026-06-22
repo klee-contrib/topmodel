@@ -33,7 +33,7 @@ function copyCode(diagram: string) {
     textArea.select();
     document.execCommand("copy");
     document.body.removeChild(textArea);
-    showFeedback("Code copié dans le presse-papiers");
+    showFeedback((globalThis as any).i18n?.codeCopied ?? "Code copied to clipboard");
 }
 // Expose functions used in inline HTML onclick handlers (required with IIFE bundle format)
 (globalThis as any).zoomClick = zoomClick;

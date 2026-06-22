@@ -76,3 +76,21 @@ ou
 ```bash
 dotnet tool list -g | grep TopModel.Generator
 ```
+
+## Language Server (`modls`)
+
+Le language server TopModel est distribué comme outil .NET global, sous le package NuGet `TopModel.LanguageServer`, et expose la commande **`modls`**. Il est utilisé par l'[extension VSCode](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel) pour fournir l'autocomplétion, la validation et la navigation.
+
+L'extension VSCode l'installe et le met à jour automatiquement. Pour l'installer manuellement :
+
+```bash
+dotnet tool install --global TopModel.LanguageServer
+```
+
+Pour le mettre à jour :
+
+```bash
+dotnet tool update --global TopModel.LanguageServer
+```
+
+> **Note** : Les versions de `modls`, `modgen` et `tmdgen` sont publiées conjointement et doivent rester alignées.

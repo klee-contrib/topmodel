@@ -9,7 +9,7 @@ import { State } from "./state";
 import { TopModelConfig, TopModelException } from "./types";
 import { execute } from "./utils";
 
-const open = require("open");
+const open = require("open").default;
 const yaml = require("js-yaml");
 
 let state: State;
@@ -20,7 +20,11 @@ export async function activate(ctx: ExtensionContext) {
     try {
         const installed = await checkDotnetInstall();
         if (installed) {
+            state = new State(ctx);
+
             const confs = await findConfFiles();
+
+            await state.initLanguageServer(confs);
 
             const applications = Object.entries(
                 groupBy(
@@ -32,10 +36,9 @@ export async function activate(ctx: ExtensionContext) {
                 ),
             ).map(
                 ([workspaceName, confs]) =>
-                    new Application(workspace.workspaceFolders!.find((w) => w.name === workspaceName)!, confs, ctx),
+                    new Application(workspace.workspaceFolders!.find((w) => w.name === workspaceName)!, confs),
             );
 
-            state = new State(ctx);
             state.applications.push(...applications);
         }
     } catch (error: any) {
@@ -44,7 +47,10 @@ export async function activate(ctx: ExtensionContext) {
 }
 
 export function deactivate() {
-    state.preview?.panel.dispose();
+    state?.preview?.panel.dispose();
+    // On attend l'arrêt effectif du serveur (kill du processus inclus) pour libérer le verrou
+    // sur les fichiers de l'outil avant que VSCode ne détruise l'hôte d'extension.
+    return state?.stopLanguageServer();
 }
 
 /********************************************************* */

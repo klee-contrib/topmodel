@@ -10,11 +10,18 @@ export class TmdTool {
     versions: string[] = [];
     error?: unknown;
     installed?: boolean;
-    status?: Status;
+    status: Status = "LOADING";
+    /**
+     * Hooks optionnels exécutés autour de la mise à jour de l'outil.
+     * Utilisés pour le language server : il faut arrêter le processus modls (qui verrouille
+     * les fichiers de l'outil) avant `dotnet tool update`, puis le redémarrer ensuite.
+     */
+    public onBeforeUpdate?: () => Promise<void>;
+    public onAfterUpdate?: () => Promise<void>;
     private _terminal?: Terminal;
     constructor(
-        public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator",
-        public readonly command: "modgen" | "tmdgen",
+        public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator" | "TopModel.LanguageServer",
+        public readonly command: "modgen" | "tmdgen" | "modls",
     ) {
         makeAutoObservable(this);
         if (this.name === "TopModel.Generator") {
@@ -26,6 +33,10 @@ export class TmdTool {
                 this._terminal = undefined;
             }
         });
+    }
+
+    get isGenerator() {
+        return this.command !== "modls";
     }
 
     get latestVersion() {
@@ -43,17 +54,12 @@ export class TmdTool {
 
         switch (this.status) {
             case "ERROR":
-                if (this.installed) {
-                    text += " en erreur";
-                } else {
-                    text += " n'est pas installé";
-                }
+                text += ` ${this.installed ? t("statusInError") : t("statusNotInstalled")}`;
                 break;
             case "INSTALLING":
                 text += ` -> v${latestVersion}`;
                 break;
             case "LOADING":
-                text += `chargement`;
                 break;
         }
 
@@ -62,6 +68,11 @@ export class TmdTool {
 
     public async init(context: ExtensionContext) {
         await this.checkInstall();
+        // Le language server est requis au démarrage de l'extension : on l'installe automatiquement.
+        if (!this.installed && this.name === "TopModel.LanguageServer") {
+            await this.install();
+        }
+
         if (this.installed) {
             await this.loadCurrentVersion();
             await this.loadVersions();
@@ -86,7 +97,7 @@ export class TmdTool {
     }
 
     private async showReleaseNote(text: string) {
-        const buttonText = "Voir la release note";
+        const buttonText = t("releaseNoteButton");
         const selection = await window.showInformationMessage(text, buttonText);
         if (selection === buttonText) {
             commands.executeCommand(COMMANDS.releaseNote);
@@ -95,20 +106,27 @@ export class TmdTool {
 
     private async install() {
         this.status = "INSTALLING";
+        if (this.name === "TopModel.LanguageServer") {
+            window.showInformationMessage(t("languageServerInstalling"));
+        }
+
         await execute(`dotnet tool install --global ${this.name}`);
+        this.installed = true;
         await this.loadCurrentVersion();
-        this.showReleaseNote(`L'outil ${this.name} (v${this.currentVersion}) a été installé`);
+        this.showReleaseNote(t("toolInstalled", [this.name, this.currentVersion ?? ""]));
         this.status = "READY";
     }
 
     private async loadCurrentVersion() {
         try {
-            const result = (await execute(`${this.command} --version`)) as string;
-            this.currentVersion = result.replace("\r\n", "");
+            this.currentVersion = ((await execute(`${this.command} --version`)) as string).trim();
+            if (!this.currentVersion) {
+                throw new Error(t("versionNotFound", [this.name]));
+            }
         } catch (error) {
-            console.error("Erreur pendant le chargement de la version courante de l'outil", this, error);
+            console.error(t("versionLoadError", [this.name]), this, error);
             this.status = "ERROR";
-            this.error = "Erreur pendant le chargement de la version courante de l'outil " + this.name;
+            this.error = t("versionLoadError", [this.name]);
         }
     }
 
@@ -145,10 +163,10 @@ export class TmdTool {
                 await this.update();
             } else {
                 this.status = "READY";
-                const shouldUpdate = `Mettre à jour ${this.name}`;
-                const showChangelog = "Voir la release note";
+                const shouldUpdate = t("updateTool", [this.name]);
+                const showChangelog = t("releaseNoteButton");
                 const selection = await window.showInformationMessage(
-                    `L'outil ${this.name} peut être mis à jour (${this.currentVersion} > ${this.latestVersion})`,
+                    t("toolCanBeUpdated", [this.name, this.currentVersion ?? "", this.latestVersion ?? ""]),
                     shouldUpdate,
                     showChangelog,
                 );
@@ -171,24 +189,29 @@ export class TmdTool {
         this.status = "INSTALLING";
         const oldVersion = this.currentVersion;
         try {
+            // Arrête le processus qui verrouille les fichiers de l'outil (cf. language server).
+            await this.onBeforeUpdate?.();
             await execute(`dotnet nuget locals http-cache --clear`);
             await execute(
                 `dotnet tool update --global ${this.name}${this.latestVersion ? ` --version ${this.latestVersion}` : ""}`,
             );
             await this.loadCurrentVersion();
             this.status = "READY";
-            this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.currentVersion}`);
+            this.showReleaseNote(t("toolUpdated", [this.name, oldVersion ?? "", this.currentVersion ?? ""]));
         } catch (error) {
             this.status = "ERROR";
-            this.error = "Erreur pendant la mise à jour de l'outil " + this.name;
-            await window.showInformationMessage("Erreur pendant la mise à jour de l'outil " + this.name + ": " + error);
+            this.error = t("toolUpdateErrorState", [this.name]);
+            await window.showInformationMessage(t("toolUpdateError", [this.name, String(error)]));
+        } finally {
+            // Redémarre le processus arrêté, que la mise à jour ait réussi ou échoué.
+            await this.onAfterUpdate?.();
         }
     }
 
     private async onInstalledChanged() {
         if (this.installed === false) {
-            const option = `Installer ${this.name}`;
-            const selection = await window.showInformationMessage(`${this.name} n'est pas installé`, option);
+            const option = t("installToolButton", [this.name]);
+            const selection = await window.showInformationMessage(t("toolNotInstalled", [this.name]), option);
             if (selection === option) {
                 await this.install();
             }
@@ -196,8 +219,11 @@ export class TmdTool {
     }
     public registerCommands(context: ExtensionContext) {
         this.registerUpdateCommand(context);
-        this.registerStartCommand(false, context);
-        this.registerStartCommand(true, context);
+        // Le language server n'a pas de commande de génération à lancer.
+        if (this.isGenerator) {
+            this.registerStartCommand(false, context);
+            this.registerStartCommand(true, context);
+        }
     }
 
     private registerUpdateCommand(context: ExtensionContext) {

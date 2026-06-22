@@ -12,6 +12,7 @@ import {
     window,
     workspace,
 } from "vscode";
+import { LanguageClient } from "vscode-languageclient/node";
 import { Application } from "./application";
 import { t } from "./i18n";
 import { Mermaid } from "./types";
@@ -30,6 +31,7 @@ export class TopModelPreviewPanel {
     constructor(
         context: ExtensionContext,
         private readonly applications: Application[],
+        private readonly client?: LanguageClient,
     ) {
         makeAutoObservable(this);
         autorun(() => this.refresh());
@@ -108,7 +110,7 @@ export class TopModelPreviewPanel {
         if (message.type === "click:class") {
             const className = message.className;
             const symbolInformations: SymbolInformation[] =
-                (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
+                (await this.client?.sendRequest("workspace/symbol", {
                     query: className,
                 })) ?? [];
             const symbol = symbolInformations.find((s) => s.name === className);
@@ -128,8 +130,8 @@ export class TopModelPreviewPanel {
     }
 
     async refresh() {
-        if (this.currentApplication?.client) {
-            const data = await this.currentApplication.client.sendRequest("mermaid", {
+        if (this.client && this.currentApplication) {
+            const data = await this.client.sendRequest("mermaid", {
                 uri: this.currentFsPath,
                 scope: this.currentScope,
             });
@@ -251,6 +253,7 @@ export class TopModelPreviewPanel {
                 }
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
+        <script>const i18n = {codeCopied: ${JSON.stringify(t("codeCopied"))}}</script>
         <script src="${this.previewSrcUri}"></script>
         <title>TopModel</title>
     </head>
@@ -281,7 +284,7 @@ export class TopModelPreviewPanel {
             </div>
             <div class="code-element code-wrapper" style="display: none;">
             <button style="display: none;" class="copy-button code-element" onclick="copyCode(currentDiagram)">
-                Copier
+                ${t("copyButton")}
             </button>
             <code id="sourceCode" style="display: none; overflow: auto;" class="code-element">
                     ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
