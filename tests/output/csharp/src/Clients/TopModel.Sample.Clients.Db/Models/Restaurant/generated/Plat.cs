@@ -19,7 +19,7 @@ public partial record Plat
     /// Identifiant du plat.
     /// </summary>
     [Column("pla_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 

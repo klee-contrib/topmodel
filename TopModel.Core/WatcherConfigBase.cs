@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS0618, S1133
+﻿#pragma warning disable CS0618
 
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;

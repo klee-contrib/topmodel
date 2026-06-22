@@ -66,7 +66,7 @@ public partial record CommandeHistorique
     /// Réservation associée à la commande.
     /// </summary>
     [Column("rev_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? ReservationId { get; set; }
 
     /// <summary>

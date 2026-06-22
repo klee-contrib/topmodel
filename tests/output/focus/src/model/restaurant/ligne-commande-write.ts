@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_ID, DO_PRIX, DO_QUANTITE} from "../../domains";
+import {DO_ID, DO_PRIX, DO_QUANTITE, DO_SEQ_ID} from "../../domains";
 
 export type LigneCommandeWrite = EntityToType<LigneCommandeWriteEntityType>;
 export type LigneCommandeWriteEntityType = typeof LigneCommandeWriteEntity;
@@ -21,7 +21,7 @@ export const LigneCommandeWriteEntity = entity({
     commandeId: e.field(DO_ID, f => f
         .label("restaurant.ligneCommande.commandeId")
     ),
-    platId: e.field(DO_ID, f => f
+    platId: e.field(DO_SEQ_ID, f => f
         .label("restaurant.ligneCommande.platId")
     )
 });

@@ -3,13 +3,13 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE, DO_SEQ_ID} from "../../domains";
 
 export type ReservationRead = EntityToType<ReservationReadEntityType>;
 export type ReservationReadEntityType = typeof ReservationReadEntity;
 
 export const ReservationReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f.optional()
         .label("restaurant.reservation.id")
     ),
     dateReservation: e.field(DO_DATE_HEURE, f => f

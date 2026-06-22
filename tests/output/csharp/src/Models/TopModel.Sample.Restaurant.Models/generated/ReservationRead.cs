@@ -16,7 +16,7 @@ public partial record ReservationRead
     /// Identifiant de la réservation.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? Id { get; set; }
 
     /// <summary>

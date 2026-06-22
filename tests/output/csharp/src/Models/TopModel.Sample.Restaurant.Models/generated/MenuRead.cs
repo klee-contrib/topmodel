@@ -16,7 +16,7 @@ public partial record MenuRead
     /// Identifiant du menu.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? Id { get; set; }
 
     /// <summary>

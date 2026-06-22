@@ -18,7 +18,7 @@ public abstract partial record Vaisselle
     /// Id de la vaisselle.
     /// </summary>
     [Column("vsl_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 

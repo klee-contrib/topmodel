@@ -113,7 +113,7 @@ class:
   comment: Vaisselle de restaurant
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_SEQ_ID
       primaryKey: true
       comment: Id de la vaisselle
     - name: Description

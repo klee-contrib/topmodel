@@ -53,7 +53,7 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("pla_id")]
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 
     /// <summary>

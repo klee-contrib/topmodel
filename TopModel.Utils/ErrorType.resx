@@ -177,7 +177,7 @@
   <data name="TMD3024" xml:space="preserve">
     <value>Persisted abstract class '{0}' cannot use 'joined-tables' as inheritance strategy.</value>
   </data>
-  <data name="TMD3025" xml:space="preserve">
+  <data name="TMD3026" xml:space="preserve">
     <value>Class '{0}' cannot define values since its type is not `regular`.</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
@@ -230,5 +230,8 @@
   </data>
   <data name="TMD9013" xml:space="preserve">
     <value>Cannot define value on association '{0}' of class '{1}' because it is multiple or doesn't target a readonly enum class. </value>
+  </data>
+  <data name="TMD3025" xml:space="preserve">
+    <value>Class '{0}' with an auto-generated primary key needs a sequence name to use the `distinct-tables` strategy.</value>
   </data>
 </root>

@@ -16,7 +16,7 @@ class:
 
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_SEQ_ID
       primaryKey: true
       comment: Identifiant du menu
 
@@ -65,7 +65,7 @@ class:
 
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_SEQ_ID
       primaryKey: true
       comment: Identifiant du plat
 

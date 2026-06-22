@@ -2,14 +2,14 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE} from "@/domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_QUANTITE, DO_SEQ_ID} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type PromotionRead = EntityToType<PromotionReadEntityType>;
 export type PromotionReadEntityType = typeof PromotionReadEntity;
 
 export const PromotionReadEntity = entity({
-    platId: e.field(DO_ID, f => f.optional()
+    platId: e.field(DO_SEQ_ID, f => f.optional()
         .label("restaurant.promotion.platId")
     ),
     libelle: e.field(DO_LIBELLE, f => f

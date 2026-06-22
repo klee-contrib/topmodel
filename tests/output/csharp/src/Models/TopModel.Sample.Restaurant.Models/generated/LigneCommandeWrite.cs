@@ -44,6 +44,6 @@ public partial record LigneCommandeWrite
     /// Plat commandé.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 }
