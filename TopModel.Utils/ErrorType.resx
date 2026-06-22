@@ -153,14 +153,14 @@
   <data name="TMD0011" xml:space="preserve">
     <value>Cannot find variable '{0}'.</value>
   </data>
-  <data name="TMD3006" xml:space="preserve">
+  <data name="TMD3007" xml:space="preserve">
     <value>Class '{0}' is not an interface and thus cannot be implemented.</value>
   </data>
-  <data name="TMD3007" xml:space="preserve">
+  <data name="TMD3006" xml:space="preserve">
     <value>Class '{0}' cannot inherit class '{1}' because interfaces can only inherit another interface, and vice versa.</value>
   </data>
   <data name="TMD3008" xml:space="preserve">
-    <value>Abstract class '{0}' cannot inherit non-abstract class '{1}'.</value>
+    <value>Interface '{0}' cannot implement another interface. Use `extends` instead.</value>
   </data>
   <data name="TMD3009" xml:space="preserve">
     <value>Persisted class '{0}' cannot inherit from class '{1}' because it is not a persisted class with a simple primary key.</value>

@@ -153,14 +153,14 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
-  <data name="TMD3006" xml:space="preserve">
+  <data name="TMD3007" xml:space="preserve">
     <value>La classe '{0}' n'est pas une interface et donc ne peut pas être implémentée.</value>
   </data>
-  <data name="TMD3007" xml:space="preserve">
+  <data name="TMD3006" xml:space="preserve">
     <value>La classe '{0}' ne peut pas hériter de la classe '{1}' car seule une interface peut hériter d'une interface, et inversement.</value>
   </data>
   <data name="TMD3008" xml:space="preserve">
-    <value>La classe '{0}' abstraite ne peut pas hériter de la classe '{1}' non abstraite.</value>
+    <value>L'interface '{0}' ne peut pas implémenter une autre interface. Utilisez `extends` à la place.</value>
   </data>
   <data name="TMD3009" xml:space="preserve">
     <value>La classe '{0}' persistée ne peut pas hériter de la classe '{1}' car ce n'est pas une classe persistée avec une clé primaire simple.</value>
