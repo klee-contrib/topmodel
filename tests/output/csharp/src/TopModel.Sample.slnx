@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Éléments de solution/">
     <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="Clients/TopModel.Sample.Clients.Db/TopModel.Sample.Clients.Db.csproj" />
   <Project Path="Clients/TopModel.Sample.Clients.External/TopModel.Sample.Clients.External.csproj" />

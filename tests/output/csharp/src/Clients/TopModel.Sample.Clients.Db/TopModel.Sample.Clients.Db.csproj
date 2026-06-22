@@ -1,10 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Kinetix.Services.Annotations" Version="8.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Kinetix.EFCore.Npgsql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Models\TopModel.Sample.Restaurant.Models\TopModel.Sample.Restaurant.Models.csproj" />
