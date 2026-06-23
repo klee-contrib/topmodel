@@ -12,7 +12,7 @@
   * Création de la table TYPE_UTILISATEUR
  **/
 create table TYPE_UTILISATEUR (
-	CODE varchar(3) not null,
+	CODE varchar(3),
 	LIBELLE varchar(15) not null,
 	constraint PK_TYPE_UTILISATEUR primary key (CODE)
 );
@@ -21,7 +21,7 @@ create table TYPE_UTILISATEUR (
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
-	ID int8 not null,
+	ID int8,
 	EMAIL varchar(50) not null,
 	NOM varchar(15),
 	DATE_INSCRIPTION timestamp,
