@@ -7,7 +7,7 @@
 -- ===========================================================================================
 
 create table [dbo].[COMMANDE] (
-	[COM_ID] int identity,
+	[COM_ID] int identity(2, 2),
 	[COM_DATE_COMMANDE] timestamp not null,
 	[COM_DATE_LIVRAISON] timestamp,
 	[COM_MONTANT_TOTAL] decimal not null,

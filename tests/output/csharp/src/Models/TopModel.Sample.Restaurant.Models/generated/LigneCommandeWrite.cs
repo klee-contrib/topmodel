@@ -37,7 +37,7 @@ public partial record LigneCommandeWrite
     /// Commande à laquelle appartient la ligne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     public int? CommandeId { get; set; }
 
     /// <summary>

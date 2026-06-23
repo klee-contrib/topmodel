@@ -16,7 +16,7 @@ public partial record CommandeRead
     /// Identifiant de la commande.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     public int? Id { get; set; }
 
     /// <summary>

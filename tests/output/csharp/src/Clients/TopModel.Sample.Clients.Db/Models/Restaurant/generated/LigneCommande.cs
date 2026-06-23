@@ -19,7 +19,7 @@ public partial record LigneCommande
     /// Identifiant de la ligne.
     /// </summary>
     [Column("lig_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     [Key]
     public int? Id { get; set; }
 

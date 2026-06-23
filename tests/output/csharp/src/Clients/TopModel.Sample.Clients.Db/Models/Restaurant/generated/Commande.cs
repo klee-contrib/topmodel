@@ -19,7 +19,7 @@ public partial record Commande
     /// Identifiant de la commande.
     /// </summary>
     [Column("com_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     [Key]
     public int? Id { get; set; }
 

@@ -3,13 +3,13 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_DATE_HEURE, DO_ID, DO_PRIX, DO_QUANTITE, DO_SEQ_ID} from "../../domains";
+import {DO_DATE_HEURE, DO_ID_2, DO_PRIX, DO_QUANTITE, DO_SEQ_ID} from "../../domains";
 
 export type LigneCommandeRead = EntityToType<LigneCommandeReadEntityType>;
 export type LigneCommandeReadEntityType = typeof LigneCommandeReadEntity;
 
 export const LigneCommandeReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID_2, f => f.optional()
         .label("restaurant.ligneCommande.id")
     ),
     quantite: e.field(DO_QUANTITE, f => f
@@ -21,7 +21,7 @@ export const LigneCommandeReadEntity = entity({
     prixTotal: e.field(DO_PRIX, f => f
         .label("restaurant.ligneCommande.prixTotal")
     ),
-    commandeId: e.field(DO_ID, f => f
+    commandeId: e.field(DO_ID_2, f => f
         .label("restaurant.ligneCommande.commandeId")
     ),
     platId: e.field(DO_SEQ_ID, f => f

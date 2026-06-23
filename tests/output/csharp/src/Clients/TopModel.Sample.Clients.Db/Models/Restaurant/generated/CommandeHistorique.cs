@@ -19,7 +19,7 @@ public partial record CommandeHistorique
     /// Identifiant de la commande.
     /// </summary>
     [Column("com_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int? Id { get; set; }

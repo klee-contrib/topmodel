@@ -32,13 +32,4 @@ public class OracleTablesGenerator(ILogger<OracleTablesGenerator> logger, IFileW
             }
         }
     }
-
-    /// <summary>
-    /// Gère l'auto-incrémentation des clés primaires en ajoutant identity à la colonne.
-    /// </summary>
-    /// <param name="writer">Flux d'écriture création bases.</param>
-    protected override void WriteIdentityColumn(IFileWriter writer, GeneratedValueDefinition generatedValue)
-    {
-        throw new NotSupportedException("Non implémenté");
-    }
 }

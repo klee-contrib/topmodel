@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_PRIX} from "@/domains";
+import {DO_CODE, DO_DATE_HEURE, DO_ID, DO_ID_2, DO_PRIX} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {ClientReadEntity} from "./client-read";
@@ -14,7 +14,7 @@ export type CommandeRead = EntityToType<CommandeReadEntityType>;
 export type CommandeReadEntityType = typeof CommandeReadEntity;
 
 export const CommandeReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID_2, f => f.optional()
         .label("restaurant.commande.id")
     ),
     dateCommande: e.field(DO_DATE_HEURE, f => f

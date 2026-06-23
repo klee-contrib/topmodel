@@ -4,7 +4,7 @@
 classDiagram
 %% Commande d'un client
 class Commande{
- DO_ID Id
+ DO_ID_2 Id
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
@@ -18,7 +18,7 @@ Commande "0..1" --> "1" AvisClient
 Commande "1..*" --> "1" LigneCommande
 %% Commande pour historique avec préservation des clés primaires
 class CommandeHistorique{
- DO_ID Id
+ DO_ID_2 Id
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
@@ -31,7 +31,7 @@ class CommandeHistorique{
 }
 %% Ligne d'une commande
 class LigneCommande{
- DO_ID Id
+ DO_ID_2 Id
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
@@ -41,7 +41,7 @@ LigneCommande "1" --> "0..*" Commande
 LigneCommande "1" --> "0..*" Plat
 %% Ligne de commande pour historique avec préservation des clés primaires
 class LigneCommandeHistorique{
- DO_ID Id
+ DO_ID_2 Id
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal

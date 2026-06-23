@@ -330,6 +330,74 @@ public class DbContextGenerator(
             w.WriteLine();
         }
 
+        var hasSequence = false;
+        foreach (var property in classes.SelectMany(c => c.Properties).Where(p => p.GeneratedValue != null))
+        {
+            var sequenceName = Config.UseLowerCaseSqlNames
+                ? Config.GetSequenceName(property, tag)?.ToLower()
+                : Config.GetSequenceName(property, tag);
+            if (sequenceName != null)
+            {
+                hasSequence = true;
+                w.WriteLine(
+                    2,
+                    $"modelBuilder.HasSequence(\"{sequenceName}\").StartsAt({property.GeneratedValue!.Start}).IncrementsBy({property.GeneratedValue.Increment});"
+                );
+
+                var classesWithSequence = new List<Class>();
+                if (
+                    property.Class.Type != ClassType.Abstract
+                    || property.Class.InheritanceStrategy != InheritanceStrategy.DistinctTables
+                )
+                {
+                    classesWithSequence.Add(property.Class);
+                }
+
+                if (property.Class.InheritanceStrategy == InheritanceStrategy.DistinctTables)
+                {
+                    classesWithSequence.AddRange(classes.Where(c => c.Extends == property.Class));
+                }
+
+                foreach (var classeWithSequence in classesWithSequence)
+                {
+                    w.Write(2, $"modelBuilder.Entity<{GetClassName(classeWithSequence, tag)}>().Property(");
+
+                    if (property.UseClassForAssociation)
+                    {
+                        w.Write($"\"{property.PropertyNamePascal}\"");
+                    }
+                    else
+                    {
+                        w.Write($"p => p.{property.NamePascal}");
+                    }
+
+                    w.WriteLine($").UseHiLo(\"{sequenceName}\");");
+                }
+            }
+            else if (property.GeneratedValue!.Start != 1 || property.GeneratedValue.Increment != 1)
+            {
+                w.Write(2, $"modelBuilder.Entity<{GetClassName(property.Class, tag)}>().Property(");
+
+                if (property.UseClassForAssociation)
+                {
+                    w.Write($"\"{property.PropertyNamePascal}\"");
+                }
+                else
+                {
+                    w.Write($"p => p.{property.NamePascal}");
+                }
+
+                w.WriteLine(
+                    $").UseIdentityColumn({property.GeneratedValue.Start}, {property.GeneratedValue.Increment});"
+                );
+            }
+        }
+
+        if (hasSequence)
+        {
+            w.WriteLine();
+        }
+
         var hasTphOrTpc = false;
         foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.SingleTable))
         {
@@ -384,25 +452,7 @@ public class DbContextGenerator(
         foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.DistinctTables))
         {
             hasTphOrTpc = true;
-            var seqName = Config.UseLowerCaseSqlNames ? $"seq_{classe.SqlName.ToLower()}" : $"SEQ_{classe.SqlName}";
-
             w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().UseTpcMappingStrategy();");
-            w.WriteLine(2, $"modelBuilder.HasSequence(\"{seqName}\");");
-
-            foreach (var subClasse in classes.Where(c => c.Extends == classe))
-            {
-                var key = classe.PrimaryKey.Single();
-                w.Write(2, $"modelBuilder.Entity<{GetClassName(subClasse, tag)}>().Property(");
-                if (key.UseClassForAssociation)
-                {
-                    w.Write($"\"{key.PropertyNamePascal}\"");
-                }
-                else
-                {
-                    w.Write($"p => p.{key.NamePascal}");
-                }
-                w.WriteLine($").UseSequence(\"{seqName}\");");
-            }
         }
 
         if (hasTphOrTpc)

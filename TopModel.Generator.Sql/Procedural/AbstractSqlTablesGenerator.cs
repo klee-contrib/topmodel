@@ -46,13 +46,6 @@ public abstract class AbstractSqlTablesGenerator(
 
     protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties) { }
 
-    /// <summary>
-    /// Gère l'auto-incrémentation des clés primaires.
-    /// </summary>
-    /// <param name="writer">Flux d'écriture création bases.</param>
-    /// <param name="generatedValue">Définition de l'identité.</param>
-    protected abstract void WriteIdentityColumn(IFileWriter writer, GeneratedValueDefinition generatedValue);
-
     private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(Config.TableTablespace);
 
     private string GetTablespaceDeclaration(string? tablespace)
