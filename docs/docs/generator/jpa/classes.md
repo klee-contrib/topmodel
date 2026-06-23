@@ -57,9 +57,8 @@ Les classes persistées sont générées avec les annotations correspondant à c
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@Id`                                    | Sur une propriété `primaryKey: true`                                                                                                                       |
 | `@MapsId`                                | Sur l'association correspondant à la clé primaire quand celle-ci est une association à PK simple                                                           |
-| `@GeneratedValue` + `@SequenceGenerator` | Sur la PK auto-générée si `identity.mode: sequence`                                                                                                        |
-| `@GeneratedValue(strategy = IDENTITY)`   | Sur la PK auto-générée si `identity.mode: identity` (valeur par défaut)                                                                                    |
-| `@GeneratedValue(strategy = UUID)`       | Sur la PK auto-générée si `identity.mode: uuid`                                                                                                            |
+| `@GeneratedValue` + `@SequenceGenerator` | Sur la PK auto-générée si avec un `sequenceName` dans le domaine                                                                                           |
+| `@GeneratedValue(strategy = IDENTITY)`   | Sur la PK auto-générée sans `sequenceName` dans le domaine                                                                                                 |
 | `@Enumerated(EnumType.STRING)`           | Sur toute propriété persistée dont le type est une enum Java générée par TopModel                                                                          |
 | `@Column`                                | Sur les propriétés qui ne sont ni des compositions, ni des associations (nom, nullable, length/precision/scale, columnDefinition sont déduits du `domain`) |
 | `@OneToOne`                              | Sur une association portant une contrainte d'unicité                                                                                                       |

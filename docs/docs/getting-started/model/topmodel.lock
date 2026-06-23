@@ -11,8 +11,8 @@ modules:
     version: 4.1.5
     hash: 8fbd172dee51cf483e96b4f6abd6557d
   sql:
-    version: 4.1.5
-    hash: 70f84ebe636e884a18bbb458d7078d3b
+    version: 4.1.6
+    hash: 2242f33d2225bad712b06bc458c00589
   javascript:
     version: 4.2.5
     hash: 8faa40c07c8d00e5ed6f0a4c97938581
