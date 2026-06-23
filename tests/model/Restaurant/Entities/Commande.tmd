@@ -18,7 +18,7 @@ class:
 
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_ID_2
       primaryKey: true
       comment: Identifiant de la commande
 
@@ -69,7 +69,7 @@ class:
 
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_ID_2
       primaryKey: true
       comment: Identifiant de la ligne
 
@@ -110,7 +110,7 @@ class:
 
   properties:
     - name: Id
-      domain: DO_ID
+      domain: DO_SEQ_ID
       primaryKey: true
       comment: Identifiant de la réservation
 

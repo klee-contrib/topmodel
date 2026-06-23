@@ -3,6 +3,6 @@
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Kinetix.Modeling" Version="8.1.2" />
+    <PackageReference Include="Kinetix.Modeling" Version="10.0.0" />
   </ItemGroup>
 </Project>

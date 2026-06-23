@@ -8,7 +8,7 @@
 
 create table [dbo].[VERRE] (
 	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar not null,
+	[VSL_DESCRIPTION] varchar(100) not null,
 	[VRR_A_PIED] boolean not null,
 	constraint [PK_VERRE] primary key clustered ([VSL_ID] ASC))
 go

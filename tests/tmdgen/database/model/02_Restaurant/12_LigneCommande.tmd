@@ -7,8 +7,8 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/02_Plat
-  - 03_Restaurant/11_Commande
+  - 02_Restaurant/02_Plat
+  - 02_Restaurant/11_Commande
 ---
 class:
   name: LigneCommande

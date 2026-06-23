@@ -177,7 +177,7 @@
   <data name="TMD3024" xml:space="preserve">
     <value>La classe '{0}' abstraite et persistée doit spécifier une stratégie d'héritage différente de 'joined-tables'.</value>
   </data>
-  <data name="TMD3025" xml:space="preserve">
+  <data name="TMD3026" xml:space="preserve">
     <value>La classe '{0}' ne peut pas définir de valeurs car elle n'est pas de type `regular`.</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
@@ -230,5 +230,8 @@
   </data>
   <data name="TMD9013" xml:space="preserve">
     <value>Il est impossible de définir une valeur pour l'association '{0}' de la classe '{1}' car elle est multiple ou ne cible pas une classe enum readonly.</value>
+  </data>
+  <data name="TMD3025" xml:space="preserve">
+    <value>La classe '{0}' avec une clé primaire auto-générée a besoin d'un nom de séquence pour utiliser la stratégie `distinct-tables`.</value>
   </data>
 </root>

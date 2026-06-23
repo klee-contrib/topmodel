@@ -30,7 +30,7 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         return suffix;
     }
 
-    protected override IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property)
+    protected override IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property, string tag)
     {
         yield return IdAnnotation;
     }

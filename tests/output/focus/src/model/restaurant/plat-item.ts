@@ -3,7 +3,7 @@
 ////
 
 import {e, entity, EntityToType} from "@focus4/entities";
-import {DO_BOOLEEN, DO_CODE, DO_ID, DO_LIBELLE, DO_PRIX} from "../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_LIBELLE, DO_PRIX, DO_SEQ_ID} from "../../domains";
 
 import {CategoriePlatCode} from "./enums";
 
@@ -11,7 +11,7 @@ export type PlatItem = EntityToType<PlatItemEntityType>;
 export type PlatItemEntityType = typeof PlatItemEntity;
 
 export const PlatItemEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f.optional()
         .label("restaurant.plat.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

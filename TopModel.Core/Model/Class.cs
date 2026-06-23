@@ -1,6 +1,4 @@
-﻿#pragma warning disable S1133
-
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 

@@ -16,7 +16,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -38,9 +37,8 @@ public class TableRestaurant {
 	 * Identifiant de la table.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TABLE_RESTAURANT")
-	@SequenceGenerator(sequenceName = "SEQ_TABLE_RESTAURANT", name = "SEQ_TABLE_RESTAURANT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

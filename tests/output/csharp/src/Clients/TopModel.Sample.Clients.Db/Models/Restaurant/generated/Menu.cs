@@ -19,7 +19,7 @@ public partial record Menu
     /// Identifiant du menu.
     /// </summary>
     [Column("men_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 

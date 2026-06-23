@@ -55,42 +55,6 @@ _Valeur par défaut_: `false`
 
 **Note :** En mode JDBC, les enums ne sont pas supportés de la même manière qu'en mode JPA. Les classes avec des valeurs ne peuvent pas utiliser le mode enum.
 
-### `identity`
-
-Options de génération de la séquence.
-
-- `mode`
-
-  Mode de génération de la séquence. Les valeurs possibles sont :
-  - `"none"` : Aucune génération automatique
-  - `"sequence"` : Utilise une séquence de base de données (nécessite `increment` et optionnellement `start`)
-  - `"identity"` : Utilise l'auto-incrémentation de la base de données (par défaut)
-  - `"uuid"` : Génère un UUID pour la clé primaire
-
-  _Valeur par défaut_: `identity`
-
-- `increment`
-
-  Incrément de la séquence générée.
-
-- `start`
-
-  Début de la séquence générée.
-
-### Utilisation combinée avec le générateur postgresql
-
-Le mode de génération par défaut des générateurs ne crée pas de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de JDBC ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` du générateur PostgreSQL.
-
-Le mode `sequence` dans la configuration JPA et dans la configuration PostgreSQL se déclare de la même manière :
-
-```yaml
-## Configuration jpa et proceduralSql
-identity:
-  increment: 50
-  start: 1000
-  mode: sequence
-```
-
 ## Exemple de configuration
 
 Voici un exemple de configuration complet du générateur JPA, mixant plusieurs générateurs :
@@ -109,8 +73,4 @@ jpa:
     apiGeneration: Server # Mode de génération de l'API (Client ou Server)
     fieldsEnum: ["persisted"] # Classes dans lesquelles le générateur doit ajouter une enum des champs
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Interface dont doivent hériter ces enums
-    identity:
-      mode: sequence
-      increment: 50
-      start: 1000
 ```

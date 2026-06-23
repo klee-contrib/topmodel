@@ -19,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -40,8 +41,9 @@ public class Reservation {
 	 * Identifiant de la réservation.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "REV_ID", nullable = false, columnDefinition = "int")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_RESERVATION")
+	@SequenceGenerator(sequenceName = "SEQ_RESERVATION", name = "SEQ_RESERVATION", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

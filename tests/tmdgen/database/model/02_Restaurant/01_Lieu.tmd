@@ -8,6 +8,27 @@ tags:
   - Back
 ---
 class:
+  name: Assiette
+  sqlName: assiette
+  comment: Assiette.
+  properties:
+    - name: VslId
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Id de la vaisselle
+
+    - name: VslDescription
+      domain: DO_LIBELLE
+      required: true
+      comment: Description de la vaisselle.
+
+    - name: AstTaille
+      domain: DO_ENTIER
+      required: true
+      comment: Taille de l'assiette.
+---
+class:
   name: CategoriePlat
   sqlName: categorie_plat
   comment: Catégorie de plat
@@ -89,6 +110,23 @@ class:
       comment: Date de création de l'enregistrement
 ---
 class:
+  name: Couvert
+  sqlName: couvert
+  comment: Couvert.
+  trigram: VSL
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Id de la vaisselle
+
+    - name: Description
+      domain: DO_LIBELLE
+      required: true
+      comment: Description de la vaisselle.
+---
+class:
   name: Lieu
   sqlName: lieu
   comment: Lieu
@@ -128,3 +166,50 @@ class:
     - name: FrnBio
       domain: DO_BOOLEAN
       comment: Si le fournisseur fait du bio.
+---
+class:
+  name: Prestataire
+  sqlName: prestataire
+  comment: Prestaire du restaurant
+  trigram: PST
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la personne
+
+    - name: Nom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom de la personne
+
+    - name: Prenom
+      domain: DO_LIBELLE
+      required: true
+      comment: Prénom de la personne
+
+    - name: Telephone
+      domain: DO_LIBELLE
+      comment: Numéro de téléphone de l'employé.
+---
+class:
+  name: Verre
+  sqlName: verre
+  comment: Verre.
+  properties:
+    - name: VslId
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Id de la vaisselle
+
+    - name: VslDescription
+      domain: DO_LIBELLE
+      required: true
+      comment: Description de la vaisselle.
+
+    - name: VrrAPied
+      domain: DO_BOOLEAN
+      required: true
+      comment: Si le verre est à pied ou non.

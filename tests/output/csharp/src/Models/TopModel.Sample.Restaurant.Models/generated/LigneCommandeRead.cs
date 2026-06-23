@@ -16,7 +16,7 @@ public partial record LigneCommandeRead
     /// Identifiant de la ligne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     public int? Id { get; set; }
 
     /// <summary>
@@ -44,14 +44,14 @@ public partial record LigneCommandeRead
     /// Commande à laquelle appartient la ligne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     public int? CommandeId { get; set; }
 
     /// <summary>
     /// Plat commandé.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 
     /// <summary>

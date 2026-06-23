@@ -7,8 +7,8 @@
 -- ===========================================================================================
 
 create table [dbo].[CATEGORIE_PLAT_REGION] (
-	[REG_CODE] varchar,
-	[CAT_CODE] varchar,
+	[REG_CODE] varchar(10),
+	[CAT_CODE] varchar(10),
 	constraint [PK_CATEGORIE_PLAT_REGION] primary key clustered ([REG_CODE] ASC, [CAT_CODE] ASC),
 	constraint [FK_CATEGORIE_PLAT_REGION_REG_CODE] foreign key ([REG_CODE]) references [dbo].[REGION] ([REG_CODE]),
 	constraint [FK_CATEGORIE_PLAT_REGION_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]))

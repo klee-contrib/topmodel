@@ -7,10 +7,10 @@
 -- ===========================================================================================
 
 create table [dbo].[RESERVATION] (
-	[REV_ID] int identity,
+	[REV_ID] int,
 	[REV_DATE_RESERVATION] timestamp not null,
 	[REV_NOMBRE_PERSONNES] int not null,
-	[REV_COMMENTAIRE] varchar,
+	[REV_COMMENTAIRE] varchar(100),
 	[REV_CONFIRMEE] boolean not null default false,
 	[PER_ID] int not null,
 	[TAB_ID] int,
@@ -21,6 +21,12 @@ create table [dbo].[RESERVATION] (
 	constraint [FK_RESERVATION_TAB_ID] foreign key ([TAB_ID]) references [dbo].[TABLE_RESTAURANT] ([TAB_ID]),
 	constraint [FK_RESERVATION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
 	constraint [UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION] unique nonclustered ([TAB_ID] ASC, [REV_DATE_RESERVATION] ASC))
+go
+
+/**
+  * Création de la séquence pour la clé primaire de la table RESERVATION
+ **/
+create sequence SEQ_RESERVATION as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for RESERVATION.PER_ID */

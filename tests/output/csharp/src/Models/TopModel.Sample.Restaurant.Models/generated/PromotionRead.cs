@@ -16,7 +16,7 @@ public partial record PromotionRead
     /// Plat concerné par la promotion.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 
     /// <summary>

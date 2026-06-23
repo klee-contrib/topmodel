@@ -7,7 +7,7 @@
 -- ===========================================================================================
 
 create table [dbo].[LIGNE_COMMANDE] (
-	[LIG_ID] int identity,
+	[LIG_ID] int identity(2, 2),
 	[LIG_QUANTITE] int not null,
 	[LIG_PRIX_UNITAIRE] decimal not null,
 	[LIG_PRIX_TOTAL] decimal not null,

@@ -8,6 +8,8 @@ export const DO_DATE = domain(z.string());
 export const DO_DATE_HEURE = domain(z.string());
 export const DO_EMAIL = domain(z.email());
 export const DO_ID = domain(z.number().positive());
+export const DO_ID_2 = domain(z.number().positive());
+export const DO_SEQ_ID = domain(z.number().positive());
 export const DO_LIBELLE = domain(z.string());
 
 export const DO_LISTE = domain(z.array(z.any()));

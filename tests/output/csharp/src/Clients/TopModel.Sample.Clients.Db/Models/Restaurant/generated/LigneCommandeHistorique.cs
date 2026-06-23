@@ -19,7 +19,7 @@ public partial record LigneCommandeHistorique
     /// Identifiant de la ligne.
     /// </summary>
     [Column("lig_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int? Id { get; set; }
@@ -53,7 +53,7 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("pla_id")]
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 
     /// <summary>
@@ -69,6 +69,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("com_id")]
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.Id2)]
     public int? CommandeHistoriqueId { get; set; }
 }

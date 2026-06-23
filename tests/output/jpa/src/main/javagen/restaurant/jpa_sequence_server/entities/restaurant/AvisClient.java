@@ -19,7 +19,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -41,9 +40,8 @@ public class AvisClient {
 	 * Identifiant de l'avis.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "AVI_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_AVIS_CLIENT")
-	@SequenceGenerator(sequenceName = "SEQ_AVIS_CLIENT", name = "SEQ_AVIS_CLIENT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

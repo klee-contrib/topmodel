@@ -27,7 +27,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import restaurant.jpa_sequence_server.enums.restaurant.StatutCommande;
@@ -45,9 +44,8 @@ public class Commande {
 	 * Identifiant de la commande.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMMANDE")
-	@SequenceGenerator(sequenceName = "SEQ_COMMANDE", name = "SEQ_COMMANDE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

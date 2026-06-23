@@ -19,7 +19,7 @@ public partial record Reservation
     /// Identifiant de la réservation.
     /// </summary>
     [Column("rev_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 

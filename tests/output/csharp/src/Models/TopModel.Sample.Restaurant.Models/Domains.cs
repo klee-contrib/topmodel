@@ -3,6 +3,8 @@
 public enum Domains
 {
     Id,
+    Id2,
+    SeqId,
     Quantite,
     Libelle,
     DateHeure,

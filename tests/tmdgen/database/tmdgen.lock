@@ -6,16 +6,15 @@ version: 4.1.0
 generatedFiles:
   - ./model/01_Common/01_Region.tmd
   - ./model/01_Common/02_Departement.tmd
-  - ./model/03_Restaurant/01_Lieu.tmd
-  - ./model/03_Restaurant/02_Plat.tmd
-  - ./model/03_Restaurant/03_CategoriePlatRegion.tmd
-  - ./model/03_Restaurant/04_MenuPlat.tmd
-  - ./model/03_Restaurant/05_Personne.tmd
-  - ./model/03_Restaurant/06_Promotion.tmd
-  - ./model/03_Restaurant/07_Client.tmd
-  - ./model/03_Restaurant/08_Employe.tmd
-  - ./model/03_Restaurant/09_AvisClient.tmd
-  - ./model/03_Restaurant/10_Reservation.tmd
-  - ./model/03_Restaurant/11_Commande.tmd
-  - ./model/03_Restaurant/12_LigneCommande.tmd
-  - ./model/05_Autres/01_Assiette.tmd
+  - ./model/02_Restaurant/01_Lieu.tmd
+  - ./model/02_Restaurant/02_Plat.tmd
+  - ./model/02_Restaurant/03_CategoriePlatRegion.tmd
+  - ./model/02_Restaurant/04_MenuPlat.tmd
+  - ./model/02_Restaurant/05_Personne.tmd
+  - ./model/02_Restaurant/06_Promotion.tmd
+  - ./model/02_Restaurant/07_Client.tmd
+  - ./model/02_Restaurant/08_Employe.tmd
+  - ./model/02_Restaurant/09_AvisClient.tmd
+  - ./model/02_Restaurant/10_Reservation.tmd
+  - ./model/02_Restaurant/11_Commande.tmd
+  - ./model/02_Restaurant/12_LigneCommande.tmd

@@ -119,27 +119,7 @@
         "commentsFileName": {
           "type": "string",
           "description": "Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes."
-        },
-        "identity": {
-          "type": "object",
-          "description": "Options de génération de la séquence",
-          "properties": {
-            "mode": {
-              "type": "string",
-              "description": "Mode de génération des séquences.",
-              "enum": [ "none", "sequence", "identity" ],
-              "default": "identity"
-            },
-            "increment": {
-              "type": "number",
-              "description": "Incrément de la séquence générée."
-            },
-            "start": {
-              "type": "number",
-              "description": "Début de la séquence générée."
-            }
-          }
-        }
+        }        
       }
     },
     "ssdt": {

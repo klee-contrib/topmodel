@@ -20,7 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -42,9 +41,8 @@ public class LigneCommande {
 	 * Identifiant de la ligne.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LIGNE_COMMANDE")
-	@SequenceGenerator(sequenceName = "SEQ_LIGNE_COMMANDE", name = "SEQ_LIGNE_COMMANDE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

@@ -51,25 +51,6 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
   - `disableIdentity` : Désactive les colonnes d'identité.
   - `generateComments` : Génère les commentaires pour les tables et les colonnes dans les fichiers de table.
 
-- `identity`
-
-  Options de génération de la séquence
-  - `mode`
-
-    Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).
-
-    _Valeur par défaut_: `identity`
-
-    En mode `sequence`, si une classe possède des `values` mais dont la PK n'est pas précisée, le générateur inclut la colonne PK dans l'`INSERT` et l'initialise via la séquence de la table.
-
-  - `increment`
-
-    Incrément de la séquence générée.
-
-  - `start`
-
-    Début de la séquence générée.
-
 - `resourcesTableName`
 
   Nom de la table contenant les traductions

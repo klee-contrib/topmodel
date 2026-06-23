@@ -8,7 +8,7 @@
 
 create table [dbo].[PROMOTION] (
 	[PLA_ID] int,
-	[PRO_LIBELLE] varchar not null,
+	[PRO_LIBELLE] varchar(100) not null,
 	[PRO_POURCENTAGE_REDUCTION] int not null,
 	[PRO_DATE_DEBUT] timestamp not null,
 	[PRO_DATE_FIN] timestamp not null,
@@ -18,6 +18,12 @@ create table [dbo].[PROMOTION] (
 	constraint [PK_PROMOTION] primary key clustered ([PLA_ID] ASC),
 	constraint [FK_PROMOTION_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
 	constraint [FK_PROMOTION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
+go
+
+/**
+  * Création de la séquence pour la clé primaire de la table PROMOTION
+ **/
+create sequence SEQ_PROMOTION as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for PROMOTION.LIE_ID */

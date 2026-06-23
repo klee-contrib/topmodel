@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX} from "@/domains";
+import {DO_BOOLEEN, DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX, DO_SEQ_ID} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {CategoriePlat} from "./enums";
@@ -12,7 +12,7 @@ export type MenuRead = EntityToType<MenuReadEntityType>;
 export type MenuReadEntityType = typeof MenuReadEntity;
 
 export const MenuReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f.optional()
         .label("restaurant.menu.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

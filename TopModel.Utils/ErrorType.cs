@@ -247,9 +247,14 @@ public enum ErrorType
     TMD3024,
 
     /// <summary>
-    /// Values sur classe non regular.
+    /// Distinct-tables sans séquence.
     /// </summary>
     TMD3025,
+
+    /// <summary>
+    /// Values sur classe non regular.
+    /// </summary>
+    TMD3026,
 
     #endregion
 

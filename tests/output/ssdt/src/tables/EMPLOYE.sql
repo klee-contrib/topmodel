@@ -7,9 +7,9 @@
 -- ===========================================================================================
 
 create table [dbo].[EMPLOYE] (
-	[EMP_TELEPHONE] varchar,
+	[EMP_TELEPHONE] varchar(20),
 	[EMP_DATE_NAISSANCE] timestamp,
-	[EMP_MATRICULE] varchar not null,
+	[EMP_MATRICULE] varchar(10) not null,
 	[EMP_DATE_EMBAUCHE] timestamp not null,
 	[EMP_SALAIRE] decimal,
 	[LIE_ID] int not null,

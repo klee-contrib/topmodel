@@ -1,6 +1,4 @@
-﻿using TopModel.Generator.Core;
-
-namespace TopModel.Generator.Sql.Procedural;
+﻿namespace TopModel.Generator.Sql.Procedural;
 
 /// <summary>
 /// Paramètres pour la génération de SQL procédural.
@@ -36,9 +34,4 @@ public class ProceduralSqlConfig
     /// Nom du fichier contenant les scripts de création de commentaires sur les tables et les colonnes.
     /// </summary>
     public string? CommentsFileName { get; set; }
-
-    /// <summary>
-    /// Mode de génération des séquences.
-    /// </summary>
-    public IdentityConfig Identity { get; set; } = new() { Mode = IdentityMode.IDENTITY };
 }

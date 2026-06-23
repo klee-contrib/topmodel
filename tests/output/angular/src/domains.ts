@@ -25,6 +25,12 @@ export const DO_EMAIL = domain({
 export const DO_ID = domain({
   schema: z.number().positive(),
 });
+export const DO_ID_2 = domain({
+  schema: z.number().positive(),
+});
+export const DO_SEQ_ID = domain({
+  schema: z.number().positive(),
+});
 export const DO_LIBELLE = domain({
   schema: z.string(),
 });

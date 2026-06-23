@@ -7,14 +7,14 @@
 -- ===========================================================================================
 
 create table [dbo].[COMMANDE] (
-	[COM_ID] int identity,
+	[COM_ID] int identity(2, 2),
 	[COM_DATE_COMMANDE] timestamp not null,
 	[COM_DATE_LIVRAISON] timestamp,
 	[COM_MONTANT_TOTAL] decimal not null,
 	[PER_ID] int not null,
 	[TAB_ID] int,
 	[REV_ID] int,
-	[STC_CODE] varchar not null default N'EN_ATT',
+	[STC_CODE] varchar(10) not null default N'EN_ATT',
 	[AVI_ID] int,
 	[COM_DATE_CREATION] timestamp not null,
 	constraint [PK_COMMANDE] primary key clustered ([COM_ID] ASC),

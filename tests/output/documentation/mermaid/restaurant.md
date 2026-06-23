@@ -4,7 +4,7 @@
 classDiagram
 %% Commande d'un client
 class Commande{
- DO_ID Id
+ DO_ID_2 Id
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
@@ -18,20 +18,20 @@ Commande "0..1" --> "1" AvisClient
 Commande "1..*" --> "1" LigneCommande
 %% Commande pour historique avec préservation des clés primaires
 class CommandeHistorique{
- DO_ID Id
+ DO_ID_2 Id
  DO_DATE_HEURE DateCommande
  DO_DATE_HEURE DateLivraison
  DO_PRIX MontantTotal
  DO_ID ClientId
  DO_ID TableId
- DO_ID ReservationId
+ DO_SEQ_ID ReservationId
  DO_CODE StatutCommande
  DO_ID AvisClientId
  DO_DATE_HEURE DateCreation
 }
 %% Ligne d'une commande
 class LigneCommande{
- DO_ID Id
+ DO_ID_2 Id
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
@@ -41,17 +41,17 @@ LigneCommande "1" --> "0..*" Commande
 LigneCommande "1" --> "0..*" Plat
 %% Ligne de commande pour historique avec préservation des clés primaires
 class LigneCommandeHistorique{
- DO_ID Id
+ DO_ID_2 Id
  DO_QUANTITE Quantite
  DO_PRIX PrixUnitaire
  DO_PRIX PrixTotal
- DO_ID PlatId
+ DO_SEQ_ID PlatId
  DO_DATE_HEURE DateCreation
 }
 LigneCommandeHistorique "1" --> "0..*" CommandeHistorique
 %% Réservation d'une table
 class Reservation{
- DO_ID Id
+ DO_SEQ_ID Id
  DO_DATE_HEURE DateReservation
  DO_QUANTITE NombrePersonnes
  DO_LIBELLE Commentaire
@@ -63,7 +63,7 @@ Reservation "0..1" --> "0..*" TableRestaurant
 Reservation "1" --> "0..*" Restaurant
 %% Menu du restaurant
 class Menu{
- DO_ID Id
+ DO_SEQ_ID Id
  DO_LIBELLE Nom
  DO_LIBELLE Description
  DO_PRIX Prix
@@ -83,7 +83,7 @@ MenuPlat "1" --> "0..*" Menu
 MenuPlat "1" --> "0..*" Plat
 %% Plat du menu
 class Plat{
- DO_ID Id
+ DO_SEQ_ID Id
  DO_LIBELLE Nom
  DO_LIBELLE Description
  DO_PRIX Prix
@@ -189,7 +189,7 @@ class TableRestaurant{
 TableRestaurant "1" --> "0..*" Restaurant
 %% Vaisselle de restaurant
 class Vaisselle{
- DO_ID Id
+ DO_SEQ_ID Id
  DO_LIBELLE Description
 }
 %% Verre.

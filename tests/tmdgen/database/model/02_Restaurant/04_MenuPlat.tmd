@@ -7,7 +7,7 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Restaurant/02_Plat
+  - 02_Restaurant/02_Plat
 ---
 class:
   name: MenuPlat

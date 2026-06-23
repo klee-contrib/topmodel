@@ -8,5 +8,5 @@ import restaurant.jpa_sequence_server.entities.common.Translation;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface TranslationDAO extends CustomCrudRepository<Translation, String> {
+public interface TranslationDAO extends CustomCrudRepository<Translation, Translation.TranslationId> {
 }

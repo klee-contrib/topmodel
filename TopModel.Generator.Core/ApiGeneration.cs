@@ -1,6 +1,4 @@
-﻿#pragma warning disable S1133
-
-namespace TopModel.Generator.Core;
+﻿namespace TopModel.Generator.Core;
 
 /// <summary>
 /// Mode de génération de des endpoints.

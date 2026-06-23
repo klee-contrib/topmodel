@@ -7,7 +7,7 @@
 -- ===========================================================================================
 
 create table [dbo].[CLIENT] (
-	[CLI_EMAIL] varchar,
+	[CLI_EMAIL] varchar(100),
 	[PER_ID] int,
 	constraint [PK_CLIENT] primary key clustered ([PER_ID] ASC),
 	constraint [FK_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[PERSONNE] ([PER_ID]))

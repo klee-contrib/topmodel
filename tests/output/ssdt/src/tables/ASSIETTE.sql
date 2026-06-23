@@ -8,7 +8,7 @@
 
 create table [dbo].[ASSIETTE] (
 	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar not null,
+	[VSL_DESCRIPTION] varchar(100) not null,
 	[AST_TAILLE] int not null,
 	constraint [PK_ASSIETTE] primary key clustered ([VSL_ID] ASC))
 go
@@ -16,7 +16,7 @@ go
 /**
   * Création de la séquence pour la clé primaire de la table VAISSELLE
  **/
-create sequence SEQ_VAISSELLE as INT start with 1 increment by 1
+create sequence SEQ_VAISSELLE as int start with 1000 increment by 50
 go
 
 /**

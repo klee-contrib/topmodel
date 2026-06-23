@@ -111,11 +111,6 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? FieldsEnumInterface { get; set; }
 
     /// <summary>
-    /// Mode de génération des séquences.
-    /// </summary>
-    public virtual IdentityConfig Identity { get; set; } = new() { Mode = IdentityMode.IDENTITY };
-
-    /// <summary>
     /// Location des flux de données générés.
     /// </summary>
     public virtual string? DataFlowsPath { get; set; }

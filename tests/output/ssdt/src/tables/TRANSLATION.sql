@@ -7,9 +7,9 @@
 -- ===========================================================================================
 
 create table [dbo].[TRANSLATION] (
-	[TRA_RESOURCE_KEY] varchar,
-	[TRA_VALUE] varchar not null,
-	[TRA_LANG] varchar,
+	[TRA_RESOURCE_KEY] varchar(100),
+	[TRA_VALUE] varchar(100) not null,
+	[TRA_LANG] varchar(100),
 	constraint [PK_TRANSLATION] primary key clustered ([TRA_RESOURCE_KEY] ASC, [TRA_LANG] ASC))
 go
 

@@ -18,7 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import restaurant.jpa_sequence_server.enums.restaurant.DepartementCode;
@@ -37,9 +36,8 @@ public class Personne implements PersonneBase {
 	 * Identifiant de la personne.
 	 */
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PERSONNE")
-	@SequenceGenerator(sequenceName = "SEQ_PERSONNE", name = "SEQ_PERSONNE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
 
 	/**

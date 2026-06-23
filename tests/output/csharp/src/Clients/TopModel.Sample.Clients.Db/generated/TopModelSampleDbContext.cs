@@ -215,6 +215,19 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
         modelBuilder.Entity<Translation>().HasKey(p => new { p.ResourceKey, p.Lang });
 
+        modelBuilder.Entity<Commande>().Property(p => p.Id).UseIdentityColumn(2, 2);
+        modelBuilder.Entity<LigneCommande>().Property(p => p.Id).UseIdentityColumn(2, 2);
+        modelBuilder.HasSequence("seq_menu").StartsAt(1000).IncrementsBy(50);
+        modelBuilder.Entity<Menu>().Property(p => p.Id).UseHiLo("seq_menu");
+        modelBuilder.HasSequence("seq_plat").StartsAt(1000).IncrementsBy(50);
+        modelBuilder.Entity<Plat>().Property(p => p.Id).UseHiLo("seq_plat");
+        modelBuilder.HasSequence("seq_reservation").StartsAt(1000).IncrementsBy(50);
+        modelBuilder.Entity<Reservation>().Property(p => p.Id).UseHiLo("seq_reservation");
+        modelBuilder.HasSequence("seq_vaisselle").StartsAt(1000).IncrementsBy(50);
+        modelBuilder.Entity<Assiette>().Property(p => p.Id).UseHiLo("seq_vaisselle");
+        modelBuilder.Entity<Couvert>().Property(p => p.Id).UseHiLo("seq_vaisselle");
+        modelBuilder.Entity<Verre>().Property(p => p.Id).UseHiLo("seq_vaisselle");
+
         modelBuilder.Entity<Lieu>()
             .HasDiscriminator<string>("lie_discriminator")
             .HasValue<Fournisseur>("FOURNISSEUR")
@@ -227,10 +240,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
             .HasValue<PlatEntree>(CategoriePlat.Entree.Code)
             .HasValue<PlatPrincipal>(CategoriePlat.Principal.Code);
         modelBuilder.Entity<Vaisselle>().UseTpcMappingStrategy();
-        modelBuilder.HasSequence("seq_vaisselle");
-        modelBuilder.Entity<Assiette>().Property(p => p.Id).UseSequence("seq_vaisselle");
-        modelBuilder.Entity<Couvert>().Property(p => p.Id).UseSequence("seq_vaisselle");
-        modelBuilder.Entity<Verre>().Property(p => p.Id).UseSequence("seq_vaisselle");
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
         modelBuilder.Entity<CategoriePlat>().HasIndex(p => p.Ordre).IsUnique();

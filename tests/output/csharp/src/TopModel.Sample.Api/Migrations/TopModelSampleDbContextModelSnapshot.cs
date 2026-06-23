@@ -17,12 +17,26 @@ namespace TopModel.Sample.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence("seq_vaisselle");
+            modelBuilder.HasSequence("seq_menu")
+                .StartsAt(1000L)
+                .IncrementsBy(50);
+
+            modelBuilder.HasSequence("seq_plat")
+                .StartsAt(1000L)
+                .IncrementsBy(50);
+
+            modelBuilder.HasSequence("seq_reservation")
+                .StartsAt(1000L)
+                .IncrementsBy(50);
+
+            modelBuilder.HasSequence("seq_vaisselle")
+                .StartsAt(1000L)
+                .IncrementsBy(50);
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Common.Translation", b =>
                 {
@@ -436,6 +450,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Identifiant de la commande");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 2L, 2L, null, null, null, null);
 
                     b.Property<int?>("AvisClientId")
                         .HasColumnType("integer")
@@ -612,6 +627,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasComment("Identifiant de la ligne");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 2L, 2L, null, null, null, null);
 
                     b.Property<int>("CommandeId")
                         .HasColumnType("integer")
@@ -711,7 +727,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("men_id")
                         .HasComment("Identifiant du menu");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "seq_menu");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("timestamp with time zone")
@@ -866,7 +882,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("pla_id")
                         .HasComment("Identifiant du plat");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "seq_plat");
 
                     b.Property<string>("CategoriePlatCode")
                         .IsRequired()
@@ -1028,7 +1044,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_id")
                         .HasComment("Identifiant de la réservation");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "seq_reservation");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("integer")
@@ -1140,10 +1156,9 @@ namespace TopModel.Sample.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("vsl_id")
-                        .HasDefaultValueSql("nextval('seq_vaisselle')")
                         .HasComment("Id de la vaisselle");
 
-                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"), "seq_vaisselle");
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "seq_vaisselle");
 
                     b.Property<string>("Description")
                         .IsRequired()

@@ -16,7 +16,7 @@ public partial record PlatRead
     /// Identifiant du plat.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.SeqId)]
     public int? Id { get; set; }
 
     /// <summary>
