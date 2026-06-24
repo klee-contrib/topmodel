@@ -43,7 +43,7 @@ internal class ClassResolver(
                         yield return new ModelError(localizer, ErrorType.TMD3025, [classe.Name], classe);
                     }
 
-                    if (classe.Extends != null && classe.Extends.PrimaryKey.Count() != 1)
+                    if (classe.Extends != null && classe.Extends.ExtendedProperties.Count(p => p.PrimaryKey) != 1)
                     {
                         yield return new ModelError(
                             localizer,
