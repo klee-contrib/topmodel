@@ -111,7 +111,7 @@ Il n'est **pas possible d'initialiser deux fois la même propriété dans un map
 1. La propriété de la classe courante est un alias de la propriété de la classe cible (ou les deux propriétés sont des alias de la même propriété).
 2. La propriété de la classe courante a le même nom que la propriété de la classe cible.
 
-Le mapping sera ensuite ajouté s'il est possible. Puisqu'il n'est pas possible d'initialiser deux fois la même propriété, une erreur sera levée plusieurs mappings automatiques ont été trouvés vers la même propriété. Pour lever l'ambiguïté, ou si un mapping n'est pas souhaité, il est possible de le désactiver dans la section `mappings` en renseignant `MyProperty: false` à l'intérieur.
+Le mapping sera ensuite ajouté s'il est possible. Puisqu'il n'est pas possible d'initialiser deux fois la même propriété, une erreur sera levée plusieurs mappings automatiques ont été trouvés vers la même propriété. Pour lever l'ambiguïté, ou si un mapping n'est pas souhaité, vous devez désactiver le mapping en trop dans la section `mappings` en renseignant `MyProperty: false` à l'intérieur.
 
 Quelques exemples :
 
