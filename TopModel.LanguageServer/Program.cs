@@ -88,5 +88,13 @@ using var server = await LanguageServer.From(options =>
         )
 );
 
-await server.WaitForExit;
+try
+{
+    await server.WaitForExit.WaitAsync(command.CancellationToken);
+}
+catch (OperationCanceledException)
+{
+    // Ctrl+C : le token a été annulé, on sort pour laisser les `using` disposer le serveur et les watchers.
+}
+
 return 0;

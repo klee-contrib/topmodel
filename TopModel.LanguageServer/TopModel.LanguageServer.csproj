@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>4.5.1</Version>
+    <Version>4.5.2</Version>
     <Description>Language Server TopModel.</Description>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
