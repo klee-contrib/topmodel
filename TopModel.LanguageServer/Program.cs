@@ -87,14 +87,11 @@ using var server = await LanguageServer.From(options =>
             }
         )
 );
-
-try
+Console.CancelKeyPress += (_, eventArgs) =>
 {
-    await server.WaitForExit.WaitAsync(command.CancellationToken);
-}
-catch (OperationCanceledException)
-{
-    // Ctrl+C : le token a été annulé, on sort pour laisser les `using` disposer le serveur et les watchers.
-}
-
+    eventArgs.Cancel = true;
+    server.ForcefulShutdown();
+    Environment.Exit(0);
+};
+await server.WaitForExit;
 return 0;
