@@ -46,12 +46,13 @@ public interface PersonneClient {
 
 	/**
 	 * Ajoute un employé (nécessite le rôle ADMIN).
+	 * @param token Token.
 	 * @param employe Employé à créer.
 	 *
 	 * @return Employé créé.
 	 */
 	@PostExchange("/employes")
-	ResponseEntity<EmployeRead> addEmploye(@RequestBody @Valid EmployeWrite employe);
+	ResponseEntity<EmployeRead> addEmploye(@RequestParam(value = "token", required = false) String token, @RequestBody @Valid EmployeWrite employe);
 
 	/**
 	 * Supprime un client.

@@ -18,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
+import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeDeleteResult;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeItem;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeWrite;
@@ -108,6 +109,7 @@ public abstract class AbstractCommandeClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode deleteCommandeWithBody.
+	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder deleteCommandeWithBodyUriComponentsBuilder() {
 		String uri = host + "/api/restaurants/commandes";
@@ -117,11 +119,12 @@ public abstract class AbstractCommandeClient {
 	/**
 	 * Supprime une commande.
 	 * @param commandeItem Commande item à supprimer dans le body
+	 * @return Détail de la suppression.
 	 */
-	public ResponseEntity deleteCommandeWithBody(CommandeItem commandeItem){
+	public ResponseEntity<CommandeDeleteResult> deleteCommandeWithBody(CommandeItem commandeItem){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.deleteCommandeWithBodyUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(commandeItem, headers), (Class<?>) null);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(commandeItem, headers), CommandeDeleteResult.class);
 	}
 
 	/**

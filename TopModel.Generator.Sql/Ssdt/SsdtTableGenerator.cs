@@ -49,7 +49,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         Config.WriteSequence(writer, classe, tag);
 
         // Indexes sur les clés étrangères.
-        WriteIndexes(writer, classe, Config.GetAllProperties(classe));
+        WriteIndexes(writer, classe, Config.GetProperties(classe));
 
         // Définition
         if (Config.Ssdt!.GenerateComments)
@@ -224,7 +224,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="table">Table.</param>
     protected virtual void WriteInsideInstructions(IFileWriter writer, Class table)
     {
-        var properties = Config.GetAllProperties(table).ToList();
+        var properties = Config.GetProperties(table).ToList();
 
         foreach (var property in properties)
         {

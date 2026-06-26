@@ -34,7 +34,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        foreach (var property in classe.Properties)
+        foreach (var property in Config.GetProperties(classe))
         {
             var getter = JpaModelPropertyGenerator.GetGetter(tag, property);
             getter.Body.Clear();
@@ -47,7 +47,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        foreach (var property in classe.Properties.Where(p => !p.Readonly))
+        foreach (var property in Config.GetProperties(classe).Where(p => !p.Readonly))
         {
             var getter = JpaModelPropertyGenerator.GetSetter(tag, property);
             getter.Body.Clear();

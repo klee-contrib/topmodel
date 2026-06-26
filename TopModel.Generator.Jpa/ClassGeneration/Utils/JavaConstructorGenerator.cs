@@ -12,8 +12,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 
     public JavaConstructor GetAllArgsConstructor(Class classe, string tag)
     {
-        var properties = classe.Properties;
-        return GetConstructor(classe, properties, tag);
+        return GetConstructor(classe, Config.GetProperties(classe), tag);
     }
 
     public JavaConstructor GetConstructor(Class classe, IEnumerable<IProperty> properties, string tag)

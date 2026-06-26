@@ -27,10 +27,10 @@ public static class Mappers
             Commentaire = avisClient.Commentaire,
             DateAvis = avisClient.DateAvis,
             Approuve = avisClient.Approuve,
-            NombreVues = avisClient.NombreVues,
             ClientId = avisClient.Client?.Id,
             RestaurantId = avisClient.Restaurant?.Id,
-            DateCreation = avisClient.DateCreation
+            DateCreation = avisClient.DateCreation,
+            NombreVues = avisClient.NombreVues
         };
     }
 
@@ -259,10 +259,9 @@ public static class Mappers
     /// <param name="restaurant">Instance de 'Restaurant'.</param>
     /// <param name="tables">Tables.</param>
     /// <param name="nombrePlats">Nombre de plats.</param>
-    /// <param name="nombreTables">Nombre de tables.</param>
     /// <param name="noteMoyenne">Note moyenne.</param>
     /// <returns>Une nouvelle instance de 'RestaurantAvecStatistiques'.</returns>
-    public static RestaurantAvecStatistiques CreateRestaurantAvecStatistiques(Restaurant restaurant, ICollection<TableRestaurant> tables, int? nombrePlats = null, int? nombreTables = null, decimal? noteMoyenne = null)
+    public static RestaurantAvecStatistiques CreateRestaurantAvecStatistiques(Restaurant restaurant, ICollection<TableRestaurant> tables, int? nombrePlats = null, decimal? noteMoyenne = null)
     {
         ArgumentNullException.ThrowIfNull(restaurant);
         ArgumentNullException.ThrowIfNull(tables);
@@ -281,7 +280,6 @@ public static class Mappers
             DateCreation = restaurant.DateCreation,
             Tables = tables.Select(CreateTableRead).ToList(),
             NombrePlats = nombrePlats,
-            NombreTables = nombreTables,
             NoteMoyenne = noteMoyenne
         };
     }

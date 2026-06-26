@@ -21,6 +21,7 @@ import org.springframework.web.service.annotation.PutExchange;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
+import restaurant.jpa_server.dtos.restaurant.CommandeDeleteResult;
 import restaurant.jpa_server.dtos.restaurant.CommandeItem;
 import restaurant.jpa_server.dtos.restaurant.CommandeRead;
 import restaurant.jpa_server.dtos.restaurant.CommandeWrite;
@@ -64,10 +65,10 @@ public interface CommandeClient {
 	 * Supprime une commande.
 	 * @param commandeItem Commande item à supprimer dans le body.
 	 *
-	 * @return Aucun retour.
+	 * @return Détail de la suppression.
 	 */
 	@DeleteExchange("/commandes")
-	ResponseEntity<Void> deleteCommandeWithBody(@RequestBody @Valid CommandeItem commandeItem);
+	ResponseEntity<CommandeDeleteResult> deleteCommandeWithBody(@RequestBody @Valid CommandeItem commandeItem);
 
 	/**
 	 * Exporte les commandes au format CSV.

@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_PRIX, DO_QUANTITE, DO_TELEPHONE} from "@/domains";
+import {DO_DATE_HEURE, DO_ID, DO_LIBELLE, DO_LISTE, DO_QUANTITE, DO_TELEPHONE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {TableReadEntity} from "./table-read";
@@ -49,8 +49,5 @@ export const RestaurantAvecStatistiquesEntity = entity({
     ),
     nombreTables: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.restaurantAvecStatistiques.nombreTables")
-    ),
-    noteMoyenne: e.field(DO_PRIX, f => f.optional()
-        .label("restaurant.restaurantAvecStatistiques.noteMoyenne")
     )
 });

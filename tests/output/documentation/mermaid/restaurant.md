@@ -119,8 +119,8 @@ class AvisClient{
  DO_LIBELLE Commentaire
  DO_DATE_HEURE DateAvis
  DO_BOOLEEN Approuve
- DO_QUANTITE NombreVues
  DO_DATE_HEURE DateCreation
+ DO_QUANTITE NombreVues
 }
 AvisClient "1" --> "0..*" Client
 AvisClient "1" --> "0..*" Restaurant

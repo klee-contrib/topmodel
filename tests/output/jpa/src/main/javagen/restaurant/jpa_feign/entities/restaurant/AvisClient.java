@@ -22,6 +22,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import topmodel.test.NombreVuesBase;
+
 /**
  * Avis d'un client sur un restaurant.
  */
@@ -34,7 +36,7 @@ import jakarta.persistence.UniqueConstraint;
 		@UniqueConstraint(columnNames = {"PER_ID", "LIE_ID", "AVI_DATE_AVIS"})
 	}
 )
-public class AvisClient {
+public class AvisClient extends NombreVuesBase {
 
 	/**
 	 * Identifiant de l'avis.
@@ -67,12 +69,6 @@ public class AvisClient {
 	 */
 	@Column(name = "AVI_APPROUVE", nullable = false, columnDefinition = "boolean")
 	private Boolean approuve = false;
-
-	/**
-	 * Nombre de vues de l'avis (calculé).
-	 */
-	@Column(name = "AVI_NOMBRE_VUES", nullable = false, columnDefinition = "int")
-	private Integer nombreVues = 0;
 
 	/**
 	 * Client ayant donné l'avis.
@@ -138,15 +134,6 @@ public class AvisClient {
 	 */
 	public Boolean getApprouve() {
 		return this.approuve;
-	}
-
-	/**
-	 * Getter for nombreVues.
-	 *
-	 * @return value of {@link #nombreVues nombreVues}.
-	 */
-	public Integer getNombreVues() {
-		return this.nombreVues;
 	}
 
 	/**
@@ -217,14 +204,6 @@ public class AvisClient {
 	}
 
 	/**
-	 * Set the value of {@link #nombreVues nombreVues}.
-	 * @param nombreVues value to set.
-	 */
-	public void setNombreVues(Integer nombreVues) {
-		this.nombreVues = nombreVues;
-	}
-
-	/**
 	 * Set the value of {@link #client client}.
 	 * @param client value to set.
 	 */
@@ -257,7 +236,6 @@ public class AvisClient {
 		COMMENTAIRE(String.class),
 		DATE_AVIS(LocalDateTime.class),
 		APPROUVE(Boolean.class),
-		NOMBRE_VUES(Integer.class),
 		CLIENT(Client.class),
 		RESTAURANT(Restaurant.class),
 		DATE_CREATION(LocalDateTime.class);

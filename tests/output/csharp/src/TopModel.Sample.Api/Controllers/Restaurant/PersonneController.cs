@@ -27,12 +27,13 @@ public class PersonneController : Controller
     /// Ajoute un employé (nécessite le rôle ADMIN)
     /// </summary>
     /// <param name="employe">Employé à créer</param>
+    /// <param name="token">Token</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Employé créé</returns>
     [Authorize]
     [Authorize(Roles = "ADMIN")]
     [HttpPost("api/restaurants/employes")]
-    public async Task<EmployeRead> AddEmploye([FromBody] EmployeWrite employe, CancellationToken ct = default)
+    public async Task<EmployeRead> AddEmploye([FromBody] EmployeWrite employe, string? token = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

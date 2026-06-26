@@ -41,11 +41,6 @@ class:
       required: true
       comment: Indique si l'avis est approuvé par le restaurant
 
-    - name: NombreVues
-      domain: DO_ENTIER
-      required: true
-      comment: Nombre de vues de l'avis (calculé)
-
     - association: Client
       comment: Client ayant donné l'avis
       required: true

@@ -43,30 +43,32 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
             fw.WriteLine("/**");
             fw.WriteLine($" * {endpoint.Description}");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 fw.WriteLine($" * @param {param.GetParamName()} {param.Comment}");
             }
 
             fw.WriteLine(" * @param options Options pour 'fetch'.");
 
-            if (endpoint.Returns != null)
+            var returns = Config.GetReturns(endpoint);
+
+            if (returns != null)
             {
-                fw.WriteLine($" * @returns {endpoint.Returns.Comment}");
+                fw.WriteLine($" * @returns {returns.Comment}");
             }
 
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 var defaultValue = Config.GetValue(param);
                 fw.Write(
-                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                    $"{param.GetParamName()}{(param.IsQueryParam(Config) && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
                 );
             }
 
-            var fetchReturnType = endpoint.Returns == null ? "void" : Config.GetType(endpoint.Returns);
+            var fetchReturnType = returns == null ? "void" : Config.GetType(returns);
             fw.WriteLine(
                 $"options: AsyncDataOptions<{fetchReturnType}> = {{}}): AsyncData<{fetchReturnType} | null, Error | null> {{"
             );
@@ -77,7 +79,9 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
                 fw.WriteLine("    fillFormData(");
                 fw.WriteLine("        {");
 
-                foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
+                foreach (
+                    var param in Config.GetParams(endpoint).Where(p => !p.IsRouteParam() && !p.IsQueryParam(Config))
+                )
                 {
                     if (param is not { Composition: not null })
                     {
@@ -88,7 +92,7 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
                         fw.Write($@"            ...{param.GetParamName()}");
                     }
 
-                    if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
+                    if (Config.GetParams(endpoint).Last() != param)
                     {
                         fw.WriteLine(",");
                     }
@@ -113,16 +117,16 @@ public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFil
             {
                 fw.WriteLine(3, "body,");
             }
-            else if (endpoint.GetJsonBodyParam() != null)
+            else if (endpoint.GetJsonBodyParam(Config) != null)
             {
-                fw.WriteLine(3, $@"body: {endpoint.GetJsonBodyParam()!.GetParamName()},");
+                fw.WriteLine(3, $@"body: {endpoint.GetJsonBodyParam(Config)!.GetParamName()},");
             }
 
-            if (endpoint.GetQueryParams().Any())
+            if (endpoint.GetQueryParams(Config).Any())
             {
                 fw.WriteLine(4, "query: {");
 
-                foreach (var qParam in endpoint.GetQueryParams())
+                foreach (var qParam in endpoint.GetQueryParams(Config))
                 {
                     fw.WriteLine(5, $@"{qParam.GetParamName()},");
                 }

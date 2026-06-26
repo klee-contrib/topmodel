@@ -55,37 +55,39 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
             fw.WriteLine("/**");
             fw.WriteLine($" * {endpoint.Description}");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 fw.WriteLine($" * @param {param.GetParamName()} {param.Comment}");
             }
 
             fw.WriteLine(" * @param options Options pour 'fetch'.");
 
-            if (endpoint.Returns != null)
+            var returns = Config.GetReturns(endpoint);
+
+            if (returns != null)
             {
-                fw.WriteLine($" * @returns {endpoint.Returns.Comment}");
+                fw.WriteLine($" * @returns {returns.Comment}");
             }
 
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 var defaultValue = Config.GetValue(param);
                 fw.Write(
-                    $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
+                    $"{param.GetParamName()}{(param.IsQueryParam(Config) && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, "
                 );
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
-            if (endpoint.Returns == null)
+            if (returns == null)
             {
                 fw.Write("void");
             }
             else
             {
-                fw.Write(Config.GetType(endpoint.Returns));
+                fw.Write(Config.GetType(returns));
             }
 
             fw.WriteLine("> {");
@@ -96,7 +98,9 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
                 fw.WriteLine(1, "fillFormData(");
                 fw.WriteLine(2, "{");
 
-                foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
+                foreach (
+                    var param in Config.GetParams(endpoint).Where(p => !p.IsRouteParam() && !p.IsQueryParam(Config))
+                )
                 {
                     if (param is not { Composition: not null })
                     {
@@ -107,7 +111,7 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
                         fw.Write(3, $@"...{param.GetParamName()}");
                     }
 
-                    if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
+                    if (Config.GetParams(endpoint).Last() != param)
                     {
                         fw.WriteLine(",");
                     }
@@ -124,29 +128,32 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
 
             fw.Write(1, $@"return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
 
-            if (endpoint.GetJsonBodyParam() != null)
+            if (endpoint.GetJsonBodyParam(Config) != null)
             {
-                fw.Write($"body: {endpoint.GetJsonBodyParam()!.GetParamName()}");
+                fw.Write($"body: {endpoint.GetJsonBodyParam(Config)!.GetParamName()}");
             }
             else if (endpoint.IsMultipart)
             {
                 fw.Write("body");
             }
 
-            if ((endpoint.GetJsonBodyParam() != null || endpoint.IsMultipart) && endpoint.GetQueryParams().Any())
+            if (
+                (endpoint.GetJsonBodyParam(Config) != null || endpoint.IsMultipart)
+                && endpoint.GetQueryParams(Config).Any()
+            )
             {
                 fw.Write(", ");
             }
 
-            if (endpoint.GetQueryParams().Any())
+            if (endpoint.GetQueryParams(Config).Any())
             {
                 fw.Write("query: {");
 
-                foreach (var qParam in endpoint.GetQueryParams())
+                foreach (var qParam in endpoint.GetQueryParams(Config))
                 {
                     fw.Write(qParam.GetParamName());
 
-                    if (qParam != endpoint.GetQueryParams().Last())
+                    if (qParam != endpoint.GetQueryParams(Config).Last())
                     {
                         fw.Write(", ");
                     }
@@ -161,7 +168,9 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
 
         if (
             endpoints.Any(endpoint =>
-                endpoint.Params.Any(p => p is not { Composition: not null } && Config.GetType(p).Contains("File"))
+                Config
+                    .GetParams(endpoint)
+                    .Any(p => p is not { Composition: not null } && Config.GetType(p).Contains("File"))
             )
         )
         {

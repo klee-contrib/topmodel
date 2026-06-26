@@ -24,9 +24,6 @@ export const AvisClientReadEntity = entity({
     approuve: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.avisClient.approuve")
     ),
-    nombreVues: e.field(DO_QUANTITE, f => f.defaultValue(0)
-        .label("restaurant.avisClient.nombreVues")
-    ),
     clientId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.clientId")
     ),
@@ -35,5 +32,8 @@ export const AvisClientReadEntity = entity({
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
+    ),
+    nombreVues: e.field(DO_QUANTITE, f => f.defaultValue(0)
+        .label("restaurant.nombreVuesBase.nombreVues")
     )
 });

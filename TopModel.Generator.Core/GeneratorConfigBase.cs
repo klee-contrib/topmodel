@@ -656,7 +656,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                         || container is IProperty { Class: Class pc } && IsPersistent(pc, tag),
                     AnnotationConstraint.ClassProperty => container is IProperty { Class: not null },
                     AnnotationConstraint.EndpointParam => container is IProperty { Endpoint: Endpoint e } p
-                        && e.Params.Contains(p),
+                        && GetParams(e).Contains(p),
                     AnnotationConstraint.PrimaryKey => container is IProperty { PrimaryKey: true },
                     _ => true,
                 }

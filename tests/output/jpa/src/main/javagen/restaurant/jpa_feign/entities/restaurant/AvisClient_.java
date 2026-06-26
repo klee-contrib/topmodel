@@ -24,8 +24,6 @@ public class AvisClient_ {
 
 	public static volatile SingularAttribute<AvisClient, Boolean> approuve;
 
-	public static volatile SingularAttribute<AvisClient, Integer> nombreVues;
-
 	public static volatile SingularAttribute<AvisClient, Client> client;
 
 	public static volatile SingularAttribute<AvisClient, Restaurant> restaurant;
@@ -41,8 +39,6 @@ public class AvisClient_ {
 	public static final String DATE_AVIS = "dateAvis";
 
 	public static final String APPROUVE = "approuve";
-
-	public static final String NOMBRE_VUES = "nombreVues";
 
 	public static final String CLIENT = "client";
 

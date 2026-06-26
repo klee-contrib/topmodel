@@ -57,7 +57,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
     {
         var constructor = JavaEnumGeneratorHelper.GetConstructor(
             classe,
-            classe.Properties.Where(p => p.EnumProperty != p),
+            Config.GetProperties(classe).Where(p => p.EnumProperty != p),
             tag
         );
         if (constructor.Parameters.Count == 0)
@@ -71,7 +71,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
 
     protected virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
     {
-        foreach (var property in classe.Properties.Where(p => p.EnumProperty != p))
+        foreach (var property in Config.GetProperties(classe).Where(p => p.EnumProperty != p))
         {
             JavaField field = GetField(property, tag);
             yield return field;
@@ -133,17 +133,18 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         return javaEnum;
     }
 
-    private static IEnumerable<IProperty> GetEnumProperties(Class classe)
+    private IEnumerable<IProperty> GetEnumProperties(Class classe)
     {
-        return classe.Properties.Where(e => e.EnumProperty == e);
+        return Config.GetProperties(classe).Where(e => e.EnumProperty == e);
     }
 
     private IEnumerable<JavaEnumValue> GetEnumValues(Class classe)
     {
         foreach (var refValue in classe.Values)
         {
-            var args = classe
-                .Properties.Where(p => p.EnumProperty != p)
+            var args = Config
+                .GetProperties(classe)
+                .Where(p => p.EnumProperty != p)
                 .Select(prop => JavaEnumGeneratorHelper.GetPropertyValue(classe, prop, refValue))
                 .ToArray();
             var value = new JavaEnumValue(refValue.Value[classe.EnumKey]);

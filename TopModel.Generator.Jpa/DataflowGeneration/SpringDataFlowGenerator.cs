@@ -41,14 +41,12 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
     protected static void WriteBeanFlow(JavaWriter fw, DataFlow dataFlow)
     {
-        fw.AddImports(
-            [
-                "org.springframework.context.annotation.Bean",
-                "org.springframework.batch.core.job.flow.Flow",
-                "org.springframework.beans.factory.annotation.Qualifier",
-                "org.springframework.batch.core.step.Step",
-            ]
-        );
+        fw.AddImports([
+            "org.springframework.context.annotation.Bean",
+            "org.springframework.batch.core.job.flow.Flow",
+            "org.springframework.beans.factory.annotation.Qualifier",
+            "org.springframework.batch.core.step.Step",
+        ]);
 
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Flow"")");
@@ -442,20 +440,18 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         var packageName = Config.ResolveVariables(Config.DataFlowsPath!, module: module).ToPackageName();
         flows = flows.OrderBy(f => f.Name);
         using var fw = this.OpenJavaWriter(configFilePath, packageName);
-        fw.AddImports(
-            [
-                "org.springframework.context.annotation.Configuration",
-                "org.springframework.context.annotation.Bean",
-                "org.springframework.batch.core.job.Job",
-                "org.springframework.batch.core.repository.JobRepository",
-                "org.springframework.beans.factory.annotation.Qualifier",
-                "org.springframework.batch.core.job.flow.Flow",
-                "org.springframework.batch.core.job.builder.JobBuilder",
-                "org.springframework.batch.core.job.parameters.RunIdIncrementer",
-                "org.springframework.core.task.TaskExecutor",
-                "org.springframework.context.annotation.Import",
-            ]
-        );
+        fw.AddImports([
+            "org.springframework.context.annotation.Configuration",
+            "org.springframework.context.annotation.Bean",
+            "org.springframework.batch.core.job.Job",
+            "org.springframework.batch.core.repository.JobRepository",
+            "org.springframework.beans.factory.annotation.Qualifier",
+            "org.springframework.batch.core.job.flow.Flow",
+            "org.springframework.batch.core.job.builder.JobBuilder",
+            "org.springframework.batch.core.job.parameters.RunIdIncrementer",
+            "org.springframework.core.task.TaskExecutor",
+            "org.springframework.context.annotation.Import",
+        ]);
         fw.WriteLine();
         fw.WriteLine("@Configuration");
 
@@ -625,13 +621,15 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
 
         foreach (
-            var property in dataFlow.Class.ExtendedProperties.Where(p =>
-                !p.AssociationMultiple
-                && (
-                    mapper == null
-                    || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)
+            var property in Config
+                .GetExtendedProperties(dataFlow.Class)
+                .Where(p =>
+                    !p.AssociationMultiple
+                    && (
+                        mapper == null
+                        || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)
+                    )
                 )
-            )
         )
         {
             var sqlType = property.Domain.Implementations["sql"].Type ?? string.Empty;

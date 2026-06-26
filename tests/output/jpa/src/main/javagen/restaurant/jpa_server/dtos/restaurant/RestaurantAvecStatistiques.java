@@ -113,12 +113,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private Integer nombrePlats = 0;
 
 	/**
-	 * Nombre de tables du restaurant.
-	 */
-	@NotNull
-	private Integer nombreTables = 0;
-
-	/**
 	 * Note moyenne des avis clients.
 	 */
 	private BigDecimal noteMoyenne;
@@ -232,15 +226,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
-	 * Getter for nombreTables.
-	 *
-	 * @return value of {@link #nombreTables nombreTables}.
-	 */
-	public Integer getNombreTables() {
-		return this.nombreTables;
-	}
-
-	/**
 	 * Getter for noteMoyenne.
 	 *
 	 * @return value of {@link #noteMoyenne noteMoyenne}.
@@ -343,14 +328,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 */
 	public void setNombrePlats(Integer nombrePlats) {
 		this.nombrePlats = nombrePlats;
-	}
-
-	/**
-	 * Set the value of {@link #nombreTables nombreTables}.
-	 * @param nombreTables value to set.
-	 */
-	public void setNombreTables(Integer nombreTables) {
-		this.nombreTables = nombreTables;
 	}
 
 	/**

@@ -71,21 +71,28 @@ public abstract class AbstractPersonneClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode addEmploye.
+	 * @param token Token
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder addEmployeUriComponentsBuilder() {
+	protected UriComponentsBuilder addEmployeUriComponentsBuilder(String token) {
 		String uri = host + "/api/restaurants/employes";
-		return UriComponentsBuilder.fromUri(URI.create(uri));
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
+		if (token != null) {
+			uriBuilder.queryParam("token", token);
+		}
+
+		return uriBuilder;
 	}
 
 	/**
 	 * Ajoute un employé (nécessite le rôle ADMIN).
 	 * @param employe Employé à créer
+	 * @param token Token
 	 * @return Employé créé
 	 */
-	public ResponseEntity<EmployeRead> addEmploye(EmployeWrite employe){
+	public ResponseEntity<EmployeRead> addEmploye(String token, EmployeWrite employe){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.addEmployeUriComponentsBuilder();
+		UriComponentsBuilder uri = this.addEmployeUriComponentsBuilder(token);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(employe, headers), EmployeRead.class);
 	}
 

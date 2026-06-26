@@ -1,0 +1,17 @@
+---
+module: Restaurant
+tags:
+  - back
+uses:
+  - Restaurant/Entities/Commande
+---
+class:
+  name: CommandeDeleteResult
+  comment: Résultat de suppression d'une commande
+
+  properties:
+    - alias:
+        class: Commande
+        include:
+          - Id
+          - DateCommande

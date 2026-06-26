@@ -91,6 +91,8 @@ internal class AssociationProperty : IProperty
 
     public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
+    public IList<string>? Tags { get; set; }
+
     public string Name => this.GetAssociationName();
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
@@ -168,6 +170,7 @@ internal class AssociationProperty : IProperty
             Reference = Reference,
             Required = Required,
             Role = Role,
+            Tags = Tags,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
         };
@@ -200,26 +203,27 @@ internal class AssociationProperty : IProperty
         var ap = new AssociationProperty
         {
             SourceProperty = SourceProperty ?? this,
+            Annotations = Annotations,
             Association = Association,
             Class = container as Class,
+            ClassName = ClassName,
             Comment = Comment,
+            CustomProperties = CustomProperties,
             Decorator = container as Decorator,
+            DefaultAssociationUseClass = DefaultAssociationUseClass,
             DefaultValue = DefaultValue,
             Endpoint = container as Endpoint,
             Label = Label,
             Location = Location,
+            Multiple = Multiple,
+            PrimaryKey = PrimaryKey,
+            Readonly = Readonly,
             Required = Required,
             Role = Role,
-            Multiple = Multiple,
-            Readonly = Readonly,
-            PrimaryKey = PrimaryKey,
-            WithReverse = WithReverse,
+            Tags = Tags,
             Trigram = Trigram,
-            CustomProperties = CustomProperties,
-            Annotations = Annotations,
-            ClassName = ClassName,
-            DefaultAssociationUseClass = DefaultAssociationUseClass,
             UseLegacyRoleName = UseLegacyRoleName,
+            WithReverse = WithReverse,
         };
 
         if (_useClass.HasValue)

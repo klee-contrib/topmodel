@@ -38,7 +38,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             imports.Add((Import: "lastValueFrom", Path: "rxjs"));
         }
 
-        if (endpoints.Any(e => e.GetQueryParams().Any()))
+        if (endpoints.Any(e => e.GetQueryParams(Config).Any()))
         {
             imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
         }
@@ -114,21 +114,23 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         fw.WriteLine(1, "/**");
         fw.WriteLine(1, $" * @description {endpoint.Description}");
         var fullRoute = endpoint.FullRoute.Replace("{", "${");
-        foreach (var param in endpoint.Params)
+        foreach (var param in Config.GetParams(endpoint))
         {
             fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
         }
 
-        if (endpoint.Returns != null)
+        var returns = Config.GetReturns(endpoint);
+
+        if (returns != null)
         {
-            fw.WriteLine(1, $" * @returns {endpoint.Returns.Comment}");
+            fw.WriteLine(1, $" * @returns {returns.Comment}");
         }
 
         fw.WriteLine(1, " */");
         fw.Write(1, $"{endpoint.NameCamel}(");
 
         var hasProperty = false;
-        foreach (var param in endpoint.Params)
+        foreach (var param in Config.GetParams(endpoint))
         {
             if (hasProperty)
             {
@@ -138,18 +140,18 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             hasProperty = true;
             var defaultValue = Config.GetValue(param);
             fw.Write(
-                $"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}"
+                $"{param.GetParamName()}{(param.IsQueryParam(Config) && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}"
             );
         }
 
         string returnType;
-        if (endpoint.Returns == null)
+        if (returns == null)
         {
             returnType = "void";
         }
         else
         {
-            returnType = Config.GetType(endpoint.Returns);
+            returnType = Config.GetType(returns);
         }
 
         var optionsType = GetOptionsType();
@@ -190,7 +192,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             fw.WriteLine(2, "this.fillFormData(");
             fw.WriteLine(3, "{");
 
-            foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
+            foreach (var param in Config.GetParams(endpoint).Where(p => !p.IsRouteParam() && !p.IsQueryParam(Config)))
             {
                 if (param is not { Composition: not null })
                 {
@@ -201,7 +203,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
                     fw.Write($@"                ...{param.GetParamName()}");
                 }
 
-                if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
+                if (Config.GetParams(endpoint).Last() != param)
                 {
                     fw.WriteLine(",");
                 }
@@ -216,7 +218,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             fw.WriteLine(2, ");");
         }
 
-        if (endpoint.GetQueryParams().Any())
+        if (endpoint.GetQueryParams(Config).Any())
         {
             fw.WriteLine(
                 2,
@@ -234,7 +236,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
 };"
             );
 
-            foreach (var qParam in endpoint.GetQueryParams())
+            foreach (var qParam in endpoint.GetQueryParams(Config))
             {
                 fw.WriteLine(2, $"addParam('{qParam.GetParamName()}', {qParam.GetParamName()});");
             }
@@ -259,9 +261,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             2,
             $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{getter}(`/{fullRoute}`"
         );
-        if (endpoint.GetJsonBodyParam() != null && endpoint.Method != "DELETE")
+        if (endpoint.GetJsonBodyParam(Config) != null && endpoint.Method != "DELETE")
         {
-            fw.Write($", {endpoint.GetJsonBodyParam()!.GetParamName()}");
+            fw.Write($", {endpoint.GetJsonBodyParam(Config)!.GetParamName()}");
         }
         else if (endpoint.IsMultipart)
         {
@@ -279,9 +281,9 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
             options["responseType"] = $"'{responseType}'";
         }
 
-        if (endpoint.GetJsonBodyParam() != null && endpoint.Method == "DELETE")
+        if (endpoint.GetJsonBodyParam(Config) != null && endpoint.Method == "DELETE")
         {
-            options["body"] = endpoint.GetJsonBodyParam()!.GetParamName();
+            options["body"] = endpoint.GetJsonBodyParam(Config)!.GetParamName();
         }
 
         fw.Write(

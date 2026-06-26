@@ -40,10 +40,12 @@ public class JavaUniqueValuedPropertyGenerator(
 
     protected virtual IEnumerable<IProperty> GetUniqueValuedProperties(Class classe)
     {
-        return classe.Properties.Where(e =>
-            e.UniqueValuedProperty == e
-            && (e.EnumProperty == null || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
-        );
+        return Config
+            .GetProperties(classe)
+            .Where(e =>
+                e.UniqueValuedProperty == e
+                && (e.EnumProperty == null || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
+            );
     }
 
     protected void HandleClass(Class classe, string tag)

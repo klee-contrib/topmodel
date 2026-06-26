@@ -220,12 +220,13 @@ public class JpaConfig : GeneratorConfigBase
     {
         if (UseJdbc)
         {
-            return classe.Properties.Where(p =>
-                (!p.AssociationMultiple && !p.IsReverseProperty || !classe.IsPersistent)
-                && (p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc))
-            );
+            return GetProperties(classe)
+                .Where(p =>
+                    (!p.AssociationMultiple && !p.IsReverseProperty || !classe.IsPersistent)
+                    && (p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc))
+                );
         }
-        return classe.Properties.Where(p => p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc));
+        return GetProperties(classe).Where(p => p is not { Composition: Class cpc } || AvailableClasses.Contains(cpc));
     }
 
     public virtual string GetClassFileName(Class classe, string tag)

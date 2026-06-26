@@ -359,7 +359,7 @@ public class CsharpConfig : GeneratorConfigBase
 
         if (
             property.EnumProperty != null
-            && (property.Class?.Properties.Any(p => p.NamePascal == defaultValue.Split(".")[0]) ?? false)
+            && GetProperties(property.Class).Any(p => p.NamePascal == defaultValue.Split(".")[0])
         )
         {
             defaultValue =

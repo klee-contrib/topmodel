@@ -118,10 +118,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             var label = refValue.GetLabel(item);
 
             foreach (
-                var prop in item.Properties.Where(p =>
-                    p.UniqueValuedProperty == p
-                    && (p.EnumProperty == null || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
-                )
+                var prop in Config
+                    .GetProperties(item)
+                    .Where(p =>
+                        p.UniqueValuedProperty == p
+                        && (
+                            p.EnumProperty == null
+                            || Config.UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly
+                        )
+                    )
             )
             {
                 if (refValue.Value.TryGetValue(prop, out var code))
@@ -179,11 +184,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         w.WriteLine(1, "{");
 
-        foreach (var property in item.Properties)
+        foreach (var property in Config.GetProperties(item))
         {
             w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
             w.WriteLine(2, $"{property.SqlName},");
-            if (item.Properties.IndexOf(property) != item.Properties.Count - 1)
+            if (property != Config.GetProperties(item).Last())
             {
                 w.WriteLine();
             }
@@ -210,7 +215,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         var hasLine = false;
         var refs = GetRefs(item);
 
-        foreach (var prop in item.Properties.Where(p => p.EnumProperty == p))
+        foreach (var prop in Config.GetProperties(item).Where(p => p.EnumProperty == p))
         {
             hasLine = true;
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {prop.Class}.");
@@ -271,19 +276,21 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
         var sameColumnSet = new HashSet<string>(
-            item.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty)
+            Config
+                .GetProperties(item)
+                .Where(p => !p.AssociationMultiple && !p.IsReverseProperty)
                 .GroupBy(g => g.SqlName)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
         );
 
         foreach (
-            var property in item.Properties.Where(p =>
-                p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc)
-            )
+            var property in Config
+                .GetProperties(item)
+                .Where(p => p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
         )
         {
-            if (item.Properties.IndexOf(property) > 0)
+            if (property != Config.GetProperties(item).First())
             {
                 w.WriteLine();
             }
@@ -531,26 +538,30 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             if (
-                item.Properties.Any(p =>
-                    p.Required && !Config.RequiredNonNullable(tag)
-                    || p.PrimaryKey
-                    || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null
-                )
+                Config
+                    .GetProperties(item)
+                    .Any(p =>
+                        p.Required && !Config.RequiredNonNullable(tag)
+                        || p.PrimaryKey
+                        || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null
+                    )
             )
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
             if (
-                item.Properties.Any(property =>
-                    property.PersistentClass != null
-                    && (
-                        property.PersistentClass == property.Class
-                        || !Config.NoColumnOnAlias && property.DomainChain.Count() == 1
+                Config
+                    .GetProperties(item)
+                    .Any(property =>
+                        property.PersistentClass != null
+                        && (
+                            property.PersistentClass == property.Class
+                            || !Config.NoColumnOnAlias && property.DomainChain.Count() == 1
+                        )
+                        && Config.AvailableClasses.Contains(property.PersistentClass)
+                        && !Config.NoPersistence(tag)
                     )
-                    && Config.AvailableClasses.Contains(property.PersistentClass)
-                    && !Config.NoPersistence(tag)
-                )
                 || Config.IsPersistent(item, tag)
                     && (
                         item.InheritanceStrategy != InheritanceStrategy.DistinctTables || item.Type == ClassType.Regular
@@ -561,7 +572,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (item.Properties.Any(p => p is not { Composition: not null }) && Config.Kinetix)
+            if (Config.GetProperties(item).Any(p => p is not { Composition: not null }) && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -578,7 +589,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         usings.AddRange(Config.GetDecoratorImports(item, tag));
         usings.AddRange(Config.GetAnnotations(item, tag).SelectMany(a => a.Imports));
 
-        foreach (var property in item.Properties)
+        foreach (var property in Config.GetProperties(item))
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
             usings.AddRange(Config.GetAnnotations(property, tag).SelectMany(a => a.Imports));

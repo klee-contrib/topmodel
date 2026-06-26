@@ -140,6 +140,11 @@
                   "number"
                 ]
               }
+            },
+            "tags": {
+              "type": "array",
+              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
+              "items": { "type": "string" }
             }
           }
         },
@@ -273,6 +278,11 @@
                   "number"
                 ]
               }
+            },
+            "tags": {
+              "type": "array",
+              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
+              "items": { "type": "string" }
             }
           }
         },
@@ -510,6 +520,11 @@
                   "number"
                 ]
               }
+            },
+            "tags": {
+              "type": "array",
+              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
+              "items": { "type": "string" }
             }
           }
         },
@@ -579,6 +594,11 @@
                   "number"
                 ]
               }
+            },
+            "tags": {
+              "type": "array",
+              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
+              "items": { "type": "string" }
             }
           }
         }

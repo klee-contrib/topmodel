@@ -125,7 +125,7 @@ public abstract class AbstractSqlTablesGenerator(
         writer.WriteLine(" **/");
         writer.WriteLine("create table " + tableName + " (");
 
-        foreach (var property in Config.GetAllProperties(classe))
+        foreach (var property in Config.GetProperties(classe))
         {
             Config.WriteColumn(writer, classe, property);
             writer.Write(",");
@@ -137,8 +137,8 @@ public abstract class AbstractSqlTablesGenerator(
             }
         }
 
-        WriteCheckConstraints(writer, Config.GetAllProperties(classe));
-        WritePrimaryKeyConstraint(writer, classe, Config.GetAllProperties(classe));
+        WriteCheckConstraints(writer, Config.GetProperties(classe));
+        WritePrimaryKeyConstraint(writer, classe, Config.GetProperties(classe));
         WriteEndTableDeclaration(writer);
 
         Config.WriteSequence(writer, classe, tag);

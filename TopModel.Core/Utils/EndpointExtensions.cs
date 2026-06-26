@@ -5,14 +5,20 @@ namespace TopModel.Core.Utils;
 
 public static class EndpointExtensions
 {
+    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static IProperty? GetJsonBodyParam(this Endpoint endpoint)
+    {
+        return GetJsonBodyParam(endpoint, config: null);
+    }
+
+    public static IProperty? GetJsonBodyParam(this Endpoint endpoint, WatcherConfigBase? config)
     {
         if (endpoint.IsMultipart)
         {
             return null;
         }
 
-        var bodyParams = endpoint.Params.Where(param =>
+        var bodyParams = (config?.GetParams(endpoint) ?? endpoint.Params).Where(param =>
             param is IProperty { Composition: not null } or { Domain.BodyParam: true }
         );
         return bodyParams.Count() > 1
@@ -54,10 +60,16 @@ public static class EndpointExtensions
             .Except(endpoint.GetRouteParams());
     }
 
+    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
     {
-        return endpoint
-            .Params.Where(param =>
+        return GetQueryParams(endpoint, config: null);
+    }
+
+    public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint, WatcherConfigBase? config)
+    {
+        return (config?.GetParams(endpoint) ?? endpoint.Params)
+            .Where(param =>
                 !(
                     param is { Composition: not null }
                     || (param.Domain?.BodyParam ?? false)
@@ -72,9 +84,15 @@ public static class EndpointExtensions
         return endpoint.Params.Where(param => endpoint.Route.Contains($"{{{param.GetParamName()}}}"));
     }
 
+    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static bool IsJsonBodyParam(this IProperty property)
     {
-        return property.Endpoint.GetJsonBodyParam() == property;
+        return IsJsonBodyParam(property, config: null);
+    }
+
+    public static bool IsJsonBodyParam(this IProperty property, WatcherConfigBase? config)
+    {
+        return property.Endpoint.GetJsonBodyParam(config) == property;
     }
 
     public static bool IsQueryOrMultipartParam(this IProperty property)
@@ -82,9 +100,15 @@ public static class EndpointExtensions
         return property.Endpoint.GetQueryAndMultipartParams().Contains(property);
     }
 
+    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static bool IsQueryParam(this IProperty property)
     {
-        return property.Endpoint.GetQueryParams().Contains(property);
+        return IsQueryParam(property, config: null);
+    }
+
+    public static bool IsQueryParam(this IProperty property, WatcherConfigBase? config)
+    {
+        return property.Endpoint.GetQueryParams(config).Contains(property);
     }
 
     public static bool IsRouteParam(this IProperty property)

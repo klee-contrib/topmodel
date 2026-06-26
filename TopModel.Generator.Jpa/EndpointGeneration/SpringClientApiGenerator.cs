@@ -74,9 +74,11 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
     {
         var returnType = "Void";
 
-        if (endpoint.Returns != null)
+        var returns = Config.GetReturns(endpoint);
+
+        if (returns != null)
         {
-            returnType = Config.GetType(endpoint.Returns);
+            returnType = Config.GetType(returns);
         }
         var method = new JavaMethod(
             "org.springframework.http.ResponseEntity",
@@ -85,7 +87,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         )
         {
             Comment = endpoint.Description,
-            ReturnComment = endpoint.Returns != null ? endpoint.Returns.Comment : "Aucun retour",
+            ReturnComment = returns != null ? returns.Comment : "Aucun retour",
         };
         var javaAnnotations = Config
             .GetAnnotations(endpoint, tag)
@@ -96,19 +98,20 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             $"{endpoint.Method.ToPascalCase(strict: true)}Exchange",
             imports: $"org.springframework.web.service.annotation.{endpoint.Method.ToPascalCase(strict: true)}Exchange"
         ).AddAttribute($@"""{endpoint.Route}""");
-        if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
+        if (returns != null && returns.Domain?.MediaType != null)
         {
-            exchangeAnnotation.AddAttribute("accept", $@"{{ ""{endpoint.Returns.Domain.MediaType}"" }}");
+            exchangeAnnotation.AddAttribute("accept", $@"{{ ""{returns.Domain.MediaType}"" }}");
         }
 
-        if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
+        if (Config.GetParams(endpoint).Any(p => p.Domain?.MediaType != null))
         {
             exchangeAnnotation.AddAttribute(
                 "contentType",
                 string.Join(
                     ", ",
-                    endpoint
-                        .Params.Where(p => p.Domain?.MediaType != null)
+                    Config
+                        .GetParams(endpoint)
+                        .Where(p => p.Domain?.MediaType != null)
                         .Select(p => $@"""{p.Domain.MediaType}""")
                         .First()
                 )
@@ -133,7 +136,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             method.AddParameter(parameter);
         }
 
-        foreach (var param in endpoint.GetQueryParams())
+        foreach (var param in endpoint.GetQueryParams(Config))
         {
             var requestParamAnnotation = new JavaAnnotation(
                 "RequestParam",
@@ -153,11 +156,13 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         if (endpoint.IsMultipart)
         {
             foreach (
-                var param in endpoint.Params.Where(param =>
-                    param is { Composition: not null }
-                    || (param.Domain?.BodyParam ?? false)
-                    || (param.Domain?.IsMultipart ?? false)
-                )
+                var param in Config
+                    .GetParams(endpoint)
+                    .Where(param =>
+                        param is { Composition: not null }
+                        || (param.Domain?.BodyParam ?? false)
+                        || (param.Domain?.IsMultipart ?? false)
+                    )
             )
             {
                 if (param is { Composition: not null })
@@ -202,7 +207,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         }
         else
         {
-            var bodyParam = endpoint.GetJsonBodyParam();
+            var bodyParam = endpoint.GetJsonBodyParam(Config);
             if (bodyParam != null)
             {
                 var validAnnotation = new JavaAnnotation("Valid", imports: "jakarta.validation.Valid");

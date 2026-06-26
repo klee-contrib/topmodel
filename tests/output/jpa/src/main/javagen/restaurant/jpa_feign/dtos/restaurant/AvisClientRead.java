@@ -64,13 +64,6 @@ public class AvisClientRead implements Serializable {
 	private Boolean approuve = false;
 
 	/**
-	 * Nombre de vues de l'avis (calculé).
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
-	 */
-	@NotNull
-	private Integer nombreVues = 0;
-
-	/**
 	 * Client ayant donné l'avis.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
@@ -91,6 +84,13 @@ public class AvisClientRead implements Serializable {
 	@NotNull
 	@PastOrPresent
 	private LocalDateTime dateCreation;
+
+	/**
+	 * Nombre de vues de l'avis (calculé).
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
+	 */
+	@NotNull
+	private Integer nombreVues = 0;
 
 	/**
 	 * No arg constructor.
@@ -155,15 +155,6 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Getter for nombreVues.
-	 *
-	 * @return value of {@link #nombreVues nombreVues}.
-	 */
-	public Integer getNombreVues() {
-		return this.nombreVues;
-	}
-
-	/**
 	 * Getter for clientId.
 	 *
 	 * @return value of {@link #clientId clientId}.
@@ -188,6 +179,15 @@ public class AvisClientRead implements Serializable {
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
+	}
+
+	/**
+	 * Getter for nombreVues.
+	 *
+	 * @return value of {@link #nombreVues nombreVues}.
+	 */
+	public Integer getNombreVues() {
+		return this.nombreVues;
 	}
 
 	/**
@@ -231,14 +231,6 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #nombreVues nombreVues}.
-	 * @param nombreVues value to set.
-	 */
-	public void setNombreVues(Integer nombreVues) {
-		this.nombreVues = nombreVues;
-	}
-
-	/**
 	 * Set the value of {@link #clientId clientId}.
 	 * @param clientId value to set.
 	 */
@@ -263,6 +255,14 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #nombreVues nombreVues}.
+	 * @param nombreVues value to set.
+	 */
+	public void setNombreVues(Integer nombreVues) {
+		this.nombreVues = nombreVues;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.AvisClientRead AvisClientRead}.
 	 */
 	public enum Fields {
@@ -271,10 +271,10 @@ public class AvisClientRead implements Serializable {
 		COMMENTAIRE(String.class),
 		DATE_AVIS(LocalDateTime.class),
 		APPROUVE(Boolean.class),
-		NOMBRE_VUES(Integer.class),
 		CLIENT_ID(Integer.class),
 		RESTAURANT_ID(Integer.class),
-		DATE_CREATION(LocalDateTime.class);
+		DATE_CREATION(LocalDateTime.class),
+		NOMBRE_VUES(Integer.class);
 
 		private final Class<?> type;
 

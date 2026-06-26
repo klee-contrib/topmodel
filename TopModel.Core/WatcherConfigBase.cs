@@ -182,6 +182,11 @@ public class WatcherConfigBase
         return true;
     }
 
+    public virtual IEnumerable<IProperty> GetExtendedProperties(Class? classe)
+    {
+        return classe?.ExtendedProperties.Where(c => c.Tags == null || c.Tags.Intersect(Tags).Any()) ?? [];
+    }
+
     /// <summary>
     /// Récupère les implémentations de l'annotation pour la config.
     /// </summary>
@@ -220,6 +225,36 @@ public class WatcherConfigBase
     public virtual ConverterImplementation? GetImplementation(Converter? converter)
     {
         return GetImplementation(converter?.Implementations);
+    }
+
+    public virtual IEnumerable<IProperty> GetParams(Endpoint? endpoint)
+    {
+        return endpoint?.Params.Where(c => c.IsRouteParam() || c.Tags == null || c.Tags.Intersect(Tags).Any()) ?? [];
+    }
+
+    public virtual IEnumerable<IProperty> GetProperties(Class? classe)
+    {
+        return classe?.Properties.Where(c => c.Tags == null || c.Tags.Intersect(Tags).Any()) ?? [];
+    }
+
+    public virtual IEnumerable<ClassDependency> GetClassDependencies(Class classe)
+    {
+        return GetProperties(classe)
+            .GetClassDependencies(classe)
+            .Concat(classe.Extends != null ? [new ClassDependency(classe.Extends, classe)] : []);
+    }
+
+    public virtual IEnumerable<ClassDependency> GetClassDependencies(Endpoint endpoint)
+    {
+        return GetParams(endpoint).Concat([GetReturns(endpoint)!]).Where(p => p != null).GetClassDependencies();
+    }
+
+    public virtual IProperty? GetReturns(Endpoint? endpoint)
+    {
+        return
+            endpoint?.Returns != null && (endpoint.Returns.Tags == null || endpoint.Returns.Tags.Intersect(Tags).Any())
+            ? endpoint.Returns
+            : null;
     }
 
     /// <summary>

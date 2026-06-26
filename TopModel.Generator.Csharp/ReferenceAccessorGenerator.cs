@@ -371,13 +371,13 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     w.WriteLine(3, $"select new {Config.GetTypeName(classe)}");
                     w.WriteLine(3, "{");
 
-                    foreach (var prop in classe.Properties)
+                    foreach (var prop in Config.GetProperties(classe))
                     {
                         w.Write(
                             4,
                             $"{prop.NamePascal} = {(prop == classe.DefaultProperty ? $"tra.{translationClass.DefaultProperty!.NamePascal}" : $"row.{prop.NamePascal}")}"
                         );
-                        w.WriteLine(prop == classe.Properties[^1] ? string.Empty : ",");
+                        w.WriteLine(prop == Config.GetProperties(classe).Last() ? string.Empty : ",");
                     }
 
                     w.WriteLine(3, "}");

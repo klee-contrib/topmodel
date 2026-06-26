@@ -27,7 +27,6 @@ public partial class TopModelSampleDbContext : DbContext
         avisClient.Property(p => p.Commentaire).HasComment("Commentaire de l'avis");
         avisClient.Property(p => p.DateAvis).HasComment("Date de l'avis");
         avisClient.Property(p => p.Approuve).HasComment("Indique si l'avis est approuvé par le restaurant");
-        avisClient.Property(p => p.NombreVues).HasComment("Nombre de vues de l'avis (calculé)");
         avisClient.Property("ClientId").HasComment("Client ayant donné l'avis");
         avisClient.Property("RestaurantId").HasComment("Restaurant concerné par l'avis");
         avisClient.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");

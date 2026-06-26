@@ -16,13 +16,15 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotNull;
 
+import topmodel.test.NombreVuesBase;
+
 /**
  * Avis d'un client sur un restaurant.
  */
 @Table(name = "avis_client")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class AvisClient {
+public class AvisClient extends NombreVuesBase {
 
 	/**
 	 * Identifiant de l'avis.
@@ -57,13 +59,6 @@ public class AvisClient {
 	@NotNull
 	@Column("avi_approuve")
 	private Boolean approuve = false;
-
-	/**
-	 * Nombre de vues de l'avis (calculé).
-	 */
-	@NotNull
-	@Column("avi_nombre_vues")
-	private Integer nombreVues = 0;
 
 	/**
 	 * Client ayant donné l'avis.
@@ -133,15 +128,6 @@ public class AvisClient {
 	}
 
 	/**
-	 * Getter for nombreVues.
-	 *
-	 * @return value of {@link #nombreVues nombreVues}.
-	 */
-	public Integer getNombreVues() {
-		return this.nombreVues;
-	}
-
-	/**
 	 * Getter for client.
 	 *
 	 * @return value of {@link #client client}.
@@ -206,14 +192,6 @@ public class AvisClient {
 	 */
 	public void setApprouve(Boolean approuve) {
 		this.approuve = approuve;
-	}
-
-	/**
-	 * Set the value of {@link #nombreVues nombreVues}.
-	 * @param nombreVues value to set.
-	 */
-	public void setNombreVues(Integer nombreVues) {
-		this.nombreVues = nombreVues;
 	}
 
 	/**

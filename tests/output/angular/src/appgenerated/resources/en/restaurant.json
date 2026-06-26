@@ -5,7 +5,6 @@
         "commentaire": "Commentaire",
         "dateAvis": "DateAvis",
         "id": "Id",
-        "nombreVues": "NombreVues",
         "note": "Note",
         "restaurantId": "Restaurant"
     },
@@ -99,6 +98,9 @@
         "categoriesPlat": "CategoriesPlat",
         "plats": "Plats"
     },
+    "nombreVuesBase": {
+        "nombreVues": "NombreVues"
+    },
     "personne": {
         "departementCode": "DepartementCode"
     },
@@ -159,7 +161,6 @@
     "restaurantAvecStatistiques": {
         "nombrePlats": "NombrePlats",
         "nombreTables": "NombreTables",
-        "noteMoyenne": "NoteMoyenne",
         "tables": "Tables"
     },
     "statistiquesRestaurant": {

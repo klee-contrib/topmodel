@@ -14,6 +14,15 @@ options:
   endpoints:
     prefix: api/restaurants
 ---
+decorator:
+  name: WithToken
+  description: Ajoute un paramètre "token" pour les APIs sur le back uniquement
+  properties:
+    - name: Token
+      domain: DO_CODE
+      comment: Token
+      tags: [back]
+---
 endpoint:
   name: GetClients
   method: GET
@@ -187,6 +196,8 @@ endpoint:
   method: POST
   route: /employes
   description: Ajoute un employé (nécessite le rôle ADMIN)
+  decorators:
+    - WithToken
 
   annotations:
     - Authenticated

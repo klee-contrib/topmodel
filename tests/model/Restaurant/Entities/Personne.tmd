@@ -123,12 +123,31 @@ class:
       comment: Adresse email du client
       label: Courriel
 ---
+decorator:
+  name: NombreVuesBase
+  description: Décrit une classe de base technique qui gère le nombbre de vues.
+  csharp:
+    extends: NombreVuesBase
+  java:
+    extends: NombreVuesBase
+    imports:
+      - topmodel.test.NombreVuesBase
+  properties:
+    - name: NombreVues
+      domain: DO_QUANTITE
+      required: true
+      defaultValue: 0
+      readonly: true
+      comment: Nombre de vues de l'avis (calculé)
+      tags: []
+---
 class:
   name: AvisClient
   trigram: AVI
   comment: Avis d'un client sur un restaurant
   decorators:
     - DateCreation
+    - NombreVuesBase
 
   properties:
     - name: Id
@@ -155,13 +174,6 @@ class:
       required: true
       defaultValue: false
       comment: Indique si l'avis est approuvé par le restaurant
-
-    - name: NombreVues
-      domain: DO_QUANTITE
-      required: true
-      defaultValue: 0
-      readonly: true
-      comment: Nombre de vues de l'avis (calculé)
 
     - association: Client
       required: true

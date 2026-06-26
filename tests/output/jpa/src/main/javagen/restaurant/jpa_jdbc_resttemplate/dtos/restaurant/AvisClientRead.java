@@ -68,14 +68,6 @@ public class AvisClientRead implements Serializable {
 	private Boolean approuve = false;
 
 	/**
-	 * Nombre de vues de l'avis (calculé).
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
-	 */
-	@NotNull
-	@Column("avi_nombre_vues")
-	private Integer nombreVues = 0;
-
-	/**
 	 * Client ayant donné l'avis.
 	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
@@ -99,6 +91,14 @@ public class AvisClientRead implements Serializable {
 	@PastOrPresent
 	@Column("avi_date_creation")
 	private LocalDateTime dateCreation;
+
+	/**
+	 * Nombre de vues de l'avis (calculé).
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
+	 */
+	@NotNull
+	@Column("avi_nombre_vues")
+	private Integer nombreVues = 0;
 
 	/**
 	 * Getter for id.
@@ -146,15 +146,6 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Getter for nombreVues.
-	 *
-	 * @return value of {@link #nombreVues nombreVues}.
-	 */
-	public Integer getNombreVues() {
-		return this.nombreVues;
-	}
-
-	/**
 	 * Getter for clientId.
 	 *
 	 * @return value of {@link #clientId clientId}.
@@ -179,6 +170,15 @@ public class AvisClientRead implements Serializable {
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
+	}
+
+	/**
+	 * Getter for nombreVues.
+	 *
+	 * @return value of {@link #nombreVues nombreVues}.
+	 */
+	public Integer getNombreVues() {
+		return this.nombreVues;
 	}
 
 	/**
@@ -222,14 +222,6 @@ public class AvisClientRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #nombreVues nombreVues}.
-	 * @param nombreVues value to set.
-	 */
-	public void setNombreVues(Integer nombreVues) {
-		this.nombreVues = nombreVues;
-	}
-
-	/**
 	 * Set the value of {@link #clientId clientId}.
 	 * @param clientId value to set.
 	 */
@@ -251,5 +243,13 @@ public class AvisClientRead implements Serializable {
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Set the value of {@link #nombreVues nombreVues}.
+	 * @param nombreVues value to set.
+	 */
+	public void setNombreVues(Integer nombreVues) {
+		this.nombreVues = nombreVues;
 	}
 }

@@ -229,6 +229,8 @@ internal class AliasProperty : IProperty
         set => _customProperties = value;
     }
 
+    public IList<string>? Tags { get; set; }
+
     public IProperty? SourceProperty { get; private set; }
 
     public IProperty? OriginalProperty => _property;
@@ -339,6 +341,7 @@ internal class AliasProperty : IProperty
             PreserveTrigram = PreserveTrigram,
             Reference = Reference,
             Suffix = Suffix,
+            Tags = Tags,
             Trigram = Trigram,
         };
 
@@ -371,27 +374,28 @@ internal class AliasProperty : IProperty
         var alp = new AliasProperty
         {
             SourceProperty = SourceProperty ?? this,
+            As = As,
             Class = container as Class,
             Comment = _comment!,
+            CustomProperties = _customProperties,
             Decorator = container as Decorator,
             DefaultValue = _defaultValue,
-            Endpoint = container as Endpoint,
-            Label = _label,
-            Location = Location,
-            As = As,
-            OriginalAliasProperty = OriginalAliasProperty,
-            Prefix = Prefix,
-            Property = _property,
-            Suffix = Suffix,
-            Name = _name!,
-            Trigram = Trigram,
-            PreservePrimaryKey = PreservePrimaryKey,
-            PreserveTrigram = PreserveTrigram,
             DiscardAssociations = DiscardAssociations,
             DomainParameters = _domainParameters!,
-            CustomProperties = _customProperties,
-            OwnAnnotations = OwnAnnotations,
+            Endpoint = container as Endpoint,
             ExcludedAnnotations = ExcludedAnnotations,
+            Label = _label,
+            Location = Location,
+            Name = _name!,
+            OriginalAliasProperty = OriginalAliasProperty,
+            OwnAnnotations = OwnAnnotations,
+            Prefix = Prefix,
+            PreservePrimaryKey = PreservePrimaryKey,
+            PreserveTrigram = PreserveTrigram,
+            Property = _property,
+            Suffix = Suffix,
+            Tags = Tags,
+            Trigram = Trigram,
         };
 
         if (_domain != null)
@@ -436,34 +440,35 @@ internal class AliasProperty : IProperty
     {
         var alp = new AliasProperty
         {
-            Property = prop,
-            Location = Location,
-            Reference = Reference,
-            PropertyReference = includeReference,
-            Class = Class,
-            Decorator = Decorator,
-            SourceProperty = SourceProperty,
-            DomainReference = DomainReference,
-            CompositionReference = CompositionReference,
-            Endpoint = Endpoint,
-            Prefix = Prefix,
-            Suffix = Suffix,
-            Comment = _comment!,
-            Name = _name!,
-            Trigram = Trigram,
-            DefaultValue = _defaultValue,
-            Label = _label,
+            AnnotationReferences = AnnotationReferences,
             As = As,
+            Class = Class,
+            Comment = _comment!,
+            CompositionReference = CompositionReference,
+            CustomProperties = _customProperties,
+            Decorator = Decorator,
+            DefaultValue = _defaultValue,
+            DiscardAssociations = DiscardAssociations,
+            DomainParameters = _domainParameters!,
+            DomainReference = DomainReference,
+            Endpoint = Endpoint,
+            ExcludedAnnotations = ExcludedAnnotations,
+            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
+            Label = _label,
+            Location = Location,
+            Name = _name!,
+            OriginalAliasProperty = this,
+            OwnAnnotations = OwnAnnotations,
+            Prefix = Prefix,
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
-            DiscardAssociations = DiscardAssociations,
-            OriginalAliasProperty = this,
-            DomainParameters = _domainParameters!,
-            CustomProperties = _customProperties,
-            OwnAnnotations = OwnAnnotations,
-            ExcludedAnnotations = ExcludedAnnotations,
-            AnnotationReferences = AnnotationReferences,
-            ExcludedAnnotationReferences = ExcludedAnnotationReferences,
+            Property = prop,
+            PropertyReference = includeReference,
+            Reference = Reference,
+            SourceProperty = SourceProperty,
+            Suffix = Suffix,
+            Tags = Tags,
+            Trigram = Trigram,
         };
 
         if (_domain != null)

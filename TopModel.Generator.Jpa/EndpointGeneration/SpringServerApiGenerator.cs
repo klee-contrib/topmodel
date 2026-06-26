@@ -57,33 +57,35 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     {
         var returnType = "void";
 
-        if (endpoint.Returns != null)
+        var returns = Config.GetReturns(endpoint);
+
+        if (returns != null)
         {
-            returnType = Config.GetType(endpoint.Returns);
+            returnType = Config.GetType(returns);
         }
 
         var method = new JavaMethod(returnType, endpoint.NameCamel) { Comment = endpoint.Description };
 
-        if (endpoint.Returns != null)
+        if (returns != null)
         {
-            method.ReturnComment = endpoint.Returns.Comment;
-            method.Imports.AddRange(endpoint.Returns.GetTypeImports(Config, tag));
+            method.ReturnComment = returns.Comment;
+            method.Imports.AddRange(returns.GetTypeImports(Config, tag));
         }
 
         var mappingAnnotation = new JavaAnnotation(
             $@"@{endpoint.Method.ToPascalCase(strict: true)}Mapping",
             imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(strict: true)}Mapping"
         ).AddAttribute("path", $@"""{GetRoute(endpoint)}""");
-        if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
+        if (returns != null && returns.Domain?.MediaType != null)
         {
-            mappingAnnotation.AddAttribute("produces", @$"""{endpoint.Returns.Domain.MediaType}""");
+            mappingAnnotation.AddAttribute("produces", @$"""{returns.Domain.MediaType}""");
         }
 
-        if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
+        if (Config.GetParams(endpoint).Any(p => p.Domain?.MediaType != null))
         {
             mappingAnnotation.AddAttribute(
                 "consumes",
-                @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}"
+                @$"{{ {string.Join(", ", Config.GetParams(endpoint).Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}"
             );
         }
 
@@ -93,13 +95,13 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         method.AddAnnotation(mappingAnnotation);
-        foreach (var param in endpoint.Params)
+        foreach (var param in Config.GetParams(endpoint))
         {
             if (param.IsRouteParam())
             {
                 method.AddParameter(GetRouteParam(tag, param));
             }
-            else if (param.IsQueryParam())
+            else if (param.IsQueryParam(Config))
             {
                 method.AddParameter(GetQueryParam(tag, param));
             }

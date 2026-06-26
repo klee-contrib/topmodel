@@ -21,7 +21,7 @@ public class SqlResourcesGenerator(
             && classe.HasTable
             && (
                 Config.TranslateReferences == true && classe.DefaultProperty != null && classe.Values.Any()
-                || Config.TranslateProperties == true && classe.Properties.Any(c => c.Label != null)
+                || Config.TranslateProperties == true && Config.GetProperties(classe).Any(c => c.Label != null)
             )
         )
         {
@@ -45,7 +45,7 @@ public class SqlResourcesGenerator(
         {
             var propertiesMap = classes
                 .OrderBy(c => c.SqlName)
-                .SelectMany(c => c.Properties)
+                .SelectMany(Config.GetProperties)
                 .Where(p => p.Label != null)
                 .DistinctBy(property => property.ResourceKey)
                 .GroupBy(property => property.Class)

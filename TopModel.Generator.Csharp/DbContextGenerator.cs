@@ -19,7 +19,7 @@ public class DbContextGenerator(
         return classes
             .Distinct()
             .OrderBy(c => c.NamePascal)
-            .SelectMany(c => c.Properties)
+            .SelectMany(Config.GetProperties)
             .Where(p =>
                 p is { Association.IsPersistent: true }
                 && !p.AssociationMultiple
@@ -87,7 +87,9 @@ public class DbContextGenerator(
                 );
             }
 
-            foreach (var property in classe.Properties.Where(p => !p.AssociationMultiple && !p.IsReverseProperty))
+            foreach (
+                var property in Config.GetProperties(classe).Where(p => !p.AssociationMultiple && !p.IsReverseProperty)
+            )
             {
                 cw.WriteLine(
                     2,
@@ -200,7 +202,7 @@ public class DbContextGenerator(
         w.WriteLine(1, "{");
 
         var hasPropConfig = false;
-        foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties))
+        foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(Config.GetProperties))
         {
             if (fp.EnumProperty != null && Config.UniqueValueGeneration.CanEnum)
             {
@@ -237,7 +239,11 @@ public class DbContextGenerator(
         }
 
         var hasJson = false;
-        foreach (var cp in classes.Distinct().SelectMany(c => c.Properties.Where(p => p is { Composition: not null })))
+        foreach (
+            var cp in classes
+                .Distinct()
+                .SelectMany(c => Config.GetProperties(c).Where(p => p is { Composition: not null }))
+        )
         {
             hasJson = true;
             var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;
@@ -331,7 +337,7 @@ public class DbContextGenerator(
         }
 
         var hasSequence = false;
-        foreach (var property in classes.SelectMany(c => c.Properties).Where(p => p.GeneratedValue != null))
+        foreach (var property in classes.SelectMany(Config.GetProperties).Where(p => p.GeneratedValue != null))
         {
             var sequenceName = Config.UseLowerCaseSqlNames
                 ? Config.GetSequenceName(property, tag)?.ToLower()
@@ -408,7 +414,7 @@ public class DbContextGenerator(
 
             hasTphOrTpc = true;
             w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>()");
-            if (classe.Properties.Contains(classe.DiscriminatorProperty))
+            if (Config.GetProperties(classe).Contains(classe.DiscriminatorProperty))
             {
                 if (classe.DiscriminatorProperty.UseClassForAssociation)
                 {
@@ -472,9 +478,9 @@ public class DbContextGenerator(
                             idx.Properties.Count > 1
                             || !(
                                 idx.Unique
-                                && c.Properties.Any(p =>
-                                    p.Association != null && p.Unique && p == idx.Properties.Single()
-                                )
+                                && Config
+                                    .GetProperties(c)
+                                    .Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
                             )
                         )
                     )
@@ -503,9 +509,9 @@ public class DbContextGenerator(
                     .Distinct()
                     .OrderBy(c => c.NamePascal)
                     .SelectMany(c =>
-                        c.Properties.Where(p =>
-                            !p.AssociationMultiple && !p.IsReverseProperty && p.UseClassForAssociation
-                        )
+                        Config
+                            .GetProperties(c)
+                            .Where(p => !p.AssociationMultiple && !p.IsReverseProperty && p.UseClassForAssociation)
                     )
             )
             {
@@ -562,7 +568,7 @@ public class DbContextGenerator(
             {
                 hasData = true;
 
-                var hasClassAssociations = classe.Properties.Any(p => p.UseClassForAssociation);
+                var hasClassAssociations = Config.GetProperties(classe).Any(p => p.UseClassForAssociation);
 
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
                 if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)

@@ -34,7 +34,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
         var imports = enums
-            .SelectMany(r => r.ClassDependencies)
+            .SelectMany(Config.GetClassDependencies)
             .Select(dep =>
                 (
                     Import: dep.Source switch
@@ -53,16 +53,20 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 )
             )
             .Concat(
-                enums.SelectMany(r => r.Properties).SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
+                enums
+                    .SelectMany(Config.GetProperties)
+                    .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
             )
             .Concat(
                 enums
                     .Where(r => r.Readonly || r.Enum == EnumMode.Enum)
                     .SelectMany(r =>
-                        r.Properties.SelectMany(dep =>
-                            r.Values.Where(v => v.Value.ContainsKey(dep))
-                                .SelectMany(v => Config.GetValueImportPaths(fileName, dep, v.Value[dep]))
-                        )
+                        Config
+                            .GetProperties(r)
+                            .SelectMany(dep =>
+                                r.Values.Where(v => v.Value.ContainsKey(dep))
+                                    .SelectMany(v => Config.GetValueImportPaths(fileName, dep, v.Value[dep]))
+                            )
                     )
             )
             .Where(i => i.Path != null && i.Path != $"./{Config.EnumsFileName}")
@@ -96,7 +100,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
 
             var values = Config.GetAllValues(enumClass).ToList();
 
-            foreach (var enumProp in enumClass.Properties.Where(e => e.EnumLikeProperty == e))
+            foreach (var enumProp in Config.GetProperties(enumClass).Where(e => e.EnumLikeProperty == e))
             {
                 fw.Write("export type ");
                 fw.Write(enumClass.NamePascal);
@@ -156,7 +160,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
 
             fw.WriteLine(" {");
 
-            foreach (var property in enumClass.Properties)
+            foreach (var property in Config.GetProperties(enumClass))
             {
                 fw.Write("    ");
                 fw.Write(property.NameCamel);

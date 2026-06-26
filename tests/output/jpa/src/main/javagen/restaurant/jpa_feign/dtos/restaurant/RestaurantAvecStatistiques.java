@@ -117,12 +117,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private Integer nombrePlats = 0;
 
 	/**
-	 * Nombre de tables du restaurant.
-	 */
-	@NotNull
-	private Integer nombreTables = 0;
-
-	/**
 	 * Note moyenne des avis clients.
 	 */
 	private BigDecimal noteMoyenne;
@@ -139,13 +133,12 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 * @param restaurant Instance de 'Restaurant'.
 	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
-	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques'.
 	 */
-	public RestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
-		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, nombreTables, noteMoyenne, this);
+	public RestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
+		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, noteMoyenne, this);
 	}
 
 	/**
@@ -257,15 +250,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
-	 * Getter for nombreTables.
-	 *
-	 * @return value of {@link #nombreTables nombreTables}.
-	 */
-	public Integer getNombreTables() {
-		return this.nombreTables;
-	}
-
-	/**
 	 * Getter for noteMoyenne.
 	 *
 	 * @return value of {@link #noteMoyenne noteMoyenne}.
@@ -371,14 +355,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #nombreTables nombreTables}.
-	 * @param nombreTables value to set.
-	 */
-	public void setNombreTables(Integer nombreTables) {
-		this.nombreTables = nombreTables;
-	}
-
-	/**
 	 * Set the value of {@link #noteMoyenne noteMoyenne}.
 	 * @param noteMoyenne value to set.
 	 */
@@ -402,7 +378,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 		DATE_CREATION(LocalDateTime.class),
 		TABLES(List.class),
 		NOMBRE_PLATS(Integer.class),
-		NOMBRE_TABLES(Integer.class),
 		NOTE_MOYENNE(BigDecimal.class);
 
 		private final Class<?> type;
