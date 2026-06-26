@@ -48,19 +48,21 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         using var fw = this.OpenCSharpWriter(filePath);
 
-        var hasBody = endpoints.Any(e => e.GetJsonBodyParam() != null);
+        var hasBody = endpoints.Any(e => e.GetJsonBodyParam(Config) != null);
         var hasReturn = endpoints.Any(e =>
-            e.Returns != null && !new[] { "string", "byte[]" }.Contains(Config.GetType(e.Returns)?.TrimEnd('?'))
+            Config.GetReturns(e) != null
+            && !new[] { "string", "byte[]" }.Contains(Config.GetType(Config.GetReturns(e)!)?.TrimEnd('?'))
         );
         var hasJson = hasReturn || hasBody;
 
         var hasAsyncEnumerable = endpoints.Any(e =>
-            e.Returns != null && (Config.GetType(e.Returns)?.StartsWith("IAsyncEnumerable") ?? false)
+            Config.GetReturns(e) != null
+            && (Config.GetType(Config.GetReturns(e)!)?.StartsWith("IAsyncEnumerable") ?? false)
         );
 
         var usings = new List<string>();
 
-        if (endpoints.Any(e => e.Returns != null && !e.Returns.Required))
+        if (endpoints.Any(e => Config.GetReturns(e) != null && !Config.GetReturns(e)!.Required))
         {
             usings.Add("System.Net");
         }
@@ -78,9 +80,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         }
 
         if (
-            endpoints.Any(e => e.GetQueryParams().Any())
+            endpoints.Any(e => e.GetQueryParams(Config).Any())
             && endpoints.Any(e =>
-                e.GetQueryParams()
+                e.GetQueryParams(Config)
                     .Any(qp =>
                     {
                         var typeName = Config.GetType(qp);
@@ -98,7 +100,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
-            if (property.IsQueryParam())
+            if (property.IsQueryParam(Config))
             {
                 usings.AddRange(Config.GetValueImports(property));
             }
@@ -122,7 +124,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         var client = $"{(!primaryConstructor ? "_" : string.Empty)}client";
 
-        while (endpoints.SelectMany(e => e.Params).Any(p => p.GetParamName() == client))
+        while (endpoints.SelectMany(Config.GetParams).Any(p => p.GetParamName() == client))
         {
             client = $"_{client}";
         }
@@ -172,7 +174,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         {
             string GetSafeVariableName(string varName)
             {
-                while (endpoint.Params.Any(p => p.GetParamName() == varName))
+                while (Config.GetParams(endpoint).Any(p => p.GetParamName() == varName))
                 {
                     varName = $"_{varName}";
                 }
@@ -184,6 +186,8 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             var query = GetSafeVariableName("query");
             var res = GetSafeVariableName("res");
 
+            var returns = Config.GetReturns(endpoint);
+
             if (orderedEndpoints.IndexOf(endpoint) > 0 || !primaryConstructor || hasJson)
             {
                 fw.WriteLine();
@@ -191,7 +195,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             fw.WriteSummary(1, endpoint.Description);
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 fw.WriteParam(param.GetParamName(), param.Comment);
             }
@@ -201,14 +205,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                 fw.WriteParam(ct, "CancellationToken.");
             }
 
-            fw.WriteReturns(1, endpoint.Returns?.Comment ?? "Task.");
+            fw.WriteReturns(1, returns?.Comment ?? "Task.");
 
             fw.Write("    public async ");
 
-            var returnType =
-                endpoint.Returns != null
-                    ? Config.GetType(endpoint.Returns, nonNullable: endpoint.Returns.Required)
-                    : null;
+            var returnType = returns != null ? Config.GetType(returns, nonNullable: returns.Required) : null;
 
             var isAsyncEnumerable = returnType?.StartsWith("IAsyncEnumerable") ?? false;
 
@@ -228,19 +229,19 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             fw.Write($" {endpoint.NamePascal}(");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 var defaultValue = Config.GetDefaultValue(param, tag);
                 fw.Write(
-                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && defaultValue != "null")} {param.GetParamName().Verbatim()}"
+                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam(Config) || param.IsRouteParam() || param.IsQueryParam(Config) && defaultValue != "null")} {param.GetParamName().Verbatim()}"
                 );
 
-                if (param.IsQueryParam())
+                if (param.IsQueryParam(Config))
                 {
                     fw.Write($" = {defaultValue}");
                 }
 
-                if (endpoint.Params[^1] != param || Config.UseCancellationTokens)
+                if (Config.GetParams(endpoint).Last() != param || Config.UseCancellationTokens)
                 {
                     fw.Write(", ");
                 }
@@ -256,11 +257,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             fw.WriteLine(")");
             fw.WriteLine(1, "{");
 
-            var bodyParam = endpoint.GetJsonBodyParam();
+            var bodyParam = endpoint.GetJsonBodyParam(Config);
 
             fw.WriteLine(2, $"await EnsureAuthentication({(Config.UseCancellationTokens ? ct : string.Empty)});");
 
-            if (endpoint.GetQueryParams().Any())
+            if (endpoint.GetQueryParams(Config).Any())
             {
                 fw.WriteLine(
                     2,
@@ -268,7 +269,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                 );
                 fw.WriteLine(2, "{");
 
-                foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
+                foreach (var qp in endpoint.GetQueryParams(Config).Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
                     var type = Config.GetType(qp, nonNullable: Config.GetDefaultValue(qp, tag) != "null");
                     var nullable = type.EndsWith('?');
@@ -284,7 +285,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     fw.WriteLine(3, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
-                var listQPs = endpoint.GetQueryParams().Where(qp => Config.GetType(qp).Contains("[]")).ToList();
+                var listQPs = endpoint.GetQueryParams(Config).Where(qp => Config.GetType(qp).Contains("[]")).ToList();
 
                 if (listQPs.Count == 0)
                 {
@@ -322,13 +323,13 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             fw.WriteLine(
                 2,
-                $"using var {res} = await {client}.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? $"?{{{query}}}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
+                $"using var {res} = await {client}.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams(Config).Any() ? $"?{{{query}}}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
             );
             fw.WriteLine(2, $"await EnsureSuccess({res}{(Config.UseCancellationTokens ? $", {ct}" : string.Empty)});");
 
             if (returnType != null)
             {
-                if (!endpoint.Returns!.Required)
+                if (!returns!.Required)
                 {
                     fw.WriteLine();
                     fw.WriteLine(2, $"if ({res}.StatusCode == HttpStatusCode.NoContent)");
@@ -374,7 +375,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     fw.WriteLine();
                     fw.Write(2, $"return ");
 
-                    if (Config.NullableEnable && endpoint.Returns.Required)
+                    if (Config.NullableEnable && returns.Required)
                     {
                         fw.Write("(");
                     }
@@ -383,7 +384,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         $"await {res}.Content.ReadFromJsonAsync<{returnType}>(_jsOptions{(Config.UseCancellationTokens ? $", {ct}" : string.Empty)})"
                     );
 
-                    if (Config.NullableEnable && endpoint.Returns.Required)
+                    if (Config.NullableEnable && returns.Required)
                     {
                         fw.Write(")!");
                     }

@@ -377,11 +377,6 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("avi_date_creation")
                         .HasComment("Date de création de l'enregistrement");
 
-                    b.Property<int>("NombreVues")
-                        .HasColumnType("integer")
-                        .HasColumnName("avi_nombre_vues")
-                        .HasComment("Nombre de vues de l'avis (calculé)");
-
                     b.Property<int>("Note")
                         .HasColumnType("integer")
                         .HasColumnName("avi_note")

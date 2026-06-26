@@ -32,7 +32,6 @@ create table AVIS_CLIENT (
 	AVI_COMMENTAIRE varchar(100),
 	AVI_DATE_AVIS timestamp not null,
 	AVI_APPROUVE boolean not null,
-	AVI_NOMBRE_VUES int not null,
 	PER_ID int not null,
 	LIE_ID int not null,
 	AVI_DATE_CREATION timestamp not null,

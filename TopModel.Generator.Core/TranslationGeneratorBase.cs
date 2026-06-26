@@ -17,7 +17,7 @@ public abstract class TranslationGeneratorBase<T>(
         Config
             .Tags.SelectMany(tag =>
             {
-                var properties = Config.Classes.Where(c => c.Tags.Contains(tag)).SelectMany(c => c.Properties);
+                var properties = Config.Classes.Where(c => c.Tags.Contains(tag)).SelectMany(Config.GetProperties);
 
                 return properties
                     .SelectMany(p => GetResourceFileNames(p, tag))
@@ -55,8 +55,8 @@ public abstract class TranslationGeneratorBase<T>(
                     Config
                         .Tags.Intersect(classe.Tags)
                         .SelectMany(tag =>
-                            classe
-                                .Properties.OfType<IProperty>()
+                            Config
+                                .GetProperties(classe)
                                 .SelectMany(p =>
                                     GetResourceFileNames(p, tag)
                                         .Select(f =>
@@ -103,8 +103,8 @@ public abstract class TranslationGeneratorBase<T>(
                     Config
                         .Tags.Intersect(classe.Tags)
                         .SelectMany(tag =>
-                            classe
-                                .Properties.OfType<IProperty>()
+                            Config
+                                .GetProperties(classe)
                                 .SelectMany(p =>
                                     GetCommentResourceFileNames(p, tag)
                                         .Select(f =>

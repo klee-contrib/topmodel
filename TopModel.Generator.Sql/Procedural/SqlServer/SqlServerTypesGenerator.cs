@@ -64,7 +64,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
     private void WriteTypeDeclaration(Class classe, IFileWriter writer)
     {
-        var isContainsInsertKey = classe.Properties.Any(p => p.Name == InsertKeyName);
+        var isContainsInsertKey = Config.GetProperties(classe).Any(p => p.Name == InsertKeyName);
         if (isContainsInsertKey)
         {
             WriteType(classe, writer);
@@ -72,7 +72,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         var t = 0;
 
-        foreach (var property in Config.GetAllProperties(classe))
+        foreach (var property in Config.GetProperties(classe))
         {
             var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
 

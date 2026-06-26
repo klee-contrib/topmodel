@@ -18,6 +18,12 @@ internal class CompositionProperty : IProperty
 
     public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
 
+#nullable enable
+
+    public IList<string>? Tags { get; set; }
+
+#nullable disable
+
     public string Comment { get; set; }
 
     public bool Readonly
@@ -92,6 +98,7 @@ internal class CompositionProperty : IProperty
             Readonly = Readonly,
             Reference = Reference,
             Required = Required,
+            Tags = Tags,
             Trigram = Trigram,
         };
     }
@@ -102,9 +109,11 @@ internal class CompositionProperty : IProperty
         return new CompositionProperty
         {
             SourceProperty = SourceProperty ?? this,
+            Annotations = Annotations,
             Class = container as Class,
             Comment = Comment,
             Composition = Composition,
+            CustomProperties = CustomProperties,
             Decorator = container as Decorator,
             Domain = Domain,
             DomainParameters = DomainParameters,
@@ -112,10 +121,9 @@ internal class CompositionProperty : IProperty
             Location = Location,
             Name = Name,
             Required = Required,
-            CustomProperties = CustomProperties,
             Readonly = Readonly,
+            Tags = Tags,
             Trigram = Trigram,
-            Annotations = Annotations,
         };
     }
 

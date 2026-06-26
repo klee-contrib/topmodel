@@ -23,7 +23,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
     protected virtual IEnumerable<IProperty> GetForeignKeys(Class classe)
     {
-        foreach (var property in Config.GetAllProperties(classe))
+        foreach (var property in Config.GetProperties(classe))
         {
             if (property is { Association.IsPersistent: true } ap)
             {

@@ -663,7 +663,11 @@ public class ModelStore(
             foreach (var genConfig in config.Configs.Values.Where(c => c.Endpoints.Contains(endpoint)))
             {
                 foreach (
-                    var composition in endpoint.Properties.Select(c => c.Composition).Where(c => c != null).Distinct()
+                    var composition in endpoint
+                        .Properties.Where(p => p.Tags == null || p.Tags.Intersect(genConfig.Tags).Any())
+                        .Select(c => c.Composition)
+                        .Where(c => c != null)
+                        .Distinct()
                 )
                 {
                     if (!genConfig.AvailableClasses.Contains(composition) && Classes.Contains(composition))

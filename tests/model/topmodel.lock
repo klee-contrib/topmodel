@@ -4,12 +4,12 @@
 
 version: 4.5.1
 custom:
-  ../../TopModel.Generator.Csharp: 62c75c4c11baa8a63fc0d763a3f8fd2a
-  ../../TopModel.Generator.Javascript: ebc0a7551ea4010d71d73ba4b344ce7f
-  ../../TopModel.Generator.Jpa: 19097fa2b2665a195872fc878d151d14
-  ../../TopModel.Generator.Sql: 1d6a2fb1da8fd8b93ae2fd64ef5bc6a2
+  ../../TopModel.Generator.Csharp: 00ae5962671af12920f98b6c9224af49
+  ../../TopModel.Generator.Javascript: d626478b8f0acde41df62566945461c6
+  ../../TopModel.Generator.Jpa: 018feea0bc2c0af21f3c96b7eb08912c
+  ../../TopModel.Generator.Sql: d58aaa632c525b8d3566cee58b5f5a83
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
-  ../../TopModel.Generator.Documentation: ca8b922adec54ee5ed7ec9d4eaec289b
+  ../../TopModel.Generator.Documentation: d4010390bed36e67d2f480795f165167
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/menu.service.ts
@@ -112,6 +112,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientWrite.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CommandeDeleteResult.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CommandeRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CommandeWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/Departement.cs
@@ -239,6 +240,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/ClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/ClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/CommandeDeleteResult.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/CommandeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/CommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/CommandeResume.java
@@ -377,6 +379,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/ClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/ClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/CommandeDeleteResult.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/CommandeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/CommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/CommandeResume.java
@@ -490,6 +493,7 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/ClientItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/ClientRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/ClientWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/CommandeDeleteResult.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/CommandeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/CommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/CommandeResume.java

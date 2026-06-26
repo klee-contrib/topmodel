@@ -9,7 +9,6 @@ export const restaurant = {
         commentaire: "Commentaire",
         dateAvis: "DateAvis",
         id: "Id",
-        nombreVues: "NombreVues",
         note: "Note",
         restaurantId: "Restaurant"
     },
@@ -103,6 +102,9 @@ export const restaurant = {
         categoriesPlat: "CategoriesPlat",
         plats: "Plats"
     },
+    nombreVuesBase: {
+        nombreVues: "NombreVues"
+    },
     personne: {
         departementCode: "DepartementCode"
     },
@@ -163,7 +165,6 @@ export const restaurant = {
     restaurantAvecStatistiques: {
         nombrePlats: "NombrePlats",
         nombreTables: "NombreTables",
-        noteMoyenne: "NoteMoyenne",
         tables: "Tables"
     },
     statistiquesRestaurant: {

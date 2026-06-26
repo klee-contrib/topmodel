@@ -77,7 +77,6 @@ public class RestaurantMappers {
 		target.setCommentaire(avisClient.getCommentaire());
 		target.setDateAvis(avisClient.getDateAvis());
 		target.setApprouve(avisClient.getApprouve());
-		target.setNombreVues(avisClient.getNombreVues());
 		if (avisClient.getClient() != null) {
 			target.setClientId(avisClient.getClient().getId());
 		} else {
@@ -91,6 +90,7 @@ public class RestaurantMappers {
 		}
 
 		target.setDateCreation(avisClient.getDateCreation());
+		target.setNombreVues(avisClient.getNombreVues());
 		return target;
 	}
 
@@ -537,13 +537,12 @@ public class RestaurantMappers {
 	 * @param restaurant Instance de 'Restaurant' source.
 	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
-	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques' sur laquelle les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne) {
-		return mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, nombreTables, noteMoyenne, new RestaurantAvecStatistiques());
+	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
+		return mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, noteMoyenne, new RestaurantAvecStatistiques());
 	}
 
 	/**
@@ -551,13 +550,12 @@ public class RestaurantMappers {
 	 * @param restaurant Instance de 'Restaurant' source.
 	 * @param tables Tables.
 	 * @param nombrePlats Nombre de plats.
-	 * @param nombreTables Nombre de tables.
 	 * @param noteMoyenne Note moyenne.
 	 * @param target Instance de 'RestaurantAvecStatistiques' cible.
 	 *
 	 * @return L'instance de 'RestaurantAvecStatistiques' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, Integer nombreTables, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
+	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
@@ -602,7 +600,6 @@ public class RestaurantMappers {
 		target.setDateCreation(restaurant.getDateCreation());
 		target.setTables(tables.stream().filter(Objects::nonNull).map(RestaurantMappers::createTableRead).collect(Collectors.toList()));
 		target.setNombrePlats(nombrePlats);
-		target.setNombreTables(nombreTables);
 		target.setNoteMoyenne(noteMoyenne);
 		return target;
 	}

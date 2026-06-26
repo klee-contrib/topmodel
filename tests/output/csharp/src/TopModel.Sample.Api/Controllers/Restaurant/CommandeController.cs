@@ -52,9 +52,9 @@ public class CommandeController : Controller
     /// </summary>
     /// <param name="commandeItem">Commande item à supprimer dans le body</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
-    /// <returns>Task.</returns>
+    /// <returns>Détail de la suppression.</returns>
     [HttpDelete("api/restaurants/commandes")]
-    public async Task DeleteCommandeWithBody([FromBody] ICommandeItem commandeItem, CancellationToken ct = default)
+    public async Task<CommandeDeleteResult> DeleteCommandeWithBody([FromBody] ICommandeItem commandeItem, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

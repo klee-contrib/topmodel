@@ -44,13 +44,14 @@ public class TypescriptDefinitionGenerator(
 
         if (
             (Config.EntityMode != EntityMode.NONE)
-            && classe.Properties.Any(c => c.Domain is not null && !Config.IsListComposition(c))
+            && Config.GetProperties(classe).Any(c => c.Domain is not null && !Config.IsListComposition(c))
         )
         {
             var domainImport = Config.GetRelativePath(Config.ResolveVariables(Config.DomainPath, tag), fileName);
             commonImports.AddRange(
-                classe
-                    .Properties.Select(p =>
+                Config
+                    .GetProperties(classe)
+                    .Select(p =>
                         p is not { Composition: not null } ? p.Domain
                         : p is { Composition: not null } && !Config.IsListComposition(p) ? p.Domain
                         : null!
@@ -66,8 +67,9 @@ public class TypescriptDefinitionGenerator(
             fw.WriteLine($"import {{{import.Import}}} from \"{import.Path}\";");
         }
 
-        var dependencyImports = classe
-            .ClassDependencies.Select(dep =>
+        var dependencyImports = Config
+            .GetClassDependencies(classe)
+            .Select(dep =>
                 (
                     Import: (
                         dep is { Source: IProperty { Composition: Class cpc } cp }
@@ -87,8 +89,9 @@ public class TypescriptDefinitionGenerator(
                 )
             )
             .Concat(
-                classe
-                    .Properties.Where(p =>
+                Config
+                    .GetProperties(classe)
+                    .Where(p =>
                         Config.EntityMode != EntityMode.FOCUS
                         || p.Composition == null
                             && Config.GetType(p, forceAssociationPropertyType: true)
@@ -99,7 +102,7 @@ public class TypescriptDefinitionGenerator(
                     )
                     .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
             )
-            .Concat(classe.Properties.SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
+            .Concat(Config.GetProperties(classe).SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
             .Where(p => p.Path != null && p.Path != entityTypesPath)
             .GroupAndSort();
 
@@ -145,7 +148,7 @@ public class TypescriptDefinitionGenerator(
         {
             fw.WriteLine("{");
 
-            foreach (var property in classe.Properties)
+            foreach (var property in Config.GetProperties(classe))
             {
                 fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
                 var type = Config.GetType(property, forceAssociationPropertyType: true);
@@ -203,7 +206,7 @@ public class TypescriptDefinitionGenerator(
                 fw.WriteLine("Entity,");
             }
 
-            foreach (var property in classe.Properties)
+            foreach (var property in Config.GetProperties(classe))
             {
                 fw.Write("    ");
                 fw.Write(property.NameCamel);
@@ -301,7 +304,7 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write(1, "}");
 
-                if (property != classe.Properties[^1])
+                if (property != Config.GetProperties(classe).Last())
                 {
                     fw.Write(",");
                 }
@@ -321,7 +324,7 @@ public class TypescriptDefinitionGenerator(
                 fw.WriteLine(1, $"...{classe.Extends.NamePascal}Entity,");
             }
 
-            foreach (var property in classe.Properties)
+            foreach (var property in Config.GetProperties(classe))
             {
                 fw.Write(1, $"{property.NameCamel}: e.");
                 var type = Config.GetType(property, forceAssociationPropertyType: true);
@@ -405,7 +408,7 @@ public class TypescriptDefinitionGenerator(
                 }
 
                 fw.Write(1, ")");
-                fw.WriteLine(property == classe.Properties[^1] ? "" : ",");
+                fw.WriteLine(property == Config.GetProperties(classe).Last() ? "" : ",");
             }
 
             fw.WriteLine("});");
@@ -428,33 +431,38 @@ public class TypescriptDefinitionGenerator(
             yield break;
         }
 
-        if (classe.Properties.Any(p => p.Domain is not null && !Config.IsListComposition(p)))
+        if (Config.GetProperties(classe).Any(p => p.Domain is not null && !Config.IsListComposition(p)))
         {
             yield return "FieldEntry2";
         }
 
-        if (classe.Properties.Any(p => p is { Composition: Class cpc } && cpc.NamePascal == Config.GetType(p)))
+        if (
+            Config
+                .GetProperties(classe)
+                .Any(p => p is { Composition: Class cpc } && cpc.NamePascal == Config.GetType(p))
+        )
         {
             yield return "ObjectEntry";
         }
 
         if (
-            classe.Properties.Any(p =>
-                (p is { Composition: not null } && p.Class == classe && Config.IsListComposition(p))
-            )
+            Config
+                .GetProperties(classe)
+                .Any(p => (p is { Composition: not null } && p.Class == classe && Config.IsListComposition(p)))
         )
         {
             yield return "ListEntry";
         }
 
-        if (classe.Properties.Any(p => p.Composition == classe && Config.IsListComposition(p)))
+        if (Config.GetProperties(classe).Any(p => p.Composition == classe && Config.IsListComposition(p)))
         {
             yield return "RecursiveListEntry";
         }
 
         foreach (
-            var p in classe
-                .Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
+            var p in Config
+                .GetProperties(classe)
+                .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
                 .Where(p => p.Path == entityTypesPath)
         )
         {

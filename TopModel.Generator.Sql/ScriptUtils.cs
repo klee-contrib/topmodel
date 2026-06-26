@@ -24,45 +24,6 @@ public static class ScriptUtils
             && (classe.Extends == null || classe.Extends.InheritanceStrategy != InheritanceStrategy.SingleTable);
     }
 
-    public static IEnumerable<IProperty> GetAllProperties(this SqlConfig config, Class classe)
-    {
-        if (classe.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.DistinctTables)
-        {
-            foreach (var prop in config.GetAllProperties(classe.Extends))
-            {
-                yield return prop;
-            }
-        }
-
-        // On enlève les multiples (directes ou reverse) + les reverses de oneToOne.
-        foreach (
-            var prop in classe.Properties.Where(p =>
-                !p.AssociationMultiple && (!p.IsReverseProperty || p.ReverseProperty!.AssociationMultiple)
-            )
-        )
-        {
-            yield return prop;
-        }
-
-        if (classe.ParentAssociationProperty != null)
-        {
-            yield return classe.ParentAssociationProperty!;
-        }
-
-        if (classe.DiscriminatorProperty != null && !classe.Properties.Contains(classe.DiscriminatorProperty))
-        {
-            yield return classe.DiscriminatorProperty;
-        }
-
-        if (classe.InheritanceStrategy == InheritanceStrategy.SingleTable)
-        {
-            foreach (var prop in config.Classes.Where(c => c.Extends == classe).SelectMany(config.GetAllProperties))
-            {
-                yield return prop;
-            }
-        }
-    }
-
     /// <summary>
     /// Ecrit le SQL pour une colonne.
     /// </summary>
@@ -208,7 +169,7 @@ public static class ScriptUtils
     public static string GetInsertLine(this SqlConfig config, Class classe, ClassValue refValue, string tag)
     {
         var properties = new Dictionary<string, string?>();
-        foreach (var property in config.GetAllProperties(classe))
+        foreach (var property in config.GetProperties(classe))
         {
             var insertValue = GetInsertValue(config, classe, property, refValue, tag);
             if (insertValue != null)
@@ -260,12 +221,14 @@ public static class ScriptUtils
         return classe == null ? throw new ArgumentNullException(nameof(classe)) : classe.SqlName + "_TABLE_TYPE";
     }
 
-    public static IEnumerable<Class> SortInserts(this IEnumerable<Class> classes)
+    public static IEnumerable<Class> SortInserts(this IEnumerable<Class> classes, SqlConfig config)
     {
         return CoreUtils.Sort(
             classes.OrderBy(c => c.SqlName),
             c =>
-                c.Properties.SelectMany(a => new[] { a.Association!, a.Association?.Extends! })
+                config
+                    .GetProperties(c)
+                    .SelectMany(a => new[] { a.Association!, a.Association?.Extends! })
                     .Where(a => a != null && a != c && classes.Contains(a))
                     .Concat(c.Extends != null && c.Extends.Values.Count > 0 ? [c.Extends] : [])
         );
@@ -332,7 +295,7 @@ public static class ScriptUtils
             );
             writer.WriteLine("go");
 
-            foreach (var p in config.GetAllProperties(classe))
+            foreach (var p in config.GetProperties(classe))
             {
                 writer.WriteLine(
                     $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{classe.SqlName}', 'COLUMN', '{p.SqlName}'"
@@ -346,7 +309,7 @@ public static class ScriptUtils
                 $"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
             );
 
-            foreach (var p in config.GetAllProperties(classe))
+            foreach (var p in config.GetProperties(classe))
             {
                 writer.WriteLine(
                     $"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"

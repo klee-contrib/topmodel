@@ -25,7 +25,6 @@ COMMENT ON COLUMN AVIS_CLIENT.AVI_NOTE IS 'Note sur 5';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_COMMENTAIRE IS 'Commentaire de l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_DATE_AVIS IS 'Date de l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_APPROUVE IS 'Indique si l''avis est approuvé par le restaurant';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_NOMBRE_VUES IS 'Nombre de vues de l''avis (calculé)';
 COMMENT ON COLUMN AVIS_CLIENT.PER_ID IS 'Client ayant donné l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.LIE_ID IS 'Restaurant concerné par l''avis';
 COMMENT ON COLUMN AVIS_CLIENT.AVI_DATE_CREATION IS 'Date de création de l''enregistrement';

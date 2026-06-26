@@ -84,6 +84,9 @@ public class PropertyLoader(FileChecker fileChecker)
                                 rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
                             );
                             break;
+                        case "tags":
+                            rp.Tags = fileChecker.Deserialize<IList<string>>(parser);
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
@@ -251,6 +254,9 @@ public class PropertyLoader(FileChecker fileChecker)
                                 ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
                             );
                             break;
+                        case "tags":
+                            ap.Tags = fileChecker.Deserialize<IList<string>>(parser);
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
@@ -337,6 +343,9 @@ public class PropertyLoader(FileChecker fileChecker)
                             parser.ConsumeMapping(prop =>
                                 cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
                             );
+                            break;
+                        case "tags":
+                            cp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -498,6 +507,9 @@ public class PropertyLoader(FileChecker fileChecker)
                                 customProperties.Add(prop.Value, parser.Consume<Scalar>().Value)
                             );
                             alp.CustomProperties = customProperties;
+                            break;
+                        case "tags":
+                            alp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");

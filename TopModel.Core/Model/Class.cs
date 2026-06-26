@@ -141,6 +141,7 @@ public class Class : IPropertyContainer
     public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; internal set; } =
         new Dictionary<Reference, IDictionary<Reference, string>>();
 
+    [Obsolete("Utiliser `Config.GetClassDependencies(classe)`.")]
     public IEnumerable<ClassDependency> ClassDependencies =>
         Properties
             .GetClassDependencies(this)

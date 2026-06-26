@@ -142,7 +142,7 @@ public class JavascriptConfig : GeneratorConfigBase
     )
     {
         return endpoints
-            .SelectMany(e => e.ClassDependencies)
+            .SelectMany(GetClassDependencies)
             .Select(dep =>
                 (
                     Import: dep is { Source: IProperty fp and not IProperty { Composition: not null } }
@@ -158,8 +158,8 @@ public class JavascriptConfig : GeneratorConfigBase
             .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
             .Concat(
                 endpoints
-                    .SelectMany(d => d.Params)
-                    .Where(p => p.IsQueryParam())
+                    .SelectMany(GetParams)
+                    .Where(p => p.IsQueryParam(this))
                     .SelectMany(dep => GetValueImportPaths(fileName, dep))
             )
             .Where(i => i.Path != null)

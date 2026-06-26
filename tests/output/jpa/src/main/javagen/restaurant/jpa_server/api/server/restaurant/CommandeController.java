@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
+import restaurant.jpa_server.dtos.restaurant.CommandeDeleteResult;
 import restaurant.jpa_server.dtos.restaurant.CommandeItem;
 import restaurant.jpa_server.dtos.restaurant.CommandeRead;
 import restaurant.jpa_server.dtos.restaurant.CommandeWrite;
@@ -69,11 +70,12 @@ public interface CommandeController {
 	/**
 	 * Supprime une commande.
 	 * @param commandeItem Commande item à supprimer dans le body.
+	 *
+	 * @return Détail de la suppression.
 	 */
 	@DeleteMapping(path = "commandes")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Operation(description = "Supprime une commande")
-	void deleteCommandeWithBody(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Commande item à supprimer dans le body") @RequestBody @Valid CommandeItem commandeItem);
+	CommandeDeleteResult deleteCommandeWithBody(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Commande item à supprimer dans le body") @RequestBody @Valid CommandeItem commandeItem);
 
 	/**
 	 * Exporte les commandes au format CSV.

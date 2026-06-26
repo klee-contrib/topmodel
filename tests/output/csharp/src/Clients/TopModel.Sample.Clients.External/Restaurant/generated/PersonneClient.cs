@@ -36,12 +36,17 @@ public partial class PersonneClient(HttpClient _client)
     /// Ajoute un employé (nécessite le rôle ADMIN).
     /// </summary>
     /// <param name="employe">Employé à créer.</param>
+    /// <param name="token">Token.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Employé créé.</returns>
-    public async Task<EmployeRead> AddEmploye(EmployeWrite employe, CancellationToken ct = default)
+    public async Task<EmployeRead> AddEmploye(EmployeWrite employe, string? token = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/restaurants/employes") { Content = JsonContent.Create(employe, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
+        var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
+        {
+            ["token"] = token,
+        }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
+        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/restaurants/employes?{query}") { Content = JsonContent.Create(employe, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
         return (await res.Content.ReadFromJsonAsync<EmployeRead>(_jsOptions, ct))!;

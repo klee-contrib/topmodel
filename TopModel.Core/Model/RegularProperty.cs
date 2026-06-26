@@ -38,6 +38,8 @@ internal class RegularProperty : IProperty
 
     public string Comment { get; set; }
 
+#nullable enable
+
     public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; internal set; } = [];
@@ -47,6 +49,10 @@ internal class RegularProperty : IProperty
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
     public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
+
+    public IList<string>? Tags { get; set; }
+
+#nullable disable
 
     public Class Class { get; set; }
 
@@ -91,6 +97,7 @@ internal class RegularProperty : IProperty
             PrimaryKey = PrimaryKey,
             Readonly = Readonly,
             Required = Required,
+            Tags = Tags,
             Trigram = Trigram,
         };
     }
@@ -101,8 +108,10 @@ internal class RegularProperty : IProperty
         return new RegularProperty
         {
             SourceProperty = SourceProperty ?? this,
+            Annotations = Annotations,
             Class = container as Class,
             Comment = Comment,
+            CustomProperties = CustomProperties,
             Decorator = container as Decorator,
             DefaultValue = DefaultValue,
             Domain = Domain,
@@ -114,9 +123,8 @@ internal class RegularProperty : IProperty
             PrimaryKey = PrimaryKey,
             Required = Required,
             Readonly = Readonly,
+            Tags = Tags,
             Trigram = Trigram,
-            CustomProperties = CustomProperties,
-            Annotations = Annotations,
         };
     }
 

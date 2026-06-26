@@ -35,7 +35,7 @@ public class JavaEnumClassPropertyGenerator(
 
     protected virtual IEnumerable<IProperty> GetEnumProperties(Class classe)
     {
-        return classe.Properties.Where(e => e.EnumProperty == e);
+        return Config.GetProperties(classe).Where(e => e.EnumProperty == e);
     }
 
     protected string GetFileName(IProperty property, Class classe, string tag)

@@ -71,10 +71,11 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         string pk;
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
-            pk = Config.GetType(classe.ExtendedProperties.Single(p => p.PrimaryKey));
+            pk = Config.GetType(Config.GetExtendedProperties(classe).Single(p => p.PrimaryKey));
             javaClass.Imports.AddRange(
-                classe
-                    .ExtendedProperties.Single(p => p.PrimaryKey)
+                Config
+                    .GetExtendedProperties(classe)
+                    .Single(p => p.PrimaryKey)
                     .GetTypeImports(Config, tag, forceAssociationPropertyType: true)
             );
         }

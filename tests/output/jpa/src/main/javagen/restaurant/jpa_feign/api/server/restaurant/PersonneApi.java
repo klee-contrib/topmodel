@@ -51,12 +51,13 @@ public interface PersonneApi {
 	/**
 	 * Ajoute un employé (nécessite le rôle ADMIN).
 	 * @param employe Employé à créer.
+	 * @param token Token.
 	 *
 	 * @return Employé créé.
 	 */
 	@PostMapping(path = "api/restaurants/employes")
 	@Operation(description = "Ajoute un employé (nécessite le rôle ADMIN)")
-	EmployeRead addEmploye(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Employé à créer") @RequestBody @Valid EmployeWrite employe);
+	EmployeRead addEmploye(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Employé à créer") @RequestBody @Valid EmployeWrite employe, @Parameter(description = "Token") @RequestParam(value = "token", required = false) String token);
 
 	/**
 	 * Supprime un client.

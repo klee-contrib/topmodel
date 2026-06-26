@@ -83,7 +83,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 idx.Unique
                 && (
                     idx.Properties.Count > 1
-                    || !classe.Properties.Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
+                    || !Config
+                        .GetProperties(classe)
+                        .Any(p => p.Association != null && p.Unique && p == idx.Properties.Single())
                 )
             );
 
@@ -410,7 +412,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
+        foreach (var ap in Config.GetProperties(classe).Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {
@@ -442,7 +444,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in classe.Properties.Where(p => p.AssociationMultiple && p.UseClassForAssociation))
+        foreach (var ap in Config.GetProperties(classe).Where(p => p.AssociationMultiple && p.UseClassForAssociation))
         {
             if (ap.ReverseProperty != null)
             {

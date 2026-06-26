@@ -38,7 +38,7 @@ public abstract class AbstractSqlValuesGenerator(
 
         WriteInsertStart(writerInsert);
 
-        foreach (var classe in classes.SortInserts())
+        foreach (var classe in classes.SortInserts(Config))
         {
             WriteInsert(writerInsert, classe, tag);
         }

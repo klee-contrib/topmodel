@@ -92,13 +92,6 @@ public partial record RestaurantAvecStatistiques
     public int? NombrePlats { get; set; } = 0;
 
     /// <summary>
-    /// Nombre de tables du restaurant.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Quantite)]
-    public int? NombreTables { get; set; } = 0;
-
-    /// <summary>
     /// Note moyenne des avis clients.
     /// </summary>
     [Domain(Domains.Prix)]

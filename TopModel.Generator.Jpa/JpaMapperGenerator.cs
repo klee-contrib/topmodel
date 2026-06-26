@@ -442,7 +442,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         foreach (
             var mapping in mapper
                 .Mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value))
-                .OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key))
+                .OrderBy(m => Config.GetProperties(m.Key.Class).ToList().IndexOf(m.Key))
         )
         {
             var propertyTarget = mapping.Value;

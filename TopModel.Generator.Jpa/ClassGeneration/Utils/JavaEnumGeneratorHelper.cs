@@ -19,7 +19,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// <returns>Expression Java de la forme <c>new ClassName(val1, val2, ...)</c>.</returns>
     public string GetAllArgsConstructorCall(Class classe, ClassValue refValue, string tag)
     {
-        var args = classe.Properties.Select(prop => GetPropertyValue(classe, prop, refValue)).ToArray();
+        var args = Config.GetProperties(classe).Select(prop => GetPropertyValue(classe, prop, refValue)).ToArray();
         return $"new {classe.NamePascal}{GetAllArgsConstructor(classe, tag).CallWith(args)}";
     }
 
@@ -126,8 +126,9 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
 
     private IList<string> GetAllArgsConstructorCallImports(Class classe, string tag)
     {
-        return classe
-            .Properties.SelectMany(prop =>
+        return Config
+            .GetProperties(classe)
+            .SelectMany(prop =>
             {
                 if (Config.UniqueValueGeneration.CanConst && prop.UniqueValuedProperty != null)
                 {

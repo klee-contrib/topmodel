@@ -253,6 +253,36 @@ properties:
 
 Un alias hérite des annotations de la propriété source, ainsi que de son type pour le ciblage. Un alias d'association pourra donc être ciblé par des annotations qui ciblent les associations. Les annotations renseignées sur l'alias lui même seront ajoutées aux annotations existantes.
 
+## Tags de propriétés
+
+Chaque classe ou endpoint sera transmis aux configurations qui référencent les tags de ces objets (qu'ils soient sur le fichier ou la classe/l'endpoint lui-même). Par défaut, l'ensemble des propriétés sera généré par les générateurs de ces configurations. Parfois, cela n'est pas souhaitable, par exemple si :
+
+- La propriété est déjà implémentée par une classe externe spécifiée dans un `extends` d'un [décorateur](/model/decorators)
+- On ne veut pas que la propriété soit générée dans un client d'API alors qu'elle existe sur le serveur (pour du versionning, pour masquer des propriétés qui ne devraient pas être visibles en front..)
+
+Pour répondre à ce besoin, vous pouvez spécifier des **tags sur les propriétés**. Si la propriété `tags` n'est pas renseignée, alors la propriété sera générée normalement, mais si renseignée, alors la propriété ne sera générée **que pour les tags listés** :
+
+```yaml
+- name: MyProperty
+  domain: DO_CODE
+  comment: Propriété toujours générée.
+- name: MyProperty2
+  domain: DO_CODE
+  tags: [back]
+  comment: Propriété générée uniquement en back.
+- name: MyProperty3
+  domain: DO_CODE
+  tags: []
+  comment: Propriété jamais générée.
+```
+
+Quelques remarques :
+
+- Les tags sur les paramètres de routes des endpoints sont ignorés : on ne peut pas ne pas générer un paramètre de route vu qu'il fait partie de la définition de l'endpoint.
+- Les tags ne sont **pas hérités par les alias**. La non-génération d'une propriété est liée à la propriété elle-même, et non à son héritage via les alias. Vous pouvez toujours recopier les tags si besoin.
+- Les tags sont en revanche bien **recopiés dans les implémentations** (décorateurs et interfaces). Il s'agit bien ici de la même propriété.
+- Les mappings de mappers ne prennent pas en compte la non-génération éventuelle de la propriété, puisque la propriété pourrait quand même exister dans le code final. Si un mapping fait référence à une propriété inexistante car non générée, supprimez le mapping.
+
 ## Autres informations de propriétés
 
 - `readonly` : Une propriété readonly ne devrait être renseignable qu'à la création d'une classe (une notion qui n'est représentable qu'en C# malheureusement..), mais en revanche, dans une [interface](/model/classes#interfaces-et-classes-abstraites), elle n'aura pas de setter.

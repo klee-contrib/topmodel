@@ -45,7 +45,7 @@ public class DocumentationClassDocGenerator(
         foreach (var classe in classList)
         {
             var tableName = classe.SqlName;
-            foreach (var property in classe.Properties.Where(p => !p.IsReverseProperty))
+            foreach (var property in Config.GetProperties(classe).Where(p => !p.IsReverseProperty))
             {
                 List<string> constraints = [];
                 if (property is { Association: not null })

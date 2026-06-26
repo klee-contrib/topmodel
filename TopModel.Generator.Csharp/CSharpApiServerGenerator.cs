@@ -36,11 +36,11 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         var defaultValue = Config.GetDefaultValue(param, tag);
 
-        var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam();
+        var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam(Config) && !param.IsRouteParam();
 
         var type = Config.GetType(
             param,
-            nonNullable: param.Required && !isFormParam && !param.IsQueryParam()
+            nonNullable: param.Required && !isFormParam && !param.IsQueryParam(Config)
                 || param.IsRouteParam()
                 || defaultValue != "null"
         );
@@ -52,7 +52,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
             sb.Append("[FromForm]");
             hasAnnotation = true;
         }
-        else if (param.IsJsonBodyParam())
+        else if (param.IsJsonBodyParam(Config))
         {
             sb.Append("[FromBody]");
             hasAnnotation = true;
@@ -63,7 +63,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
             hasAnnotation = true;
         }
 
-        if (param.Required && defaultValue == "null" && (param.IsQueryParam() || isFormParam))
+        if (param.Required && defaultValue == "null" && (param.IsQueryParam(Config) || isFormParam))
         {
             sb.Append("[Required]");
             hasAnnotation = true;
@@ -76,7 +76,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         sb.Append($@"{type} {param.GetParamName().Verbatim()}");
 
-        if (param.IsQueryParam() || isFormParam)
+        if (param.IsQueryParam(Config) || isFormParam)
         {
             sb.Append($" = {defaultValue}");
         }
@@ -93,16 +93,19 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
             if (split[i].StartsWith('{'))
             {
                 var routeParamName = split[i][1..^1];
-                var param = endpoint.Params.Single(param => param.GetParamName() == routeParamName);
+                var param = Config.GetParams(endpoint).SingleOrDefault(param => param.GetParamName() == routeParamName);
 
-                var paramType = Config.GetType(param) switch
-                {
-                    "int" => "int",
-                    "int?" => "int",
-                    "Guid" => "guid",
-                    "Guid?" => "guid",
-                    _ => null,
-                };
+                var paramType =
+                    param != null
+                        ? Config.GetType(param) switch
+                        {
+                            "int" => "int",
+                            "int?" => "int",
+                            "Guid" => "guid",
+                            "Guid?" => "guid",
+                            _ => null,
+                        }
+                        : null;
                 if (paramType != null)
                 {
                     split[i] = $"{{{routeParamName}:{paramType}}}";
@@ -140,7 +143,7 @@ public class {className} : Controller
         {
             string GetSafeVariableName(string varName)
             {
-                while (endpoint.Params.Any(p => p.NameCamel == varName))
+                while (Config.GetParams(endpoint).Any(p => p.NameCamel == varName))
                 {
                     varName = $"_{varName}";
                 }
@@ -158,7 +161,7 @@ public class {className} : Controller
             wd.AppendLine($"{indent}/// {endpoint.Description}");
             wd.AppendLine($"{indent}/// </summary>");
 
-            foreach (var param in endpoint.Params)
+            foreach (var param in Config.GetParams(endpoint))
             {
                 wd.AppendLine($@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>");
             }
@@ -170,14 +173,14 @@ public class {className} : Controller
                 );
             }
 
-            if (!Config.NoAsyncControllers || endpoint.Returns != null)
+            var returns = Config.GetReturns(endpoint);
+
+            if (!Config.NoAsyncControllers || returns != null)
             {
-                wd.AppendLine(
-                    $"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>"
-                );
+                wd.AppendLine($"{indent}/// <returns>{(returns != null ? returns.Comment : "Task.")}</returns>");
             }
 
-            if (endpoint.Returns is { Domain.MediaType: string mediaType })
+            if (returns is { Domain.MediaType: string mediaType })
             {
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
@@ -189,7 +192,7 @@ public class {className} : Controller
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens ? $"{(endpoint.Params.Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
+                $"{indent}public {Config.GetReturnTypeName(returns)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();

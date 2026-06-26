@@ -60,6 +60,7 @@ public class Endpoint : IPropertyContainer
 
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
 
+    [Obsolete("Utiliser `Config.GetClassDependencies(endpoint)`.")]
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];

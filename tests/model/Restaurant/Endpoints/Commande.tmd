@@ -7,6 +7,7 @@ tags:
 uses:
   - meta/annotations
   - Restaurant/Dtos/Commande
+  - Restaurant/Dtos/Commande_Back
   - Restaurant/Entities/Commande
   - Restaurant/References
 options:
@@ -218,3 +219,9 @@ endpoint:
     - composition: CommandeItem
       name: commandeItem
       comment: Commande item à supprimer dans le body
+
+  returns:
+    composition: CommandeDeleteResult
+    name: result
+    comment: Détail de la suppression.
+    tags: [back]

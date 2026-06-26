@@ -12,7 +12,6 @@ create table [dbo].[AVIS_CLIENT] (
 	[AVI_COMMENTAIRE] varchar(100),
 	[AVI_DATE_AVIS] timestamp not null,
 	[AVI_APPROUVE] boolean not null default false,
-	[AVI_NOMBRE_VUES] int not null default 0,
 	[PER_ID] int not null,
 	[LIE_ID] int not null,
 	[AVI_DATE_CREATION] timestamp not null,
@@ -46,8 +45,6 @@ go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Date de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_AVIS'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si l''avis est approuvé par le restaurant', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_APPROUVE'
-go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nombre de vues de l''avis (calculé)', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_NOMBRE_VUES'
 go
 EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'PER_ID'
 go

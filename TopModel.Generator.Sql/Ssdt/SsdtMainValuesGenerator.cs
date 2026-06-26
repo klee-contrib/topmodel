@@ -39,7 +39,7 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
         WriteHeader(writer);
 
         // Appel des scripts d'insertion.
-        WriteScriptCalls(writer, classes.SortInserts());
+        WriteScriptCalls(writer, classes.SortInserts(Config));
     }
 
     /// <summary>

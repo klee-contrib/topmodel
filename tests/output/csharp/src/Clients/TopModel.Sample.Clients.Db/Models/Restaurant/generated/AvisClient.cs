@@ -13,7 +13,7 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// Avis d'un client sur un restaurant.
 /// </summary>
 [Table("avis_client")]
-public partial record AvisClient
+public partial record AvisClient : NombreVuesBase
 {
     /// <summary>
     /// Identifiant de l'avis.
@@ -54,14 +54,6 @@ public partial record AvisClient
     [Required]
     [Domain(Domains.Booleen)]
     public bool? Approuve { get; set; } = false;
-
-    /// <summary>
-    /// Nombre de vues de l'avis (calculé).
-    /// </summary>
-    [Column("avi_nombre_vues")]
-    [Required]
-    [Domain(Domains.Quantite)]
-    public int? NombreVues { get; init; } = 0;
 
     /// <summary>
     /// Client ayant donné l'avis.

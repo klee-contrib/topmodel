@@ -83,10 +83,12 @@ class:
       required: true
       defaultValue: 0
       comment: Nombre de tables du restaurant
+      tags: [front]
 
     - name: NoteMoyenne
       domain: DO_PRIX
       comment: Note moyenne des avis clients
+      tags: [back]
 
   mappers:
     from:
@@ -101,10 +103,6 @@ class:
               name: NombrePlats
               domain: DO_QUANTITE
               comment: Nombre de plats
-          - property:
-              name: NombreTables
-              domain: DO_QUANTITE
-              comment: Nombre de tables
           - property:
               name: NoteMoyenne
               domain: DO_PRIX

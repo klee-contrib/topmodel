@@ -48,13 +48,6 @@ public partial record AvisClientRead
     public bool? Approuve { get; set; } = false;
 
     /// <summary>
-    /// Nombre de vues de l'avis (calculé).
-    /// </summary>
-    [Required]
-    [Domain(Domains.Quantite)]
-    public int? NombreVues { get; set; } = 0;
-
-    /// <summary>
     /// Client ayant donné l'avis.
     /// </summary>
     [Required]
@@ -74,4 +67,11 @@ public partial record AvisClientRead
     [Required]
     [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
+
+    /// <summary>
+    /// Nombre de vues de l'avis (calculé).
+    /// </summary>
+    [Required]
+    [Domain(Domains.Quantite)]
+    public int? NombreVues { get; set; } = 0;
 }

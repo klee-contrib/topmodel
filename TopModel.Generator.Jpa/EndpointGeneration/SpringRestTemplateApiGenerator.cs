@@ -48,7 +48,7 @@ public class SpringRestTemplateApiGenerator(
             }
         }
 
-        foreach (var param in endpoint.GetQueryParams())
+        foreach (var param in endpoint.GetQueryParams(Config))
         {
             if (withType)
             {
@@ -60,7 +60,7 @@ public class SpringRestTemplateApiGenerator(
             }
         }
 
-        var bodyParam = endpoint.GetJsonBodyParam();
+        var bodyParam = endpoint.GetJsonBodyParam(Config);
         if (bodyParam != null && withBody)
         {
             if (withType)
@@ -79,9 +79,9 @@ public class SpringRestTemplateApiGenerator(
     protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
         var properties = endpoints
-            .SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag));
+            .SelectMany(Config.GetParams)
+            .Concat(endpoints.Select(endpoint => Config.GetReturns(endpoint)!).Where(r => r != null));
+        return properties.SelectMany(property => property.GetTypeImports(Config, tag));
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -141,39 +141,38 @@ public class SpringRestTemplateApiGenerator(
     {
         fw.WriteDocStart(1, endpoint.Description);
 
-        foreach (var param in endpoint.Params)
+        foreach (var param in Config.GetParams(endpoint))
         {
             fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
         }
 
-        if (endpoint.Returns != null)
+        var returns = Config.GetReturns(endpoint);
+
+        if (returns != null)
         {
-            fw.WriteLine(1, $" * @return {endpoint.Returns.Comment}");
+            fw.WriteLine(1, $" * @return {returns.Comment}");
         }
 
         fw.WriteLine(1, " */");
         var returnType = "ResponseEntity";
         var returnClass = "(Class<?>) null";
-        if (endpoint.Returns != null)
+        if (returns != null)
         {
-            if (
-                Config.GetType(endpoint.Returns) == "ResponseEntity"
-                && Config.GetType(endpoint.Returns).Split('<').Length > 1
-            )
+            if (Config.GetType(returns) == "ResponseEntity" && Config.GetType(returns).Split('<').Length > 1)
             {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>')[0]}>";
-                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>')[0]}.class";
+                returnType = $"ResponseEntity<{Config.GetType(returns).Split('<')[1].Split('>')[0]}>";
+                returnClass = $"{Config.GetType(returns).Split('<')[1].Split('>')[0]}.class";
             }
-            else if (Config.GetType(endpoint.Returns).Contains('<'))
+            else if (Config.GetType(returns).Contains('<'))
             {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
-                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(endpoint.Returns)}>() {{}}";
+                returnType = $"ResponseEntity<{Config.GetType(returns)}>";
+                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(returns)}>() {{}}";
                 fw.AddImport("org.springframework.core.ParameterizedTypeReference");
             }
             else
             {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
-                returnClass = $"{Config.GetType(endpoint.Returns)}.class";
+                returnType = $"ResponseEntity<{Config.GetType(returns)}>";
+                returnClass = $"{Config.GetType(returns)}.class";
             }
         }
 
@@ -184,7 +183,7 @@ public class SpringRestTemplateApiGenerator(
             $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, withType: false, withBody: false))});"
         );
         var body =
-            $"new HttpEntity<>({(endpoint.GetJsonBodyParam()?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
+            $"new HttpEntity<>({(endpoint.GetJsonBodyParam(Config)?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam(Config)?.GetParamName()}, " : string.Empty)}headers)";
 
         fw.WriteLine(
             2,
@@ -212,12 +211,12 @@ public class SpringRestTemplateApiGenerator(
     {
         fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.NameCamel}");
 
-        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams()))
+        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
         {
             fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
         }
 
-        if (endpoint.Returns != null)
+        if (Config.GetReturns(endpoint) != null)
         {
             fw.WriteLine(1, $" * @return uriBuilder avec les query params remplis");
         }
@@ -232,7 +231,7 @@ public class SpringRestTemplateApiGenerator(
         );
         var fullRoute = endpoint.FullRoute;
         fullRoute = "/" + fullRoute;
-        foreach (IProperty p in endpoint.GetRouteParams())
+        foreach (var p in endpoint.GetRouteParams())
         {
             fullRoute = fullRoute.Replace(@$"{{{p.GetParamName()}}}", "%s");
         }
@@ -248,7 +247,7 @@ public class SpringRestTemplateApiGenerator(
         }
 
         fw.WriteLine(2, @$"String uri = host + {fullRoute};");
-        if (!endpoint.GetQueryParams().Any())
+        if (!endpoint.GetQueryParams(Config).Any())
         {
             fw.WriteLine(2, @$"return UriComponentsBuilder.fromUri(URI.create(uri));");
             fw.WriteLine(1, "}");
@@ -256,7 +255,7 @@ public class SpringRestTemplateApiGenerator(
         }
 
         fw.WriteLine(2, @$"UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));");
-        foreach (IProperty p in endpoint.GetQueryParams())
+        foreach (var p in endpoint.GetQueryParams(Config))
         {
             var indentLevel = 2;
             if (!p.Required)

@@ -117,6 +117,44 @@ public class SqlConfig : GeneratorConfigBase
         };
     }
 
+    public override IEnumerable<IProperty> GetProperties(Class? classe)
+    {
+        if (classe?.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.DistinctTables)
+        {
+            foreach (var prop in GetProperties(classe.Extends))
+            {
+                yield return prop;
+            }
+        }
+
+        // On enlève les multiples (directes ou reverse) + les reverses de oneToOne.
+        foreach (
+            var prop in base.GetProperties(classe)
+                .Where(p => !p.AssociationMultiple && (!p.IsReverseProperty || p.ReverseProperty!.AssociationMultiple))
+        )
+        {
+            yield return prop;
+        }
+
+        if (classe?.ParentAssociationProperty != null)
+        {
+            yield return classe.ParentAssociationProperty!;
+        }
+
+        if (classe?.DiscriminatorProperty != null && !classe.Properties.Contains(classe.DiscriminatorProperty))
+        {
+            yield return classe.DiscriminatorProperty;
+        }
+
+        if (classe?.InheritanceStrategy == InheritanceStrategy.SingleTable)
+        {
+            foreach (var prop in Classes.Where(c => c.Extends == classe).SelectMany(GetProperties))
+            {
+                yield return prop;
+            }
+        }
+    }
+
     public string GetType(IProperty property)
     {
         var type = GetType(property, forceAssociationPropertyType: true);

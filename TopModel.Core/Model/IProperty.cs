@@ -41,6 +41,8 @@ public interface IProperty : IAnnotationContainer
 
     IDictionary<string, string> CustomProperties { get; }
 
+    IList<string>? Tags { get; set; }
+
     Class Class { get; set; }
 
     Endpoint Endpoint { get; set; }
