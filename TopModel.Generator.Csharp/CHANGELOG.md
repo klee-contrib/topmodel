@@ -1,3 +1,11 @@
+## 4.3.0
+
+Compatibilité avec TopModel 4.6 (tags de propriétés).
+
+- [`845b4e5`](https://github.com/klee-contrib/topmodel/commit/845b4e59fb01aa1c0e235fa6e3fbd6a050b14172) - [C#] `noBaseDbContext`
+
+  **impacts génération** : La génération de la déclaration de classe du DbContext a été normalisée avec les autres classe (il y a un retour à la ligne en plus et la classe de base n'est plus répétée sur tous les partials)
+
 ## 4.2.0
 
 Compatibilité avec TopModel 4.5 (stratégies d'héritage persistées, classes abstraites/interfaces, séquences).

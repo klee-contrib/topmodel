@@ -1,3 +1,7 @@
+## 4.3.0
+
+Compatibilité avec TopModel 4.6 (tags de propriétés).
+
 ## 4.2.0
 
 Compatibilité avec TopModel 4.5 (stratégies d'héritage persistées, classes abstraites/interfaces, et config de séquence dans le domaine).

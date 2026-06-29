@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.4.0
+
+Compatibilité avec TopModel 4.6 (tags de propriétés).
+
+- [`5567db1`](https://github.com/klee-contrib/topmodel/commit/5567db1d9c1549796e23b30a9a979e12edf79473) - [JPA] Fix #579 (import en trop metamodel)
+
 ## 4.3.0
 
 Compatibilité avec TopModel 4.5 (stratégies d'héritage persistées, classes abstraites/interfaces, et config de séquence dans le domaine).

@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.6.0
+
+- [#587](https://github.com/klee-contrib/topmodel/pull/587) - Tags sur les propriétés, pour désactiver la génération dans certaines configs
+
 ## 4.5.1
 
 - [`10758d1`](https://github.com/klee-contrib/topmodel/commit/10758d109140f9d1bc7ca4465b3cf563d0f3f4a7) - [Core] Fix contrôle héritage persisté a plus de 2 classes
