@@ -75,6 +75,11 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string DbContextName { get; set; } = "{app}DbContext";
 
     /// <summary>
+    /// Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
+    /// </summary>
+    public virtual bool NoBaseDbContext { get; set; }
+
+    /// <summary>
     /// Location des flux de données générés.
     /// </summary>
     public virtual string? DataFlowsPath { get; set; }

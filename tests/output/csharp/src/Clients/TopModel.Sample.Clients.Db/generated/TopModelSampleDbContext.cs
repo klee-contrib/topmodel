@@ -12,7 +12,8 @@ namespace TopModel.Sample.Clients.Db;
 /// <summary>
 /// DbContext généré pour Entity Framework Core.
 /// </summary>
-public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbContext> options) : DbContext(options)
+public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbContext> options)
+     : DbContext(options)
 {
     /// <summary>
     /// Accès à l'entité Assiette.

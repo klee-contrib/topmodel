@@ -10,7 +10,7 @@ namespace TopModel.Sample.Clients.Db;
 /// <summary>
 /// Partial pour ajouter les traductions dans EF.
 /// </summary>
-public partial class TopModelSampleDbContext : DbContext
+public partial class TopModelSampleDbContext
 {
     partial void AddFrResources(ModelBuilder modelBuilder)
     {

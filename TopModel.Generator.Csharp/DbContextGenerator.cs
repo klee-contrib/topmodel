@@ -64,8 +64,7 @@ public class DbContextGenerator(
         cw.WriteNamespace(contextNs);
 
         cw.WriteSummary("Partial pour ajouter les commentaires EF.");
-        cw.WriteLine($"public partial class {dbContextName} : DbContext");
-        cw.WriteLine("{");
+        cw.WriteClassDeclaration(dbContextName);
         cw.WriteLine(1, "partial void AddComments(ModelBuilder modelBuilder)");
         cw.WriteLine(1, "{");
 
@@ -162,18 +161,17 @@ public class DbContextGenerator(
 
         var primaryConstructor = Config.DotnetVersion >= 8;
 
-        if (primaryConstructor)
-        {
-            w.WriteLine(
-                $"public partial class {dbContextName}(DbContextOptions<{dbContextName}> options) : DbContext(options)"
-            );
-            w.WriteLine("{");
-        }
-        else
-        {
-            w.WriteLine($"public partial class {dbContextName} : DbContext");
-            w.WriteLine("{");
+        w.WriteClassDeclaration(
+            dbContextName,
+            Config.NoBaseDbContext ? null : "DbContext",
+            parameters: primaryConstructor && !Config.NoBaseDbContext
+                ? $"DbContextOptions<{dbContextName}> options"
+                : null,
+            baseParameters: primaryConstructor && !Config.NoBaseDbContext ? "options" : null
+        );
 
+        if (!primaryConstructor && !Config.NoBaseDbContext)
+        {
             w.WriteSummary(1, "Constructeur par défaut.");
             w.WriteParam("options", "Options du DbContext.");
             w.WriteLine(1, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");

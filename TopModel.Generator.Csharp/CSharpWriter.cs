@@ -138,8 +138,8 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="parameters">Paramètres de la classe parente (si constructeur principal).</param>
     public virtual void WriteClassDeclaration(
         string name,
-        string? inheritedClass,
-        bool isRecord,
+        string? inheritedClass = null,
+        bool isRecord = false,
         ClassType classType = ClassType.Regular,
         string[]? ifList = null,
         string? parameters = null,

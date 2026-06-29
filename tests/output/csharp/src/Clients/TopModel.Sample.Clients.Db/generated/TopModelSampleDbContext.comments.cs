@@ -12,7 +12,7 @@ namespace TopModel.Sample.Clients.Db;
 /// <summary>
 /// Partial pour ajouter les commentaires EF.
 /// </summary>
-public partial class TopModelSampleDbContext : DbContext
+public partial class TopModelSampleDbContext
 {
     partial void AddComments(ModelBuilder modelBuilder)
     {

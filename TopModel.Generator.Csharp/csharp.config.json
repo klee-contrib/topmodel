@@ -179,6 +179,10 @@
       "type": "string",
       "description": "Nom du DbContext. Par défaut : {app}DbContext."
     },
+    "noBaseDbContext": {
+      "type": "boolean",
+      "description": "Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial."
+    },
     "referenceAccessorsInterfacePath": {
       "type": "string",
       "description": "Chemin vers lequel générer les interfaces d'accesseurs de référence."

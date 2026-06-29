@@ -49,8 +49,7 @@ public class DbContextResourcesGenerator(
         cw.WriteNamespace(contextNs);
 
         cw.WriteSummary("Partial pour ajouter les traductions dans EF.");
-        cw.WriteLine($"public partial class {dbContextName} : DbContext");
-        cw.WriteLine("{");
+        cw.WriteClassDeclaration(dbContextName);
         cw.WriteLine(1, $"partial void Add{lang.ToPascalCase()}Resources(ModelBuilder modelBuilder)");
         cw.WriteLine(1, "{");
 

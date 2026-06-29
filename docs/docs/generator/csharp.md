@@ -195,6 +195,10 @@ _(en preview, documentation à venir)_
 
   _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
+- `noBaseDbContext`
+
+  Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
+
 - `referenceAccessorsInterfacePath`
 
   Chemin vers lequel générer les interfaces d'accesseurs de référence.
