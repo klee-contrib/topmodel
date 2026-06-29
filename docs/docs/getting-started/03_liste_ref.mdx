@@ -14,6 +14,7 @@ tags: []
 ---
 class:
   name: TypeUtilisateur
+  trigram: TUT
   comment: Type d'utilisateur
   reference: true # Indique que cette classe est une classe de référentiel
   properties:
@@ -128,12 +129,12 @@ public class TypeUtilisateur {
   * Code du type d'utilisateur.
   */
  @Id
- @Column(name = "CODE", nullable = false, length = 10, columnDefinition = "varchar")
+ @Column(name = "TUT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
  @Enumerated(EnumType.STRING)
  private TypeUtilisateurCode code;
 
  // Libellé du type d'utilisateur.
- @Column(name = "LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+ @Column(name = "TUT_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
  private String libelle;
 
   // ...
@@ -186,14 +187,14 @@ public partial record TypeUtilisateur
 
 ```sql
 create table TYPE_UTILISATEUR (
- CODE varchar(10) not null,
- LIBELLE varchar(100) not null,
- constraint PK_TYPE_UTILISATEUR primary key (CODE)
+ TUT_CODE varchar(10) not null,
+ TUT_LIBELLE varchar(100) not null,
+ constraint PK_TYPE_UTILISATEUR primary key (TUT_CODE)
 );
 
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('GES', 'refs.typeUtilisateur.values.GES');
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('CLI', 'refs.typeUtilisateur.values.CLI');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('GES', 'refs.typeUtilisateur.values.GES');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('CLI', 'refs.typeUtilisateur.values.CLI');
 ```
 
 </TabItem>

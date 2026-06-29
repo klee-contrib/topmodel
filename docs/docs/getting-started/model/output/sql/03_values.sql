@@ -9,6 +9,6 @@
 -- ===========================================================================================
 
 /**		Initialisation de la table TYPE_UTILISATEUR		**/
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('GES', 'refs.typeUtilisateur.values.GES');
-INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('CLI', 'refs.typeUtilisateur.values.CLI');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('GES', 'refs.typeUtilisateur.values.GES');
+INSERT INTO TYPE_UTILISATEUR(TUT_CODE, TUT_LIBELLE) VALUES('CLI', 'refs.typeUtilisateur.values.CLI');

@@ -9,15 +9,15 @@
 -- ===========================================================================================
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.CODE
+  * Création de l'index de clef étrangère pour UTILISATEUR.TUT_CODE
  **/
-create index IDX_UTILISATEUR_CODE_FK on UTILISATEUR (
-	CODE ASC
+create index IDX_UTI_TUT_CODE_FK on UTILISATEUR (
+	TUT_CODE ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.CODE
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.TUT_CODE
  **/
 alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_CODE foreign key (CODE)
-		references TYPE_UTILISATEUR (CODE);
+	add constraint FK_UTILISATEUR_TUT_CODE foreign key (TUT_CODE)
+		references TYPE_UTILISATEUR (TUT_CODE);

@@ -28,12 +28,12 @@ public partial record TypeUtilisateur
         /// <summary>
         /// Nom de la colonne en base associée à la propriété Code.
         /// </summary>
-        CODE,
+        TUT_CODE,
 
         /// <summary>
         /// Nom de la colonne en base associée à la propriété Libelle.
         /// </summary>
-        LIBELLE,
+        TUT_LIBELLE,
     }
 
     #endregion
@@ -62,7 +62,7 @@ public partial record TypeUtilisateur
     /// <summary>
     /// Code du type d'utilisateur.
     /// </summary>
-    [Column("code")]
+    [Column("tut_code")]
     [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
@@ -70,7 +70,7 @@ public partial record TypeUtilisateur
     /// <summary>
     /// Libellé du type d'utilisateur.
     /// </summary>
-    [Column("libelle")]
+    [Column("tut_libelle")]
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(15)]

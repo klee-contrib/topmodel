@@ -20,6 +20,7 @@ tags: []
 ---
 class:
   name: Utilisateur
+  trigram: UTI
   comment: Utilisateur de l'application
   properties:
     - name: Id
@@ -82,7 +83,7 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   * Type de l'utilisateur.
   */
  @ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
- @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+ @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
  private TypeUtilisateur typeUtilisateur;
 ```
 
@@ -93,7 +94,7 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
     /// <summary>
     /// Type de l'utilisateur.
     /// </summary>
-    [Column("code")]
+    [Column("tut_code")]
     [Required]
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
@@ -109,19 +110,19 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
- ID int not null,
- EMAIL varchar(50) not null,
- NOM varchar(100),
- DATE_INSCRIPTION date,
- CODE varchar(10) not null,
- constraint PK_UTILISATEUR primary key (ID)
+ UTI_ID int not null,
+ UTI_EMAIL varchar(50) not null,
+ UTI_NOM varchar(100),
+ UTI_DATE_INSCRIPTION date,
+ TUT_CODE varchar(10) not null,
+ constraint PK_UTILISATEUR primary key (UTI_ID)
 );
 
 /**
   * Création de l'index de clef étrangère pour TYPE_UTILISATEUR.LIBELLE
  **/
 create index IDX_TYPE_UTILISATEUR_LIBELLE_FK on TYPE_UTILISATEUR (
- LIBELLE ASC
+ TUT_LIBELLE ASC
 );
 ```
 

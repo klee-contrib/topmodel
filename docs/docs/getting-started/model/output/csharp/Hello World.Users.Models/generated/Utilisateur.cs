@@ -26,27 +26,27 @@ public partial record Utilisateur
         /// <summary>
         /// Nom de la colonne en base associée à la propriété Id.
         /// </summary>
-        ID,
+        UTI_ID,
 
         /// <summary>
         /// Nom de la colonne en base associée à la propriété Email.
         /// </summary>
-        EMAIL,
+        UTI_EMAIL,
 
         /// <summary>
         /// Nom de la colonne en base associée à la propriété Nom.
         /// </summary>
-        NOM,
+        UTI_NOM,
 
         /// <summary>
         /// Nom de la colonne en base associée à la propriété DateInscription.
         /// </summary>
-        DATE_INSCRIPTION,
+        UTI_DATE_INSCRIPTION,
 
         /// <summary>
         /// Nom de la colonne en base associée à la propriété TypeUtilisateurCode.
         /// </summary>
-        CODE,
+        TUT_CODE,
     }
 
     #endregion
@@ -54,7 +54,7 @@ public partial record Utilisateur
     /// <summary>
     /// Identifiant unique de l'utilisateur.
     /// </summary>
-    [Column("id")]
+    [Column("uti_id")]
     [Domain(Domains.Id)]
     [Key]
     public long? Id { get; set; }
@@ -62,7 +62,7 @@ public partial record Utilisateur
     /// <summary>
     /// Adresse mail de l'utilisateur.
     /// </summary>
-    [Column("email")]
+    [Column("uti_email")]
     [Required]
     [Domain(Domains.Email)]
     [StringLength(50)]
@@ -71,7 +71,7 @@ public partial record Utilisateur
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Column("nom")]
+    [Column("uti_nom")]
     [Domain(Domains.Libelle)]
     [StringLength(15)]
     public string Nom { get; set; }
@@ -79,14 +79,14 @@ public partial record Utilisateur
     /// <summary>
     /// Date d'inscription.
     /// </summary>
-    [Column("date_inscription")]
+    [Column("uti_date_inscription")]
     [Domain(Domains.Date)]
     public DateTime? DateInscription { get; set; }
 
     /// <summary>
     /// Type de l'utilisateur.
     /// </summary>
-    [Column("code")]
+    [Column("tut_code")]
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; }

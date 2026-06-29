@@ -5,6 +5,7 @@ tags: [back]
 ---
 class:
   name: Utilisateur
+  trigram: UTI # Préfixe utilisé pour toutes les propriétés en base de données.
   comment: Utilisateur de l'application
   properties:
     - name: Id

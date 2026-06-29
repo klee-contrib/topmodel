@@ -36,7 +36,7 @@ tags: []
 endpoint: # Description du EndPoint
   name: DeleteUtilisateur # Nom du endpoint
   method: DELETE # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Supprime un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine...) gratuitement
@@ -81,7 +81,7 @@ Notre `endpoint` pourra donc s'écrire de la manière suivante (Ajoutez ces lign
 endpoint: # Description du EndPoint
   name: GetUtilisateur # Nom du endpoint
   method: GET # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Charge le détail d'un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme une liste de propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine) gratuitement
@@ -154,7 +154,7 @@ Il ne nous reste plus qu'à ajouter le endpoint dans notre fichier `"Endpoints.t
 endpoint: # Description du EndPoint
   name: UpdateUtilisateur # Nom du endpoint
   method: PATCH # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Modifie un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - composition: UtilisateurUpdateDto
@@ -207,30 +207,30 @@ public interface EndpointsController {
 
  /**
   * Supprime un Utilisateur.
-  * @param utilisateurId Identifiant unique de l'utilisateur.
+  * @param utiId Identifiant unique de l'utilisateur.
   */
  @ResponseStatus(HttpStatus.NO_CONTENT)
- @DeleteMapping(path = "Utilisateur/{utilisateurId}")
- void deleteUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
+ @DeleteMapping(path = "Utilisateur/{utiId}")
+ void deleteUtilisateur(@PathVariable("utiId") long utiId);
 
  /**
   * Charge le détail d'un Utilisateur.
-  * @param utilisateurId Identifiant unique de l'utilisateur.
+  * @param utiId Identifiant unique de l'utilisateur.
   *
   * @return Le détail d'un Utilisateur.
   */
- @GetMapping(path = "Utilisateur/{utilisateurId}")
- UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
+ @GetMapping(path = "Utilisateur/{utiId}")
+ UtilisateurDetailDto getUtilisateur(@PathVariable("utiId") long utiId);
 
  /**
   * Modifie un Utilisateur.
   * @param detail Le détail de l'utilisateur à modifier.
-  * @param utilisateurId Identifiant unique de l'utilisateur.
+  * @param utiId Identifiant unique de l'utilisateur.
   *
   * @return Le détail de l'utilisateur modifié.
   */
- @PatchMapping(path = "Utilisateur/{utilisateurId}")
- UtilisateurDetailDto updateUtilisateur(@RequestBody @Valid UtilisateurUpdateDto detail, @PathVariable("utilisateurId") long utilisateurId);
+ @PatchMapping(path = "Utilisateur/{utiId}")
+ UtilisateurDetailDto updateUtilisateur(@RequestBody @Valid UtilisateurUpdateDto detail, @PathVariable("utiId") long utiId);
 }
 ```
 
@@ -254,10 +254,10 @@ public class EndpointsController : Controller
     /// <summary>
     /// Supprime un Utilisateur
     /// </summary>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Task.</returns>
-    [HttpDelete("Utilisateur/{utilisateurId}")]
-    public async Task DeleteUtilisateur(long utilisateurId)
+    [HttpDelete("Utilisateur/{utiId}")]
+    public async Task DeleteUtilisateur(long utiId)
     {
 
     }
@@ -265,10 +265,10 @@ public class EndpointsController : Controller
     /// <summary>
     /// Charge le détail d'un Utilisateur
     /// </summary>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Le détail d'un Utilisateur</returns>
-    [HttpGet("Utilisateur/{utilisateurId}")]
-    public async Task<UtilisateurDetailDto> GetUtilisateur(long utilisateurId)
+    [HttpGet("Utilisateur/{utiId}")]
+    public async Task<UtilisateurDetailDto> GetUtilisateur(long utiId)
     {
 
     }
@@ -277,10 +277,10 @@ public class EndpointsController : Controller
     /// Modifie un Utilisateur
     /// </summary>
     /// <param name="detail">Le détail de l'utilisateur à modifier</param>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Le détail de l'utilisateur modifié</returns>
-    [HttpPatch("Utilisateur/{utilisateurId}")]
-    public async Task<UtilisateurDetailDto> UpdateUtilisateur([FromBody] UtilisateurUpdateDto detail, long utilisateurId)
+    [HttpPatch("Utilisateur/{utiId}")]
+    public async Task<UtilisateurDetailDto> UpdateUtilisateur([FromBody] UtilisateurUpdateDto detail, long utiId)
     {
 
     }
@@ -311,29 +311,29 @@ export class EndpointsService {
 
     /**
      * @description Supprime un Utilisateur
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      */
-    deleteUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
-        return this.http.delete<void>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    deleteUtilisateur(utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
+        return this.http.delete<void>(`/Utilisateur/${utiId}`, {observe: 'body', ...options});
     }
 
     /**
      * @description Charge le détail d'un Utilisateur
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail d'un Utilisateur
      */
-    getUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
-        return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    getUtilisateur(utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utiId}`, {observe: 'body', ...options});
     }
 
     /**
      * @description Modifie un Utilisateur
      * @param detail Le détail de l'utilisateur à modifier
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail de l'utilisateur modifié
      */
-    updateUtilisateur(detail: UtilisateurUpdateDto, utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
-        return this.http.patch<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, detail, {observe: 'body', ...options});
+    updateUtilisateur(detail: UtilisateurUpdateDto, utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.patch<UtilisateurDetailDto>(`/Utilisateur/${utiId}`, detail, {observe: 'body', ...options});
     }
 }
 

@@ -34,28 +34,28 @@ public interface EndpointsController {
 
 	/**
 	 * Supprime un Utilisateur.
-	 * @param utilisateurId Identifiant unique de l'utilisateur.
+	 * @param utiId Identifiant unique de l'utilisateur.
 	 */
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@DeleteMapping(path = "Utilisateur/{utilisateurId}")
-	void deleteUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
+	@DeleteMapping(path = "Utilisateur/{utiId}")
+	void deleteUtilisateur(@PathVariable("utiId") long utiId);
 
 	/**
 	 * Charge le détail d'un Utilisateur.
-	 * @param utilisateurId Identifiant unique de l'utilisateur.
+	 * @param utiId Identifiant unique de l'utilisateur.
 	 *
 	 * @return Le détail d'un Utilisateur.
 	 */
-	@GetMapping(path = "Utilisateur/{utilisateurId}")
-	UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") long utilisateurId);
+	@GetMapping(path = "Utilisateur/{utiId}")
+	UtilisateurDetailDto getUtilisateur(@PathVariable("utiId") long utiId);
 
 	/**
 	 * Modifie un Utilisateur.
 	 * @param detail Le détail de l'utilisateur à modifier.
-	 * @param utilisateurId Identifiant unique de l'utilisateur.
+	 * @param utiId Identifiant unique de l'utilisateur.
 	 *
 	 * @return Le détail de l'utilisateur modifié.
 	 */
-	@PatchMapping(path = "Utilisateur/{utilisateurId}")
-	UtilisateurDetailDto updateUtilisateur(@RequestBody @Valid UtilisateurUpdateDto detail, @PathVariable("utilisateurId") long utilisateurId);
+	@PatchMapping(path = "Utilisateur/{utiId}")
+	UtilisateurDetailDto updateUtilisateur(@RequestBody @Valid UtilisateurUpdateDto detail, @PathVariable("utiId") long utiId);
 }

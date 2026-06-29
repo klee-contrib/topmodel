@@ -14,6 +14,7 @@ module: Users # Module commun de toutes classes du fichier
 ---
 class:
   name: Utilisateur # Nom de la classe
+  trigram: UTI # Trigramme de la classe, pour préfixer les propriétés dans la base de données.
   comment: Utilisateur de l'application # Commentaire associé à la classe (il est obligatoire)
 ```
 
@@ -136,6 +137,7 @@ tags: []
 ---
 class:
   name: Utilisateur
+  trigram: UTI
   comment: Utilisateur de l'application
   properties:
     - name: Id
@@ -194,25 +196,25 @@ public class Utilisateur {
   */
  @GeneratedValue(strategy = GenerationType.IDENTITY)
  @Id
- @Column(name = "ID", nullable = false, columnDefinition = "int")
+ @Column(name = "UTI_ID", nullable = false, columnDefinition = "int")
  private Integer id;
 
  /**
   * Adresse mail de l'utilisateur.
   */
- @Column(name = "EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
+ @Column(name = "UTI_EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
  private String email;
 
  /**
   * Nom de l'utilisateur.
   */
- @Column(name = "NOM", length = 100, columnDefinition = "varchar")
+ @Column(name = "UTI_NOM", length = 100, columnDefinition = "varchar")
  private String nom;
 
  /**
   * Date d'inscription.
   */
- @Column(name = "DATE_INSCRIPTION", columnDefinition = "date")
+ @Column(name = "UTI_DATE_INSCRIPTION", columnDefinition = "date")
  private LocalDate dateInscription;
 
    // Getters and Setters
@@ -235,7 +237,7 @@ public partial record Utilisateur
     /// <summary>
     /// Identifiant unique de l'utilisateur.
     /// </summary>
-    [Column("id")]
+    [Column("uti_id")]
     [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
@@ -243,7 +245,7 @@ public partial record Utilisateur
     /// <summary>
     /// Adresse mail de l'utilisateur.
     /// </summary>
-    [Column("email")]
+    [Column("uti_email")]
     [Required]
     [Domain(Domains.Email)]
     [StringLength(50)]
@@ -252,7 +254,7 @@ public partial record Utilisateur
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Column("nom")]
+    [Column("uti_nom")]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string Nom { get; set; }
@@ -260,7 +262,7 @@ public partial record Utilisateur
     /// <summary>
     /// Date d'inscription.
     /// </summary>
-    [Column("date_inscription")]
+    [Column("uti_date_inscription")]
     [Domain(Domains.Date)]
     public DateOnly? DateInscription { get; set; }
 }
@@ -275,17 +277,17 @@ public partial record Utilisateur
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
- ID int not null,
- EMAIL varchar(50) not null,
- NOM varchar(100),
- DATE_INSCRIPTION date,
- constraint PK_UTILISATEUR primary key (ID)
+ UTI_ID int not null,
+ UTI_EMAIL varchar(50) not null,
+ UTI_NOM varchar(100),
+ UTI_DATE_INSCRIPTION date,
+ constraint PK_UTILISATEUR primary key (UTI_ID)
 );
 
 /**
   * Création de la séquence pour la clé primaire de la table UTILISATEUR
  **/
-create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.ID;
+create sequence SEQ_UTILISATEUR as int with start 1000 increment by 50 owned by UTILISATEUR.UTI_ID;
 ```
 
 </TabItem>

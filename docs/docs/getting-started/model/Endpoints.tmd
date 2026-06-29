@@ -8,7 +8,7 @@ tags: [back, front]
 endpoint: # Description du EndPoint
   name: DeleteUtilisateur # Nom du endpoint
   method: DELETE # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Supprime un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine...) gratuitement
@@ -18,7 +18,7 @@ endpoint: # Description du EndPoint
 endpoint: # Description du EndPoint
   name: GetUtilisateur # Nom du endpoint
   method: GET # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Charge le détail d'un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme une liste de propriétés
     - alias: # L'avantage d'utiliser un alias est de récupérer les méta-données de cette propiété (commentaire, domaine) gratuitement
@@ -46,7 +46,7 @@ endpoint: # Description du EndPoint
 endpoint: # Description du EndPoint
   name: UpdateUtilisateur # Nom du endpoint
   method: PATCH # Méthode Http utilisée
-  route: Utilisateur/{utilisateurId} # Route pour accéder à ce endpoint
+  route: Utilisateur/{utiId} # Route pour accéder à ce endpoint
   description: Modifie un Utilisateur # Description du endpoint
   params: # Paramètres, se décrivent comme des propriétés
     - composition: UtilisateurUpdateDto

@@ -22,10 +22,10 @@ public class EndpointsController : Controller
     /// <summary>
     /// Supprime un Utilisateur
     /// </summary>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Task.</returns>
-    [HttpDelete("Utilisateur/{utilisateurId}")]
-    public async Task DeleteUtilisateur(long utilisateurId)
+    [HttpDelete("Utilisateur/{utiId}")]
+    public async Task DeleteUtilisateur(long utiId)
     {
 
     }
@@ -33,10 +33,10 @@ public class EndpointsController : Controller
     /// <summary>
     /// Charge le détail d'un Utilisateur
     /// </summary>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Le détail d'un Utilisateur</returns>
-    [HttpGet("Utilisateur/{utilisateurId}")]
-    public async Task<UtilisateurDetailDto> GetUtilisateur(long utilisateurId)
+    [HttpGet("Utilisateur/{utiId}")]
+    public async Task<UtilisateurDetailDto> GetUtilisateur(long utiId)
     {
 
     }
@@ -45,10 +45,10 @@ public class EndpointsController : Controller
     /// Modifie un Utilisateur
     /// </summary>
     /// <param name="detail">Le détail de l'utilisateur à modifier</param>
-    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <param name="utiId">Identifiant unique de l'utilisateur</param>
     /// <returns>Le détail de l'utilisateur modifié</returns>
-    [HttpPatch("Utilisateur/{utilisateurId}")]
-    public async Task<UtilisateurDetailDto> UpdateUtilisateur([FromBody] UtilisateurUpdateDto detail, long utilisateurId)
+    [HttpPatch("Utilisateur/{utiId}")]
+    public async Task<UtilisateurDetailDto> UpdateUtilisateur([FromBody] UtilisateurUpdateDto detail, long utiId)
     {
 
     }

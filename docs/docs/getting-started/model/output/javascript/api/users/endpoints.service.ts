@@ -27,28 +27,28 @@ export class EndpointsService {
 
     /**
      * @description Supprime un Utilisateur
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      */
-    deleteUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
-        return this.http.delete<void>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    deleteUtilisateur(utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
+        return this.http.delete<void>(`/Utilisateur/${utiId}`, {observe: 'body', ...options});
     }
 
     /**
      * @description Charge le détail d'un Utilisateur
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail d'un Utilisateur
      */
-    getUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
-        return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    getUtilisateur(utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utiId}`, {observe: 'body', ...options});
     }
 
     /**
      * @description Modifie un Utilisateur
      * @param detail Le détail de l'utilisateur à modifier
-     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail de l'utilisateur modifié
      */
-    updateUtilisateur(detail: UtilisateurUpdateDto, utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
-        return this.http.patch<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, detail, {observe: 'body', ...options});
+    updateUtilisateur(detail: UtilisateurUpdateDto, utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.patch<UtilisateurDetailDto>(`/Utilisateur/${utiId}`, detail, {observe: 'body', ...options});
     }
 }

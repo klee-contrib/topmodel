@@ -100,6 +100,7 @@ tags: [back]
 ---
 class:
   name: Utilisateur
+  trigram: UTI
   comment: Utilisateur de l'application
   properties:
     - name: Id
@@ -137,6 +138,7 @@ tags: [back, front]
 ---
 class:
   name: TypeUtilisateur
+  trigram: TUT
   comment: Type d'utilisateur
   reference: true
   properties:
@@ -353,7 +355,7 @@ tags: [back, front]
 endpoint:
   name: DeleteUtilisateur
   method: DELETE
-  route: Utilisateur/{utilisateurId}
+  route: Utilisateur/{utiId}
   description: Supprime un Utilisateur
   params:
     - alias:
@@ -363,7 +365,7 @@ endpoint:
 endpoint:
   name: GetUtilisateur
   method: GET
-  route: Utilisateur/{utilisateurId}
+  route: Utilisateur/{utiId}
   description: Charge le détail d'un Utilisateur
   params:
     - alias:
@@ -391,7 +393,7 @@ endpoint:
 endpoint:
   name: UpdateUtilisateur
   method: PATCH
-  route: Utilisateur/{utilisateurId}
+  route: Utilisateur/{utiId}
   description: Modifie un Utilisateur
   params:
     - composition: UtilisateurUpdateDto
@@ -431,7 +433,7 @@ Dans votre répertoire projet, vous devriez voir la structure suivante apparaît
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-detail-dto.ts  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-dto.ts  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-search-result-dto.ts  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ utilisateur-update-dto.ts  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ utilisateur-update-dto.ts
 
 `output/java/javagen/hello world`/  
 ├─ api/  
@@ -453,7 +455,7 @@ Dans votre répertoire projet, vous devriez voir la structure suivante apparaît
 │ &nbsp;&nbsp;&nbsp;&nbsp;└─ Utilisateur.java  
 └─ enums/  
 &nbsp;&nbsp;&nbsp;&nbsp;└─ refs/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ TypeUtilisateurCode.java  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ TypeUtilisateurCode.java
 
 `output/csharp`/  
 ├─ Hello World.Refs.Models/  
@@ -474,7 +476,7 @@ Dans votre répertoire projet, vous devriez voir la structure suivante apparaît
 └─ Hello World.Web/  
 &nbsp;&nbsp;&nbsp;&nbsp;└─ Controllers/  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ Users/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ EndpointsController.cs  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ EndpointsController.cs
 
 `output/sql`/  
 ├─ 01_tables.sql  
@@ -571,7 +573,7 @@ Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre r
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-detail-dto.ts  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-dto.ts  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ utilisateur-search-result-dto.ts  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ utilisateur-update-dto.ts  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ utilisateur-update-dto.ts
 
 `output/java/javagen/hello world`/  
 ├─ api/  
@@ -593,7 +595,7 @@ Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre r
 │ &nbsp;&nbsp;&nbsp;&nbsp;└─ Utilisateur.java  
 └─ enums/  
 &nbsp;&nbsp;&nbsp;&nbsp;└─ refs/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ TypeUtilisateurCode.java  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ TypeUtilisateurCode.java
 
 `output/csharp`/  
 ├─ Hello World.Refs.Models/  
@@ -614,7 +616,7 @@ Après le rajout du générateur `sql`, voici à quoi devrait ressembler votre r
 └─ Hello World.Web/  
 &nbsp;&nbsp;&nbsp;&nbsp;└─ Controllers/  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ Users/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ EndpointsController.cs  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ EndpointsController.cs
 
 `output/sql`/  
 ├─ 01_tables.sql  

@@ -3,6 +3,7 @@ tags: [back, front]
 ---
 class:
   name: TypeUtilisateur
+  trigram: TUT
   comment: Type d'utilisateur
   reference: true
   properties:
