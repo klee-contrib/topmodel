@@ -4,8 +4,6 @@
 
 package restaurant.jpa_feign.entities.restaurant;
 
-import java.util.List;
-
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;

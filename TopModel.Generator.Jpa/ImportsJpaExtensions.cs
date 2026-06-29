@@ -19,12 +19,16 @@ public static class ImportsJpaExtensions
         this IProperty p,
         JpaConfig config,
         string tag,
-        bool forceAssociationPropertyType = false
+        bool forceAssociationPropertyType = false,
+        bool skipDomainImports = false
     )
     {
-        foreach (var di in config.GetDomainImports(p, tag))
+        if (!skipDomainImports)
         {
-            yield return di;
+            foreach (var di in config.GetDomainImports(p, tag))
+            {
+                yield return di;
+            }
         }
 
         if (p is { Composition: Class cpc })

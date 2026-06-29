@@ -81,7 +81,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
                 Volatile = true,
             };
 
-            var imports = property.GetTypeImports(Config, tag);
+            var imports = property.GetTypeImports(Config, tag, skipDomainImports: attributeType != "SingularAttribute");
             javaField.Imports.Add($"jakarta.persistence.metamodel.{attributeType}");
 
             javaField.Imports.AddRange(imports);

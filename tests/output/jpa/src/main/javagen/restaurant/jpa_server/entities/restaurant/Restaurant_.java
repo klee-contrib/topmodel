@@ -5,7 +5,6 @@
 package restaurant.jpa_server.entities.restaurant;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.ListAttribute;
