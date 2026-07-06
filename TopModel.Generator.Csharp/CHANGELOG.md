@@ -1,3 +1,7 @@
+## 4.3.1
+
+- [`284312b`](https://github.com/klee-contrib/topmodel/commit/284312b525db1345da4b2829ef8282666d27a044) - [c#/jpa/sql/js] Fix '\n' en dur qui restaient
+
 ## 4.3.0
 
 Compatibilité avec TopModel 4.6 (tags de propriétés).
