@@ -55,52 +55,53 @@ public class FlowTree
             return $"{Flows[0].Name.ToCamelCase()}Flow";
         }
 
-        var result = $" //\n{indent}new FlowBuilder<Flow>(\"{string.Join('-', Flows.Select(r => r.Name))}\")";
+        var result =
+            $" //{Environment.NewLine}{indent}new FlowBuilder<Flow>(\"{string.Join('-', Flows.Select(r => r.Name))}\")";
         var next = "start";
         if (RootFlows.Count == 1)
         {
-            result += $" //\n{indent}{baseIndent}.start({RootFlows[0].Name.ToCamelCase()}Flow)";
+            result += $" //{Environment.NewLine}{indent}{baseIndent}.start({RootFlows[0].Name.ToCamelCase()}Flow)";
             next = "next";
         }
         else if (RootFlows.Count > 1)
         {
             result +=
-                $" //\n{indent}{baseIndent}.start(new FlowBuilder<Flow>(\"{string.Join('-', RootFlows.Select(r => r.Name))}\")";
+                $" //{Environment.NewLine}{indent}{baseIndent}.start(new FlowBuilder<Flow>(\"{string.Join('-', RootFlows.Select(r => r.Name))}\")";
             next = "next";
-            result += $" //\n{indent}{baseIndent}.split(taskExecutor)";
-            result += $" //\n{indent}{baseIndent}.add(";
+            result += $" //{Environment.NewLine}{indent}{baseIndent}.split(taskExecutor)";
+            result += $" //{Environment.NewLine}{indent}{baseIndent}.add(";
             foreach (var s in RootFlows)
             {
-                result += $" //\n{indent}{baseIndent}{baseIndent}{s.Name.ToCamelCase()}Flow";
+                result += $" //{Environment.NewLine}{indent}{baseIndent}{baseIndent}{s.Name.ToCamelCase()}Flow";
                 if (RootFlows.IndexOf(s) != RootFlows.Count - 1)
                 {
                     result += ",";
                 }
             }
 
-            result += $" //\n{indent}{baseIndent})";
-            result += $" //\n{indent}.end()";
-            result += $" //\n{indent})";
+            result += $" //{Environment.NewLine}{indent}{baseIndent})";
+            result += $" //{Environment.NewLine}{indent}.end()";
+            result += $" //{Environment.NewLine}{indent})";
         }
 
         if (Subflows.Count == 1)
         {
-            result += $"//\n{indent}{baseIndent}.{next}({Subflows[0].ToFlow(indentLevel + 2)})";
+            result += $"//{Environment.NewLine}{indent}{baseIndent}.{next}({Subflows[0].ToFlow(indentLevel + 2)})";
         }
         else
         {
             if (RootFlows.Any())
             {
-                result += $" //\n{indent}.{next}(";
+                result += $" //{Environment.NewLine}{indent}.{next}(";
                 result +=
-                    $" //\n{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
+                    $" //{Environment.NewLine}{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
             }
 
-            result += $" //\n{indent}{baseIndent}.split(taskExecutor)";
-            result += $" //\n{indent}{baseIndent}.add(";
+            result += $" //{Environment.NewLine}{indent}{baseIndent}.split(taskExecutor)";
+            result += $" //{Environment.NewLine}{indent}{baseIndent}.add(";
             foreach (var subflow in Subflows)
             {
-                result += $" //\n{indent}{baseIndent}{baseIndent}{subflow.ToFlow(indentLevel + 2)}";
+                result += $" //{Environment.NewLine}{indent}{baseIndent}{baseIndent}{subflow.ToFlow(indentLevel + 2)}";
                 if (Subflows.IndexOf(subflow) != Subflows.Count - 1)
                 {
                     result += ",";
@@ -109,14 +110,14 @@ public class FlowTree
 
             if (RootFlows.Any())
             {
-                result += $" //\n{indent}{baseIndent})";
-                result += $" //\n{indent}{baseIndent}.end()";
+                result += $" //{Environment.NewLine}{indent}{baseIndent})";
+                result += $" //{Environment.NewLine}{indent}{baseIndent}.end()";
             }
 
-            result += $" //\n{indent})";
+            result += $" //{Environment.NewLine}{indent})";
         }
 
-        result += $" //\n{indent}.build()";
+        result += $" //{Environment.NewLine}{indent}.build()";
         return result;
     }
 

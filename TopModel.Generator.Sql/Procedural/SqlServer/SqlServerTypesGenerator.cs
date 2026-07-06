@@ -58,7 +58,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
                 + typeName
                 + "')"
         );
-        writer.WriteLine("Drop Type " + typeName + '\n');
+        writer.WriteLine("Drop Type " + typeName + Environment.NewLine);
         writer.WriteLine("Create type " + typeName + " as Table (");
     }
 

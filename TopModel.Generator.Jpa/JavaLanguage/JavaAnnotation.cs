@@ -88,19 +88,19 @@ public class JavaAnnotation
             {
                 var attr = attrList[i];
                 var isLast = i == attrList.Count - 1;
-                sb.Append("\n\t");
+                sb.Append($"{Environment.NewLine}\t");
                 if (attr.Value is List<JavaAnnotation> annotations)
                 {
                     sb.Append($"{attr.Key} = {{");
                     for (var j = 0; j < annotations.Count; j++)
                     {
-                        sb.Append($"\n\t\t{annotations[j]}");
+                        sb.Append($"{Environment.NewLine}\t\t{annotations[j]}");
                         if (j < annotations.Count - 1)
                         {
                             sb.Append(',');
                         }
                     }
-                    sb.Append("\n\t}");
+                    sb.Append($"{Environment.NewLine}\t}}");
                 }
                 else
                 {
@@ -113,7 +113,7 @@ public class JavaAnnotation
                 }
             }
 
-            sb.Append("\n)");
+            sb.Append($"{Environment.NewLine})");
             return sb.ToString();
         }
         else

@@ -335,7 +335,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Crée une nouvelle instance de '{Config.GetTypeName(classe)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                $"Crée une nouvelle instance de '{Config.GetTypeName(classe)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
             foreach (var param in mapper.Params)
             {
@@ -488,7 +488,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
             w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
 
@@ -578,7 +578,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}"
+                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
             w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
             w.WriteParam("dest", $"Instance pré-existante de '{Config.GetTypeName(mapper.Class)}'.");

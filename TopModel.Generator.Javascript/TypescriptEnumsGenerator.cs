@@ -200,7 +200,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
             fw.Write("        ");
             fw.Write(
                 string.Join(
-                    ",\n        ",
+                    $",{Environment.NewLine}        ",
                     refValue
                         .Value.Where(p => p.Value != "null")
                         .Select(property =>

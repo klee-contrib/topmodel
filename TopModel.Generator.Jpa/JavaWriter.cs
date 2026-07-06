@@ -377,8 +377,8 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         summary = summary.Trim();
 
         var sb = new StringBuilder();
-        sb.Append("/**\n");
-        sb.Append(" * ").Append(summary.Replace("\n", "\n * "));
+        sb.Append($"/**{Environment.NewLine}");
+        sb.Append(" * ").Append(summary.Replace(Environment.NewLine, $"{Environment.NewLine} * "));
         if (!summary.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
             sb.Append('.');

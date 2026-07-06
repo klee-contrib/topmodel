@@ -471,7 +471,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(
             "\t\t\t"
                 + string.Join(
-                    ", //\n\t\t\t",
+                    $", //{Environment.NewLine}\t\t\t",
                     flows.Select(f => $@"@Qualifier(""{f.Name}Flow"") Flow {f.Name.ToCamelCase()}Flow")
                 )
         );

@@ -183,7 +183,7 @@ public class ModelStore(
         if (watchers.Any())
         {
             logger.LogInformation(
-                $"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.Order())}"
+                $"Watchers enregistrés : {Environment.NewLine}                          - {string.Join($"{Environment.NewLine}                          - ", watchers.Order())}"
             );
         }
         else

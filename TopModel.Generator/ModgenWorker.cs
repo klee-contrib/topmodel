@@ -684,7 +684,8 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         if (!configFile.StartsWith("# yaml-language-server"))
         {
             var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
-            configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
+            configFile =
+                $"# yaml-language-server: $schema={relativePath}.schema.json{Environment.NewLine}" + configFile;
             await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
         }
 

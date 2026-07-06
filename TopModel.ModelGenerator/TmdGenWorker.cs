@@ -104,7 +104,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
         mainLogger.LogInformation(string.Empty);
         mainLogger.LogInformation(
             ModelGeneratorMessage.RegisteredGenerators,
-            $"\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
+            $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
         );
 
         var tmdLock = new TopModelLock(Config, mainLogger);
