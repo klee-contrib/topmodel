@@ -88,11 +88,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             yield return value;
         }
 
-        foreach (var child in AvailableClasses.Where(c => c.Extends == classe))
+        if (classe.InheritanceStrategy != InheritanceStrategy.DistinctTables)
         {
-            foreach (var value in GetAllValues(child))
+            foreach (var child in AvailableClasses.Where(c => c.Extends == classe))
             {
-                yield return value;
+                foreach (var value in GetAllValues(child))
+                {
+                    yield return value;
+                }
             }
         }
     }
@@ -258,8 +261,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Tags.Contains(tag)
             ? tag
-            : classe.Tags.Intersect(Tags).FirstOrDefault()
-                ?? classe.Tags.Intersect(ReferencedTagConfigs.Keys).FirstOrDefault()
+            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
+                    .Tags.Intersect(ReferencedTagConfigs.Keys)
+                    .FirstOrDefault()
                 ?? tag;
     }
 

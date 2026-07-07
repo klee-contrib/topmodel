@@ -78,7 +78,7 @@ create table COMMANDE (
 	PER_ID int not null,
 	TAB_ID int,
 	REV_ID int,
-	STC_CODE varchar(10) not null,
+	STC_CODE STATUT_COMMANDE not null,
 	AVI_ID int,
 	COM_DATE_CREATION timestamp not null,
 	constraint PK_COMMANDE primary key (COM_ID)
@@ -95,7 +95,7 @@ create table COMMANDE_HISTORIQUE (
 	PER_ID int not null,
 	TAB_ID int,
 	REV_ID int,
-	STC_CODE varchar(10) not null,
+	STC_CODE STATUT_COMMANDE not null,
 	AVI_ID int,
 	COM_DATE_CREATION timestamp not null,
 	constraint PK_COMMANDE_HISTORIQUE primary key (COM_ID)
@@ -306,6 +306,11 @@ create table RESERVATION (
 create sequence SEQ_RESERVATION as int start with 1000 increment by 50 owned by RESERVATION.REV_ID;
 
 /**
+  * Création de la table STATUT_COMMANDE
+ **/
+create type STATUT_COMMANDE as enum (EN_ATT, EN_PREP, PRETE, SERVIE, ANNULE) 
+
+/**
   * Création de la table TABLE_RESTAURANT
  **/
 create table TABLE_RESTAURANT (
@@ -327,6 +332,11 @@ create table TRANSLATION (
 	TRA_LANG varchar(100),
 	constraint PK_TRANSLATION primary key (TRA_RESOURCE_KEY,TRA_LANG)
 );
+
+/**
+  * Création de la table TYPE_TERRASSE
+ **/
+create type TYPE_TERRASSE as enum (INT, EXT) 
 
 /**
   * Création de la table VERRE

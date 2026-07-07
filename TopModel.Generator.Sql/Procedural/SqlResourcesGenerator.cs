@@ -19,6 +19,7 @@ public class SqlResourcesGenerator(
         if (
             Config.AvailableClasses.Any(c => c.Translation)
             && classe.HasTable
+            && classe.Enum != EnumMode.Enum
             && (
                 Config.TranslateReferences == true && classe.DefaultProperty != null && classe.Values.Any()
                 || Config.TranslateProperties == true && Config.GetProperties(classe).Any(c => c.Label != null)

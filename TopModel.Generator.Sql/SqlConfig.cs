@@ -27,8 +27,9 @@ public class SqlConfig : GeneratorConfigBase
 
     /// <summary>
     /// Si le langage cible de la configuration supporte les enums.
-    /// </summary>
-    public override bool HasEnumSupport => false;
+    /// </summary
+    /// >
+    public override bool HasEnumSupport => true;
 
     /// <summary>
     /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).
@@ -57,6 +58,7 @@ public class SqlConfig : GeneratorConfigBase
             TargetDBMS.Sqlserver => $"{Environment.NewLine}go",
             _ => ";",
         };
+    public override UniqueValueGenerationMode UniqueValueGeneration => UniqueValueGenerationMode.None;
 
     /// <summary>
     /// Indique la limite de longueur d'un identifiant.
@@ -92,7 +94,7 @@ public class SqlConfig : GeneratorConfigBase
 
     public override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent && classe.Enum != EnumMode.Enum;
+        return classe.IsPersistent && (TargetDBMS == TargetDBMS.Postgre || classe.Enum != EnumMode.Enum);
     }
 
     public override bool FilterEndpoint(Endpoint endpoint)
@@ -210,5 +212,15 @@ public class SqlConfig : GeneratorConfigBase
     protected override string QuoteValue(string value)
     {
         return $@"{(TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{value.Replace("'", "''")}'";
+    }
+
+    public override string GetEnumType(IProperty prop, bool internalReference = false)
+    {
+        if (prop.UniqueValuedProperty == null)
+        {
+            return string.Empty;
+        }
+
+        return prop.UniqueValuedProperty?.Class?.SqlName ?? string.Empty;
     }
 }
