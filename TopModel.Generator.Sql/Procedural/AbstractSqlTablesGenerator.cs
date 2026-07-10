@@ -126,7 +126,12 @@ public abstract class AbstractSqlTablesGenerator(
 
         if (classe.Enum == EnumMode.Enum)
         {
-            var valeurs = string.Join(", ", Config.GetAllValues(classe).Select(v => $"{v.Value[classe.EnumKey]}"));
+            var valeurs = string.Join(
+                ", ",
+                Config
+                    .GetAllValues(classe)
+                    .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
+            );
             writer.Write($"create type {classe.SqlName} as enum ({valeurs}) ");
             writer.WriteLine();
         }

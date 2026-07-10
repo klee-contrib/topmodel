@@ -308,7 +308,7 @@ create sequence SEQ_RESERVATION as int start with 1000 increment by 50 owned by 
 /**
   * Création de la table STATUT_COMMANDE
  **/
-create type STATUT_COMMANDE as enum (EN_ATT, EN_PREP, PRETE, SERVIE, ANNULE) 
+create type STATUT_COMMANDE as enum ('EN_ATT', 'EN_PREP', 'PRETE', 'SERVIE', 'ANNULE') 
 
 /**
   * Création de la table TABLE_RESTAURANT
@@ -336,7 +336,7 @@ create table TRANSLATION (
 /**
   * Création de la table TYPE_TERRASSE
  **/
-create type TYPE_TERRASSE as enum (INT, EXT) 
+create type TYPE_TERRASSE as enum ('INT', 'EXT') 
 
 /**
   * Création de la table VERRE
