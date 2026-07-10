@@ -12,7 +12,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.HasTable)
+        if (classe.HasTable && classe.Enum != EnumMode.Enum)
         {
             yield return (
                 "index-and-keys",
@@ -115,7 +115,7 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         var propertyTarget = propertySource.AssociationProperty!;
         var association = propertySource.Association!;
 
-        if (!Config.AvailableClasses.Contains(association))
+        if (!Config.AvailableClasses.Contains(association) || association.Enum == EnumMode.Enum)
         {
             return;
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -38,7 +39,12 @@ public abstract class AbstractSqlTablesGenerator(
 
         writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des tables.");
 
-        foreach (var classe in classes.OrderBy(c => c.SqlName))
+        foreach (
+            var classe in CoreUtils.Sort(
+                classes.OrderBy(c => c.SqlName),
+                c => Config.GetProperties(c).Select(p => p.Association!).Where(p => p?.Enum == EnumMode.Enum)
+            )
+        )
         {
             WriteTableDeclaration(classe, writer, tag);
         }
@@ -123,24 +129,38 @@ public abstract class AbstractSqlTablesGenerator(
         writer.WriteLine("/**");
         writer.WriteLine("  * Création de la table " + tableName);
         writer.WriteLine(" **/");
-        writer.WriteLine("create table " + tableName + " (");
 
-        foreach (var property in Config.GetProperties(classe))
+        if (classe.Enum == EnumMode.Enum)
         {
-            Config.WriteColumn(writer, classe, property);
-            writer.Write(",");
+            var valeurs = string.Join(
+                ", ",
+                Config
+                    .GetAllValues(classe)
+                    .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
+            );
+            writer.Write($"create type {classe.SqlName} as enum ({valeurs}); ");
             writer.WriteLine();
-
-            if (property is { Association.IsPersistent: true } ap)
-            {
-                fkPropertiesList.Add(ap);
-            }
         }
+        else
+        {
+            writer.WriteLine("create table " + tableName + " (");
+            foreach (var property in Config.GetProperties(classe))
+            {
+                Config.WriteColumn(writer, classe, property);
+                writer.Write(",");
+                writer.WriteLine();
 
-        WriteCheckConstraints(writer, Config.GetProperties(classe));
-        WritePrimaryKeyConstraint(writer, classe, Config.GetProperties(classe));
-        WriteEndTableDeclaration(writer);
+                if (property is { Association.IsPersistent: true } ap)
+                {
+                    fkPropertiesList.Add(ap);
+                }
+            }
 
-        Config.WriteSequence(writer, classe, tag);
+            WriteCheckConstraints(writer, Config.GetProperties(classe));
+            WritePrimaryKeyConstraint(writer, classe, Config.GetProperties(classe));
+            WriteEndTableDeclaration(writer);
+
+            Config.WriteSequence(writer, classe, tag);
+        }
     }
 }

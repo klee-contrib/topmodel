@@ -48,7 +48,7 @@ class:
       comment: Réservation associée à la commande
 
     - name: StcCode
-      domain: DO_LIBELLE
+      domain: DO_CODE
       required: true
       comment: Statut de la commande
 

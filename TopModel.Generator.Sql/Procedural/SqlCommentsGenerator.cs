@@ -12,7 +12,7 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.HasTable)
+        if (classe.HasTable && classe.Enum != EnumMode.Enum)
         {
             yield return ("comments", Path.Combine(Config.OutputDirectory, Config.Procedural!.CommentsFileName!));
         }
