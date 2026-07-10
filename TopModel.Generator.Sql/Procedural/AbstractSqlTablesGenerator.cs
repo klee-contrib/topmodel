@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -38,7 +39,12 @@ public abstract class AbstractSqlTablesGenerator(
 
         writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des tables.");
 
-        foreach (var classe in classes.OrderBy(c => c.SqlName))
+        foreach (
+            var classe in CoreUtils.Sort(
+                classes.OrderBy(c => c.SqlName),
+                c => Config.GetProperties(c).Select(p => p.Association!).Where(p => p?.Enum == EnumMode.Enum)
+            )
+        )
         {
             WriteTableDeclaration(classe, writer, tag);
         }
@@ -132,7 +138,7 @@ public abstract class AbstractSqlTablesGenerator(
                     .GetAllValues(classe)
                     .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
             );
-            writer.Write($"create type {classe.SqlName} as enum ({valeurs}) ");
+            writer.Write($"create type {classe.SqlName} as enum ({valeurs}); ");
             writer.WriteLine();
         }
         else

@@ -14,11 +14,15 @@ custom:
   ../../TopModel.Generator.Javascript: d626478b8f0acde41df62566945461c6
   ../../TopModel.Generator.Jpa: 1ee89635990515f1849ccbc969802253
 <<<<<<< HEAD
+<<<<<<< HEAD
   ../../TopModel.Generator.Sql: b43a136615837cfa04ab2216cc77fcd5
 >>>>>>> 49a1466e (Rajoute l'enum postgres)
 =======
   ../../TopModel.Generator.Sql: da964df281ac30cc38937c5b53205565
 >>>>>>> 486be6cd (Enrobe les clés de guillemet)
+=======
+  ../../TopModel.Generator.Sql: 46ce29db96b75897eb59faa618401644
+>>>>>>> 35bafec4 (Trie les insert de type / table)
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: d4010390bed36e67d2f480795f165167
 generatedFiles:
