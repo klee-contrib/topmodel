@@ -1,3 +1,9 @@
+## 4.3.2
+
+- [`b424907`](https://github.com/klee-contrib/topmodel/commit/b424907ae962f78336674a0b12fec2582f7c11c7) - [C#] `usePostgresEnums`
+
+  Cette nouvelle option permet d'utiliser des enums Postgres pour les classes `enum: true`, en générant une méthode d'extension pour configurer la connexion Npgsql.
+
 ## 4.3.1
 
 - [`284312b`](https://github.com/klee-contrib/topmodel/commit/284312b525db1345da4b2829ef8282666d27a044) - [c#/jpa/sql/js] Fix '\n' en dur qui restaient

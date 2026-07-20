@@ -1,3 +1,9 @@
+## 4.4.0
+
+- [#590](https://github.com/klee-contrib/topmodel/pull/590) - Générer des Enums au sens PostgreSQL
+
+  Le générateur SQL, quand il cible PostgreSQL, va désormais générer des enums Postgres pour les classes `enum: true` (persistées).
+
 ## 4.3.1
 
 - [`284312b`](https://github.com/klee-contrib/topmodel/commit/284312b525db1345da4b2829ef8282666d27a044) - [c#/jpa/sql/js] Fix '\n' en dur qui restaient
