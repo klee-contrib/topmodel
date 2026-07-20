@@ -261,6 +261,12 @@ _(en preview, documentation à venir)_
 
   _Valeur par défaut_: `true`
 
+- `usePostgresEnums`
+
+  Utilise des enums Postgres pour les classes `enum: true` en base de données.
+
+  Ce paramètre génère une méthode d'extension `MapEnums()` à côté du DbContext, qu'il faudra appeler dans la configuration de `UseNpgsql()` de l'application pour que les enums soient prises en compte par Entity Framework (et Npgsql).
+
 - `useLowerCaseSqlNames`
 
   Utilise des noms de tables et de colonnes en lowercase.

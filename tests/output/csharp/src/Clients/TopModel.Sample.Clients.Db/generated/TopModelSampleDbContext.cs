@@ -179,8 +179,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CategoriePlatRegion>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasMaxLength(10);
-        modelBuilder.Entity<Commande>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
-        modelBuilder.Entity<CommandeHistorique>().Property(p => p.StatutCommande).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Departement>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasMaxLength(10);
         modelBuilder.Entity<Region>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);

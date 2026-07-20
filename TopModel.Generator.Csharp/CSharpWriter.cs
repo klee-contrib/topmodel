@@ -143,7 +143,8 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         ClassType classType = ClassType.Regular,
         string[]? ifList = null,
         string? parameters = null,
-        string? baseParameters = null
+        string? baseParameters = null,
+        bool isStatic = false
     )
     {
         if (string.IsNullOrEmpty(name))
@@ -160,7 +161,14 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
             sb.Append("abstract ");
         }
 
-        sb.Append("partial ");
+        if (isStatic)
+        {
+            sb.Append("static ");
+        }
+        else
+        {
+            sb.Append("partial ");
+        }
 
         if (classType == ClassType.Interface)
         {

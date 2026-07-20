@@ -181,6 +181,11 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseEFComments { get; set; }
 
     /// <summary>
+    /// Utilise des enums Postgres pour les classes `enum: true` en base de données.
+    /// </summary>
+    public virtual bool UsePostgresEnums { get; set; }
+
+    /// <summary>
     /// Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération. Par défaut : 10.
     /// </summary>
     public virtual int DotnetVersion { get; set; } = 10;

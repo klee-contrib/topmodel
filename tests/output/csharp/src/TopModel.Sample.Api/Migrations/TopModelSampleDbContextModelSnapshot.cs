@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TopModel.Sample.Clients.Db;
+using TopModel.Sample.Restaurant.Models;
 
 #nullable disable
 
@@ -20,6 +21,8 @@ namespace TopModel.Sample.Api.Migrations
                 .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "statut_commande", new[] { "ANNULE", "EN_ATT", "EN_PREP", "PRETE", "SERVIE" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "type_terrasse", new[] { "EXT", "INT" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.HasSequence("seq_menu")
@@ -482,10 +485,8 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_id")
                         .HasComment("Réservation associée à la commande");
 
-                    b.Property<string>("StatutCommande")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                    b.Property<StatutCommande>("StatutCommande")
+                        .HasColumnType("statut_commande")
                         .HasColumnName("stc_code")
                         .HasComment("Statut de la commande");
 
@@ -553,10 +554,8 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("rev_id")
                         .HasComment("Réservation associée à la commande");
 
-                    b.Property<string>("StatutCommande")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                    b.Property<StatutCommande>("StatutCommande")
+                        .HasColumnType("statut_commande")
                         .HasColumnName("stc_code")
                         .HasComment("Statut de la commande");
 

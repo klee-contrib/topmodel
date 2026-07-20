@@ -12,6 +12,8 @@ public class DbContextGenerator(
     TranslationStore translationStore
 ) : ClassGroupGeneratorBase<CsharpConfig>(logger, writerProvider)
 {
+    private const string BuilderOptions = "NpgsqlDbContextOptionsBuilderExtensions";
+
     public override string Name => "CSharpDbContextGen";
 
     protected virtual IEnumerable<IProperty> GetAssociationProperties(IEnumerable<Class> classes, string tag)
@@ -45,6 +47,20 @@ public class DbContextGenerator(
             {
                 yield return ("comments", Config.GetDbContextFilePath(tag).Replace(".cs", ".comments.cs"));
             }
+        }
+
+        if (
+            classe.IsPersistent
+            && classe.Type != ClassType.Interface
+            && !Config.NoPersistence(tag)
+            && classe.Enum == EnumMode.Enum
+            && Config.UsePostgresEnums
+        )
+        {
+            yield return (
+                "enums",
+                Config.GetDbContextFilePath(tag).Replace($"{Config.GetDbContextName(tag)}.cs", $"{BuilderOptions}.cs")
+            );
         }
     }
 
@@ -106,6 +122,36 @@ public class DbContextGenerator(
         cw.WriteLine("}");
     }
 
+    protected virtual void HandleEnumsFile(string fileName, string tag, string contextNs, IList<Class> classList)
+    {
+        using var w = this.OpenCSharpWriter(fileName);
+
+        w.AddUsings(classList.Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag))).Distinct());
+        w.AddUsing("Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure");
+        w.AddUsing("Npgsql.NameTranslation");
+
+        w.WriteNamespace(contextNs);
+
+        w.WriteSummary("Extension du builder Npgsql pour enregistrer les enums Postgres.");
+        w.WriteClassDeclaration(BuilderOptions, isStatic: true);
+
+        w.WriteSummary(1, "Enregistre les enums Postgres.");
+        w.WriteParam("builder", "Le builder Npgsql.");
+        w.WriteLine(1, $"public static void MapEnums(this NpgsqlDbContextOptionsBuilder builder)");
+        w.WriteLine(1, "{");
+        w.WriteLine(2, "var nameTranslator = new NpgsqlNullNameTranslator();");
+        foreach (var classe in classList)
+        {
+            w.WriteLine(
+                2,
+                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{(Config.UseLowerCaseSqlNames ? classe.SqlName.ToLower() : classe.SqlName)}\", nameTranslator: nameTranslator);"
+            );
+        }
+        w.WriteLine(1, "}");
+
+        w.WriteLine("}");
+    }
+
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
         var dbContextName = Config.GetDbContextName(tag);
@@ -128,9 +174,13 @@ public class DbContextGenerator(
         {
             HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
         }
-        else
+        else if (fileType == "comments")
         {
             HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
+        }
+        else
+        {
+            HandleEnumsFile(fileName, tag, contextNs, classList);
         }
     }
 
@@ -205,14 +255,17 @@ public class DbContextGenerator(
             if (fp.EnumProperty != null && Config.UniqueValueGeneration.CanEnum)
             {
                 hasPropConfig = true;
-                if (!fp.UseClassForAssociation || fp.EnumProperty?.Class.Enum == EnumMode.Enum)
+                if (
+                    !fp.UseClassForAssociation
+                    || fp.EnumProperty?.Class.Enum == EnumMode.Enum && !Config.UsePostgresEnums
+                )
                 {
                     w.WriteLine(
                         2,
                         $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
                     );
                 }
-                else if (fp.Domain?.Length != null)
+                else if (fp.Domain?.Length != null && fp.EnumProperty?.Class.Enum != EnumMode.Enum)
                 {
                     w.WriteLine(
                         2,

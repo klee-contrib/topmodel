@@ -4,7 +4,7 @@
 
 version: 4.6.1
 custom:
-  ../../TopModel.Generator.Csharp: 93e1ce36b4689c551c11dd1a9acbb7d5
+  ../../TopModel.Generator.Csharp: 964eff33a98811b04ae84d19f53b2c6c
   ../../TopModel.Generator.Javascript: 5c0bdac9b628223e1f8552abc71e277a
   ../../TopModel.Generator.Jpa: d9d87abb6b67ea994cf9e488cacb45af
   ../../TopModel.Generator.Sql: b38875216aa64b473fbd3eccbb96afc2
@@ -56,6 +56,7 @@ generatedFiles:
   - ../output/angular/src/appgenerated/resources/en/restaurant.json
   - ../output/angular/src/appgenerated/resources/fr/common.json
   - ../output/angular/src/appgenerated/resources/fr/restaurant.json
+  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/NpgsqlDbContextOptionsBuilderExtensions.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.resources.de.cs
