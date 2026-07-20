@@ -16,9 +16,9 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (
-            classe.HasTable && classe.Values.Count > 0
+            classe.HasTable && classe.Values.Count > 0 && classe.Enum != EnumMode.Enum
             || (
-                classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+                classe.InheritanceStrategy != InheritanceStrategy.DistinctTables
                 && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
             )
         )

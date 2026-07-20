@@ -22,7 +22,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.HasTable)
+        if (classe.HasTable && Config.GetProperties(classe).Any(p => p.Name == InsertKeyName))
         {
             yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
         }
@@ -42,12 +42,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
         }
     }
 
-    /// <summary>
-    /// Ecrit dans le writer le script de création du type.
-    /// </summary>
-    /// <param name="classe">Classe.</param>
-    /// <param name="writer">Writer.</param>
-    private static void WriteType(Class classe, IFileWriter writer)
+    private void WriteTypeDeclaration(Class classe, IFileWriter writer)
     {
         var typeName = classe.SqlName + "_TABLE_TYPE";
         writer.WriteLine("/**");
@@ -60,37 +55,31 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
         );
         writer.WriteLine("Drop Type " + typeName + Environment.NewLine);
         writer.WriteLine("Create type " + typeName + " as Table (");
-    }
-
-    private void WriteTypeDeclaration(Class classe, IFileWriter writer)
-    {
-        var isContainsInsertKey = Config.GetProperties(classe).Any(p => p.Name == InsertKeyName);
-        if (isContainsInsertKey)
-        {
-            WriteType(classe, writer);
-        }
 
         var t = 0;
 
         foreach (var property in Config.GetProperties(classe))
         {
-            var persistentType = property is { Composition: null } ? Config.GetType(property) : JsonType;
+            var type =
+                property is { Composition: null, Domain: not null } ? Config.GetType(property)
+                : property is { Composition: null, Domain: null } ? $"varchar({Config.IdentifierLengthLimit})"
+                : JsonType;
 
-            if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
+            if (type.ToLower().Equals("varchar") && property.Domain?.Length != null)
             {
-                persistentType = $"{persistentType}({property.Domain.Length})";
+                type = $"{type}({property.Domain.Length})";
             }
 
             if (
-                (persistentType.ToLower().Equals("numeric") || persistentType.ToLower().Equals("decimal"))
-                && property.Domain.Length != null
+                (type.ToLower().Equals("numeric") || type.ToLower().Equals("decimal"))
+                && property.Domain?.Length != null
             )
             {
-                persistentType =
-                    $"{persistentType}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
+                type =
+                    $"{type}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
             }
 
-            if (isContainsInsertKey && !property.PrimaryKey && property.Name != InsertKeyName)
+            if (!property.PrimaryKey && property.Name != InsertKeyName)
             {
                 if (t > 0)
                 {
@@ -98,23 +87,20 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
                     writer.WriteLine();
                 }
 
-                writer.Write("\t" + property.SqlName + " " + persistentType);
+                writer.Write("\t" + property.SqlName + " " + type);
                 t++;
             }
         }
 
-        if (isContainsInsertKey)
+        if (t > 0)
         {
-            if (t > 0)
-            {
-                writer.Write(",");
-                writer.WriteLine();
-            }
-
-            writer.WriteLine('\t' + classe.Trigram + "_INSERT_KEY int");
-            writer.WriteLine();
-            writer.WriteLine($"){Config.BatchSeparator}");
+            writer.Write(",");
             writer.WriteLine();
         }
+
+        writer.WriteLine('\t' + classe.Trigram + "_INSERT_KEY int");
+        writer.WriteLine();
+        writer.WriteLine($"){Config.BatchSeparator}");
+        writer.WriteLine();
     }
 }

@@ -15,9 +15,9 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.HasTable && classe.Values.Count > 0
+        return classe.HasTable && classe.Values.Count > 0 && classe.Enum != EnumMode.Enum
             || (
-                classe.InheritanceStrategy == InheritanceStrategy.SingleTable
+                classe.InheritanceStrategy != InheritanceStrategy.DistinctTables
                 && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
             );
     }

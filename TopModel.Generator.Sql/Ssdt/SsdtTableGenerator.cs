@@ -32,10 +32,22 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     {
         using var writer = this.OpenSqlWriter(fileName);
 
-        var useCompression = false;
-
         // Entête du fichier.
         WriteHeader(writer, classe.SqlName);
+
+        if (classe.Enum == EnumMode.Enum)
+        {
+            var valeurs = string.Join(
+                ", ",
+                Config
+                    .GetAllValues(classe)
+                    .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
+            );
+            writer.Write($"create type {classe.SqlName} as enum ({valeurs}); ");
+            writer.WriteLine();
+
+            return;
+        }
 
         // Ouverture du create table.
         WriteCreateTableOpening(writer, classe);
@@ -44,7 +56,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         WriteInsideInstructions(writer, classe);
 
         // Fin du create table.
-        WriteCreateTableClosing(writer, classe, useCompression);
+        WriteCreateTableClosing(writer, classe);
 
         Config.WriteSequence(writer, classe, tag);
 
@@ -74,19 +86,12 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="classe">Classe de la table.</param>
-    /// <param name="useCompression">Indique si on utilise la compression.</param>
-    protected virtual void WriteCreateTableClosing(IFileWriter writer, Class classe, bool useCompression)
+    protected virtual void WriteCreateTableClosing(IFileWriter writer, Class classe)
     {
         ArgumentNullException.ThrowIfNull(writer);
         ArgumentNullException.ThrowIfNull(classe);
 
         writer.WriteLine(")");
-
-        if (useCompression)
-        {
-            writer.WriteLine("WITH (DATA_COMPRESSION=PAGE)");
-        }
-
         writer.WriteLine(Config.TargetDBMS == TargetDBMS.Sqlserver ? "go" : ";");
     }
 
