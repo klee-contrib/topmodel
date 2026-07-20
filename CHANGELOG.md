@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.6.1
+
+- Fix génération des values en trop en stratégie d'héritage "distinct-tables"
+
 ## 4.6.0
 
 - [#587](https://github.com/klee-contrib/topmodel/pull/587) - Tags sur les propriétés, pour désactiver la génération dans certaines configs
