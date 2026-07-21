@@ -288,15 +288,15 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
             new Couvert { Id = 3, Description = "Couteau" });
         modelBuilder.Entity<Departement>().HasData(Departement.Values);
         modelBuilder.Entity<Employe>().HasData(
-            new { Id = Personne.MichelId, Nom = "Christophe", Prenom = "Michel", Matricule = Employe.MichelMatricule, DateCreation = DateTime.Parse("2026-01-01"), DateEmbauche = DateTime.Parse("2026-01-01"), RestaurantId = 1 });
+            new { Id = Personne.MichelId, Nom = "Christophe", Prenom = "Michel", Matricule = Employe.MichelMatricule, DateCreation = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), DateEmbauche = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), RestaurantId = 1 });
         modelBuilder.Entity<Fournisseur>().HasData(
             new Fournisseur { Id = 2, Nom = "Pomona", Bio = true });
         modelBuilder.Entity<Personne>().HasData(
-            new Personne { Id = Personne.JeanId, Nom = "Michel", Prenom = "Jean", DateCreation = DateTime.Parse("2026-01-01") });
+            new Personne { Id = Personne.JeanId, Nom = "Michel", Prenom = "Jean", DateCreation = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal) });
         modelBuilder.Entity<Region>().HasData(
             new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
         modelBuilder.Entity<Models.Restaurant.Restaurant>().HasData(
-            new { Id = 1, Nom = "Burger King", DateCreation = DateTime.Parse("1954-01-01") });
+            new { Id = 1, Nom = "Burger King", DateCreation = DateTime.Parse("1954-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal) });
 
         AddComments(modelBuilder);
         AddFrResources(modelBuilder);

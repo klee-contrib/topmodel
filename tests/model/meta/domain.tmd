@@ -111,7 +111,7 @@ domain:
   csharp:
     type: DateTime
     values:
-      template: DateTime.Parse("{value}")
+      template: DateTime.Parse("{value}", null, System.Globalization.DateTimeStyles.AdjustToUniversal)
   java:
     type: LocalDateTime
     imports:

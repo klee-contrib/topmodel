@@ -8,11 +8,11 @@ modules:
     version: 4.4.1
     hash: fc919dd6f316a68e5b19980ec5c6e998
   csharp:
-    version: 4.3.1
-    hash: ca72799e3264703f071bd5d660e4d985
+    version: 4.3.2
+    hash: 6562c45d82925b3d33c76448362e0444
   sql:
-    version: 4.3.1
-    hash: 42f1a90cd4e500b913b05067d433a2d1
+    version: 4.4.0
+    hash: 81eea4982bd9f19a775e50792cb31c2d
   javascript:
     version: 4.3.1
     hash: f0864fb1a6151af271c75f27937efc8e

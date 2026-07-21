@@ -861,7 +861,7 @@ namespace TopModel.Sample.Api.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DepartementCode = "75",
                             Nom = "Michel",
                             Prenom = "Jean"
@@ -1390,7 +1390,7 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             Id = 1,
                             Nom = "Burger King",
-                            DateCreation = new DateTime(1954, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            DateCreation = new DateTime(1954, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1463,10 +1463,10 @@ namespace TopModel.Sample.Api.Migrations
                         new
                         {
                             Id = 2,
-                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateCreation = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Nom = "Christophe",
                             Prenom = "Michel",
-                            DateEmbauche = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateEmbauche = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Matricule = "123456",
                             RestaurantId = 1
                         });

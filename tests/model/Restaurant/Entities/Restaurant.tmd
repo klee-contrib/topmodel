@@ -45,7 +45,7 @@ class:
       comment: Numéro de téléphone
 
   values:
-    BK: { Id: 1, Nom: Burger King, DateCreation: 1954-01-01 }
+    BK: { Id: 1, Nom: Burger King, DateCreation: 1954-01-01T00:00:00Z }
 ---
 class:
   name: Fournisseur

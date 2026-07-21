@@ -771,6 +771,10 @@
             "type": "boolean",
             "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
           },
+          "usePostgresEnums": {
+            "type": "boolean",
+            "description": "Utilise des enums Postgres pour les classes `enum: true` en base de données."
+          },
           "useRecords": {
             "type": "boolean",
             "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'."
