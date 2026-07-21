@@ -6,29 +6,29 @@
 --   Description		:	Création de la table AVIS_CLIENT.
 -- ===========================================================================================
 
-create table [dbo].[AVIS_CLIENT] (
-	[AVI_ID] int identity,
-	[AVI_NOTE] int not null,
-	[AVI_COMMENTAIRE] varchar(100),
-	[AVI_DATE_AVIS] timestamp not null,
-	[AVI_APPROUVE] boolean not null default false,
-	[PER_ID] int not null,
-	[LIE_ID] int not null,
-	[AVI_DATE_CREATION] timestamp not null,
-	constraint [PK_AVIS_CLIENT] primary key clustered ([AVI_ID] ASC),
-	constraint [FK_AVIS_CLIENT_PER_ID] foreign key ([PER_ID]) references [dbo].[CLIENT] ([PER_ID]),
-	constraint [FK_AVIS_CLIENT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
-	constraint [UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS] unique nonclustered ([PER_ID] ASC, [LIE_ID] ASC, [AVI_DATE_AVIS] ASC))
+create table AVIS_CLIENT (
+	AVI_ID int identity,
+	AVI_NOTE int not null,
+	AVI_COMMENTAIRE varchar(100),
+	AVI_DATE_AVIS timestamp not null,
+	AVI_APPROUVE boolean not null default false,
+	PER_ID int not null,
+	LIE_ID int not null,
+	AVI_DATE_CREATION timestamp not null,
+	constraint PK_AVIS_CLIENT primary key clustered (AVI_ID asc),
+	constraint FK_AVIS_CLIENT_PER_ID foreign key (PER_ID) references CLIENT (PER_ID),
+	constraint FK_AVIS_CLIENT_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID),
+	constraint UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS unique nonclustered (PER_ID asc, LIE_ID asc, AVI_DATE_AVIS asc))
 go
 
 /* Index on foreign key column for AVIS_CLIENT.PER_ID */
-create nonclustered index [IDX_AVI_PER_ID_FK]
-	on [dbo].[AVIS_CLIENT] ([PER_ID] ASC)
+create nonclustered index IDX_AVI_PER_ID_FK
+	on AVIS_CLIENT (PER_ID asc)
 go
 
 /* Index on foreign key column for AVIS_CLIENT.LIE_ID */
-create nonclustered index [IDX_AVI_LIE_ID_FK]
-	on [dbo].[AVIS_CLIENT] ([LIE_ID] ASC)
+create nonclustered index IDX_AVI_LIE_ID_FK
+	on AVIS_CLIENT (LIE_ID asc)
 go
 
 /**

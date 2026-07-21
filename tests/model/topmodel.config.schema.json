@@ -232,6 +232,10 @@
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+          },
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
@@ -318,10 +322,6 @@
           "noAsyncControllers": {
             "type": "boolean",
             "description": "Génère des contrôleurs d'API synchrones."
-          },
-          "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'."
           },
           "dbSchema": {
             "type": "string",
@@ -747,6 +747,10 @@
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+          },
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
@@ -1097,6 +1101,10 @@
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
           },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+          },
           "tableTablespace": {
             "type": "string",
             "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
@@ -1335,6 +1343,10 @@
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
+          },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
           },
           "schemas": {
             "type": "object",

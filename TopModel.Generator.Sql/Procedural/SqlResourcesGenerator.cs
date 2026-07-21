@@ -59,7 +59,7 @@ public class SqlResourcesGenerator(
                     writer.WriteLine();
                     writer.WriteLine(
                         "/**\t\tInitialisation des traductions des propriétés de la table "
-                            + modelClass.SqlName
+                            + Config.GetSqlName(modelClass, noQuote: true)
                             + "\t\t**/"
                     );
 
@@ -74,7 +74,7 @@ public class SqlResourcesGenerator(
                             foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                             {
                                 writer.WriteLine(
-                                    $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
+                                    $@"INSERT INTO {Config.GetSqlName(classe)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty))}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!)}) VALUES({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
                                 );
                             }
                         }
@@ -93,7 +93,9 @@ public class SqlResourcesGenerator(
             {
                 writer.WriteLine();
                 writer.WriteLine(
-                    "/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/"
+                    "/**\t\tInitialisation des traductions des valeurs de la table "
+                        + Config.GetSqlName(modelClass, noQuote: true)
+                        + "\t\t**/"
                 );
                 foreach (var lang in translationStore.Translations.Keys)
                 {
@@ -102,7 +104,7 @@ public class SqlResourcesGenerator(
                         foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                         {
                             writer.WriteLine(
-                                $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
+                                $@"INSERT INTO {Config.GetSqlName(classe)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty))}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!)}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
                             );
                         }
                     }

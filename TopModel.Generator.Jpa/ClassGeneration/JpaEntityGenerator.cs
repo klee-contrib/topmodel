@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
@@ -51,7 +50,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 var discriminatorAnnotation = new JavaAnnotation(
                     "DiscriminatorColumn",
                     imports: "jakarta.persistence.DiscriminatorColumn"
-                ).AddAttribute("name", $"\"{classe.DiscriminatorProperty.SqlName}\"");
+                ).AddAttribute("name", $"\"{Config.GetSqlName(classe.DiscriminatorProperty)}\"");
 
                 yield return discriminatorAnnotation;
             }
@@ -76,7 +75,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
                 "name",
-                $@"""{classe.SqlName}"""
+                $@"""{Config.GetSqlName(classe)}"""
             );
 
             var uks = classe.Indexes.Where(idx =>
@@ -93,7 +92,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     new JavaAnnotation(
                         "UniqueConstraint",
                         imports: "jakarta.persistence.UniqueConstraint"
-                    ).AddAttribute("columnNames", uk.Properties.Select(u => $@"""{u.SqlName}""").ToArray())
+                    ).AddAttribute("columnNames", uk.Properties.Select(u => $@"""{Config.GetSqlName(u)}""").ToArray())
                 )
                 .ToList();
 
@@ -110,10 +109,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     nonUniqueIndexes.Select(idx =>
                     {
                         return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
-                            .AddAttribute("name", $@"""{idx.SqlName}""")
+                            .AddAttribute("name", $@"""{Config.GetSqlName(idx)}""")
                             .AddAttribute(
                                 "columnList",
-                                $@"""{string.Join(", ", idx.Properties.Select(c => c.SqlName))}"""
+                                $@"""{string.Join(", ", idx.Properties.Select(p => Config.GetSqlName(p)))}"""
                             );
                     })
                 );

@@ -44,7 +44,7 @@ public class DocumentationClassDocGenerator(
 
         foreach (var classe in classList)
         {
-            var tableName = classe.SqlName;
+            var tableName = Config.GetSqlName(classe);
             foreach (var property in Config.GetProperties(classe).Where(p => !p.IsReverseProperty))
             {
                 List<string> constraints = [];
@@ -62,7 +62,7 @@ public class DocumentationClassDocGenerator(
                     schema,
                     tableName,
                     property.Name,
-                    property.SqlName,
+                    Config.GetSqlName(property),
                     property.Label,
                     Config.GetType(property),
                     $"{property.Domain?.Length}",

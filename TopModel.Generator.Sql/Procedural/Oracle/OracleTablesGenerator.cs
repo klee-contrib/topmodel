@@ -23,11 +23,7 @@ public class OracleTablesGenerator(ILogger<OracleTablesGenerator> logger, IFileW
             if (IsNumericBoolean(property))
             {
                 writer.WriteLine(
-                    "\tconstraint "
-                        + Config.CheckIdentifierLength($"CHK_{property.SqlName}")
-                        + " check ("
-                        + property.SqlName
-                        + " in (0,1)),"
+                    $"\tconstraint CHK_{property.SqlName} check ({Config.GetSqlName(property)} in (0,1)),"
                 );
             }
         }

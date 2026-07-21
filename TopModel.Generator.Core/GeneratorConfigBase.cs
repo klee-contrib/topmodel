@@ -37,6 +37,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual IList<string>? Disable { get; set; }
 
     /// <summary>
+    /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
+    /// </summary>
+    public virtual bool UseLowerCaseSqlNames { get; set; } = true;
+
+    /// <summary>
     /// Si le langage cible de la configuration supporte les enums.
     /// </summary>
     public virtual bool HasEnumSupport => true;
@@ -51,6 +56,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Mode de génération de l'API ("Client" ou "Server").
     /// </summary>
     public virtual string? ApiGeneration { get; set; }
+
+    /// <summary>
+    /// Indique la limite de longueur d'un identifiant.
+    /// </summary>
+    public virtual int SqlIdentifierLengthLimit => 128;
 
     /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
@@ -261,9 +271,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Tags.Contains(tag)
             ? tag
-            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
-                    .Tags.Intersect(ReferencedTagConfigs.Keys)
-                    .FirstOrDefault()
+            : classe.Tags.Intersect(Tags).FirstOrDefault()
+                ?? classe.Tags.Intersect(ReferencedTagConfigs.Keys).FirstOrDefault()
                 ?? tag;
     }
 
@@ -427,6 +436,63 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual string? GetSequenceName(IProperty property, string tag)
     {
         return property.Domain?.GeneratedValue?.SequenceName?.Value.ParseTemplate(property, this, tag);
+    }
+
+    /// <summary>
+    /// Récupère le nom SQL d'une clé étrangère, selon la configuration de génération.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
+    /// <returns>Le nom SQL de la clé étrangère.</returns>
+    public virtual string? GetSqlForeignKeyName(IProperty property, bool noQuote = false)
+    {
+        var name = UseLowerCaseSqlNames ? property.ForeignKeyName?.ToLower() : property.ForeignKeyName;
+        return name == null ? null : FixSqlIdentifier(name, noQuote);
+    }
+
+    /// <summary>
+    /// Récupère le nom SQL d'un index de clé étrangère, selon la configuration de génération.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
+    /// <returns>Le nom SQL de l'index de la clé étrangère.</returns>
+    public virtual string? GetSqlIndexForeignKeyName(IProperty property, bool noQuote = false)
+    {
+        var name = UseLowerCaseSqlNames ? property.IndexForeignKeyName?.ToLower() : property.IndexForeignKeyName;
+        return name == null ? null : FixSqlIdentifier(name, noQuote);
+    }
+
+    /// <summary>
+    /// Récupère le nom SQL d'une classe, selon la configuration de génération.
+    /// </summary>
+    /// <param name="classe">La classe.</param>
+    /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
+    /// <returns>Le nom SQL de la classe.</returns>
+    public virtual string GetSqlName(Class classe, bool noQuote = false)
+    {
+        return FixSqlIdentifier(UseLowerCaseSqlNames ? classe.SqlName.ToLower() : classe.SqlName, noQuote);
+    }
+
+    /// <summary>
+    /// Récupère le nom SQL d'une propriété, selon la configuration de génération.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
+    /// <returns>Le nom SQL de la propriété.</returns>
+    public virtual string GetSqlName(IProperty property, bool noQuote = false)
+    {
+        return FixSqlIdentifier(UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName, noQuote);
+    }
+
+    /// <summary>
+    /// Récupère le nom SQL d'un index, selon la configuration de génération.
+    /// </summary>
+    /// <param name="index">L'index.</param>
+    /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
+    /// <returns>Le nom SQL de l'index.</returns>
+    public virtual string GetSqlName(IndexDefinition index, bool noQuote = false)
+    {
+        return FixSqlIdentifier(UseLowerCaseSqlNames ? index.SqlName.ToLower() : index.SqlName, noQuote);
     }
 
     /// <summary>
@@ -611,6 +677,16 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual bool ShouldQuoteValue(IProperty property)
     {
         return property.Domain == null || GetImplementation(property.Domain)?.Type?.ToLower() == "string";
+    }
+
+    protected virtual string FixSqlIdentifier(string identifier, bool noQuote = false)
+    {
+        if (identifier.Length > SqlIdentifierLengthLimit)
+        {
+            identifier = identifier[..SqlIdentifierLengthLimit];
+        }
+
+        return identifier;
     }
 
     protected virtual string GetEnumInEnumClassType(string className, string propName, bool internalReference = false)

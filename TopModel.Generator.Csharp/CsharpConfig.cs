@@ -116,11 +116,6 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseEFMigrations { get; set; } = true;
 
     /// <summary>
-    /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
-    /// </summary>
-    public virtual bool UseLowerCaseSqlNames { get; set; } = true;
-
-    /// <summary>
     /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
     /// </summary>
     public virtual string? DbSchema { get; set; }

@@ -26,9 +26,9 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "TABLE_RESTAURANT",
+	name = "table_restaurant",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"LIE_ID", "TAB_NUMERO"})
+		@UniqueConstraint(columnNames = {"lie_id", "tab_numero"})
 	}
 )
 public class TableRestaurant {
@@ -38,38 +38,38 @@ public class TableRestaurant {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "tab_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
 	 */
-	@Column(name = "TAB_NUMERO", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "tab_numero", nullable = false, length = 10, columnDefinition = "varchar")
 	private String numero;
 
 	/**
 	 * Capacité de la table (nombre de places).
 	 */
-	@Column(name = "TAB_CAPACITE", nullable = false, columnDefinition = "int")
+	@Column(name = "tab_capacite", nullable = false, columnDefinition = "int")
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
 	 */
-	@Column(name = "TAB_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "tab_disponible", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@Column(name = "LIE_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "lie_id", nullable = false, columnDefinition = "int")
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "TAB_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "tab_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

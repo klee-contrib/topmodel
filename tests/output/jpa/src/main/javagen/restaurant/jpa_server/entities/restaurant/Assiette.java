@@ -13,14 +13,14 @@ import jakarta.persistence.Table;
  * Assiette.
  */
 @Entity
-@Table(name = "ASSIETTE")
+@Table(name = "assiette")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Assiette extends Vaisselle {
 
 	/**
 	 * Taille de l'assiette.
 	 */
-	@Column(name = "AST_TAILLE", nullable = false, columnDefinition = "int")
+	@Column(name = "ast_taille", nullable = false, columnDefinition = "int")
 	private Integer taille;
 
 	/**

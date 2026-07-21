@@ -19,14 +19,14 @@ import jakarta.persistence.Table;
  * Client du restaurant.
  */
 @Entity
-@Table(name = "CLIENT")
+@Table(name = "client")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Client extends Personne {
 
 	/**
 	 * Adresse email du client.
 	 */
-	@Column(name = "CLI_EMAIL", length = 100, columnDefinition = "varchar")
+	@Column(name = "cli_email", length = 100, columnDefinition = "varchar")
 	private String email;
 
 	/**

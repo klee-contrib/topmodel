@@ -35,7 +35,7 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
  * Commande d'un client.
  */
 @Entity
-@Table(name = "COMMANDE")
+@Table(name = "commande")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Commande {
@@ -45,44 +45,44 @@ public class Commande {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "com_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Date et heure de la commande.
 	 */
-	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "com_date_commande", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
 	 */
-	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
+	@Column(name = "com_date_livraison", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
 	 */
-	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "com_montant_total", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
 	 */
-	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
+	@JoinColumn(name = "per_id", referencedColumnName = "per_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
 	private Client client;
 
 	/**
 	 * Table associée à la commande.
 	 */
-	@Column(name = "TAB_ID", columnDefinition = "int")
+	@Column(name = "tab_id", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
 	 */
-	@JoinColumn(name = "REV_ID", referencedColumnName = "REV_ID")
+	@JoinColumn(name = "rev_id", referencedColumnName = "rev_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Reservation.class)
 	private Reservation reservation;
 
@@ -90,13 +90,13 @@ public class Commande {
 	 * Statut de la commande.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "stc_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 */
-	@JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
+	@JoinColumn(name = "avi_id", referencedColumnName = "avi_id", unique = true)
 	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	private AvisClient avisClient;
 
@@ -110,7 +110,7 @@ public class Commande {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "COM_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "com_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

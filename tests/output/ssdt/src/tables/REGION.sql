@@ -6,15 +6,15 @@
 --   Description		:	Création de la table REGION.
 -- ===========================================================================================
 
-create table [dbo].[REGION] (
-	[REG_CODE] varchar(10),
-	[REG_LIBELLE] varchar(100) not null,
-	[REG_NOM_RESPONSABLE] varchar(100),
-	constraint [PK_REGION] primary key clustered ([REG_CODE] ASC))
+create table REGION (
+	REG_CODE varchar(10),
+	REG_LIBELLE varchar(100) not null,
+	REG_NOM_RESPONSABLE varchar(100),
+	constraint PK_REGION primary key clustered (REG_CODE asc))
 go
 
-create nonclustered index [IDX_REG_REG_LIBELLE]
-	on [dbo].[REGION] ([REG_LIBELLE] ASC)
+create nonclustered index IDX_REG_REG_LIBELLE
+	on REGION (REG_LIBELLE asc)
 go
 
 /**

@@ -44,9 +44,9 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
     private void WriteTypeDeclaration(Class classe, IFileWriter writer)
     {
-        var typeName = classe.SqlName + "_TABLE_TYPE";
+        var typeName = Config.GetSqlTableTypeName(classe);
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création du type " + classe.SqlName + "_TABLE_TYPE");
+        writer.WriteLine("  * Création du type " + typeName);
         writer.WriteLine(" **/");
         writer.WriteLine(
             "If Exists (Select * From sys.types st Join sys.schemas ss On st.schema_id = ss.schema_id Where st.name = N'"
@@ -62,7 +62,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
         {
             var type =
                 property is { Composition: null, Domain: not null } ? Config.GetType(property)
-                : property is { Composition: null, Domain: null } ? $"varchar({Config.IdentifierLengthLimit})"
+                : property is { Composition: null, Domain: null } ? $"varchar({Config.SqlIdentifierLengthLimit})"
                 : JsonType;
 
             if (type.ToLower().Equals("varchar") && property.Domain?.Length != null)
@@ -87,7 +87,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
                     writer.WriteLine();
                 }
 
-                writer.Write("\t" + property.SqlName + " " + type);
+                writer.Write("\t" + Config.GetSqlName(property) + " " + type);
                 t++;
             }
         }

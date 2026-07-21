@@ -20,7 +20,7 @@ public class PlatPrincipal extends Plat {
 	/**
 	 * Si le plat est végétarien.
 	 */
-	@Column(name = "PPR_VEGETARIEN", nullable = false, columnDefinition = "boolean")
+	@Column(name = "ppr_vegetarien", nullable = false, columnDefinition = "boolean")
 	private Boolean vegetarien;
 
 	/**

@@ -23,7 +23,7 @@ import restaurant.jpa_server.enums.restaurant.StatutCommande;
  * Commande pour historique avec préservation des clés primaires.
  */
 @Entity
-@Table(name = "COMMANDE_HISTORIQUE")
+@Table(name = "commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeHistorique {
 
@@ -32,49 +32,49 @@ public class CommandeHistorique {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@Id
-	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "com_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Date et heure de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
-	@Column(name = "COM_DATE_COMMANDE", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "com_date_commande", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
-	@Column(name = "COM_DATE_LIVRAISON", columnDefinition = "timestamp")
+	@Column(name = "com_date_livraison", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
-	@Column(name = "COM_MONTANT_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "com_montant_total", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
-	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "per_id", nullable = false, columnDefinition = "int")
 	private Integer clientId;
 
 	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
-	@Column(name = "TAB_ID", columnDefinition = "int")
+	@Column(name = "tab_id", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
-	@Column(name = "REV_ID", columnDefinition = "int")
+	@Column(name = "rev_id", columnDefinition = "int")
 	private Integer reservationId;
 
 	/**
@@ -82,14 +82,14 @@ public class CommandeHistorique {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "STC_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "stc_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private StatutCommande statutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
-	@Column(name = "AVI_ID", columnDefinition = "int")
+	@Column(name = "avi_id", columnDefinition = "int")
 	private Integer avisClientId;
 
 	/**
@@ -97,7 +97,7 @@ public class CommandeHistorique {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
 	 */
 	@CreatedDate
-	@Column(name = "COM_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "com_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

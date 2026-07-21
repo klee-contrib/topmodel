@@ -57,12 +57,12 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="classSet">Ensemble des listes de référence.</param>
-    private static void WriteScriptCalls(IFileWriter writer, IEnumerable<Class> classSet)
+    private void WriteScriptCalls(IFileWriter writer, IEnumerable<Class> classSet)
     {
         foreach (var classe in classSet)
         {
-            var subscriptName = classe.SqlName + ".insert.sql";
-            writer.WriteLine("/* Insertion dans la table " + classe.SqlName + ". */");
+            var subscriptName = Config.GetSqlName(classe, noQuote: true) + ".insert.sql";
+            writer.WriteLine("/* Insertion dans la table " + Config.GetSqlName(classe) + ". */");
             writer.WriteLine(":r .\\" + subscriptName);
             writer.WriteLine();
         }

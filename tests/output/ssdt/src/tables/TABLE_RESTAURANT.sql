@@ -6,21 +6,21 @@
 --   Description		:	Création de la table TABLE_RESTAURANT.
 -- ===========================================================================================
 
-create table [dbo].[TABLE_RESTAURANT] (
-	[TAB_ID] int identity,
-	[TAB_NUMERO] varchar(10) not null,
-	[TAB_CAPACITE] int not null,
-	[TAB_DISPONIBLE] boolean not null default true,
-	[LIE_ID] int not null,
-	[TAB_DATE_CREATION] timestamp not null,
-	constraint [PK_TABLE_RESTAURANT] primary key clustered ([TAB_ID] ASC),
-	constraint [FK_TABLE_RESTAURANT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]),
-	constraint [UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO] unique nonclustered ([LIE_ID] ASC, [TAB_NUMERO] ASC))
+create table TABLE_RESTAURANT (
+	TAB_ID int identity,
+	TAB_NUMERO varchar(10) not null,
+	TAB_CAPACITE int not null,
+	TAB_DISPONIBLE boolean not null default true,
+	LIE_ID int not null,
+	TAB_DATE_CREATION timestamp not null,
+	constraint PK_TABLE_RESTAURANT primary key clustered (TAB_ID asc),
+	constraint FK_TABLE_RESTAURANT_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID),
+	constraint UK_TABLE_RESTAURANT_LIE_ID_TAB_NUMERO unique nonclustered (LIE_ID asc, TAB_NUMERO asc))
 go
 
 /* Index on foreign key column for TABLE_RESTAURANT.LIE_ID */
-create nonclustered index [IDX_TAB_LIE_ID_FK]
-	on [dbo].[TABLE_RESTAURANT] ([LIE_ID] ASC)
+create nonclustered index IDX_TAB_LIE_ID_FK
+	on TABLE_RESTAURANT (LIE_ID asc)
 go
 
 /**

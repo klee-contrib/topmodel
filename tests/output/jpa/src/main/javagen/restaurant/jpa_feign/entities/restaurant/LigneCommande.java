@@ -30,9 +30,9 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "LIGNE_COMMANDE",
+	name = "ligne_commande",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"COM_ID", "PLA_ID"})
+		@UniqueConstraint(columnNames = {"com_id", "pla_id"})
 	}
 )
 public class LigneCommande {
@@ -42,38 +42,38 @@ public class LigneCommande {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "lig_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Quantité commandée.
 	 */
-	@Column(name = "LIG_QUANTITE", nullable = false, columnDefinition = "int")
+	@Column(name = "lig_quantite", nullable = false, columnDefinition = "int")
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
 	 */
-	@Column(name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "lig_prix_unitaire", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
 	 */
-	@Column(name = "LIG_PRIX_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "lig_prix_total", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixTotal;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
-	@JoinColumn(name = "COM_ID", referencedColumnName = "COM_ID")
+	@JoinColumn(name = "com_id", referencedColumnName = "com_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Commande.class)
 	private Commande commande;
 
 	/**
 	 * Plat commandé.
 	 */
-	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
+	@JoinColumn(name = "pla_id", referencedColumnName = "pla_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
 	private Plat plat;
 
@@ -81,7 +81,7 @@ public class LigneCommande {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "LIG_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "lig_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

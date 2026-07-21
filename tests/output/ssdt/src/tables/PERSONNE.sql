@@ -6,19 +6,19 @@
 --   Description		:	Création de la table PERSONNE.
 -- ===========================================================================================
 
-create table [dbo].[PERSONNE] (
-	[PER_ID] int identity,
-	[PER_NOM] varchar(100) not null,
-	[PER_PRENOM] varchar(100) not null,
-	[DEP_CODE] varchar(10) default N'75',
-	[PER_DATE_CREATION] timestamp not null,
-	constraint [PK_PERSONNE] primary key clustered ([PER_ID] ASC),
-	constraint [FK_PERSONNE_DEP_CODE] foreign key ([DEP_CODE]) references [dbo].[DEPARTEMENT] ([DEP_CODE]))
+create table PERSONNE (
+	PER_ID int identity,
+	PER_NOM varchar(100) not null,
+	PER_PRENOM varchar(100) not null,
+	DEP_CODE varchar(10) default N'75',
+	PER_DATE_CREATION timestamp not null,
+	constraint PK_PERSONNE primary key clustered (PER_ID asc),
+	constraint FK_PERSONNE_DEP_CODE foreign key (DEP_CODE) references DEPARTEMENT (DEP_CODE))
 go
 
 /* Index on foreign key column for PERSONNE.DEP_CODE */
-create nonclustered index [IDX_PER_DEP_CODE_FK]
-	on [dbo].[PERSONNE] ([DEP_CODE] ASC)
+create nonclustered index IDX_PER_DEP_CODE_FK
+	on PERSONNE (DEP_CODE asc)
 go
 
 /**

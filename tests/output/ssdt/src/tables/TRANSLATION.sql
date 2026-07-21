@@ -6,11 +6,11 @@
 --   Description		:	Création de la table TRANSLATION.
 -- ===========================================================================================
 
-create table [dbo].[TRANSLATION] (
-	[TRA_RESOURCE_KEY] varchar(100),
-	[TRA_VALUE] varchar(100) not null,
-	[TRA_LANG] varchar(100),
-	constraint [PK_TRANSLATION] primary key clustered ([TRA_RESOURCE_KEY] ASC, [TRA_LANG] ASC))
+create table TRANSLATION (
+	TRA_RESOURCE_KEY varchar(100),
+	TRA_VALUE varchar(100) not null,
+	TRA_LANG varchar(100),
+	constraint PK_TRANSLATION primary key clustered (TRA_RESOURCE_KEY asc, TRA_LANG asc))
 go
 
 /**

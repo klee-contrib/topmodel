@@ -6,17 +6,17 @@
 --   Description		:	Création de la table CATEGORIE_PLAT.
 -- ===========================================================================================
 
-create table [dbo].[CATEGORIE_PLAT] (
-	[CAT_CODE] varchar(10),
-	[CAT_LIBELLE] varchar(100) not null,
-	[CAT_ORDRE] int not null,
-	[CAT_PRIX_MOYEN] decimal,
-	constraint [PK_CATEGORIE_PLAT] primary key clustered ([CAT_CODE] ASC),
-	constraint [UK_CATEGORIE_PLAT_CAT_ORDRE] unique nonclustered ([CAT_ORDRE] ASC))
+create table CATEGORIE_PLAT (
+	CAT_CODE varchar(10),
+	CAT_LIBELLE varchar(100) not null,
+	CAT_ORDRE int not null,
+	CAT_PRIX_MOYEN decimal,
+	constraint PK_CATEGORIE_PLAT primary key clustered (CAT_CODE asc),
+	constraint UK_CATEGORIE_PLAT_CAT_ORDRE unique nonclustered (CAT_ORDRE asc))
 go
 
-create nonclustered index [IDX_CAT_CAT_LIBELLE]
-	on [dbo].[CATEGORIE_PLAT] ([CAT_LIBELLE] ASC)
+create nonclustered index IDX_CAT_CAT_LIBELLE
+	on CATEGORIE_PLAT (CAT_LIBELLE asc)
 go
 
 /**

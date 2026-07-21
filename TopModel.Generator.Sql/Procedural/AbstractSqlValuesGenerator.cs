@@ -58,7 +58,7 @@ public abstract class AbstractSqlValuesGenerator(
     private void WriteInsert(IFileWriter writer, Class modelClass, string tag)
     {
         writer.WriteLine();
-        writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.SqlName + "\t\t**/");
+        writer.WriteLine($"/**\t\tInitialisation de la table {Config.GetSqlName(modelClass, noQuote: true)}\t\t**/");
         foreach (var initItem in Config.GetAllValues(modelClass))
         {
             writer.WriteLine(Config.GetInsertLine(modelClass, initItem, tag));

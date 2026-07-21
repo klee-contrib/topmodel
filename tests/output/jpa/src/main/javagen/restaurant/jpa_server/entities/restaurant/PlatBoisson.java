@@ -20,7 +20,7 @@ public class PlatBoisson extends Plat {
 	/**
 	 * Volume de la boisson.
 	 */
-	@Column(name = "PBO_VOLUME", nullable = false, columnDefinition = "int")
+	@Column(name = "pbo_volume", nullable = false, columnDefinition = "int")
 	private Integer volume;
 
 	/**

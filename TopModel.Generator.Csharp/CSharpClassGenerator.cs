@@ -44,7 +44,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && item.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
             )
             {
-                var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
+                var sqlName = Config.GetSqlName(item);
                 if (Config.DbSchema != null)
                 {
                     w.WriteAttribute(
@@ -334,13 +334,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !sameColumnSet.Contains(property.SqlName)
                 && !property.AssociationMultiple
                 && !property.UseClassForAssociation
+                && !Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column"))
             )
             {
-                var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
-                if (!Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column")))
-                {
-                    w.WriteAttribute(1, "Column", $@"""{sqlName}""");
-                }
+                w.WriteAttribute(1, "Column", $@"""{Config.GetSqlName(property)}""");
             }
 
             if (

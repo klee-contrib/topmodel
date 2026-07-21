@@ -1,5 +1,4 @@
-﻿using TopModel.Core;
-using TopModel.Core.Model;
+﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
 using TopModel.Generator.Sql.Ssdt;
@@ -8,6 +7,78 @@ namespace TopModel.Generator.Sql;
 
 public class SqlConfig : GeneratorConfigBase
 {
+    private static readonly HashSet<string> ReservedSqlKeywords = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "add",
+        "all",
+        "alter",
+        "and",
+        "any",
+        "as",
+        "asc",
+        "authorization",
+        "between",
+        "by",
+        "case",
+        "check",
+        "column",
+        "constraint",
+        "create",
+        "cross",
+        "current_date",
+        "current_time",
+        "current_timestamp",
+        "delete",
+        "desc",
+        "distinct",
+        "drop",
+        "else",
+        "end",
+        "except",
+        "exists",
+        "false",
+        "for",
+        "foreign",
+        "from",
+        "full",
+        "grant",
+        "group",
+        "having",
+        "in",
+        "inner",
+        "insert",
+        "intersect",
+        "into",
+        "is",
+        "join",
+        "key",
+        "left",
+        "like",
+        "not",
+        "null",
+        "on",
+        "or",
+        "order",
+        "outer",
+        "primary",
+        "references",
+        "right",
+        "select",
+        "set",
+        "table",
+        "then",
+        "true",
+        "union",
+        "unique",
+        "update",
+        "user",
+        "using",
+        "values",
+        "when",
+        "where",
+        "with",
+    };
+
     /// <summary>
     /// Config pour la génération en mode procédural.
     /// </summary>
@@ -60,11 +131,6 @@ public class SqlConfig : GeneratorConfigBase
         };
     public override UniqueValueGenerationMode UniqueValueGeneration => UniqueValueGenerationMode.None;
 
-    /// <summary>
-    /// Indique la limite de longueur d'un identifiant.
-    /// </summary>
-    public virtual int IdentifierLengthLimit => 128;
-
     protected override bool UseValueNameForValues => false;
 
     public static bool IsBoolean(IProperty property)
@@ -78,20 +144,6 @@ public class SqlConfig : GeneratorConfigBase
             );
     }
 
-    /// <summary>
-    /// Lève une ArgumentException si l'identifiant est trop long.
-    /// </summary>
-    /// <param name="identifier">Identifiant à vérifier.</param>
-    /// <returns>Identifiant passé en paramètre.</returns>
-    public string CheckIdentifierLength(string identifier)
-    {
-        return identifier.Length > IdentifierLengthLimit
-            ? throw new ModelException(
-                $"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères."
-            )
-            : identifier;
-    }
-
     public override bool FilterClass(Class classe)
     {
         return classe.IsPersistent && (TargetDBMS == TargetDBMS.Postgre || classe.Enum != EnumMode.Enum);
@@ -100,6 +152,16 @@ public class SqlConfig : GeneratorConfigBase
     public override bool FilterEndpoint(Endpoint endpoint)
     {
         return false;
+    }
+
+    public override string GetEnumType(IProperty prop, bool internalReference = false)
+    {
+        if (prop.UniqueValuedProperty == null)
+        {
+            return string.Empty;
+        }
+
+        return prop.UniqueValuedProperty?.Class != null ? GetSqlName(prop.UniqueValuedProperty!.Class) : string.Empty;
     }
 
     /// <summary>
@@ -157,6 +219,18 @@ public class SqlConfig : GeneratorConfigBase
         }
     }
 
+    public virtual string GetSqlPrimaryKeyName(Class classe, bool noQuote = false)
+    {
+        var pkName = $"PK_{classe.SqlName}";
+        return FixSqlIdentifier(UseLowerCaseSqlNames ? pkName.ToLower() : pkName, noQuote);
+    }
+
+    public virtual string GetSqlTableTypeName(Class classe, bool noQuote = false)
+    {
+        var typeName = classe.SqlName + "_TABLE_TYPE";
+        return FixSqlIdentifier(UseLowerCaseSqlNames ? typeName.ToLower() : typeName, noQuote);
+    }
+
     public string GetType(IProperty property)
     {
         var type = GetType(property, forceAssociationPropertyType: true);
@@ -209,18 +283,32 @@ public class SqlConfig : GeneratorConfigBase
             || (type ?? string.Empty).Contains("time");
     }
 
+    protected override string FixSqlIdentifier(string identifier, bool noQuote = false)
+    {
+        identifier = base.FixSqlIdentifier(identifier, noQuote);
+
+        var quoteS = TargetDBMS == TargetDBMS.Sqlserver ? "[" : "\"";
+        var quoteE = TargetDBMS == TargetDBMS.Sqlserver ? "]" : "\"";
+
+        if (
+            noQuote
+            || !ReservedSqlKeywords.Contains(identifier)
+                && identifier.All(i => char.IsLetterOrDigit(i) || i == '_')
+                && (
+                    TargetDBMS == TargetDBMS.Postgre && identifier.ToLower() == identifier
+                    || TargetDBMS == TargetDBMS.Oracle && identifier.ToUpper() == identifier
+                    || TargetDBMS == TargetDBMS.Sqlserver
+                )
+        )
+        {
+            return identifier;
+        }
+
+        return $"{quoteS}{identifier}{quoteE}";
+    }
+
     protected override string QuoteValue(string value)
     {
         return $@"{(TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{value.Replace("'", "''")}'";
-    }
-
-    public override string GetEnumType(IProperty prop, bool internalReference = false)
-    {
-        if (prop.UniqueValuedProperty == null)
-        {
-            return string.Empty;
-        }
-
-        return prop.UniqueValuedProperty?.Class?.SqlName ?? string.Empty;
     }
 }

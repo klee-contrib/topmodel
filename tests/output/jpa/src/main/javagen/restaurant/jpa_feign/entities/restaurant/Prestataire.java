@@ -19,10 +19,10 @@ import jakarta.persistence.Table;
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "PRESTATAIRE",
+	name = "prestataire",
 	indexes = {
-		@Index(name = "IDX_PST_PST_NOM_PST_PRENOM", columnList = "PST_NOM, PST_PRENOM"),
-		@Index(name = "IDX_PST_PST_TELEPHONE", columnList = "PST_TELEPHONE")
+		@Index(name = "idx_pst_pst_nom_pst_prenom", columnList = "pst_nom, pst_prenom"),
+		@Index(name = "idx_pst_pst_telephone", columnList = "pst_telephone")
 	}
 )
 public class Prestataire implements EmployeBase {
@@ -32,25 +32,25 @@ public class Prestataire implements EmployeBase {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PST_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "pst_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
 	 */
-	@Column(name = "PST_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "pst_nom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Prénom de la personne.
 	 */
-	@Column(name = "PST_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "pst_prenom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String prenom;
 
 	/**
 	 * Numéro de téléphone de l'employé.
 	 */
-	@Column(name = "PST_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(name = "pst_telephone", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**

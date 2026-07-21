@@ -6,10 +6,10 @@
 --   Description		:	Création de la table COUVERT.
 -- ===========================================================================================
 
-create table [dbo].[COUVERT] (
-	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar(100) not null,
-	constraint [PK_COUVERT] primary key clustered ([VSL_ID] ASC))
+create table COUVERT (
+	VSL_ID int,
+	VSL_DESCRIPTION varchar(100) not null,
+	constraint PK_COUVERT primary key clustered (VSL_ID asc))
 go
 
 /**

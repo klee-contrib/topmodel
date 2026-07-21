@@ -15,7 +15,7 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         return new JavaAnnotation(
             "Column",
             imports: "org.springframework.data.relational.core.mapping.Column"
-        ).AddAttribute("value", $@"""{property.SqlName.ToLower()}""");
+        ).AddAttribute("value", $@"""{Config.GetSqlName(property)}""");
     }
 
     public override bool ShouldWriteEnumAnnotation(IProperty property)

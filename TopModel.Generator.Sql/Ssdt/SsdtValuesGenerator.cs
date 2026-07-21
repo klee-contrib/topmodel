@@ -24,17 +24,18 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Path.Combine(Config.Ssdt!.InitListScriptFolder!, classe.SqlName + ".insert.sql");
+        return Path.Combine(
+            Config.Ssdt!.InitListScriptFolder!,
+            Config.GetSqlName(classe, noQuote: true) + ".insert.sql"
+        );
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         using var writer = this.OpenSqlWriter(fileName);
 
-        var tableName = classe.SqlName;
-
         // Entête du fichier.
-        WriteHeader(writer, tableName);
+        WriteHeader(writer, Config.GetSqlName(classe, noQuote: true));
 
         // Ecrit les inserts.
         WriteInsertLines(writer, classe, tag);

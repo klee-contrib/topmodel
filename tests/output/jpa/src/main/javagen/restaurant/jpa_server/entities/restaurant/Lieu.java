@@ -19,8 +19,8 @@ import jakarta.persistence.Table;
  * Lieu.
  */
 @Entity
-@Table(name = "LIEU")
-@DiscriminatorColumn(name = "LIE_DISCRIMINATOR")
+@Table(name = "lieu")
+@DiscriminatorColumn(name = "lie_discriminator")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class Lieu {
@@ -30,19 +30,19 @@ public abstract class Lieu {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "LIE_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "lie_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Nom du restaurant.
 	 */
-	@Column(name = "LIE_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "lie_nom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Adresse du restaurant.
 	 */
-	@Column(name = "LIE_ADRESSE", length = 100, columnDefinition = "varchar")
+	@Column(name = "lie_adresse", length = 100, columnDefinition = "varchar")
 	private String adresse;
 
 	/**

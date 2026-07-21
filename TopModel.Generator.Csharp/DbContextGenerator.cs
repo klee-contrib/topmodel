@@ -144,7 +144,7 @@ public class DbContextGenerator(
         {
             w.WriteLine(
                 2,
-                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{(Config.UseLowerCaseSqlNames ? classe.SqlName.ToLower() : classe.SqlName)}\", nameTranslator: nameTranslator);"
+                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{Config.GetSqlName(classe)}\", nameTranslator: nameTranslator);"
             );
         }
         w.WriteLine(1, "}");
@@ -297,10 +297,9 @@ public class DbContextGenerator(
         )
         {
             hasJson = true;
-            var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;
             w.WriteLine(
                 2,
-                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{sqlName}""));"
+                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{Config.GetSqlName(cp)}""));"
             );
         }
 
@@ -481,12 +480,7 @@ public class DbContextGenerator(
             }
             else
             {
-                w.WriteLine(
-                    3,
-                    $".HasDiscriminator<string>(\"{(Config.UseLowerCaseSqlNames
-                    ? classe.DiscriminatorProperty.SqlName.ToLower()
-                    : classe.DiscriminatorProperty.SqlName)}\")"
-                );
+                w.WriteLine(3, $".HasDiscriminator<string>(\"{Config.GetSqlName(classe.DiscriminatorProperty)}\")");
             }
 
             var subClasses = (classe.Type == ClassType.Regular ? new[] { classe } : [])
@@ -569,7 +563,7 @@ public class DbContextGenerator(
                 hasSp = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{GetClassName(sp.Class, tag)}>().Property(\"{sp.PropertyNamePascal}\").HasColumnName(\"{(Config.UseLowerCaseSqlNames ? sp.SqlName.ToLower() : sp.SqlName)}\");"
+                    $"modelBuilder.Entity<{GetClassName(sp.Class, tag)}>().Property(\"{sp.PropertyNamePascal}\").HasColumnName(\"{Config.GetSqlName(sp)}\");"
                 );
             }
 

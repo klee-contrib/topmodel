@@ -32,7 +32,7 @@ import jakarta.persistence.Table;
  * Menu du restaurant.
  */
 @Entity
-@Table(name = "MENU")
+@Table(name = "menu")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Menu {
@@ -41,7 +41,7 @@ public class Menu {
 	 * Identifiant du menu.
 	 */
 	@Id
-	@Column(name = "MEN_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "men_id", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MENU")
 	@SequenceGenerator(sequenceName = "SEQ_MENU", name = "SEQ_MENU", initialValue = 1000, allocationSize = 50)
 	private Integer id;
@@ -49,43 +49,43 @@ public class Menu {
 	/**
 	 * Nom du menu.
 	 */
-	@Column(name = "MEN_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "men_nom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Description du menu.
 	 */
-	@Column(name = "MEN_DESCRIPTION", length = 100, columnDefinition = "varchar")
+	@Column(name = "men_description", length = 100, columnDefinition = "varchar")
 	private String description;
 
 	/**
 	 * Prix du menu.
 	 */
-	@Column(name = "MEN_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "men_prix", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le menu est disponible.
 	 */
-	@Column(name = "MEN_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "men_disponible", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
 	 * Date de début de validité du menu.
 	 */
-	@Column(name = "MEN_DATE_DEBUT", columnDefinition = "timestamp")
+	@Column(name = "men_date_debut", columnDefinition = "timestamp")
 	private LocalDateTime dateDebut;
 
 	/**
 	 * Date de fin de validité du menu.
 	 */
-	@Column(name = "MEN_DATE_FIN", columnDefinition = "timestamp")
+	@Column(name = "men_date_fin", columnDefinition = "timestamp")
 	private LocalDateTime dateFin;
 
 	/**
 	 * Restaurant proposant ce menu.
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 
@@ -100,7 +100,7 @@ public class Menu {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "MEN_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "men_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

@@ -26,7 +26,7 @@ import jakarta.persistence.Table;
  * Promotion sur un plat.
  */
 @Entity
-@Table(name = "PROMOTION")
+@Table(name = "promotion")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Promotion {
@@ -41,44 +41,44 @@ public class Promotion {
 	 * Plat concerné par la promotion.
 	 */
 	@MapsId
-	@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID", unique = true)
+	@JoinColumn(name = "pla_id", referencedColumnName = "pla_id", unique = true)
 	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
 	private Plat plat;
 
 	/**
 	 * Libellé de la promotion.
 	 */
-	@Column(name = "PRO_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "pro_libelle", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Pourcentage de réduction (0-100).
 	 */
-	@Column(name = "PRO_POURCENTAGE_REDUCTION", nullable = false, columnDefinition = "int")
+	@Column(name = "pro_pourcentage_reduction", nullable = false, columnDefinition = "int")
 	private Integer pourcentageReduction;
 
 	/**
 	 * Date de début de la promotion.
 	 */
-	@Column(name = "PRO_DATE_DEBUT", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "pro_date_debut", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateDebut;
 
 	/**
 	 * Date de fin de la promotion.
 	 */
-	@Column(name = "PRO_DATE_FIN", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "pro_date_fin", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateFin;
 
 	/**
 	 * Indique si la promotion est active.
 	 */
-	@Column(name = "PRO_ACTIVE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "pro_active", nullable = false, columnDefinition = "boolean")
 	private Boolean active = true;
 
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 
@@ -86,7 +86,7 @@ public class Promotion {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "PRO_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "pro_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

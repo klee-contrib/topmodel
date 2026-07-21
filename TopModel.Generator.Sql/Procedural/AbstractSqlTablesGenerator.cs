@@ -110,24 +110,24 @@ public abstract class AbstractSqlTablesGenerator(
             return;
         }
 
-        writer.Write("\tconstraint " + "PK_" + classe.SqlName + " primary key ");
+        writer.Write($"\tconstraint {Config.GetSqlPrimaryKeyName(classe)} primary key ");
         if (SupportsClusteredKey)
         {
             writer.Write("clustered ");
         }
 
-        writer.WriteLine($"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => pk.SqlName))})");
+        writer.WriteLine(
+            $"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => Config.GetSqlName(pk)))})"
+        );
     }
 
     private void WriteTableDeclaration(Class classe, IFileWriter writer, string tag)
     {
         var fkPropertiesList = new List<IProperty>();
 
-        var tableName = Config.CheckIdentifierLength(classe.SqlName);
-
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création de la table " + tableName);
+        writer.WriteLine($"  * Création de la table {Config.GetSqlName(classe, noQuote: true)}");
         writer.WriteLine(" **/");
 
         if (classe.Enum == EnumMode.Enum)
@@ -138,12 +138,12 @@ public abstract class AbstractSqlTablesGenerator(
                     .GetAllValues(classe)
                     .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
             );
-            writer.Write($"create type {classe.SqlName} as enum ({valeurs}); ");
+            writer.Write($"create type {Config.GetSqlName(classe)} as enum ({valeurs}); ");
             writer.WriteLine();
         }
         else
         {
-            writer.WriteLine("create table " + tableName + " (");
+            writer.WriteLine($"create table {Config.GetSqlName(classe)} (");
             foreach (var property in Config.GetProperties(classe))
             {
                 Config.WriteColumn(writer, classe, property);

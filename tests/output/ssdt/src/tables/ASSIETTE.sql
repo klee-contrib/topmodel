@@ -6,11 +6,11 @@
 --   Description		:	Création de la table ASSIETTE.
 -- ===========================================================================================
 
-create table [dbo].[ASSIETTE] (
-	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar(100) not null,
-	[AST_TAILLE] int not null,
-	constraint [PK_ASSIETTE] primary key clustered ([VSL_ID] ASC))
+create table ASSIETTE (
+	VSL_ID int,
+	VSL_DESCRIPTION varchar(100) not null,
+	AST_TAILLE int not null,
+	constraint PK_ASSIETTE primary key clustered (VSL_ID asc))
 go
 
 /**

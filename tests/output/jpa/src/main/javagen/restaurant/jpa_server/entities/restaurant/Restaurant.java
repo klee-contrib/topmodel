@@ -33,7 +33,7 @@ public class Restaurant extends Lieu {
 	/**
 	 * Numéro de téléphone.
 	 */
-	@Column(name = "RES_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(name = "res_telephone", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**
@@ -70,7 +70,7 @@ public class Restaurant extends Lieu {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "RES_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "res_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

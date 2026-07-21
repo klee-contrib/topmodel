@@ -6,21 +6,21 @@
 --   Description		:	Création de la table DEPARTEMENT.
 -- ===========================================================================================
 
-create table [dbo].[DEPARTEMENT] (
-	[DEP_CODE] varchar(10),
-	[DEP_LIBELLE] varchar(100) not null,
-	[REG_CODE] varchar(10) not null,
-	constraint [PK_DEPARTEMENT] primary key clustered ([DEP_CODE] ASC),
-	constraint [FK_DEPARTEMENT_REG_CODE] foreign key ([REG_CODE]) references [dbo].[REGION] ([REG_CODE]))
+create table DEPARTEMENT (
+	DEP_CODE varchar(10),
+	DEP_LIBELLE varchar(100) not null,
+	REG_CODE varchar(10) not null,
+	constraint PK_DEPARTEMENT primary key clustered (DEP_CODE asc),
+	constraint FK_DEPARTEMENT_REG_CODE foreign key (REG_CODE) references REGION (REG_CODE))
 go
 
 /* Index on foreign key column for DEPARTEMENT.REG_CODE */
-create nonclustered index [IDX_DEP_REG_CODE_FK]
-	on [dbo].[DEPARTEMENT] ([REG_CODE] ASC)
+create nonclustered index IDX_DEP_REG_CODE_FK
+	on DEPARTEMENT (REG_CODE asc)
 go
 
-create nonclustered index [IDX_DEP_DEP_LIBELLE]
-	on [dbo].[DEPARTEMENT] ([DEP_LIBELLE] ASC)
+create nonclustered index IDX_DEP_DEP_LIBELLE
+	on DEPARTEMENT (DEP_LIBELLE asc)
 go
 
 /**

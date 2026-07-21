@@ -44,12 +44,16 @@
       "description": "Désactive les générateurs demandés",
       "items": {
         "type": "string",
-        "enum": ["DocClassGen", "DocEndpointGen", "DocMermaidGen"]
+        "enum": [ "DocClassGen", "DocEndpointGen", "DocMermaidGen" ]
       }
     },
     "outputDirectory": {
       "type": "string",
       "description": "Racine du répertoire de génération."
+    },
+    "useLowerCaseSqlNames": {
+      "type": "boolean",
+      "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
     },
     "schemas": {
       "type": "object",

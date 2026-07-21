@@ -6,18 +6,18 @@
 --   Description		:	Création de la table PROMOTION.
 -- ===========================================================================================
 
-create table [dbo].[PROMOTION] (
-	[PLA_ID] int,
-	[PRO_LIBELLE] varchar(100) not null,
-	[PRO_POURCENTAGE_REDUCTION] int not null,
-	[PRO_DATE_DEBUT] timestamp not null,
-	[PRO_DATE_FIN] timestamp not null,
-	[PRO_ACTIVE] boolean not null default true,
-	[LIE_ID] int,
-	[PRO_DATE_CREATION] timestamp not null,
-	constraint [PK_PROMOTION] primary key clustered ([PLA_ID] ASC),
-	constraint [FK_PROMOTION_PLA_ID] foreign key ([PLA_ID]) references [dbo].[PLAT] ([PLA_ID]),
-	constraint [FK_PROMOTION_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
+create table PROMOTION (
+	PLA_ID int,
+	PRO_LIBELLE varchar(100) not null,
+	PRO_POURCENTAGE_REDUCTION int not null,
+	PRO_DATE_DEBUT timestamp not null,
+	PRO_DATE_FIN timestamp not null,
+	PRO_ACTIVE boolean not null default true,
+	LIE_ID int,
+	PRO_DATE_CREATION timestamp not null,
+	constraint PK_PROMOTION primary key clustered (PLA_ID asc),
+	constraint FK_PROMOTION_PLA_ID foreign key (PLA_ID) references PLAT (PLA_ID),
+	constraint FK_PROMOTION_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID))
 go
 
 /**
@@ -27,8 +27,8 @@ create sequence SEQ_PROMOTION as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for PROMOTION.LIE_ID */
-create nonclustered index [IDX_PRO_LIE_ID_FK]
-	on [dbo].[PROMOTION] ([LIE_ID] ASC)
+create nonclustered index IDX_PRO_LIE_ID_FK
+	on PROMOTION (LIE_ID asc)
 go
 
 /**

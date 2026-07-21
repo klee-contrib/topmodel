@@ -6,18 +6,18 @@
 --   Description		:	Création de la table MENU.
 -- ===========================================================================================
 
-create table [dbo].[MENU] (
-	[MEN_ID] int,
-	[MEN_NOM] varchar(100) not null,
-	[MEN_DESCRIPTION] varchar(100),
-	[MEN_PRIX] decimal not null,
-	[MEN_DISPONIBLE] boolean not null default true,
-	[MEN_DATE_DEBUT] timestamp,
-	[MEN_DATE_FIN] timestamp,
-	[LIE_ID] int not null,
-	[MEN_DATE_CREATION] timestamp not null,
-	constraint [PK_MENU] primary key clustered ([MEN_ID] ASC),
-	constraint [FK_MENU_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
+create table MENU (
+	MEN_ID int,
+	MEN_NOM varchar(100) not null,
+	MEN_DESCRIPTION varchar(100),
+	MEN_PRIX decimal not null,
+	MEN_DISPONIBLE boolean not null default true,
+	MEN_DATE_DEBUT timestamp,
+	MEN_DATE_FIN timestamp,
+	LIE_ID int not null,
+	MEN_DATE_CREATION timestamp not null,
+	constraint PK_MENU primary key clustered (MEN_ID asc),
+	constraint FK_MENU_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID))
 go
 
 /**
@@ -27,8 +27,8 @@ create sequence SEQ_MENU as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for MENU.LIE_ID */
-create nonclustered index [IDX_MEN_LIE_ID_FK]
-	on [dbo].[MENU] ([LIE_ID] ASC)
+create nonclustered index IDX_MEN_LIE_ID_FK
+	on MENU (LIE_ID asc)
 go
 
 /**

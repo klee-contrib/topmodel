@@ -6,21 +6,21 @@
 --   Description		:	Création de la table LIGNE_COMMANDE_HISTORIQUE.
 -- ===========================================================================================
 
-create table [dbo].[LIGNE_COMMANDE_HISTORIQUE] (
-	[LIG_ID] int,
-	[LIG_QUANTITE] int not null,
-	[LIG_PRIX_UNITAIRE] decimal not null,
-	[LIG_PRIX_TOTAL] decimal not null,
-	[PLA_ID] int not null,
-	[LIG_DATE_CREATION] timestamp not null,
-	[COM_ID] int not null,
-	constraint [PK_LIGNE_COMMANDE_HISTORIQUE] primary key clustered ([LIG_ID] ASC),
-	constraint [FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID] foreign key ([COM_ID]) references [dbo].[COMMANDE_HISTORIQUE] ([COM_ID]))
+create table LIGNE_COMMANDE_HISTORIQUE (
+	LIG_ID int,
+	LIG_QUANTITE int not null,
+	LIG_PRIX_UNITAIRE decimal not null,
+	LIG_PRIX_TOTAL decimal not null,
+	PLA_ID int not null,
+	LIG_DATE_CREATION timestamp not null,
+	COM_ID int not null,
+	constraint PK_LIGNE_COMMANDE_HISTORIQUE primary key clustered (LIG_ID asc),
+	constraint FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID foreign key (COM_ID) references COMMANDE_HISTORIQUE (COM_ID))
 go
 
 /* Index on foreign key column for LIGNE_COMMANDE_HISTORIQUE.COM_ID */
-create nonclustered index [IDX_LIGNE_COMMANDE_HISTORIQUE_COM_ID_FK]
-	on [dbo].[LIGNE_COMMANDE_HISTORIQUE] ([COM_ID] ASC)
+create nonclustered index IDX_LIGNE_COMMANDE_HISTORIQUE_COM_ID_FK
+	on LIGNE_COMMANDE_HISTORIQUE (COM_ID asc)
 go
 
 /**

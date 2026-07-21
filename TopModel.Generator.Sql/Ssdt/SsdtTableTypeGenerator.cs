@@ -21,7 +21,10 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Path.Combine(Config.Ssdt!.TableTypeScriptFolder!, classe.GetTableTypeName() + ".sql");
+        return Path.Combine(
+            Config.Ssdt!.TableTypeScriptFolder!,
+            Config.GetSqlTableTypeName(classe, noQuote: true) + ".sql"
+        );
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -29,7 +32,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
-        WriteHeader(writer, classe.GetTableTypeName());
+        WriteHeader(writer, Config.GetSqlTableTypeName(classe));
 
         // Ouverture du create table.
         WriteCreateTableOpening(writer, classe);
@@ -53,16 +56,6 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     }
 
     /// <summary>
-    /// Ecrit l'ouverture du create table.
-    /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="table">Table.</param>
-    private static void WriteCreateTableOpening(IFileWriter writer, Class table)
-    {
-        writer.WriteLine("Create type [" + table.GetTableTypeName() + "] as Table (");
-    }
-
-    /// <summary>
     /// Ecrit l'entête du fichier.
     /// </summary>
     /// <param name="writer">Flux.</param>
@@ -74,18 +67,6 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     }
 
     /// <summary>
-    /// Ecrit la colonne InsertKey.
-    /// </summary>
-    /// <param name="sb">Flux.</param>
-    /// <param name="classe">Classe.</param>
-    private static void WriteInsertKeyLine(StringBuilder sb, Class classe)
-    {
-        sb.Append('[')
-            .Append(classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty)
-            .Append("INSERT_KEY] int null");
-    }
-
-    /// <summary>
     /// Ecrit le SQL pour une colonne.
     /// </summary>
     /// <param name="sb">Flux.</param>
@@ -93,7 +74,31 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     private void WriteColumn(StringBuilder sb, IProperty property)
     {
         var persistentType = Config.GetType(property);
-        sb.Append('[').Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
+        sb.Append(Config.GetSqlName(property)).Append(' ').Append(persistentType).Append(" null");
+    }
+
+    /// <summary>
+    /// Ecrit l'ouverture du create table.
+    /// </summary>
+    /// <param name="writer">Flux.</param>
+    /// <param name="table">Table.</param>
+    private void WriteCreateTableOpening(IFileWriter writer, Class table)
+    {
+        writer.WriteLine($"Create type {Config.GetSqlTableTypeName(table)} as Table (");
+    }
+
+    /// <summary>
+    /// Ecrit la colonne InsertKey.
+    /// </summary>
+    /// <param name="sb">Flux.</param>
+    /// <param name="classe">Classe.</param>
+    private void WriteInsertKeyLine(StringBuilder sb, Class classe)
+    {
+        var insertKeyProp = Config.GetProperties(classe).SingleOrDefault(p => p.Name == ScriptUtils.InsertKeyName);
+        if (insertKeyProp != null)
+        {
+            sb.Append($"{Config.GetSqlName(insertKeyProp)} int null");
+        }
     }
 
     /// <summary>

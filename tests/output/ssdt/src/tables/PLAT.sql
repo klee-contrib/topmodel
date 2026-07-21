@@ -6,20 +6,20 @@
 --   Description		:	Création de la table PLAT.
 -- ===========================================================================================
 
-create table [dbo].[PLAT] (
-	[PLA_ID] int,
-	[PLA_NOM] varchar(100) not null,
-	[PLA_DESCRIPTION] varchar(100),
-	[PLA_PRIX] decimal not null,
-	[PLA_DISPONIBLE] boolean not null default true,
-	[CAT_CODE] varchar(10) not null,
-	[LIE_ID] int not null,
-	[PLA_DATE_CREATION] timestamp not null,
-	[PBO_VOLUME] int,
-	[PPR_VEGETARIEN] boolean,
-	constraint [PK_PLAT] primary key clustered ([PLA_ID] ASC),
-	constraint [FK_PLAT_CAT_CODE] foreign key ([CAT_CODE]) references [dbo].[CATEGORIE_PLAT] ([CAT_CODE]),
-	constraint [FK_PLAT_LIE_ID] foreign key ([LIE_ID]) references [dbo].[LIEU] ([LIE_ID]))
+create table PLAT (
+	PLA_ID int,
+	PLA_NOM varchar(100) not null,
+	PLA_DESCRIPTION varchar(100),
+	PLA_PRIX decimal not null,
+	PLA_DISPONIBLE boolean not null default true,
+	CAT_CODE varchar(10) not null,
+	LIE_ID int not null,
+	PLA_DATE_CREATION timestamp not null,
+	PBO_VOLUME int,
+	PPR_VEGETARIEN boolean,
+	constraint PK_PLAT primary key clustered (PLA_ID asc),
+	constraint FK_PLAT_CAT_CODE foreign key (CAT_CODE) references CATEGORIE_PLAT (CAT_CODE),
+	constraint FK_PLAT_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID))
 go
 
 /**
@@ -29,13 +29,13 @@ create sequence SEQ_PLAT as int start with 1000 increment by 50
 go
 
 /* Index on foreign key column for PLAT.CAT_CODE */
-create nonclustered index [IDX_PLA_CAT_CODE_FK]
-	on [dbo].[PLAT] ([CAT_CODE] ASC)
+create nonclustered index IDX_PLA_CAT_CODE_FK
+	on PLAT (CAT_CODE asc)
 go
 
 /* Index on foreign key column for PLAT.LIE_ID */
-create nonclustered index [IDX_PLA_LIE_ID_FK]
-	on [dbo].[PLAT] ([LIE_ID] ASC)
+create nonclustered index IDX_PLA_LIE_ID_FK
+	on PLAT (LIE_ID asc)
 go
 
 /**

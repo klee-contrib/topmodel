@@ -33,7 +33,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     {
         JavaAnnotation column = new JavaAnnotation("Column", imports: "jakarta.persistence.Column").AddAttribute(
             "name",
-            $@"""{property.SqlName}"""
+            $@"""{Config.GetSqlName(property)}"""
         );
         if (property.Required)
         {
@@ -504,8 +504,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         }
         yield return association;
 
-        var fk = property.SqlName;
-        var apk = property.AssociationProperty!.SqlName;
+        var fk = Config.GetSqlName(property);
+        var apk = Config.GetSqlName(property.AssociationProperty!);
         var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
             .AddAttribute("name", $@"""{fk}""")
             .AddAttribute("referencedColumnName", $@"""{apk}""");
@@ -538,7 +538,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         }
         else
         {
-            var pk = property.Class.PrimaryKey.Single().SqlName;
+            var pk = Config.GetSqlName(property.Class.PrimaryKey.Single());
             var joinColumn = new JavaAnnotation("JoinColumn", imports: "jakarta.persistence.JoinColumn")
                 .AddAttribute("name", $@"""{pk}""")
                 .AddAttribute("referencedColumnName", $@"""{pk}""");
@@ -556,8 +556,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
     protected virtual IEnumerable<JavaAnnotation> GetOneToOneAnnotations(IProperty property)
     {
-        var fk = property.SqlName;
-        var apk = property.AssociationProperty!.SqlName;
+        var fk = Config.GetSqlName(property);
+        var apk = Config.GetSqlName(property.AssociationProperty!);
         var association = new JavaAnnotation("OneToOne", imports: $"jakarta.persistence.OneToOne")
             .AddAttribute("fetch", "FetchType.LAZY", "jakarta.persistence.FetchType")
             .AddAttribute("optional", (!property.Required).ToString().ToLower());

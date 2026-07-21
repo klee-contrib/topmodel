@@ -69,7 +69,7 @@ public class ExportRestaurantsFlow {
 		return new JdbcCursorItemReaderBuilder<Restaurant>() //
 				.name("ExportRestaurantsReader") //
 				.rowMapper(new BeanPropertyRowMapper<>(Restaurant.class)) //
-				.sql("select * from public.RESTAURANT") //
+				.sql("select * from public.restaurant") //
 				.fetchSize(100000) //
 				.dataSource(datasource) //
 				.build();

@@ -30,9 +30,9 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "MENU_PLAT",
+	name = "menu_plat",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"MEN_ID", "MPL_ORDRE"})
+		@UniqueConstraint(columnNames = {"men_id", "mpl_ordre"})
 	}
 )
 public class MenuPlat {
@@ -52,14 +52,14 @@ public class MenuPlat {
 	/**
 	 * Ordre d'affichage du plat dans le menu.
 	 */
-	@Column(name = "MPL_ORDRE", nullable = false, columnDefinition = "int")
+	@Column(name = "mpl_ordre", nullable = false, columnDefinition = "int")
 	private Integer ordre;
 
 	/**
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "MPL_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "mpl_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**
@@ -157,11 +157,11 @@ public class MenuPlat {
 
 	public static class MenuPlatId {
 
-		@JoinColumn(name = "MEN_ID", referencedColumnName = "MEN_ID")
+		@JoinColumn(name = "men_id", referencedColumnName = "men_id")
 		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Menu.class)
 		private Menu menu;
 
-		@JoinColumn(name = "PLA_ID", referencedColumnName = "PLA_ID")
+		@JoinColumn(name = "pla_id", referencedColumnName = "pla_id")
 		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Plat.class)
 		private Plat plat;
 

@@ -25,7 +25,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Path.Combine(Config.Ssdt!.TableScriptFolder!, classe.SqlName + ".sql");
+        return Path.Combine(Config.Ssdt!.TableScriptFolder!, Config.GetSqlName(classe, noQuote: true) + ".sql");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -33,7 +33,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
-        WriteHeader(writer, classe.SqlName);
+        WriteHeader(writer, Config.GetSqlName(classe, noQuote: true));
 
         if (classe.Enum == EnumMode.Enum)
         {
@@ -43,7 +43,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
                     .GetAllValues(classe)
                     .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
             );
-            writer.Write($"create type {classe.SqlName} as enum ({valeurs}); ");
+            writer.Write($"create type {Config.GetSqlName(classe)} as enum ({valeurs}); ");
             writer.WriteLine();
 
             return;
@@ -102,14 +102,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="table">Table.</param>
     protected virtual void WriteCreateTableOpening(IFileWriter writer, Class table)
     {
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            writer.WriteLine($"create table [dbo].[{table.SqlName}] (");
-        }
-        else
-        {
-            writer.WriteLine($"create table {table.SqlName} (");
-        }
+        writer.WriteLine($"create table {Config.GetSqlName(table)} (");
     }
 
     /// <summary>
@@ -120,24 +113,15 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     protected virtual void WriteForeignKeyConstraint(IFileWriter writer, IProperty property)
     {
         var referenceClass = property.Association!;
-        var referencedSqlName = (
+        var referencedSqlName = Config.GetSqlName(
             referenceClass.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
                 ? referenceClass.Extends
                 : referenceClass
-        ).SqlName;
+        );
 
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            writer.Write(
-                $"constraint [{property.ForeignKeyName}] foreign key ([{property.SqlName}]) references [dbo].[{referencedSqlName}] ([{property.AssociationProperty!.SqlName}])"
-            );
-        }
-        else
-        {
-            writer.Write(
-                $"constraint {property.ForeignKeyName} foreign key ({property.SqlName}) references {referencedSqlName} ({property.AssociationProperty!.SqlName})"
-            );
-        }
+        writer.Write(
+            $"constraint {Config.GetSqlForeignKeyName(property)} foreign key ({Config.GetSqlName(property)}) references {referencedSqlName} ({Config.GetSqlName(property.AssociationProperty!)})"
+        );
     }
 
     /// <summary>
@@ -158,27 +142,22 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         params IEnumerable<string> propertyNames
     )
     {
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            writer.WriteLine($"create nonclustered index [{indexName}]");
-            writer.Write("\ton [dbo].[" + tableName + "] (");
-            writer.Write(string.Join(", ", propertyNames.Select(n => $"[{n}] ASC")));
-            writer.Write(")");
-            writer.WriteLine();
-            writer.WriteLine("go");
-        }
-        else
-        {
-            writer.WriteLine($"create index {indexName}");
-            writer.Write($"\ton {tableName} (");
-            writer.Write(string.Join(", ", propertyNames.Select(n => $"{n} asc")));
-            writer.WriteLine(");");
-        }
+        writer.WriteLine(
+            $"create{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " nonclustered" : "")} index {indexName}"
+        );
+        writer.Write("\ton " + tableName + " (");
+        writer.Write(string.Join(", ", propertyNames.Select(n => $"{n} asc")));
+        writer.WriteLine($"){Config.BatchSeparator}");
     }
 
     protected virtual void WriteIndex(IFileWriter writer, IndexDefinition index)
     {
-        WriteIndex(writer, index.SqlName, index.Class.SqlName, index.Properties.Select(p => p.SqlName));
+        WriteIndex(
+            writer,
+            Config.GetSqlName(index),
+            Config.GetSqlName(index.Class),
+            index.Properties.Select(p => Config.GetSqlName(p))
+        );
     }
 
     /// <summary>
@@ -196,14 +175,21 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         )
         {
             writer.WriteLine();
-            writer.WriteLine($"/* Index on foreign key column for {classe.SqlName}.{property.SqlName} */");
-            WriteIndex(writer, property.IndexForeignKeyName!, classe.SqlName, property.SqlName);
+            writer.WriteLine(
+                $"/* Index on foreign key column for {Config.GetSqlName(classe)}.{Config.GetSqlName(property)} */"
+            );
+            WriteIndex(
+                writer,
+                Config.GetSqlIndexForeignKeyName(property)!,
+                Config.GetSqlName(classe),
+                Config.GetSqlName(property)
+            );
         }
 
         foreach (var index in classe.Indexes.Where(idx => !idx.Unique))
         {
             writer.WriteLine();
-            writer.WriteLine($"/* Index {index.SqlName} on {classe.SqlName} */");
+            writer.WriteLine($"/* Index {Config.GetSqlName(index)} on {Config.GetSqlName(classe)} */");
             WriteIndex(writer, index);
         }
 
@@ -280,27 +266,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
         writer.WriteLine(",");
         writer.Write("\t");
-
-        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-        {
-            writer.Write($"constraint [PK_{classe.SqlName}] primary key clustered (");
-        }
-        else
-        {
-            writer.Write($"constraint PK_{classe.SqlName} primary key (");
-        }
+        writer.Write(
+            $"constraint {Config.GetSqlPrimaryKeyName(classe)} primary key{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " clustered" : "")} ("
+        );
 
         foreach (var pk in properties.Where(p => p.PrimaryKey))
         {
             ++pkCount;
-            if (Config.TargetDBMS == TargetDBMS.Sqlserver)
-            {
-                writer.Write($"[{pk.SqlName}] ASC");
-            }
-            else
-            {
-                writer.Write(pk.SqlName);
-            }
+            writer.Write($"{Config.GetSqlName(pk)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}");
 
             if (pkCount < properties.Count(p => p.PrimaryKey))
             {
@@ -319,9 +292,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     protected virtual void WriteUniqueKeyConstraint(IFileWriter writer, IndexDefinition idx)
     {
         writer.Write(
-            Config.TargetDBMS == TargetDBMS.Sqlserver
-                ? $"constraint [{idx.SqlName}] unique nonclustered ({string.Join(", ", idx.Properties.Select(p => $"[{p.SqlName}] ASC"))})"
-                : $"constraint {idx.SqlName} unique ({string.Join(", ", idx.Properties.Select(p => $"{p.SqlName}"))})"
+            $"constraint {Config.GetSqlName(idx)} unique{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " nonclustered" : "")} ({string.Join(", ", idx.Properties.Select(p => $"{Config.GetSqlName(p)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}"))})"
         );
     }
 }

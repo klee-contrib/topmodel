@@ -31,9 +31,9 @@ import topmodel.test.NombreVuesBase;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "AVIS_CLIENT",
+	name = "avis_client",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"PER_ID", "LIE_ID", "AVI_DATE_AVIS"})
+		@UniqueConstraint(columnNames = {"per_id", "lie_id", "avi_date_avis"})
 	}
 )
 public class AvisClient extends NombreVuesBase {
@@ -43,44 +43,44 @@ public class AvisClient extends NombreVuesBase {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "AVI_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "avi_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Note sur 5.
 	 */
-	@Column(name = "AVI_NOTE", nullable = false, columnDefinition = "int")
+	@Column(name = "avi_note", nullable = false, columnDefinition = "int")
 	private Integer note;
 
 	/**
 	 * Commentaire de l'avis.
 	 */
-	@Column(name = "AVI_COMMENTAIRE", length = 100, columnDefinition = "varchar")
+	@Column(name = "avi_commentaire", length = 100, columnDefinition = "varchar")
 	private String commentaire;
 
 	/**
 	 * Date de l'avis.
 	 */
-	@Column(name = "AVI_DATE_AVIS", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "avi_date_avis", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateAvis;
 
 	/**
 	 * Indique si l'avis est approuvé par le restaurant.
 	 */
-	@Column(name = "AVI_APPROUVE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "avi_approuve", nullable = false, columnDefinition = "boolean")
 	private Boolean approuve = false;
 
 	/**
 	 * Client ayant donné l'avis.
 	 */
-	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
+	@JoinColumn(name = "per_id", referencedColumnName = "per_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
 	private Client client;
 
 	/**
 	 * Restaurant concerné par l'avis.
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 
@@ -88,7 +88,7 @@ public class AvisClient extends NombreVuesBase {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "AVI_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "avi_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

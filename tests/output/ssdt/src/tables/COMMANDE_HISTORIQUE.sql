@@ -6,18 +6,18 @@
 --   Description		:	Création de la table COMMANDE_HISTORIQUE.
 -- ===========================================================================================
 
-create table [dbo].[COMMANDE_HISTORIQUE] (
-	[COM_ID] int,
-	[COM_DATE_COMMANDE] timestamp not null,
-	[COM_DATE_LIVRAISON] timestamp,
-	[COM_MONTANT_TOTAL] decimal not null,
-	[PER_ID] int not null,
-	[TAB_ID] int,
-	[REV_ID] int,
-	[STC_CODE] varchar(10) not null default N'EN_ATT',
-	[AVI_ID] int,
-	[COM_DATE_CREATION] timestamp not null,
-	constraint [PK_COMMANDE_HISTORIQUE] primary key clustered ([COM_ID] ASC))
+create table COMMANDE_HISTORIQUE (
+	COM_ID int,
+	COM_DATE_COMMANDE timestamp not null,
+	COM_DATE_LIVRAISON timestamp,
+	COM_MONTANT_TOTAL decimal not null,
+	PER_ID int not null,
+	TAB_ID int,
+	REV_ID int,
+	STC_CODE varchar(10) not null default N'EN_ATT',
+	AVI_ID int,
+	COM_DATE_CREATION timestamp not null,
+	constraint PK_COMMANDE_HISTORIQUE primary key clustered (COM_ID asc))
 go
 
 /**

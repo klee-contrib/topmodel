@@ -74,6 +74,10 @@
       "description": "Si les libellés des propriétés doivent être traduits.",
       "default": "true"
     },
+    "useLowerCaseSqlNames": {
+      "type": "boolean",
+      "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+    },
     "tableTablespace": {
       "type": "string",
       "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
@@ -119,7 +123,7 @@
         "commentsFileName": {
           "type": "string",
           "description": "Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes."
-        }        
+        }
       }
     },
     "ssdt": {

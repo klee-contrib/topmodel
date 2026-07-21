@@ -124,25 +124,27 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         writer.WriteLine("/**");
         writer.WriteLine(
             "  * Génération de la contrainte de clef étrangère pour "
-                + propertySource.Class.SqlName
+                + Config.GetSqlName(propertySource.Class, noQuote: true)
                 + "."
-                + propertySource.SqlName
+                + Config.GetSqlName(propertySource, noQuote: true)
         );
         writer.WriteLine(" **/");
-        writer.WriteLine("alter table " + propertySource.Class.SqlName);
+        writer.WriteLine("alter table " + Config.GetSqlName(propertySource.Class));
 
-        writer.WriteLine($"\tadd constraint {propertySource.ForeignKeyName} foreign key ({propertySource.SqlName})");
+        writer.WriteLine(
+            $"\tadd constraint {Config.GetSqlForeignKeyName(propertySource)} foreign key ({Config.GetSqlName(propertySource)})"
+        );
         writer.Write(
             "\t\treferences "
-                + (
+                + Config.GetSqlName(
                     association.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
                         ? association.Extends
                         : association
-                ).SqlName
+                )
                 + " ("
         );
 
-        writer.Write(propertyTarget.SqlName);
+        writer.Write(Config.GetSqlName(propertyTarget));
 
         writer.WriteLine($"){Config.BatchSeparator}");
     }
@@ -154,14 +156,19 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
     /// <param name="writer">Flux d'écriture.</param>
     protected virtual void WriteForeignKeyIndex(IProperty property, IFileWriter writer)
     {
-        var tableName = property.Class.SqlName;
-        var propertyName = property.SqlName;
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
+        writer.WriteLine(
+            "  * Création de l'index de clef étrangère pour "
+                + Config.GetSqlName(property.Class, noQuote: true)
+                + "."
+                + Config.GetSqlName(property, noQuote: true)
+        );
         writer.WriteLine(" **/");
-        writer.WriteLine($"create index {property.IndexForeignKeyName} on {tableName} (");
-        writer.WriteLine("\t" + propertyName + " ASC");
+        writer.WriteLine(
+            $"create index {Config.GetSqlIndexForeignKeyName(property)} on {Config.GetSqlName(property.Class)} ("
+        );
+        writer.WriteLine("\t" + Config.GetSqlName(property) + " ASC");
         writer.WriteLine($"){GetTablespaceDeclaration()}{Config.BatchSeparator}");
     }
 
@@ -170,23 +177,23 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
     /// </summary>
     protected virtual void WriteIndex(IndexDefinition index, IFileWriter writer)
     {
-        var tableName = index.Class.SqlName;
+        var tableName = Config.GetSqlName(index.Class);
 
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de l'index {index.SqlName} sur {tableName}.");
+        writer.WriteLine($"  * Création de l'index {Config.GetSqlName(index)} sur {tableName}.");
         writer.WriteLine(" **/");
 
         if (index.Unique)
         {
             writer.WriteLine(
-                $"alter table {tableName} add constraint {index.SqlName} unique ({string.Join(", ", index.Properties.Select(c => c.SqlName))}){Config.BatchSeparator}"
+                $"alter table {tableName} add constraint {Config.GetSqlName(index)} unique ({string.Join(", ", index.Properties.Select(p => Config.GetSqlName(p)))}){Config.BatchSeparator}"
             );
         }
         else
         {
-            writer.WriteLine($"create index {index.SqlName} on {tableName} (");
-            writer.WriteLine($"\t{string.Join(", ", index.Properties.Select(c => $"{c.SqlName} ASC"))}");
+            writer.WriteLine($"create index {Config.GetSqlName(index)} on {tableName} (");
+            writer.WriteLine($"\t{string.Join(", ", index.Properties.Select(c => $"{Config.GetSqlName(c)} ASC"))}");
             writer.WriteLine($"){GetTablespaceDeclaration()}{Config.BatchSeparator}");
         }
     }

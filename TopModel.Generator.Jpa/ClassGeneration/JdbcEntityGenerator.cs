@@ -36,7 +36,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         var tableAnnotation = new JavaAnnotation(
             "Table",
             imports: "org.springframework.data.relational.core.mapping.Table"
-        ).AddAttribute("name", @$"""{classe.SqlName.ToLower()}""");
+        ).AddAttribute("name", @$"""{Config.GetSqlName(classe)}""");
         annotations.Add(tableAnnotation);
         return annotations;
     }
