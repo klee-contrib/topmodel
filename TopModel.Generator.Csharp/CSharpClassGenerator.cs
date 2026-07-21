@@ -356,7 +356,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             if (
                 Config.Kinetix
-                && property is { ReferenceClass: Class refClass, PrimaryKeyish: false }
+                && property is { ReferenceClass: Class refClass }
+                && (!property.PrimaryKeyish || property.Association != null)
                 && Config.AvailableClasses.Contains(refClass)
             )
             {
@@ -401,6 +402,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     Config.DbContextPath != null
                     && (type == "int" || type == "int?" || type == "Guid" || type == "Guid?")
                     && property.GeneratedValue == null
+                    && property.Association == null
                 )
                 {
                     w.WriteAttribute(1, "DatabaseGenerated", "DatabaseGeneratedOption.None");
@@ -607,8 +609,10 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                     when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
                     usings.Add(GetNamespace(ep.Class, tag));
                     break;
-                case { ReferenceClass: Class refClass, PrimaryKeyish: false }
-                    when Config.Kinetix && Config.AvailableClasses.Contains(refClass):
+                case { ReferenceClass: Class refClass }
+                    when Config.Kinetix
+                        && Config.AvailableClasses.Contains(refClass)
+                        && (!property.PrimaryKeyish || property.Association != null):
                     usings.Add(GetNamespace(refClass, tag));
                     break;
                 case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
