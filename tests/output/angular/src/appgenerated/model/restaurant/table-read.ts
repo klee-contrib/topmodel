@@ -10,19 +10,19 @@ export type TableReadEntityType = typeof TableReadEntity;
 
 export const TableReadEntity = entity({
     id: e.field(DO_ID, f => f
-        .label("restaurant.tableRestaurant.id")
+        .label("restaurant.table.id")
     ),
     numero: e.field(DO_CODE, f => f
-        .label("restaurant.tableRestaurant.numero")
+        .label("restaurant.table.numero")
     ),
     capacite: e.field(DO_QUANTITE, f => f
-        .label("restaurant.tableRestaurant.capacite")
+        .label("restaurant.table.capacite")
     ),
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
-        .label("restaurant.tableRestaurant.disponible")
+        .label("restaurant.table.disponible")
     ),
     restaurantId: e.field(DO_ID, f => f
-        .label("restaurant.tableRestaurant.restaurantId")
+        .label("restaurant.table.restaurantId")
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")

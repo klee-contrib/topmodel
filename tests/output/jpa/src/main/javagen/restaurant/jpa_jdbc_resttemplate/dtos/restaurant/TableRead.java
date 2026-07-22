@@ -29,7 +29,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Identifiant de la table.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getId() TableRestaurant#getId()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getId() Table#getId()}
 	 */
 	@NotNull
 	@Column("tab_id")
@@ -37,7 +37,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -46,7 +46,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	@Column("tab_capacite")
@@ -54,7 +54,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getDisponible() TableRestaurant#getDisponible()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getDisponible() Table#getDisponible()}
 	 */
 	@NotNull
 	@Column("tab_disponible")
@@ -62,7 +62,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
 	 */
 	@NotNull
 	@Column("lie_id")
@@ -70,7 +70,7 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.TableRestaurant#getDateCreation() TableRestaurant#getDateCreation()}
+	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Table#getDateCreation() Table#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent

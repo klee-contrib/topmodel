@@ -239,15 +239,15 @@ COMMENT ON COLUMN reservation.lie_id IS 'Restaurant concerné par la réservatio
 COMMENT ON COLUMN reservation.rev_date_creation IS 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table table_restaurant
+  * Commentaires pour la table table
  **/
-COMMENT ON TABLE table_restaurant IS 'Table du restaurant';
-COMMENT ON COLUMN table_restaurant.tab_id IS 'Identifiant de la table';
-COMMENT ON COLUMN table_restaurant.tab_numero IS 'Numéro de la table';
-COMMENT ON COLUMN table_restaurant.tab_capacite IS 'Capacité de la table (nombre de places)';
-COMMENT ON COLUMN table_restaurant.tab_disponible IS 'Indique si la table est disponible';
-COMMENT ON COLUMN table_restaurant.lie_id IS 'Restaurant auquel appartient la table';
-COMMENT ON COLUMN table_restaurant.tab_date_creation IS 'Date de création de l''enregistrement';
+COMMENT ON TABLE "table" IS 'Table du restaurant';
+COMMENT ON COLUMN "table".tab_id IS 'Identifiant de la table';
+COMMENT ON COLUMN "table".tab_numero IS 'Numéro de la table';
+COMMENT ON COLUMN "table".tab_capacite IS 'Capacité de la table (nombre de places)';
+COMMENT ON COLUMN "table".tab_disponible IS 'Indique si la table est disponible';
+COMMENT ON COLUMN "table".lie_id IS 'Restaurant auquel appartient la table';
+COMMENT ON COLUMN "table".tab_date_creation IS 'Date de création de l''enregistrement';
 
 /**
   * Commentaires pour la table translation

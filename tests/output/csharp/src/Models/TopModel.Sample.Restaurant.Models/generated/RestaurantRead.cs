@@ -73,7 +73,7 @@ public partial record RestaurantRead
     public DateTime? DateCreation { get; set; }
 
     /// <summary>
-    /// Association réciproque de TableRestaurant.RestaurantId.
+    /// Association réciproque de Table.RestaurantId.
     /// </summary>
     [Required]
     public ICollection<ITableItem> Tables { get; set; } = [];

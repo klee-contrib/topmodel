@@ -541,7 +541,7 @@ public class RestaurantMappers {
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques' sur laquelle les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
+	public static RestaurantAvecStatistiques createRestaurantAvecStatistiques(Restaurant restaurant, List<Table> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
 		return mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, noteMoyenne, new RestaurantAvecStatistiques());
 	}
 
@@ -555,7 +555,7 @@ public class RestaurantMappers {
 	 *
 	 * @return L'instance de 'RestaurantAvecStatistiques' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
+	public static RestaurantAvecStatistiques mapRestaurantAvecStatistiques(Restaurant restaurant, List<Table> tables, Integer nombrePlats, BigDecimal noteMoyenne, RestaurantAvecStatistiques target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
@@ -701,22 +701,22 @@ public class RestaurantMappers {
 
 	/**
 	 * Crée une nouvelle instance de la classe 'TableRead' en mappant les champs sources.
-	 * @param table Instance de 'TableRestaurant' source.
+	 * @param table Instance de 'Table' source.
 	 *
 	 * @return Une nouvelle instance de 'TableRead' sur laquelle les champs sources ont été mappés.
 	 */
-	public static TableRead createTableRead(TableRestaurant table) {
+	public static TableRead createTableRead(Table table) {
 		return mapTableRead(table, new TableRead());
 	}
 
 	/**
 	 * Mappe les champs sources sur l'instance de la classe 'TableRead' passée en paramètre.
-	 * @param table Instance de 'TableRestaurant' source.
+	 * @param table Instance de 'Table' source.
 	 * @param target Instance de 'TableRead' cible.
 	 *
 	 * @return L'instance de 'TableRead' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static TableRead mapTableRead(TableRestaurant table, TableRead target) {
+	public static TableRead mapTableRead(Table table, TableRead target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
@@ -1141,23 +1141,23 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Mappe 'TableRestaurant' vers une nouvelle instance de 'TableWrite'.
+	 * Mappe 'Table' vers une nouvelle instance de 'TableWrite'.
 	 * @param source Instance de 'TableWrite' à mapper.
 	 *
-	 * @return Nouvelle instance de 'TableWrite' mappée depuis 'tableRestaurant'.
+	 * @return Nouvelle instance de 'TableWrite' mappée depuis 'table'.
 	 */
-	public static TableRestaurant toTableRestaurant(TableWrite source) {
-		return toTableRestaurant(source, new TableRestaurant());
+	public static Table toTable(TableWrite source) {
+		return toTable(source, new Table());
 	}
 
 	/**
-	 * Mappe 'TableRestaurant' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * Mappe 'Table' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
 	 * @param source Instance de 'TableWrite' à mapper.
-	 * @param target Instance de 'TableRestaurant' sur laquelle mapper.
+	 * @param target Instance de 'Table' sur laquelle mapper.
 	 *
-	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'tableRestaurant'.
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'table'.
 	 */
-	public static TableRestaurant toTableRestaurant(TableWrite source, TableRestaurant target) {
+	public static Table toTable(TableWrite source, Table target) {
 		if (source == null) {
 			throw new IllegalArgumentException("source cannot be null");
 		}

@@ -149,8 +149,8 @@ class:
       comment: Si le plat est végétarien.
 ---
 class:
-  name: TableRestaurant
-  sqlName: table_restaurant
+  name: Table
+  sqlName: table
   comment: Table du restaurant
   trigram: TAB
   properties:

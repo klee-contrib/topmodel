@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_server.entities.restaurant;
+package restaurant.jpa_feign.entities.restaurant;
 
 import java.time.LocalDateTime;
 
@@ -26,12 +26,12 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "table_restaurant",
+	name = "table",
 	uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"lie_id", "tab_numero"})
 	}
 )
-public class TableRestaurant {
+public class Table {
 
 	/**
 	 * Identifiant de la table.
@@ -175,7 +175,7 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.TableRestaurant TableRestaurant}.
+	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Table Table}.
 	 */
 	public enum Fields {
 		ID(Integer.class),

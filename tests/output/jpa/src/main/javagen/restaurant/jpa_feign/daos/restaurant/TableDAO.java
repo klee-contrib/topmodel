@@ -4,9 +4,9 @@
 
 package restaurant.jpa_feign.daos.restaurant;
 
-import restaurant.jpa_feign.entities.restaurant.TableRestaurant;
+import restaurant.jpa_feign.entities.restaurant.Table;
 
 import topmodel.test.CustomCrudRepository;
 
-public interface TableRestaurantDAO extends CustomCrudRepository<TableRestaurant, Integer> {
+public interface TableDAO extends CustomCrudRepository<Table, Integer> {
 }

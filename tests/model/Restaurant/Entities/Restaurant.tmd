@@ -66,8 +66,7 @@ class:
     Pomona: { Id: 2, Nom: Pomona, Bio: true }
 ---
 class:
-  name: TableRestaurant
-  sqlName: TABLE_RESTAURANT
+  name: Table
   trigram: TAB
   comment: Table du restaurant
   decorators:

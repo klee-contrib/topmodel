@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_feign.entities.restaurant;
+package restaurant.jpa_server.entities.restaurant;
 
 import java.time.LocalDateTime;
 
@@ -10,21 +10,21 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-@StaticMetamodel(TableRestaurant.class)
+@StaticMetamodel(Table.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class TableRestaurant_ {
+public class Table_ {
 
-	public static volatile SingularAttribute<TableRestaurant, Integer> id;
+	public static volatile SingularAttribute<Table, Integer> id;
 
-	public static volatile SingularAttribute<TableRestaurant, String> numero;
+	public static volatile SingularAttribute<Table, String> numero;
 
-	public static volatile SingularAttribute<TableRestaurant, Integer> capacite;
+	public static volatile SingularAttribute<Table, Integer> capacite;
 
-	public static volatile SingularAttribute<TableRestaurant, Boolean> disponible;
+	public static volatile SingularAttribute<Table, Boolean> disponible;
 
-	public static volatile SingularAttribute<TableRestaurant, Integer> restaurantId;
+	public static volatile SingularAttribute<Table, Integer> restaurantId;
 
-	public static volatile SingularAttribute<TableRestaurant, LocalDateTime> dateCreation;
+	public static volatile SingularAttribute<Table, LocalDateTime> dateCreation;
 
 	public static final String ID = "id";
 

@@ -19,7 +19,7 @@ create table COMMANDE (
 	COM_DATE_CREATION timestamp not null,
 	constraint PK_COMMANDE primary key clustered (COM_ID asc),
 	constraint FK_COMMANDE_PER_ID foreign key (PER_ID) references CLIENT (PER_ID),
-	constraint FK_COMMANDE_TAB_ID foreign key (TAB_ID) references TABLE_RESTAURANT (TAB_ID),
+	constraint FK_COMMANDE_TAB_ID foreign key (TAB_ID) references [TABLE] (TAB_ID),
 	constraint FK_COMMANDE_REV_ID foreign key (REV_ID) references RESERVATION (REV_ID),
 	constraint FK_COMMANDE_AVI_ID foreign key (AVI_ID) references AVIS_CLIENT (AVI_ID),
 	constraint UK_COMMANDE_AVI_ID unique nonclustered (AVI_ID asc))

@@ -41,8 +41,7 @@ class:
       required: true
       comment: Client ayant passé la commande
 
-    - association: TableRestaurant
-      className: Table
+    - association: Table
       useClass: false
       comment: Table associée à la commande
 
@@ -138,8 +137,7 @@ class:
       required: true
       comment: Client ayant fait la réservation
 
-    - association: TableRestaurant
-      className: Table
+    - association: Table
       useClass: false
       comment: Table réservée
 

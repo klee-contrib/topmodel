@@ -151,11 +151,11 @@ class:
       comment: Informations du client ayant fait la réservation
 
     - alias:
-        class: TableRestaurant
+        class: Table
         include:
           - Numero
           - Capacite
-      prefix: Table
+      prefix: true
       comment: Table réservée
 
   mappers:

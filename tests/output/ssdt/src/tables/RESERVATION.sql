@@ -18,7 +18,7 @@ create table RESERVATION (
 	REV_DATE_CREATION timestamp not null,
 	constraint PK_RESERVATION primary key clustered (REV_ID asc),
 	constraint FK_RESERVATION_PER_ID foreign key (PER_ID) references CLIENT (PER_ID),
-	constraint FK_RESERVATION_TAB_ID foreign key (TAB_ID) references TABLE_RESTAURANT (TAB_ID),
+	constraint FK_RESERVATION_TAB_ID foreign key (TAB_ID) references [TABLE] (TAB_ID),
 	constraint FK_RESERVATION_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID),
 	constraint UK_RESERVATION_TAB_ID_REV_DATE_RESERVATION unique nonclustered (TAB_ID asc, REV_DATE_RESERVATION asc))
 go

@@ -125,10 +125,10 @@ endpoint:
 
   params:
     - alias:
-        class: TableRestaurant
+        class: Table
         property: RestaurantId
     - alias:
-        class: TableRestaurant
+        class: Table
         property: Disponible
 
   returns:
@@ -145,7 +145,7 @@ endpoint:
 
   params:
     - alias:
-        class: TableRestaurant
+        class: Table
         property: Id
 
   returns:
@@ -177,7 +177,7 @@ endpoint:
 
   params:
     - alias:
-        class: TableRestaurant
+        class: Table
         property: Id
     - composition: TableWrite
       comment: Table à mettre à jour
@@ -196,7 +196,7 @@ endpoint:
 
   params:
     - alias:
-        class: TableRestaurant
+        class: Table
         property: Id
 ---
 endpoint:
@@ -211,7 +211,7 @@ endpoint:
         property: Id
       trigram: res
     - alias:
-        class: TableRestaurant
+        class: Table
         property: Disponible
 
   returns:

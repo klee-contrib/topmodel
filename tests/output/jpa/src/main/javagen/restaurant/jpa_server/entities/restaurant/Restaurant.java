@@ -61,7 +61,7 @@ public class Restaurant extends Lieu {
 	private List<AvisClient> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de Table.RestaurantId.
 	 */
 	@Transient
 	private List<Integer> tableIds;

@@ -104,7 +104,7 @@ create index idx_com_tab_id_fk on commande (
  **/
 alter table commande
 	add constraint fk_commande_tab_id foreign key (tab_id)
-		references table_restaurant (tab_id);
+		references "table" (tab_id);
 
 /**
   * Création de l'index de clef étrangère pour commande.rev_id
@@ -356,7 +356,7 @@ create index idx_rev_tab_id_fk on reservation (
  **/
 alter table reservation
 	add constraint fk_reservation_tab_id foreign key (tab_id)
-		references table_restaurant (tab_id);
+		references "table" (tab_id);
 
 /**
   * Création de l'index de clef étrangère pour reservation.lie_id
@@ -373,17 +373,17 @@ alter table reservation
 		references lieu (lie_id);
 
 /**
-  * Création de l'index de clef étrangère pour table_restaurant.lie_id
+  * Création de l'index de clef étrangère pour table.lie_id
  **/
-create index idx_tab_lie_id_fk on table_restaurant (
+create index idx_tab_lie_id_fk on "table" (
 	lie_id ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour table_restaurant.lie_id
+  * Génération de la contrainte de clef étrangère pour table.lie_id
  **/
-alter table table_restaurant
-	add constraint fk_table_restaurant_lie_id foreign key (lie_id)
+alter table "table"
+	add constraint fk_table_lie_id foreign key (lie_id)
 		references lieu (lie_id);
 
 /**
@@ -443,9 +443,9 @@ create index idx_pst_pst_telephone on prestataire (
 alter table reservation add constraint uk_reservation_tab_id_rev_date_reservation unique (tab_id, rev_date_reservation);
 
 /**
-  * Création de l'index uk_table_restaurant_lie_id_tab_numero sur table_restaurant.
+  * Création de l'index uk_table_lie_id_tab_numero sur "table".
  **/
-alter table table_restaurant add constraint uk_table_restaurant_lie_id_tab_numero unique (lie_id, tab_numero);
+alter table "table" add constraint uk_table_lie_id_tab_numero unique (lie_id, tab_numero);
 
 /**
   * Création de l'index idx_cat_cat_libelle sur categorie_plat.

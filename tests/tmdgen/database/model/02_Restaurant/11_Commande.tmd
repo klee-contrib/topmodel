@@ -41,7 +41,7 @@ class:
       comment: Client ayant passé la commande
       required: true
 
-    - association: TableRestaurant
+    - association: Table
       comment: Table associée à la commande
 
     - association: Reservation

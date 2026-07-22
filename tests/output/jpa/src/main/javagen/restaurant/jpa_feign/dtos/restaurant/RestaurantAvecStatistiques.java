@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 
 import restaurant.jpa_feign.entities.restaurant.Restaurant;
 import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_feign.entities.restaurant.TableRestaurant;
+import restaurant.jpa_feign.entities.restaurant.Table;
 
 /**
  * Restaurant avec ses statistiques.
@@ -89,7 +89,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de Table.RestaurantId.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
 	@NotNull
@@ -137,7 +137,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 *
 	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques'.
 	 */
-	public RestaurantAvecStatistiques(Restaurant restaurant, List<TableRestaurant> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
+	public RestaurantAvecStatistiques(Restaurant restaurant, List<Table> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
 		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, noteMoyenne, this);
 	}
 

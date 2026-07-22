@@ -2,69 +2,74 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_jdbc_resttemplate.entities.restaurant;
+package restaurant.jpa_server.entities.restaurant;
 
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 /**
  * Table du restaurant.
  */
-@Table(name = "table_restaurant")
+@Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class TableRestaurant {
+@Table(
+	name = "table",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"lie_id", "tab_numero"})
+	}
+)
+public class Table {
 
 	/**
 	 * Identifiant de la table.
 	 */
 	@Id
-	@Column("tab_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "tab_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
 	 */
-	@NotNull
-	@Column("tab_numero")
+	@Column(name = "tab_numero", nullable = false, length = 10, columnDefinition = "varchar")
 	private String numero;
 
 	/**
 	 * Capacité de la table (nombre de places).
 	 */
-	@NotNull
-	@Column("tab_capacite")
+	@Column(name = "tab_capacite", nullable = false, columnDefinition = "int")
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
 	 */
-	@NotNull
-	@Column("tab_disponible")
+	@Column(name = "tab_disponible", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@NotNull
-	@Column("lie_id")
+	@Column(name = "lie_id", nullable = false, columnDefinition = "int")
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
 	 */
-	@NotNull
 	@CreatedDate
-	@Column("tab_date_creation")
+	@Column(name = "tab_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**
@@ -167,5 +172,32 @@ public class TableRestaurant {
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Table Table}.
+	 */
+	public enum Fields {
+		ID(Integer.class),
+		NUMERO(String.class),
+		CAPACITE(Integer.class),
+		DISPONIBLE(Boolean.class),
+		RESTAURANT_ID(Integer.class),
+		DATE_CREATION(LocalDateTime.class);
+
+		private final Class<?> type;
+
+		Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Getter for type.
+		 *
+		 * @return value of {@link #type type}.
+		 */
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 }

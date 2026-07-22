@@ -95,7 +95,7 @@ public class RestaurantRead implements Serializable {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de Table.RestaurantId.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Restaurant#getTableIds() Restaurant#getTableIds()}
 	 */
 	@Valid

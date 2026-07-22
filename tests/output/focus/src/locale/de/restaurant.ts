@@ -185,7 +185,7 @@ export const restaurant = {
             Annulee: "Annulée"
         }
     },
-    tableRestaurant: {
+    table: {
         capacite: "Capacite",
         disponible: "Disponible",
         id: "Id",

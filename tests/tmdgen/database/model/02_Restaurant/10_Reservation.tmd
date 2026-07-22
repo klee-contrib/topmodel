@@ -46,7 +46,7 @@ class:
       comment: Client ayant fait la réservation
       required: true
 
-    - association: TableRestaurant
+    - association: Table
       comment: Table réservée
 
     - association: Lieu
@@ -59,4 +59,4 @@ class:
       comment: Date de création de l'enregistrement
 
   unique:
-    - [TableRestaurantId, DateReservation]
+    - [TableId, DateReservation]
