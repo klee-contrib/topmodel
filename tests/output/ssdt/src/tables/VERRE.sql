@@ -16,11 +16,11 @@ go
 /**
   * Commentaires pour la table VERRE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Verre.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE'
+execute sp_addextendedproperty 'MS_Description', 'Verre.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_ID'
+execute sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_DESCRIPTION'
+execute sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VSL_DESCRIPTION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Si le verre est à pied ou non.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VRR_A_PIED'
+execute sp_addextendedproperty 'MS_Description', 'Si le verre est à pied ou non.', 'SCHEMA', 'dbo', 'TABLE', 'VERRE', 'COLUMN', 'VRR_A_PIED'
 go

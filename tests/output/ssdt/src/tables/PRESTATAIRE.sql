@@ -27,13 +27,13 @@ go
 /**
   * Commentaires pour la table PRESTATAIRE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prestaire du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Prestaire du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_NOM'
+execute sp_addextendedproperty 'MS_Description', 'Nom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_NOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prénom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_PRENOM'
+execute sp_addextendedproperty 'MS_Description', 'Prénom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_PRENOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_TELEPHONE'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_TELEPHONE'
 go

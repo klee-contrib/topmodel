@@ -15,9 +15,9 @@ go
 /**
   * Commentaires pour la table COUVERT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Couvert.', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT'
+execute sp_addextendedproperty 'MS_Description', 'Couvert.', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT', 'COLUMN', 'VSL_ID'
+execute sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT', 'COLUMN', 'VSL_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT', 'COLUMN', 'VSL_DESCRIPTION'
+execute sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'COUVERT', 'COLUMN', 'VSL_DESCRIPTION'
 go

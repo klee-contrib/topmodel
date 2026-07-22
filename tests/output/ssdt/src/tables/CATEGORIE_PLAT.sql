@@ -22,13 +22,13 @@ go
 /**
   * Commentaires pour la table CATEGORIE_PLAT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie de plat', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT'
+execute sp_addextendedproperty 'MS_Description', 'Catégorie de plat', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Code de la catégorie', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Code de la catégorie', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé de la catégorie', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_LIBELLE'
+execute sp_addextendedproperty 'MS_Description', 'Libellé de la catégorie', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_LIBELLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Ordre d''affichage dans le menu.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_ORDRE'
+execute sp_addextendedproperty 'MS_Description', 'Ordre d''affichage dans le menu.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_ORDRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prix moyen de la catégorie, à titre indicatif.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_PRIX_MOYEN'
+execute sp_addextendedproperty 'MS_Description', 'Prix moyen de la catégorie, à titre indicatif.', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT', 'COLUMN', 'CAT_PRIX_MOYEN'
 go

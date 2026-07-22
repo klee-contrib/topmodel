@@ -34,21 +34,21 @@ go
 /**
   * Commentaires pour la table AVIS_CLIENT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Avis d''un client sur un restaurant', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT'
+execute sp_addextendedproperty 'MS_Description', 'Avis d''un client sur un restaurant', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Note sur 5', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_NOTE'
+execute sp_addextendedproperty 'MS_Description', 'Note sur 5', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_NOTE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Commentaire de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_COMMENTAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Commentaire de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_COMMENTAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_AVIS'
+execute sp_addextendedproperty 'MS_Description', 'Date de l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_AVIS'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si l''avis est approuvé par le restaurant', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_APPROUVE'
+execute sp_addextendedproperty 'MS_Description', 'Indique si l''avis est approuvé par le restaurant', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_APPROUVE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'PER_ID'
+execute sp_addextendedproperty 'MS_Description', 'Client ayant donné l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'PER_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Restaurant concerné par l''avis', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'AVIS_CLIENT', 'COLUMN', 'AVI_DATE_CREATION'
 go

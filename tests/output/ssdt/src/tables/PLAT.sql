@@ -41,25 +41,25 @@ go
 /**
   * Commentaires pour la table PLAT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Plat du menu', 'SCHEMA', 'dbo', 'TABLE', 'PLAT'
+execute sp_addextendedproperty 'MS_Description', 'Plat du menu', 'SCHEMA', 'dbo', 'TABLE', 'PLAT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_NOM'
+execute sp_addextendedproperty 'MS_Description', 'Nom du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_NOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Description du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DESCRIPTION'
+execute sp_addextendedproperty 'MS_Description', 'Description du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DESCRIPTION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prix du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_PRIX'
+execute sp_addextendedproperty 'MS_Description', 'Prix du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_PRIX'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si le plat est disponible', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DISPONIBLE'
+execute sp_addextendedproperty 'MS_Description', 'Indique si le plat est disponible', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DISPONIBLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Volume de la boisson', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PBO_VOLUME'
+execute sp_addextendedproperty 'MS_Description', 'Volume de la boisson', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PBO_VOLUME'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Si le plat est végétarien.', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PPR_VEGETARIEN'
+execute sp_addextendedproperty 'MS_Description', 'Si le plat est végétarien.', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PPR_VEGETARIEN'
 go

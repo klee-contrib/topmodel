@@ -62,7 +62,7 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
     {
         if (Config.TargetDBMS == TargetDBMS.Sqlserver)
         {
-            writer.WriteLine("GO");
+            writer.WriteLine("go");
         }
     }
 

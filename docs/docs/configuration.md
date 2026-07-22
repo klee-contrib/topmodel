@@ -100,6 +100,8 @@ Toutes les configurations partagent le même socle commun de propriétés :
 
 - **`ignoreDefaultValues`** : Si renseigné, les valeurs par défaut des propriétés dans les classes et les endpoints ne seront pas générées dans cette configuration. La valeur par défaut de cette propriété dépend du module de générateurs.
 
+- **`useLowerCaseSqlNames`** : Si les noms d'identifiants SQL dans le code généré doivent être écrits en minuscule. Cela permet de s'adapter aux conventions du (ou des) SGBD cible(s) (Postgres utilise des minuscules, tandis que SQL Server ou Oracle préfèrent les majuscules). **La valeur par défaut est `true`**, car Postgres est de loin le SGBD le plus courant. Cette propriété supporte également les _variables par tag_.
+
 Exemple de configuration de module :
 
 ```yaml

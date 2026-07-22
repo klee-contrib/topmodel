@@ -27,9 +27,9 @@ go
 /**
   * Commentaires pour la table CATEGORIE_PLAT_REGION
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Catégories de plats disponibles par région', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION'
+execute sp_addextendedproperty 'MS_Description', 'Catégories de plats disponibles par région', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Région', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION', 'COLUMN', 'REG_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Région', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION', 'COLUMN', 'REG_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Catégorie de plat', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION', 'COLUMN', 'CAT_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Catégorie de plat', 'SCHEMA', 'dbo', 'TABLE', 'CATEGORIE_PLAT_REGION', 'COLUMN', 'CAT_CODE'
 go

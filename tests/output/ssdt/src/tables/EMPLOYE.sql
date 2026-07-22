@@ -38,19 +38,19 @@ go
 /**
   * Commentaires pour la table EMPLOYE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Employé du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE'
+execute sp_addextendedproperty 'MS_Description', 'Employé du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_TELEPHONE'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_TELEPHONE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de naissance', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_DATE_NAISSANCE'
+execute sp_addextendedproperty 'MS_Description', 'Date de naissance', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_DATE_NAISSANCE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Matricule de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_MATRICULE'
+execute sp_addextendedproperty 'MS_Description', 'Matricule de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_MATRICULE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date d''embauche', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_DATE_EMBAUCHE'
+execute sp_addextendedproperty 'MS_Description', 'Date d''embauche', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_DATE_EMBAUCHE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Salaire de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_SALAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Salaire de l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'EMP_SALAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant où travaille l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Restaurant où travaille l''employé', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'PER_ID'
+execute sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'EMPLOYE', 'COLUMN', 'PER_ID'
 go

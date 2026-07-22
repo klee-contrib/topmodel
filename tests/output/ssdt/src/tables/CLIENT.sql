@@ -21,9 +21,9 @@ go
 /**
   * Commentaires pour la table CLIENT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Client du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT'
+execute sp_addextendedproperty 'MS_Description', 'Client du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Adresse email du client', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT', 'COLUMN', 'CLI_EMAIL'
+execute sp_addextendedproperty 'MS_Description', 'Adresse email du client', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT', 'COLUMN', 'CLI_EMAIL'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT', 'COLUMN', 'PER_ID'
+execute sp_addextendedproperty 'MS_Description', 'Association vers la clé primaire de la classe parente', 'SCHEMA', 'dbo', 'TABLE', 'CLIENT', 'COLUMN', 'PER_ID'
 go

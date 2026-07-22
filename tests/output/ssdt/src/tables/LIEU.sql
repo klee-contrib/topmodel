@@ -21,21 +21,21 @@ go
 /**
   * Commentaires pour la table LIEU
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Lieu', 'SCHEMA', 'dbo', 'TABLE', 'LIEU'
+execute sp_addextendedproperty 'MS_Description', 'Lieu', 'SCHEMA', 'dbo', 'TABLE', 'LIEU'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_NOM'
+execute sp_addextendedproperty 'MS_Description', 'Nom du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_NOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Adresse du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_ADRESSE'
+execute sp_addextendedproperty 'MS_Description', 'Adresse du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_ADRESSE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Discriminateur pour les instances de la hiérarchie de classe', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_DISCRIMINATOR'
+execute sp_addextendedproperty 'MS_Description', 'Discriminateur pour les instances de la hiérarchie de classe', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'LIE_DISCRIMINATOR'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de téléphone', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'RES_TELEPHONE'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de téléphone', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'RES_TELEPHONE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'RES_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'RES_DATE_CREATION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de téléphone', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'FRN_TELEPHONE'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de téléphone', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'FRN_TELEPHONE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Si le fournisseur fait du bio.', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'FRN_BIO'
+execute sp_addextendedproperty 'MS_Description', 'Si le fournisseur fait du bio.', 'SCHEMA', 'dbo', 'TABLE', 'LIEU', 'COLUMN', 'FRN_BIO'
 go

@@ -16,11 +16,11 @@ go
 /**
   * Commentaires pour la table TRANSLATION
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Table pour stocker les traductions en SQL.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION'
+execute sp_addextendedproperty 'MS_Description', 'Table pour stocker les traductions en SQL.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_RESOURCE_KEY'
+execute sp_addextendedproperty 'MS_Description', 'Clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_RESOURCE_KEY'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Valeur de la clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_VALUE'
+execute sp_addextendedproperty 'MS_Description', 'Valeur de la clé de traduction.', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_VALUE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Langue de traduction', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_LANG'
+execute sp_addextendedproperty 'MS_Description', 'Langue de traduction', 'SCHEMA', 'dbo', 'TABLE', 'TRANSLATION', 'COLUMN', 'TRA_LANG'
 go

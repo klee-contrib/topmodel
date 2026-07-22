@@ -26,11 +26,11 @@ go
 /**
   * Commentaires pour la table DEPARTEMENT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Département', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT'
+execute sp_addextendedproperty 'MS_Description', 'Département', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Code du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Code du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_LIBELLE'
+execute sp_addextendedproperty 'MS_Description', 'Libellé du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_LIBELLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Région associée.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'REG_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Région associée.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'REG_CODE'
 go

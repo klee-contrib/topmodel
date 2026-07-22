@@ -33,19 +33,19 @@ go
 /**
   * Commentaires pour la table LIGNE_COMMANDE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Ligne d''une commande', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE'
+execute sp_addextendedproperty 'MS_Description', 'Ligne d''une commande', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Quantité commandée', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_QUANTITE'
+execute sp_addextendedproperty 'MS_Description', 'Quantité commandée', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_QUANTITE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prix unitaire au moment de la commande', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_PRIX_UNITAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Prix unitaire au moment de la commande', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_PRIX_UNITAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prix total de la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_PRIX_TOTAL'
+execute sp_addextendedproperty 'MS_Description', 'Prix total de la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_PRIX_TOTAL'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Commande à laquelle appartient la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'COM_ID'
+execute sp_addextendedproperty 'MS_Description', 'Commande à laquelle appartient la ligne', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'COM_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Plat commandé', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'PLA_ID'
+execute sp_addextendedproperty 'MS_Description', 'Plat commandé', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'PLA_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'LIGNE_COMMANDE', 'COLUMN', 'LIG_DATE_CREATION'
 go

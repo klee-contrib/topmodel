@@ -26,17 +26,17 @@ go
 /**
   * Commentaires pour la table TABLE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Table du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'TABLE'
+execute sp_addextendedproperty 'MS_Description', 'Table du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'TABLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_NUMERO'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_NUMERO'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Capacité de la table (nombre de places)', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_CAPACITE'
+execute sp_addextendedproperty 'MS_Description', 'Capacité de la table (nombre de places)', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_CAPACITE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si la table est disponible', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DISPONIBLE'
+execute sp_addextendedproperty 'MS_Description', 'Indique si la table est disponible', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DISPONIBLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant auquel appartient la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Restaurant auquel appartient la table', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'TABLE', 'COLUMN', 'TAB_DATE_CREATION'
 go

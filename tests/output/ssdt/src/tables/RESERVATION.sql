@@ -47,23 +47,23 @@ go
 /**
   * Commentaires pour la table RESERVATION
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Réservation d''une table', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION'
+execute sp_addextendedproperty 'MS_Description', 'Réservation d''une table', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date et heure de la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_RESERVATION'
+execute sp_addextendedproperty 'MS_Description', 'Date et heure de la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_RESERVATION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nombre de personnes', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_NOMBRE_PERSONNES'
+execute sp_addextendedproperty 'MS_Description', 'Nombre de personnes', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_NOMBRE_PERSONNES'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Commentaire sur la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_COMMENTAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Commentaire sur la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_COMMENTAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Indique si la réservation est confirmée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_CONFIRMEE'
+execute sp_addextendedproperty 'MS_Description', 'Indique si la réservation est confirmée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_CONFIRMEE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Client ayant fait la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'PER_ID'
+execute sp_addextendedproperty 'MS_Description', 'Client ayant fait la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'PER_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Table réservée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'TAB_ID'
+execute sp_addextendedproperty 'MS_Description', 'Table réservée', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'TAB_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'LIE_ID'
+execute sp_addextendedproperty 'MS_Description', 'Restaurant concerné par la réservation', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'LIE_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_CREATION'
+execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'RESERVATION', 'COLUMN', 'REV_DATE_CREATION'
 go
