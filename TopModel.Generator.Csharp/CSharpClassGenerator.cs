@@ -44,7 +44,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && item.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
             )
             {
-                var sqlName = Config.GetSqlName(item);
+                var sqlName = Config.GetSqlName(item, tag);
                 if (Config.DbSchema != null)
                 {
                     w.WriteAttribute(
@@ -337,7 +337,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column"))
             )
             {
-                w.WriteAttribute(1, "Column", $@"""{Config.GetSqlName(property)}""");
+                w.WriteAttribute(1, "Column", $@"""{Config.GetSqlName(property, tag)}""");
             }
 
             if (

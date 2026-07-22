@@ -117,8 +117,17 @@
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
     },
     "useLowerCaseSqlNames": {
-      "type": "boolean",
-      "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+        },
+        {
+          "type": "string",
+          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
     },
     "uniqueValueGeneration": {
       "type": "string",

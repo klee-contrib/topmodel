@@ -26,7 +26,7 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
     {
         return Path.Combine(
             Config.Ssdt!.InitListScriptFolder!,
-            Config.GetSqlName(classe, noQuote: true) + ".insert.sql"
+            Config.GetSqlName(classe, tag, noQuote: true) + ".insert.sql"
         );
     }
 
@@ -35,7 +35,7 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
         using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
-        WriteHeader(writer, Config.GetSqlName(classe, noQuote: true));
+        WriteHeader(writer, Config.GetSqlName(classe, tag, noQuote: true));
 
         // Ecrit les inserts.
         WriteInsertLines(writer, classe, tag);

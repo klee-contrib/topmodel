@@ -242,6 +242,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport =>
         [
+            .. base.PropertiesWithTagVariableSupport,
             nameof(PersistentModelPath),
             nameof(ReferencesModelPath),
             nameof(NonPersistentModelPath),

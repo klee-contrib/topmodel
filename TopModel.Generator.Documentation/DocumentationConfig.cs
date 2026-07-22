@@ -1,5 +1,4 @@
-﻿using TopModel.Core;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -54,7 +53,12 @@ public class DocumentationConfig : GeneratorConfigBase
         [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
 
     public override string[] PropertiesWithTagVariableSupport =>
-        [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
+        [
+            .. base.PropertiesWithTagVariableSupport,
+            nameof(EndpointsFilePath),
+            nameof(ClassesFilePath),
+            nameof(MermaidFilePath),
+        ];
 
     /// <summary>
     /// Mode de découpage du dictionnaire de classes, déduit de <see cref="ClassesFilePath"/>.

@@ -181,6 +181,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport =>
         [
+            .. base.PropertiesWithTagVariableSupport,
             nameof(EntitiesPath),
             nameof(DaosPath),
             nameof(DtosPath),

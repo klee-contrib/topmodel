@@ -233,8 +233,17 @@
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
           "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "uniqueValueGeneration": {
             "type": "string",
@@ -748,8 +757,17 @@
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
           "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "uniqueValueGeneration": {
             "type": "string",
@@ -1102,8 +1120,17 @@
             "default": "true"
           },
           "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "tableTablespace": {
             "type": "string",
@@ -1345,8 +1372,17 @@
             "description": "Racine du répertoire de génération."
           },
           "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "schemas": {
             "type": "object",

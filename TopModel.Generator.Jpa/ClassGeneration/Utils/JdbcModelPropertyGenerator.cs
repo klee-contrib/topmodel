@@ -10,12 +10,12 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
 {
     private static new JavaAnnotation IdAnnotation => new("Id", imports: "org.springframework.data.annotation.Id");
 
-    public override JavaAnnotation GetColumnAnnotation(IProperty property)
+    public override JavaAnnotation GetColumnAnnotation(IProperty property, string tag)
     {
         return new JavaAnnotation(
             "Column",
             imports: "org.springframework.data.relational.core.mapping.Column"
-        ).AddAttribute("value", $@"""{Config.GetSqlName(property)}""");
+        ).AddAttribute("value", $@"""{Config.GetSqlName(property, tag)}""");
     }
 
     public override bool ShouldWriteEnumAnnotation(IProperty property)

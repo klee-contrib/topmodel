@@ -23,7 +23,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     {
         return Path.Combine(
             Config.Ssdt!.TableTypeScriptFolder!,
-            Config.GetSqlTableTypeName(classe, noQuote: true) + ".sql"
+            Config.GetSqlTableTypeName(classe, tag, noQuote: true) + ".sql"
         );
     }
 
@@ -32,13 +32,13 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
-        WriteHeader(writer, Config.GetSqlTableTypeName(classe));
+        WriteHeader(writer, Config.GetSqlTableTypeName(classe, tag));
 
         // Ouverture du create table.
-        WriteCreateTableOpening(writer, classe);
+        WriteCreateTableOpening(writer, classe, tag);
 
         // Intérieur du create table.
-        WriteInsideInstructions(writer, classe);
+        WriteInsideInstructions(writer, classe, tag);
 
         // Fin du create table.
         WriteCreateTableClosing(writer);
@@ -71,10 +71,10 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IProperty property)
+    private void WriteColumn(StringBuilder sb, IProperty property, string tag)
     {
         var persistentType = Config.GetType(property);
-        sb.Append(Config.GetSqlName(property)).Append(' ').Append(persistentType).Append(" null");
+        sb.Append(Config.GetSqlName(property, tag)).Append(' ').Append(persistentType).Append(" null");
     }
 
     /// <summary>
@@ -82,9 +82,9 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private void WriteCreateTableOpening(IFileWriter writer, Class table)
+    private void WriteCreateTableOpening(IFileWriter writer, Class table, string tag)
     {
-        writer.WriteLine($"Create type {Config.GetSqlTableTypeName(table)} as Table (");
+        writer.WriteLine($"Create type {Config.GetSqlTableTypeName(table, tag)} as Table (");
     }
 
     /// <summary>
@@ -92,12 +92,12 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WriteInsertKeyLine(StringBuilder sb, Class classe)
+    private void WriteInsertKeyLine(StringBuilder sb, Class classe, string tag)
     {
         var insertKeyProp = Config.GetProperties(classe).SingleOrDefault(p => p.Name == ScriptUtils.InsertKeyName);
         if (insertKeyProp != null)
         {
-            sb.Append($"{Config.GetSqlName(insertKeyProp)} int null");
+            sb.Append($"{Config.GetSqlName(insertKeyProp, tag)} int null");
         }
     }
 
@@ -106,7 +106,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private void WriteInsideInstructions(IFileWriter writer, Class table)
+    private void WriteInsideInstructions(IFileWriter writer, Class table, string tag)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
@@ -121,14 +121,14 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
             )
             {
                 sb.Clear();
-                WriteColumn(sb, property);
+                WriteColumn(sb, property, tag);
                 definitions.Add(sb.ToString());
             }
         }
 
         // InsertKey.
         sb.Clear();
-        WriteInsertKeyLine(sb, table);
+        WriteInsertKeyLine(sb, table, tag);
         definitions.Add(sb.ToString());
 
         // Ecriture de la liste concaténée.

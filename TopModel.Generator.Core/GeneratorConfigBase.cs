@@ -6,6 +6,7 @@ using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Utils;
 using TopModel.Utils;
+using YamlDotNet.Serialization;
 
 namespace TopModel.Generator.Core;
 
@@ -39,7 +40,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <summary>
     /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
     /// </summary>
-    public virtual bool UseLowerCaseSqlNames { get; set; } = true;
+    [YamlMember(Alias = "useLowerCaseSqlNames")]
+    public virtual string? UseLowerCaseSqlNamesParam { get; set; }
 
     /// <summary>
     /// Si le langage cible de la configuration supporte les enums.
@@ -61,6 +63,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Indique la limite de longueur d'un identifiant.
     /// </summary>
     public virtual int SqlIdentifierLengthLimit => 128;
+
+    public override string[] PropertiesWithTagVariableSupport => [nameof(UseLowerCaseSqlNamesParam)];
 
     /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
@@ -444,9 +448,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="property">La propriété.</param>
     /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
     /// <returns>Le nom SQL de la clé étrangère.</returns>
-    public virtual string? GetSqlForeignKeyName(IProperty property, bool noQuote = false)
+    public virtual string? GetSqlForeignKeyName(IProperty property, string tag, bool noQuote = false)
     {
-        var name = UseLowerCaseSqlNames ? property.ForeignKeyName?.ToLower() : property.ForeignKeyName;
+        var name = UseLowerCaseSqlNames(tag) ? property.ForeignKeyName?.ToLower() : property.ForeignKeyName;
         return name == null ? null : FixSqlIdentifier(name, noQuote);
     }
 
@@ -456,9 +460,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="property">La propriété.</param>
     /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
     /// <returns>Le nom SQL de l'index de la clé étrangère.</returns>
-    public virtual string? GetSqlIndexForeignKeyName(IProperty property, bool noQuote = false)
+    public virtual string? GetSqlIndexForeignKeyName(IProperty property, string tag, bool noQuote = false)
     {
-        var name = UseLowerCaseSqlNames ? property.IndexForeignKeyName?.ToLower() : property.IndexForeignKeyName;
+        var name = UseLowerCaseSqlNames(tag) ? property.IndexForeignKeyName?.ToLower() : property.IndexForeignKeyName;
         return name == null ? null : FixSqlIdentifier(name, noQuote);
     }
 
@@ -468,9 +472,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="classe">La classe.</param>
     /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
     /// <returns>Le nom SQL de la classe.</returns>
-    public virtual string GetSqlName(Class classe, bool noQuote = false)
+    public virtual string GetSqlName(Class classe, string tag, bool noQuote = false)
     {
-        return FixSqlIdentifier(UseLowerCaseSqlNames ? classe.SqlName.ToLower() : classe.SqlName, noQuote);
+        return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? classe.SqlName.ToLower() : classe.SqlName, noQuote);
     }
 
     /// <summary>
@@ -479,9 +483,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="property">La propriété.</param>
     /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
     /// <returns>Le nom SQL de la propriété.</returns>
-    public virtual string GetSqlName(IProperty property, bool noQuote = false)
+    public virtual string GetSqlName(IProperty property, string tag, bool noQuote = false)
     {
-        return FixSqlIdentifier(UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName, noQuote);
+        return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? property.SqlName.ToLower() : property.SqlName, noQuote);
     }
 
     /// <summary>
@@ -490,9 +494,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// <param name="index">L'index.</param>
     /// <param name="noQuote">Ne quote pas le nom, même s'il aurait fallu.</param>
     /// <returns>Le nom SQL de l'index.</returns>
-    public virtual string GetSqlName(IndexDefinition index, bool noQuote = false)
+    public virtual string GetSqlName(IndexDefinition index, string tag, bool noQuote = false)
     {
-        return FixSqlIdentifier(UseLowerCaseSqlNames ? index.SqlName.ToLower() : index.SqlName, noQuote);
+        return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? index.SqlName.ToLower() : index.SqlName, noQuote);
     }
 
     /// <summary>
@@ -677,6 +681,16 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual bool ShouldQuoteValue(IProperty property)
     {
         return property.Domain == null || GetImplementation(property.Domain)?.Type?.ToLower() == "string";
+    }
+
+    public bool UseLowerCaseSqlNames(string tag)
+    {
+        if (string.IsNullOrEmpty(UseLowerCaseSqlNamesParam))
+        {
+            return true;
+        }
+
+        return ResolveVariables(UseLowerCaseSqlNamesParam, tag) != false.ToString();
     }
 
     protected virtual string FixSqlIdentifier(string identifier, bool noQuote = false)

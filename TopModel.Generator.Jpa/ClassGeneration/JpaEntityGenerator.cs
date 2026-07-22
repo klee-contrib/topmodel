@@ -50,7 +50,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 var discriminatorAnnotation = new JavaAnnotation(
                     "DiscriminatorColumn",
                     imports: "jakarta.persistence.DiscriminatorColumn"
-                ).AddAttribute("name", $"\"{Config.GetSqlName(classe.DiscriminatorProperty)}\"");
+                ).AddAttribute("name", $"\"{Config.GetSqlName(classe.DiscriminatorProperty, tag)}\"");
 
                 yield return discriminatorAnnotation;
             }
@@ -75,7 +75,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
                 "name",
-                $@"""{Config.GetSqlName(classe)}"""
+                $@"""{Config.GetSqlName(classe, tag)}"""
             );
 
             var uks = classe.Indexes.Where(idx =>
@@ -92,7 +92,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     new JavaAnnotation(
                         "UniqueConstraint",
                         imports: "jakarta.persistence.UniqueConstraint"
-                    ).AddAttribute("columnNames", uk.Properties.Select(u => $@"""{Config.GetSqlName(u)}""").ToArray())
+                    ).AddAttribute(
+                        "columnNames",
+                        uk.Properties.Select(u => $@"""{Config.GetSqlName(u, tag)}""").ToArray()
+                    )
                 )
                 .ToList();
 
@@ -109,10 +112,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     nonUniqueIndexes.Select(idx =>
                     {
                         return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
-                            .AddAttribute("name", $@"""{Config.GetSqlName(idx)}""")
+                            .AddAttribute("name", $@"""{Config.GetSqlName(idx, tag)}""")
                             .AddAttribute(
                                 "columnList",
-                                $@"""{string.Join(", ", idx.Properties.Select(p => Config.GetSqlName(p)))}"""
+                                $@"""{string.Join(", ", idx.Properties.Select(p => Config.GetSqlName(p, tag)))}"""
                             );
                     })
                 );
@@ -167,7 +170,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             }
             else
             {
-                annotations.Add(JpaModelPropertyGenerator.GetColumnAnnotation(pk));
+                annotations.Add(JpaModelPropertyGenerator.GetColumnAnnotation(pk, tag));
 
                 if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(pk))
                 {

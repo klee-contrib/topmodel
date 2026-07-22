@@ -167,7 +167,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
 
         var query =
-            $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{Config.GetSqlName(dataFlow.Sources[0].Class)}";
+            $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{Config.GetSqlName(dataFlow.Sources[0].Class, tag)}";
         fw.AddImport("org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder");
 
         string rowMapperImport;
@@ -314,7 +314,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, "}");
     }
 
-    protected void WriteBeanTruncateStep(JavaWriter fw, DataFlow dataFlow)
+    protected void WriteBeanTruncateStep(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         fw.WriteLine();
         fw.AddImport("io.github.kleecontrib.spring.batch.tasklet.QueryTasklet");
@@ -327,7 +327,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}TruncateStep"", jobRepository) //");
         fw.WriteLine(
             2,
-            @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {Config.GetSqlName(dataFlow.Class)}{(dataFlow.Type == DataFlowType.HardReplace ? " cascade" : string.Empty)}""), transactionManager) //"
+            @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {Config.GetSqlName(dataFlow.Class, tag)}{(dataFlow.Type == DataFlowType.HardReplace ? " cascade" : string.Empty)}""), transactionManager) //"
         );
 
         fw.WriteLine(3, ".build();");
@@ -422,7 +422,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (dataFlow.Type == DataFlowType.Replace || dataFlow.Type == DataFlowType.HardReplace)
         {
-            WriteBeanTruncateStep(fw, dataFlow);
+            WriteBeanTruncateStep(fw, dataFlow, tag);
         }
 
         if (dataFlow.Sources[0].Mode == DataFlowSourceMode.QueryAll)
@@ -591,7 +591,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (dataFlow.Type != DataFlowType.Merge)
         {
-            fw.WriteLine(3, @$"super(schema, ""{Config.GetSqlName(dataFlow.Class)}"");");
+            fw.WriteLine(3, @$"super(schema, ""{Config.GetSqlName(dataFlow.Class, tag)}"");");
         }
         else
         {
@@ -599,7 +599,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 dataFlow.Class.Extends != null ? dataFlow.Class.Extends.PrimaryKey : dataFlow.Class.PrimaryKey;
             fw.WriteLine(
                 3,
-                @$"super(schema, ""{Config.GetSqlName(dataFlow.Class)}"", ""{string.Join(',', primaryKey.Select(p => Config.GetSqlName(p)))}"");"
+                @$"super(schema, ""{Config.GetSqlName(dataFlow.Class, tag)}"", ""{string.Join(',', primaryKey.Select(p => Config.GetSqlName(p, tag)))}"");"
             );
         }
 
@@ -640,7 +640,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             };
             fw.WriteLine(
                 3,
-                $@"map(""{Config.GetSqlName(property)}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
+                $@"map(""{Config.GetSqlName(property, tag)}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
             );
         }
 

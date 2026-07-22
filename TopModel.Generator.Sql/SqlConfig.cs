@@ -161,7 +161,9 @@ public class SqlConfig : GeneratorConfigBase
             return string.Empty;
         }
 
-        return prop.UniqueValuedProperty?.Class != null ? GetSqlName(prop.UniqueValuedProperty!.Class) : string.Empty;
+        return prop.UniqueValuedProperty?.Class != null
+            ? GetSqlName(prop.UniqueValuedProperty!.Class, string.Empty)
+            : string.Empty;
     }
 
     /// <summary>
@@ -219,16 +221,16 @@ public class SqlConfig : GeneratorConfigBase
         }
     }
 
-    public virtual string GetSqlPrimaryKeyName(Class classe, bool noQuote = false)
+    public virtual string GetSqlPrimaryKeyName(Class classe, string tag, bool noQuote = false)
     {
         var pkName = $"PK_{classe.SqlName}";
-        return FixSqlIdentifier(UseLowerCaseSqlNames ? pkName.ToLower() : pkName, noQuote);
+        return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? pkName.ToLower() : pkName, noQuote);
     }
 
-    public virtual string GetSqlTableTypeName(Class classe, bool noQuote = false)
+    public virtual string GetSqlTableTypeName(Class classe, string tag, bool noQuote = false)
     {
         var typeName = classe.SqlName + "_TABLE_TYPE";
-        return FixSqlIdentifier(UseLowerCaseSqlNames ? typeName.ToLower() : typeName, noQuote);
+        return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? typeName.ToLower() : typeName, noQuote);
     }
 
     public string GetType(IProperty property)

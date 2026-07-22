@@ -31,7 +31,13 @@ public static class ScriptUtils
     /// <param name="writer">Writer.</param>
     /// <param name="classe">Clase.</param>
     /// <param name="property">Propriété.</param>
-    public static void WriteColumn(this SqlConfig config, IFileWriter writer, Class classe, IProperty property)
+    public static void WriteColumn(
+        this SqlConfig config,
+        IFileWriter writer,
+        Class classe,
+        IProperty property,
+        string tag
+    )
     {
         var type =
             property is { Composition: null, Domain: not null } ? config.GetType(property)
@@ -40,7 +46,7 @@ public static class ScriptUtils
             : "json";
 
         writer.Write("\t");
-        writer.Write(config.GetSqlName(property));
+        writer.Write(config.GetSqlName(property, tag));
         writer.Write($" {type}");
 
         if (property.Required && !property.PrimaryKey && (property.Class == classe || property.Class.Extends != classe))
@@ -117,7 +123,7 @@ public static class ScriptUtils
             writer.WriteLine();
             writer.WriteLine("/**");
             writer.WriteLine(
-                $"  * Création de la séquence pour la clé primaire de la table {config.GetSqlName(classeForSequence, noQuote: true)}"
+                $"  * Création de la séquence pour la clé primaire de la table {config.GetSqlName(classeForSequence, tag, noQuote: true)}"
             );
             writer.WriteLine(" **/");
 
@@ -139,7 +145,7 @@ public static class ScriptUtils
 
             if (classeForSequence.HasTable && config.TargetDBMS == TargetDBMS.Postgre)
             {
-                writer.Write($" owned by {config.GetSqlName(classeForSequence)}.{config.GetSqlName(pk)}");
+                writer.Write($" owned by {config.GetSqlName(classeForSequence, tag)}.{config.GetSqlName(pk, tag)}");
             }
 
             writer.WriteLine(config.BatchSeparator);
@@ -162,13 +168,13 @@ public static class ScriptUtils
             var insertValue = GetInsertValue(config, classe, property, refValue, tag);
             if (insertValue != null)
             {
-                properties[config.GetSqlName(property)] = insertValue;
+                properties[config.GetSqlName(property, tag)] = insertValue;
             }
         }
 
         // Création de la requête.
         var sb = new StringBuilder();
-        sb.Append("INSERT INTO ").Append(config.GetSqlName(classe)).Append('(');
+        sb.Append("INSERT INTO ").Append(config.GetSqlName(classe, tag)).Append('(');
         var isFirst = true;
         foreach (var columnName in properties.Keys)
         {
@@ -258,23 +264,23 @@ public static class ScriptUtils
         return fw;
     }
 
-    public static void WriteComments(this IFileWriter writer, Class classe, SqlConfig config)
+    public static void WriteComments(this IFileWriter writer, Class classe, SqlConfig config, string tag)
     {
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Commentaires pour la table {config.GetSqlName(classe, noQuote: true)}");
+        writer.WriteLine($"  * Commentaires pour la table {config.GetSqlName(classe, tag, noQuote: true)}");
         writer.WriteLine(" **/");
 
         if (config.TargetDBMS == TargetDBMS.Sqlserver)
         {
             writer.WriteLine(
-                $"EXECUTE sp_addextendedproperty 'MS_Description', '{classe.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{config.GetSqlName(classe, noQuote: true)}'"
+                $"EXECUTE sp_addextendedproperty 'MS_Description', '{classe.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{config.GetSqlName(classe, tag, noQuote: true)}'"
             );
             writer.WriteLine("go");
 
             foreach (var p in config.GetProperties(classe))
             {
                 writer.WriteLine(
-                    $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{config.GetSqlName(classe, noQuote: true)}', 'COLUMN', '{config.GetSqlName(p, noQuote: true)}'"
+                    $"EXECUTE sp_addextendedproperty 'MS_Description', '{p.Comment.Replace("'", "''")}', 'SCHEMA', 'dbo', 'TABLE', '{config.GetSqlName(classe, tag, noQuote: true)}', 'COLUMN', '{config.GetSqlName(p, tag, noQuote: true)}'"
                 );
                 writer.WriteLine("go");
             }
@@ -282,13 +288,13 @@ public static class ScriptUtils
         else
         {
             writer.WriteLine(
-                $"COMMENT ON TABLE {config.GetSqlName(classe)} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
+                $"COMMENT ON TABLE {config.GetSqlName(classe, tag)} IS '{classe.Comment.Replace("'", "''")}'{config.BatchSeparator}"
             );
 
             foreach (var p in config.GetProperties(classe))
             {
                 writer.WriteLine(
-                    $"COMMENT ON COLUMN {config.GetSqlName(classe)}.{config.GetSqlName(p)} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"
+                    $"COMMENT ON COLUMN {config.GetSqlName(classe, tag)}.{config.GetSqlName(p, tag)} IS '{p.Comment.Replace("'", "''")}'{config.BatchSeparator}"
                 );
             }
         }

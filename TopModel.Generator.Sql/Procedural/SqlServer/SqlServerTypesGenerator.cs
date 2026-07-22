@@ -38,13 +38,13 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
-            WriteTypeDeclaration(classe, writer);
+            WriteTypeDeclaration(classe, writer, tag);
         }
     }
 
-    private void WriteTypeDeclaration(Class classe, IFileWriter writer)
+    private void WriteTypeDeclaration(Class classe, IFileWriter writer, string tag)
     {
-        var typeName = Config.GetSqlTableTypeName(classe);
+        var typeName = Config.GetSqlTableTypeName(classe, tag);
         writer.WriteLine("/**");
         writer.WriteLine("  * Création du type " + typeName);
         writer.WriteLine(" **/");
@@ -87,7 +87,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
                     writer.WriteLine();
                 }
 
-                writer.Write("\t" + Config.GetSqlName(property) + " " + type);
+                writer.Write("\t" + Config.GetSqlName(property, tag) + " " + type);
                 t++;
             }
         }

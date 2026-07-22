@@ -50,7 +50,11 @@ public abstract class AbstractSqlTablesGenerator(
         }
     }
 
-    protected virtual void WriteBooleanCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties) { }
+    protected virtual void WriteBooleanCheckConstraints(
+        IFileWriter writer,
+        IEnumerable<IProperty> properties,
+        string tag
+    ) { }
 
     private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(Config.TableTablespace);
 
@@ -84,9 +88,9 @@ public abstract class AbstractSqlTablesGenerator(
     /// </summary>
     /// <param name="writer">Flux crebas.</param>
     /// <param name="properties">Liste des propriétés persistantes.</param>
-    private void WriteCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties)
+    private void WriteCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties, string tag)
     {
-        WriteBooleanCheckConstraints(writer, properties);
+        WriteBooleanCheckConstraints(writer, properties, tag);
     }
 
     /// <summary>
@@ -103,21 +107,26 @@ public abstract class AbstractSqlTablesGenerator(
     /// </summary>
     /// <param name="writer">Writer.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePrimaryKeyConstraint(IFileWriter writer, Class classe, IEnumerable<IProperty> properties)
+    private void WritePrimaryKeyConstraint(
+        IFileWriter writer,
+        Class classe,
+        IEnumerable<IProperty> properties,
+        string tag
+    )
     {
         if (!properties.Any(p => p.PrimaryKey))
         {
             return;
         }
 
-        writer.Write($"\tconstraint {Config.GetSqlPrimaryKeyName(classe)} primary key ");
+        writer.Write($"\tconstraint {Config.GetSqlPrimaryKeyName(classe, tag)} primary key ");
         if (SupportsClusteredKey)
         {
             writer.Write("clustered ");
         }
 
         writer.WriteLine(
-            $"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => Config.GetSqlName(pk)))})"
+            $"({string.Join(',', properties.Where(p => p.PrimaryKey).Select(pk => Config.GetSqlName(pk, tag)))})"
         );
     }
 
@@ -127,7 +136,7 @@ public abstract class AbstractSqlTablesGenerator(
 
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de la table {Config.GetSqlName(classe, noQuote: true)}");
+        writer.WriteLine($"  * Création de la table {Config.GetSqlName(classe, tag, noQuote: true)}");
         writer.WriteLine(" **/");
 
         if (classe.Enum == EnumMode.Enum)
@@ -138,15 +147,15 @@ public abstract class AbstractSqlTablesGenerator(
                     .GetAllValues(classe)
                     .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
             );
-            writer.Write($"create type {Config.GetSqlName(classe)} as enum ({valeurs}); ");
+            writer.Write($"create type {Config.GetSqlName(classe, tag)} as enum ({valeurs}); ");
             writer.WriteLine();
         }
         else
         {
-            writer.WriteLine($"create table {Config.GetSqlName(classe)} (");
+            writer.WriteLine($"create table {Config.GetSqlName(classe, tag)} (");
             foreach (var property in Config.GetProperties(classe))
             {
-                Config.WriteColumn(writer, classe, property);
+                Config.WriteColumn(writer, classe, property, tag);
                 writer.Write(",");
                 writer.WriteLine();
 
@@ -156,8 +165,8 @@ public abstract class AbstractSqlTablesGenerator(
                 }
             }
 
-            WriteCheckConstraints(writer, Config.GetProperties(classe));
-            WritePrimaryKeyConstraint(writer, classe, Config.GetProperties(classe));
+            WriteCheckConstraints(writer, Config.GetProperties(classe), tag);
+            WritePrimaryKeyConstraint(writer, classe, Config.GetProperties(classe), tag);
             WriteEndTableDeclaration(writer);
 
             Config.WriteSequence(writer, classe, tag);

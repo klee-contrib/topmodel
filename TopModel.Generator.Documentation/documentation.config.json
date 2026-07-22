@@ -52,8 +52,17 @@
       "description": "Racine du répertoire de génération."
     },
     "useLowerCaseSqlNames": {
-      "type": "boolean",
-      "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+        },
+        {
+          "type": "string",
+          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
     },
     "schemas": {
       "type": "object",

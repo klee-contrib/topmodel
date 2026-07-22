@@ -32,7 +32,7 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
-            WriteTableDeclaration(classe, writer);
+            WriteTableDeclaration(classe, writer, tag);
         }
     }
 
@@ -41,9 +41,9 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
     /// </summary>
     /// <param name="classe">La table à ecrire.</param>
     /// <param name="writerComment">Flux d'écritures des commentaires.</param>
-    private void WriteTableDeclaration(Class classe, IFileWriter writerComment)
+    private void WriteTableDeclaration(Class classe, IFileWriter writerComment, string tag)
     {
         writerComment.WriteLine();
-        writerComment.WriteComments(classe, Config);
+        writerComment.WriteComments(classe, Config, tag);
     }
 }
