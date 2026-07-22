@@ -44,7 +44,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
             ReturnComment = $"value of {{@link #{field.Name} {field.Name}}}",
             Visibility = "public",
         };
-        method.Imports.AddRange(property.GetTypeImports(Config, tag));
+        method.AddImports(property.GetTypeImports(Config, tag));
         return method;
     }
 
@@ -53,7 +53,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         return classe.Type != ClassType.Interface && classe.Enum == EnumMode.Enum;
     }
 
-    protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected virtual IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         var constructor = JavaEnumGeneratorHelper.GetConstructor(
             classe,
@@ -108,7 +108,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         var javaClass = InitClass(classe, tag);
 
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
+        fw.Write(javaClass);
     }
 
     protected virtual JavaClass InitClass(Class classe, string tag)
@@ -123,10 +123,10 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         var implements = Config.GetClassImplements(classe, tag).ToList();
         javaEnum.Values.AddRange(GetEnumValues(classe));
         javaEnum.Implements.AddRange(implements);
-        javaEnum.Imports.AddRange(
+        javaEnum.AddImports(
             classe.Implements.Select(implement => implement.GetImport(Config, Config.GetBestClassTag(implement, tag)))
         );
-        javaEnum.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
+        javaEnum.AddImports(Config.GetDecoratorImports(classe, tag));
         javaEnum.AddRange(GetConstuctors(classe, tag));
         javaEnum.AddRange(GetFields(classe, tag));
         javaEnum.AddRange(GetGetters(classe, tag));
@@ -169,7 +169,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         {
             Comment = { property.Comment },
         };
-        field.Imports.AddRange(property.GetTypeImports(Config, tag));
+        field.AddImports(property.GetTypeImports(Config, tag));
         return field;
     }
 }

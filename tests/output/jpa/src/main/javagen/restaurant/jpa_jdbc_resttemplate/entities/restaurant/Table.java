@@ -10,7 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.EntityListeners;
@@ -19,9 +18,9 @@ import jakarta.validation.constraints.NotNull;
 /**
  * Table du restaurant.
  */
-@Table(name = "table")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@org.springframework.data.relational.core.mapping.Table(name = "table")
 public class Table {
 
 	/**

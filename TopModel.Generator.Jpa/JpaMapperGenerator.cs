@@ -135,7 +135,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                             param.Name.ToCamelCase(),
                             tag
                         );
-                        fromMapperMethod.Imports.AddRange(imports);
+                        fromMapperMethod.AddImports(imports);
 
                         if (getter != string.Empty)
                         {
@@ -187,7 +187,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         paramName: null,
                         tag
                     );
-                    fromMapperMethod.Imports.AddRange(imports);
+                    fromMapperMethod.AddImports(imports);
 
                     checkSourceNull &= !propertySource.Required;
 
@@ -448,7 +448,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
             var (getter, checkSourceNull, imports) = GetSourceGetter(propertySource, propertyTarget!, "source", tag);
-            toMapperMethod.Imports.AddRange(imports);
+            toMapperMethod.AddImports(imports);
 
             if (getter != string.Empty)
             {
@@ -503,7 +503,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
     {
         var mapperClass = GetMapperClass(tag, fromMappers, toMappers);
         using var fw = this.OpenJavaWriter(fileName, mapperClass.Package ?? "", codePage: null);
-        fw.Write(0, mapperClass);
+        fw.Write(mapperClass);
     }
 
     protected override bool IsPersistent(Class classe)

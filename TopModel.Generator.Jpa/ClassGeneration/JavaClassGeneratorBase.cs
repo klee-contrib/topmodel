@@ -54,7 +54,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected virtual IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected virtual IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (
             Config.MappersInClass
@@ -88,7 +88,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
         if (Config.FieldsEnumInterface != null)
         {
-            javaEnum.Imports.Add(Config.FieldsEnumInterface.Replace("<>", string.Empty));
+            javaEnum.AddImports(Config.FieldsEnumInterface.Replace("<>", string.Empty));
         }
 
         if (Config.FieldsEnumInterface != null)
@@ -213,7 +213,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 Visibility = "public",
                 Comment = $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'",
             };
-            method.Imports.Add(mapper.Class.GetImport(Config, tag));
+            method.AddImports(mapper.Class.GetImport(Config, tag));
             if (mapper.Comment != null)
             {
                 method.Comment += $"{mapper.Comment}";
@@ -231,7 +231,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             method.AddBodyLine(
                 @$"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);"
             );
-            method.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
+            method.AddImports(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
             yield return method;
         }
     }
@@ -243,7 +243,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         var javaClass = InitClass(classe, tag);
 
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
+        fw.Write(javaClass);
     }
 
     protected virtual JavaClass InitClass(Class classe, string tag)
@@ -257,16 +257,16 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)
         {
-            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
+            javaClass.AddImports(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
         }
 
         javaClass.Extends = extends;
         var implements = Config.GetClassImplements(classe, tag).ToList();
         javaClass.Implements.AddRange(implements);
-        javaClass.Imports.AddRange(
+        javaClass.AddImports(
             classe.Implements.Select(implement => implement.GetImport(Config, Config.GetBestClassTag(implement, tag)))
         );
-        javaClass.Imports.AddRange(Config.GetDecoratorImports(classe, tag));
+        javaClass.AddImports(Config.GetDecoratorImports(classe, tag));
         javaClass.AddRange(GetConstuctors(classe, tag));
         javaClass.AddRange(GetFields(classe, tag));
         javaClass.AddRange(GetMethods(classe, tag));

@@ -17,7 +17,7 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         return classe.Type == ClassType.Interface;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         return [];
     }

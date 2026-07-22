@@ -45,7 +45,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         var javaClass = InitClass(classe, tag);
 
         using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
-        fw.Write(0, javaClass);
+        fw.Write(javaClass);
     }
 
     private string GetClassName(Class classe)
@@ -66,13 +66,13 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             ClassType = "interface",
             Visibility = "public",
         };
-        javaClass.Imports.Add(classe.GetImport(Config, tag));
+        javaClass.AddImports(classe.GetImport(Config, tag));
 
         string pk;
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
             pk = Config.GetType(Config.GetExtendedProperties(classe).Single(p => p.PrimaryKey));
-            javaClass.Imports.AddRange(
+            javaClass.AddImports(
                 Config
                     .GetExtendedProperties(classe)
                     .Single(p => p.PrimaryKey)
@@ -88,7 +88,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             else
             {
                 pk = Config.GetType(classe.PrimaryKey.Single(), forceAssociationPropertyType: true);
-                javaClass.Imports.AddRange(
+                javaClass.AddImports(
                     classe.PrimaryKey.Single().GetTypeImports(Config, tag, forceAssociationPropertyType: true)
                 );
             }
@@ -111,7 +111,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         }
 
         javaClass.Extends = $"{daosInterface}<{classe.NamePascal}, {pk}>";
-        javaClass.Imports.Add(daosInterfaceImport);
+        javaClass.AddImports(daosInterfaceImport);
 
         if (Config.DaosAbstract)
         {

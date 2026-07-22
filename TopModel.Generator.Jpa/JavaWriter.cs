@@ -8,22 +8,22 @@ namespace TopModel.Generator.Jpa;
 /// </summary>
 public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 {
+    private readonly List<string> _imports = [];
+    private readonly HashSet<string> _inlinedImports = [];
     private readonly List<WriterLine> _toWrite = [];
 
-    private List<string> _imports = [];
-
-    public void AddImport(string value)
+    public void AddImport(string import)
     {
-        _imports.Add(value);
+        _imports.Add(import);
     }
 
-    public void AddImports(IEnumerable<string> values)
+    public void AddImports(IEnumerable<string> imports)
     {
-        _imports.AddRange(values);
+        _imports.AddRange(imports);
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         writer.IndentValue = "\t";
         writer.WriteLine($"package {packageName};");
@@ -33,247 +33,33 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     }
 
     /// <summary>
-    /// Ecrit la signature de méthode avec le niveau indenté.
+    /// Ecrit la classe Java.
     /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="javaMethod">Valeur à écrire dans le flux.</param>
-    public void Write(int indentationLevel, JavaMethod javaMethod)
-    {
-        WriteLine();
-        AddImports(javaMethod.Imports);
-        if (!string.IsNullOrEmpty(javaMethod.Comment))
-        {
-            WriteDocStart(indentationLevel, javaMethod.Comment);
-            foreach (var param in javaMethod.Parameters)
-            {
-                WriteParam(indentationLevel, param.Name, param.Comment);
-            }
-
-            if (!string.IsNullOrEmpty(javaMethod.ReturnComment))
-            {
-                WriteReturns(indentationLevel, javaMethod.ReturnComment);
-            }
-
-            WriteDocEnd(indentationLevel);
-        }
-
-        Write(indentationLevel, javaMethod.Annotations);
-        var hasBody = javaMethod.Body.Count > 0;
-        _toWrite.Add(
-            new WriterLine() { Line = @$"{javaMethod.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel }
-        );
-        foreach (var bodyLine in javaMethod.Body)
-        {
-            _toWrite.Add(
-                new WriterLine()
-                {
-                    Line = bodyLine.Line,
-                    Indent = bodyLine.Line == string.Empty ? 0 : bodyLine.Indent + indentationLevel + 1,
-                }
-            );
-        }
-
-        if (hasBody)
-        {
-            _toWrite.Add(new WriterLine() { Line = "}", Indent = indentationLevel });
-        }
-    }
-
-    /// <summary>
-    /// Ecrit la classe Java avec le niveau indenté.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="javaClass">Classe à écrire dans le flux.</param>
-    public void Write(int indentationLevel, JavaClass javaClass)
+    public void Write(JavaClass javaClass)
     {
         AddImports(javaClass.Imports);
-        WriteLine();
-        if (!string.IsNullOrEmpty(javaClass.Comment))
-        {
-            WriteDocStart(indentationLevel, javaClass.Comment);
-            WriteDocEnd(indentationLevel);
-        }
-
-        Write(indentationLevel, javaClass.Annotations);
-        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
-        if (javaClass is JavaEnum javaEnum)
-        {
-            var i = -1;
-            foreach (var value in javaEnum.Values)
-            {
-                i++;
-                if (value.Comment != string.Empty)
-                {
-                    if (i > 0)
-                    {
-                        WriteLine();
-                    }
-
-                    WriteDocStart(indentationLevel + 1, value.Comment);
-                    WriteDocEnd(indentationLevel + 1);
-                }
-                _toWrite.Add(
-                    new WriterLine()
-                    {
-                        Line =
-                            value.ToString()
-                            + (
-                                i < javaEnum.Values.Count - 1 ? ","
-                                : (
-                                    javaClass.Fields.Count == 0
-                                    && javaClass.Constructors.Count == 0
-                                    && javaClass.Methods.Count == 0
-                                )
-                                    ? string.Empty
-                                : ";"
-                            ),
-                        Indent = indentationLevel + 1,
-                    }
-                );
-            }
-        }
-        foreach (var field in javaClass.Fields)
-        {
-            Write(indentationLevel + 1, field);
-        }
-
-        foreach (var constructor in javaClass.Constructors)
-        {
-            WriteConstructor(indentationLevel + 1, constructor);
-        }
-
-        foreach (var method in javaClass.Methods)
-        {
-            Write(indentationLevel + 1, method);
-        }
-
-        foreach (var innerClass in javaClass.InnerClasses)
-        {
-            Write(indentationLevel + 1, innerClass);
-        }
-
-        WriteLine(indentationLevel, "}");
+        WriteClass(0, javaClass);
     }
 
     /// <summary>
-    /// Ecrit l'annotation avec le niveau indenté.
+    /// Ecrit la signature de méthode Java pour une classe hors JavaClass.
     /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
-    public void Write(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
+    /// <param name="javaMethod">Valeur à écrire dans le flux.</param>
+    public void Write(JavaMethod javaMethod)
     {
-        foreach (
-            var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(')[0]).OrderBy(j => j.ToString().Length)
-        )
-        {
-            WriteLine(indentationLevel, annotation);
-        }
+        AddImports(javaMethod.Imports);
+        WriteMethod(1, javaMethod, classe: null);
     }
 
     /// <summary>
-    /// Ecrit la déclaration d'un champ.
+    /// Ecrit l'annotation pour une classe hors JavaClass.
     /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="field">Champ à écrire.</param>
-    public void Write(int indentationLevel, JavaField field)
+    /// <param name="javaAnnotation">Valeur à écrire dans le flux.</param>
+    public void Write(JavaAnnotation javaAnnotation)
     {
-        WriteLine();
-        AddImports(field.Imports);
-        if (field.Comment.Any())
-        {
-            WriteDocStart(indentationLevel, field.Comment[0]);
-            for (var i = 1; i < field.Comment.Count; i++)
-            {
-                WriteLine(indentationLevel, $" * {field.Comment[i]}");
-            }
-            WriteDocEnd(indentationLevel);
-        }
-
-        Write(indentationLevel, field.Annotations);
-        _toWrite.Add(new WriterLine() { Line = field.ToString(), Indent = indentationLevel });
-    }
-
-    /// <summary>
-    /// Retourne le code associé à la déclaration.
-    /// </summary>
-    /// <param name="name">Nom de la classe.</param>
-    /// <param name="modifier">Modifier.</param>
-    /// <param name="inheritedClass">Classe parente.</param>
-    /// <param name="implementingInterfaces">Interfaces implémentées.</param>
-    /// <param name="classType">Type de classe à implémenter (classe, interface...).</param>
-    public void WriteClassDeclaration(
-        string name,
-        string? modifier,
-        string? inheritedClass = null,
-        IList<string>? implementingInterfaces = null,
-        string classType = "class"
-    )
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        var sb = new StringBuilder();
-
-        if (string.IsNullOrEmpty(modifier))
-        {
-            sb.Append($"public {classType} ");
-        }
-        else
-        {
-            sb.Append($"public {modifier} {classType} ");
-        }
-
-        sb.Append(name);
-        if (!string.IsNullOrEmpty(inheritedClass))
-        {
-            sb.Append($" extends {inheritedClass}");
-        }
-
-        if (implementingInterfaces is not null && implementingInterfaces.Count > 0)
-        {
-            sb.Append($" implements {string.Join(", ", implementingInterfaces)}");
-        }
-
-        sb.Append(" {");
-        WriteLine(0, sb.ToString());
-    }
-
-    /// <summary>
-    /// Ecrit la déclaration d'un constructeur.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="constructor">Constructeur à écrire.</param>
-    public void WriteConstructor(int indentationLevel, JavaConstructor constructor)
-    {
-        WriteLine();
-        AddImports(constructor.Imports);
-        Write(indentationLevel, constructor.Annotations);
-        if (!string.IsNullOrEmpty(constructor.Comment))
-        {
-            WriteDocStart(indentationLevel, constructor.Comment);
-            foreach (var param in constructor.Parameters)
-            {
-                WriteParam(param.Name, param.Comment);
-            }
-
-            WriteDocEnd(indentationLevel);
-        }
-
-        var hasBody = constructor.Body.Count > 0;
-        _toWrite.Add(
-            new WriterLine() { Line = @$"{constructor.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel }
-        );
-        foreach (var bodyLine in constructor.Body)
-        {
-            _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Indent + indentationLevel + 1 });
-        }
-
-        if (hasBody)
-        {
-            _toWrite.Add(new WriterLine() { Line = "}", Indent = indentationLevel });
-        }
+        AddImports(javaAnnotation.Imports);
+        WriteAnnotation(0, javaAnnotation, classe: null);
     }
 
     public void WriteDocEnd(int indentationLevel)
@@ -288,21 +74,20 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="value">Valeur à écrire.</param>
     public void WriteDocStart(int indentationLevel, string value)
     {
+        value = value.Trim();
+
+        var sb = new StringBuilder();
+        sb.Append($"/**{Environment.NewLine}");
+        sb.Append(" * ").Append(value.Replace(Environment.NewLine, $"{Environment.NewLine} * "));
+        if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+        {
+            sb.Append('.');
+        }
+
         if (!string.IsNullOrEmpty(value))
         {
-            WriteLine(indentationLevel, LoadDocStart(value));
+            WriteLine(indentationLevel, sb.ToString());
         }
-    }
-
-    /// <summary>
-    /// Ecrit l'annotation avec le niveau indenté.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="javaAnnotation">Valeur à écrire dans le flux.</param>
-    public void WriteLine(int indentationLevel, JavaAnnotation javaAnnotation)
-    {
-        AddImports(javaAnnotation.Imports);
-        _toWrite.Add(new WriterLine() { Line = javaAnnotation.ToString(), Indent = indentationLevel });
     }
 
     /// <summary>
@@ -325,30 +110,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     }
 
     /// <summary>
-    /// Ecrit le commentaire de parametre.
-    /// </summary>
-    /// <param name="paramName">Nom du paramètre.</param>
-    /// <param name="value">Valeur du paramètre.</param>
-    public void WriteParam(string paramName, string value)
-    {
-        WriteParam(1, paramName, value);
-    }
-
-    /// <summary>
-    /// Ecrit le commentaire de parametre.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="paramName">Nom du paramètre.</param>
-    /// <param name="value">Valeur du paramètre.</param>
-    public void WriteParam(int indentationLevel, string paramName, string value)
-    {
-        if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
-        {
-            WriteLine(indentationLevel, LoadParam(paramName, value));
-        }
-    }
-
-    /// <summary>
     /// Ecrit le commentaire de returns.
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indention.</param>
@@ -357,88 +118,293 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     {
         if (!string.IsNullOrEmpty(value))
         {
+            var sb = new StringBuilder();
+            sb.Append(" * @return ");
+            sb.Append(value);
+            if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+            {
+                sb.Append('.');
+            }
+
             WriteLine(indentationLevel, " *");
-            WriteLine(indentationLevel, LoadReturns(value));
+            WriteLine(indentationLevel, sb.ToString());
+        }
+    }
+
+    private string GetAnnotation(JavaAnnotation annotation, JavaClass? classe)
+    {
+        var name = annotation.Name;
+
+        if (
+            _imports.Except(annotation.Imports).Any(i => i.Split('.')[^1] == annotation.Name)
+            || annotation.Name == classe?.Name
+        )
+        {
+            var fullName = annotation.Imports.FirstOrDefault(i => i.EndsWith(annotation.Name));
+            if (fullName != null)
+            {
+                name = fullName;
+                _inlinedImports.Add(fullName);
+            }
+        }
+
+        name = name.StartsWith('@') ? name : $"@{name}";
+
+        if (!annotation.Attributes.Any())
+        {
+            return name;
+        }
+        else if (
+            annotation.Attributes.Count == 1
+            && annotation.Attributes.Any(a => a.Key == "value")
+            && !annotation.Attributes.First().Value.TryPickT2(out var _, out var value)
+        )
+        {
+            return $"{name}({value.Match(s => s, v => GetAnnotation(v, classe))})";
+        }
+        else if (annotation.Attributes.Values.Any(v => v.IsT2))
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{name}(");
+            var attrList = annotation.Attributes.ToList();
+            for (var i = 0; i < attrList.Count; i++)
+            {
+                var attr = attrList[i];
+                var isLast = i == attrList.Count - 1;
+                sb.Append($"{Environment.NewLine}\t");
+                if (attr.Value.TryPickT2(out var annotations, out var v))
+                {
+                    sb.Append($"{attr.Key} = {{");
+                    for (var j = 0; j < annotations.Count; j++)
+                    {
+                        sb.Append($"{Environment.NewLine}\t\t{GetAnnotation(annotations[j], classe)}");
+                        if (j < annotations.Count - 1)
+                        {
+                            sb.Append(',');
+                        }
+                    }
+                    sb.Append($"{Environment.NewLine}\t}}");
+                }
+                else
+                {
+                    sb.Append($"{attr.Key} = {v.Match(s => s, value => GetAnnotation(value, classe))}");
+                }
+
+                if (!isLast)
+                {
+                    sb.Append(',');
+                }
+            }
+
+            sb.Append($"{Environment.NewLine})");
+            return sb.ToString();
+        }
+        else
+        {
+            var attributes = string.Join(
+                ", ",
+                annotation.Attributes.Select(a =>
+                    $"{a.Key} = {a.Value.Match(s => s, value => GetAnnotation(value, classe), s => throw new NotSupportedException())}"
+                )
+            );
+            return $"{name}({attributes})";
+        }
+    }
+
+    private string GetConstructorSignature(JavaConstructor constructor, JavaClass? classe)
+    {
+        return $@"{(!string.IsNullOrEmpty(constructor.Visibility) ? $"{constructor.Visibility} " : string.Empty)}{constructor.ReturnType}({string.Join(", ", constructor.Parameters.Select(p => GetMethodParameterDeclaration(p, classe)))})";
+    }
+
+    private string GetMethodParameterDeclaration(JavaMethodParameter parameter, JavaClass? classe)
+    {
+        return $@"{(parameter.Final ? "final " : string.Empty)}{string.Join(' ', parameter.Annotations.DistinctBy(e => e.Name.Split('(')[0]).OrderBy(a => a.Name).Select(a => GetAnnotation(a, classe)))}{(parameter.Annotations.Count > 0 ? ' ' : string.Empty)}{parameter.Type} {parameter.Name}";
+    }
+
+    private string GetMethodSignature(JavaMethod method, JavaClass? classe)
+    {
+        return $@"{(!string.IsNullOrEmpty(method.Visibility) ? $"{method.Visibility} " : string.Empty)}{(method.Static ? "static " : string.Empty)}{(method.GenericTypes.Count > 0 ? $"<{string.Join(", ", method.GenericTypes)}> " : string.Empty)}{method.ReturnType} {method.Name}({string.Join(", ", method.Parameters.Select(p => GetMethodParameterDeclaration(p, classe)))})";
+    }
+
+    /// <summary>
+    /// Ecrit l'annotation avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaAnnotation">Valeur à écrire dans le flux.</param>
+    /// <param name="classe">Classe Java associée.</param>
+    private void WriteAnnotation(int indentationLevel, JavaAnnotation javaAnnotation, JavaClass? classe)
+    {
+        _toWrite.Add(new WriterLine() { Line = GetAnnotation(javaAnnotation, classe), Indent = indentationLevel });
+    }
+
+    /// <summary>
+    /// Ecrit l'annotation avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
+    /// <param name="classe">Classe Java</param>
+    private void WriteAnnotations(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations, JavaClass? classe)
+    {
+        foreach (
+            var annotation in javaAnnotations
+                .DistinctBy(e => e.Name.Split('(')[0])
+                .OrderBy(a => GetAnnotation(a, classe).Length)
+        )
+        {
+            WriteAnnotation(indentationLevel, annotation, classe);
         }
     }
 
     /// <summary>
-    /// Retourne le commentaire du summary formatté.
+    /// Ecrit la classe Java avec le niveau indenté.
     /// </summary>
-    /// <param name="summary">Contenu du commentaire.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadDocStart(string summary)
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaClass">Classe à écrire dans le flux.</param>
+    private void WriteClass(int indentationLevel, JavaClass javaClass)
     {
-        if (string.IsNullOrEmpty(summary))
+        AddImports(javaClass.Imports);
+        WriteLine();
+        if (!string.IsNullOrEmpty(javaClass.Comment))
         {
-            throw new ArgumentNullException(nameof(summary));
+            WriteDocStart(indentationLevel, javaClass.Comment);
+            WriteDocEnd(indentationLevel);
         }
 
-        summary = summary.Trim();
-
-        var sb = new StringBuilder();
-        sb.Append($"/**{Environment.NewLine}");
-        sb.Append(" * ").Append(summary.Replace(Environment.NewLine, $"{Environment.NewLine} * "));
-        if (!summary.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+        WriteAnnotations(indentationLevel, javaClass.Annotations, javaClass);
+        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
+        if (javaClass is JavaEnum javaEnum)
         {
-            sb.Append('.');
+            var i = -1;
+            foreach (var value in javaEnum.Values)
+            {
+                i++;
+                if (value.Comment != string.Empty)
+                {
+                    if (i > 0)
+                    {
+                        WriteLine();
+                    }
+
+                    WriteDocStart(indentationLevel + 1, value.Comment);
+                    WriteDocEnd(indentationLevel + 1);
+                }
+                _toWrite.Add(
+                    new WriterLine()
+                    {
+                        Line =
+                            $"{value.Name}{(value.Parameters.Count > 0 ? $"({string.Join(", ", value.Parameters)})" : string.Empty)}"
+                            + (
+                                i < javaEnum.Values.Count - 1 ? ","
+                                : (
+                                    javaClass.Fields.Count == 0
+                                    && javaClass.Constructors.Count == 0
+                                    && javaClass.Methods.Count == 0
+                                )
+                                    ? string.Empty
+                                : ";"
+                            ),
+                        Indent = indentationLevel + 1,
+                    }
+                );
+            }
+        }
+        foreach (var field in javaClass.Fields)
+        {
+            WriteField(indentationLevel + 1, field, javaClass);
         }
 
-        return sb.ToString();
+        foreach (var constructor in javaClass.Constructors)
+        {
+            WriteConstructor(indentationLevel + 1, constructor, javaClass);
+        }
+
+        foreach (var method in javaClass.Methods)
+        {
+            WriteMethod(indentationLevel + 1, method, javaClass);
+        }
+
+        foreach (var innerClass in javaClass.InnerClasses)
+        {
+            WriteClass(indentationLevel + 1, innerClass);
+        }
+
+        WriteLine(indentationLevel, "}");
     }
 
     /// <summary>
-    /// Retourne le commentaire du param formatté.
+    /// Ecrit la déclaration d'un constructeur.
     /// </summary>
-    /// <param name="paramName">Nom du paramètre.</param>
-    /// <param name="value">Description du paramètre.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadParam(string paramName, string value)
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="constructor">Constructeur à écrire.</param>
+    /// <param name="classe">Classe.</param>
+    private void WriteConstructor(int indentationLevel, JavaConstructor constructor, JavaClass classe)
     {
-        if (string.IsNullOrEmpty(paramName))
+        WriteLine();
+        WriteAnnotations(indentationLevel, constructor.Annotations, classe);
+        if (!string.IsNullOrEmpty(constructor.Comment))
         {
-            throw new ArgumentNullException(nameof(paramName));
+            WriteDocStart(indentationLevel, constructor.Comment);
+            foreach (var param in constructor.Parameters)
+            {
+                WriteParam(1, param.Name, param.Comment);
+            }
+
+            if (!string.IsNullOrEmpty(constructor.ReturnComment))
+            {
+                WriteReturns(indentationLevel, constructor.ReturnComment);
+            }
+
+            WriteDocEnd(indentationLevel);
         }
 
-        if (string.IsNullOrEmpty(value))
+        var hasBody = constructor.Body.Count > 0;
+        _toWrite.Add(
+            new WriterLine()
+            {
+                Line = @$"{GetConstructorSignature(constructor, classe)}{(hasBody ? " {" : ";")}",
+                Indent = indentationLevel,
+            }
+        );
+        foreach (var bodyLine in constructor.Body)
         {
-            throw new ArgumentNullException(nameof(value));
+            _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Indent + indentationLevel + 1 });
         }
 
-        var sb = new StringBuilder();
-        sb.Append(" * @param ");
-        sb.Append(paramName);
-        sb.Append(' ');
-        sb.Append(value);
-        if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+        if (hasBody)
         {
-            sb.Append('.');
+            _toWrite.Add(new WriterLine() { Line = "}", Indent = indentationLevel });
         }
-
-        return sb.ToString();
     }
 
     /// <summary>
-    /// Retourne le commentaire du returns formatté.
+    /// Ecrit la déclaration d'un champ.
     /// </summary>
-    /// <param name="value">Description de la valeur retournée.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadReturns(string value)
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="field">Champ à écrire.</param>
+    /// <param name="classe">Classe.</param>
+    private void WriteField(int indentationLevel, JavaField field, JavaClass? classe)
     {
-        if (string.IsNullOrEmpty(value))
+        WriteLine();
+        if (field.Comment.Any())
         {
-            throw new ArgumentNullException(nameof(value));
+            WriteDocStart(indentationLevel, field.Comment[0]);
+            for (var i = 1; i < field.Comment.Count; i++)
+            {
+                WriteLine(indentationLevel, $" * {field.Comment[i]}");
+            }
+            WriteDocEnd(indentationLevel);
         }
 
-        var sb = new StringBuilder();
-        sb.Append(" * @return ");
-        sb.Append(value);
-        if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
-        {
-            sb.Append('.');
-        }
+        WriteAnnotations(indentationLevel, field.Annotations, classe);
 
-        return sb.ToString();
+        _toWrite.Add(
+            new WriterLine()
+            {
+                Line =
+                    $"{field.Visibility}{(field.Static ? " static" : string.Empty)}{(field.Final ? " final" : string.Empty)}{(field.Volatile ? " volatile" : string.Empty)} {field.Type} {field.Name}{(field.DefaultValue != string.Empty ? $" = {field.DefaultValue}" : string.Empty)};",
+                Indent = indentationLevel,
+            }
+        );
     }
 
     /// <summary>
@@ -447,13 +413,13 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="fw">FileWriter.</param>
     private void WriteImports()
     {
-        _imports = _imports
-            .Distinct()
+        var imports = _imports
             .Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != packageName)
+            .Except(_inlinedImports)
             .Distinct()
             .ToList();
         var currentPackage = string.Empty;
-        foreach (var import in this._imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).Order())
+        foreach (var import in imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).Order())
         {
             var package = import.Split('.')[0];
             if (package != currentPackage)
@@ -465,7 +431,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             writer.WriteLine($"import {import};");
         }
 
-        foreach (var import in this._imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).Order())
+        foreach (var import in imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).Order())
         {
             var package = import.Split('.')[0];
             if (package != currentPackage)
@@ -475,6 +441,81 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             }
 
             writer.WriteLine($"import {import};");
+        }
+    }
+
+    /// <summary>
+    /// Ecrit la signature de méthode avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaMethod">Valeur à écrire dans le flux.</param>
+    /// <param name="classe">Classe.</param>
+    private void WriteMethod(int indentationLevel, JavaMethod javaMethod, JavaClass? classe)
+    {
+        WriteLine();
+        if (!string.IsNullOrEmpty(javaMethod.Comment))
+        {
+            WriteDocStart(indentationLevel, javaMethod.Comment);
+            foreach (var param in javaMethod.Parameters)
+            {
+                WriteParam(indentationLevel, param.Name, param.Comment);
+            }
+
+            if (!string.IsNullOrEmpty(javaMethod.ReturnComment))
+            {
+                WriteReturns(indentationLevel, javaMethod.ReturnComment);
+            }
+
+            WriteDocEnd(indentationLevel);
+        }
+
+        WriteAnnotations(indentationLevel, javaMethod.Annotations, classe);
+        var hasBody = javaMethod.Body.Count > 0;
+        _toWrite.Add(
+            new WriterLine()
+            {
+                Line = @$"{GetMethodSignature(javaMethod, classe)}{(hasBody ? " {" : ";")}",
+                Indent = indentationLevel,
+            }
+        );
+        foreach (var bodyLine in javaMethod.Body)
+        {
+            _toWrite.Add(
+                new WriterLine()
+                {
+                    Line = bodyLine.Line,
+                    Indent = bodyLine.Line == string.Empty ? 0 : bodyLine.Indent + indentationLevel + 1,
+                }
+            );
+        }
+
+        if (hasBody)
+        {
+            _toWrite.Add(new WriterLine() { Line = "}", Indent = indentationLevel });
+        }
+    }
+
+    /// <summary>
+    /// Ecrit le commentaire de parametre.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="paramName">Nom du paramètre.</param>
+    /// <param name="value">Valeur du paramètre.</param>
+    private void WriteParam(int indentationLevel, string paramName, string value)
+    {
+        if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
+        {
+            var sb = new StringBuilder();
+            sb.Append(" * @param ");
+            sb.Append(paramName);
+            sb.Append(' ');
+            sb.Append(value);
+            if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+            {
+                sb.Append('.');
+            }
+
+            WriteLine(indentationLevel, sb.ToString());
         }
     }
 }

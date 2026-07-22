@@ -61,12 +61,11 @@ public static class ImportsJpaExtensions
                 yield return $"{config.GetEnumPackageName(ap.Class, config.GetBestClassTag(ap.Class, tag))}.{config.GetEnumType(ap)}";
             }
             else if (
-                p.Class != null && association.IsPersistent && p.Class.IsPersistent && !forceAssociationPropertyType
-                || !config.UseJdbc
-                    && p.Class != null
-                    && association.IsPersistent
-                    && p.Class.IsPersistent
-                    && !forceAssociationPropertyType
+                p.UseClassForAssociation
+                && p.Class != null
+                && association.IsPersistent
+                && p.Class.IsPersistent
+                && !forceAssociationPropertyType
             )
             {
                 yield return association.GetImport(config, config.GetBestClassTag(association, tag));

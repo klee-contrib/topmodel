@@ -16,7 +16,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 /**
@@ -25,7 +24,7 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(
+@jakarta.persistence.Table(
 	name = "table",
 	uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"lie_id", "tab_numero"})

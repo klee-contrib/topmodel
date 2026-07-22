@@ -165,8 +165,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
         javaField.AddRange(annotations);
         javaField.DefaultValue = GetDefaultValue(property);
-        javaField.Imports.AddRange(GetDefaultValueImports(property, tag));
-        javaField.Imports.AddRange(property.GetTypeImports(Config, tag));
+        javaField.AddImports(GetDefaultValueImports(property, tag));
+        javaField.AddImports(property.GetTypeImports(Config, tag));
         return javaField;
     }
 
@@ -193,10 +193,10 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             Visibility = "public",
         };
         var genericType = field.Type.Split('<')[0];
-        method.Imports.AddRange(property.GetTypeImports(Config, tag));
+        method.AddImports(property.GetTypeImports(Config, tag));
         if (NewableTypes.TryGetValue(genericType, out var newableType) && property.Class.IsPersistent)
         {
-            method.Imports.Add($"java.util.{newableType}");
+            method.AddImports($"java.util.{newableType}");
             method.Body.Clear();
             method
                 .AddBodyLine($"if (this.{field.Name} == null) {{")

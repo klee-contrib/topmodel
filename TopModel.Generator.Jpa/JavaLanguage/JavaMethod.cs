@@ -4,6 +4,8 @@ namespace TopModel.Generator.Jpa;
 
 public class JavaMethod
 {
+    private readonly IList<string> _imports = [];
+
     public JavaMethod(string returnType, string name)
     {
         Name = name;
@@ -14,17 +16,18 @@ public class JavaMethod
     {
         Name = name;
         ReturnType = returnType;
-        Imports.Add(import);
+        _imports.Add(import);
     }
 
     public IList<JavaAnnotation> Annotations { get; } = [];
 
     public IList<WriterLine> Body { get; } = [];
 
-    public IList<string> Imports { get; } = [];
-
-    public virtual string Signature =>
-        $@"{(!string.IsNullOrEmpty(Visibility) ? $"{Visibility} " : string.Empty)}{(Static ? "static " : string.Empty)}{(GenericTypes.Count > 0 ? $"<{string.Join(", ", GenericTypes)}> " : string.Empty)}{ReturnType} {Name}({string.Join(", ", Parameters.Select(p => p.Declaration))})";
+    public IEnumerable<string> Imports =>
+        _imports
+            .Concat(Annotations.SelectMany(a => a.Imports))
+            .Concat(Parameters.SelectMany(p => p.Imports))
+            .Distinct();
 
     public string Visibility { get; set; } = string.Empty;
 
@@ -40,14 +43,10 @@ public class JavaMethod
 
     public string Name { get; }
 
-    protected IList<string> GenericTypes { get; } = [];
+    public IList<string> GenericTypes { get; } = [];
 
     public JavaMethod AddAnnotation(JavaAnnotation annotation)
     {
-        foreach (var import in annotation.Imports)
-        {
-            Imports.Add(import);
-        }
         Annotations.Add(annotation);
         return this;
     }
@@ -85,12 +84,14 @@ public class JavaMethod
         return this;
     }
 
+    public JavaMethod AddImports(params IEnumerable<string> imports)
+    {
+        _imports.AddRange(imports);
+        return this;
+    }
+
     public virtual JavaMethod AddParameter(JavaMethodParameter parameter)
     {
-        foreach (var import in parameter.Imports)
-        {
-            Imports.Add(import);
-        }
         Parameters.Add(parameter);
         return this;
     }

@@ -41,7 +41,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         return annotations;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {

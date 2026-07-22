@@ -75,7 +75,7 @@ public class JavaUniqueValuedPropertyGenerator(
         var packageName = Config.GetEnumPackageName(classe, tag);
         using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName, codePage: null);
         var staticClass = GetStaticClass(property, classe);
-        fw.Write(0, staticClass);
+        fw.Write(staticClass);
     }
 
     private JavaClass GetStaticClass(IProperty property, Class classe)

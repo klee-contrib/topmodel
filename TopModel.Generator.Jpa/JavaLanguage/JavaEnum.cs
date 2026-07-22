@@ -10,13 +10,11 @@ public class JavaEnum : JavaClass
 
     public IList<JavaEnumValue> Values { get; } = [];
 
+    public override IEnumerable<string> Imports => base.Imports.Concat(Values.SelectMany(v => v.Imports)).Distinct();
+
     public JavaEnum Add(JavaEnumValue javaEnumValue)
     {
         Values.Add(javaEnumValue);
-        foreach (var import in javaEnumValue.Imports)
-        {
-            Imports.Add(import);
-        }
         return this;
     }
 

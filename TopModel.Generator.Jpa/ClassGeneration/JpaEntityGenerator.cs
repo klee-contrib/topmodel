@@ -225,12 +225,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         hashCodeMethod.AddBodyLine(
             $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}"))});"
         );
-        hashCodeMethod.Imports.Add("java.util.Objects");
+        hashCodeMethod.AddImports("java.util.Objects");
         javaClass.Add(hashCodeMethod);
         return javaClass;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
@@ -270,7 +270,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}",
                 },
             }.Add(JpaModelPropertyGenerator.IdAnnotation);
-            javaField.Imports.AddRange(ap.GetTypeImports(Config, tag));
+            javaField.AddImports(ap.GetTypeImports(Config, tag));
             javaField.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(ap, tag));
             if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(ap))
             {
@@ -343,7 +343,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
                 }
             );
-            method.Imports.AddRange(Config.GetDomainImports(ap, tag));
+            method.AddImports(Config.GetDomainImports(ap, tag));
             method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
             return method;
         }

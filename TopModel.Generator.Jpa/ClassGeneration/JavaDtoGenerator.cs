@@ -29,7 +29,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         return classe.Type != ClassType.Interface && !classe.IsPersistent && classe.Enum != EnumMode.Enum;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
@@ -117,7 +117,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     {
         var javaClass = base.InitClass(classe, tag);
         javaClass.Implements.Add("Serializable");
-        javaClass.Imports.Add("java.io.Serializable");
+        javaClass.AddImports("java.io.Serializable");
         return javaClass;
     }
 }

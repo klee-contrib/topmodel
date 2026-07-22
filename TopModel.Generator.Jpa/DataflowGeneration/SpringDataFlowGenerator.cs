@@ -391,8 +391,8 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                     "org.springframework.context.annotation.Bean"
                 )
             );
-        javaMethod.Imports.Add("org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder");
-        fw.Write(1, javaMethod);
+        javaMethod.AddImports("org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder");
+        fw.Write(javaMethod);
     }
 
     protected virtual void WriteClassFlow(string fileName, DataFlow dataFlow, string tag)
@@ -408,10 +408,10 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
-        fw.WriteClassDeclaration($"{dataFlow.Name}Flow", modifier: null);
+        fw.WriteLine($"public class {dataFlow.Name}Flow {{");
         fw.WriteLine();
         fw.WriteLine(1, $@"protected {dataFlow.Name}Flow() {{");
         fw.WriteLine(2, "// protected constructor to hide implicite public one");
@@ -457,13 +457,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
         fw.WriteLine(@$"@Import({{{string.Join(", ", flows.Select(f => $@"{f.Name.ToPascalCase()}Flow.class"))}}})");
 
         var className = Path.GetFileNameWithoutExtension(configFilePath);
-        fw.WriteClassDeclaration($"{className}", modifier: null);
+        fw.WriteLine($"public class {className} {{");
         fw.WriteLine(1, @$"@Bean(""{module.ToPascalCase()}Job"")");
         fw.WriteLine(1, @$"public Job {module.ToCamelCase()}Job( //");
         fw.WriteLine(1, @$"			JobRepository jobRepository, //");

@@ -70,7 +70,7 @@ public class JavaEnumClassPropertyGenerator(
         var packageName = Config.GetEnumPackageName(classe, tag);
         using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName, codePage: null);
         var javaEnum = GetJavaEnum(property, classe);
-        fw.Write(0, javaEnum);
+        fw.Write(javaEnum);
     }
 
     private JavaEnum GetJavaEnum(IProperty property, Class classe)

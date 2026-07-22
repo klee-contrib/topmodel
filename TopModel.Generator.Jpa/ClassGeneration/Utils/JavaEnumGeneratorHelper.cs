@@ -39,7 +39,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
                 Visibility = "public",
                 DefaultValue = GetAllArgsConstructorCall(classe, refValue, tag),
             };
-            field.Imports.AddRange(GetAllArgsConstructorCallImports(classe, tag));
+            field.AddImports(GetAllArgsConstructorCallImports(classe, tag));
             yield return field;
         }
     }
@@ -120,7 +120,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             DefaultValue = $"List.of({stringValues})",
             Comment = [$"Liste de toutes les valeurs de l'énumération {classe.NamePascal}."],
         };
-        field.Imports.Add("java.util.List");
+        field.AddImports("java.util.List");
         return field;
     }
 
