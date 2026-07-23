@@ -1,5 +1,9 @@
 # Changelog : Générateur Documentation
 
+## 4.2.0
+
+- [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`
+
 ## 4.1.0
 
 Compatibilité avec TopModel 4.6 (tags de propriétés).

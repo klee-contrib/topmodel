@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 4.6.2
+
+- [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`
+
+  Socle commun pour la fonctionnalité, voir les implémentations dans chaque générateur.
+
 ## 4.6.1
 
 - Fix génération des values en trop en stratégie d'héritage "distinct-tables"

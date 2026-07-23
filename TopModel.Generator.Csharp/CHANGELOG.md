@@ -1,3 +1,7 @@
+## 4.3.4
+
+Support des tags pour `useLowerCaseSqlNames` (par utilisation du socle commun).
+
 ## 4.3.3
 
 - [`11b931a`](https://github.com/klee-contrib/topmodel/commit/11b931ae1fc093b8d5c650d25d6d1b25462c9ae5) - [csharp] Fix annotations sur PK association simple

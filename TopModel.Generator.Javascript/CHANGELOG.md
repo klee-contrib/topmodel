@@ -1,3 +1,11 @@
+## 4.4.0
+
+- [#592](https://github.com/klee-contrib/topmodel/pull/592) - Propriétés required non optionnelles dans les interfaces + `optionalPrimaryKeys`
+
+  **breaking changes** :
+  - Pour `entityMode` `none` et `untyped`, les propriétés obligatoires sont désormais générées avec des propriétés non optionnelles. Le comportement est aligné sur ce que fait `@focus4/entities` utilisé par le mode typé depuis sa 12.13.
+  - Les (alias de) clés primaires ne sont plus générées comme étant facultatives (ce qui a un impact sur le point précédent). Vous pouvez restaurer le comportement précédent en utilisant `optionalPrimaryKeys: true`.
+
 ## 4.3.1
 
 - [`284312b`](https://github.com/klee-contrib/topmodel/commit/284312b525db1345da4b2829ef8282666d27a044) - [c#/jpa/sql/js] Fix '\n' en dur qui restaient

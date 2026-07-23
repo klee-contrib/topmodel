@@ -1,3 +1,18 @@
+## 4.5.0
+
+- [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`
+
+  **petit breaking change** (mais très visible) : Les identifiants SQL générés respectent désormais la valeur de `useLowerCaseSqlNames`, qui vaut `true` par défaut :
+  - Pour Postgres, vous aurez tout en minuscule, ce qui est tout à fait équivalent à ce qui était généré en majuscule auparavant, car tous les identifiants sont convertis en minuscule automatiquement. Cela permet d'avoir la même casse dans les scripts SQL que dans la base de données.
+
+    Si vous utilisez `useLowerCaseSqlNames: false` pour essayer de revert le changement, vous aurez des guillemets dans le code généré, ce qui permet d'avoir des identifiants réellement en majuscule dans la base de données, ce qui n'est pas du tout équivalent (Postgres est case-sensitive).
+
+  - Pour SQL Server (ou Oracle), renseignez `useLowerCaseSqlNames: false` pour retrouver vos majuscules, qui correspondent à la casse par défaut du SGBD. Pour SQL Server, on ne génère plus aucun `[` et `]` autour des identifiants (car ils sont inutiles), ni de référence au schéma `dbo`.
+
+  De plus, l'intégralité des mots clés SQL générés (comme `create table` ou `insert into`...) sont uniformément générés en minuscule.
+
+  Concrètement, la casse de vos fichiers SQL va complètement changer suite à cette mise à jour, mais ce n'est que pour rendre homogène la casse de vos fichiers avec celle de la base de données, donc ça n'a **aucun impact** dans la réalité.
+
 ## 4.4.0
 
 - [#590](https://github.com/klee-contrib/topmodel/pull/590) - Générer des Enums au sens PostgreSQL

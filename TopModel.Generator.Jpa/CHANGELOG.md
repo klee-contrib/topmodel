@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.5.0
+
+- [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`
+
+  **petit breaking change** : Les noms SQL sont générés en minuscule par défaut, en concordance avec les identifiants SQL générés pour Postgres. Vous pouvez renseigner `useLowerCaseSqlNames: false` si vous voulez garder les identifiants en majuscule, mais si vous utilisez Postgres vous vous basez à priori sur le fait qu'Hibernate ne respecte pas la casse des identifiants...
+
 ## 4.4.1
 
 - [`284312b`](https://github.com/klee-contrib/topmodel/commit/284312b525db1345da4b2829ef8282666d27a044) - [c#/jpa/sql/js] Fix '\n' en dur qui restaient
