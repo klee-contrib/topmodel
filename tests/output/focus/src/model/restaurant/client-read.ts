@@ -11,7 +11,7 @@ export type ClientRead = EntityToType<ClientReadEntityType>;
 export type ClientReadEntityType = typeof ClientReadEntity;
 
 export const ClientReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.personneBase.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

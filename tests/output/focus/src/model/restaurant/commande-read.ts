@@ -14,7 +14,7 @@ export type CommandeRead = EntityToType<CommandeReadEntityType>;
 export type CommandeReadEntityType = typeof CommandeReadEntity;
 
 export const CommandeReadEntity = entity({
-    id: e.field(DO_ID_2, f => f.optional()
+    id: e.field(DO_ID_2, f => f
         .label("restaurant.commande.id")
     ),
     dateCommande: e.field(DO_DATE_HEURE, f => f

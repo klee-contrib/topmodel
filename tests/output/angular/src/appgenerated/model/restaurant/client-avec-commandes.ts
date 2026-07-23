@@ -11,7 +11,7 @@ export type ClientAvecCommandes = EntityToType<ClientAvecCommandesEntityType>;
 export type ClientAvecCommandesEntityType = typeof ClientAvecCommandesEntity;
 
 export const ClientAvecCommandesEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.personneBase.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

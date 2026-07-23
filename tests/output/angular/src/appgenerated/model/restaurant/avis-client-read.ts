@@ -9,7 +9,7 @@ export type AvisClientRead = EntityToType<AvisClientReadEntityType>;
 export type AvisClientReadEntityType = typeof AvisClientReadEntity;
 
 export const AvisClientReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.avisClient.id")
     ),
     note: e.field(DO_QUANTITE, f => f

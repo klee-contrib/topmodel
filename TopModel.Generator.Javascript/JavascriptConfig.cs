@@ -54,12 +54,17 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Typage des entités générées
     /// </summary>
-    public virtual EntityMode EntityMode { get; set; } = EntityMode.TYPED;
+    public virtual EntityMode EntityMode { get; set; }
 
     /// <summary>
     /// Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées.
     /// </summary>
     public virtual bool ExtendedCompositions { get; set; }
+
+    /// <summary>
+    /// Génère les (alias de) clés primaires simples comme optionnelles dans les définitions d'entités. Il s'agit d'un paramètre de compatibilité avec l'existant, qui ne devrait plus être utilisé dans les nouveaux projets.
+    /// </summary>
+    public virtual bool OptionalPrimaryKeys { get; set; }
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération.

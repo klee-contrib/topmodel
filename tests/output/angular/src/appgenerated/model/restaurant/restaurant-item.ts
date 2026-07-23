@@ -9,7 +9,7 @@ export type RestaurantItem = EntityToType<RestaurantItemEntityType>;
 export type RestaurantItemEntityType = typeof RestaurantItemEntity;
 
 export const RestaurantItemEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.lieu.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

@@ -8,8 +8,8 @@ modules:
     version: 4.4.1
     hash: fc919dd6f316a68e5b19980ec5c6e998
   csharp:
-    version: 4.3.2
-    hash: 6562c45d82925b3d33c76448362e0444
+    version: 4.3.3
+    hash: a9002506b82278d9317c059f0f9d2429
   sql:
     version: 4.4.0
     hash: 81eea4982bd9f19a775e50792cb31c2d

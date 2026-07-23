@@ -100,14 +100,91 @@ apiClientFilePath: "api/{module}/{fileName}"
 
 Il est possible de générer les entités selon quatre modes (`entityMode`) :
 
+- `untyped` : génération d'une interface simple pour la classe, et d'une définition d'entité sans dépendances externes (valeur par défaut).
+- `none` : génération de l'interface simple uniquement.
 - `focus` : génération avec les APIs du module `@focus4/entities`.
-- `typed` : génération du DTO et de l'entité, avec typage du DTO via l'entité.
-- `untyped` : génération du DTO et de l'entité, sans typage du DTO via l'entité.
-- `none` : génération du DTO uniquement.
+- `typed` : génération avec les types du module `@focus4/entities`, ou équivalents (choix legacy, priviligier le mode `focus` si possible).
 
-Dans les deux premiers cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine.
+A l'exception du mode `none`, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. Par défaut, elle vaut `../domains`.
 
-Par défaut `domainPath` vaut `../domains`
+_Remarque : Si vous avez besoin que vos (alias de) clés primaires soient générés comme optionnel pour compatibilité avec l'existant, vous pouvez utiliser le paramètre `optionalPrimaryKeys: true`._
+
+#### Untyped
+
+Le mode `untyped` permet de générer la description des entités métier en tant que **`const`** non typés.
+
+Exemple :
+
+```ts
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+import { DO_CODE, DO_CODE_LIST, DO_ID } from "@domains";
+
+import {
+  UtilisateurDtoEntity,
+  UtilisateurDto,
+} from "../utilisateur/utilisateur-dto";
+import { DroitCode, TypeProfilCode } from "./references";
+import { SecteurDtoEntity, SecteurDto } from "./secteur-dto";
+
+export interface ProfilDto {
+  id: number;
+  typeProfilCode?: TypeProfilCode;
+  droits?: DroitCode[];
+  utilisateurs: UtilisateurDto[];
+  secteurs: SecteurDto[];
+}
+
+export const ProfilDtoEntity = {
+  id: {
+    type: "field",
+    name: "id",
+    domain: DO_ID,
+    isRequired: true,
+    label: "securite.profil.id",
+  },
+  typeProfilCode: {
+    type: "field",
+    name: "typeProfilCode",
+    domain: DO_CODE,
+    isRequired: false,
+    label: "securite.profil.typeProfilCode",
+  },
+  droits: {
+    type: "field",
+    name: "droits",
+    domain: DO_CODE_LIST,
+    isRequired: false,
+    label: "securite.profil.droits",
+  },
+  utilisateurs: {
+    type: "list",
+    entity: UtilisateurDtoEntity,
+  },
+  secteurs: {
+    type: "list",
+    entity: SecteurDtoEntity,
+  },
+} as const;
+```
+
+#### None
+
+Le mode `none` permet de générer uniquement les interfaces TypeScript sans générer les entités. Ce mode est utile lorsque vous n'avez pas besoin des métadonnées des entités.
+
+Exemple :
+
+```ts
+export interface ProfilDto {
+  id: number;
+  typeProfilCode?: TypeProfilCode;
+  droits?: DroitCode[];
+  utilisateurs: UtilisateurDto[];
+  secteurs: SecteurDto[];
+}
+```
 
 #### Focus
 
@@ -146,83 +223,6 @@ Le mode `typed` permet de générer la description des entités métier avec les
 Vous pouvez également activer l'option `extendedCompositions` pour générer toutes les propriétés sur les compositions (`label`, `isRequired`, `comment`), qui ne sont pas générées par défaut.
 
 Les types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
-
-#### None
-
-Le mode `none` permet de générer uniquement les interfaces TypeScript (DTO) sans générer les entités. Ce mode est utile lorsque vous n'avez pas besoin des métadonnées des entités.
-
-Exemple :
-
-```ts
-export interface ProfilDto {
-  id?: number;
-  typeProfilCode?: TypeProfilCode;
-  droits?: DroitCode[];
-  utilisateurs?: UtilisateurDto[];
-  secteurs?: SecteurDto[];
-}
-```
-
-#### Untyped
-
-Le mode `untyped` permet de générer la description des entités métier en tant que **`const`** non typés.
-
-Exemple :
-
-```ts
-////
-//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
-////
-
-import { DO_CODE, DO_CODE_LIST, DO_ID } from "@domains";
-
-import {
-  UtilisateurDtoEntity,
-  UtilisateurDto,
-} from "../utilisateur/utilisateur-dto";
-import { DroitCode, TypeProfilCode } from "./references";
-import { SecteurDtoEntity, SecteurDto } from "./secteur-dto";
-
-export interface ProfilDto {
-  id?: number;
-  typeProfilCode?: TypeProfilCode;
-  droits?: DroitCode[];
-  utilisateurs?: UtilisateurDto[];
-  secteurs?: SecteurDto[];
-}
-
-export const ProfilDtoEntity = {
-  id: {
-    type: "field",
-    name: "id",
-    domain: DO_ID,
-    isRequired: false,
-    label: "securite.profil.id",
-  },
-  typeProfilCode: {
-    type: "field",
-    name: "typeProfilCode",
-    domain: DO_CODE,
-    isRequired: false,
-    label: "securite.profil.typeProfilCode",
-  },
-  droits: {
-    type: "field",
-    name: "droits",
-    domain: DO_CODE_LIST,
-    isRequired: false,
-    label: "securite.profil.droits",
-  },
-  utilisateurs: {
-    type: "list",
-    entity: UtilisateurDtoEntity,
-  },
-  secteurs: {
-    type: "list",
-    entity: SecteurDtoEntity,
-  },
-} as const;
-```
 
 ### Génération des enums
 

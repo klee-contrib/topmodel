@@ -86,3 +86,10 @@ jobs:
       - name: build sample focus
         run: npm run build
         working-directory: ./tests/output/focus
+
+      - name: deps sample vanilla-js
+        run: npm i -g typescript
+        working-directory: ./tests/output/vanilla-js
+      - name: build sample vanilla-js
+        run: tsc --noEmit
+        working-directory: ./tests/output/vanilla-js

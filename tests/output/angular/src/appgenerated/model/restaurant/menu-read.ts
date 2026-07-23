@@ -12,7 +12,7 @@ export type MenuRead = EntityToType<MenuReadEntityType>;
 export type MenuReadEntityType = typeof MenuReadEntity;
 
 export const MenuReadEntity = entity({
-    id: e.field(DO_SEQ_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f
         .label("restaurant.menu.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

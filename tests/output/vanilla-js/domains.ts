@@ -1,0 +1,15 @@
+export const DO_BOOLEEN = {};
+export const DO_CODE = {};
+export const DO_ENTIER = {};
+export const DO_CODE_LISTE = {};
+export const DO_DATE = {};
+export const DO_DATE_HEURE = {};
+export const DO_EMAIL = {};
+export const DO_ID = {};
+export const DO_ID_2 = {};
+export const DO_SEQ_ID = {};
+export const DO_LIBELLE = {};
+export const DO_LISTE = {};
+export const DO_QUANTITE = {};
+export const DO_PRIX = {};
+export const DO_TELEPHONE = {};

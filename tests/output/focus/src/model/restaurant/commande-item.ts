@@ -11,7 +11,7 @@ export type CommandeItem = EntityToType<CommandeItemEntityType>;
 export type CommandeItemEntityType = typeof CommandeItemEntity;
 
 export const CommandeItemEntity = entity({
-    id: e.field(DO_ID_2, f => f.optional()
+    id: e.field(DO_ID_2, f => f
         .label("restaurant.commande.id")
     ),
     dateCommande: e.field(DO_DATE_HEURE, f => f

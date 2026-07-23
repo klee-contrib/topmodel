@@ -5,7 +5,7 @@
 version: 4.6.1
 custom:
   ../../TopModel.Generator.Csharp: 5dc914d79432cfb6b4c99cdb9c628c55
-  ../../TopModel.Generator.Javascript: 5c0bdac9b628223e1f8552abc71e277a
+  ../../TopModel.Generator.Javascript: a95f4c6793f5558f89ae723f999b6540
   ../../TopModel.Generator.Jpa: d9d87abb6b67ea994cf9e488cacb45af
   ../../TopModel.Generator.Sql: b38875216aa64b473fbd3eccbb96afc2
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
@@ -651,3 +651,38 @@ generatedFiles:
   - ../output/translation/i18n/de/out/common_de.properties
   - ../output/translation/i18n/de/out/restaurant_de.properties
   - ../output/translation/i18n/en/out/restaurant_en.properties
+  - ../output/vanilla-js/model/restaurant/avis-client-read.ts
+  - ../output/vanilla-js/model/restaurant/avis-client-write.ts
+  - ../output/vanilla-js/model/restaurant/client-avec-commandes.ts
+  - ../output/vanilla-js/model/restaurant/client-item.ts
+  - ../output/vanilla-js/model/restaurant/client-read.ts
+  - ../output/vanilla-js/model/restaurant/client-write.ts
+  - ../output/vanilla-js/model/restaurant/commande-item.ts
+  - ../output/vanilla-js/model/restaurant/commande-read.ts
+  - ../output/vanilla-js/model/restaurant/commande-resume.ts
+  - ../output/vanilla-js/model/restaurant/commande-write.ts
+  - ../output/vanilla-js/model/restaurant/employe-item.ts
+  - ../output/vanilla-js/model/restaurant/employe-read.ts
+  - ../output/vanilla-js/model/restaurant/employe-write.ts
+  - ../output/vanilla-js/model/restaurant/enums.ts
+  - ../output/vanilla-js/model/restaurant/ligne-commande-read.ts
+  - ../output/vanilla-js/model/restaurant/ligne-commande-write.ts
+  - ../output/vanilla-js/model/restaurant/menu-read.ts
+  - ../output/vanilla-js/model/restaurant/menu-write.ts
+  - ../output/vanilla-js/model/restaurant/personne-item.ts
+  - ../output/vanilla-js/model/restaurant/plat-item-readonly.ts
+  - ../output/vanilla-js/model/restaurant/plat-item.ts
+  - ../output/vanilla-js/model/restaurant/plat-read.ts
+  - ../output/vanilla-js/model/restaurant/plat-write.ts
+  - ../output/vanilla-js/model/restaurant/promotion-read.ts
+  - ../output/vanilla-js/model/restaurant/promotion-write.ts
+  - ../output/vanilla-js/model/restaurant/reservation-read.ts
+  - ../output/vanilla-js/model/restaurant/reservation-write.ts
+  - ../output/vanilla-js/model/restaurant/restaurant-avec-statistiques.ts
+  - ../output/vanilla-js/model/restaurant/restaurant-item.ts
+  - ../output/vanilla-js/model/restaurant/restaurant-read.ts
+  - ../output/vanilla-js/model/restaurant/restaurant-write.ts
+  - ../output/vanilla-js/model/restaurant/statistiques-restaurant.ts
+  - ../output/vanilla-js/model/restaurant/table-item.ts
+  - ../output/vanilla-js/model/restaurant/table-read.ts
+  - ../output/vanilla-js/model/restaurant/table-write.ts
