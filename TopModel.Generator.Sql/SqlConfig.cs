@@ -5,8 +5,14 @@ using TopModel.Generator.Sql.Ssdt;
 
 namespace TopModel.Generator.Sql;
 
+/// <summary>
+/// Paramètres pour la génération SQL.
+/// </summary>
 public class SqlConfig : GeneratorConfigBase
 {
+    /// <summary>
+    /// Mots-clés SQL réservés.
+    /// </summary>
     private static readonly HashSet<string> ReservedSqlKeywords = new(StringComparer.OrdinalIgnoreCase)
     {
         "add",
@@ -97,9 +103,8 @@ public class SqlConfig : GeneratorConfigBase
     public override bool IgnoreDefaultValues { get; set; } = true;
 
     /// <summary>
-    /// Si le langage cible de la configuration supporte les enums.
-    /// </summary
-    /// >
+    /// Indique si le langage cible de la configuration supporte les enums.
+    /// </summary>
     public override bool HasEnumSupport => true;
 
     /// <summary>
@@ -122,6 +127,9 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public virtual bool AllowTablespace => TargetDBMS != TargetDBMS.Sqlserver;
 
+    /// <summary>
+    /// Séparateur de batch SQL.
+    /// </summary>
     public virtual string BatchSeparator =>
         TargetDBMS switch
         {
@@ -131,8 +139,18 @@ public class SqlConfig : GeneratorConfigBase
         };
     public override UniqueValueGenerationMode UniqueValueGeneration => UniqueValueGenerationMode.None;
 
+    /// <summary>
+    /// Type JSON pour les compositions.
+    /// </summary>
+    public virtual string JsonType => TargetDBMS == TargetDBMS.Postgre ? "jsonb" : "json";
+
     protected override bool UseValueNameForValues => false;
 
+    /// <summary>
+    /// Indique si une propriété correspond à un booléen SQL.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <returns><see langword="true" /> si la propriété est booléenne.</returns>
     public static bool IsBoolean(IProperty property)
     {
         var domain = property.Domain;
@@ -169,9 +187,9 @@ public class SqlConfig : GeneratorConfigBase
     /// <summary>
     /// Renvoie le SQL pour appeler la valeur suivante de la séquence associée à une propriété.
     /// </summary>
-    /// <param name="property">Propriété.</param>
+    /// <param name="property">Propriété dont utiliser la séquence.</param>
     /// <param name="tag">Tag.</param>
-    /// <returns>SQL.</returns>
+    /// <returns>Expression SQL appelant la valeur suivante de la séquence.</returns>
     public virtual string GetNextValCall(IProperty property, string tag)
     {
         return TargetDBMS switch
@@ -221,19 +239,38 @@ public class SqlConfig : GeneratorConfigBase
         }
     }
 
+    /// <summary>
+    /// Retourne le nom SQL de la clé primaire d'une classe.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    /// <param name="noQuote">Indique si le nom doit rester sans guillemets.</param>
+    /// <returns>Nom SQL de la clé primaire.</returns>
     public virtual string GetSqlPrimaryKeyName(Class classe, string tag, bool noQuote = false)
     {
         var pkName = $"PK_{classe.SqlName}";
         return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? pkName.ToLower() : pkName, noQuote);
     }
 
+    /// <summary>
+    /// Retourne le nom SQL du type de table d'une classe.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    /// <param name="noQuote">Indique si le nom doit rester sans guillemets.</param>
+    /// <returns>Nom SQL du type de table.</returns>
     public virtual string GetSqlTableTypeName(Class classe, string tag, bool noQuote = false)
     {
         var typeName = classe.SqlName + "_TABLE_TYPE";
         return FixSqlIdentifier(UseLowerCaseSqlNames(tag) ? typeName.ToLower() : typeName, noQuote);
     }
 
-    public string GetType(IProperty property)
+    /// <summary>
+    /// Retourne le type SQL d'une propriété.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <returns>Type SQL.</returns>
+    public virtual string GetType(IProperty property)
     {
         var type = GetType(property, forceAssociationPropertyType: true);
 
@@ -289,8 +326,8 @@ public class SqlConfig : GeneratorConfigBase
     {
         identifier = base.FixSqlIdentifier(identifier, noQuote);
 
-        var quoteS = TargetDBMS == TargetDBMS.Sqlserver ? "[" : "\"";
-        var quoteE = TargetDBMS == TargetDBMS.Sqlserver ? "]" : "\"";
+        var quoteStart = TargetDBMS == TargetDBMS.Sqlserver ? "[" : "\"";
+        var quoteEnd = TargetDBMS == TargetDBMS.Sqlserver ? "]" : "\"";
 
         if (
             noQuote
@@ -306,7 +343,7 @@ public class SqlConfig : GeneratorConfigBase
             return identifier;
         }
 
-        return $"{quoteS}{identifier}{quoteE}";
+        return $"{quoteStart}{identifier}{quoteEnd}";
     }
 
     protected override string QuoteValue(string value)

@@ -6,22 +6,13 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public abstract class AbstractSqlTablesGenerator(
-    ILogger<AbstractSqlTablesGenerator> logger,
-    IFileWriterProvider writerProvider
-) : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
+/// <summary>
+/// Générateur SQL procédural pour les déclarations de tables.
+/// </summary>
+public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterProvider writerProvider)
+    : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlTablesGen";
-
-    /// <summary>
-    /// Type json pour les compositions.
-    /// </summary>
-    protected virtual string JsonType => "json";
-
-    /// <summary>
-    /// Indique si le moteur de BDD visé supporte "primary key clustered ()".
-    /// </summary>
-    protected abstract bool SupportsClusteredKey { get; }
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
@@ -50,64 +41,54 @@ public abstract class AbstractSqlTablesGenerator(
         }
     }
 
-    protected virtual void WriteBooleanCheckConstraints(
-        IFileWriter writer,
-        IEnumerable<IProperty> properties,
-        string tag
-    ) { }
-
-    private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(Config.TableTablespace);
-
-    private string GetTablespaceDeclaration(string? tablespace)
-    {
-        bool ShouldGenerateTablespace()
-        {
-            if (!Config.AllowTablespace)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(tablespace))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        if (ShouldGenerateTablespace())
-        {
-            return $"\r\nTABLESPACE  {tablespace} ";
-        }
-
-        return string.Empty;
-    }
-
     /// <summary>
-    /// Ecrit les contraintes de check.
+    /// Ecrit les contraintes de check (pour Oracle, pour les booléens).
     /// </summary>
-    /// <param name="writer">Flux crebas.</param>
+    /// <param name="writer">Writer.</param>
     /// <param name="properties">Liste des propriétés persistantes.</param>
-    private void WriteCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties, string tag)
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteCheckConstraints(IFileWriter writer, IEnumerable<IProperty> properties, string tag)
     {
-        WriteBooleanCheckConstraints(writer, properties, tag);
+        if (Config.TargetDBMS != TargetDBMS.Oracle)
+        {
+            return;
+        }
+
+        /* En Oracle, en 2024, il n'y a pas de type booléen. On utilise un numeric(1) et on rajoute une check constraint pour forcer les valeurs 0 et 1. */
+        bool IsNumericBoolean(IProperty property)
+        {
+            var sqlType = Config.GetType(property);
+            return sqlType == "number(1)" && SqlConfig.IsBoolean(property);
+        }
+
+        foreach (var property in properties)
+        {
+            if (IsNumericBoolean(property))
+            {
+                writer.WriteLine(
+                    $"\tconstraint CHK_{property.SqlName} check ({Config.GetSqlName(property, tag)} in (0,1)),"
+                );
+            }
+        }
     }
 
     /// <summary>
     /// Ajoute la fin de la déclaration de la table.
     /// </summary>
-    /// <param name="writer">Flux d'écriture crebas.</param>
-    private void WriteEndTableDeclaration(IFileWriter writer)
+    /// <param name="writer">Writer.</param>
+    protected virtual void WriteEndTableDeclaration(IFileWriter writer)
     {
-        writer.WriteLine($"){GetTableTablespaceDeclaration()}{Config.BatchSeparator}");
+        writer.WriteLine($"){Config.GetTablespaceDeclaration(Config.TableTablespace)}{Config.BatchSeparator}");
     }
 
     /// <summary>
     /// Ajoute les contraintes de clés primaires.
     /// </summary>
     /// <param name="writer">Writer.</param>
-    /// <param name="classe">Classe.</param>
-    private void WritePrimaryKeyConstraint(
+    /// <param name="classe">Classe pour laquelle écrire la contrainte.</param>
+    /// <param name="properties">Propriétés persistantes de la classe.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WritePrimaryKeyConstraint(
         IFileWriter writer,
         Class classe,
         IEnumerable<IProperty> properties,
@@ -120,7 +101,7 @@ public abstract class AbstractSqlTablesGenerator(
         }
 
         writer.Write($"\tconstraint {Config.GetSqlPrimaryKeyName(classe, tag)} primary key ");
-        if (SupportsClusteredKey)
+        if (Config.TargetDBMS == TargetDBMS.Sqlserver)
         {
             writer.Write("clustered ");
         }
@@ -130,7 +111,13 @@ public abstract class AbstractSqlTablesGenerator(
         );
     }
 
-    private void WriteTableDeclaration(Class classe, IFileWriter writer, string tag)
+    /// <summary>
+    /// Ecrit la déclaration SQL d'une table.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteTableDeclaration(Class classe, IFileWriter writer, string tag)
     {
         var fkPropertiesList = new List<IProperty>();
 
@@ -141,14 +128,7 @@ public abstract class AbstractSqlTablesGenerator(
 
         if (classe.Enum == EnumMode.Enum)
         {
-            var valeurs = string.Join(
-                ", ",
-                Config
-                    .GetAllValues(classe)
-                    .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
-            );
-            writer.Write($"create type {Config.GetSqlName(classe, tag)} as enum ({valeurs}); ");
-            writer.WriteLine();
+            Config.WriteEnumType(writer, classe, tag);
         }
         else
         {

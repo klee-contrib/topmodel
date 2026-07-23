@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Sql.Ssdt;
 
 /// <summary>
-/// Scripter permettant d'écrire les scripts de création d'une table SQL avec :
+/// Générateur permettant d'écrire les scripts de création d'une table SQL avec :
 /// - sa structure
 /// - sa contrainte PK
 /// - ses contraintes FK
@@ -37,14 +37,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
         if (classe.Enum == EnumMode.Enum)
         {
-            var valeurs = string.Join(
-                ", ",
-                Config
-                    .GetAllValues(classe)
-                    .Select(v => $"{Config.FormatValue(classe.EnumKey!, v.Value[classe.EnumKey])}")
-            );
-            writer.Write($"create type {Config.GetSqlName(classe, tag)} as enum ({valeurs}); ");
-            writer.WriteLine();
+            Config.WriteEnumType(writer, classe, tag);
 
             return;
         }
@@ -74,7 +67,8 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// Ecrit la création de la propriété de description de la table.
     /// </summary>
     /// <param name="writer">Writer.</param>
-    /// <param name="classe">Classe de la table.</param>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
     protected virtual void WriteComments(IFileWriter writer, Class classe, string tag)
     {
         writer.WriteLine();
@@ -84,8 +78,8 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Ecrit le pied du script.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="classe">Classe de la table.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
     protected virtual void WriteCreateTableClosing(IFileWriter writer, Class classe)
     {
         ArgumentNullException.ThrowIfNull(writer);
@@ -98,18 +92,20 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Ecrit l'ouverture du create table.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="table">Table.</param>
-    protected virtual void WriteCreateTableOpening(IFileWriter writer, Class table, string tag)
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteCreateTableOpening(IFileWriter writer, Class classe, string tag)
     {
-        writer.WriteLine($"create table {Config.GetSqlName(table, tag)} (");
+        writer.WriteLine($"create table {Config.GetSqlName(classe, tag)} (");
     }
 
     /// <summary>
-    /// Génère la contrainte de clef étrangère.
+    /// Génère la contrainte de clé étrangère.
     /// </summary>
-    /// <param name="sb">Flux d'écriture.</param>
-    /// <param name="property">Propriété portant la clef étrangère.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="property">Propriété portant la clé étrangère.</param>
+    /// <param name="tag">Tag.</param>
     protected virtual void WriteForeignKeyConstraint(IFileWriter writer, IProperty property, string tag)
     {
         var referenceClass = property.Association!;
@@ -128,7 +124,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Ecrit l'entête du fichier.
     /// </summary>
-    /// <param name="writer">Flux.</param>
+    /// <param name="writer">Writer.</param>
     /// <param name="tableName">Nom de la table.</param>
     protected virtual void WriteHeader(IFileWriter writer, string tableName)
     {
@@ -136,6 +132,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         writer.WriteLine();
     }
 
+    /// <summary>
+    /// Ecrit un index.
+    /// </summary>
+    /// <param name="writer">Writer.</param>
+    /// <param name="indexName">Nom de l'index.</param>
+    /// <param name="tableName">Nom de la table.</param>
+    /// <param name="propertyNames">Noms des propriétés.</param>
     protected virtual void WriteIndex(
         IFileWriter writer,
         string indexName,
@@ -151,6 +154,12 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         writer.WriteLine($"){Config.BatchSeparator}");
     }
 
+    /// <summary>
+    /// Ecrit un index du modèle.
+    /// </summary>
+    /// <param name="index">Index.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
     protected virtual void WriteIndex(IFileWriter writer, IndexDefinition index, string tag)
     {
         WriteIndex(
@@ -164,9 +173,10 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Génère les indexes portant sur les FK.
     /// </summary>
-    /// <param name="writer">Flux d'écriture.</param>
-    /// <param name="tableName">Nom de la table.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
     /// <param name="properties">Champs.</param>
+    /// <param name="tag">Tag.</param>
     protected virtual void WriteIndexes(IFileWriter writer, Class classe, IEnumerable<IProperty> properties, string tag)
     {
         foreach (
@@ -212,15 +222,16 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Ecrit les instructions à l'intérieur du create table.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="table">Table.</param>
-    protected virtual void WriteInsideInstructions(IFileWriter writer, Class table, string tag)
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteInsideInstructions(IFileWriter writer, Class classe, string tag)
     {
-        var properties = Config.GetProperties(table).ToList();
+        var properties = Config.GetProperties(classe).ToList();
 
         foreach (var property in properties)
         {
-            Config.WriteColumn(writer, table, property, tag);
+            Config.WriteColumn(writer, classe, property, tag);
             if (properties[^1] != property)
             {
                 writer.WriteLine(",");
@@ -228,7 +239,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         }
 
         // Primary Key
-        WritePkLine(writer, table, properties, tag);
+        WritePkLine(writer, classe, properties, tag);
 
         // Foreign key constraints
         foreach (
@@ -243,7 +254,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         }
 
         // Unique constraints (clés unique déclarées via "unique:" et index uniques via "indexes:")
-        foreach (var index in table.Indexes.Where(idx => idx.Unique))
+        foreach (var index in classe.Indexes.Where(index => index.Unique))
         {
             writer.WriteLine(",");
             writer.Write("\t");
@@ -254,8 +265,10 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <summary>
     /// Ecrit la ligne de création de la PK.
     /// </summary>
-    /// <param name="sb">Flux.</param>
+    /// <param name="writer">Writer.</param>
     /// <param name="classe">Classe.</param>
+    /// <param name="properties">Propriétés persistantes de la classe.</param>
+    /// <param name="tag">Tag.</param>
     protected virtual void WritePkLine(IFileWriter writer, Class classe, IEnumerable<IProperty> properties, string tag)
     {
         var pkCount = 0;
@@ -271,12 +284,14 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
             $"constraint {Config.GetSqlPrimaryKeyName(classe, tag)} primary key{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " clustered" : "")} ("
         );
 
-        foreach (var pk in properties.Where(p => p.PrimaryKey))
+        foreach (var primaryKey in properties.Where(property => property.PrimaryKey))
         {
             ++pkCount;
-            writer.Write($"{Config.GetSqlName(pk, tag)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}");
+            writer.Write(
+                $"{Config.GetSqlName(primaryKey, tag)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}"
+            );
 
-            if (pkCount < properties.Count(p => p.PrimaryKey))
+            if (pkCount < properties.Count(property => property.PrimaryKey))
             {
                 writer.Write(", ");
             }
@@ -289,11 +304,12 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// Ecrit un index unique.
     /// </summary>
     /// <param name="writer">Writer.</param>
-    /// <param name="idw">Index unique de la table.</param>
-    protected virtual void WriteUniqueKeyConstraint(IFileWriter writer, IndexDefinition idx, string tag)
+    /// <param name="index">Index unique de la table.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteUniqueKeyConstraint(IFileWriter writer, IndexDefinition index, string tag)
     {
         writer.Write(
-            $"constraint {Config.GetSqlName(idx, tag)} unique{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " nonclustered" : "")} ({string.Join(", ", idx.Properties.Select(p => $"{Config.GetSqlName(p, tag)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}"))})"
+            $"constraint {Config.GetSqlName(index, tag)} unique{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " nonclustered" : "")} ({string.Join(", ", index.Properties.Select(p => $"{Config.GetSqlName(p, tag)}{(Config.TargetDBMS == TargetDBMS.Sqlserver ? " asc" : "")}"))})"
         );
     }
 }

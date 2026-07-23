@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
-using TopModel.Generator.Sql.Procedural.Oracle;
-using TopModel.Generator.Sql.Procedural.Postgres;
-using TopModel.Generator.Sql.Procedural.SqlServer;
 using TopModel.Generator.Sql.Ssdt;
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Sql;
 
+/// <summary>
+/// Enregistre les générateurs SQL.
+/// </summary>
 public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 {
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
@@ -50,27 +50,15 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
             CombinePath(config.OutputDirectory, config.Procedural, c => c.TypesFileName);
             CombinePath(config.OutputDirectory, config.Procedural, c => c.ResourcesFileName);
 
-            if (config.TargetDBMS == TargetDBMS.Oracle)
-            {
-                services.AddGenerator<OracleTablesGenerator, SqlConfig>(config, number);
-                services.AddGenerator<OracleValuesGenerator, SqlConfig>(config, number);
-            }
-
-            if (config.TargetDBMS == TargetDBMS.Postgre)
-            {
-                services.AddGenerator<PostgresTablesGenerator, SqlConfig>(config, number);
-                services.AddGenerator<PostgresValuesGenerator, SqlConfig>(config, number);
-            }
+            services.AddGenerator<SqlTablesGenerator, SqlConfig>(config, number);
+            services.AddGenerator<SqlIndexesKeysGenerator, SqlConfig>(config, number);
+            services.AddGenerator<SqlValuesGenerator, SqlConfig>(config, number);
+            services.AddGenerator<SqlResourcesGenerator, SqlConfig>(config, number);
 
             if (config.TargetDBMS == TargetDBMS.Sqlserver)
             {
-                services.AddGenerator<SqlServerTablesGenerator, SqlConfig>(config, number);
                 services.AddGenerator<SqlServerTypesGenerator, SqlConfig>(config, number);
-                services.AddGenerator<SqlServerValuesGenerator, SqlConfig>(config, number);
             }
-
-            services.AddGenerator<SqlIndexesKeysGenerator, SqlConfig>(config, number);
-            services.AddGenerator<SqlResourcesGenerator, SqlConfig>(config, number);
 
             if (config.Procedural.CommentsFileName != null)
             {

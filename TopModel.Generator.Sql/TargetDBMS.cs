@@ -1,5 +1,8 @@
 ﻿namespace TopModel.Generator.Sql;
 
+/// <summary>
+/// SGBD cible pour la génération SQL.
+/// </summary>
 public enum TargetDBMS
 {
     /// <summary>

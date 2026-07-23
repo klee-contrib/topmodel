@@ -7,7 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Sql.Ssdt;
 
 /// <summary>
-/// Scripter permettant d'écrire les scripts de création d'un type de table SQL.
+/// Générateur permettant d'écrire les scripts de création d'un type de table SQL.
 /// </summary>
 public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGeneratorBase<SqlConfig>(logger, writerProvider)
@@ -45,10 +45,22 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     }
 
     /// <summary>
+    /// Ecrit le SQL pour une colonne.
+    /// </summary>
+    /// <param name="sb">StringBuilder.</param>
+    /// <param name="property">Propriété.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteColumn(StringBuilder sb, IProperty property, string tag)
+    {
+        var persistentType = Config.GetType(property);
+        sb.Append(Config.GetSqlName(property, tag)).Append(' ').Append(persistentType).Append(" null");
+    }
+
+    /// <summary>
     /// Ecrit le pied du script.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    private static void WriteCreateTableClosing(IFileWriter writer)
+    /// <param name="writer">Writer.</param>
+    protected virtual void WriteCreateTableClosing(IFileWriter writer)
     {
         writer.WriteLine(")");
         writer.WriteLine("go");
@@ -56,35 +68,25 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     }
 
     /// <summary>
+    /// Ecrit l'ouverture du create table.
+    /// </summary>
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteCreateTableOpening(IFileWriter writer, Class classe, string tag)
+    {
+        writer.WriteLine($"Create type {Config.GetSqlTableTypeName(classe, tag)} as Table (");
+    }
+
+    /// <summary>
     /// Ecrit l'entête du fichier.
     /// </summary>
-    /// <param name="writer">Flux.</param>
+    /// <param name="writer">Writer.</param>
     /// <param name="tableName">Nom de la table.</param>
-    private static void WriteHeader(IFileWriter writer, string tableName)
+    protected virtual void WriteHeader(IFileWriter writer, string tableName)
     {
         writer.WriteSqlFileHeader(description: $"Création du type de table {tableName}.");
         writer.WriteLine();
-    }
-
-    /// <summary>
-    /// Ecrit le SQL pour une colonne.
-    /// </summary>
-    /// <param name="sb">Flux.</param>
-    /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IProperty property, string tag)
-    {
-        var persistentType = Config.GetType(property);
-        sb.Append(Config.GetSqlName(property, tag)).Append(' ').Append(persistentType).Append(" null");
-    }
-
-    /// <summary>
-    /// Ecrit l'ouverture du create table.
-    /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="table">Table.</param>
-    private void WriteCreateTableOpening(IFileWriter writer, Class table, string tag)
-    {
-        writer.WriteLine($"Create type {Config.GetSqlTableTypeName(table, tag)} as Table (");
     }
 
     /// <summary>
@@ -92,7 +94,8 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WriteInsertKeyLine(StringBuilder sb, Class classe, string tag)
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteInsertKeyLine(StringBuilder sb, Class classe, string tag)
     {
         var insertKeyProp = Config.GetProperties(classe).SingleOrDefault(p => p.Name == ScriptUtils.InsertKeyName);
         if (insertKeyProp != null)
@@ -104,16 +107,17 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <summary>
     /// Ecrit les instructions à l'intérieur du create table.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="table">Table.</param>
-    private void WriteInsideInstructions(IFileWriter writer, Class table, string tag)
+    /// <param name="writer">Writer.</param>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteInsideInstructions(IFileWriter writer, Class classe, string tag)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
         var sb = new StringBuilder();
 
         // Colonnes
-        foreach (var property in Config.GetProperties(table))
+        foreach (var property in Config.GetProperties(classe))
         {
             if (
                 (!property.PrimaryKey || Config.ShouldQuoteValue(property))
@@ -128,7 +132,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 
         // InsertKey.
         sb.Clear();
-        WriteInsertKeyLine(sb, table, tag);
+        WriteInsertKeyLine(sb, classe, tag);
         definitions.Add(sb.ToString());
 
         // Ecriture de la liste concaténée.

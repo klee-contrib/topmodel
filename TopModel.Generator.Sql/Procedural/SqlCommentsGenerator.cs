@@ -5,6 +5,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
+/// <summary>
+/// Générateur SQL procédural pour les commentaires de tables et de colonnes.
+/// </summary>
 public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
@@ -37,13 +40,14 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
     }
 
     /// <summary>
-    /// Déclaration de la table.
+    /// Ecrit les commentaires SQL d'une table.
     /// </summary>
-    /// <param name="classe">La table à ecrire.</param>
-    /// <param name="writerComment">Flux d'écritures des commentaires.</param>
-    private void WriteTableDeclaration(Class classe, IFileWriter writerComment, string tag)
+    /// <param name="classe">Classe.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteTableDeclaration(Class classe, IFileWriter writer, string tag)
     {
-        writerComment.WriteLine();
-        writerComment.WriteComments(classe, Config, tag);
+        writer.WriteLine();
+        writer.WriteComments(classe, Config, tag);
     }
 }
