@@ -178,7 +178,7 @@ public class JavascriptResourceGenerator(
             fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
         }
 
-        var i = 1;
+        var pi = 1;
         if (Config.TranslateProperties == true)
         {
             foreach (var property in container.OrderBy(p => p.PropertyNameCamel, StringComparer.Ordinal))
@@ -195,7 +195,7 @@ public class JavascriptResourceGenerator(
                 fw.Write(indentLevel + 1, $"{Quote(property.PropertyNameCamel)}: ");
                 fw.Write($@"""{translation}""");
                 fw.WriteLine(
-                    container.Count() == i++
+                    container.Count() == pi++
                     && !onlyProperties
                     && !(
                         Config.TranslateReferences == true
@@ -214,13 +214,13 @@ public class JavascriptResourceGenerator(
             && classe?.Values.Count > 0
         )
         {
-            i = 1;
+            var rvi = 1;
             fw.WriteLine(indentLevel + 1, @$"{Quote("values")}: {{");
             foreach (var refValue in classe.Values)
             {
                 fw.Write(indentLevel + 2, $@"{Quote(refValue.Name)}: ");
                 fw.Write($@"""{_translationStore.GetTranslation(refValue, lang)}""");
-                fw.WriteLine(classe.Values.Count == i++ ? string.Empty : ",");
+                fw.WriteLine(classe.Values.Count == rvi++ ? string.Empty : ",");
             }
 
             fw.WriteLine(indentLevel + 1, "}");
@@ -245,11 +245,11 @@ public class JavascriptResourceGenerator(
         var modules = classes.GroupBy(c =>
             c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0)?.ToCamelCase()
         );
-        var u = 1;
+        var submoduleIndex = 1;
 
         var mainModuleClasses = modules
-            .Where(c => c.Key == null)
-            .SelectMany(c => c.Select(p => p.Key.NameCamel))
+            .Where(module => module.Key == null)
+            .SelectMany(module => module.Select(container => container.Key.NameCamel))
             .ToHashSet();
         var extraSubModuleProperties = new Dictionary<string, IGrouping<IPropertyContainer, IProperty>>();
 
@@ -262,7 +262,10 @@ public class JavascriptResourceGenerator(
                 {
                     extraSubModuleProperties.Add(
                         key,
-                        modules.Where(m => m.Key == null).SelectMany(p => p.Where(c => c.Key.NameCamel == key)).Single()
+                        modules
+                            .Where(module => module.Key == null)
+                            .SelectMany(module => module.Where(container => container.Key.NameCamel == key))
+                            .Single()
                     );
                 }
             }
@@ -270,17 +273,17 @@ public class JavascriptResourceGenerator(
 
         foreach (var submodule in modules.OrderBy(m => m.Key, StringComparer.Ordinal))
         {
-            var isLast = u++ == modules.Count();
+            var isLast = submoduleIndex++ == modules.Count();
             if (submodule.Key == null)
             {
-                var i = 1;
+                var ci = 1;
                 foreach (
                     var container in submodule
-                        .Where(c => !extraSubModuleProperties.ContainsKey(c.Key.NameCamel))
-                        .OrderBy(c => c.Key.NameCamel)
+                        .Where(container => !extraSubModuleProperties.ContainsKey(container.Key.NameCamel))
+                        .OrderBy(container => container.Key.NameCamel)
                 )
                 {
-                    WriteClasseNode(fw, container, isComment, classes.Count() == i++ && isLast, lang, level);
+                    WriteClasseNode(fw, container, isComment, classes.Count() == ci++ && isLast, lang, level);
                 }
             }
             else

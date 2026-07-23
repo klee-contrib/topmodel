@@ -8,7 +8,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Javascript;
 
 /// <summary>
-/// Générateur des objets de traduction javascripts.
+/// Générateur de clients d'API JavaScript basés sur fetch.
 /// </summary>
 public class JavascriptApiClientGenerator(
     ILogger<JavascriptApiClientGenerator> logger,

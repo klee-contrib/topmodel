@@ -8,7 +8,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Javascript;
 
 /// <summary>
-/// Générateur des objets de traduction javascripts.
+/// Générateur de clients d'API Nuxt.
 /// </summary>
 public class NuxtApiClientGenerator(ILogger<NuxtApiClientGenerator> logger, IFileWriterProvider writerProvider)
     : EndpointsGeneratorBase<JavascriptConfig>(logger, writerProvider)

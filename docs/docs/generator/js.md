@@ -1,6 +1,10 @@
 # JS Generator
 
-_Remarque : tous les imports spécifiés pour le générateur JS dans les domaines et la configuration seront relatifs au répertoire de génération (`outputDirectory`) s'ils commencent par un `.` (exemple : `./common` ou `../domains`). Ils seront considérés comme des imports de modules sinon (exemple : `@/domains` ou `luxon`). Les imports dans les implémentations de domaines doivent aussi inclure l'objet importé dans leur chemin (exemple, pour avoir `import {DateTime} from "luxon"`, il faut écrire `luxon/DateTime`)._
+> **Note sur les imports :** Les imports spécifiés dans la configuration du générateur JS suivent cette règle :
+>
+> - S'ils commencent par `.` (ex : `./common` ou `../domains`), ils sont **relatifs** au répertoire de génération
+> - Sinon, ils sont traités comme des **imports de modules** (ex : `@/domains` ou `luxon`)
+> - Les domaines importés doivent inclure l'objet dans le chemin (ex : `luxon/DateTime` pour `import {DateTime} from "luxon"`)
 
 ## Configuration
 
@@ -46,7 +50,7 @@ export function getProfil(
 
 #### Legacy
 
-Le mode `legacy` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définition d'une méthode `fetch`. Par défaut, cette méthode est importée de `@focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
+Le mode `legacy` permet de générer un fichier TypeScript contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définition d'une méthode `fetch`. Par défaut, cette méthode est importée de `@focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
 
 Exemple :
 
@@ -86,9 +90,9 @@ L'extension `.ts` est ajoutée automatiquement.
 
 **Variables disponibles dans les chemins :**
 
-- `{module}` : Le module de la classe/endpoint (ex: `securite`)
-- `{lang}` : La langue pour les fichiers de ressources (ex: `fr`, `en`)
-- `{fileName}` : Le nom du fichier pour les endpoints (défini dans la configuration des endpoints du modèle)
+- **`{module}`** : Module de la classe/endpoint (ex : `securite`)
+- **`{lang}`** : Langue pour les fichiers de ressources (ex : `fr`, `en`)
+- **`{fileName}`** : Nom du fichier pour les endpoints (défini dans la configuration des endpoints)
 
 Exemple :
 
@@ -98,14 +102,16 @@ apiClientFilePath: "api/{module}/{fileName}"
 
 ### Modes de génération des entités
 
-Il est possible de générer les entités selon quatre modes (`entityMode`) :
+Le paramètre `entityMode` permet de choisir le type de génération pour les entités. Quatre modes sont disponibles :
 
-- `untyped` : génération d'une interface simple pour la classe, et d'une définition d'entité sans dépendances externes (valeur par défaut).
-- `none` : génération de l'interface simple uniquement.
-- `focus` : génération avec les APIs du module `@focus4/entities`.
-- `typed` : génération avec les types du module `@focus4/entities`, ou équivalents (choix legacy, priviligier le mode `focus` si possible).
+| Mode      | Description                                                                                   |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `untyped` | Génère une interface et une définition d'entité sans dépendances externes (**par défaut**)    |
+| `none`    | Génère uniquement l'interface TypeScript, sans objet de définition                            |
+| `focus`   | Utilise les APIs du module `@focus4/entities` pour générer les entités                        |
+| `typed`   | Utilise les types du module `@focus4/entities` sans les APIs (mode legacy - préférer `focus`) |
 
-A l'exception du mode `none`, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. Par défaut, elle vaut `../domains`.
+**Configuration des domaines :** À l'exception du mode `none`, la génération utilise la propriété `domainPath` (par défaut : `../domains`) pour importer les définitions de domaine.
 
 _Remarque : Si vous avez besoin que vos (alias de) clés primaires soient générés comme optionnel pour compatibilité avec l'existant, vous pouvez utiliser le paramètre `optionalPrimaryKeys: true`._
 
@@ -190,7 +196,7 @@ export interface ProfilDto {
 
 Le mode `focus` permet de générer la description des entités métier en utilisant les APIs et les types exposés par le module NPM `@focus4/entities`, [documenté ici](https://klee-contrib.github.io/focus4/?path=/docs/mod%C3%A8le-m%C3%A9tier-entit%C3%A9s-et-champs--docs). Ce module n'est **pas lié à Focus** et peut être utilisé par **n'importe quel framework JS**.
 
-Il génère des entitiés sous la forme :
+Il génère des entités sous la forme :
 
 ```ts
 import {e, entity} from "@focus4/entities";
@@ -218,7 +224,7 @@ Vous pouvez surcharger l'import de `@focus4/entities` avec la propriété `entit
 
 #### Typed
 
-Le mode `typed` permet de générer la description des entités métier avec les mêmes types que le mode `Focus`, mais sans les APIs pour les construire. Les objets sont écrits en JS et en TS pur. Il s'agit d'un mode "legacy", car il faut mieux utiliser le mode `Focus` si on veut des objets typés.
+Le mode `typed` permet de générer la description des entités métier avec les mêmes types que le mode `focus`, mais sans les APIs pour les construire. Les objets sont écrits en JavaScript et TypeScript pur. Il s'agit d'un mode **legacy** : les APIs utilisées par le mode `focus` permettent un résultat identique en étant beaucoup moins verbeux.
 
 Vous pouvez également activer l'option `extendedCompositions` pour générer toutes les propriétés sur les compositions (`label`, `isRequired`, `comment`), qui ne sont pas générées par défaut.
 
@@ -226,7 +232,7 @@ Les types sont importés par défaut de `@focus4/stores`, mais ce chemin peut ê
 
 ### Génération des enums
 
-**On ne génère pas de définition d'entité pour les enums**. A la place, elles seront toutes agrégées dans un fichier `enums.ts` (relativement au `modelRootPath`, donc il y aura à priori au moins un fichier par module). Le nom de ce fichier est configurable via le paramètre de configuration `enumsFileName`.
+Les énumérations ne génèrent **pas** de définition d'entité. À la place, elles sont agrégées dans un fichier `enums.ts` par module (relativement au `modelRootPath`). Le nom de ce fichier peut être personnalisé avec le paramètre `enumsFileName`.
 
 Pour chaque classe, on génèrera :
 
@@ -285,14 +291,14 @@ export const statutCommandeList: StatutCommandeObject[] = [
 Si `reference: true` sur une classe, alors un objet décrivant la liste de référence sera généré en plus :
 
 - Pour une classe non enum, ou une classe enum non readonly, il sera de la forme `{type, valueKey, labelKey}`
-- Pour une classe enum reaondly ou `enum: true` il sera de la forme `{list, valueKey, labelKey}`
+- Pour une classe `enum: true` ou enum readonly, il sera de la forme `{list, valueKey, labelKey}`
 
-Ces propriétés sont :
+Ces propriétés incluent :
 
-- `type`, le type Typescript de la classe (généré comme `{} as Classe`)/
-- `list`, la liste des valeurs de la classe.
-- `valueKey`, le nom de la clé de la classe de référence (la clé primaire ou la clé d'unicité qui la remplace)
-- `labelKey`, le nom de la `DefaultProperty` de la classe de référence.
+- **`type`** : Type TypeScript de la classe (généré comme `{} as Classe`)
+- **`list`** : Liste des valeurs de la classe
+- **`valueKey`** : Nom de la propriété de clé (clé primaire ou clé d'unicité équivalente)
+- **`labelKey`** : Nom de la `DefaultProperty` de la classe de référence
 
 Exemple :
 
@@ -334,7 +340,7 @@ export const departement = {
 } as const;
 ```
 
-### Modes de génération des fichiers de ressource
+### Modes de génération des fichiers de ressources
 
 Le paramètre `resourceMode` permet de choisir le format de génération des fichiers de ressources (traductions).
 
@@ -382,7 +388,7 @@ Exemple :
 
 #### generateMainResourceFiles
 
-Génère un fichier `index.ts` qui importe et réexporte tous les fichiers de ressources générés par langue. Cette option est uniquement compatible avec `resourceMode: js`.
+Génère un fichier `index.ts` qui importe et réexporte tous les fichiers de ressources par langue. **Compatible uniquement avec `resourceMode: js`.**
 
 Exemple de fichier `index.ts` généré :
 
@@ -395,11 +401,17 @@ export { securite, common };
 
 #### translateProperties
 
-Si cette option est définie à `true` (par défaut), les libellés des propriétés seront traduits dans les fichiers de ressources. Si elle est définie à `false`, les clés de traduction seront utilisées directement.
+Gère la traduction des libellés des propriétés :
+
+- **`true` (par défaut)** : Les libellés sont générés dans les fichiers de ressources, et la clé de traduction correspondante est utilisée dans la définition d'entité.
+- **`false`** : Les libellés sont utilisés directement.
 
 #### translateReferences
 
-Si cette option est définie à `true` (par défaut), les libellés des listes de références seront traduits. Si elle est définie à `false`, les libellés seront remplacés par les valeurs réelles définies dans le modèle.
+Gère la traduction des listes de références :
+
+- **`true` (par défaut)** : Les libellés des références sont générés dans les fichiers de ressources, et la clé de traduction correspondante est utilisée dans les valeurs (si générées).
+- **`false`** : Les libellés sont utilisés directement.
 
 ### Génération de commentaires
 

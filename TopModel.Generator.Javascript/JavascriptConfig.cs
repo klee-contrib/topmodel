@@ -108,6 +108,12 @@ public class JavascriptConfig : GeneratorConfigBase
 
     protected override string NullValue => "undefined";
 
+    /// <summary>
+    /// Retourne le nom du fichier généré pour une classe.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Nom du fichier généré.</returns>
     public virtual string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
@@ -118,6 +124,13 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne le chemin du fichier de ressources pour les commentaires.
+    /// </summary>
+    /// <param name="ns">Namespace.</param>
+    /// <param name="tag">Tag.</param>
+    /// <param name="lang">Langue.</param>
+    /// <returns>Chemin du fichier.</returns>
     public virtual string GetCommentResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
@@ -128,6 +141,13 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne les imports de domaines requis pour une propriété.
+    /// </summary>
+    /// <param name="fileName">Nom du fichier source contenant la propriété.</param>
+    /// <param name="prop">Propriété.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Les imports.</returns>
     public virtual IEnumerable<(string Import, string Path)> GetDomainImportPaths(
         string fileName,
         IProperty prop,
@@ -140,6 +160,13 @@ public class JavascriptConfig : GeneratorConfigBase
             );
     }
 
+    /// <summary>
+    /// Retourne les imports requis par un fichier d'endpoints.
+    /// </summary>
+    /// <param name="fileName">Nom du fichier.</param>
+    /// <param name="endpoints">Endpoints.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Les imports.</returns>
     public virtual IList<(string Import, string Path)> GetEndpointImports(
         string fileName,
         IEnumerable<Endpoint> endpoints,
@@ -150,8 +177,8 @@ public class JavascriptConfig : GeneratorConfigBase
             .SelectMany(GetClassDependencies)
             .Select(dep =>
                 (
-                    Import: dep is { Source: IProperty fp and not IProperty { Composition: not null } }
-                        ? GetEnumType(fp)
+                    Import: dep is { Source: IProperty p and not IProperty { Composition: not null } }
+                        ? GetEnumType(p)
                         : dep.Classe.NamePascal,
                     Path: GetImportPathForClass(
                         dep,
@@ -160,17 +187,23 @@ public class JavascriptConfig : GeneratorConfigBase
                     )!
                 )
             )
-            .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
+            .Concat(endpoints.SelectMany(e => e.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
             .Concat(
                 endpoints
                     .SelectMany(GetParams)
                     .Where(p => p.IsQueryParam(this))
                     .SelectMany(dep => GetValueImportPaths(fileName, dep))
             )
-            .Where(i => i.Path != null)
+            .Where(import => import.Path != null)
             .GroupAndSort();
     }
 
+    /// <summary>
+    /// Retourne le nom du fichier d'endpoints correspondant à un fichier de modèle.
+    /// </summary>
+    /// <param name="file">Fichier de modèle.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Nom du fichier d'endpoints correspondant.</returns>
     public virtual string GetEndpointsFileName(ModelFile file, string tag)
     {
         return Path.Combine(
@@ -182,6 +215,12 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne le nom du fichier d'enums correspondant à un namespace.
+    /// </summary>
+    /// <param name="ns">Namespace.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Nom du fichier d'enums correspondant.</returns>
     public virtual string GetEnumsFileName(Namespace ns, string tag)
     {
         return Path.Combine(
@@ -192,6 +231,13 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne le chemin d'import correspondant à la dépendance de classe donnée.
+    /// </summary>
+    /// <param name="dep">Dépendance de classe.</param>
+    /// <param name="targetTag">Tag cible.</param>
+    /// <param name="sourceTag">Tag source.</param>
+    /// <returns>Chemin d'import, ou <see langword="null" /> si aucun import n'est nécessaire.</returns>
     public virtual string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag)
     {
         string target;
@@ -238,12 +284,24 @@ public class JavascriptConfig : GeneratorConfigBase
         return path;
     }
 
+    /// <summary>
+    /// Retourne le chemin du fichier principal de ressources.
+    /// </summary>
+    /// <param name="tag">Tag.</param>
+    /// <param name="lang">Langue.</param>
+    /// <returns>Chemin du fichier.</returns>
     public virtual string GetMainResourceFilePath(string tag, string lang)
     {
         return Path.Combine(OutputDirectory, ResolveVariables(ResourceRootPath!, tag, lang: lang), "index.ts")
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Calcule le chemin relatif d'un chemin depuis un fichier source.
+    /// </summary>
+    /// <param name="path">Chemin à rendre relatif.</param>
+    /// <param name="fileName">Nom du fichier source.</param>
+    /// <returns>Chemin relatif.</returns>
     public virtual string GetRelativePath(string path, string fileName)
     {
         return !path.StartsWith('.')
@@ -255,6 +313,13 @@ public class JavascriptConfig : GeneratorConfigBase
                 .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne le chemin du fichier de ressources.
+    /// </summary>
+    /// <param name="ns">Namespace.</param>
+    /// <param name="tag">Tag.</param>
+    /// <param name="lang">Langue.</param>
+    /// <returns>Chemin du fichier.</returns>
     public virtual string GetResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
@@ -265,6 +330,13 @@ public class JavascriptConfig : GeneratorConfigBase
             .Replace('\\', '/');
     }
 
+    /// <summary>
+    /// Retourne les imports requis par une valeur de propriété.
+    /// </summary>
+    /// <param name="fileName">Nom du fichier source.</param>
+    /// <param name="prop">Propriété.</param>
+    /// <param name="value">Valeur.</param>
+    /// <returns>Imports des valeurs.</returns>
     public virtual IEnumerable<(string Import, string Path)> GetValueImportPaths(
         string fileName,
         IProperty prop,
@@ -277,6 +349,11 @@ public class JavascriptConfig : GeneratorConfigBase
             );
     }
 
+    /// <summary>
+    /// Indique si une propriété est une composition typée comme une liste.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <returns><see langword="true" /> si la propriété est une composition de liste.</returns>
     public virtual bool IsListComposition(IProperty property)
     {
         return property is { Composition: Class c, Domain: Domain d }

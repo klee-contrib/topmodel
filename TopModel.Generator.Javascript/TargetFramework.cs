@@ -1,5 +1,8 @@
 ﻿namespace TopModel.Generator.Javascript;
 
+/// <summary>
+/// Framework cible pour la génération des clients d'API JavaScript.
+/// </summary>
 public enum TargetFramework
 {
     /// <summary>
@@ -13,7 +16,7 @@ public enum TargetFramework
     ANGULAR,
 
     /// <summary>
-    /// Angular that return Promise instead of Observable.
+    /// Angular qui retourne des promesses au lieu d'observables.
     /// </summary>
     ANGULAR_PROMISE,
 

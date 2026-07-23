@@ -1,5 +1,8 @@
 ﻿namespace TopModel.Generator.Javascript;
 
+/// <summary>
+/// Mode de génération des entités TypeScript.
+/// </summary>
 public enum EntityMode
 {
     /// <summary>

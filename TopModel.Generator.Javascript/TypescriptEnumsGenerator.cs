@@ -39,7 +39,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 (
                     Import: dep.Source switch
                     {
-                        IProperty fp => Config.GetType(fp, forceAssociationPropertyType: true),
+                        IProperty p => Config.GetType(p, forceAssociationPropertyType: true),
                         Class c => c.NamePascal,
                         _ => null!,
                     },

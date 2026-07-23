@@ -3,8 +3,16 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;
 
+/// <summary>
+/// Utilitaires pour la génération JavaScript.
+/// </summary>
 public static class JavascriptUtils
 {
+    /// <summary>
+    /// Regroupe et trie les imports par chemin.
+    /// </summary>
+    /// <param name="imports">Imports à regrouper.</param>
+    /// <returns>Imports regroupés et triés.</returns>
     public static IList<(string Import, string Path)> GroupAndSort(
         this IEnumerable<(string Import, string Path)> imports
     )
@@ -16,6 +24,12 @@ public static class JavascriptUtils
             .ToList();
     }
 
+    /// <summary>
+    /// Ecrit la définition d'une référence.
+    /// </summary>
+    /// <param name="fw">Writer.</param>
+    /// <param name="classe">Classe de référence.</param>
+    /// <param name="config">Config.</param>
     public static void WriteReferenceDefinition(this IFileWriter fw, Class classe, JavascriptConfig config)
     {
         fw.Write($"export const {classe.NameCamel} = {{");

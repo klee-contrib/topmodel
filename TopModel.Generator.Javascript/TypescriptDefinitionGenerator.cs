@@ -77,7 +77,7 @@ public class TypescriptDefinitionGenerator(
                         && !Config.IsListComposition(cp)
                     )
                         ? dep.Classe.NamePascal
-                    : dep is { Source: IProperty fp and not { Composition: not null } } ? Config.GetEnumType(fp)
+                    : dep is { Source: IProperty p and not { Composition: not null } } ? Config.GetEnumType(p)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : Config.EntityMode == EntityMode.FOCUS ? "Entity" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
                         dep,
@@ -470,13 +470,13 @@ public class TypescriptDefinitionGenerator(
         }
 
         foreach (
-            var p in Config
+            var (import, _) in Config
                 .GetProperties(classe)
                 .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
                 .Where(p => p.Path == entityTypesPath)
         )
         {
-            yield return p.Import;
+            yield return import;
         }
 
         yield return "EntityToType";
