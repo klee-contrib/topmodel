@@ -9,7 +9,7 @@ export type ReservationRead = EntityToType<ReservationReadEntityType>;
 export type ReservationReadEntityType = typeof ReservationReadEntity;
 
 export const ReservationReadEntity = entity({
-    id: e.field(DO_SEQ_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f
         .label("restaurant.reservation.id")
     ),
     dateReservation: e.field(DO_DATE_HEURE, f => f

@@ -11,7 +11,7 @@ export type RestaurantAvecStatistiques = EntityToType<RestaurantAvecStatistiques
 export type RestaurantAvecStatistiquesEntityType = typeof RestaurantAvecStatistiquesEntity;
 
 export const RestaurantAvecStatistiquesEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.lieu.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

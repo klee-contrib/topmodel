@@ -139,6 +139,10 @@
       "type": "boolean",
       "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées."
     },
+    "optionalPrimaryKeys": {
+      "type": "boolean",
+      "description": "Génère les (alias de) clés primaires simples comme optionnelles dans les définitions d'entités. Il s'agit d'un paramètre de compatibilité avec l'existant, qui ne devrait plus être utilisé dans les nouveaux projets."
+    },
     "entityTypesPath": {
       "type": "string",
       "description": "Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération."

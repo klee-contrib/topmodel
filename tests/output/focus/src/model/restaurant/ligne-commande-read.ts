@@ -9,7 +9,7 @@ export type LigneCommandeRead = EntityToType<LigneCommandeReadEntityType>;
 export type LigneCommandeReadEntityType = typeof LigneCommandeReadEntity;
 
 export const LigneCommandeReadEntity = entity({
-    id: e.field(DO_ID_2, f => f.optional()
+    id: e.field(DO_ID_2, f => f
         .label("restaurant.ligneCommande.id")
     ),
     quantite: e.field(DO_QUANTITE, f => f

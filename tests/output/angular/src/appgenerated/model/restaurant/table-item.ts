@@ -9,7 +9,7 @@ export type TableItem = EntityToType<TableItemEntityType>;
 export type TableItemEntityType = typeof TableItemEntity;
 
 export const TableItemEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.tableRestaurant.id")
     ),
     numero: e.field(DO_CODE, f => f

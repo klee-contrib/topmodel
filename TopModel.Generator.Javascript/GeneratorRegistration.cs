@@ -5,6 +5,9 @@ using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Javascript;
 
+/// <summary>
+/// Enregistre les générateurs JavaScript.
+/// </summary>
 public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
 {
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />

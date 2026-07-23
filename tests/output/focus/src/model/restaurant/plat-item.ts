@@ -11,7 +11,7 @@ export type PlatItem = EntityToType<PlatItemEntityType>;
 export type PlatItemEntityType = typeof PlatItemEntity;
 
 export const PlatItemEntity = entity({
-    id: e.field(DO_SEQ_ID, f => f.optional()
+    id: e.field(DO_SEQ_ID, f => f
         .label("restaurant.plat.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

@@ -11,7 +11,7 @@ export type RestaurantRead = EntityToType<RestaurantReadEntityType>;
 export type RestaurantReadEntityType = typeof RestaurantReadEntity;
 
 export const RestaurantReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.lieu.id")
     ),
     nom: e.field(DO_LIBELLE, f => f

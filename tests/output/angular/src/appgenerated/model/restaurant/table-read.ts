@@ -9,7 +9,7 @@ export type TableRead = EntityToType<TableReadEntityType>;
 export type TableReadEntityType = typeof TableReadEntity;
 
 export const TableReadEntity = entity({
-    id: e.field(DO_ID, f => f.optional()
+    id: e.field(DO_ID, f => f
         .label("restaurant.tableRestaurant.id")
     ),
     numero: e.field(DO_CODE, f => f

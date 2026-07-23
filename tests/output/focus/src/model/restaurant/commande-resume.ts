@@ -9,7 +9,7 @@ export type CommandeResume = EntityToType<CommandeResumeEntityType>;
 export type CommandeResumeEntityType = typeof CommandeResumeEntity;
 
 export const CommandeResumeEntity = entity({
-    id: e.field(DO_ID_2, f => f.optional()
+    id: e.field(DO_ID_2, f => f
         .label("restaurant.commande.id")
     )
 });

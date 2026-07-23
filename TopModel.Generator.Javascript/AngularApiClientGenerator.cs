@@ -8,7 +8,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Javascript;
 
 /// <summary>
-/// Générateur des objets de traduction javascripts.
+/// Générateur de clients d'API Angular.
 /// </summary>
 public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger, IFileWriterProvider writerProvider)
     : EndpointsGeneratorBase<JavascriptConfig>(logger, writerProvider)

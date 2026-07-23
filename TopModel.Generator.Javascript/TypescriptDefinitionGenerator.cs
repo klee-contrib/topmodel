@@ -77,7 +77,7 @@ public class TypescriptDefinitionGenerator(
                         && !Config.IsListComposition(cp)
                     )
                         ? dep.Classe.NamePascal
-                    : dep is { Source: IProperty fp and not { Composition: not null } } ? Config.GetEnumType(fp)
+                    : dep is { Source: IProperty p and not { Composition: not null } } ? Config.GetEnumType(p)
                     : $"{(Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED ? dep.Classe.NamePascal + "Entity, " : string.Empty)}{dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : Config.EntityMode == EntityMode.FOCUS ? "Entity" : string.Empty)}",
                     Path: Config.GetImportPathForClass(
                         dep,
@@ -106,7 +106,10 @@ public class TypescriptDefinitionGenerator(
             .Where(p => p.Path != null && p.Path != entityTypesPath)
             .GroupAndSort();
 
-        fw.WriteLine();
+        if (commonImports.Any())
+        {
+            fw.WriteLine();
+        }
 
         foreach (var import in dependencyImports)
         {
@@ -150,7 +153,9 @@ public class TypescriptDefinitionGenerator(
 
             foreach (var property in Config.GetProperties(classe))
             {
-                fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
+                fw.Write(
+                    $"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED || property.Required ? string.Empty : "?")}: "
+                );
                 var type = Config.GetType(property, forceAssociationPropertyType: true);
 
                 if (Config.EntityMode == EntityMode.TYPED)
@@ -185,11 +190,11 @@ public class TypescriptDefinitionGenerator(
             }
 
             fw.WriteLine("}");
-            fw.WriteLine();
         }
 
         if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.UNTYPED)
         {
+            fw.WriteLine();
             fw.Write($"export const {classe.NamePascal}Entity");
 
             if (Config.EntityMode == EntityMode.TYPED)
@@ -271,7 +276,7 @@ public class TypescriptDefinitionGenerator(
                 {
                     fw.WriteLine(
                         2,
-                        $"isRequired: {(property.Required && !(property.PrimaryKeyish && property.GeneratedValue != null)).ToString().ToFirstLower()},"
+                        $"isRequired: {(property.Required && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null))).ToString().ToFirstLower()},"
                     );
 
                     if (Config.TranslateProperties == true)
@@ -385,7 +390,12 @@ public class TypescriptDefinitionGenerator(
                     fw.Write($".defaultValue({defaultValue})");
                 }
 
-                if (!(property.Required && !(property.PrimaryKeyish && property.GeneratedValue != null)))
+                if (
+                    !(
+                        property.Required
+                        && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null))
+                    )
+                )
                 {
                     fw.WriteLine(".optional()");
                 }
@@ -460,13 +470,13 @@ public class TypescriptDefinitionGenerator(
         }
 
         foreach (
-            var p in Config
+            var (import, _) in Config
                 .GetProperties(classe)
                 .SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag))
                 .Where(p => p.Path == entityTypesPath)
         )
         {
-            yield return p.Import;
+            yield return import;
         }
 
         yield return "EntityToType";
