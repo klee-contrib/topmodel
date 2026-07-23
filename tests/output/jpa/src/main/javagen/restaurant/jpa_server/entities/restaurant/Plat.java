@@ -33,9 +33,9 @@ import jakarta.persistence.Table;
  * Plat du menu.
  */
 @Entity
-@Table(name = "PLAT")
+@Table(name = "plat")
 @DiscriminatorValue("AUTRE")
-@DiscriminatorColumn(name = "CAT_CODE")
+@DiscriminatorColumn(name = "cat_code")
 @EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -45,7 +45,7 @@ public class Plat {
 	 * Identifiant du plat.
 	 */
 	@Id
-	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "pla_id", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PLAT")
 	@SequenceGenerator(sequenceName = "SEQ_PLAT", name = "SEQ_PLAT", initialValue = 1000, allocationSize = 50)
 	private Integer id;
@@ -53,38 +53,38 @@ public class Plat {
 	/**
 	 * Nom du plat.
 	 */
-	@Column(name = "PLA_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "pla_nom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Description du plat.
 	 */
-	@Column(name = "PLA_DESCRIPTION", length = 100, columnDefinition = "varchar")
+	@Column(name = "pla_description", length = 100, columnDefinition = "varchar")
 	private String description;
 
 	/**
 	 * Prix du plat.
 	 */
-	@Column(name = "PLA_PRIX", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "pla_prix", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le plat est disponible.
 	 */
-	@Column(name = "PLA_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "pla_disponible", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
 	 * Catégorie du plat.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CategoriePlat.class)
-	@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE", insertable = false, updatable = false)
+	@JoinColumn(name = "cat_code", referencedColumnName = "cat_code", insertable = false, updatable = false)
 	private CategoriePlat categoriePlat;
 
 	/**
 	 * Restaurant proposant ce plat.
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 
@@ -98,7 +98,7 @@ public class Plat {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "PLA_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "pla_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

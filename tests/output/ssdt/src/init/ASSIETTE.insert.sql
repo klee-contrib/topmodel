@@ -6,5 +6,5 @@
 --   Description		:	Insertion des valeurs de la table ASSIETTE.
 -- ===========================================================================================
 
-INSERT INTO ASSIETTE(VSL_ID, VSL_DESCRIPTION, AST_TAILLE) VALUES(1, N'Grande assiette', 29);
-GO
+insert into ASSIETTE(VSL_ID, VSL_DESCRIPTION, AST_TAILLE) values(1, N'Grande assiette', 29);
+go

@@ -50,12 +50,14 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 "HttpExchange",
                 imports: "org.springframework.web.service.annotation.HttpExchange"
             ).AddAttribute($@"""{endpoints[0].ModelFile.Options.Endpoints.Prefix}""");
-            fw.WriteLine(0, exchangeAnnotation);
+            fw.AddImports(exchangeAnnotation.Imports);
+            fw.Write(exchangeAnnotation);
         }
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.AddImports(Config.GeneratedAnnotation.Imports);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
         fw.WriteLine($"public interface {className} {{");
@@ -225,7 +227,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             }
         }
 
-        fw.Write(1, method);
+        fw.Write(method);
     }
 
     protected virtual void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)

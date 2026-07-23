@@ -20,13 +20,13 @@ public class Fournisseur extends Lieu {
 	/**
 	 * Numéro de téléphone.
 	 */
-	@Column(name = "FRN_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(name = "frn_telephone", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**
 	 * Si le fournisseur fait du bio.
 	 */
-	@Column(name = "FRN_BIO", columnDefinition = "boolean")
+	@Column(name = "frn_bio", columnDefinition = "boolean")
 	private Boolean bio;
 
 	/**

@@ -25,7 +25,7 @@ import restaurant.jpa_feign.enums.restaurant.RegionCode;
  * Catégories de plats disponibles par région.
  */
 @Entity
-@Table(name = "CATEGORIE_PLAT_REGION")
+@Table(name = "categorie_plat_region")
 @IdClass(CategoriePlatRegion.CategoriePlatRegionId.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion {
@@ -114,11 +114,11 @@ public class CategoriePlatRegion {
 
 	public static class CategoriePlatRegionId {
 
-		@JoinColumn(name = "REG_CODE", referencedColumnName = "REG_CODE")
+		@JoinColumn(name = "reg_code", referencedColumnName = "reg_code")
 		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Region.class)
 		private RegionCode regionCode;
 
-		@JoinColumn(name = "CAT_CODE", referencedColumnName = "CAT_CODE")
+		@JoinColumn(name = "cat_code", referencedColumnName = "cat_code")
 		@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = CategoriePlat.class)
 		private CategoriePlat categoriePlat;
 

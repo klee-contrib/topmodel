@@ -13,14 +13,14 @@ import jakarta.persistence.Table;
  * Verre.
  */
 @Entity
-@Table(name = "VERRE")
+@Table(name = "verre")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Verre extends Vaisselle {
 
 	/**
 	 * Si le verre est à pied ou non.
 	 */
-	@Column(name = "VRR_A_PIED", nullable = false, columnDefinition = "boolean")
+	@Column(name = "vrr_a_pied", nullable = false, columnDefinition = "boolean")
 	private Boolean aPied;
 
 	/**

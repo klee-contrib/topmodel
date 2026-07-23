@@ -209,14 +209,14 @@ public partial class TopModelSampleDbContext
         restaurant.Property(p => p.Telephone).HasComment("Numéro de téléphone");
         restaurant.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
-        var tableRestaurant = modelBuilder.Entity<TableRestaurant>();
-        tableRestaurant.ToTable(t => t.HasComment("Table du restaurant"));
-        tableRestaurant.Property(p => p.Id).HasComment("Identifiant de la table");
-        tableRestaurant.Property(p => p.Numero).HasComment("Numéro de la table");
-        tableRestaurant.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
-        tableRestaurant.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
-        tableRestaurant.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
-        tableRestaurant.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
+        var table = modelBuilder.Entity<Table>();
+        table.ToTable(t => t.HasComment("Table du restaurant"));
+        table.Property(p => p.Id).HasComment("Identifiant de la table");
+        table.Property(p => p.Numero).HasComment("Numéro de la table");
+        table.Property(p => p.Capacite).HasComment("Capacité de la table (nombre de places)");
+        table.Property(p => p.Disponible).HasComment("Indique si la table est disponible");
+        table.Property(p => p.RestaurantId).HasComment("Restaurant auquel appartient la table");
+        table.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var translation = modelBuilder.Entity<Translation>();
         translation.ToTable(t => t.HasComment("Table pour stocker les traductions en SQL."));

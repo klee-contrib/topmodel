@@ -17,9 +17,6 @@ public class JavaMethodParameter
         Imports.Add(import);
     }
 
-    public string Declaration =>
-        $@"{(Final ? "final " : string.Empty)}{string.Join(' ', Annotations.DistinctBy(e => e.Name.Split('(')[0]).OrderBy(a => a.Name))}{(Annotations.Count > 0 ? ' ' : string.Empty)}{Type} {Name}";
-
     public IList<string> Imports { get; } = [];
 
     public IList<JavaAnnotation> Annotations { get; } = [];
@@ -30,7 +27,7 @@ public class JavaMethodParameter
 
     public string Comment { get; set; } = string.Empty;
 
-    private string Type { get; set; }
+    public string Type { get; set; }
 
     public JavaMethodParameter Add(JavaAnnotation annotation)
     {

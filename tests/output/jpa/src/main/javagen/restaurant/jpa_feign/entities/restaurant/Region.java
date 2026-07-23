@@ -21,7 +21,7 @@ import restaurant.jpa_feign.enums.restaurant.RegionCode;
  * Région.
  */
 @Entity
-@Table(name = "REGION")
+@Table(name = "region")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Region {
@@ -31,19 +31,19 @@ public class Region {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "REG_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "reg_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private RegionCode code;
 
 	/**
 	 * Libellé de la région.
 	 */
-	@Column(name = "REG_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "reg_libelle", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Nom du responsable de la région.
 	 */
-	@Column(name = "REG_NOM_RESPONSABLE", length = 100, columnDefinition = "varchar")
+	@Column(name = "reg_nom_responsable", length = 100, columnDefinition = "varchar")
 	private String nomResponsable;
 
 	/**

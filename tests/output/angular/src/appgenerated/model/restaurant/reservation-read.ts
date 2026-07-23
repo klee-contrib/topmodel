@@ -46,9 +46,9 @@ export const ReservationReadEntity = entity({
         .label("restaurant.client.email")
     ),
     tableNumero: e.field(DO_CODE, f => f
-        .label("restaurant.tableRestaurant.numero")
+        .label("restaurant.table.numero")
     ),
     tableCapacite: e.field(DO_QUANTITE, f => f
-        .label("restaurant.tableRestaurant.capacite")
+        .label("restaurant.table.capacite")
     )
 });

@@ -6,6 +6,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
+/// <summary>
+/// Générateur SQL procédural pour les traductions.
+/// </summary>
 public class SqlResourcesGenerator(
     ILogger<SqlResourcesGenerator> logger,
     TranslationStore translationStore,
@@ -59,11 +62,11 @@ public class SqlResourcesGenerator(
                     writer.WriteLine();
                     writer.WriteLine(
                         "/**\t\tInitialisation des traductions des propriétés de la table "
-                            + modelClass.SqlName
+                            + Config.GetSqlName(modelClass, tag, noQuote: true)
                             + "\t\t**/"
                     );
 
-                    foreach (var lang in translationStore.Translations.Keys)
+                    foreach (var language in translationStore.Translations.Keys)
                     {
                         foreach (
                             var property in properties
@@ -74,7 +77,7 @@ public class SqlResourcesGenerator(
                             foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                             {
                                 writer.WriteLine(
-                                    $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(property, lang))});"
+                                    $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(property, language))});"
                                 );
                             }
                         }
@@ -93,16 +96,18 @@ public class SqlResourcesGenerator(
             {
                 writer.WriteLine();
                 writer.WriteLine(
-                    "/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/"
+                    "/**\t\tInitialisation des traductions des valeurs de la table "
+                        + Config.GetSqlName(modelClass, tag, noQuote: true)
+                        + "\t\t**/"
                 );
-                foreach (var lang in translationStore.Translations.Keys)
+                foreach (var language in translationStore.Translations.Keys)
                 {
-                    foreach (var val in modelClass.Values)
+                    foreach (var value in modelClass.Values)
                     {
                         foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                         {
                             writer.WriteLine(
-                                $@"INSERT INTO {classe.SqlName}({classe.PrimaryKey.Single(p => p != classe.LocaleProperty).SqlName}{(classe.LocaleProperty != null ? $", {classe.LocaleProperty!.SqlName}" : string.Empty)}, {classe.DefaultProperty!.SqlName}) VALUES({SingleQuote(val.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(translationStore.GetTranslation(val, lang))});"
+                                $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(value.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(value, language))});"
                             );
                         }
                     }

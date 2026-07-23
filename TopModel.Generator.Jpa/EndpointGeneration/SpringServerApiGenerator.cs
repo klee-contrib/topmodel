@@ -69,7 +69,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         if (returns != null)
         {
             method.ReturnComment = returns.Comment;
-            method.Imports.AddRange(returns.GetTypeImports(Config, tag));
+            method.AddImports(returns.GetTypeImports(Config, tag));
         }
 
         var mappingAnnotation = new JavaAnnotation(
@@ -166,7 +166,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         var annotations = GetClassAnnotations(endpoints[0].ModelFile, tag);
         javaInterface.AddRange(annotations);
         javaInterface.AddRange(GetMethods(endpoints, tag));
-        fw.Write(0, javaInterface);
+        fw.Write(javaInterface);
     }
 
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)

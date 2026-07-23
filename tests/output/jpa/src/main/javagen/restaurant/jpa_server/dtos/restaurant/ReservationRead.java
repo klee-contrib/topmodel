@@ -113,7 +113,7 @@ public class ReservationRead implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -121,7 +121,7 @@ public class ReservationRead implements Serializable {
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	private Integer tableCapacite;

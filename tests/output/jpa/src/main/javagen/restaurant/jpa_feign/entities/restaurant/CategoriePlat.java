@@ -31,9 +31,9 @@ import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "CATEGORIE_PLAT",
+	name = "categorie_plat",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"CAT_ORDRE"})
+		@UniqueConstraint(columnNames = {"cat_ordre"})
 	}
 )
 public class CategoriePlat {
@@ -63,25 +63,25 @@ public class CategoriePlat {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CAT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "cat_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private CategoriePlatCode code;
 
 	/**
 	 * Libellé de la catégorie.
 	 */
-	@Column(name = "CAT_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "cat_libelle", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Ordre d'affichage dans le menu.
 	 */
-	@Column(name = "CAT_ORDRE", nullable = false, columnDefinition = "int")
+	@Column(name = "cat_ordre", nullable = false, columnDefinition = "int")
 	private Integer ordre;
 
 	/**
 	 * Prix moyen de la catégorie, à titre indicatif.
 	 */
-	@Column(name = "CAT_PRIX_MOYEN", scale = 2, columnDefinition = "decimal")
+	@Column(name = "cat_prix_moyen", scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixMoyen;
 
 	/**

@@ -267,14 +267,6 @@ _(en preview, documentation à venir)_
 
   Ce paramètre génère une méthode d'extension `MapEnums()` à côté du DbContext, qu'il faudra appeler dans la configuration de `UseNpgsql()` de l'application pour que les enums soient prises en compte par Entity Framework (et Npgsql).
 
-- `useLowerCaseSqlNames`
-
-  Utilise des noms de tables et de colonnes en lowercase.
-
-  EF Core met des guillemets autour de tous les noms de table dans les requêtes qu'il génère (ainsi que dans les migrations), ce qui pose problème avec PostgreSQL qui est case-sensitive mais utilise les minuscules par défaut.
-
-  _Valeur par défaut_: `true`
-
 - `dbSchema`
 
   Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/'public').

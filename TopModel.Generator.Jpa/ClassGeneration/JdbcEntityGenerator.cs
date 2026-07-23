@@ -36,12 +36,12 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         var tableAnnotation = new JavaAnnotation(
             "Table",
             imports: "org.springframework.data.relational.core.mapping.Table"
-        ).AddAttribute("name", @$"""{classe.SqlName.ToLower()}""");
+        ).AddAttribute("name", @$"""{Config.GetSqlName(classe, tag)}""");
         annotations.Add(tableAnnotation);
         return annotations;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {

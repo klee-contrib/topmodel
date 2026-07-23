@@ -6,34 +6,34 @@
 --   Description		:	Création de la table PRESTATAIRE.
 -- ===========================================================================================
 
-create table [dbo].[PRESTATAIRE] (
-	[PST_ID] int identity,
-	[PST_NOM] varchar(100) not null,
-	[PST_PRENOM] varchar(100) not null,
-	[PST_TELEPHONE] varchar(20),
-	constraint [PK_PRESTATAIRE] primary key clustered ([PST_ID] ASC))
+create table PRESTATAIRE (
+	PST_ID int identity,
+	PST_NOM varchar(100) not null,
+	PST_PRENOM varchar(100) not null,
+	PST_TELEPHONE varchar(20),
+	constraint PK_PRESTATAIRE primary key clustered (PST_ID asc))
 go
 
 /* Index IDX_PST_PST_NOM_PST_PRENOM on PRESTATAIRE */
-create nonclustered index [IDX_PST_PST_NOM_PST_PRENOM]
-	on [dbo].[PRESTATAIRE] ([PST_NOM] ASC, [PST_PRENOM] ASC)
+create nonclustered index IDX_PST_PST_NOM_PST_PRENOM
+	on PRESTATAIRE (PST_NOM asc, PST_PRENOM asc)
 go
 
 /* Index IDX_PST_PST_TELEPHONE on PRESTATAIRE */
-create nonclustered index [IDX_PST_PST_TELEPHONE]
-	on [dbo].[PRESTATAIRE] ([PST_TELEPHONE] ASC)
+create nonclustered index IDX_PST_PST_TELEPHONE
+	on PRESTATAIRE (PST_TELEPHONE asc)
 go
 
 /**
   * Commentaires pour la table PRESTATAIRE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prestaire du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE'
+execute sp_addextendedproperty 'MS_Description', 'Prestaire du restaurant', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Identifiant de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_ID'
+execute sp_addextendedproperty 'MS_Description', 'Identifiant de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Nom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_NOM'
+execute sp_addextendedproperty 'MS_Description', 'Nom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_NOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Prénom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_PRENOM'
+execute sp_addextendedproperty 'MS_Description', 'Prénom de la personne', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_PRENOM'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_TELEPHONE'
+execute sp_addextendedproperty 'MS_Description', 'Numéro de téléphone de l''employé.', 'SCHEMA', 'dbo', 'TABLE', 'PRESTATAIRE', 'COLUMN', 'PST_TELEPHONE'
 go

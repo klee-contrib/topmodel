@@ -5,6 +5,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
+/// <summary>
+/// Générateur SQL procédural pour les index, les clés étrangères et uniques.
+/// </summary>
 public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
@@ -21,6 +24,11 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         }
     }
 
+    /// <summary>
+    /// Retourne les propriétés portant une clé étrangère.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <returns>Propriétés de clé étrangère.</returns>
     protected virtual IEnumerable<IProperty> GetForeignKeys(Class classe)
     {
         foreach (var property in Config.GetProperties(classe))
@@ -30,33 +38,6 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
                 yield return ap;
             }
         }
-    }
-
-    protected virtual string GetTablespaceDeclaration(string? tablespace = null)
-    {
-        tablespace ??= Config.IndexTablespace;
-
-        bool ShouldGenerateTablespace()
-        {
-            if (!Config.AllowTablespace)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(tablespace))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        if (ShouldGenerateTablespace())
-        {
-            return $"\r\nTABLESPACE  {tablespace} ";
-        }
-
-        return string.Empty;
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
@@ -75,17 +56,17 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         {
             if (fkProperty.Class.PrimaryKey.Count() != 1 || fkProperty.Class.PrimaryKey.Single() != fkProperty)
             {
-                WriteForeignKeyIndex(fkProperty, writer);
+                WriteForeignKeyIndex(fkProperty, writer, tag);
             }
 
-            WriteForeignKeyConstraint(fkProperty, writer);
+            WriteForeignKeyConstraint(fkProperty, writer, tag);
         }
 
         foreach (var classe in classes.Where(c => c.Indexes.Count > 0).OrderBy(c => c.SqlName))
         {
             foreach (var index in classe.Indexes)
             {
-                WriteIndex(index, writer);
+                WriteIndex(index, writer, tag);
             }
         }
 
@@ -100,20 +81,21 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
             {
                 var index = new IndexDefinition { Class = fkProperty.Class };
                 index.Properties.Add(fkProperty);
-                WriteIndex(index, writer);
+                WriteIndex(index, writer, tag);
             }
         }
     }
 
     /// <summary>
-    /// Génère la contrainte de clef étrangère.
+    /// Ecrit la contrainte de clé étrangère.
     /// </summary>
-    /// <param name="property">Propriété portant la clef étrangère.</param>
-    /// <param name="writer">Flux d'écriture.</param>
-    protected virtual void WriteForeignKeyConstraint(IProperty propertySource, IFileWriter writer)
+    /// <param name="sourceProperty">Propriété portant la clé étrangère.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteForeignKeyConstraint(IProperty sourceProperty, IFileWriter writer, string tag)
     {
-        var propertyTarget = propertySource.AssociationProperty!;
-        var association = propertySource.Association!;
+        var targetProperty = sourceProperty.AssociationProperty!;
+        var association = sourceProperty.Association!;
 
         if (!Config.AvailableClasses.Contains(association) || association.Enum == EnumMode.Enum)
         {
@@ -124,70 +106,84 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         writer.WriteLine("/**");
         writer.WriteLine(
             "  * Génération de la contrainte de clef étrangère pour "
-                + propertySource.Class.SqlName
+                + Config.GetSqlName(sourceProperty.Class, tag, noQuote: true)
                 + "."
-                + propertySource.SqlName
+                + Config.GetSqlName(sourceProperty, tag, noQuote: true)
         );
         writer.WriteLine(" **/");
-        writer.WriteLine("alter table " + propertySource.Class.SqlName);
+        writer.WriteLine("alter table " + Config.GetSqlName(sourceProperty.Class, tag));
 
-        writer.WriteLine($"\tadd constraint {propertySource.ForeignKeyName} foreign key ({propertySource.SqlName})");
+        writer.WriteLine(
+            $"\tadd constraint {Config.GetSqlForeignKeyName(sourceProperty, tag)} foreign key ({Config.GetSqlName(sourceProperty, tag)})"
+        );
         writer.Write(
             "\t\treferences "
-                + (
+                + Config.GetSqlName(
                     association.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
                         ? association.Extends
-                        : association
-                ).SqlName
+                        : association,
+                    tag
+                )
                 + " ("
         );
 
-        writer.Write(propertyTarget.SqlName);
+        writer.Write(Config.GetSqlName(targetProperty, tag));
 
         writer.WriteLine($"){Config.BatchSeparator}");
     }
 
     /// <summary>
-    /// Génère l'index portant sur la clef étrangère.
+    /// Ecrit l'index associé à la clé étrangère.
     /// </summary>
-    /// <param name="property">Propriété cible de l'index.</param>
-    /// <param name="writer">Flux d'écriture.</param>
-    protected virtual void WriteForeignKeyIndex(IProperty property, IFileWriter writer)
+    /// <param name="property">Propriété portant la clé étrangère.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteForeignKeyIndex(IProperty property, IFileWriter writer, string tag)
     {
-        var tableName = property.Class.SqlName;
-        var propertyName = property.SqlName;
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
+        writer.WriteLine(
+            "  * Création de l'index de clef étrangère pour "
+                + Config.GetSqlName(property.Class, tag, noQuote: true)
+                + "."
+                + Config.GetSqlName(property, tag, noQuote: true)
+        );
         writer.WriteLine(" **/");
-        writer.WriteLine($"create index {property.IndexForeignKeyName} on {tableName} (");
-        writer.WriteLine("\t" + propertyName + " ASC");
-        writer.WriteLine($"){GetTablespaceDeclaration()}{Config.BatchSeparator}");
+        writer.WriteLine(
+            $"create index {Config.GetSqlIndexForeignKeyName(property, tag)} on {Config.GetSqlName(property.Class, tag)} ("
+        );
+        writer.WriteLine("\t" + Config.GetSqlName(property, tag) + " ASC");
+        writer.WriteLine($"){Config.GetTablespaceDeclaration(Config.IndexTablespace)}{Config.BatchSeparator}");
     }
 
     /// <summary>
-    /// Génère un index défini dans le modèle.
+    /// Ecrit un index du modèle.
     /// </summary>
-    protected virtual void WriteIndex(IndexDefinition index, IFileWriter writer)
+    /// <param name="index">Index.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteIndex(IndexDefinition index, IFileWriter writer, string tag)
     {
-        var tableName = index.Class.SqlName;
+        var tableName = Config.GetSqlName(index.Class, tag);
 
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de l'index {index.SqlName} sur {tableName}.");
+        writer.WriteLine($"  * Création de l'index {Config.GetSqlName(index, tag)} sur {tableName}.");
         writer.WriteLine(" **/");
 
         if (index.Unique)
         {
             writer.WriteLine(
-                $"alter table {tableName} add constraint {index.SqlName} unique ({string.Join(", ", index.Properties.Select(c => c.SqlName))}){Config.BatchSeparator}"
+                $"alter table {tableName} add constraint {Config.GetSqlName(index, tag)} unique ({string.Join(", ", index.Properties.Select(p => Config.GetSqlName(p, tag)))}){Config.BatchSeparator}"
             );
         }
         else
         {
-            writer.WriteLine($"create index {index.SqlName} on {tableName} (");
-            writer.WriteLine($"\t{string.Join(", ", index.Properties.Select(c => $"{c.SqlName} ASC"))}");
-            writer.WriteLine($"){GetTablespaceDeclaration()}{Config.BatchSeparator}");
+            writer.WriteLine($"create index {Config.GetSqlName(index, tag)} on {tableName} (");
+            writer.WriteLine(
+                $"\t{string.Join(", ", index.Properties.Select(c => $"{Config.GetSqlName(c, tag)} ASC"))}"
+            );
+            writer.WriteLine($"){Config.GetTablespaceDeclaration(Config.IndexTablespace)}{Config.BatchSeparator}");
         }
     }
 }

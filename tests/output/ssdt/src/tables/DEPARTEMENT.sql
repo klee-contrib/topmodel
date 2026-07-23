@@ -6,31 +6,31 @@
 --   Description		:	Création de la table DEPARTEMENT.
 -- ===========================================================================================
 
-create table [dbo].[DEPARTEMENT] (
-	[DEP_CODE] varchar(10),
-	[DEP_LIBELLE] varchar(100) not null,
-	[REG_CODE] varchar(10) not null,
-	constraint [PK_DEPARTEMENT] primary key clustered ([DEP_CODE] ASC),
-	constraint [FK_DEPARTEMENT_REG_CODE] foreign key ([REG_CODE]) references [dbo].[REGION] ([REG_CODE]))
+create table DEPARTEMENT (
+	DEP_CODE varchar(10),
+	DEP_LIBELLE varchar(100) not null,
+	REG_CODE varchar(10) not null,
+	constraint PK_DEPARTEMENT primary key clustered (DEP_CODE asc),
+	constraint FK_DEPARTEMENT_REG_CODE foreign key (REG_CODE) references REGION (REG_CODE))
 go
 
 /* Index on foreign key column for DEPARTEMENT.REG_CODE */
-create nonclustered index [IDX_DEP_REG_CODE_FK]
-	on [dbo].[DEPARTEMENT] ([REG_CODE] ASC)
+create nonclustered index IDX_DEP_REG_CODE_FK
+	on DEPARTEMENT (REG_CODE asc)
 go
 
-create nonclustered index [IDX_DEP_DEP_LIBELLE]
-	on [dbo].[DEPARTEMENT] ([DEP_LIBELLE] ASC)
+create nonclustered index IDX_DEP_DEP_LIBELLE
+	on DEPARTEMENT (DEP_LIBELLE asc)
 go
 
 /**
   * Commentaires pour la table DEPARTEMENT
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Département', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT'
+execute sp_addextendedproperty 'MS_Description', 'Département', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Code du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Code du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_CODE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Libellé du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_LIBELLE'
+execute sp_addextendedproperty 'MS_Description', 'Libellé du département.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'DEP_LIBELLE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Région associée.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'REG_CODE'
+execute sp_addextendedproperty 'MS_Description', 'Région associée.', 'SCHEMA', 'dbo', 'TABLE', 'DEPARTEMENT', 'COLUMN', 'REG_CODE'
 go

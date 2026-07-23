@@ -3,26 +3,19 @@ using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
-namespace TopModel.Generator.Sql.Procedural.SqlServer;
+namespace TopModel.Generator.Sql.Procedural;
 
+/// <summary>
+/// Générateur SQL Server procédural pour les types de table.
+/// </summary>
 public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
-    /// <summary>
-    /// Nom pour l'insert en bulk.
-    /// </summary>
-    private const string InsertKeyName = "InsertKey";
-
-    /// <summary>
-    /// Type json pour les compositions.
-    /// </summary>
-    private const string JsonType = "json";
-
     public override string Name => "SqlTypesGen";
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.HasTable && Config.GetProperties(classe).Any(p => p.Name == InsertKeyName))
+        if (classe.HasTable && Config.GetProperties(classe).Any(p => p.Name == ScriptUtils.InsertKeyName))
         {
             yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
         }
@@ -38,15 +31,21 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
-            WriteTypeDeclaration(classe, writer);
+            WriteTypeDeclaration(classe, writer, tag);
         }
     }
 
-    private void WriteTypeDeclaration(Class classe, IFileWriter writer)
+    /// <summary>
+    /// Ecrit la déclaration SQL pour le type de table.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="writer">Writer.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteTypeDeclaration(Class classe, IFileWriter writer, string tag)
     {
-        var typeName = classe.SqlName + "_TABLE_TYPE";
+        var typeName = Config.GetSqlTableTypeName(classe, tag);
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création du type " + classe.SqlName + "_TABLE_TYPE");
+        writer.WriteLine("  * Création du type " + typeName);
         writer.WriteLine(" **/");
         writer.WriteLine(
             "If Exists (Select * From sys.types st Join sys.schemas ss On st.schema_id = ss.schema_id Where st.name = N'"
@@ -56,43 +55,26 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
         writer.WriteLine("Drop Type " + typeName + Environment.NewLine);
         writer.WriteLine("Create type " + typeName + " as Table (");
 
-        var t = 0;
+        var columnCount = 0;
 
         foreach (var property in Config.GetProperties(classe))
         {
-            var type =
-                property is { Composition: null, Domain: not null } ? Config.GetType(property)
-                : property is { Composition: null, Domain: null } ? $"varchar({Config.IdentifierLengthLimit})"
-                : JsonType;
+            var type = Config.GetColumnType(property);
 
-            if (type.ToLower().Equals("varchar") && property.Domain?.Length != null)
+            if (!property.PrimaryKey && property.Name != ScriptUtils.InsertKeyName)
             {
-                type = $"{type}({property.Domain.Length})";
-            }
-
-            if (
-                (type.ToLower().Equals("numeric") || type.ToLower().Equals("decimal"))
-                && property.Domain?.Length != null
-            )
-            {
-                type =
-                    $"{type}({property.Domain.Length}{(property.Domain.Scale != null ? $", {property.Domain.Scale}" : string.Empty)})";
-            }
-
-            if (!property.PrimaryKey && property.Name != InsertKeyName)
-            {
-                if (t > 0)
+                if (columnCount > 0)
                 {
                     writer.Write(",");
                     writer.WriteLine();
                 }
 
-                writer.Write("\t" + property.SqlName + " " + type);
-                t++;
+                writer.Write("\t" + Config.GetSqlName(property, tag) + " " + type);
+                columnCount++;
             }
         }
 
-        if (t > 0)
+        if (columnCount > 0)
         {
             writer.Write(",");
             writer.WriteLine();

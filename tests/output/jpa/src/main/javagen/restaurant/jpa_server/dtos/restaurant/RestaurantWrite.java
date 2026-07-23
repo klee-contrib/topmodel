@@ -75,7 +75,7 @@ public class RestaurantWrite implements Serializable {
 	private List<Integer> avisClients;
 
 	/**
-	 * Association réciproque de TableRestaurant.RestaurantId.
+	 * Association réciproque de Table.RestaurantId.
 	 * Alias of {@link restaurant.jpa_server.dtos.restaurant.RestaurantRead#getTables() RestaurantRead#getTables()}
 	 */
 	@Valid

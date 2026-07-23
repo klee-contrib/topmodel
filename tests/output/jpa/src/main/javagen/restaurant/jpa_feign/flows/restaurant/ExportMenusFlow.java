@@ -67,7 +67,7 @@ public class ExportMenusFlow {
 		return new JdbcCursorItemReaderBuilder<Menu>() //
 				.name("ExportMenusReader") //
 				.rowMapper(new BeanPropertyRowMapper<>(Menu.class)) //
-				.sql("select * from public.MENU") //
+				.sql("select * from public.menu") //
 				.fetchSize(100000) //
 				.dataSource(datasource) //
 				.build();

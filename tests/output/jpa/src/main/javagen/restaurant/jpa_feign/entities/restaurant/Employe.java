@@ -23,12 +23,12 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "EMPLOYE",
+	name = "employe",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"EMP_MATRICULE"})
+		@UniqueConstraint(columnNames = {"emp_matricule"})
 	},
 	indexes = {
-		@Index(name = "IDX_EMP_EMP_TELEPHONE", columnList = "EMP_TELEPHONE")
+		@Index(name = "idx_emp_emp_telephone", columnList = "emp_telephone")
 	}
 )
 public class Employe extends Personne implements EmployeBase {
@@ -36,37 +36,37 @@ public class Employe extends Personne implements EmployeBase {
 	/**
 	 * Numéro de téléphone de l'employé.
 	 */
-	@Column(name = "EMP_TELEPHONE", length = 20, columnDefinition = "varchar")
+	@Column(name = "emp_telephone", length = 20, columnDefinition = "varchar")
 	private String telephone;
 
 	/**
 	 * Date de naissance.
 	 */
-	@Column(name = "EMP_DATE_NAISSANCE", columnDefinition = "timestamp")
+	@Column(name = "emp_date_naissance", columnDefinition = "timestamp")
 	private LocalDateTime dateNaissance;
 
 	/**
 	 * Matricule de l'employé.
 	 */
-	@Column(name = "EMP_MATRICULE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "emp_matricule", nullable = false, length = 10, columnDefinition = "varchar")
 	private String matricule;
 
 	/**
 	 * Date d'embauche.
 	 */
-	@Column(name = "EMP_DATE_EMBAUCHE", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "emp_date_embauche", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateEmbauche;
 
 	/**
 	 * Salaire de l'employé.
 	 */
-	@Column(name = "EMP_SALAIRE", scale = 2, columnDefinition = "decimal")
+	@Column(name = "emp_salaire", scale = 2, columnDefinition = "decimal")
 	private BigDecimal salaire;
 
 	/**
 	 * Restaurant où travaille l'employé.
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 

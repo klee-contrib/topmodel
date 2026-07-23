@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package restaurant.jpa_server.entities.restaurant;
+package restaurant.jpa_feign.entities.restaurant;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 /**
@@ -25,51 +24,51 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Table(
-	name = "TABLE_RESTAURANT",
+@jakarta.persistence.Table(
+	name = "table",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"LIE_ID", "TAB_NUMERO"})
+		@UniqueConstraint(columnNames = {"lie_id", "tab_numero"})
 	}
 )
-public class TableRestaurant {
+public class Table {
 
 	/**
 	 * Identifiant de la table.
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TAB_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "tab_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
 	 */
-	@Column(name = "TAB_NUMERO", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "tab_numero", nullable = false, length = 10, columnDefinition = "varchar")
 	private String numero;
 
 	/**
 	 * Capacité de la table (nombre de places).
 	 */
-	@Column(name = "TAB_CAPACITE", nullable = false, columnDefinition = "int")
+	@Column(name = "tab_capacite", nullable = false, columnDefinition = "int")
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
 	 */
-	@Column(name = "TAB_DISPONIBLE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "tab_disponible", nullable = false, columnDefinition = "boolean")
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
 	 */
-	@Column(name = "LIE_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "lie_id", nullable = false, columnDefinition = "int")
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "TAB_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "tab_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**
@@ -175,7 +174,7 @@ public class TableRestaurant {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.TableRestaurant TableRestaurant}.
+	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Table Table}.
 	 */
 	public enum Fields {
 		ID(Integer.class),

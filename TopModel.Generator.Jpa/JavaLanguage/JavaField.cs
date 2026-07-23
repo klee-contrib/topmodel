@@ -4,6 +4,8 @@ namespace TopModel.Generator.Jpa;
 
 public class JavaField(string type, string name)
 {
+    private readonly IList<string> _imports = [];
+
     public string Type { get; set; } = type;
     public string Visibility { get; set; } = "private";
 
@@ -16,14 +18,19 @@ public class JavaField(string type, string name)
 
     public IList<JavaAnnotation> Annotations { get; } = [];
 
-    public IList<string> Imports { get; } = [];
+    public IEnumerable<string> Imports => _imports.Concat(Annotations.SelectMany(a => a.Imports)).Distinct();
 
     public IList<string> Comment { get; set; } = [];
 
     public JavaField Add(JavaAnnotation annotation)
     {
-        Imports.AddRange(annotation.Imports);
         Annotations.Add(annotation);
+        return this;
+    }
+
+    public JavaField AddImports(params IEnumerable<string> imports)
+    {
+        _imports.AddRange(imports);
         return this;
     }
 
@@ -34,10 +41,5 @@ public class JavaField(string type, string name)
             Add(annotation);
         }
         return this;
-    }
-
-    public override string ToString()
-    {
-        return $"{Visibility}{(Static ? " static" : string.Empty)}{(Final ? " final" : string.Empty)}{(Volatile ? " volatile" : string.Empty)} {Type} {Name}{(DefaultValue != string.Empty ? $" = {DefaultValue}" : string.Empty)};";
     }
 }

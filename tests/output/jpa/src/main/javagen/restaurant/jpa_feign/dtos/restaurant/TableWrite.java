@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_feign.entities.restaurant.TableRestaurant;
+import restaurant.jpa_feign.entities.restaurant.Table;
 
 /**
  * Détail d'une table en écriture.
@@ -28,7 +28,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -36,21 +36,21 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.TableRestaurant#getDisponible() TableRestaurant#getDisponible()}
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getDisponible() Table#getDisponible()}
 	 */
 	@NotNull
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
 	 */
 	@NotNull
 	private Integer restaurantId;
@@ -124,13 +124,13 @@ public class TableWrite implements Serializable {
 	}
 
 	/**
-	 * Mappe 'TableWrite' vers 'TableRestaurant'.
-	 * @param target Instance pré-existante de 'TableRestaurant'. Une nouvelle instance sera créée si non spécifié.
+	 * Mappe 'TableWrite' vers 'Table'.
+	 * @param target Instance pré-existante de 'Table'. Une nouvelle instance sera créée si non spécifié.
 	 *
-	 * @return Une instance de 'TableRestaurant'.
+	 * @return Une instance de 'Table'.
 	 */
-	public TableRestaurant toTableRestaurant(TableRestaurant target) {
-		return RestaurantMappers.toTableRestaurant(this, target);
+	public Table toTable(Table target) {
+		return RestaurantMappers.toTable(this, target);
 	}
 
 	/**

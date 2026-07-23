@@ -63,6 +63,16 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 
   Nom du tablespace pour les index (Postgres ou Oracle).
 
+### Impacts de `useLowerCaseSqlNames`
+
+`useLowerCaseSqlNames` force la casse des identifiants SQL générés en miniscule ou en majuscule, peu importe la sensibilité à la casse du SBGD cible. Les identifiants seront donc quotés au besoin :
+
+- Dans Postgres, un identifiant non quoté est automatiquement converti en minusucule, donc avec `useLowerCaseSqlNames: true`, les identifiants ne seront pas quotés (car non nécessaire). En revanche, avec `false`, tous les identifiants seront quotés pour préserver le choix de les avoir en majuscule.
+- Dans Oracle, c'est pareil mais à l'envers (Oracle convertit automatiquement en majuscule).
+- Dans SQL Server, on ne quote jamais car la casse de l'identifiant est conservée, et le SGBD est de toute façon insensible à la casse.
+
+_Remarque : les identifiants qui entrerait en conflit avec un mot clé réservé comme "table" ou "user" sont eux toujours quotés, peu importe la casse._
+
 ### Exemple
 
 ```yaml

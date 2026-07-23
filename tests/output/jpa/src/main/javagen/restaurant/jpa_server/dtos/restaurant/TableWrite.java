@@ -25,7 +25,7 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getNumero() TableRestaurant#getNumero()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -33,21 +33,21 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getCapacite() TableRestaurant#getCapacite()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getDisponible() TableRestaurant#getDisponible()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getDisponible() Table#getDisponible()}
 	 */
 	@NotNull
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.TableRestaurant#getRestaurantId() TableRestaurant#getRestaurantId()}
+	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
 	 */
 	@NotNull
 	private Integer restaurantId;

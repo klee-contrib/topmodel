@@ -9,258 +9,258 @@
 -- ===========================================================================================
 
 /**
-  * Commentaires pour la table ASSIETTE
+  * Commentaires pour la table assiette
  **/
-COMMENT ON TABLE ASSIETTE IS 'Assiette.';
-COMMENT ON COLUMN ASSIETTE.VSL_ID IS 'Id de la vaisselle';
-COMMENT ON COLUMN ASSIETTE.VSL_DESCRIPTION IS 'Description de la vaisselle.';
-COMMENT ON COLUMN ASSIETTE.AST_TAILLE IS 'Taille de l''assiette.';
+comment on table assiette is 'Assiette.';
+comment on column assiette.vsl_id is 'Id de la vaisselle';
+comment on column assiette.vsl_description is 'Description de la vaisselle.';
+comment on column assiette.ast_taille is 'Taille de l''assiette.';
 
 /**
-  * Commentaires pour la table AVIS_CLIENT
+  * Commentaires pour la table avis_client
  **/
-COMMENT ON TABLE AVIS_CLIENT IS 'Avis d''un client sur un restaurant';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_ID IS 'Identifiant de l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_NOTE IS 'Note sur 5';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_COMMENTAIRE IS 'Commentaire de l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_DATE_AVIS IS 'Date de l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_APPROUVE IS 'Indique si l''avis est approuvé par le restaurant';
-COMMENT ON COLUMN AVIS_CLIENT.PER_ID IS 'Client ayant donné l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.LIE_ID IS 'Restaurant concerné par l''avis';
-COMMENT ON COLUMN AVIS_CLIENT.AVI_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table avis_client is 'Avis d''un client sur un restaurant';
+comment on column avis_client.avi_id is 'Identifiant de l''avis';
+comment on column avis_client.avi_note is 'Note sur 5';
+comment on column avis_client.avi_commentaire is 'Commentaire de l''avis';
+comment on column avis_client.avi_date_avis is 'Date de l''avis';
+comment on column avis_client.avi_approuve is 'Indique si l''avis est approuvé par le restaurant';
+comment on column avis_client.per_id is 'Client ayant donné l''avis';
+comment on column avis_client.lie_id is 'Restaurant concerné par l''avis';
+comment on column avis_client.avi_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table CATEGORIE_PLAT
+  * Commentaires pour la table categorie_plat
  **/
-COMMENT ON TABLE CATEGORIE_PLAT IS 'Catégorie de plat';
-COMMENT ON COLUMN CATEGORIE_PLAT.CAT_CODE IS 'Code de la catégorie';
-COMMENT ON COLUMN CATEGORIE_PLAT.CAT_LIBELLE IS 'Libellé de la catégorie';
-COMMENT ON COLUMN CATEGORIE_PLAT.CAT_ORDRE IS 'Ordre d''affichage dans le menu.';
-COMMENT ON COLUMN CATEGORIE_PLAT.CAT_PRIX_MOYEN IS 'Prix moyen de la catégorie, à titre indicatif.';
+comment on table categorie_plat is 'Catégorie de plat';
+comment on column categorie_plat.cat_code is 'Code de la catégorie';
+comment on column categorie_plat.cat_libelle is 'Libellé de la catégorie';
+comment on column categorie_plat.cat_ordre is 'Ordre d''affichage dans le menu.';
+comment on column categorie_plat.cat_prix_moyen is 'Prix moyen de la catégorie, à titre indicatif.';
 
 /**
-  * Commentaires pour la table CATEGORIE_PLAT_REGION
+  * Commentaires pour la table categorie_plat_region
  **/
-COMMENT ON TABLE CATEGORIE_PLAT_REGION IS 'Catégories de plats disponibles par région';
-COMMENT ON COLUMN CATEGORIE_PLAT_REGION.REG_CODE IS 'Région';
-COMMENT ON COLUMN CATEGORIE_PLAT_REGION.CAT_CODE IS 'Catégorie de plat';
+comment on table categorie_plat_region is 'Catégories de plats disponibles par région';
+comment on column categorie_plat_region.reg_code is 'Région';
+comment on column categorie_plat_region.cat_code is 'Catégorie de plat';
 
 /**
-  * Commentaires pour la table CLIENT
+  * Commentaires pour la table client
  **/
-COMMENT ON TABLE CLIENT IS 'Client du restaurant';
-COMMENT ON COLUMN CLIENT.CLI_EMAIL IS 'Adresse email du client';
-COMMENT ON COLUMN CLIENT.PER_ID IS 'Association vers la clé primaire de la classe parente';
+comment on table client is 'Client du restaurant';
+comment on column client.cli_email is 'Adresse email du client';
+comment on column client.per_id is 'Association vers la clé primaire de la classe parente';
 
 /**
-  * Commentaires pour la table COMMANDE
+  * Commentaires pour la table commande
  **/
-COMMENT ON TABLE COMMANDE IS 'Commande d''un client';
-COMMENT ON COLUMN COMMANDE.COM_ID IS 'Identifiant de la commande';
-COMMENT ON COLUMN COMMANDE.COM_DATE_COMMANDE IS 'Date et heure de la commande';
-COMMENT ON COLUMN COMMANDE.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
-COMMENT ON COLUMN COMMANDE.COM_MONTANT_TOTAL IS 'Montant total de la commande';
-COMMENT ON COLUMN COMMANDE.PER_ID IS 'Client ayant passé la commande';
-COMMENT ON COLUMN COMMANDE.TAB_ID IS 'Table associée à la commande';
-COMMENT ON COLUMN COMMANDE.REV_ID IS 'Réservation associée à la commande';
-COMMENT ON COLUMN COMMANDE.STC_CODE IS 'Statut de la commande';
-COMMENT ON COLUMN COMMANDE.AVI_ID IS 'Avis laissé par le client sur la commande.';
-COMMENT ON COLUMN COMMANDE.COM_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table commande is 'Commande d''un client';
+comment on column commande.com_id is 'Identifiant de la commande';
+comment on column commande.com_date_commande is 'Date et heure de la commande';
+comment on column commande.com_date_livraison is 'Date et heure de livraison';
+comment on column commande.com_montant_total is 'Montant total de la commande';
+comment on column commande.per_id is 'Client ayant passé la commande';
+comment on column commande.tab_id is 'Table associée à la commande';
+comment on column commande.rev_id is 'Réservation associée à la commande';
+comment on column commande.stc_code is 'Statut de la commande';
+comment on column commande.avi_id is 'Avis laissé par le client sur la commande.';
+comment on column commande.com_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table COMMANDE_HISTORIQUE
+  * Commentaires pour la table commande_historique
  **/
-COMMENT ON TABLE COMMANDE_HISTORIQUE IS 'Commande pour historique avec préservation des clés primaires';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_ID IS 'Identifiant de la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_COMMANDE IS 'Date et heure de la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_LIVRAISON IS 'Date et heure de livraison';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_MONTANT_TOTAL IS 'Montant total de la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.PER_ID IS 'Client ayant passé la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.TAB_ID IS 'Table associée à la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.REV_ID IS 'Réservation associée à la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.STC_CODE IS 'Statut de la commande';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.AVI_ID IS 'Avis laissé par le client sur la commande.';
-COMMENT ON COLUMN COMMANDE_HISTORIQUE.COM_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table commande_historique is 'Commande pour historique avec préservation des clés primaires';
+comment on column commande_historique.com_id is 'Identifiant de la commande';
+comment on column commande_historique.com_date_commande is 'Date et heure de la commande';
+comment on column commande_historique.com_date_livraison is 'Date et heure de livraison';
+comment on column commande_historique.com_montant_total is 'Montant total de la commande';
+comment on column commande_historique.per_id is 'Client ayant passé la commande';
+comment on column commande_historique.tab_id is 'Table associée à la commande';
+comment on column commande_historique.rev_id is 'Réservation associée à la commande';
+comment on column commande_historique.stc_code is 'Statut de la commande';
+comment on column commande_historique.avi_id is 'Avis laissé par le client sur la commande.';
+comment on column commande_historique.com_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table COUVERT
+  * Commentaires pour la table couvert
  **/
-COMMENT ON TABLE COUVERT IS 'Couvert.';
-COMMENT ON COLUMN COUVERT.VSL_ID IS 'Id de la vaisselle';
-COMMENT ON COLUMN COUVERT.VSL_DESCRIPTION IS 'Description de la vaisselle.';
+comment on table couvert is 'Couvert.';
+comment on column couvert.vsl_id is 'Id de la vaisselle';
+comment on column couvert.vsl_description is 'Description de la vaisselle.';
 
 /**
-  * Commentaires pour la table DEPARTEMENT
+  * Commentaires pour la table departement
  **/
-COMMENT ON TABLE DEPARTEMENT IS 'Département';
-COMMENT ON COLUMN DEPARTEMENT.DEP_CODE IS 'Code du département.';
-COMMENT ON COLUMN DEPARTEMENT.DEP_LIBELLE IS 'Libellé du département.';
-COMMENT ON COLUMN DEPARTEMENT.REG_CODE IS 'Région associée.';
+comment on table departement is 'Département';
+comment on column departement.dep_code is 'Code du département.';
+comment on column departement.dep_libelle is 'Libellé du département.';
+comment on column departement.reg_code is 'Région associée.';
 
 /**
-  * Commentaires pour la table EMPLOYE
+  * Commentaires pour la table employe
  **/
-COMMENT ON TABLE EMPLOYE IS 'Employé du restaurant';
-COMMENT ON COLUMN EMPLOYE.EMP_TELEPHONE IS 'Numéro de téléphone de l''employé.';
-COMMENT ON COLUMN EMPLOYE.EMP_DATE_NAISSANCE IS 'Date de naissance';
-COMMENT ON COLUMN EMPLOYE.EMP_MATRICULE IS 'Matricule de l''employé';
-COMMENT ON COLUMN EMPLOYE.EMP_DATE_EMBAUCHE IS 'Date d''embauche';
-COMMENT ON COLUMN EMPLOYE.EMP_SALAIRE IS 'Salaire de l''employé';
-COMMENT ON COLUMN EMPLOYE.LIE_ID IS 'Restaurant où travaille l''employé';
-COMMENT ON COLUMN EMPLOYE.PER_ID IS 'Association vers la clé primaire de la classe parente';
+comment on table employe is 'Employé du restaurant';
+comment on column employe.emp_telephone is 'Numéro de téléphone de l''employé.';
+comment on column employe.emp_date_naissance is 'Date de naissance';
+comment on column employe.emp_matricule is 'Matricule de l''employé';
+comment on column employe.emp_date_embauche is 'Date d''embauche';
+comment on column employe.emp_salaire is 'Salaire de l''employé';
+comment on column employe.lie_id is 'Restaurant où travaille l''employé';
+comment on column employe.per_id is 'Association vers la clé primaire de la classe parente';
 
 /**
-  * Commentaires pour la table LIEU
+  * Commentaires pour la table lieu
  **/
-COMMENT ON TABLE LIEU IS 'Lieu';
-COMMENT ON COLUMN LIEU.LIE_ID IS 'Identifiant du restaurant';
-COMMENT ON COLUMN LIEU.LIE_NOM IS 'Nom du restaurant';
-COMMENT ON COLUMN LIEU.LIE_ADRESSE IS 'Adresse du restaurant';
-COMMENT ON COLUMN LIEU.LIE_DISCRIMINATOR IS 'Discriminateur pour les instances de la hiérarchie de classe';
-COMMENT ON COLUMN LIEU.RES_TELEPHONE IS 'Numéro de téléphone';
-COMMENT ON COLUMN LIEU.RES_DATE_CREATION IS 'Date de création de l''enregistrement';
-COMMENT ON COLUMN LIEU.FRN_TELEPHONE IS 'Numéro de téléphone';
-COMMENT ON COLUMN LIEU.FRN_BIO IS 'Si le fournisseur fait du bio.';
+comment on table lieu is 'Lieu';
+comment on column lieu.lie_id is 'Identifiant du restaurant';
+comment on column lieu.lie_nom is 'Nom du restaurant';
+comment on column lieu.lie_adresse is 'Adresse du restaurant';
+comment on column lieu.lie_discriminator is 'Discriminateur pour les instances de la hiérarchie de classe';
+comment on column lieu.res_telephone is 'Numéro de téléphone';
+comment on column lieu.res_date_creation is 'Date de création de l''enregistrement';
+comment on column lieu.frn_telephone is 'Numéro de téléphone';
+comment on column lieu.frn_bio is 'Si le fournisseur fait du bio.';
 
 /**
-  * Commentaires pour la table LIGNE_COMMANDE
+  * Commentaires pour la table ligne_commande
  **/
-COMMENT ON TABLE LIGNE_COMMANDE IS 'Ligne d''une commande';
-COMMENT ON COLUMN LIGNE_COMMANDE.LIG_ID IS 'Identifiant de la ligne';
-COMMENT ON COLUMN LIGNE_COMMANDE.LIG_QUANTITE IS 'Quantité commandée';
-COMMENT ON COLUMN LIGNE_COMMANDE.LIG_PRIX_UNITAIRE IS 'Prix unitaire au moment de la commande';
-COMMENT ON COLUMN LIGNE_COMMANDE.LIG_PRIX_TOTAL IS 'Prix total de la ligne';
-COMMENT ON COLUMN LIGNE_COMMANDE.COM_ID IS 'Commande à laquelle appartient la ligne';
-COMMENT ON COLUMN LIGNE_COMMANDE.PLA_ID IS 'Plat commandé';
-COMMENT ON COLUMN LIGNE_COMMANDE.LIG_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table ligne_commande is 'Ligne d''une commande';
+comment on column ligne_commande.lig_id is 'Identifiant de la ligne';
+comment on column ligne_commande.lig_quantite is 'Quantité commandée';
+comment on column ligne_commande.lig_prix_unitaire is 'Prix unitaire au moment de la commande';
+comment on column ligne_commande.lig_prix_total is 'Prix total de la ligne';
+comment on column ligne_commande.com_id is 'Commande à laquelle appartient la ligne';
+comment on column ligne_commande.pla_id is 'Plat commandé';
+comment on column ligne_commande.lig_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table LIGNE_COMMANDE_HISTORIQUE
+  * Commentaires pour la table ligne_commande_historique
  **/
-COMMENT ON TABLE LIGNE_COMMANDE_HISTORIQUE IS 'Ligne de commande pour historique avec préservation des clés primaires';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_ID IS 'Identifiant de la ligne';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_QUANTITE IS 'Quantité commandée';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_PRIX_UNITAIRE IS 'Prix unitaire au moment de la commande';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_PRIX_TOTAL IS 'Prix total de la ligne';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.PLA_ID IS 'Plat commandé';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.LIG_DATE_CREATION IS 'Date de création de l''enregistrement';
-COMMENT ON COLUMN LIGNE_COMMANDE_HISTORIQUE.COM_ID IS 'Commande à laquelle appartient la ligne';
+comment on table ligne_commande_historique is 'Ligne de commande pour historique avec préservation des clés primaires';
+comment on column ligne_commande_historique.lig_id is 'Identifiant de la ligne';
+comment on column ligne_commande_historique.lig_quantite is 'Quantité commandée';
+comment on column ligne_commande_historique.lig_prix_unitaire is 'Prix unitaire au moment de la commande';
+comment on column ligne_commande_historique.lig_prix_total is 'Prix total de la ligne';
+comment on column ligne_commande_historique.pla_id is 'Plat commandé';
+comment on column ligne_commande_historique.lig_date_creation is 'Date de création de l''enregistrement';
+comment on column ligne_commande_historique.com_id is 'Commande à laquelle appartient la ligne';
 
 /**
-  * Commentaires pour la table MENU
+  * Commentaires pour la table menu
  **/
-COMMENT ON TABLE MENU IS 'Menu du restaurant';
-COMMENT ON COLUMN MENU.MEN_ID IS 'Identifiant du menu';
-COMMENT ON COLUMN MENU.MEN_NOM IS 'Nom du menu';
-COMMENT ON COLUMN MENU.MEN_DESCRIPTION IS 'Description du menu';
-COMMENT ON COLUMN MENU.MEN_PRIX IS 'Prix du menu';
-COMMENT ON COLUMN MENU.MEN_DISPONIBLE IS 'Indique si le menu est disponible';
-COMMENT ON COLUMN MENU.MEN_DATE_DEBUT IS 'Date de début de validité du menu';
-COMMENT ON COLUMN MENU.MEN_DATE_FIN IS 'Date de fin de validité du menu';
-COMMENT ON COLUMN MENU.LIE_ID IS 'Restaurant proposant ce menu';
-COMMENT ON COLUMN MENU.MEN_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table menu is 'Menu du restaurant';
+comment on column menu.men_id is 'Identifiant du menu';
+comment on column menu.men_nom is 'Nom du menu';
+comment on column menu.men_description is 'Description du menu';
+comment on column menu.men_prix is 'Prix du menu';
+comment on column menu.men_disponible is 'Indique si le menu est disponible';
+comment on column menu.men_date_debut is 'Date de début de validité du menu';
+comment on column menu.men_date_fin is 'Date de fin de validité du menu';
+comment on column menu.lie_id is 'Restaurant proposant ce menu';
+comment on column menu.men_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table MENU_PLAT
+  * Commentaires pour la table menu_plat
  **/
-COMMENT ON TABLE MENU_PLAT IS 'Plat dans un menu';
-COMMENT ON COLUMN MENU_PLAT.MEN_ID IS 'Menu contenant ce plat';
-COMMENT ON COLUMN MENU_PLAT.PLA_ID IS 'Plat du menu';
-COMMENT ON COLUMN MENU_PLAT.MPL_ORDRE IS 'Ordre d''affichage du plat dans le menu';
-COMMENT ON COLUMN MENU_PLAT.MPL_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table menu_plat is 'Plat dans un menu';
+comment on column menu_plat.men_id is 'Menu contenant ce plat';
+comment on column menu_plat.pla_id is 'Plat du menu';
+comment on column menu_plat.mpl_ordre is 'Ordre d''affichage du plat dans le menu';
+comment on column menu_plat.mpl_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table PERSONNE
+  * Commentaires pour la table personne
  **/
-COMMENT ON TABLE PERSONNE IS 'Classe de base représentant une personne';
-COMMENT ON COLUMN PERSONNE.PER_ID IS 'Identifiant de la personne';
-COMMENT ON COLUMN PERSONNE.PER_NOM IS 'Nom de la personne';
-COMMENT ON COLUMN PERSONNE.PER_PRENOM IS 'Prénom de la personne';
-COMMENT ON COLUMN PERSONNE.DEP_CODE IS 'Département de résidence de la personne.';
-COMMENT ON COLUMN PERSONNE.PER_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table personne is 'Classe de base représentant une personne';
+comment on column personne.per_id is 'Identifiant de la personne';
+comment on column personne.per_nom is 'Nom de la personne';
+comment on column personne.per_prenom is 'Prénom de la personne';
+comment on column personne.dep_code is 'Département de résidence de la personne.';
+comment on column personne.per_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table PLAT
+  * Commentaires pour la table plat
  **/
-COMMENT ON TABLE PLAT IS 'Plat du menu';
-COMMENT ON COLUMN PLAT.PLA_ID IS 'Identifiant du plat';
-COMMENT ON COLUMN PLAT.PLA_NOM IS 'Nom du plat';
-COMMENT ON COLUMN PLAT.PLA_DESCRIPTION IS 'Description du plat';
-COMMENT ON COLUMN PLAT.PLA_PRIX IS 'Prix du plat';
-COMMENT ON COLUMN PLAT.PLA_DISPONIBLE IS 'Indique si le plat est disponible';
-COMMENT ON COLUMN PLAT.CAT_CODE IS 'Catégorie du plat';
-COMMENT ON COLUMN PLAT.LIE_ID IS 'Restaurant proposant ce plat';
-COMMENT ON COLUMN PLAT.PLA_DATE_CREATION IS 'Date de création de l''enregistrement';
-COMMENT ON COLUMN PLAT.PBO_VOLUME IS 'Volume de la boisson';
-COMMENT ON COLUMN PLAT.PPR_VEGETARIEN IS 'Si le plat est végétarien.';
+comment on table plat is 'Plat du menu';
+comment on column plat.pla_id is 'Identifiant du plat';
+comment on column plat.pla_nom is 'Nom du plat';
+comment on column plat.pla_description is 'Description du plat';
+comment on column plat.pla_prix is 'Prix du plat';
+comment on column plat.pla_disponible is 'Indique si le plat est disponible';
+comment on column plat.cat_code is 'Catégorie du plat';
+comment on column plat.lie_id is 'Restaurant proposant ce plat';
+comment on column plat.pla_date_creation is 'Date de création de l''enregistrement';
+comment on column plat.pbo_volume is 'Volume de la boisson';
+comment on column plat.ppr_vegetarien is 'Si le plat est végétarien.';
 
 /**
-  * Commentaires pour la table PRESTATAIRE
+  * Commentaires pour la table prestataire
  **/
-COMMENT ON TABLE PRESTATAIRE IS 'Prestaire du restaurant';
-COMMENT ON COLUMN PRESTATAIRE.PST_ID IS 'Identifiant de la personne';
-COMMENT ON COLUMN PRESTATAIRE.PST_NOM IS 'Nom de la personne';
-COMMENT ON COLUMN PRESTATAIRE.PST_PRENOM IS 'Prénom de la personne';
-COMMENT ON COLUMN PRESTATAIRE.PST_TELEPHONE IS 'Numéro de téléphone de l''employé.';
+comment on table prestataire is 'Prestaire du restaurant';
+comment on column prestataire.pst_id is 'Identifiant de la personne';
+comment on column prestataire.pst_nom is 'Nom de la personne';
+comment on column prestataire.pst_prenom is 'Prénom de la personne';
+comment on column prestataire.pst_telephone is 'Numéro de téléphone de l''employé.';
 
 /**
-  * Commentaires pour la table PROMOTION
+  * Commentaires pour la table promotion
  **/
-COMMENT ON TABLE PROMOTION IS 'Promotion sur un plat';
-COMMENT ON COLUMN PROMOTION.PLA_ID IS 'Plat concerné par la promotion.';
-COMMENT ON COLUMN PROMOTION.PRO_LIBELLE IS 'Libellé de la promotion';
-COMMENT ON COLUMN PROMOTION.PRO_POURCENTAGE_REDUCTION IS 'Pourcentage de réduction (0-100)';
-COMMENT ON COLUMN PROMOTION.PRO_DATE_DEBUT IS 'Date de début de la promotion';
-COMMENT ON COLUMN PROMOTION.PRO_DATE_FIN IS 'Date de fin de la promotion';
-COMMENT ON COLUMN PROMOTION.PRO_ACTIVE IS 'Indique si la promotion est active';
-COMMENT ON COLUMN PROMOTION.LIE_ID IS 'Restaurant concerné par la promotion (null si globale)';
-COMMENT ON COLUMN PROMOTION.PRO_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table promotion is 'Promotion sur un plat';
+comment on column promotion.pla_id is 'Plat concerné par la promotion.';
+comment on column promotion.pro_libelle is 'Libellé de la promotion';
+comment on column promotion.pro_pourcentage_reduction is 'Pourcentage de réduction (0-100)';
+comment on column promotion.pro_date_debut is 'Date de début de la promotion';
+comment on column promotion.pro_date_fin is 'Date de fin de la promotion';
+comment on column promotion.pro_active is 'Indique si la promotion est active';
+comment on column promotion.lie_id is 'Restaurant concerné par la promotion (null si globale)';
+comment on column promotion.pro_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table REGION
+  * Commentaires pour la table region
  **/
-COMMENT ON TABLE REGION IS 'Région';
-COMMENT ON COLUMN REGION.REG_CODE IS 'Code de la région.';
-COMMENT ON COLUMN REGION.REG_LIBELLE IS 'Libellé de la région.';
-COMMENT ON COLUMN REGION.REG_NOM_RESPONSABLE IS 'Nom du responsable de la région.';
+comment on table region is 'Région';
+comment on column region.reg_code is 'Code de la région.';
+comment on column region.reg_libelle is 'Libellé de la région.';
+comment on column region.reg_nom_responsable is 'Nom du responsable de la région.';
 
 /**
-  * Commentaires pour la table RESERVATION
+  * Commentaires pour la table reservation
  **/
-COMMENT ON TABLE RESERVATION IS 'Réservation d''une table';
-COMMENT ON COLUMN RESERVATION.REV_ID IS 'Identifiant de la réservation';
-COMMENT ON COLUMN RESERVATION.REV_DATE_RESERVATION IS 'Date et heure de la réservation';
-COMMENT ON COLUMN RESERVATION.REV_NOMBRE_PERSONNES IS 'Nombre de personnes';
-COMMENT ON COLUMN RESERVATION.REV_COMMENTAIRE IS 'Commentaire sur la réservation';
-COMMENT ON COLUMN RESERVATION.REV_CONFIRMEE IS 'Indique si la réservation est confirmée';
-COMMENT ON COLUMN RESERVATION.PER_ID IS 'Client ayant fait la réservation';
-COMMENT ON COLUMN RESERVATION.TAB_ID IS 'Table réservée';
-COMMENT ON COLUMN RESERVATION.LIE_ID IS 'Restaurant concerné par la réservation';
-COMMENT ON COLUMN RESERVATION.REV_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table reservation is 'Réservation d''une table';
+comment on column reservation.rev_id is 'Identifiant de la réservation';
+comment on column reservation.rev_date_reservation is 'Date et heure de la réservation';
+comment on column reservation.rev_nombre_personnes is 'Nombre de personnes';
+comment on column reservation.rev_commentaire is 'Commentaire sur la réservation';
+comment on column reservation.rev_confirmee is 'Indique si la réservation est confirmée';
+comment on column reservation.per_id is 'Client ayant fait la réservation';
+comment on column reservation.tab_id is 'Table réservée';
+comment on column reservation.lie_id is 'Restaurant concerné par la réservation';
+comment on column reservation.rev_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table TABLE_RESTAURANT
+  * Commentaires pour la table table
  **/
-COMMENT ON TABLE TABLE_RESTAURANT IS 'Table du restaurant';
-COMMENT ON COLUMN TABLE_RESTAURANT.TAB_ID IS 'Identifiant de la table';
-COMMENT ON COLUMN TABLE_RESTAURANT.TAB_NUMERO IS 'Numéro de la table';
-COMMENT ON COLUMN TABLE_RESTAURANT.TAB_CAPACITE IS 'Capacité de la table (nombre de places)';
-COMMENT ON COLUMN TABLE_RESTAURANT.TAB_DISPONIBLE IS 'Indique si la table est disponible';
-COMMENT ON COLUMN TABLE_RESTAURANT.LIE_ID IS 'Restaurant auquel appartient la table';
-COMMENT ON COLUMN TABLE_RESTAURANT.TAB_DATE_CREATION IS 'Date de création de l''enregistrement';
+comment on table "table" is 'Table du restaurant';
+comment on column "table".tab_id is 'Identifiant de la table';
+comment on column "table".tab_numero is 'Numéro de la table';
+comment on column "table".tab_capacite is 'Capacité de la table (nombre de places)';
+comment on column "table".tab_disponible is 'Indique si la table est disponible';
+comment on column "table".lie_id is 'Restaurant auquel appartient la table';
+comment on column "table".tab_date_creation is 'Date de création de l''enregistrement';
 
 /**
-  * Commentaires pour la table TRANSLATION
+  * Commentaires pour la table translation
  **/
-COMMENT ON TABLE TRANSLATION IS 'Table pour stocker les traductions en SQL.';
-COMMENT ON COLUMN TRANSLATION.TRA_RESOURCE_KEY IS 'Clé de traduction.';
-COMMENT ON COLUMN TRANSLATION.TRA_VALUE IS 'Valeur de la clé de traduction.';
-COMMENT ON COLUMN TRANSLATION.TRA_LANG IS 'Langue de traduction';
+comment on table translation is 'Table pour stocker les traductions en SQL.';
+comment on column translation.tra_resource_key is 'Clé de traduction.';
+comment on column translation.tra_value is 'Valeur de la clé de traduction.';
+comment on column translation.tra_lang is 'Langue de traduction';
 
 /**
-  * Commentaires pour la table VERRE
+  * Commentaires pour la table verre
  **/
-COMMENT ON TABLE VERRE IS 'Verre.';
-COMMENT ON COLUMN VERRE.VSL_ID IS 'Id de la vaisselle';
-COMMENT ON COLUMN VERRE.VSL_DESCRIPTION IS 'Description de la vaisselle.';
-COMMENT ON COLUMN VERRE.VRR_A_PIED IS 'Si le verre est à pied ou non.';
+comment on table verre is 'Verre.';
+comment on column verre.vsl_id is 'Id de la vaisselle';
+comment on column verre.vsl_description is 'Description de la vaisselle.';
+comment on column verre.vrr_a_pied is 'Si le verre est à pied ou non.';

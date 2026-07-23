@@ -11,7 +11,7 @@ class Commande{
  DO_DATE_HEURE DateCreation
 }
 Commande "1" --> "0..*" Client
-Commande "0..1" --> "0..*" TableRestaurant
+Commande "0..1" --> "0..*" Table
 Commande "0..1" --> "0..*" Reservation
 Commande "1" --> "0..*" StatutCommande
 Commande "0..1" --> "1" AvisClient
@@ -59,7 +59,7 @@ class Reservation{
  DO_DATE_HEURE DateCreation
 }
 Reservation "1" --> "0..*" Client
-Reservation "0..1" --> "0..*" TableRestaurant
+Reservation "0..1" --> "0..*" Table
 Reservation "1" --> "0..*" Restaurant
 %% Menu du restaurant
 class Menu{
@@ -177,16 +177,16 @@ Restaurant "1..*" --> "1" Menu
 Restaurant "1..*" --> "1" Plat
 Restaurant "0..*" --> "0..1" Promotion
 Restaurant "1..*" --> "1" AvisClient
-Restaurant "1..*" --> "1" TableRestaurant
+Restaurant "1..*" --> "1" Table
 %% Table du restaurant
-class TableRestaurant{
+class Table{
  DO_ID Id
  DO_CODE Numero
  DO_QUANTITE Capacite
  DO_BOOLEEN Disponible
  DO_DATE_HEURE DateCreation
 }
-TableRestaurant "1" --> "0..*" Restaurant
+Table "1" --> "0..*" Restaurant
 %% Vaisselle de restaurant
 class Vaisselle{
  DO_SEQ_ID Id

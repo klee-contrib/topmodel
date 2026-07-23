@@ -24,7 +24,7 @@ import jakarta.persistence.Table;
  * Classe de base représentant une personne.
  */
 @Entity
-@Table(name = "PERSONNE")
+@Table(name = "personne")
 @EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -35,32 +35,32 @@ public class Personne implements PersonneBase {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PER_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "per_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
 	 */
-	@Column(name = "PER_NOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "per_nom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Prénom de la personne.
 	 */
-	@Column(name = "PER_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "per_prenom", nullable = false, length = 100, columnDefinition = "varchar")
 	private String prenom;
 
 	/**
 	 * Département de résidence de la personne.
 	 */
-	@Column(name = "DEP_CODE", length = 10, columnDefinition = "varchar")
+	@Column(name = "dep_code", length = 10, columnDefinition = "varchar")
 	private String departementCode = "75";
 
 	/**
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "PER_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "per_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

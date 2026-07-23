@@ -96,26 +96,6 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, "}");
     }
 
-    protected static void WriteBeanTruncateStep(JavaWriter fw, DataFlow dataFlow)
-    {
-        fw.WriteLine();
-        fw.AddImport("io.github.kleecontrib.spring.batch.tasklet.QueryTasklet");
-        fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}TruncateStep"")");
-        fw.WriteLine(1, @$"public static Step {dataFlow.Name.ToCamelCase()}TruncateStep( //");
-        fw.WriteLine(1, @$"		JobRepository jobRepository, //");
-        fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
-        fw.AddImport("javax.sql.DataSource");
-        fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Target}"") DataSource dataSource) {{");
-        fw.WriteLine(1, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}TruncateStep"", jobRepository) //");
-        fw.WriteLine(
-            2,
-            @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {dataFlow.Class.SqlName}{(dataFlow.Type == DataFlowType.HardReplace ? " cascade" : string.Empty)}""), transactionManager) //"
-        );
-
-        fw.WriteLine(3, ".build();");
-        fw.WriteLine(1, "}");
-    }
-
     protected virtual string GetProcessorName(DataFlow dataFlow, FlowHook flowHook, int index)
     {
         var suffix = string.Empty;
@@ -187,7 +167,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
 
         var query =
-            $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources[0].Class.SqlName}";
+            $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{Config.GetSqlName(dataFlow.Sources[0].Class, tag)}";
         fw.AddImport("org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder");
 
         string rowMapperImport;
@@ -334,6 +314,26 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(1, "}");
     }
 
+    protected void WriteBeanTruncateStep(JavaWriter fw, DataFlow dataFlow, string tag)
+    {
+        fw.WriteLine();
+        fw.AddImport("io.github.kleecontrib.spring.batch.tasklet.QueryTasklet");
+        fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}TruncateStep"")");
+        fw.WriteLine(1, @$"public static Step {dataFlow.Name.ToCamelCase()}TruncateStep( //");
+        fw.WriteLine(1, @$"		JobRepository jobRepository, //");
+        fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
+        fw.AddImport("javax.sql.DataSource");
+        fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Target}"") DataSource dataSource) {{");
+        fw.WriteLine(1, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}TruncateStep"", jobRepository) //");
+        fw.WriteLine(
+            2,
+            @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {Config.GetSqlName(dataFlow.Class, tag)}{(dataFlow.Type == DataFlowType.HardReplace ? " cascade" : string.Empty)}""), transactionManager) //"
+        );
+
+        fw.WriteLine(3, ".build();");
+        fw.WriteLine(1, "}");
+    }
+
     protected virtual void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         if (Config.DataFlowsWriter == DataFlowsWriter.Bulk)
@@ -391,8 +391,8 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                     "org.springframework.context.annotation.Bean"
                 )
             );
-        javaMethod.Imports.Add("org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder");
-        fw.Write(1, javaMethod);
+        javaMethod.AddImports("org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder");
+        fw.Write(javaMethod);
     }
 
     protected virtual void WriteClassFlow(string fileName, DataFlow dataFlow, string tag)
@@ -408,10 +408,10 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
-        fw.WriteClassDeclaration($"{dataFlow.Name}Flow", modifier: null);
+        fw.WriteLine($"public class {dataFlow.Name}Flow {{");
         fw.WriteLine();
         fw.WriteLine(1, $@"protected {dataFlow.Name}Flow() {{");
         fw.WriteLine(2, "// protected constructor to hide implicite public one");
@@ -422,7 +422,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (dataFlow.Type == DataFlowType.Replace || dataFlow.Type == DataFlowType.HardReplace)
         {
-            WriteBeanTruncateStep(fw, dataFlow);
+            WriteBeanTruncateStep(fw, dataFlow, tag);
         }
 
         if (dataFlow.Sources[0].Mode == DataFlowSourceMode.QueryAll)
@@ -457,13 +457,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
         fw.WriteLine(@$"@Import({{{string.Join(", ", flows.Select(f => $@"{f.Name.ToPascalCase()}Flow.class"))}}})");
 
         var className = Path.GetFileNameWithoutExtension(configFilePath);
-        fw.WriteClassDeclaration($"{className}", modifier: null);
+        fw.WriteLine($"public class {className} {{");
         fw.WriteLine(1, @$"@Bean(""{module.ToPascalCase()}Job"")");
         fw.WriteLine(1, @$"public Job {module.ToCamelCase()}Job( //");
         fw.WriteLine(1, @$"			JobRepository jobRepository, //");
@@ -591,7 +591,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
         if (dataFlow.Type != DataFlowType.Merge)
         {
-            fw.WriteLine(3, @$"super(schema, ""{dataFlow.Class.SqlName}"");");
+            fw.WriteLine(3, @$"super(schema, ""{Config.GetSqlName(dataFlow.Class, tag)}"");");
         }
         else
         {
@@ -599,7 +599,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 dataFlow.Class.Extends != null ? dataFlow.Class.Extends.PrimaryKey : dataFlow.Class.PrimaryKey;
             fw.WriteLine(
                 3,
-                @$"super(schema, ""{dataFlow.Class.SqlName}"", ""{string.Join(',', primaryKey.Select(pk => pk.SqlName))}"");"
+                @$"super(schema, ""{Config.GetSqlName(dataFlow.Class, tag)}"", ""{string.Join(',', primaryKey.Select(p => Config.GetSqlName(p, tag)))}"");"
             );
         }
 
@@ -640,7 +640,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             };
             fw.WriteLine(
                 3,
-                $@"map(""{property.SqlName}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
+                $@"map(""{Config.GetSqlName(property, tag)}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
             );
         }
 

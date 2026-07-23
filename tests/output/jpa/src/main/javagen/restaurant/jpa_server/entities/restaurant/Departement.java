@@ -27,7 +27,7 @@ import restaurant.jpa_server.enums.restaurant.RegionCode;
  */
 @Entity
 @Immutable
-@Table(name = "DEPARTEMENT")
+@Table(name = "departement")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Departement {
@@ -53,20 +53,20 @@ public class Departement {
 	 * Code du département.
 	 */
 	@Id
-	@Column(name = "DEP_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "dep_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private String code;
 
 	/**
 	 * Libellé du département.
 	 */
-	@Column(name = "DEP_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "dep_libelle", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
 	 * Région associée.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "REG_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "reg_code", nullable = false, length = 10, columnDefinition = "varchar")
 	private RegionCode regionCode;
 
 	/**

@@ -5,6 +5,8 @@ namespace TopModel.Generator.Jpa;
 
 public class JavaClass(string name)
 {
+    private readonly IList<string> _imports = [];
+
     public string Name { get; set; } = name;
 
     public string? Package { get; set; }
@@ -17,7 +19,14 @@ public class JavaClass(string name)
 
     public IList<JavaAnnotation> Annotations { get; } = [];
 
-    public IList<string> Imports { get; } = [];
+    public virtual IEnumerable<string> Imports =>
+        _imports
+            .Concat(Annotations.SelectMany(a => a.Imports))
+            .Concat(Constructors.SelectMany(c => c.Imports))
+            .Concat(Fields.SelectMany(f => f.Imports))
+            .Concat(Methods.SelectMany(m => m.Imports))
+            .Concat(InnerClasses.SelectMany(c => c.Imports))
+            .Distinct();
 
     public IList<string> Implements { get; } = [];
 
@@ -35,28 +44,24 @@ public class JavaClass(string name)
 
     public JavaClass Add(JavaAnnotation annotation)
     {
-        Imports.AddRange(annotation.Imports);
         Annotations.Add(annotation);
         return this;
     }
 
     public JavaClass Add(JavaConstructor constructor)
     {
-        Imports.AddRange(constructor.Imports);
         Constructors.Add(constructor);
         return this;
     }
 
     public JavaClass Add(JavaField field)
     {
-        Imports.AddRange(field.Imports);
         Fields.Add(field);
         return this;
     }
 
     public JavaClass Add(JavaMethod method)
     {
-        Imports.AddRange(method.Imports);
         Methods.Add(method);
         return this;
     }
@@ -64,8 +69,12 @@ public class JavaClass(string name)
     public JavaClass Add(JavaClass innerClass)
     {
         InnerClasses.Add(innerClass);
-        Imports.AddRange(innerClass.Imports);
+        return this;
+    }
 
+    public JavaClass AddImports(params IEnumerable<string> imports)
+    {
+        _imports.AddRange(imports);
         return this;
     }
 

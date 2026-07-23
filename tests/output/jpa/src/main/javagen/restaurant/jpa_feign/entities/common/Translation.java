@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
  * Table pour stocker les traductions en SQL.
  */
 @Entity
-@Table(name = "TRANSLATION")
+@Table(name = "translation")
 @IdClass(Translation.TranslationId.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Translation {
@@ -31,7 +31,7 @@ public class Translation {
 	/**
 	 * Valeur de la clé de traduction.
 	 */
-	@Column(name = "TRA_VALUE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "tra_value", nullable = false, length = 100, columnDefinition = "varchar")
 	private String value;
 
 	/**
@@ -117,10 +117,10 @@ public class Translation {
 
 	public static class TranslationId {
 
-		@Column(name = "TRA_RESOURCE_KEY", nullable = false, length = 100, columnDefinition = "varchar")
+		@Column(name = "tra_resource_key", nullable = false, length = 100, columnDefinition = "varchar")
 		private String resourceKey;
 
-		@Column(name = "TRA_LANG", nullable = false, length = 100, columnDefinition = "varchar")
+		@Column(name = "tra_lang", nullable = false, length = 100, columnDefinition = "varchar")
 		private String lang;
 
 		/**

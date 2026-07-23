@@ -50,7 +50,7 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
 
         if (classe.Extends is not null)
         {
-            javaClass.Imports.Add(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)) + "_");
+            javaClass.AddImports(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)) + "_");
             javaClass.Extends = classe.Extends.NamePascal + "_";
         }
 
@@ -82,9 +82,9 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             };
 
             var imports = property.GetTypeImports(Config, tag, skipDomainImports: attributeType != "SingularAttribute");
-            javaField.Imports.Add($"jakarta.persistence.metamodel.{attributeType}");
+            javaField.AddImports($"jakarta.persistence.metamodel.{attributeType}");
 
-            javaField.Imports.AddRange(imports);
+            javaField.AddImports(imports);
 
             javaClass.Add(javaField);
         }
@@ -102,6 +102,6 @@ public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFile
             );
         }
 
-        fw.Write(0, javaClass);
+        fw.Write(javaClass);
     }
 }

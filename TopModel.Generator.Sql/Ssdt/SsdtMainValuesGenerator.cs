@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Sql.Ssdt;
 
 /// <summary>
-/// Scripter écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs.
+/// Générateur écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs.
 /// </summary>
 public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
@@ -15,13 +15,7 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (
-            classe.HasTable && classe.Values.Count > 0 && classe.Enum != EnumMode.Enum
-            || (
-                classe.InheritanceStrategy != InheritanceStrategy.DistinctTables
-                && Config.Classes.Any(c => c.Extends == classe && c.Values.Count > 0)
-            )
-        )
+        if (Config.HasValues(classe))
         {
             yield return (
                 "main",
@@ -39,14 +33,14 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
         WriteHeader(writer);
 
         // Appel des scripts d'insertion.
-        WriteScriptCalls(writer, classes.SortInserts(Config));
+        WriteScriptCalls(writer, classes.SortInserts(Config), tag);
     }
 
     /// <summary>
     /// Ecrit l'entête du fichier.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    private static void WriteHeader(IFileWriter writer)
+    /// <param name="writer">Writer.</param>
+    protected virtual void WriteHeader(IFileWriter writer)
     {
         writer.WriteSqlFileHeader(description: "Insertion des valeurs de listes statiques.");
         writer.WriteLine();
@@ -55,14 +49,15 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
     /// <summary>
     /// Ecrit les appels de scripts.
     /// </summary>
-    /// <param name="writer">Flux.</param>
-    /// <param name="classSet">Ensemble des listes de référence.</param>
-    private static void WriteScriptCalls(IFileWriter writer, IEnumerable<Class> classSet)
+    /// <param name="writer">Writer.</param>
+    /// <param name="classes">Ensemble des listes de référence.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteScriptCalls(IFileWriter writer, IEnumerable<Class> classes, string tag)
     {
-        foreach (var classe in classSet)
+        foreach (var classe in classes)
         {
-            var subscriptName = classe.SqlName + ".insert.sql";
-            writer.WriteLine("/* Insertion dans la table " + classe.SqlName + ". */");
+            var subscriptName = Config.GetSqlName(classe, tag, noQuote: true) + ".insert.sql";
+            writer.WriteLine("/* Insertion dans la table " + Config.GetSqlName(classe, tag) + ". */");
             writer.WriteLine(":r .\\" + subscriptName);
             writer.WriteLine();
         }

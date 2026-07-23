@@ -181,7 +181,7 @@
             "Annulee": "Cancelled"
         }
     },
-    "tableRestaurant": {
+    "table": {
         "capacite": "Capacite",
         "disponible": "Disponible",
         "id": "Id",

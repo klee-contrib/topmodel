@@ -30,9 +30,9 @@ import jakarta.persistence.UniqueConstraint;
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
-	name = "RESERVATION",
+	name = "reservation",
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"TAB_ID", "REV_DATE_RESERVATION"})
+		@UniqueConstraint(columnNames = {"tab_id", "rev_date_reservation"})
 	}
 )
 public class Reservation {
@@ -41,7 +41,7 @@ public class Reservation {
 	 * Identifiant de la réservation.
 	 */
 	@Id
-	@Column(name = "REV_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "rev_id", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_RESERVATION")
 	@SequenceGenerator(sequenceName = "SEQ_RESERVATION", name = "SEQ_RESERVATION", initialValue = 1000, allocationSize = 50)
 	private Integer id;
@@ -49,44 +49,44 @@ public class Reservation {
 	/**
 	 * Date et heure de la réservation.
 	 */
-	@Column(name = "REV_DATE_RESERVATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "rev_date_reservation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateReservation;
 
 	/**
 	 * Nombre de personnes.
 	 */
-	@Column(name = "REV_NOMBRE_PERSONNES", nullable = false, columnDefinition = "int")
+	@Column(name = "rev_nombre_personnes", nullable = false, columnDefinition = "int")
 	private Integer nombrePersonnes;
 
 	/**
 	 * Commentaire sur la réservation.
 	 */
-	@Column(name = "REV_COMMENTAIRE", length = 100, columnDefinition = "varchar")
+	@Column(name = "rev_commentaire", length = 100, columnDefinition = "varchar")
 	private String commentaire;
 
 	/**
 	 * Indique si la réservation est confirmée.
 	 */
-	@Column(name = "REV_CONFIRMEE", nullable = false, columnDefinition = "boolean")
+	@Column(name = "rev_confirmee", nullable = false, columnDefinition = "boolean")
 	private Boolean confirmee = false;
 
 	/**
 	 * Client ayant fait la réservation.
 	 */
-	@JoinColumn(name = "PER_ID", referencedColumnName = "PER_ID")
+	@JoinColumn(name = "per_id", referencedColumnName = "per_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Client.class)
 	private Client client;
 
 	/**
 	 * Table réservée.
 	 */
-	@Column(name = "TAB_ID", columnDefinition = "int")
+	@Column(name = "tab_id", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
 	 * Restaurant concerné par la réservation.
 	 */
-	@JoinColumn(name = "LIE_ID", referencedColumnName = "LIE_ID")
+	@JoinColumn(name = "lie_id", referencedColumnName = "lie_id")
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
 	private Restaurant restaurant;
 
@@ -94,7 +94,7 @@ public class Reservation {
 	 * Date de création de l'enregistrement.
 	 */
 	@CreatedDate
-	@Column(name = "REV_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "rev_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**

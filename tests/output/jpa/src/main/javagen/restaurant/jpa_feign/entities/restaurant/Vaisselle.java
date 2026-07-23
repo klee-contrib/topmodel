@@ -26,7 +26,7 @@ public abstract class Vaisselle {
 	 * Id de la vaisselle.
 	 */
 	@Id
-	@Column(name = "VSL_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "vsl_id", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_VAISSELLE")
 	@SequenceGenerator(sequenceName = "SEQ_VAISSELLE", name = "SEQ_VAISSELLE", initialValue = 1000, allocationSize = 50)
 	private Integer id;
@@ -34,7 +34,7 @@ public abstract class Vaisselle {
 	/**
 	 * Description de la vaisselle.
 	 */
-	@Column(name = "VSL_DESCRIPTION", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "vsl_description", nullable = false, length = 100, columnDefinition = "varchar")
 	private String description;
 
 	/**

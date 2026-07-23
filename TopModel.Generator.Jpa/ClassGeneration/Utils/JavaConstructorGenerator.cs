@@ -46,7 +46,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         return constructor;
     }
 
-    public IEnumerable<JavaMethod> GetFromMappers(Class classe, string tag)
+    public IEnumerable<JavaConstructor> GetFromMappers(Class classe, string tag)
     {
         var fromMappers = classe
             .FromMappers.Where(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
@@ -93,7 +93,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             }
 
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(fromMapper);
-            constructor.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+            constructor.AddImports(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             constructor.AddBodyLine(
                 $"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);"
             );
@@ -102,7 +102,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         }
     }
 
-    public JavaMethod GetNoArgConstructor(Class classe, string tag)
+    public JavaConstructor GetNoArgConstructor(Class classe, string tag)
     {
         var constructor = new JavaConstructor(classe.NamePascal)
         {

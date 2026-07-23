@@ -95,7 +95,7 @@ public class SpringRestTemplateApiGenerator(
 
         if (Config.GeneratedHint)
         {
-            fw.WriteLine(0, Config.GeneratedAnnotation);
+            fw.Write(Config.GeneratedAnnotation);
         }
 
         fw.WriteLine($"public abstract class {className} {{");

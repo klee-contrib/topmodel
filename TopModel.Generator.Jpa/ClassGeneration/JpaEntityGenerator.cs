@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
@@ -51,7 +50,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 var discriminatorAnnotation = new JavaAnnotation(
                     "DiscriminatorColumn",
                     imports: "jakarta.persistence.DiscriminatorColumn"
-                ).AddAttribute("name", $"\"{classe.DiscriminatorProperty.SqlName}\"");
+                ).AddAttribute("name", $"\"{Config.GetSqlName(classe.DiscriminatorProperty, tag)}\"");
 
                 yield return discriminatorAnnotation;
             }
@@ -76,7 +75,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var tableAnnotation = new JavaAnnotation("Table", imports: "jakarta.persistence.Table").AddAttribute(
                 "name",
-                $@"""{classe.SqlName}"""
+                $@"""{Config.GetSqlName(classe, tag)}"""
             );
 
             var uks = classe.Indexes.Where(idx =>
@@ -93,7 +92,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     new JavaAnnotation(
                         "UniqueConstraint",
                         imports: "jakarta.persistence.UniqueConstraint"
-                    ).AddAttribute("columnNames", uk.Properties.Select(u => $@"""{u.SqlName}""").ToArray())
+                    ).AddAttribute(
+                        "columnNames",
+                        uk.Properties.Select(u => $@"""{Config.GetSqlName(u, tag)}""").ToArray()
+                    )
                 )
                 .ToList();
 
@@ -110,10 +112,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     nonUniqueIndexes.Select(idx =>
                     {
                         return new JavaAnnotation("Index", imports: "jakarta.persistence.Index")
-                            .AddAttribute("name", $@"""{idx.SqlName}""")
+                            .AddAttribute("name", $@"""{Config.GetSqlName(idx, tag)}""")
                             .AddAttribute(
                                 "columnList",
-                                $@"""{string.Join(", ", idx.Properties.Select(c => c.SqlName))}"""
+                                $@"""{string.Join(", ", idx.Properties.Select(p => Config.GetSqlName(p, tag)))}"""
                             );
                     })
                 );
@@ -168,7 +170,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             }
             else
             {
-                annotations.Add(JpaModelPropertyGenerator.GetColumnAnnotation(pk));
+                annotations.Add(JpaModelPropertyGenerator.GetColumnAnnotation(pk, tag));
 
                 if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(pk))
                 {
@@ -226,12 +228,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         hashCodeMethod.AddBodyLine(
             $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}"))});"
         );
-        hashCodeMethod.Imports.Add("java.util.Objects");
+        hashCodeMethod.AddImports("java.util.Objects");
         javaClass.Add(hashCodeMethod);
         return javaClass;
     }
 
-    protected override IEnumerable<JavaMethod> GetConstuctors(Class classe, string tag)
+    protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
@@ -271,7 +273,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}",
                 },
             }.Add(JpaModelPropertyGenerator.IdAnnotation);
-            javaField.Imports.AddRange(ap.GetTypeImports(Config, tag));
+            javaField.AddImports(ap.GetTypeImports(Config, tag));
             javaField.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(ap, tag));
             if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(ap))
             {
@@ -344,7 +346,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                         $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
                 }
             );
-            method.Imports.AddRange(Config.GetDomainImports(ap, tag));
+            method.AddImports(Config.GetDomainImports(ap, tag));
             method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
             return method;
         }

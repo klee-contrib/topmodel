@@ -95,7 +95,7 @@ class:
       - params:
           - class: Restaurant
           - property:
-              composition: TableRestaurant
+              composition: Table
               name: Tables
               domain: DO_LISTE
               comment: Tables
@@ -115,7 +115,7 @@ class:
 
   properties:
     - alias:
-        class: TableRestaurant
+        class: Table
         include:
           - Id
           - Numero
@@ -132,13 +132,13 @@ class:
 
   properties:
     - alias:
-        class: TableRestaurant
+        class: Table
         include: DateCreation
 
   mappers:
     from:
       - params:
-          - class: TableRestaurant
+          - class: Table
             name: table
 ---
 class:
@@ -147,14 +147,14 @@ class:
 
   properties:
     - alias:
-        class: TableRestaurant
+        class: Table
         exclude:
           - Id
           - DateCreation
 
   mappers:
     to:
-      - class: TableRestaurant
+      - class: Table
 ---
 class:
   name: StatistiquesRestaurant

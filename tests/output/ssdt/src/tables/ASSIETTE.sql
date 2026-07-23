@@ -6,11 +6,11 @@
 --   Description		:	Création de la table ASSIETTE.
 -- ===========================================================================================
 
-create table [dbo].[ASSIETTE] (
-	[VSL_ID] int,
-	[VSL_DESCRIPTION] varchar(100) not null,
-	[AST_TAILLE] int not null,
-	constraint [PK_ASSIETTE] primary key clustered ([VSL_ID] ASC))
+create table ASSIETTE (
+	VSL_ID int,
+	VSL_DESCRIPTION varchar(100) not null,
+	AST_TAILLE int not null,
+	constraint PK_ASSIETTE primary key clustered (VSL_ID asc))
 go
 
 /**
@@ -22,11 +22,11 @@ go
 /**
   * Commentaires pour la table ASSIETTE
  **/
-EXECUTE sp_addextendedproperty 'MS_Description', 'Assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE'
+execute sp_addextendedproperty 'MS_Description', 'Assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_ID'
+execute sp_addextendedproperty 'MS_Description', 'Id de la vaisselle', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_ID'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_DESCRIPTION'
+execute sp_addextendedproperty 'MS_Description', 'Description de la vaisselle.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'VSL_DESCRIPTION'
 go
-EXECUTE sp_addextendedproperty 'MS_Description', 'Taille de l''assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'AST_TAILLE'
+execute sp_addextendedproperty 'MS_Description', 'Taille de l''assiette.', 'SCHEMA', 'dbo', 'TABLE', 'ASSIETTE', 'COLUMN', 'AST_TAILLE'
 go

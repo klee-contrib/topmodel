@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
  * Ligne de commande pour historique avec préservation des clés primaires.
  */
 @Entity
-@Table(name = "LIGNE_COMMANDE_HISTORIQUE")
+@Table(name = "ligne_commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeHistorique {
 
@@ -28,35 +28,35 @@ public class LigneCommandeHistorique {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getId() LigneCommande#getId()}
 	 */
 	@Id
-	@Column(name = "LIG_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "lig_id", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Quantité commandée.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
 	 */
-	@Column(name = "LIG_QUANTITE", nullable = false, columnDefinition = "int")
+	@Column(name = "lig_quantite", nullable = false, columnDefinition = "int")
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
 	 */
-	@Column(name = "LIG_PRIX_UNITAIRE", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "lig_prix_unitaire", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
 	 */
-	@Column(name = "LIG_PRIX_TOTAL", nullable = false, scale = 2, columnDefinition = "decimal")
+	@Column(name = "lig_prix_total", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal prixTotal;
 
 	/**
 	 * Plat commandé.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
-	@Column(name = "PLA_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "pla_id", nullable = false, columnDefinition = "int")
 	private Integer platId;
 
 	/**
@@ -64,13 +64,13 @@ public class LigneCommandeHistorique {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
 	 */
 	@CreatedDate
-	@Column(name = "LIG_DATE_CREATION", nullable = false, columnDefinition = "timestamp")
+	@Column(name = "lig_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
 	 */
-	@Column(name = "COM_ID", nullable = false, columnDefinition = "int")
+	@Column(name = "com_id", nullable = false, columnDefinition = "int")
 	private Integer commandeHistoriqueId;
 
 	/**
