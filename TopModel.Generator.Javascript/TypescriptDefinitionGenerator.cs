@@ -154,7 +154,7 @@ public class TypescriptDefinitionGenerator(
             foreach (var property in Config.GetProperties(classe))
             {
                 fw.Write(
-                    $"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED || property.Required ? string.Empty : "?")}: "
+                    $"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED || property.Required && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null)) ? string.Empty : "?")}: "
                 );
                 var type = Config.GetType(property, forceAssociationPropertyType: true);
 
