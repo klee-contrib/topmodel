@@ -2,20 +2,18 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_CODE, DO_DATE, DO_EMAIL, DO_LIBELLE} from "../../domains";
 
 import {TypeUtilisateurCode} from "../refs/enums";
 
-export type UtilisateurCreateDto = EntityToType<UtilisateurCreateDtoEntityType>;
-export interface UtilisateurCreateDtoEntityType {
-    utilisateurEmail: FieldEntry2<typeof DO_EMAIL, string>;
-    utilisateurNom: FieldEntry2<typeof DO_LIBELLE, string>;
-    utilisateurDateInscription: FieldEntry2<typeof DO_DATE, string>;
-    utilisateurTypeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>;
+export interface UtilisateurCreateDto {
+    utilisateurEmail: string;
+    utilisateurNom?: string;
+    utilisateurDateInscription?: string;
+    utilisateurTypeUtilisateurCode?: TypeUtilisateurCode;
 }
 
-export const UtilisateurCreateDtoEntity: UtilisateurCreateDtoEntityType = {
+export const UtilisateurCreateDtoEntity = {
     utilisateurEmail: {
         type: "field",
         name: "utilisateurEmail",
@@ -44,4 +42,4 @@ export const UtilisateurCreateDtoEntity: UtilisateurCreateDtoEntityType = {
         isRequired: false,
         label: "users.utilisateur.typeUtilisateurCode"
     }
-};
+} as const;

@@ -1,3 +1,7 @@
+## 4.4.1
+
+- [`8fc7bcb`](https://github.com/klee-contrib/topmodel/commit/8fc7bcb4c4dc842eccaffea12151ef0ba2edb880) - [JS] Fix génération interface simple qui prenait pas en compte optionalPrimaryKeys
+
 ## 4.4.0
 
 - [#592](https://github.com/klee-contrib/topmodel/pull/592) - Propriétés required non optionnelles dans les interfaces + `optionalPrimaryKeys`

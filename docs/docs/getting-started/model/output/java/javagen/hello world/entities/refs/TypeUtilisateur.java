@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
  * Type d'utilisateur.
  */
 @Entity
-@Table(name = "TYPE_UTILISATEUR")
+@Table(name = "type_utilisateur")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeUtilisateur {
@@ -31,13 +31,13 @@ public class TypeUtilisateur {
 	 */
 	@Id
 	@Enumerated(EnumType.STRING)
-	@Column(name = "TUT_CODE", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "tut_code", nullable = false, length = 3, columnDefinition = "varchar")
 	private TypeUtilisateurCode code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "TUT_LIBELLE", nullable = false, length = 15, columnDefinition = "varchar")
+	@Column(name = "tut_libelle", nullable = false, length = 15, columnDefinition = "varchar")
 	private String libelle;
 
 	/**

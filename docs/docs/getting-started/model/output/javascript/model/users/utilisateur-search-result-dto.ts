@@ -2,21 +2,19 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_CODE, DO_DATE, DO_EMAIL, DO_LIBELLE} from "../../domains";
 
 import {TypeUtilisateurCode} from "../refs/enums";
 
-export type UtilisateurSearchResultDto = EntityToType<UtilisateurSearchResultDtoEntityType>;
-export interface UtilisateurSearchResultDtoEntityType {
-    email: FieldEntry2<typeof DO_EMAIL, string>;
-    nom: FieldEntry2<typeof DO_LIBELLE, string>;
-    dateInscription: FieldEntry2<typeof DO_DATE, string>;
-    typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>;
-    libelleTypeUtilisateur: FieldEntry2<typeof DO_LIBELLE, string>;
+export interface UtilisateurSearchResultDto {
+    email: string;
+    nom?: string;
+    dateInscription?: string;
+    typeUtilisateurCode?: TypeUtilisateurCode;
+    libelleTypeUtilisateur: string;
 }
 
-export const UtilisateurSearchResultDtoEntity: UtilisateurSearchResultDtoEntityType = {
+export const UtilisateurSearchResultDtoEntity = {
     email: {
         type: "field",
         name: "email",
@@ -52,4 +50,4 @@ export const UtilisateurSearchResultDtoEntity: UtilisateurSearchResultDtoEntityT
         isRequired: true,
         label: "refs.typeUtilisateur.libelle"
     }
-};
+} as const;

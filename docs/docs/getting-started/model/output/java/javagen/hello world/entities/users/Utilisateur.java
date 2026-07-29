@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
  * Utilisateur de l'application.
  */
 @Entity
-@Table(name = "UTILISATEUR")
+@Table(name = "utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Utilisateur {
 
@@ -28,32 +28,32 @@ public class Utilisateur {
 	 * Identifiant unique de l'utilisateur.
 	 */
 	@Id
-	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int8")
+	@Column(name = "uti_id", nullable = false, columnDefinition = "int8")
 	private long id;
 
 	/**
 	 * Adresse mail de l'utilisateur.
 	 */
-	@Column(name = "UTI_EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
+	@Column(name = "uti_email", nullable = false, length = 50, columnDefinition = "varchar")
 	private String email;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_NOM", length = 15, columnDefinition = "varchar")
+	@Column(name = "uti_nom", length = 15, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Date d'inscription.
 	 */
-	@Column(name = "UTI_DATE_INSCRIPTION", columnDefinition = "timestamp")
+	@Column(name = "uti_date_inscription", columnDefinition = "timestamp")
 	private LocalDate dateInscription;
 
 	/**
 	 * Type de l'utilisateur.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "TUT_CODE", length = 3, columnDefinition = "varchar")
+	@Column(name = "tut_code", length = 3, columnDefinition = "varchar")
 	private TypeUtilisateurCode typeUtilisateurCode;
 
 	/**

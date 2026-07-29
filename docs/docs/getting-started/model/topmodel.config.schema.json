@@ -230,6 +230,19 @@
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
+          "useLowerCaseSqlNames": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
@@ -608,6 +621,19 @@
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
           },
+          "useLowerCaseSqlNames": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
+          },
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
@@ -694,10 +720,6 @@
           "noAsyncControllers": {
             "type": "boolean",
             "description": "Génère des contrôleurs d'API synchrones."
-          },
-          "useLowerCaseSqlNames": {
-            "type": "boolean",
-            "description": "Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'."
           },
           "dbSchema": {
             "type": "string",
@@ -902,6 +924,19 @@
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
+          },
+          "useLowerCaseSqlNames": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+              },
+              {
+                "type": "string",
+                "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "tableTablespace": {
             "type": "string",
@@ -1145,6 +1180,10 @@
           "extendedCompositions": {
             "type": "boolean",
             "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées."
+          },
+          "optionalPrimaryKeys": {
+            "type": "boolean",
+            "description": "Génère les (alias de) clés primaires simples comme optionnelles dans les définitions d'entités. Il s'agit d'un paramètre de compatibilité avec l'existant, qui ne devrait plus être utilisé dans les nouveaux projets."
           },
           "entityTypesPath": {
             "type": "string",
