@@ -37,6 +37,8 @@ public interface IProperty : IAnnotationContainer
 
     LocatedString? Trigram { get; set; }
 
+    ParamLocation? ParamLocation { get; }
+
     string? FinalTrigram { get; }
 
     IDictionary<string, string> CustomProperties { get; }
@@ -83,6 +85,8 @@ public interface IProperty : IAnnotationContainer
     internal string TrueNamePascal { get; }
 
     internal string TruePropertyNamePascal { get; }
+
+    internal ParamLocation? OwnLocation { get; }
 
     IProperty CloneDefinition();
 

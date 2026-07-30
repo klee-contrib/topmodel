@@ -28,6 +28,12 @@ endpoint:
     - composition: MenuWrite
       comment: Menu à créer
       name: menu
+      paramLocation: form-data
+    - alias:
+        class: Region
+        property: Code
+      suffix: Origine
+      paramLocation: form-data
 
   returns:
     composition: MenuRead
@@ -43,13 +49,13 @@ endpoint:
   params:
     - alias:
         class: Plat
-        property: Disponible
-    - alias:
-        class: Plat
         property: Restaurant
     - alias:
         class: Plat
         property: CategoriePlat
+    - alias:
+        class: Plat
+        property: Disponible
 
   returns:
     composition: PlatItem

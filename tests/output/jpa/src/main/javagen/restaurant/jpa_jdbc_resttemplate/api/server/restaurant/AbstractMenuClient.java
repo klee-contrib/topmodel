@@ -80,12 +80,13 @@ public abstract class AbstractMenuClient {
 	/**
 	 * Crée un menu avec ses plats.
 	 * @param menu Menu à créer
+	 * @param regCodeOrigine Code de la région.
 	 * @return Menu créé avec ses plats
 	 */
-	public ResponseEntity<MenuRead> createMenu(MenuWrite menu){
+	public ResponseEntity<MenuRead> createMenu(){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.createMenuUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(menu, headers), MenuRead.class);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), MenuRead.class);
 	}
 
 	/**
@@ -149,30 +150,30 @@ public abstract class AbstractMenuClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode getPlats.
-	 * @param disponible Indique si le plat est disponible
 	 * @param restaurantId Restaurant proposant ce plat
 	 * @param categoriePlatCode Catégorie du plat
+	 * @param disponible Indique si le plat est disponible
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getPlatsUriComponentsBuilder(Boolean disponible, Integer restaurantId, String categoriePlatCode) {
+	protected UriComponentsBuilder getPlatsUriComponentsBuilder(Integer restaurantId, String categoriePlatCode, Boolean disponible) {
 		String uri = host + "/api/restaurants/plats";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("disponible", disponible);
 		uriBuilder.queryParam("restaurantId", restaurantId);
 		uriBuilder.queryParam("categoriePlatCode", categoriePlatCode);
+		uriBuilder.queryParam("disponible", disponible);
 		return uriBuilder;
 	}
 
 	/**
 	 * Liste tous les plats.
-	 * @param disponible Indique si le plat est disponible
 	 * @param restaurantId Restaurant proposant ce plat
 	 * @param categoriePlatCode Catégorie du plat
+	 * @param disponible Indique si le plat est disponible
 	 * @return Liste des plats
 	 */
-	public ResponseEntity<List<PlatItem>> getPlats(Boolean disponible, Integer restaurantId, String categoriePlatCode){
+	public ResponseEntity<List<PlatItem>> getPlats(Integer restaurantId, String categoriePlatCode, Boolean disponible){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getPlatsUriComponentsBuilder(disponible, restaurantId, categoriePlatCode);
+		UriComponentsBuilder uri = this.getPlatsUriComponentsBuilder(restaurantId, categoriePlatCode, disponible);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<PlatItem>>() {});
 	}
 

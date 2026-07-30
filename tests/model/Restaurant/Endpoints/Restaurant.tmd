@@ -106,10 +106,10 @@ endpoint:
       trigram: res
     - alias:
         class: Plat
-        property: Disponible
+        property: CategoriePlat
     - alias:
         class: Plat
-        property: CategoriePlat
+        property: Disponible
 
   returns:
     composition: PlatItem
@@ -261,6 +261,7 @@ endpoint:
         class: AvisClient
         property: Note
       name: noteMin
+      required: false
       comment: Note minimum requise
 
   returns:

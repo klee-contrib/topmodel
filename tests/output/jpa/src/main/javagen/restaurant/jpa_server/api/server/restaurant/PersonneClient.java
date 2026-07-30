@@ -74,7 +74,7 @@ public interface PersonneClient {
 	 * @return Liste des avis correspondant aux critères.
 	 */
 	@GetExchange("/avis")
-	ResponseEntity<List<AvisClientRead>> getAvisClients(@RequestParam(value = "resId", required = true) Integer resId, @RequestParam(value = "noteMin", required = true) Integer noteMin, @RequestParam(value = "approuve", required = true) Boolean approuve, @RequestParam(value = "dateDebut", required = true) LocalDateTime dateDebut, @RequestParam(value = "dateFin", required = true) LocalDateTime dateFin);
+	ResponseEntity<List<AvisClientRead>> getAvisClients(@RequestParam(value = "resId", required = true) Integer resId, @RequestParam(value = "noteMin", required = false) Integer noteMin, @RequestParam(value = "approuve", required = true) Boolean approuve, @RequestParam(value = "dateDebut", required = false) LocalDateTime dateDebut, @RequestParam(value = "dateFin", required = false) LocalDateTime dateFin);
 
 	/**
 	 * Charge le détail d'un client.

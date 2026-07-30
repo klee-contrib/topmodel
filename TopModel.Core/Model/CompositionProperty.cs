@@ -6,6 +6,8 @@ namespace TopModel.Core.Model;
 
 internal class CompositionProperty : IProperty
 {
+    private ParamLocation? _paramLocation;
+
 #nullable disable
 
     public Class Composition { get; set; }
@@ -32,6 +34,36 @@ internal class CompositionProperty : IProperty
         set;
     }
 
+    public ParamLocation? ParamLocation
+    {
+#pragma warning disable S4275
+        get
+        {
+            if (Endpoint == null || !Endpoint.Params.Contains(this))
+            {
+                return null;
+            }
+
+            var ownLocation = ((IProperty)this).OwnLocation;
+            if (ownLocation != null)
+            {
+                return ownLocation;
+            }
+
+            if (
+                (Composition?.Properties.Any(cpp => cpp.ParamLocation == Model.ParamLocation.FormData) ?? false)
+                || Endpoint.Params.Any(p => p != this && p.ParamLocation == Model.ParamLocation.FormData)
+            )
+            {
+                return Model.ParamLocation.FormData;
+            }
+
+            return Model.ParamLocation.JsonBody;
+        }
+#pragma warning restore S4275
+        set => _paramLocation = value;
+    }
+
     public Class Class { get; set; }
 
     public Endpoint Endpoint { get; set; }
@@ -44,11 +76,16 @@ internal class CompositionProperty : IProperty
 
     public string? Label { get; set; }
 
-    public bool IsMultipart => Composition.Properties.Any(cpp => cpp.Domain?.IsMultipart ?? false);
+    [Obsolete("Utiliser ParamLocation == ParamLocation.FormData")]
+    public bool IsMultipart => ParamLocation == Model.ParamLocation.FormData;
 
     public bool PrimaryKey => false;
 
-    public bool Required { get; set; } = true;
+    public bool Required
+    {
+        get => ParamLocation == Model.ParamLocation.JsonBody || field;
+        set;
+    } = true;
 
     public string? DefaultValue => null;
 
@@ -82,10 +119,12 @@ internal class CompositionProperty : IProperty
 
     string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
+    ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
+
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        return new CompositionProperty
+        var cp = new CompositionProperty
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -101,12 +140,19 @@ internal class CompositionProperty : IProperty
             Tags = Tags,
             Trigram = Trigram,
         };
+
+        if (_paramLocation.HasValue)
+        {
+            cp.ParamLocation = _paramLocation.Value;
+        }
+
+        return cp;
     }
 
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        return new CompositionProperty
+        var cp = new CompositionProperty
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
@@ -125,6 +171,13 @@ internal class CompositionProperty : IProperty
             Tags = Tags,
             Trigram = Trigram,
         };
+
+        if (_paramLocation.HasValue)
+        {
+            cp.ParamLocation = _paramLocation.Value;
+        }
+
+        return cp;
     }
 
     public override string ToString()

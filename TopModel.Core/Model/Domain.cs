@@ -25,7 +25,10 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public GeneratedValueDefinition? GeneratedValue { get; set; }
 
-    public bool BodyParam { get; set; }
+    [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
+    public bool BodyParam => ParamLocation == Model.ParamLocation.JsonBody;
+
+    public ParamLocation? ParamLocation { get; set; }
 
     public bool Collection { get; set; }
 
@@ -53,7 +56,8 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public string? MediaType { get; set; }
 
-    public bool IsMultipart => MediaType == "multipart/form-data";
+    [Obsolete("Utiliser ParamLocation == ParamLocation.FormData")]
+    public bool IsMultipart => ParamLocation == Model.ParamLocation.FormData;
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(strict: true);
 

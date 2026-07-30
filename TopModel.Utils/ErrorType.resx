@@ -234,4 +234,22 @@
   <data name="TMD3025" xml:space="preserve">
     <value>Class '{0}' with an auto-generated primary key needs a sequence name to use the `distinct-tables` strategy.</value>
   </data>
+  <data name="TMD7007" xml:space="preserve">
+    <value>Endpoint '{0}' cannot have multiple 'json-body' or 'form-data' parameters.</value>
+  </data>
+  <data name="TMD7008" xml:space="preserve">
+    <value>Composition '{0}' must be located in 'json-body' or 'form-data'.</value>
+  </data>
+  <data name="TMD7009" xml:space="preserve">
+    <value>Composition '{0}' cannot be located in 'json-body' because its properties or other endpoint parameters ask for 'form-data'.</value>
+  </data>
+  <data name="TMD7010" xml:space="preserve">
+    <value>Parameter '{0}' cannot be a route parameter because it cannot be found in the endpoint route.</value>
+  </data>
+  <data name="TMD7004" xml:space="preserve">
+    <value>Optional parameter '{0}' should follow all required parameters.</value>
+  </data>
+  <data name="TMD7005" xml:space="preserve">
+    <value>Endpoint '{0}' defines a '{1}' parameter in its route that doesn't exist in its parameter list. Possible values : {2}.</value>
+  </data>
 </root>

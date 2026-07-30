@@ -102,18 +102,18 @@ export async function getRestaurantMenu(resId: number, menId: number, options: R
 /**
  * Liste les plats d'un restaurant
  * @param resId Identifiant du restaurant
- * @param disponible Indique si le plat est disponible
  * @param categoriePlatCode Catégorie du plat
+ * @param disponible Indique si le plat est disponible
  * @param options Options pour 'fetch'.
  * @returns Liste des plats du restaurant
  */
-export async function getRestaurantPlats(resId: number, disponible: boolean = true, categoriePlatCode?: CategoriePlatCode, options: RequestInit = {}): Promise<PlatItem[]> {
+export async function getRestaurantPlats(resId: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
     const query = new URLSearchParams();
-    if (disponible !== undefined) {
-        query.append("disponible", `${disponible}`)
-    }
     if (categoriePlatCode !== undefined) {
         query.append("categoriePlatCode", categoriePlatCode)
+    }
+    if (disponible !== undefined) {
+        query.append("disponible", `${disponible}`)
     }
     const response = await fetch(`./api/restaurants/${resId}/plats?${query}`, {
         ...options,

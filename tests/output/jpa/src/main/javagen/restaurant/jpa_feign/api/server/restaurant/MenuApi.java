@@ -7,6 +7,7 @@ package restaurant.jpa_feign.api.server.restaurant;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ import restaurant.jpa_feign.dtos.restaurant.PromotionRead;
 import restaurant.jpa_feign.dtos.restaurant.PromotionWrite;
 import restaurant.jpa_feign.entities.restaurant.CategoriePlat;
 import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_feign.enums.restaurant.RegionCode;
 
 @FeignClient(name = "Restaurant", contextId = "MenuApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -50,13 +52,12 @@ public interface MenuApi {
 
 	/**
 	 * Crée un menu avec ses plats.
-	 * @param menu Menu à créer.
 	 *
 	 * @return Menu créé avec ses plats.
 	 */
 	@PostMapping(path = "api/restaurants/menus")
 	@Operation(description = "Crée un menu avec ses plats")
-	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @RequestBody @Valid MenuWrite menu);
+	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @SpringQueryMap @Valid MenuWrite menu, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Code de la région.") @SpringQueryMap @Valid RegionCode regCodeOrigine);
 
 	/**
 	 * Supprime un plat.
@@ -88,15 +89,15 @@ public interface MenuApi {
 
 	/**
 	 * Liste tous les plats.
-	 * @param disponible Indique si le plat est disponible.
 	 * @param restaurantId Restaurant proposant ce plat.
 	 * @param categoriePlatCode Catégorie du plat.
+	 * @param disponible Indique si le plat est disponible.
 	 *
 	 * @return Liste des plats.
 	 */
 	@GetMapping(path = "api/restaurants/plats")
 	@Operation(description = "Liste tous les plats")
-	List<PlatItem> getPlats(@Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	List<PlatItem> getPlats(@Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Met à jour partiellement un plat.

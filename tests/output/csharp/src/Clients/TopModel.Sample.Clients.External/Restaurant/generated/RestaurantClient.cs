@@ -108,17 +108,17 @@ public partial class RestaurantClient(HttpClient client)
     /// Liste les plats d'un restaurant.
     /// </summary>
     /// <param name="resId">Identifiant du restaurant.</param>
-    /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="categoriePlatCode">Catégorie du plat.</param>
+    /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats du restaurant.</returns>
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, bool disponible = true, CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["disponible"] = disponible.ToString(),
             ["categoriePlatCode"] = categoriePlatCode?.ToString(),
+            ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);

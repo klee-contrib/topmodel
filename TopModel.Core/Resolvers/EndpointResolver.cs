@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
@@ -32,22 +33,64 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                     );
                 }
 
-                foreach (var queryParam in endpoint.GetQueryAndMultipartParams())
+                if (
+                    endpoint.Params.Count(p => p.ParamLocation == ParamLocation.JsonBody) > 1
+                    || endpoint.Params.Any(p => p.ParamLocation == ParamLocation.JsonBody)
+                        && endpoint.Params.Any(p => p.ParamLocation == ParamLocation.FormData)
+                )
                 {
-                    var index = endpoint.Params.IndexOf(queryParam);
+                    yield return new ModelError(
+                        localizer,
+                        ErrorType.TMD7007,
+                        [endpoint.Name.Value],
+                        modelFile,
+                        endpoint.GetLocation()
+                    );
+                }
 
-                    if (
-                        endpoint.Params.Any(param =>
-                            !param.IsQueryOrMultipartParam() && endpoint.Params.IndexOf(param) > index
+                foreach (var param in endpoint.Params.Where(p => p.OwnLocation != null))
+                {
+                    if (param.Composition != null)
+                    {
+                        if (param.ParamLocation == ParamLocation.Query || param.ParamLocation == ParamLocation.Route)
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD7008,
+                                [param.Name],
+                                modelFile,
+                                param.GetLocation()
+                            );
+                        }
+
+                        if (
+                            param.OwnLocation == ParamLocation.JsonBody
+                            && (
+                                param.Composition!.Properties.Any(cpp => cpp.ParamLocation == ParamLocation.FormData)
+                                || endpoint.Params.Any(p => p != this && p.ParamLocation == ParamLocation.FormData)
+                            )
                         )
+                        {
+                            yield return new ModelError(
+                                localizer,
+                                ErrorType.TMD7009,
+                                [param.Name],
+                                modelFile,
+                                param.GetLocation()
+                            );
+                        }
+                    }
+                    else if (
+                        !endpoint.Route.Contains($"{{{param.GetParamName()}}}")
+                        && param.ParamLocation == ParamLocation.Route
                     )
                     {
                         yield return new ModelError(
-                            ErrorType.TMD7004,
-                            endpoint,
-                            $"Le paramètre de requête (ou multipart) '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.",
-                            queryParam.GetLocation(),
-                            isError: false
+                            localizer,
+                            ErrorType.TMD7010,
+                            [param.Name],
+                            modelFile,
+                            param.GetLocation()
                         );
                     }
                 }
@@ -59,16 +102,54 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                     if (split[i].StartsWith('{'))
                     {
                         var routeParamName = split[i][1..^1];
-                        var param = endpoint.Params.FirstOrDefault(param => param.GetParamName() == routeParamName);
+                        var param = endpoint.Params.FirstOrDefault(param =>
+                            param.ParamLocation == ParamLocation.Route && param.GetParamName() == routeParamName
+                        );
 
                         if (param == null)
                         {
                             yield return new ModelError(
+                                localizer,
                                 ErrorType.TMD7005,
-                                endpoint,
-                                $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.Select(p => p.GetParamName()))}."
+                                [
+                                    endpoint.Name.Value,
+                                    routeParamName,
+                                    string.Join(
+                                        ", ",
+                                        endpoint.Params.Where(p => p.OwnLocation == null).Select(p => p.GetParamName())
+                                    ),
+                                ],
+                                endpoint
                             );
                         }
+                    }
+                }
+
+                foreach (
+                    var queryParam in endpoint.Params.Where(param =>
+                        param.ParamLocation == ParamLocation.Query || param.ParamLocation == ParamLocation.FormData
+                    )
+                )
+                {
+                    var index = endpoint.Params.IndexOf(queryParam);
+
+                    if (
+                        endpoint.Params.Any(param =>
+                            param.DefaultValue == null
+                            && param.Required
+                            && (queryParam.DefaultValue != null || !queryParam.Required)
+                            && endpoint.Params.IndexOf(param) > index
+                        )
+                    )
+                    {
+                        yield return new ModelError(
+                            localizer,
+                            ErrorType.TMD7004,
+                            [queryParam.GetParamName()],
+                            endpoint,
+                            queryParam.GetLocation(),
+                            isError: false
+                        );
                     }
                 }
             }

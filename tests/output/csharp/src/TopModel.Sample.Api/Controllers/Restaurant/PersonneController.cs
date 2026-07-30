@@ -61,7 +61,7 @@ public class PersonneController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des avis correspondant aux critères</returns>
     [HttpGet("api/restaurants/avis")]
-    public async Task<ICollection<AvisClientRead>> GetAvisClients([Required] int? resId = null, [Required] int? noteMin = null, bool approuve = false, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<ICollection<AvisClientRead>> GetAvisClients([Required] int? resId = null, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

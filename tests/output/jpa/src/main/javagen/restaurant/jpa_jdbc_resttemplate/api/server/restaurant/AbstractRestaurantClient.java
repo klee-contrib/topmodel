@@ -176,28 +176,28 @@ public abstract class AbstractRestaurantClient {
 	/**
 	 * UriComponentsBuilder pour la méthode getRestaurantPlats.
 	 * @param resId Identifiant du restaurant
-	 * @param disponible Indique si le plat est disponible
 	 * @param categoriePlatCode Catégorie du plat
+	 * @param disponible Indique si le plat est disponible
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getRestaurantPlatsUriComponentsBuilder(Integer resId, Boolean disponible, String categoriePlatCode) {
+	protected UriComponentsBuilder getRestaurantPlatsUriComponentsBuilder(Integer resId, String categoriePlatCode, Boolean disponible) {
 		String uri = host + "/api/restaurants/%s/plats".formatted(resId);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("disponible", disponible);
 		uriBuilder.queryParam("categoriePlatCode", categoriePlatCode);
+		uriBuilder.queryParam("disponible", disponible);
 		return uriBuilder;
 	}
 
 	/**
 	 * Liste les plats d'un restaurant.
 	 * @param resId Identifiant du restaurant
-	 * @param disponible Indique si le plat est disponible
 	 * @param categoriePlatCode Catégorie du plat
+	 * @param disponible Indique si le plat est disponible
 	 * @return Liste des plats du restaurant
 	 */
-	public ResponseEntity<List<PlatItem>> getRestaurantPlats(Integer resId, Boolean disponible, String categoriePlatCode){
+	public ResponseEntity<List<PlatItem>> getRestaurantPlats(Integer resId, String categoriePlatCode, Boolean disponible){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.getRestaurantPlatsUriComponentsBuilder(resId, disponible, categoriePlatCode);
+		UriComponentsBuilder uri = this.getRestaurantPlatsUriComponentsBuilder(resId, categoriePlatCode, disponible);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<PlatItem>>() {});
 	}
 
@@ -335,7 +335,10 @@ public abstract class AbstractRestaurantClient {
 			uriBuilder.queryParam("adresse", adresse);
 		}
 
-		uriBuilder.queryParam("noteMin", noteMin);
+		if (noteMin != null) {
+			uriBuilder.queryParam("noteMin", noteMin);
+		}
+
 		return uriBuilder;
 	}
 

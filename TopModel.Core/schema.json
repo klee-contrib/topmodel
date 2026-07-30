@@ -115,6 +115,11 @@
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
+            "paramLocation": {
+              "type": "string",
+              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "enum": [ "route", "query", "form-data", "json-body" ]
+            },
             "annotations": {
               "type": "array",
               "description": "Annotations de la propriété.",
@@ -195,6 +200,11 @@
             },
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
+            },
+            "paramLocation": {
+              "type": "string",
+              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "enum": [ "route", "query", "form-data", "json-body" ]
             },
             "withReverse": {
               "oneOf": [
@@ -495,6 +505,11 @@
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
             },
+            "paramLocation": {
+              "type": "string",
+              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre). Cette valeur n'est pas héritée de la propriété originale.",
+              "enum": [ "route", "query", "form-data", "json-body" ]
+            },
             "annotations": {
               "type": "array",
               "description": "Annotations de la propriété. S'ajoute aux annotations de la propriété originale.",
@@ -568,6 +583,11 @@
             "trigram": {
               "type": "string",
               "description": "Surcharge locale du trigram"
+            },
+            "paramLocation": {
+              "type": "string",
+              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "enum": [ "route", "query", "form-data", "json-body" ]
             },
             "annotations": {
               "type": "array",
@@ -870,9 +890,10 @@
                 }
               ]
             },
-            "bodyParam": {
-              "type": "boolean",
-              "description": "Passe un champ de ce domaine comme body param dans un endpoint."
+            "paramLocation": {
+              "type": "string",
+              "description": "Localisation par défaut d'un paramètre d'endpoint utilisant ce domaine.",
+              "enum": [ "route", "query", "form-data", "json-body" ]
             },
             "collection": {
               "type": "boolean",

@@ -7,9 +7,11 @@ package restaurant.jpa_server.api.server.restaurant;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
@@ -29,6 +31,7 @@ import restaurant.jpa_server.dtos.restaurant.PromotionRead;
 import restaurant.jpa_server.dtos.restaurant.PromotionWrite;
 import restaurant.jpa_server.entities.restaurant.CategoriePlat;
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_server.enums.restaurant.RegionCode;
 
 @HttpExchange("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -51,7 +54,7 @@ public interface MenuClient {
 	 * @return Menu créé avec ses plats.
 	 */
 	@PostExchange("/menus")
-	ResponseEntity<MenuRead> createMenu(@RequestBody @Valid MenuWrite menu);
+	<K, V> ResponseEntity<MenuRead> createMenu(@RequestPart(value = "menu", required = true) MultiValueMap<K, V> menu);
 
 	/**
 	 * Supprime un plat.
@@ -81,14 +84,14 @@ public interface MenuClient {
 
 	/**
 	 * Liste tous les plats.
-	 * @param disponible Indique si le plat est disponible.
 	 * @param restaurantId Restaurant proposant ce plat.
 	 * @param categoriePlatCode Catégorie du plat.
+	 * @param disponible Indique si le plat est disponible.
 	 *
 	 * @return Liste des plats.
 	 */
 	@GetExchange("/plats")
-	ResponseEntity<List<PlatItem>> getPlats(@RequestParam(value = "disponible", required = true) Boolean disponible, @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	ResponseEntity<List<PlatItem>> getPlats(@RequestParam(value = "restaurantId", required = true) Integer restaurantId, @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Met à jour partiellement un plat.

@@ -234,4 +234,22 @@
   <data name="TMD3025" xml:space="preserve">
     <value>La classe '{0}' avec une clé primaire auto-générée a besoin d'un nom de séquence pour utiliser la stratégie `distinct-tables`.</value>
   </data>
+  <data name="TMD7007" xml:space="preserve">
+    <value>L'endpoint '{0}` ne peut pas contenir plusieurs paramètres 'json-body' ou 'form-data'.</value>
+  </data>
+  <data name="TMD7008" xml:space="preserve">
+    <value>La composition '{0}' doit être localisée dans 'json-body' ou 'form-data'.</value>
+  </data>
+  <data name="TMD7009" xml:space="preserve">
+    <value>La composition '{0}' ne peut pas être localisée dans 'json-body', car ses propriétés ou d'autres paramètres du endpoint demandent 'form-data'.</value>
+  </data>
+  <data name="TMD7010" xml:space="preserve">
+    <value>Le paramètre '{0}' ne peut pas être défini comme paramètre de route car il est introuvable dans la route de l'endpoint.</value>
+  </data>
+  <data name="TMD7004" xml:space="preserve">
+    <value>Le paramètre facultatif '{0}' devrait suivre tous les paramètres obligatoires.</value>
+  </data>
+  <data name="TMD7005" xml:space="preserve">
+    <value>L'endpoint '{0}' définit un paramètre '{1}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {2}.</value>
+  </data>
 </root>

@@ -6,6 +6,7 @@ namespace TopModel.Core.Model;
 
 internal class AssociationProperty : IProperty
 {
+    private ParamLocation? _paramLocation;
     private IProperty? _property;
 
     private bool? _useClass;
@@ -67,7 +68,11 @@ internal class AssociationProperty : IProperty
 
     public virtual string As { get; set; } = "list";
 
-    public virtual bool Required { get; set; }
+    public virtual bool Required
+    {
+        get => ParamLocation == Model.ParamLocation.Route || ParamLocation == Model.ParamLocation.JsonBody || field;
+        set;
+    }
 
     public bool Readonly
     {
@@ -76,6 +81,28 @@ internal class AssociationProperty : IProperty
     }
 
     public string? DefaultValue { get; set; }
+
+    public ParamLocation? ParamLocation
+    {
+#pragma warning disable S4275
+        get
+        {
+            if (Endpoint == null || !Endpoint.Params.Contains(this))
+            {
+                return null;
+            }
+
+            var ownLocation = ((IProperty)this).OwnLocation;
+            if (ownLocation != null)
+            {
+                return ownLocation;
+            }
+
+            return Endpoint.HasInRoute(this) ? Model.ParamLocation.Route : Model.ParamLocation.Query;
+        }
+#pragma warning restore S4275
+        set => _paramLocation = value;
+    }
 
     public virtual ReverseAssociationDefinition? WithReverse { get; set; }
 
@@ -148,6 +175,8 @@ internal class AssociationProperty : IProperty
 
     string IProperty.TruePropertyNamePascal => this.GetAssociationName(pascalCase: true, forcePropertyName: true);
 
+    ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
+
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
@@ -178,6 +207,11 @@ internal class AssociationProperty : IProperty
         if (_useClass.HasValue)
         {
             ap.UseClass = _useClass.Value;
+        }
+
+        if (_paramLocation.HasValue)
+        {
+            ap.ParamLocation = _paramLocation.Value;
         }
 
         if (WithReverse != null)
@@ -229,6 +263,11 @@ internal class AssociationProperty : IProperty
         if (_useClass.HasValue)
         {
             ap.UseClass = _useClass.Value;
+        }
+
+        if (_paramLocation.HasValue)
+        {
+            ap.ParamLocation = _paramLocation.Value;
         }
 
         return ap;

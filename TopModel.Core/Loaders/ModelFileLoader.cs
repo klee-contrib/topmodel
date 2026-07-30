@@ -400,7 +400,6 @@ public class ModelFileLoader(
                     AnnotationReferences = d.AnnotationReferences,
                     AsDomainReferences = d.AsDomainReferences,
                     GeneratedValue = d.GeneratedValue,
-                    BodyParam = d.BodyParam,
                     Collection = d.Collection,
                     ExcludedAnnotationReferences = d.ExcludedAnnotationReferences,
                     Implementations = d.Implementations,
@@ -410,6 +409,7 @@ public class ModelFileLoader(
                     MediaType = d.MediaType,
                     ModelFile = newFile,
                     Name = d.Name,
+                    ParamLocation = d.ParamLocation,
                     Scale = d.Scale,
                 };
 

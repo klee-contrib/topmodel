@@ -6,6 +6,8 @@ namespace TopModel.Core.Model;
 
 internal class RegularProperty : IProperty
 {
+    private ParamLocation? _paramLocation;
+
 #nullable disable
 
     public string Name { get; set; }
@@ -18,7 +20,11 @@ internal class RegularProperty : IProperty
 
     public bool PrimaryKey { get; set; }
 
-    public bool Required { get; set; }
+    public bool Required
+    {
+        get => ParamLocation == Model.ParamLocation.Route || ParamLocation == Model.ParamLocation.JsonBody || field;
+        set;
+    }
 
     public bool Readonly
     {
@@ -70,6 +76,28 @@ internal class RegularProperty : IProperty
 
     public IProperty? SourceProperty { get; private set; }
 
+    public ParamLocation? ParamLocation
+    {
+#pragma warning disable S4275
+        get
+        {
+            if (Endpoint == null || !Endpoint.Params.Contains(this))
+            {
+                return null;
+            }
+
+            var ownLocation = ((IProperty)this).OwnLocation;
+            if (ownLocation != null)
+            {
+                return ownLocation;
+            }
+
+            return Endpoint.HasInRoute(this) ? Model.ParamLocation.Route : Model.ParamLocation.Query;
+        }
+#pragma warning restore S4275
+        set => _paramLocation = value;
+    }
+
 #nullable disable
 
     internal Reference Location { get; set; }
@@ -80,10 +108,12 @@ internal class RegularProperty : IProperty
 
     string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
+    ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
+
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        return new RegularProperty
+        var rp = new RegularProperty
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -100,12 +130,19 @@ internal class RegularProperty : IProperty
             Tags = Tags,
             Trigram = Trigram,
         };
+
+        if (_paramLocation.HasValue)
+        {
+            rp.ParamLocation = _paramLocation.Value;
+        }
+
+        return rp;
     }
 
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        return new RegularProperty
+        var rp = new RegularProperty
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
@@ -126,6 +163,13 @@ internal class RegularProperty : IProperty
             Tags = Tags,
             Trigram = Trigram,
         };
+
+        if (_paramLocation.HasValue)
+        {
+            rp.ParamLocation = _paramLocation.Value;
+        }
+
+        return rp;
     }
 
     public override string ToString()

@@ -333,12 +333,12 @@ public enum ErrorType
     TMD7003,
 
     /// <summary>
-    /// Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.
+    /// Ordre des paramètres obligatoires.
     /// </summary>
     TMD7004,
 
     /// <summary>
-    /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
+    /// Paramètre de route introuvable.
     /// </summary>
     TMD7005,
 
@@ -346,6 +346,26 @@ public enum ErrorType
     /// L'endpoint '{endpoint}' ne peut pas faire partie de la configuration '{genConfig.Name}' car il dépend la classe '{composition}' qui n'y est pas disponible.
     /// </summary>
     TMD7006,
+
+    /// <summary>
+    /// Plusieurs JsonBody ou FormData.
+    /// </summary>
+    TMD7007,
+
+    /// <summary>
+    /// Composition autre que JsonBody ou FormData.
+    /// </summary>
+    TMD7008,
+
+    /// <summary>
+    /// Composition JsonBody alors qu'elle devrait être FormData.
+    /// </summary>
+    TMD7009,
+
+    /// <summary>
+    /// Paramètre dans la route non défini comme paramètre de route.
+    /// </summary>
+    TMD7010,
 
     #endregion
 

@@ -14,8 +14,8 @@ modules:
     version: 4.5.0
     hash: 2a426321c8c8e6b6dfd4c7a23dc05dfc
   javascript:
-    version: 4.4.0
-    hash: acafbf5de90d09d9ee5f43ce774914ae
+    version: 4.4.1
+    hash: bc2a904677a7fc70ee50bb0fa7e3fa23
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
   - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs

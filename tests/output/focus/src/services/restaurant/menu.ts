@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {CategoriePlat, CategoriePlatCode} from "../../model/restaurant/enums";
+import {CategoriePlat, CategoriePlatCode, RegionCode} from "../../model/restaurant/enums";
 import {MenuRead} from "../../model/restaurant/menu-read";
 import {MenuWrite} from "../../model/restaurant/menu-write";
 import {PlatItem} from "../../model/restaurant/plat-item";
@@ -30,15 +30,23 @@ export async function addPlat(plat: PlatWrite, options: RequestInit = {}): Promi
 /**
  * Crée un menu avec ses plats
  * @param menu Menu à créer
+ * @param regCodeOrigine Code de la région.
  * @param options Options pour 'fetch'.
  * @returns Menu créé avec ses plats
  */
-export async function createMenu(menu: MenuWrite, options: RequestInit = {}): Promise<MenuRead> {
+export async function createMenu(menu: MenuWrite, regCodeOrigine: RegionCode, options: RequestInit = {}): Promise<MenuRead> {
+    const body = new FormData();
+    fillFormData(
+        {
+            ...menu,
+            regCodeOrigine
+        },
+        body
+    );
     const response = await fetch(`./api/restaurants/menus`, {
         ...options,
         method: "POST",
-        body: JSON.stringify(menu),
-        headers: {...options.headers, "Content-Type": "application/json"}
+        body
     });
     return await response.json();
 }
@@ -84,22 +92,22 @@ export async function getPlat(plaId: number, options: RequestInit = {}): Promise
 
 /**
  * Liste tous les plats
- * @param disponible Indique si le plat est disponible
  * @param restaurantId Restaurant proposant ce plat
  * @param categoriePlatCode Catégorie du plat
+ * @param disponible Indique si le plat est disponible
  * @param options Options pour 'fetch'.
  * @returns Liste des plats
  */
-export async function getPlats(disponible: boolean = true, restaurantId?: number, categoriePlatCode?: CategoriePlatCode, options: RequestInit = {}): Promise<PlatItem[]> {
+export async function getPlats(restaurantId?: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
     const query = new URLSearchParams();
-    if (disponible !== undefined) {
-        query.append("disponible", `${disponible}`)
-    }
     if (restaurantId !== undefined) {
         query.append("restaurantId", `${restaurantId}`)
     }
     if (categoriePlatCode !== undefined) {
         query.append("categoriePlatCode", categoriePlatCode)
+    }
+    if (disponible !== undefined) {
+        query.append("disponible", `${disponible}`)
     }
     const response = await fetch(`./api/restaurants/plats?${query}`, {
         ...options,
