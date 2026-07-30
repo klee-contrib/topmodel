@@ -1,5 +1,10 @@
 export const SERVER_EXE = "modls";
 
+/** Clés des paramètres de l'extension, relatives à la section `topmodel`. */
+export const SETTINGS = {
+    languageServerPath: "languageServerPath",
+};
+
 export const COMMANDS = {
     modgen: "topmodel.modgen",
     modgenWatch: "topmodel.modgen.watch",

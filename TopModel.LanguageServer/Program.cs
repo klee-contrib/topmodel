@@ -75,6 +75,7 @@ using var server = await LanguageServer.From(options =>
                         worker.Services.AddSingleton<IModelReporter>(provider.GetRequiredService<LSReporter>());
                         worker.Services.AddSingleton(provider.GetRequiredService<ModelFileLoader>());
                         workerStore.AddWorker(worker);
+                        TextDocumentSelectorExtensions.AddModelRoot(worker.Config.ModelRoot);
                     },
                     worker => workerStore.RemoveWorker(worker)
                 );

@@ -150,6 +150,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Automatically updates TopModel"
+                },
+                "topmodel.languageServerPath": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Path to the language server executable to launch, instead of the globally installed `modls` tool. Useful to debug a local build of the language server, or to use another version than the one installed globally. Accepts `${workspaceFolder}` and relative paths (resolved from the workspace folder). A `.dll` is launched with `dotnet`. When set, the extension no longer installs or updates the `TopModel.LanguageServer` tool."
                 }
             }
         }

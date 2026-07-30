@@ -33,6 +33,8 @@ type LangTranslations = {
     versionNotFound: string;
     toolUpdateErrorState: string;
     restartLanguageServer: string;
+    customLanguageServer: string;
+    languageServerStartFailed: string;
 };
 type AvailableLanguages = "fr" | "en";
 
@@ -71,6 +73,8 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         versionNotFound: "Version introuvable pour {0}",
         toolUpdateErrorState: "Erreur pendant la mise à jour de l'outil {0}",
         restartLanguageServer: "Redémarrer le language server",
+        customLanguageServer: "Language server personnalisé ({0})",
+        languageServerStartFailed: "Impossible de démarrer le language server « {0} » : {1}",
     },
     en: {
         startGeneration: "Start Generation",
@@ -106,6 +110,8 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         versionNotFound: "Version not found for {0}",
         toolUpdateErrorState: "Error while updating tool {0}",
         restartLanguageServer: "Restart the language server",
+        customLanguageServer: "Custom language server ({0})",
+        languageServerStartFailed: "Failed to start the language server « {0} »: {1}",
     },
 };
 

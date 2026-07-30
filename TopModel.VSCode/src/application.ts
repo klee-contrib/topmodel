@@ -3,9 +3,9 @@ import { makeAutoObservable } from "mobx";
 import { Terminal, Uri, window, WorkspaceFolder } from "vscode";
 import { CloseAction, ErrorAction, LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
-import { SERVER_EXE } from "./const";
+import { t } from "./i18n";
 import { Status, TopModelConfig } from "./types";
-import { killProcessTree } from "./utils";
+import { getServerCommand, killProcessTree } from "./utils";
 import path = require("path");
 
 export class Application {
@@ -49,8 +49,9 @@ export class Application {
         });
     }
 
+    /** Racines de modèle de ce workspace folder, résolues depuis le dossier de chaque fichier de config. */
     public get modelRootFolders() {
-        return this.configs.map((c) => path.dirname(path.resolve(c.file.fsPath, c.config.modelRoot ?? "./")));
+        return this.configs.map((c) => path.resolve(path.dirname(c.file.fsPath), c.config.modelRoot ?? "./"));
     }
 
     private get configPaths() {
@@ -77,22 +78,27 @@ export class Application {
 
         try {
             this.clientStatus = "LOADING";
-            const args = this.configPaths.flatMap((f) => ["-f", f]);
+            // La commande dépend du paramètre `topmodel.languageServerPath` : tool global `modls`
+            // par défaut, ou l'exécutable indiqué par l'utilisateur (debug, version alternative).
+            const { command, args: commandArgs } = getServerCommand(this.workspaceFolder);
+            const args = [...commandArgs, ...this.configPaths.flatMap((f) => ["-f", f])];
             const cwd = this.workspaceFolder.uri.fsPath;
             const serverOptions: ServerOptions = () => {
-                const proc = spawn(SERVER_EXE, args, { cwd });
+                const proc = spawn(command, args, { cwd });
                 this.serverProcess = proc;
+                proc.on("error", (error) => this.onServerProcessError(proc, command, error));
                 proc.on("exit", () => this.onServerProcessExit(proc));
                 return Promise.resolve(proc);
             };
+            // Glob absolu scopant les providers aux fichiers de CE workspace folder.
+            const folderPattern = `${this.workspaceFolder.uri.fsPath.replace(/\\/g, "/")}/**/*.tmd`;
             this.client = new LanguageClient(
                 `TopModel - ${this.workspaceFolder.name}`,
                 `TopModel - ${this.workspaceFolder.name}`,
                 serverOptions,
                 {
                     workspaceFolder: this.workspaceFolder,
-                    // On gère nous-mêmes le redémarrage (cf. onServerProcessExit) pour ne pas entrer
-                    // en conflit avec le redémarrage automatique intégré au LanguageClient.
+                    documentSelector: [{ pattern: folderPattern }],
                     errorHandler: {
                         error: () => ({ action: ErrorAction.Continue }),
                         closed: () => ({ action: CloseAction.DoNotRestart }),
@@ -137,6 +143,22 @@ export class Application {
     public async restartLanguageServer() {
         await this.stopLanguageServer();
         await this.startLanguageServer();
+    }
+
+    /**
+     * Appelé quand le processus n'a pas pu être lancé (typiquement un `languageServerPath` erroné).
+     * On remonte l'erreur à l'utilisateur et on n'enchaîne pas sur le redémarrage automatique, qui
+     * ne ferait que répéter le même échec.
+     */
+    private onServerProcessError(proc: ChildProcess, command: string, error: Error) {
+        if (this.serverProcess !== proc) {
+            return;
+        }
+
+        this.serverProcess = undefined;
+        this.clientStatus = "ERROR";
+        console.error(error);
+        window.showErrorMessage(t("languageServerStartFailed", [command, error.message]));
     }
 
     /**

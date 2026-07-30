@@ -1,12 +1,21 @@
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import {
+    commands,
+    ExtensionContext,
+    Position,
+    StatusBarAlignment,
+    StatusBarItem,
+    window,
+    workspace,
+    WorkspaceFolder,
+} from "vscode";
 import { Application } from "./application";
-import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { COMMANDS, COMMANDS_OPTIONS, SETTINGS } from "./const";
 import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
-import { killAllLanguageServers } from "./utils";
+import { getLanguageServerPath, killAllLanguageServers } from "./utils";
 
 const open = require("open").default;
 
@@ -21,6 +30,8 @@ export class State {
     error?: string;
     preview?: TopModelPreviewPanel;
     private _versionMismatchNotified = false;
+    /** Vrai une fois le tool modls initialisé, pour ne pas le réinitialiser (ni réenregistrer ses commandes). */
+    private _lsToolInitialized = false;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
@@ -29,6 +40,7 @@ export class State {
         autorun(() => this.notifyVersionMismatch());
         this.initTools();
         this.registerCommands();
+        this.watchLanguageServerPath();
     }
 
     get status(): Status {
@@ -79,6 +91,11 @@ export class State {
 
                 if (!this.versionsAligned) {
                     tooltip += ` | ${t("toolsVersionMismatch", [this.mismatchedTools])}`;
+                }
+
+                const languageServerPath = getLanguageServerPath();
+                if (languageServerPath) {
+                    tooltip += ` | ${t("customLanguageServer", [languageServerPath])}`;
                 }
 
                 return tooltip;
@@ -176,6 +193,18 @@ export class State {
      * Les clients LSP eux-mêmes (un par workspace folder) sont démarrés par les {@link Application}.
      */
     public async installLanguageServerTool(): Promise<boolean> {
+        // Un language server lancé depuis un chemin custom (build local à debugger, autre version
+        // sur le poste) ne passe pas par le tool global : ni installation, ni mise à jour, ni
+        // contrôle d'alignement des versions.
+        if (getLanguageServerPath()) {
+            this.tools.ls.status = "READY";
+            return true;
+        }
+
+        if (this._lsToolInitialized) {
+            return this.tools.ls.installed === true;
+        }
+
         // La mise à jour de modls doit arrêter les serveurs (qui verrouillent leurs fichiers) avant
         // `dotnet tool update`, puis les redémarrer. On câble ces hooks avant l'init du tool.
         // On arrête proprement nos propres clients, puis on tue tous les modls de la machine (ceux
@@ -186,8 +215,60 @@ export class State {
         };
         this.tools.ls.onAfterUpdate = () => this.startLanguageServer();
 
+        this._lsToolInitialized = true;
         await this.tools.ls.init(this.context);
         return this.tools.ls.installed === true;
+    }
+
+    /**
+     * Applique à chaud un changement de `topmodel.languageServerPath` : le serveur en cours est
+     * arrêté puis relancé depuis le nouveau chemin, sans avoir à recharger la fenêtre. Le tool
+     * global modls est initialisé à ce moment-là s'il ne l'avait pas été (retour au serveur par
+     * défaut alors que l'extension avait démarré sur un chemin custom).
+     */
+    private watchLanguageServerPath() {
+        this.context.subscriptions.push(
+            workspace.onDidChangeConfiguration(async (event) => {
+                if (!event.affectsConfiguration(`topmodel.${SETTINGS.languageServerPath}`)) {
+                    return;
+                }
+
+                await this.stopLanguageServer();
+                if (await this.installLanguageServerTool()) {
+                    await this.startLanguageServer();
+                }
+            }),
+        );
+    }
+
+    /**
+     * Prend en charge de nouveaux workspace folders : enregistre leurs {@link Application} et démarre
+     * leurs clients LSP. Les folders déjà gérés sont ignorés, si bien que l'appel est idempotent.
+     */
+    public async addApplications(applications: Application[]) {
+        const added = applications.filter(
+            (app) => !this.applications.some((a) => a.workspaceFolder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+        );
+
+        // Mutation en place : la preview conserve une référence sur ce tableau.
+        this.applications.push(...added);
+        await Promise.all(added.map((app) => app.startLanguageServer()));
+    }
+
+    /**
+     * Abandonne les workspace folders retirés du workspace : arrête leurs clients LSP (et tue les
+     * processus modls correspondants, qui verrouillent les fichiers de l'outil) puis les déréférence.
+     */
+    public async removeApplications(folders: readonly WorkspaceFolder[]) {
+        const removed = this.applications.filter((app) =>
+            folders.some((folder) => folder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+        );
+
+        for (const app of removed) {
+            this.applications.splice(this.applications.indexOf(app), 1);
+        }
+
+        await Promise.all(removed.map((app) => app.stopLanguageServer()));
     }
 
     /** Démarre le language server de chaque workspace folder (idempotent). */
