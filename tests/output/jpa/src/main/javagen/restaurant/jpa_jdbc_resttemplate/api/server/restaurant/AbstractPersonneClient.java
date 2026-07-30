@@ -128,10 +128,19 @@ public abstract class AbstractPersonneClient {
 		String uri = host + "/api/restaurants/avis";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("resId", resId);
-		uriBuilder.queryParam("noteMin", noteMin);
+		if (noteMin != null) {
+			uriBuilder.queryParam("noteMin", noteMin);
+		}
+
 		uriBuilder.queryParam("approuve", approuve);
-		uriBuilder.queryParam("dateDebut", dateDebut);
-		uriBuilder.queryParam("dateFin", dateFin);
+		if (dateDebut != null) {
+			uriBuilder.queryParam("dateDebut", dateDebut);
+		}
+
+		if (dateFin != null) {
+			uriBuilder.queryParam("dateFin", dateFin);
+		}
+
 		return uriBuilder;
 	}
 

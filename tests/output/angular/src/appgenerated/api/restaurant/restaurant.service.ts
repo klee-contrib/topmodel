@@ -80,11 +80,11 @@ export class RestaurantService {
     /**
      * @description Liste les plats d'un restaurant
      * @param resId Identifiant du restaurant
-     * @param disponible Indique si le plat est disponible
      * @param categoriePlatCode Catégorie du plat
+     * @param disponible Indique si le plat est disponible
      * @returns Liste des plats du restaurant
      */
-    getRestaurantPlats(resId: number, disponible: boolean = true, categoriePlatCode?: CategoriePlatCode, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
+    getRestaurantPlats(resId: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -97,8 +97,8 @@ export class RestaurantService {
             }
           }
         };
-        addParam('disponible', disponible);
         addParam('categoriePlatCode', categoriePlatCode);
+        addParam('disponible', disponible);
 
         return this.http.get<PlatItem[]>(`/api/restaurants/${resId}/plats`, {observe: 'body', ...options});
     }

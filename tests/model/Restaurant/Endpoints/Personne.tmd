@@ -155,6 +155,7 @@ endpoint:
     - alias:
         class: AvisClient
         property: Note
+      required: false
       name: noteMin
     - alias:
         class: AvisClient
@@ -163,10 +164,12 @@ endpoint:
     - alias:
         class: AvisClient
         property: DateAvis
+      required: false
       name: dateDebut
     - alias:
         class: AvisClient
         property: DateAvis
+      required: false
       name: dateFin
 
   returns:

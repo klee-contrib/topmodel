@@ -230,7 +230,7 @@ domain:
   name: FILE_FORM
   mediaType: "multipart/form-data"
   label: Fichier
-  bodyParam: true
+  paramLocation: form-data
   java:
     type: MultipartFile
     imports:
@@ -240,7 +240,7 @@ domain:
   name: FILE
   mediaType: "multipart/form-data"
   label: Fichier
-  bodyParam: true
+  paramLocation: form-data
   java:
     type: File
     imports:

@@ -6,7 +6,7 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { CategoriePlat, CategoriePlatCode } from "../../model/restaurant/enums";
+import { CategoriePlat, CategoriePlatCode, RegionCode } from "../../model/restaurant/enums";
 import { MenuRead } from "../../model/restaurant/menu-read";
 import { MenuWrite } from "../../model/restaurant/menu-write";
 import { PlatItem } from "../../model/restaurant/plat-item";
@@ -33,10 +33,19 @@ export class MenuService {
     /**
      * @description Crée un menu avec ses plats
      * @param menu Menu à créer
+     * @param regCodeOrigine Code de la région.
      * @returns Menu créé avec ses plats
      */
-    createMenu(menu: MenuWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuRead> {
-        return this.http.post<MenuRead>(`/api/restaurants/menus`, menu, {observe: 'body', ...options});
+    createMenu(menu: MenuWrite, regCodeOrigine: RegionCode, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<MenuRead> {
+        const body = new FormData();
+        this.fillFormData(
+            {
+                ...menu,
+                regCodeOrigine
+            },
+            body
+        );
+        return this.http.post<MenuRead>(`/api/restaurants/menus`, body, {observe: 'body', ...options});
     }
 
     /**
@@ -66,12 +75,12 @@ export class MenuService {
 
     /**
      * @description Liste tous les plats
-     * @param disponible Indique si le plat est disponible
      * @param restaurantId Restaurant proposant ce plat
      * @param categoriePlatCode Catégorie du plat
+     * @param disponible Indique si le plat est disponible
      * @returns Liste des plats
      */
-    getPlats(disponible: boolean = true, restaurantId?: number, categoriePlatCode?: CategoriePlatCode, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
+    getPlats(restaurantId?: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -84,9 +93,9 @@ export class MenuService {
             }
           }
         };
-        addParam('disponible', disponible);
         addParam('restaurantId', restaurantId);
         addParam('categoriePlatCode', categoriePlatCode);
+        addParam('disponible', disponible);
 
         return this.http.get<PlatItem[]>(`/api/restaurants/plats`, {observe: 'body', ...options});
     }
@@ -148,5 +157,19 @@ export class MenuService {
      */
     updatePlat(plaId: number, plat: PlatWrite, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatRead> {
         return this.http.put<PlatRead>(`/api/restaurants/plats/${plaId}`, plat, {observe: 'body', ...options});
+    }
+
+    private fillFormData(data: any, formData: FormData, prefix = "") {
+        if (Array.isArray(data)) {
+            for (const [i, item] of data.entries()) {
+                this.fillFormData(item, formData, prefix + (typeof item === "object" && !(item instanceof File) ? `[${i}]` : ""));
+            }
+        } else if (typeof data === "object" && !(data instanceof File)) {
+            for (const key in data) {
+                this.fillFormData(data[key], formData, (prefix ? `${prefix}.` : "") + key);
+            }
+        } else {
+            formData.append(prefix, data);
+        }
     }
 }

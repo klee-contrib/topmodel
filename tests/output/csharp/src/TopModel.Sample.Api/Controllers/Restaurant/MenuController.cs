@@ -27,12 +27,13 @@ public class MenuController : Controller
     /// Crée un menu avec ses plats
     /// </summary>
     /// <param name="menu">Menu à créer</param>
+    /// <param name="regCodeOrigine">Code de la région.</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Menu créé avec ses plats</returns>
     [Authorize]
     [Authorize(Roles = "MANAGER")]
     [HttpPost("api/restaurants/menus")]
-    public async Task<MenuRead> CreateMenu([FromBody] MenuWrite menu, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu([FromForm] MenuWrite menu = new(), [FromForm][Required] Region.Codes? regCodeOrigine = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -75,13 +76,13 @@ public class MenuController : Controller
     /// <summary>
     /// Liste tous les plats
     /// </summary>
-    /// <param name="disponible">Indique si le plat est disponible</param>
     /// <param name="restaurantId">Restaurant proposant ce plat</param>
     /// <param name="categoriePlatCode">Catégorie du plat</param>
+    /// <param name="disponible">Indique si le plat est disponible</param>
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats</returns>
     [HttpGet("api/restaurants/plats")]
-    public async Task<ICollection<IPlatItem>> GetPlats(bool disponible = true, [Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats([Required] int? restaurantId = null, [Required] CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

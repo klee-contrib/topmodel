@@ -102,14 +102,14 @@ public interface RestaurantApi {
 	/**
 	 * Liste les plats d'un restaurant.
 	 * @param resId Identifiant du restaurant.
-	 * @param disponible Indique si le plat est disponible.
 	 * @param categoriePlatCode Catégorie du plat.
+	 * @param disponible Indique si le plat est disponible.
 	 *
 	 * @return Liste des plats du restaurant.
 	 */
 	@GetMapping(path = "api/restaurants/{resId}/plats")
 	@Operation(description = "Liste les plats d'un restaurant")
-	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Récupère les statistiques d'un restaurant.
@@ -174,7 +174,7 @@ public interface RestaurantApi {
 	 */
 	@GetMapping(path = "api/restaurants/search")
 	@Operation(description = "Recherche avancée de restaurants")
-	List<RestaurantAvecStatistiques> searchRestaurants(@Parameter(description = "Nom du restaurant (recherche partielle)") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Adresse du restaurant (recherche partielle)") @RequestParam(value = "adresse", required = false) String adresse, @Parameter(description = "Note minimum requise") @RequestParam(value = "noteMin", required = true) Integer noteMin);
+	List<RestaurantAvecStatistiques> searchRestaurants(@Parameter(description = "Nom du restaurant (recherche partielle)") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Adresse du restaurant (recherche partielle)") @RequestParam(value = "adresse", required = false) String adresse, @Parameter(description = "Note minimum requise") @RequestParam(value = "noteMin", required = false) Integer noteMin);
 
 	/**
 	 * Met à jour un restaurant.

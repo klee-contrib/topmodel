@@ -42,8 +42,8 @@ public class DomainLoader(FileChecker fileChecker) : ILoader
                         domain.GeneratedValue = fileChecker.Deserialize<GeneratedValueDefinition>(parser);
                     }
                     break;
-                case "bodyParam":
-                    domain.BodyParam = value!.Value == "true";
+                case "paramLocation":
+                    domain.ParamLocation = fileChecker.Deserialize<ParamLocation>(value!.Value);
                     break;
                 case "collection":
                     domain.Collection = value!.Value == "true";

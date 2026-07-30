@@ -50,6 +50,9 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "trigram":
                             rp.Trigram = new LocatedString(value!);
                             break;
+                        case "paramLocation":
+                            rp.ParamLocation = fileChecker.Deserialize<ParamLocation>(value!.Value);
+                            break;
                         case "annotations":
                             parser.ConsumeSequence(() =>
                             {
@@ -144,6 +147,9 @@ public class PropertyLoader(FileChecker fileChecker)
                             break;
                         case "defaultValue":
                             ap.DefaultValue = value!.Value;
+                            break;
+                        case "paramLocation":
+                            ap.ParamLocation = fileChecker.Deserialize<ParamLocation>(value!.Value);
                             break;
                         case "withReverse":
                             if (value?.Value != "false")
@@ -310,6 +316,9 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "trigram":
                             cp.Trigram = new LocatedString(value!);
                             break;
+                        case "paramLocation":
+                            cp.ParamLocation = fileChecker.Deserialize<ParamLocation>(value!.Value);
+                            break;
                         case "annotations":
                             parser.ConsumeSequence(() =>
                             {
@@ -441,6 +450,9 @@ public class PropertyLoader(FileChecker fileChecker)
                             break;
                         case "primaryKey":
                             alp.PrimaryKey = value!.Value == "true";
+                            break;
+                        case "paramLocation":
+                            alp.ParamLocation = fileChecker.Deserialize<ParamLocation>(value!.Value);
                             break;
                         case "preservePrimaryKey":
                             alp.PreservePrimaryKey = value!.Value == "true";

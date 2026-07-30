@@ -5,6 +5,13 @@ namespace TopModel.Core.Utils;
 
 public static class EndpointExtensions
 {
+    public static IEnumerable<IProperty> GetFormDataParams(this Endpoint endpoint, WatcherConfigBase? config)
+    {
+        return (config?.GetParams(endpoint) ?? endpoint.Params).Where(param =>
+            param.ParamLocation == ParamLocation.FormData
+        );
+    }
+
     [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static IProperty? GetJsonBodyParam(this Endpoint endpoint)
     {
@@ -13,20 +20,9 @@ public static class EndpointExtensions
 
     public static IProperty? GetJsonBodyParam(this Endpoint endpoint, WatcherConfigBase? config)
     {
-        if (endpoint.IsMultipart)
-        {
-            return null;
-        }
-
-        var bodyParams = (config?.GetParams(endpoint) ?? endpoint.Params).Where(param =>
-            param is IProperty { Composition: not null } or { Domain.BodyParam: true }
+        return (config?.GetParams(endpoint) ?? endpoint.Params).SingleOrDefault(p =>
+            p.ParamLocation == ParamLocation.JsonBody
         );
-        return bodyParams.Count() > 1
-            ? throw new ModelException(
-                endpoint,
-                $"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}"
-            )
-            : bodyParams.SingleOrDefault();
     }
 
     public static string GetParamName(this IProperty property)
@@ -51,15 +47,6 @@ public static class EndpointExtensions
         return $"{trigram}{property.NameCamel.ToFirstUpper()}";
     }
 
-    public static IEnumerable<IProperty> GetQueryAndMultipartParams(this Endpoint endpoint)
-    {
-        return endpoint
-            .Params.Where(param =>
-                !(param is IProperty { Composition: not null } || (param.Domain?.BodyParam ?? false))
-            )
-            .Except(endpoint.GetRouteParams());
-    }
-
     [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
     {
@@ -68,51 +55,48 @@ public static class EndpointExtensions
 
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint, WatcherConfigBase? config)
     {
-        return (config?.GetParams(endpoint) ?? endpoint.Params)
-            .Where(param =>
-                !(
-                    param is { Composition: not null }
-                    || (param.Domain?.BodyParam ?? false)
-                    || (param.Domain?.IsMultipart ?? false)
-                )
-            )
-            .Except(endpoint.GetRouteParams());
+        return (config?.GetParams(endpoint) ?? endpoint.Params).Where(param =>
+            param.ParamLocation == ParamLocation.Query
+        );
     }
 
     public static IEnumerable<IProperty> GetRouteParams(this Endpoint endpoint)
     {
-        return endpoint.Params.Where(param => endpoint.Route.Contains($"{{{param.GetParamName()}}}"));
+        return endpoint.Params.Where(param => param.ParamLocation == ParamLocation.Route);
     }
 
-    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
+    public static bool HasInRoute(this Endpoint endpoint, IProperty param)
+    {
+        return endpoint.Route.Contains($"{{{param.GetParamName()}}}");
+    }
+
+    [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
     public static bool IsJsonBodyParam(this IProperty property)
     {
         return IsJsonBodyParam(property, config: null);
     }
 
+    [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
     public static bool IsJsonBodyParam(this IProperty property, WatcherConfigBase? config)
     {
-        return property.Endpoint.GetJsonBodyParam(config) == property;
+        return property.ParamLocation == ParamLocation.JsonBody;
     }
 
-    public static bool IsQueryOrMultipartParam(this IProperty property)
-    {
-        return property.Endpoint.GetQueryAndMultipartParams().Contains(property);
-    }
-
-    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
+    [Obsolete("Utiliser ParamLocation == ParamLocation.Query")]
     public static bool IsQueryParam(this IProperty property)
     {
         return IsQueryParam(property, config: null);
     }
 
+    [Obsolete("Utiliser ParamLocation == ParamLocation.Query")]
     public static bool IsQueryParam(this IProperty property, WatcherConfigBase? config)
     {
-        return property.Endpoint.GetQueryParams(config).Contains(property);
+        return property.ParamLocation == ParamLocation.Query;
     }
 
+    [Obsolete("Utiliser ParamLocation == ParamLocation.Route")]
     public static bool IsRouteParam(this IProperty property)
     {
-        return property.Endpoint.GetRouteParams().Contains(property);
+        return property.ParamLocation == ParamLocation.Route;
     }
 }

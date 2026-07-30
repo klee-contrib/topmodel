@@ -15,6 +15,7 @@ internal class AliasProperty : IProperty
     private IDictionary<string, string>? _domainParameters;
     private string? _label;
     private string? _name;
+    private ParamLocation? _paramLocation;
     private bool? _primaryKey;
 #nullable disable
     private IProperty _property;
@@ -128,7 +129,10 @@ internal class AliasProperty : IProperty
 
     public bool Required
     {
-        get => _required ?? _property?.Required ?? false;
+        get =>
+            ParamLocation == Model.ParamLocation.Route
+            || ParamLocation == Model.ParamLocation.JsonBody
+            || (_required ?? _property?.Required ?? false);
         set => _required = value;
     }
 
@@ -249,6 +253,41 @@ internal class AliasProperty : IProperty
 
     public string? Suffix { get; set; }
 
+    public ParamLocation? ParamLocation
+    {
+#pragma warning disable S4275
+        get
+        {
+            if (Endpoint == null || !Endpoint.Params.Contains(this))
+            {
+                return null;
+            }
+
+            var ownLocation = ((IProperty)this).OwnLocation;
+            if (ownLocation != null)
+            {
+                return ownLocation;
+            }
+
+            if (
+                Composition != null
+                && (
+                    Composition.Properties.Any(cpp => cpp.ParamLocation == Model.ParamLocation.FormData)
+                    || Endpoint.Params.Any(p => p != this && p.ParamLocation == Model.ParamLocation.FormData)
+                )
+            )
+            {
+                return Model.ParamLocation.FormData;
+            }
+
+            return Endpoint.HasInRoute(this) ? Model.ParamLocation.Route
+                : Composition != null ? Model.ParamLocation.JsonBody
+                : Model.ParamLocation.Query;
+        }
+#pragma warning restore S4275
+        set => _paramLocation = value;
+    }
+
     internal required Reference Location { get; set; }
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
@@ -319,6 +358,8 @@ internal class AliasProperty : IProperty
         }
     }
 
+    ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
+
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
@@ -363,6 +404,11 @@ internal class AliasProperty : IProperty
         if (_useClass.HasValue)
         {
             alp.UseClass = _useClass.Value;
+        }
+
+        if (_paramLocation.HasValue)
+        {
+            alp.ParamLocation = _paramLocation.Value;
         }
 
         return alp;
@@ -426,6 +472,11 @@ internal class AliasProperty : IProperty
         if (_useClass.HasValue)
         {
             alp.UseClass = _useClass.Value;
+        }
+
+        if (_paramLocation.HasValue)
+        {
+            alp.ParamLocation = _paramLocation.Value;
         }
 
         return alp;
@@ -499,6 +550,11 @@ internal class AliasProperty : IProperty
         if (_useClass.HasValue)
         {
             alp.UseClass = _useClass.Value;
+        }
+
+        if (_paramLocation.HasValue)
+        {
+            alp.ParamLocation = _paramLocation.Value;
         }
 
         return alp;

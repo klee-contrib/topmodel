@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import restaurant.jpa_server.dtos.restaurant.PromotionRead;
 import restaurant.jpa_server.dtos.restaurant.PromotionWrite;
 import restaurant.jpa_server.entities.restaurant.CategoriePlat;
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
+import restaurant.jpa_server.enums.restaurant.RegionCode;
 
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -51,14 +53,13 @@ public interface MenuController {
 
 	/**
 	 * Crée un menu avec ses plats.
-	 * @param menu Menu à créer.
 	 *
 	 * @return Menu créé avec ses plats.
 	 */
 	@PostMapping(path = "menus")
 	@PreAuthorize("isAuthenticated()")
 	@Operation(description = "Crée un menu avec ses plats")
-	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @RequestBody @Valid MenuWrite menu);
+	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @ModelAttribute @Valid MenuWrite menu, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Code de la région.") @ModelAttribute @Valid RegionCode regCodeOrigine);
 
 	/**
 	 * Supprime un plat.
@@ -90,15 +91,15 @@ public interface MenuController {
 
 	/**
 	 * Liste tous les plats.
-	 * @param disponible Indique si le plat est disponible.
 	 * @param restaurantId Restaurant proposant ce plat.
 	 * @param categoriePlatCode Catégorie du plat.
+	 * @param disponible Indique si le plat est disponible.
 	 *
 	 * @return Liste des plats.
 	 */
 	@GetMapping(path = "plats")
 	@Operation(description = "Liste tous les plats")
-	List<PlatItem> getPlats(@Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	List<PlatItem> getPlats(@Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Met à jour partiellement un plat.

@@ -41,10 +41,7 @@ public class Endpoint : IPropertyContainer
 
     public IList<IProperty> Params { get; set; } = [];
 
-    public bool IsMultipart =>
-        Params.Any(p =>
-            !p.IsRouteParam() && (p.Domain?.IsMultipart ?? false) || p is CompositionProperty cp && cp.IsMultipart
-        );
+    public bool IsMultipart => Params.Any(p => p.ParamLocation == ParamLocation.FormData);
 
     public IList<IProperty> Properties => Params.Concat([Returns!]).Where(p => p != null).ToList();
 

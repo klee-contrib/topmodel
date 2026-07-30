@@ -95,13 +95,13 @@ public interface RestaurantClient {
 	/**
 	 * Liste les plats d'un restaurant.
 	 * @param resId Identifiant du restaurant.
-	 * @param disponible Indique si le plat est disponible.
 	 * @param categoriePlatCode Catégorie du plat.
+	 * @param disponible Indique si le plat est disponible.
 	 *
 	 * @return Liste des plats du restaurant.
 	 */
 	@GetExchange("/{resId}/plats")
-	ResponseEntity<List<PlatItem>> getRestaurantPlats(@PathVariable("resId") Integer resId, @RequestParam(value = "disponible", required = true) Boolean disponible, @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode);
+	ResponseEntity<List<PlatItem>> getRestaurantPlats(@PathVariable("resId") Integer resId, @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @RequestParam(value = "disponible", required = true) Boolean disponible);
 
 	/**
 	 * Récupère les statistiques d'un restaurant.
@@ -160,7 +160,7 @@ public interface RestaurantClient {
 	 * @return Liste des restaurants correspondant aux critères.
 	 */
 	@GetExchange("/search")
-	ResponseEntity<List<RestaurantAvecStatistiques>> searchRestaurants(@RequestParam(value = "nom", required = true) String nom, @RequestParam(value = "adresse", required = false) String adresse, @RequestParam(value = "noteMin", required = true) Integer noteMin);
+	ResponseEntity<List<RestaurantAvecStatistiques>> searchRestaurants(@RequestParam(value = "nom", required = true) String nom, @RequestParam(value = "adresse", required = false) String adresse, @RequestParam(value = "noteMin", required = false) Integer noteMin);
 
 	/**
 	 * Met à jour un restaurant.
