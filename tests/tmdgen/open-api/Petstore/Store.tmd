@@ -56,7 +56,6 @@ endpoint:
   params:
     - composition: Order
       name: body
-      required: false
       comment: Non documenté
   returns:
     composition: Order

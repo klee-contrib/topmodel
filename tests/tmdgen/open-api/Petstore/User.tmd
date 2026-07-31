@@ -18,7 +18,6 @@ endpoint:
   params:
     - composition: User
       name: body
-      required: false
       comment: Created user object
 ---
 endpoint:
@@ -31,7 +30,6 @@ endpoint:
     - composition: User
       name: body
       domain: DO_LIST
-      required: false
       comment: Non documenté
   returns:
     composition: User
@@ -99,11 +97,10 @@ endpoint:
   description: "Update user"
   preservePropertyCasing: true
   params:
-    - composition: User
-      name: body
-      required: false
-      comment: Update an existent user in the store
-
     - name: username
       domain: DO_LIBELLE
       comment: name that need to be deleted
+
+    - composition: User
+      name: body
+      comment: Update an existent user in the store
