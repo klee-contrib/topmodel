@@ -242,32 +242,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                     || operation.Value.RequestBody != null
                 )
                 {
-                    var bodySchema = operation.Value.GetRequestBodySchema();
-                    if (bodySchema != null)
-                    {
-                        var p = WriteProperty(_config, new("body", bodySchema), bodySchema, tmdFile);
-                        if (p is TmdCompositionProperty cp)
-                        {
-                            cp.Composition = _classesStore.SingleOrDefault(c => c.Key == cp.CompositionReference).Value;
-                        }
-
-                        if (p.Comment == TmdProperty.DefaultComment)
-                        {
-                            var description = operation.Value.RequestBody?.Description.Format();
-                            if (!string.IsNullOrEmpty(description))
-                            {
-                                p.Comment = description;
-                            }
-                        }
-
-                        endPoint.Params.Add(p);
-                    }
-
-                    foreach (
-                        var param in (operation.Value.Parameters ?? [])
-                            .Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path)
-                            .OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name)
-                    )
+                    void AddParam(IOpenApiParameter param)
                     {
                         TmdProperty property;
                         if ((param.Schema?.Enum ?? []).Any())
@@ -295,6 +270,46 @@ public class OpenApiTmdGenerator : TmdGenerator
                         {
                             property.Comment = $@"{param.Description.Format()}";
                         }
+                    }
+
+                    foreach (
+                        var param in (operation.Value.Parameters ?? [])
+                            .Where(p => p.In == ParameterLocation.Path)
+                            .OrderBy(p => p.Name)
+                    )
+                    {
+                        AddParam(param);
+                    }
+
+                    var bodySchema = operation.Value.GetRequestBodySchema();
+                    if (bodySchema != null)
+                    {
+                        var p = WriteProperty(_config, new("body", bodySchema), bodySchema, tmdFile);
+                        if (p is TmdCompositionProperty cp)
+                        {
+                            cp.Composition = _classesStore.SingleOrDefault(c => c.Key == cp.CompositionReference).Value;
+                            cp.Required = true;
+                        }
+
+                        if (p.Comment == TmdProperty.DefaultComment)
+                        {
+                            var description = operation.Value.RequestBody?.Description.Format();
+                            if (!string.IsNullOrEmpty(description))
+                            {
+                                p.Comment = description;
+                            }
+                        }
+
+                        endPoint.Params.Add(p);
+                    }
+
+                    foreach (
+                        var param in (operation.Value.Parameters ?? [])
+                            .Where(p => p.In == ParameterLocation.Query)
+                            .OrderBy(p => p.Name)
+                    )
+                    {
+                        AddParam(param);
                     }
                 }
 

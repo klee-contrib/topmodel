@@ -18,7 +18,6 @@ endpoint:
   params:
     - composition: Pet
       name: body
-      required: false
       comment: Create a new pet in the store
   returns:
     composition: Pet
@@ -98,7 +97,6 @@ endpoint:
   params:
     - composition: Pet
       name: body
-      required: false
       comment: Update an existent pet in the store
   returns:
     composition: Pet
@@ -132,13 +130,13 @@ endpoint:
   description: "uploads an image"
   preservePropertyCasing: true
   params:
-    - name: body
-      domain: DO_FILE
-      comment: Non documenté
-
     - name: petId
       domain: DO_ID
       comment: ID of pet to update
+
+    - name: body
+      domain: DO_FILE
+      comment: Non documenté
 
     - name: additionalMetadata
       domain: DO_LIBELLE
