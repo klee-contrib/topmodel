@@ -54,3 +54,53 @@ En cliquant sur la barre d'état de l'extension, il vous sera proposé les diff�
 ## Mettre à jour TopModel (`F1` : `Mettre à jour TopModel.Generator`)
 
 Vous pouvez mettre à jour TopModel en utilisant la commande `Mettre à jour TopModel.Generator`.
+
+## Utiliser un language server spécifique (`topmodel.languageServerPath`)
+
+Par défaut, l'extension installe et met à jour automatiquement l'outil global `modls` (le language server de TopModel), et l'utilise pour tous vos workspaces.
+
+Le paramètre `topmodel.languageServerPath` permet de renseigner le chemin d'un exécutable (ou d'une dll) à lancer à la place, par exemple pour :
+
+- déboguer un build local du language server
+- utiliser une autre version que celle installée globalement
+
+Ce paramètre accepte :
+
+- un chemin absolu, ou relatif (résolu depuis la racine du workspace)
+- la variable `${workspaceFolder}`
+- un fichier `.dll`, qui sera alors lancé via `dotnet`
+
+```json title="settings.json"
+{
+  "topmodel.languageServerPath": "${workspaceFolder}/TopModel.LanguageServer/bin/Debug/net8.0/TopModel.LanguageServer.dll"
+}
+```
+
+Dès que ce paramètre est renseigné, l'extension n'installe et ne met plus à jour l'outil `TopModel.LanguageServer` global.
+
+## Utiliser le language server dans IntelliJ
+
+Le language server `modls` communique via le protocole standard LSP (stdio), il est donc possible de le brancher manuellement grâce au support natif des Language Servers de JetBrains (disponible dans les éditions Ultimate/Professional).
+
+1. Installez d'abord `modls`, si ce n'est pas déjà fait :
+
+   ```bash
+   dotnet tool install --global TopModel.LanguageServer
+   ```
+
+2. Ouvrez `Settings/Preferences` → `Languages & Frameworks` → `Language Servers`
+3. Ajoutez un nouveau serveur (`+`) :
+   - **File name patterns** : `*.tmd`
+   - **Server** → **Executable** : la commande à lancer, par exemple :
+
+     ```text
+     modls
+     ```
+
+     Ou, pour utiliser un build local (une dll plutôt que le tool global), en passant par `dotnet` :
+
+     ```text
+     dotnet /chemin/vers/TopModel.LanguageServer.dll
+     ```
+
+Redémarrez l'IDE (ou le projet) après cette configuration. Comme pour l'extension VSCode, si `modls` n'est pas accessible dans le `PATH` utilisé par l'IDE, la connexion au language server échoue silencieusement : vérifiez la commande avec `modls --version` dans le même terminal que celui utilisé par l'IDE.
