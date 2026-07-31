@@ -80,18 +80,18 @@ Dès que ce paramètre est renseigné, l'extension n'installe et ne met plus à 
 
 ## Utiliser le language server dans IntelliJ
 
-Le language server `modls` communique via le protocole standard LSP (stdio), il est donc possible de le brancher manuellement grâce au support natif des Language Servers de JetBrains (disponible dans les éditions Ultimate/Professional).
+Le language server `modls` communique via le protocole standard LSP (stdio), il est donc possible de le brancher manuellement dans les IDE JetBrains grâce au plugin [LSP4IJ](https://plugins.jetbrains.com/plugin/23257-lsp4ij) (Red Hat). Ce plugin n'est pas installé par défaut : sans lui, le menu `Language Servers` décrit ci-dessous n'apparaît pas.
 
-1. Installez d'abord `modls`, si ce n'est pas déjà fait :
+1. Installez le plugin `LSP4IJ` : `Settings/Preferences` → `Plugins` → `Marketplace` → rechercher `LSP4IJ` → `Install`, puis redémarrez l'IDE
+2. Installez `modls`, si ce n'est pas déjà fait :
 
    ```bash
    dotnet tool install --global TopModel.LanguageServer
    ```
 
-2. Ouvrez `Settings/Preferences` → `Languages & Frameworks` → `Language Servers`
-3. Ajoutez un nouveau serveur (`+`) :
-   - **File name patterns** : `*.tmd`
-   - **Server** → **Executable** : la commande à lancer, par exemple :
+3. Ouvrez `Settings` → `Languages & Frameworks` → `Language Servers`
+4. Ajoutez un nouveau serveur (`+`), onglet **Server** :
+   - **Command** : la commande complète à lancer, par exemple :
 
      ```text
      modls
@@ -103,4 +103,16 @@ Le language server `modls` communique via le protocole standard LSP (stdio), il 
      dotnet /chemin/vers/TopModel.LanguageServer.dll
      ```
 
-Redémarrez l'IDE (ou le projet) après cette configuration. Comme pour l'extension VSCode, si `modls` n'est pas accessible dans le `PATH` utilisé par l'IDE, la connexion au language server échoue silencieusement : vérifiez la commande avec `modls --version` dans le même terminal que celui utilisé par l'IDE.
+   - **Working Directory** : le répertoire racine du projet, contenant le(s) fichier(s) `topmodel.config`. C'est indispensable : sans cela, le language server ne retrouve pas la configuration du modèle.
+
+5. Onglet **Mappings** : associez l'extension de fichier `*.tmd` à ce serveur
+
+Redémarrez le projet après cette configuration.
+
+### Diagnostiquer un problème de connexion
+
+Si le language server ne démarre pas (par exemple si `modls` n'est pas accessible dans le `PATH` utilisé par l'IDE), utilisez la [console LSP](https://github.com/redhat-developer/lsp4ij/blob/main/docs/UserGuide.md#lsp-console) fournie par LSP4IJ :
+
+1. Ouvrez le tool window `Language Servers` (en bas de l'IDE)
+2. Sélectionnez le serveur `TopModel`, clic droit → `Copy Command` pour récupérer la commande exacte lancée par l'IDE, et vérifiez qu'elle fonctionne dans un terminal
+3. Passez le niveau de trace à `verbose` pour voir le détail des échanges JSON-RPC avec le language server, ou consultez l'onglet `Logs` si le language server émet des messages via `window/logMessage`
