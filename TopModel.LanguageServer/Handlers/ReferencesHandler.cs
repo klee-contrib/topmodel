@@ -29,6 +29,6 @@ public class ReferencesHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         ClientCapabilities clientCapabilities
     )
     {
-        return new ReferenceRegistrationOptions() { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new ReferenceRegistrationOptions() { DocumentSelector = workerStore.TmdFiles };
     }
 }

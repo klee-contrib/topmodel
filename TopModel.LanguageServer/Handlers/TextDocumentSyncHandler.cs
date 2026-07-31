@@ -47,7 +47,7 @@ public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache f
     {
         return new TextDocumentSyncRegistrationOptions
         {
-            DocumentSelector = TextDocumentSelector.TmdFiles,
+            DocumentSelector = workerStore.TmdFiles,
             Change = TextDocumentSyncKind.Full,
             Save = new SaveOptions { IncludeText = true },
         };

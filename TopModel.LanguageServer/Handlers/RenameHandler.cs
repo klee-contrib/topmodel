@@ -54,6 +54,6 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
         ClientCapabilities clientCapabilities
     )
     {
-        return new RenameRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new RenameRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }

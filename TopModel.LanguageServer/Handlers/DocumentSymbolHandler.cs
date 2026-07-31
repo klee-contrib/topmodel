@@ -142,6 +142,6 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
         ClientCapabilities clientCapabilities
     )
     {
-        return new DocumentSymbolRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new DocumentSymbolRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }

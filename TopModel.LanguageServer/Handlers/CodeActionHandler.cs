@@ -89,7 +89,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         return new()
         {
-            DocumentSelector = TextDocumentSelector.TmdFiles,
+            DocumentSelector = workerStore.TmdFiles,
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>
             {

@@ -122,7 +122,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
         ClientCapabilities clientCapabilities
     )
     {
-        return new CompletionRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new CompletionRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 
     private static (string Key, int Line, int End, bool IsKey) GetCurrentKey(string[] text, int line, int position)

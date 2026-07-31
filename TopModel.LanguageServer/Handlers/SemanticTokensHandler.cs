@@ -14,7 +14,7 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = TextDocumentSelector.TmdFiles,
+            DocumentSelector = workerStore.TmdFiles,
             Legend = new()
             {
                 TokenModifiers = capability?.TokenModifiers ?? [],

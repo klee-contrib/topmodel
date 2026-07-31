@@ -97,6 +97,6 @@ public class CodeLensHandler(LSWorkerStore workerStore) : CodeLensHandlerBase
         ClientCapabilities clientCapabilities
     )
     {
-        return new CodeLensRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new CodeLensRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }

@@ -2,4 +2,4 @@
 
 namespace TopModel.LanguageServer.Handlers.Mermaid;
 
-public record MermaidResponse(string Diagram, string Module, string FileName, MermaidScope Scope);
+public record MermaidResponse(string Diagram, string Module, string FileName, string App, MermaidScope Scope);

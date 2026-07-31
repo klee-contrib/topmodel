@@ -64,6 +64,6 @@ public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
         ClientCapabilities clientCapabilities
     )
     {
-        return new HoverRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new HoverRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }

@@ -94,6 +94,6 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         ClientCapabilities clientCapabilities
     )
     {
-        return new DefinitionRegistrationOptions { DocumentSelector = TextDocumentSelector.TmdFiles };
+        return new DefinitionRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }
