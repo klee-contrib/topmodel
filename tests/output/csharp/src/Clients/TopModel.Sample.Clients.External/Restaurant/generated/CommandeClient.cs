@@ -83,13 +83,13 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="dateFin">Date et heure de la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Fichier CSV des commandes.</returns>
-    public async Task<byte[]?> ExportCommandes(DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<byte[]?> ExportCommandes(DateTime dateDebut, DateTime dateFin, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateDebut"] = dateDebut?.ToString("o"),
-            ["dateFin"] = dateFin?.ToString("o"),
+            ["dateDebut"] = dateDebut.ToString("o"),
+            ["dateFin"] = dateFin.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/export?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
@@ -125,12 +125,12 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="tableId">Table associée à la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des commandes.</returns>
-    public async Task<ICollection<ICommandeItem>> GetCommandes(int? clientId = null, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetCommandes(int clientId, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["clientId"] = clientId?.ToString(),
+            ["clientId"] = clientId.ToString(),
             ["statutCommande"] = statutCommande.ToString(),
             ["tableId"] = tableId?.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
@@ -146,12 +146,12 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="dateCommande">Date et heure de la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Commandes pour la date spécifiée.</returns>
-    public async Task<ICollection<ICommandeItem>> GetCommandesByDate(DateTime? dateCommande = null, CancellationToken ct = default)
+    public async Task<ICollection<ICommandeItem>> GetCommandesByDate(DateTime dateCommande, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateCommande"] = dateCommande?.ToString("o"),
+            ["dateCommande"] = dateCommande.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/by-date?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);

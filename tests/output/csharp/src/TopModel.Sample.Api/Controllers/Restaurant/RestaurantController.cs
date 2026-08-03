@@ -93,7 +93,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats du restaurant</returns>
     [HttpGet("api/restaurants/{resId:int}/plats")]
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, [Required] CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, [Required] CategoriePlat.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -108,7 +108,7 @@ public class RestaurantController : Controller
     /// <returns>Statistiques du restaurant</returns>
     [Authorize]
     [HttpGet("api/restaurants/{resId:int}/statistiques")]
-    public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, [Required] DateTime? dateDebut = null, [Required] DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, [Required] DateTime? dateDebut, [Required] DateTime? dateFin, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -157,7 +157,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des tables</returns>
     [HttpGet("api/restaurants/tables")]
-    public async Task<ICollection<ITableItem>> GetTables([Required] int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<ITableItem>> GetTables([Required] int? restaurantId, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -171,7 +171,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des restaurants correspondant aux critères</returns>
     [HttpGet("api/restaurants/search")]
-    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants([Required] string? nom = null, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
+    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants([Required] string? nom, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

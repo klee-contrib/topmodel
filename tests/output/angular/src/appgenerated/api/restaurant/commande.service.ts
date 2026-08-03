@@ -2,16 +2,17 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+
 import { CommandeItem } from "../../model/restaurant/commande-item";
 import { CommandeRead } from "../../model/restaurant/commande-read";
 import { CommandeWrite } from "../../model/restaurant/commande-write";
 import { StatutCommande } from "../../model/restaurant/enums";
 import { ReservationRead } from "../../model/restaurant/reservation-read";
 import { ReservationWrite } from "../../model/restaurant/reservation-write";
+
 @Injectable({
     providedIn: 'root'
 })
@@ -20,7 +21,7 @@ export class CommandeService {
     private readonly http = inject(HttpClient);
 
     /**
-     * @description Crée une nouvelle commande
+     * Crée une nouvelle commande
      * @param commande Commande à créer
      * @returns Commande créée
      */
@@ -29,7 +30,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Crée une réservation
+     * Crée une réservation
      * @param reservation Réservation à créer
      * @returns Réservation créée
      */
@@ -38,7 +39,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Supprime une commande
+     * Supprime une commande
      * @param comId Identifiant de la commande
      */
     deleteCommande(comId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -46,7 +47,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Supprime une commande
+     * Supprime une commande
      * @param commandeItem Commande item à supprimer dans le body
      */
     deleteCommandeWithBody(commandeItem: CommandeItem, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -54,12 +55,12 @@ export class CommandeService {
     }
 
     /**
-     * @description Exporte les commandes au format CSV
+     * Exporte les commandes au format CSV
      * @param dateDebut Date et heure de la commande
      * @param dateFin Date et heure de la commande
      * @returns Fichier CSV des commandes
      */
-    exportCommandes(dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<Blob> {
+    exportCommandes(dateDebut: string, dateFin: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<Blob> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -79,7 +80,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Charge le détail d'une commande
+     * Charge le détail d'une commande
      * @param comId Identifiant de la commande
      * @returns Détail de la commande
      */
@@ -88,13 +89,13 @@ export class CommandeService {
     }
 
     /**
-     * @description Liste toutes les commandes
+     * Liste toutes les commandes
      * @param clientId Client ayant passé la commande
      * @param statutCommande Statut de la commande
      * @param tableId Table associée à la commande
      * @returns Liste des commandes
      */
-    getCommandes(clientId?: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
+    getCommandes(clientId: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -115,11 +116,11 @@ export class CommandeService {
     }
 
     /**
-     * @description Récupère les commandes par date
+     * Récupère les commandes par date
      * @param dateCommande Date et heure de la commande
      * @returns Commandes pour la date spécifiée
      */
-    getCommandesByDate(dateCommande?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
+    getCommandesByDate(dateCommande: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<CommandeItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -138,7 +139,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Liste tous les statuts de commande
+     * Liste tous les statuts de commande
      * @returns Liste des statuts de commande
      */
     getStatutCommandes(options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<StatutCommande[]> {
@@ -146,7 +147,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Met à jour partiellement une commande
+     * Met à jour partiellement une commande
      * @param comId Identifiant de la commande
      * @param commande Données partielles de la commande
      * @returns Commande mise à jour
@@ -156,7 +157,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Met à jour une commande
+     * Met à jour une commande
      * @param comId Identifiant de la commande
      * @param commande Commande à mettre à jour
      * @returns Commande mise à jour
@@ -166,7 +167,7 @@ export class CommandeService {
     }
 
     /**
-     * @description Met à jour uniquement le statut d'une commande
+     * Met à jour uniquement le statut d'une commande
      * @param comId Identifiant de la commande
      * @param statutCommande Statut de la commande
      * @returns Commande avec le statut mis à jour

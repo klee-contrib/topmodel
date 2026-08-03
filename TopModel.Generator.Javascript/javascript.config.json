@@ -2,7 +2,10 @@
   "type": "object",
   "description": "Config pour la génération de Javascript.",
   "additionalProperties": false,
-  "required": [ "outputDirectory", "tags" ],
+  "required": [
+    "outputDirectory",
+    "tags"
+  ],
   "properties": {
     "name": {
       "type": "string",
@@ -127,13 +130,23 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": [ "fetch", "angular", "angular_promise", "nuxt", "legacy" ]
+      "enum": [
+        "fetch",
+        "angular",
+        "angular_promise",
+        "legacy"
+      ]
     },
     "entityMode": {
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "typed",
-      "enum": [ "untyped", "typed", "none", "focus" ]
+      "enum": [
+        "untyped",
+        "typed",
+        "none",
+        "focus"
+      ]
     },
     "extendedCompositions": {
       "type": "boolean",
@@ -150,7 +163,10 @@
     "resourceMode": {
       "type": "string",
       "description": "Mode de génération (JS, JSON ou JSON Schema).",
-      "enum": [ "js", "json" ]
+      "enum": [
+        "js",
+        "json"
+      ]
     },
     "translateReferences": {
       "type": "boolean",

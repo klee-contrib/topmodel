@@ -376,7 +376,7 @@ public class CsharpConfig : GeneratorConfigBase
         }
 
         if (
-            property.Composition != null && property.Required
+            property.Composition != null && property.Required && property.Class != null
             || property.AssociationMultiple && property.UseClassForAssociation
         )
         {

@@ -2,10 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+
 import { AvisClientRead } from "../../model/restaurant/avis-client-read";
 import { ClientAvecCommandes } from "../../model/restaurant/client-avec-commandes";
 import { ClientItem } from "../../model/restaurant/client-item";
@@ -14,6 +14,7 @@ import { ClientWrite } from "../../model/restaurant/client-write";
 import { CommandeItem } from "../../model/restaurant/commande-item";
 import { EmployeRead } from "../../model/restaurant/employe-read";
 import { EmployeWrite } from "../../model/restaurant/employe-write";
+
 @Injectable({
     providedIn: 'root'
 })
@@ -22,7 +23,7 @@ export class PersonneService {
     private readonly http = inject(HttpClient);
 
     /**
-     * @description Ajoute un client
+     * Ajoute un client
      * @param client Client à créer
      * @returns Client créé
      */
@@ -31,7 +32,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Ajoute un employé (nécessite le rôle ADMIN)
+     * Ajoute un employé (nécessite le rôle ADMIN)
      * @param employe Employé à créer
      * @returns Employé créé
      */
@@ -40,7 +41,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Supprime un client
+     * Supprime un client
      * @param perId Identifiant de la personne
      */
     deleteClient(perId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -48,7 +49,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Liste les avis clients avec filtres
+     * Liste les avis clients avec filtres
      * @param resId Identifiant du restaurant
      * @param noteMin Note sur 5
      * @param approuve Indique si l'avis est approuvé par le restaurant
@@ -56,7 +57,7 @@ export class PersonneService {
      * @param dateFin Date de l'avis
      * @returns Liste des avis correspondant aux critères
      */
-    getAvisClients(resId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<AvisClientRead[]> {
+    getAvisClients(resId: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<AvisClientRead[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -79,7 +80,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Charge le détail d'un client
+     * Charge le détail d'un client
      * @param perId Identifiant de la personne
      * @returns Détail du client
      */
@@ -88,7 +89,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Récupère un client avec toutes ses commandes
+     * Récupère un client avec toutes ses commandes
      * @param perId Identifiant de la personne
      * @returns Client avec ses commandes
      */
@@ -97,7 +98,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Liste les commandes d'un client
+     * Liste les commandes d'un client
      * @param perId Identifiant de la personne
      * @returns Liste des commandes du client
      */
@@ -106,12 +107,12 @@ export class PersonneService {
     }
 
     /**
-     * @description Liste tous les clients
+     * Liste tous les clients
      * @param nom Nom de la personne
      * @param email Adresse email du client
      * @returns Liste des clients
      */
-    getClients(nom?: string, email?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<ClientItem[]> {
+    getClients(nom: string, email?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<ClientItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -131,7 +132,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Met à jour partiellement un client
+     * Met à jour partiellement un client
      * @param perId Identifiant de la personne
      * @param client Données partielles du client
      * @returns Client mis à jour
@@ -141,7 +142,7 @@ export class PersonneService {
     }
 
     /**
-     * @description Met à jour un client
+     * Met à jour un client
      * @param perId Identifiant de la personne
      * @param client Client à mettre à jour
      * @returns Client mis à jour

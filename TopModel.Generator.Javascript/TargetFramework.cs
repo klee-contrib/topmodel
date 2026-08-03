@@ -21,11 +21,6 @@ public enum TargetFramework
     ANGULAR_PROMISE,
 
     /// <summary>
-    /// Nuxt.
-    /// </summary>
-    NUXT,
-
-    /// <summary>
     /// Legacy.
     /// </summary>
     LEGACY,

@@ -8,7 +8,7 @@ Depuis la version 2.0, **`modgen` n'inclus plus aucun générateurs par défaut*
 
 - **Le module de générateurs [C# (`csharp`)](./generator/csharp)** : Génération de classes C#, Entity Framework Core, API controllers/clients, etc.
 - **Le module de générateurs [JPA (`jpa`)](./generator/jpa)** : Génération de classes Java/JPA, entités, repositories, etc.
-- **Le module de générateurs [Javascript (`javascript`)](./generator/js)** : Génération de classes TypeScript, clients API Angular/Nuxt, etc.
+- **Le module de générateurs [Javascript (`javascript`)](./generator/js)** : Génération de classes TypeScript, clients API fetch/Angular, etc.
 - **Le module de générateurs [SQL (`sql`)](./generator/sql)** : Génération de scripts SQL (PostgreSQL, Oracle, SQL Server, SSDT, etc.)
 - **Le module de générateurs [traductions manquantes (`translation`)](./generator/translation)** : Génération de fichiers de traductions manquantes
 - **Le module de générateurs [documentation (`documentation`)](./generator/documentation)** : Génération de documentation Markdown (dictionnaire de données, liste d'endpoints, diagrammes de classes Mermaid)
@@ -71,6 +71,6 @@ Votre module peut avoir besoin d'attributs sur les classes, propriétés ou endp
 
 Les attributs ajoutés à l'intérieur de `customProperties` ne peuvent pas être des objets.
 
-Les générateurs standards n'utiliseront **jamais** le contenu de `CustomProperties`. 
+Les générateurs standards n'utiliseront **jamais** le contenu de `CustomProperties`.
 
 Bon courage !

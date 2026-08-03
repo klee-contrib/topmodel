@@ -112,12 +112,12 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats du restaurant.</returns>
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode.ToString(),
             ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
@@ -134,13 +134,13 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="dateFin">Date de fin pour le calcul des statistiques.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Statistiques du restaurant.</returns>
-    public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<StatistiquesRestaurant> GetRestaurantStatistiques(int resId, DateTime dateDebut, DateTime dateFin, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["dateDebut"] = dateDebut?.ToString("o"),
-            ["dateFin"] = dateFin?.ToString("o"),
+            ["dateDebut"] = dateDebut.ToString("o"),
+            ["dateFin"] = dateFin.ToString("o"),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/statistiques?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
@@ -204,12 +204,12 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si la table est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des tables.</returns>
-    public async Task<ICollection<ITableItem>> GetTables(int? restaurantId = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<ITableItem>> GetTables(int restaurantId, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["restaurantId"] = restaurantId?.ToString(),
+            ["restaurantId"] = restaurantId.ToString(),
             ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/tables?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
@@ -226,7 +226,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="noteMin">Note minimum requise.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des restaurants correspondant aux critères.</returns>
-    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants(string? nom = null, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
+    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants(string nom, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>

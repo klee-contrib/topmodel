@@ -74,7 +74,7 @@ export async function deleteCommandeWithBody(commandeItem: CommandeItem, options
  * @param options Options pour 'fetch'.
  * @returns Fichier CSV des commandes
  */
-export async function exportCommandes(dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<Blob | undefined> {
+export async function exportCommandes(dateDebut: string, dateFin: string, options: RequestInit = {}): Promise<Blob | undefined> {
     const query = new URLSearchParams();
     if (dateDebut !== undefined) {
         query.append("dateDebut", dateDebut)
@@ -114,7 +114,7 @@ export async function getCommande(comId: number, options: RequestInit = {}): Pro
  * @param options Options pour 'fetch'.
  * @returns Liste des commandes
  */
-export async function getCommandes(clientId?: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: RequestInit = {}): Promise<CommandeItem[]> {
+export async function getCommandes(clientId: number, statutCommande: StatutCommande = "EN_ATT", tableId?: number, options: RequestInit = {}): Promise<CommandeItem[]> {
     const query = new URLSearchParams();
     if (clientId !== undefined) {
         query.append("clientId", `${clientId}`)
@@ -138,7 +138,7 @@ export async function getCommandes(clientId?: number, statutCommande: StatutComm
  * @param options Options pour 'fetch'.
  * @returns Commandes pour la date spécifiée
  */
-export async function getCommandesByDate(dateCommande?: string, options: RequestInit = {}): Promise<CommandeItem[]> {
+export async function getCommandesByDate(dateCommande: string, options: RequestInit = {}): Promise<CommandeItem[]> {
     const query = new URLSearchParams();
     if (dateCommande !== undefined) {
         query.append("dateCommande", dateCommande)

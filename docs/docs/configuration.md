@@ -49,7 +49,7 @@ TopModel fournit les modules de générateurs suivants :
 
 - **`csharp`** : Module de générateurs C# (Entity Framework Core, API, etc.)
 - **`jpa`** : Module de générateurs Java/JPA
-- **`javascript`** : Module de générateurs JavaScript/TypeScript (Angular, Nuxt, etc.)
+- **`javascript`** : Module de générateurs JavaScript/TypeScript (Angular, React, etc.)
 - **`sql`** : Module de générateurs SQL (PostgreSQL, Oracle, SQL Server, etc.)
 - **`translation`** : Module de générateurs de traductions manquantes
 

@@ -22,7 +22,7 @@ TopModel est décomposé en différents modules :
 #### Modules de génération
 
 - **TopModel.Generator.Csharp** : Générateur pour le langage C# (classes, API client/serveur, DbContext, mappers, ressources)
-- **TopModel.Generator.Javascript** : Générateur pour JavaScript/TypeScript (API clients Angular/Nuxt, ressources, définitions TypeScript)
+- **TopModel.Generator.Javascript** : Générateur pour JavaScript/TypeScript (API clients fetch/Angular, ressources, définitions TypeScript)
 - **TopModel.Generator.Jpa** : Générateur pour Java/JPA (classes, endpoints, mappers, ressources)
 - **TopModel.Generator.Sql** : Générateur pour SQL (scripts procéduraux, SSDT)
 - **TopModel.Generator.Translation** : Générateur pour les fichiers de traduction

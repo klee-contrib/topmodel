@@ -10,7 +10,7 @@
 
 ### Modes de génération de l'API client
 
-Il est possible de générer l'API cliente selon 5 modes (`apiMode`) : `fetch` (par défaut), `nuxt`, `angular`, `angular_promise` ou `legacy`.
+Il est possible de générer l'API cliente selon 5 modes (`apiMode`) : `fetch` (par défaut), `angular`, `angular_promise` ou `legacy`.
 
 ### Fetch
 
@@ -25,28 +25,6 @@ _(Remarque : Il s'agit du mode à utiliser pour focus4 12.7+)_
 Les modes `angular` et `angular_promise` permettent de générer un service `@Injectable` au sens Angular, contenant les méthodes d'appels à l'API. Les méthodes retournent respectivement des `Observable` de RxJS ou des `Promise`.
 
 Ce mode dispose d'une [page de documentation dédiée](./js/angular.md).
-
-#### Nuxt
-
-Le mode `nuxt` permet de générer des fonctions d'appels à l'API compatibles avec Nuxt 3, utilisant `useAsyncData` et `$fetch` de Nuxt. Les fonctions retournent un objet `AsyncData` qui peut être utilisé directement dans les composants Nuxt.
-
-Exemple de code généré :
-
-```typescript
-export function getProfil(
-  id: number,
-  options: AsyncDataOptions<ProfilDto> = {},
-): AsyncData<ProfilDto | null, Error | null> {
-  return useAsyncData(
-    `/api/profil/${id}`,
-    () =>
-      $fetch<ProfilDto>(`/api/profil/${id}`, {
-        method: "GET",
-      }),
-    options,
-  );
-}
-```
 
 #### Legacy
 
@@ -465,9 +443,8 @@ Le module JavaScript génère plusieurs types de fichiers :
 2. **TypescriptEnumsGenerator** (`JSEnumsGen`) : Génère les définitions des listes de références
 3. **JavascriptApiClientGenerator** (`JSApiClientGen`) : Génère les clients API en mode fetch
 4. **AngularApiClientGenerator** (`JSNGApiClientGen`) : Génère les services Angular pour les clients API
-5. **NuxtApiClientGenerator** (`JSApiClientGen`) : Génère les fonctions API pour Nuxt
-6. **LegacyApiClientGenerator** (`JSLApiClientGen`) : Génère les clients API en mode legacy (ancienne API Focus)
-7. **JavascriptResourceGenerator** (`JSResourceGen`) : Génère les fichiers de ressources (traductions)
+5. **LegacyApiClientGenerator** (`JSLApiClientGen`) : Génère les clients API en mode legacy (ancienne API Focus)
+6. **JavascriptResourceGenerator** (`JSResourceGen`) : Génère les fichiers de ressources (traductions)
 
 Vous pouvez désactiver certains générateurs avec la propriété `disable` :
 
