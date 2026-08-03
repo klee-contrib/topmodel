@@ -22,12 +22,9 @@ public enum GeneratorMessage
     GeneratorsInUse,
     GeneratorUpdatesAvailable,
     ModgenUpdateCommand,
-    GeneratingConfigSchema,
-    ConfigSchemaGenerated,
     ConfigNameAlreadyInUse,
     ReferencedConfigNotFound,
     ExcludeOptionDescription,
     UpdateOptionDescription,
-    SchemaOptionDescription,
     RootCommandDescription,
 }

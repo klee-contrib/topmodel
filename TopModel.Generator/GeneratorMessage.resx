@@ -98,12 +98,6 @@
   <data name="ModgenUpdateCommand" xml:space="preserve">
     <value>You can run `modgen --update {0}` to update.</value>
   </data>
-  <data name="GeneratingConfigSchema" xml:space="preserve">
-    <value>Generating configuration schema...</value>
-  </data>
-  <data name="ConfigSchemaGenerated" xml:space="preserve">
-    <value>Configuration schema generated successfully.</value>
-  </data>
   <data name="ConfigNameAlreadyInUse" xml:space="preserve">
     <value>Configuration name '{0}' is already in use.</value>
   </data>
@@ -115,9 +109,6 @@
   </data>
   <data name="UpdateOptionDescription" xml:space="preserve">
     <value>Updates the specified generator module (or all modules if 'all').</value>
-  </data>
-  <data name="SchemaOptionDescription" xml:space="preserve">
-    <value>Generates the JSON schema file for the config file.</value>
   </data>
   <data name="RootCommandDescription" xml:space="preserve">
     <value>Launches the topmodel generator.</value>

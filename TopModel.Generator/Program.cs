@@ -12,10 +12,7 @@ var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")
 {
     Description = GeneratorMessage.ExcludeOptionDescription.GetMessage(),
 };
-var schemaOption = new Option<bool>("--schema", "-s")
-{
-    Description = GeneratorMessage.SchemaOptionDescription.GetMessage(),
-};
+var schemaOption = new Option<bool>("--schema", "-s") { Description = CliMessage.SchemaOptionDescription.GetMessage() };
 var updateOption = new Option<string>("--update", "-u")
 {
     Description = GeneratorMessage.UpdateOptionDescription.GetMessage(),

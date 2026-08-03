@@ -18,4 +18,7 @@ public enum CliMessage
     ParallelOptionDescription,
     ConfigChanged,
     CancellationRequested,
+    GeneratingConfigSchema,
+    ConfigSchemaGenerated,
+    SchemaOptionDescription,
 }

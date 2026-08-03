@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TopModel.ModelGenerator.Database;
 using TopModel.ModelGenerator.OpenApi;
@@ -10,6 +11,14 @@ namespace TopModel.ModelGenerator;
 public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileChecker>
 {
     private readonly Dictionary<string, string> _passwords = [];
+
+#nullable disable
+
+    private ILogger _logger;
+
+#nullable enable
+
+    public bool SchemaMode { get; set; }
 
     public override void Init()
     {
@@ -96,18 +105,23 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 
     public override async Task Run(CancellationToken cancellationToken)
     {
-        var mainLogger = ServiceProvider.GetRequiredService<ILogger<TmdGenerator>>();
-        using var scope = mainLogger.BeginScope(StoreConfig);
+        _logger = ServiceProvider.GetRequiredService<ILogger<TmdGenerator>>();
+        using var scope = _logger.BeginScope(StoreConfig);
+
+        if (SchemaMode)
+        {
+            await WriteSchema(cancellationToken);
+        }
 
         var generators = ServiceProvider.GetRequiredService<IEnumerable<TmdGenerator>>();
 
-        mainLogger.LogInformation(string.Empty);
-        mainLogger.LogInformation(
+        _logger.LogInformation(string.Empty);
+        _logger.LogInformation(
             ModelGeneratorMessage.RegisteredGenerators,
             $"{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}"
         );
 
-        var tmdLock = new TopModelLock(Config, mainLogger);
+        var tmdLock = new TopModelLock(Config, _logger);
         var generatedFiles = new List<string>();
 
         foreach (var generator in generators)
@@ -118,12 +132,34 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
         if (!cancellationToken.IsCancellationRequested)
         {
             tmdLock.UpdateFiles(generatedFiles);
-            mainLogger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
+            _logger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
         }
     }
 
     public override Task WaitForFinished(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    private async Task WriteSchema(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation(CliMessage.GeneratingConfigSchema);
+
+        var schema = await File.ReadAllTextAsync(
+            Assembly.GetExecutingAssembly().GetFilePath("schema.tmdgen.config.json"),
+            cancellationToken
+        );
+        await File.WriteAllTextAsync(ConfigFullName + ".schema.json", schema, cancellationToken);
+
+        var configFile = await File.ReadAllTextAsync(ConfigFullName, cancellationToken);
+        if (!configFile.StartsWith("# yaml-language-server"))
+        {
+            var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
+            configFile =
+                $"# yaml-language-server: $schema={relativePath}.schema.json{Environment.NewLine}" + configFile;
+            await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
+        }
+
+        _logger.LogInformation(CliMessage.ConfigSchemaGenerated);
     }
 }

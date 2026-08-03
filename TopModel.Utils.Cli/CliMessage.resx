@@ -165,4 +165,13 @@
   <data name="ParallelModeEnabled" xml:space="preserve">
     <value>[olive]Parallel[/] mode enabled.</value>
   </data>
+  <data name="SchemaOptionDescription" xml:space="preserve">
+    <value>Generates the JSON schema file for the config file.</value>
+  </data>
+  <data name="GeneratingConfigSchema" xml:space="preserve">
+    <value>Generating configuration schema...</value>
+  </data>
+  <data name="ConfigSchemaGenerated" xml:space="preserve">
+    <value>Configuration schema generated successfully.</value>
+  </data>
 </root>

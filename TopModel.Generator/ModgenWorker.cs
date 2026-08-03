@@ -643,7 +643,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
     private async Task WriteSchema(CancellationToken cancellationToken)
     {
-        _logger.LogInformation(GeneratorMessage.GeneratingConfigSchema);
+        _logger.LogInformation(CliMessage.GeneratingConfigSchema);
         var schema = JsonNode
             .Parse(
                 await File.ReadAllTextAsync(
@@ -689,6 +689,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
         }
 
-        _logger.LogInformation(GeneratorMessage.ConfigSchemaGenerated);
+        _logger.LogInformation(CliMessage.ConfigSchemaGenerated);
     }
 }
