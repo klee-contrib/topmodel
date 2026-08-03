@@ -1,8 +1,8 @@
 # Endpoints
 
-En plus de pouvoir définir des classes dans le modèle, TopModel permet aussi de définir des endpoints d'API. Cela permet de compléter l'approche "model-first" en pouvant décrire des APIs qui référencent explicitement des classes et des propriétés du modèle. Les générateurs pourront derrière utiliser ces descriptions pour générer des clients d'API, ou bien une "interface" pour les contrôleurs côté serveur.
+En plus de pouvoir définir des classes dans le modèle, TopModel permet aussi de définir des endpoints d'API. Cela complète l'approche "model-first" en permettant de décrire des API qui référencent explicitement des classes et des propriétés du modèle. Les générateurs peuvent ensuite utiliser ces descriptions pour produire des clients d'API, ou une "interface" pour les contrôleurs côté serveur.
 
-Un exemple de endpoint :
+Exemple d'endpoint :
 
 ```yaml
 ---
@@ -12,40 +12,57 @@ endpoint:
   route: api/evenements-audit/{evaId}
   description: Charge le détail d'un événement d'audit.
 
-  # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
+  # Liste des paramètres de l'endpoint.
+  # Ce sont des propriétés de modèle, comme pour les classes.
+  # Il peut ne pas y en avoir.
   params:
     - alias:
         property: Id
         class: EvenementAudit
 
-  # Type de retour du endpoint. La aussi, c'est une propriété du modèle et il peut ne pas y en avoir.
+  # Type de retour de l'endpoint.
+  # Ici aussi, il s'agit d'une propriété du modèle et il peut ne pas y en avoir.
   returns:
     composition: EvenementAuditDetail
-    name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    name: detail # Le nom est obligatoire car c'est une propriété, mais il n'est pas utilisé.
     comment: Le détail et la liste des impacts.
 ```
 
-Si un paramètre d'endpoint est un **alias d'une clé primaire**, alors son **nom de paramètre sera préfixé par le trigramme** de cette propriété si elle en a un, ou le nom de sa classe à défaut. Ce préfixe est surchargeable en renseigant `trigram` sur la propriété (y compris avec `""` pour le retirer).
+Si un paramètre d'endpoint est un **alias d'une clé primaire**, alors son **nom de paramètre est préfixé par le trigramme** de cette propriété si elle en a un, ou par le nom de sa classe à défaut. Ce préfixe est surchargeable en renseignant `trigram` sur la propriété (y compris avec `""` pour le retirer).
 
-Le type de chaque paramètre (body, query, route) est automatiquement déterminé :
+## Localisation des paramètres
 
-1. Si le paramètre est référencé dans la route, alors il est dans la route.
+Chaque propriété utilisée comme paramètre d'endpoint peut définir sa localisation via la propriété **`paramLocation`**, qui peut valoir :
 
-   > Il faudra bien le référencer avec son nom de paramètre dans la route (potentiellement préfixé, du coup).
+- `route` : Le paramètre est dans la route.
+- `query` : Le paramètre est dans la query.
+- `json-body` : Le paramètre est l'unique paramètre du body de la requête, en JSON.
+- `form-data` : Le paramètre est dans le body, de type `multipart/form-data`. Pour une composition, chaque propriété de l'objet cible est insérée individuellement dans le body.
 
-   > Il sera forcément obligatoire, quelque soit la valeur de `required` pour la propriété.
+Si `paramLocation` n'est pas renseigné, sa valeur est déterminée automatiquement selon les règles suivantes :
 
-2. Si le paramètre est une composition, ou si le domaine de la propriété spécifie `bodyParam: true`, alors il sera dans le body.
+- `json-body` pour les compositions sans autre paramètre `form-data`.
+- `form-data` pour les compositions avec un autre paramètre `form-data`.
+- `query` pour le reste.
 
-   > Il ne peut y avoir qu'un seul paramètre dans le body.
+`paramLocation` peut également être renseigné au niveau du domaine, afin d'être appliqué par défaut à tous les paramètres qui utilisent ce domaine. Cette valeur peut toujours être surchargée sur la propriété.
 
-3. Sinon, il sera dans la query
+Quelques remarques :
 
-   > Il sera forcément facultatif, quelque soit la valeur de `required` pour la propriété.
+- Un paramètre `route` doit nécessairement être dans la route, et un paramètre utilisé dans la route doit nécessairement correspondre à un paramètre `route` existant. Par conséquent, l'information explicite `paramLocation: route` est toujours soit redondante, soit invalide.
+- Un endpoint ne peut avoir qu'un seul body, par conséquent :
+  - Soit il s'agit d'une seule propriété `json-body`
+  - Soit il s'agit de plusieurs propriétés `form-data`.
 
-Tous les générateurs vont générer **un fichier client ou serveur par fichier de modèle qui contient des endpoints**, qui reflétera le chemin et le nom du fichier de modèle en question. A l'inverse des générateurs de classes qui vont utiliser le module, ici il n'est pas important.
+  TopModel s'assurera que cette règle est respectée.
 
-Il est possible de paramétrer le nom du fichier généré, ainsi que d'ajouter un préfixe aux routes. Pour cela, dans les méta-data du fichier (au niveau de `module`,`tags`, `uses`...), vous pouvez ajouter des options :
+- Les paramètres `route` et `json-body` sont toujours obligatoires, peu importe la valeur de `required`.
+
+## Fichier d'endpoint
+
+Tous les générateurs produisent **un fichier client ou serveur par fichier de modèle contenant des endpoints**. Ce fichier reflète le chemin et le nom du fichier de modèle concerné. Contrairement aux générateurs de classes, le module n'est pas pris en compte ici.
+
+Il est possible de paramétrer le nom du fichier généré, ainsi que d'ajouter un préfixe aux routes. Pour cela, dans les métadonnées du fichier (au niveau de `module`, `tags`, `uses`, etc.), vous pouvez ajouter des options :
 
 ```yaml
 ---
@@ -63,10 +80,10 @@ options:
 
 Ainsi, toutes les routes décrites dans ce fichier auront le préfixe `utilisateur`. Le fichier généré se nommera `UtilisateurApi` (éventuellement complété du suffixe du générateur utilisé, par exemple `Controller` ou `Client`).
 
-**Si des fichiers de modèle de même module ont le même nom** (que ça soit le vrai nom de fichier dans des dossiers différents où bien une surcharge comme décrite précédemment), alors **les endpoints générés pour ces fichiers seront regroupés dans le même fichier cible**, pour tous les générateurs clients et serveurs.
+**Si des fichiers de modèle d'un même module ont le même nom** (que ce soit le vrai nom de fichier dans des dossiers différents, ou une surcharge comme décrite précédemment), alors **les endpoints générés pour ces fichiers sont regroupés dans le même fichier cible**, pour tous les générateurs clients et serveurs.
 
-Une erreur sera levée si des fichiers de même nom ne définissent pas le même préfixe pour les routes. De même, deux endpoints de même fichier cible ne peuvent pas avoir le même nom.
+Une erreur est levée si des fichiers de même nom ne définissent pas le même préfixe de route. De même, deux endpoints d'un même fichier cible ne peuvent pas avoir le même nom.
 
 ## Tags d'un endpoint
 
-Un endpoint peut également définir ses propres tags, qui s'ajouteront aux tags du fichier, via la propriété `tags`, pour plus de flexibilité dans l'organisation des endpoints en fichiers (par exemple, s'il n'y a qu'un seul endpoint dans un fichier qui a besoin pris en compte par un autre générateur, alors on peut ajouter un tag directement sur cet endpoint au lieu de le mettre dans un fichier différent).
+Un endpoint peut également définir ses propres tags, via la propriété `tags`. Ils s'ajoutent alors aux tags du fichier, pour plus de flexibilité dans l'organisation des endpoints en fichiers. Par exemple, s'il n'y a qu'un seul endpoint dans un fichier qui doit être pris en compte par un autre générateur, il est possible d'ajouter un tag directement sur cet endpoint au lieu de le déplacer dans un autre fichier.
