@@ -45,7 +45,7 @@ public abstract class DatabaseTmdGenerator(
         [EnumeratorCancellation] CancellationToken ct = default
     )
     {
-        InitConnection();
+        await InitConnection(ct);
         logger.LogInformation(ModelGeneratorMessage.DbConnectionSuccess, config.Source.DbName);
         logger.LogInformation(ModelGeneratorMessage.GeneratingPleaseWait);
         var columns = await GetColumns();
@@ -544,7 +544,7 @@ public abstract class DatabaseTmdGenerator(
         }
     }
 
-    private void InitConnection()
+    private async Task InitConnection(CancellationToken ct)
     {
         if (Passwords.TryGetValue(config.Source.DbName, out var password))
         {
@@ -555,7 +555,7 @@ public abstract class DatabaseTmdGenerator(
         {
             _connection = GetConnection();
             logger.LogInformation(ModelGeneratorMessage.ConnectingToDb, config.Source.DbName);
-            _connection.Open();
+            await _connection.OpenAsync(ct);
         }
         catch (Exception)
         {
@@ -566,6 +566,8 @@ public abstract class DatabaseTmdGenerator(
             Passwords.Remove(config.Source.DbName);
             while (true)
             {
+                ct.ThrowIfCancellationRequested();
+
                 var key = Console.ReadKey(intercept: true);
                 if (key.Key == ConsoleKey.Enter)
                 {
@@ -576,7 +578,7 @@ public abstract class DatabaseTmdGenerator(
             }
 
             config.Source.Password = password;
-            InitConnection();
+            await InitConnection(ct);
         }
     }
 
