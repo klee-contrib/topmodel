@@ -2,6 +2,7 @@ import { autorun, makeAutoObservable } from "mobx";
 import {
     commands,
     ExtensionContext,
+    extensions,
     StatusBarAlignment,
     StatusBarItem,
     window,
@@ -15,6 +16,10 @@ import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
 import { getLanguageServerPath, killAllLanguageServers } from "./utils";
+import { SchemaContentProvider, YamlExtensionApi } from "./schemas";
+
+const SCHEME = "topmodel";
+const MODEL_SCHEMA_URI = `${SCHEME}:/schema.json`;
 
 const open = require("open").default;
 
@@ -28,6 +33,8 @@ export class State {
     applications: Application[] = [];
     error?: string;
     preview?: TopModelPreviewPanel;
+    /** Schéma des fichiers de modèle, servi par le language server. @see loadSchemas */
+    private modelSchema?: string;
     private _versionMismatchNotified = false;
     /** Vrai une fois le tool modls initialisé, pour ne pas le réinitialiser (ni réenregistrer ses commandes). */
     private _lsToolInitialized = false;
@@ -252,6 +259,41 @@ export class State {
         // Mutation en place : la preview conserve une référence sur ce tableau.
         this.applications.push(...added);
         await Promise.all(added.map((app) => app.startLanguageServer()));
+        await this.loadSchemas();
+    }
+
+    /**
+     * Charge les schémas JSON servis par le language server, pour ne pas avoir à les lui redemander
+     * à chaque fichier ouvert.
+     *
+     * Un seul chargement suffit : les schémas ne dépendent pas du modèle chargé, seulement de la
+     * version de modls, si bien que n'importe lequel des serveurs peut les fournir.
+     */
+    private async loadSchemas() {
+        const client = this.applications[0]?.client;
+        if (this.modelSchema || !client) {
+            return;
+        }
+
+        try {
+            const response = await client.sendRequest<{ content: string } | null>("schema");
+            this.modelSchema = response?.content;
+            if (this.modelSchema) {
+                this.context.subscriptions.push(
+                    workspace.registerTextDocumentContentProvider(SCHEME, new SchemaContentProvider(this.modelSchema!)),
+                );
+
+                const api = await extensions.getExtension<YamlExtensionApi>("redhat.vscode-yaml")?.activate();
+                api?.registerContributor(
+                    SCHEME,
+                    (resource) => (resource.endsWith(".tmd") ? MODEL_SCHEMA_URI : undefined),
+                    () => this.modelSchema!,
+                    "TopModel",
+                );
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     /**

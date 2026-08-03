@@ -209,7 +209,7 @@ class:
             .Select(g => g.First().file)
             .Select(f =>
             {
-                var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
+                var lastLine = modelFileCache.GetFile(facade.GetFilePath(f)).Length;
                 return (CommandOrCodeAction)
                     new CodeAction
                     {
@@ -381,7 +381,7 @@ domain:
 
         var objet = objets.First()!;
         var targetFile = objet.GetFile();
-        var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
+        var fileText = modelFileCache.GetFile(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
         return files

@@ -37,6 +37,7 @@ public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache f
 
     public override Task<Unit> Handle(DidCloseTextDocumentParams request, CancellationToken cancellationToken)
     {
+        fileCache.RemoveFile(request.TextDocument.Uri.GetFileSystemPath());
         return Unit.Task;
     }
 

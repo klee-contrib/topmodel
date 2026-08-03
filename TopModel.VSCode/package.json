@@ -89,20 +89,6 @@
                 }
             }
         ],
-        "yamlValidation": [
-            {
-                "fileMatch": "topmodel*.config",
-                "url": "./schemas/schema.config.json"
-            },
-            {
-                "fileMatch": "tmdgen*.config",
-                "url": "./schemas/schema.tmdgen.config.json"
-            },
-            {
-                "fileMatch": "*.tmd",
-                "url": "./schemas/schema.json"
-            }
-        ],
         "languages": [
             {
                 "id": "yaml",
@@ -161,10 +147,9 @@
     },
     "main": "./out/main.js",
     "scripts": {
-        "copy-schemas": "node copy-schemas.mjs",
         "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "build-preview-assets": "esbuild ./src/topmodel-preview.ts --bundle --outfile=out/topmodel-preview.js --platform=browser --format=iife --minify",
-        "build": "npm run copy-schemas && npm run build-extension && npm run build-preview-assets",
+        "build": "npm run build-extension && npm run build-preview-assets",
         "lint": "oxlint src",
         "package": "vsce package",
         "extension-watch": "npm run build-extension -- --sourcemap --watch",
