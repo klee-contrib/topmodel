@@ -50,11 +50,12 @@ public interface MenuClient {
 	/**
 	 * Crée un menu avec ses plats.
 	 * @param menu Menu à créer.
+	 * @param regCodeOrigine Code de la région.
 	 *
 	 * @return Menu créé avec ses plats.
 	 */
 	@PostExchange("/menus")
-	<K, V> ResponseEntity<MenuRead> createMenu(@RequestPart(value = "menu", required = true) MultiValueMap<K, V> menu);
+	<K, V> ResponseEntity<MenuRead> createMenu(@RequestPart(value = "menu", required = true) MultiValueMap<K, V> menu, @RequestPart(value = "CodeOrigine", required = true) RegionCode regCodeOrigine);
 
 	/**
 	 * Supprime un plat.

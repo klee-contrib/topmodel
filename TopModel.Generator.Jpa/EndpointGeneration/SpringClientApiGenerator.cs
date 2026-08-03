@@ -157,15 +157,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
         if (endpoint.IsMultipart)
         {
-            foreach (
-                var param in Config
-                    .GetParams(endpoint)
-                    .Where(param =>
-                        param is { Composition: not null }
-                        || (param.Domain?.BodyParam ?? false)
-                        || (param.Domain?.IsMultipart ?? false)
-                    )
-            )
+            foreach (var param in endpoint.GetFormDataParams(Config))
             {
                 if (param is { Composition: not null })
                 {

@@ -36,34 +36,42 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         var defaultValue = Config.GetDefaultValue(param, tag);
 
-        var isFormParam = param.Endpoint.IsMultipart && !param.IsQueryParam(Config) && !param.IsRouteParam();
-
         var type = Config.GetType(
             param,
-            nonNullable: param.Required && !isFormParam && !param.IsQueryParam(Config)
-                || param.IsRouteParam()
+            nonNullable: param.Required
+                && (
+                    param.ParamLocation != ParamLocation.Query
+                    && (param.ParamLocation != ParamLocation.FormData || param.Composition != null)
+                )
                 || defaultValue != "null"
         );
 
         var hasAnnotation = false;
 
-        if (isFormParam && !type.StartsWith("IFormFile"))
+        if (param.ParamLocation == ParamLocation.FormData && !type.StartsWith("IFormFile"))
         {
             sb.Append("[FromForm]");
             hasAnnotation = true;
         }
-        else if (param.IsJsonBodyParam(Config))
+        else if (param.ParamLocation == ParamLocation.JsonBody)
         {
             sb.Append("[FromBody]");
             hasAnnotation = true;
         }
-        else if (type.EndsWith("[]"))
+        else if (param.ParamLocation == ParamLocation.Query && type.EndsWith("[]"))
         {
             sb.Append("[FromQuery]");
             hasAnnotation = true;
         }
 
-        if (param.Required && defaultValue == "null" && (param.IsQueryParam(Config) || isFormParam))
+        if (
+            param.Required
+            && defaultValue == "null"
+            && (
+                param.ParamLocation == ParamLocation.Query
+                || param.ParamLocation == ParamLocation.FormData && param.Composition == null
+            )
+        )
         {
             sb.Append("[Required]");
             hasAnnotation = true;
@@ -76,7 +84,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         sb.Append($@"{type} {param.GetParamName().Verbatim()}");
 
-        if (param.IsQueryParam(Config) || isFormParam)
+        if (defaultValue != "null" || !param.Required)
         {
             sb.Append($" = {defaultValue}");
         }

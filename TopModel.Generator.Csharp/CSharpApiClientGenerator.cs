@@ -80,9 +80,12 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         }
 
         if (
-            endpoints.Any(e => e.GetQueryParams(Config).Any())
-            && endpoints.Any(e =>
+            endpoints.Any(e =>
                 e.GetQueryParams(Config)
+                    .Concat(
+                        e.GetFormDataParams(Config)
+                            .SelectMany(p => p is { Composition: Class c } ? Config.GetProperties(c) : [p])
+                    )
                     .Any(qp =>
                     {
                         var typeName = Config.GetType(qp);
@@ -100,7 +103,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
-            if (property.IsQueryParam(Config))
+            if (property.ParamLocation == ParamLocation.Query)
             {
                 usings.AddRange(Config.GetValueImports(property));
             }
@@ -184,6 +187,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             var ct = GetSafeVariableName("ct");
             var query = GetSafeVariableName("query");
+            var formData = GetSafeVariableName("formData");
             var res = GetSafeVariableName("res");
 
             var returns = Config.GetReturns(endpoint);
@@ -232,11 +236,9 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             foreach (var param in Config.GetParams(endpoint))
             {
                 var defaultValue = Config.GetDefaultValue(param, tag);
-                fw.Write(
-                    $"{Config.GetType(param, nonNullable: param.IsJsonBodyParam(Config) || param.IsRouteParam() || param.IsQueryParam(Config) && defaultValue != "null")} {param.GetParamName().Verbatim()}"
-                );
+                fw.Write($"{Config.GetType(param, nonNullable: param.Required)} {param.GetParamName().Verbatim()}");
 
-                if (param.IsQueryParam(Config))
+                if (defaultValue != "null" || !param.Required)
                 {
                     fw.Write($" = {defaultValue}");
                 }
@@ -257,23 +259,48 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             fw.WriteLine(")");
             fw.WriteLine(1, "{");
 
-            var bodyParam = endpoint.GetJsonBodyParam(Config);
-
             fw.WriteLine(2, $"await EnsureAuthentication({(Config.UseCancellationTokens ? ct : string.Empty)});");
 
-            if (endpoint.GetQueryParams(Config).Any())
+            void WriteFormUrlEncodedContent(string name, IEnumerable<IProperty> parameters, bool asString = false)
             {
                 fw.WriteLine(
                     2,
-                    $"var {query} = await new FormUrlEncodedContent(new Dictionary<string, string{(Config.NullableEnable ? "?" : string.Empty)}>"
+                    $"var {name} = {(asString ? "await " : string.Empty)}new FormUrlEncodedContent(new Dictionary<string, string{(Config.NullableEnable ? "?" : string.Empty)}>"
                 );
                 fw.WriteLine(2, "{");
 
-                foreach (var qp in endpoint.GetQueryParams(Config).Where(qp => !Config.GetType(qp).Contains("[]")))
+                var formDataParams = parameters.SelectMany(param =>
+                    param is { Composition: Class c }
+                        ? Config
+                            .GetProperties(c)
+                            .Select(subParam => new
+                            {
+                                Type = Config.GetType(
+                                    subParam,
+                                    nonNullable: subParam.Required
+                                        && (
+                                            Config.RequiredNonNullable(Config.GetBestClassTag(c, tag))
+                                            || subParam.Composition != null
+                                        )
+                                ),
+                                Name = subParam.NameCamel,
+                                Value = $"{param.GetParamName().Verbatim()}.{subParam.NamePascal}",
+                            })
+                        :
+                        [
+                            new
+                            {
+                                Type = Config.GetType(param, nonNullable: param.Required),
+                                Name = param.GetParamName(),
+                                Value = param.GetParamName().Verbatim(),
+                            },
+                        ]
+                );
+
+                foreach (var param in formDataParams.Where(qp => !qp.Type.Contains("[]")))
                 {
-                    var type = Config.GetType(qp, nonNullable: Config.GetDefaultValue(qp, tag) != "null");
-                    var nullable = type.EndsWith('?');
-                    var toString = type.TrimEnd("?") switch
+                    var nullable = param.Type.EndsWith('?');
+                    var toString = param.Type.TrimEnd("?") switch
                     {
                         "string" => string.Empty,
                         "decimal" or "double" or "float" =>
@@ -282,17 +309,14 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         _ => $"{(nullable ? "?" : string.Empty)}.ToString()",
                     };
 
-                    fw.WriteLine(3, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
+                    fw.WriteLine(3, $@"[""{param.Name}""] = {param.Value}{toString},");
                 }
 
                 var listQPs = endpoint.GetQueryParams(Config).Where(qp => Config.GetType(qp).Contains("[]")).ToList();
 
                 if (listQPs.Count == 0)
                 {
-                    fw.WriteLine(
-                        2,
-                        $"}}.Where(kv => kv.Value != null)).ReadAsStringAsync({(Config.UseCancellationTokens ? ct : string.Empty)});"
-                    );
+                    fw.Write(2, "}");
                 }
                 else
                 {
@@ -314,16 +338,30 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         );
                     }
 
-                    fw.WriteLine(
-                        2,
-                        $" .Where(kv => kv.Value != null)).ReadAsStringAsync({(Config.UseCancellationTokens ? ct : string.Empty)});"
-                    );
+                    fw.Write(2, " ");
                 }
+
+                fw.WriteLine(
+                    $".Where(kv => kv.Value != null)){(asString ? $".ReadAsStringAsync({(Config.UseCancellationTokens ? ct : string.Empty)})" : string.Empty)};"
+                );
             }
+
+            if (endpoint.GetQueryParams(Config).Any())
+            {
+                WriteFormUrlEncodedContent(query, endpoint.GetQueryParams(Config), asString: true);
+            }
+
+            var hasFormData = endpoint.GetFormDataParams(Config).Any();
+            if (hasFormData)
+            {
+                WriteFormUrlEncodedContent(formData, endpoint.GetFormDataParams(Config));
+            }
+
+            var jsonBodyParam = endpoint.GetJsonBodyParam(Config);
 
             fw.WriteLine(
                 2,
-                $"using var {res} = await {client}.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams(Config).Any() ? $"?{{{query}}}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
+                $"using var {res} = await {client}.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(strict: true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams(Config).Any() ? $"?{{{query}}}" : string.Empty)}\"){(jsonBodyParam != null ? $" {{ Content = JsonContent.Create({jsonBodyParam.NameCamel}, options: _jsOptions) }}" : hasFormData ? $" {{ Content = {formData} }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)}{(Config.UseCancellationTokens ? ", ct" : string.Empty)});"
             );
             fw.WriteLine(2, $"await EnsureSuccess({res}{(Config.UseCancellationTokens ? $", {ct}" : string.Empty)});");
 

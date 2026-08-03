@@ -97,11 +97,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         method.AddAnnotation(mappingAnnotation);
         foreach (var param in Config.GetParams(endpoint))
         {
-            if (param.IsRouteParam())
+            if (param.ParamLocation == ParamLocation.Route)
             {
                 method.AddParameter(GetRouteParam(tag, param));
             }
-            else if (param.IsQueryParam(Config))
+            else if (param.ParamLocation == ParamLocation.Query)
             {
                 method.AddParameter(GetQueryParam(tag, param));
             }
@@ -174,7 +174,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
         if (bodyParam.Endpoint.IsMultipart)
         {
-            if (!(bodyParam.Domain?.IsMultipart ?? false))
+            if (bodyParam.Composition != null)
             {
                 parameter.Add(GetBodyParamNotMultipartAnnotation());
                 parameter.Add(new JavaAnnotation("Valid", imports: "jakarta.validation.Valid"));

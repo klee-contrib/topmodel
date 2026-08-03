@@ -98,7 +98,7 @@ export async function getPlat(plaId: number, options: RequestInit = {}): Promise
  * @param options Options pour 'fetch'.
  * @returns Liste des plats
  */
-export async function getPlats(restaurantId?: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
+export async function getPlats(restaurantId: number, categoriePlatCode: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
     const query = new URLSearchParams();
     if (restaurantId !== undefined) {
         query.append("restaurantId", `${restaurantId}`)
@@ -159,7 +159,7 @@ export async function patchPromotion(plaId: number, promotion: PromotionWrite, o
  * @param options Options pour 'fetch'.
  * @returns Plats correspondant aux critères de recherche
  */
-export async function searchPlats(nom?: string, restaurantId?: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
+export async function searchPlats(nom: string, restaurantId: number, categoriePlatCode: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
     const query = new URLSearchParams();
     if (nom !== undefined) {
         query.append("nom", nom)
@@ -195,4 +195,18 @@ export async function updatePlat(plaId: number, plat: PlatWrite, options: Reques
         headers: {...options.headers, "Content-Type": "application/json"}
     });
     return await response.json();
+}
+
+function fillFormData(data: any, formData: FormData, prefix = "") {
+    if (Array.isArray(data)) {
+        for (const [i, item] of data.entries()) {
+            fillFormData(item, formData, prefix + (typeof item === "object" && !(item instanceof File) ? `[${i}]` : ""));
+        }
+    } else if (typeof data === "object" && !(data instanceof File)) {
+        for (const key in data) {
+            fillFormData(data[key], formData, (prefix ? `${prefix}.` : "") + key);
+        }
+    } else {
+        formData.append(prefix, data);
+    }
 }

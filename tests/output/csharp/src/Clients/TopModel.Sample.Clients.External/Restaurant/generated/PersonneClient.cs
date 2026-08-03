@@ -75,12 +75,12 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="dateFin">Date de l'avis.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des avis correspondant aux critères.</returns>
-    public async Task<ICollection<AvisClientRead>> GetAvisClients(int? resId = null, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<ICollection<AvisClientRead>> GetAvisClients(int resId, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["resId"] = resId?.ToString(),
+            ["resId"] = resId.ToString(),
             ["noteMin"] = noteMin?.ToString(),
             ["approuve"] = approuve.ToString(),
             ["dateDebut"] = dateDebut?.ToString("o"),
@@ -144,7 +144,7 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="email">Adresse email du client.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des clients.</returns>
-    public async Task<ICollection<ClientItem>> GetClients(string? nom = null, string? email = null, CancellationToken ct = default)
+    public async Task<ICollection<ClientItem>> GetClients(string nom, string? email = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>

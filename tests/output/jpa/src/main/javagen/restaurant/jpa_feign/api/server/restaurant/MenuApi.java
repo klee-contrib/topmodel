@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,7 +58,7 @@ public interface MenuApi {
 	 */
 	@PostMapping(path = "api/restaurants/menus")
 	@Operation(description = "Crée un menu avec ses plats")
-	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @SpringQueryMap @Valid MenuWrite menu, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Code de la région.") @SpringQueryMap @Valid RegionCode regCodeOrigine);
+	MenuRead createMenu(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Menu à créer") @SpringQueryMap @Valid MenuWrite menu, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Code de la région.") @RequestPart(value = "regCodeOrigine", required = true) RegionCode regCodeOrigine);
 
 	/**
 	 * Supprime un plat.

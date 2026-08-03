@@ -2,10 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+
 import { CategoriePlatCode } from "../../model/restaurant/enums";
 import { MenuRead } from "../../model/restaurant/menu-read";
 import { PlatItem } from "../../model/restaurant/plat-item";
@@ -17,6 +17,7 @@ import { StatistiquesRestaurant } from "../../model/restaurant/statistiques-rest
 import { TableItem } from "../../model/restaurant/table-item";
 import { TableRead } from "../../model/restaurant/table-read";
 import { TableWrite } from "../../model/restaurant/table-write";
+
 @Injectable({
     providedIn: 'root'
 })
@@ -25,7 +26,7 @@ export class RestaurantService {
     private readonly http = inject(HttpClient);
 
     /**
-     * @description Ajoute un restaurant
+     * Ajoute un restaurant
      * @param restaurant Restaurant à créer
      * @returns Restaurant créé
      */
@@ -34,7 +35,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Ajoute une table
+     * Ajoute une table
      * @param table Table à créer
      * @returns Table créée
      */
@@ -43,7 +44,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Supprime un restaurant
+     * Supprime un restaurant
      * @param resId Identifiant du restaurant
      */
     deleteRestaurant(resId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -51,7 +52,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Supprime une table
+     * Supprime une table
      * @param tabId Identifiant de la table
      */
     deleteTable(tabId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -59,7 +60,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Charge le détail d'un restaurant
+     * Charge le détail d'un restaurant
      * @param resId Identifiant du restaurant
      * @returns Détail du restaurant
      */
@@ -68,7 +69,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Récupère un menu spécifique d'un restaurant
+     * Récupère un menu spécifique d'un restaurant
      * @param resId Identifiant du restaurant
      * @param menId Identifiant du menu
      * @returns Menu du restaurant
@@ -78,13 +79,13 @@ export class RestaurantService {
     }
 
     /**
-     * @description Liste les plats d'un restaurant
+     * Liste les plats d'un restaurant
      * @param resId Identifiant du restaurant
      * @param categoriePlatCode Catégorie du plat
      * @param disponible Indique si le plat est disponible
      * @returns Liste des plats du restaurant
      */
-    getRestaurantPlats(resId: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
+    getRestaurantPlats(resId: number, categoriePlatCode: CategoriePlatCode, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<PlatItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -104,13 +105,13 @@ export class RestaurantService {
     }
 
     /**
-     * @description Récupère les statistiques d'un restaurant
+     * Récupère les statistiques d'un restaurant
      * @param resId Identifiant du restaurant
      * @param dateDebut Date de début pour le calcul des statistiques
      * @param dateFin Date de fin pour le calcul des statistiques
      * @returns Statistiques du restaurant
      */
-    getRestaurantStatistiques(resId: number, dateDebut?: string, dateFin?: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<StatistiquesRestaurant> {
+    getRestaurantStatistiques(resId: number, dateDebut: string, dateFin: string, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<StatistiquesRestaurant> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -130,7 +131,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Liste les tables d'un restaurant
+     * Liste les tables d'un restaurant
      * @param resId Identifiant du restaurant
      * @param disponible Indique si la table est disponible
      * @returns Liste des tables du restaurant
@@ -154,7 +155,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Liste tous les restaurants
+     * Liste tous les restaurants
      * @returns Liste des restaurants
      */
     getRestaurants(options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<RestaurantItem[]> {
@@ -162,7 +163,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Charge le détail d'une table
+     * Charge le détail d'une table
      * @param tabId Identifiant de la table
      * @returns Détail de la table
      */
@@ -171,12 +172,12 @@ export class RestaurantService {
     }
 
     /**
-     * @description Liste toutes les tables
+     * Liste toutes les tables
      * @param restaurantId Restaurant auquel appartient la table
      * @param disponible Indique si la table est disponible
      * @returns Liste des tables
      */
-    getTables(restaurantId?: number, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<TableItem[]> {
+    getTables(restaurantId: number, disponible: boolean = true, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<TableItem[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -196,13 +197,13 @@ export class RestaurantService {
     }
 
     /**
-     * @description Recherche avancée de restaurants
+     * Recherche avancée de restaurants
      * @param nom Nom du restaurant (recherche partielle)
      * @param adresse Adresse du restaurant (recherche partielle)
      * @param noteMin Note minimum requise
      * @returns Liste des restaurants correspondant aux critères
      */
-    searchRestaurants(nom?: string, adresse?: string, noteMin?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<RestaurantAvecStatistiques[]> {
+    searchRestaurants(nom: string, adresse?: string, noteMin?: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<RestaurantAvecStatistiques[]> {
         const addParam = (key: string, value: any) => {
           if (value !== null && value !== undefined) {
             if (options.params instanceof HttpParams) {
@@ -223,7 +224,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Met à jour un restaurant
+     * Met à jour un restaurant
      * @param resId Identifiant du restaurant
      * @param restaurant Restaurant à mettre à jour
      * @returns Restaurant mis à jour
@@ -233,7 +234,7 @@ export class RestaurantService {
     }
 
     /**
-     * @description Met à jour une table
+     * Met à jour une table
      * @param tabId Identifiant de la table
      * @param table Table à mettre à jour
      * @returns Table mise à jour

@@ -2,7 +2,7 @@
 
 Le générateur Angular est un mode particulier du [générateur JavaScript](../js.md). Il est activé en configurant le paramètre `apiMode` à `angular` ou `angular_promise` dans la configuration JavaScript.
 
-Contrairement aux autres modes (`fetch`, `nuxt`, `legacy`) qui produisent des fonctions utilitaires, le mode Angular génère une **classe de service `@Injectable`** par fichier d'endpoints, utilisant le module `HttpClient` officiel d'Angular.
+Contrairement aux autres modes (`fetch`, `legacy`) qui produisent des fonctions utilitaires, le mode Angular génère une **classe de service `@Injectable`** par fichier d'endpoints, utilisant le module `HttpClient` officiel d'Angular.
 
 ## Activation
 
@@ -52,18 +52,22 @@ Ce comportement est contrôlé par `apiClientFilePath` (valeur par défaut : `{m
 Chaque fichier d'endpoints est converti en une classe `@Injectable` fournie au root de l'application Angular (`providedIn: 'root'`). Le `HttpClient` est injecté via la fonction `inject()` (pattern moderne Angular >= 14).
 
 ```typescript
-import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpContext,
+  HttpHeaders,
+  HttpParams,
+} from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class RestaurantService {
+  private readonly http = inject(HttpClient);
 
-    private readonly http = inject(HttpClient);
-
-    // ... méthodes générées
+  // ... méthodes générées
 }
 ```
 

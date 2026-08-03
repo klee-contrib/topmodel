@@ -2,6 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -39,10 +40,22 @@ public partial class MenuClient(HttpClient client)
     /// <param name="regCodeOrigine">Code de la région.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Menu créé avec ses plats.</returns>
-    public async Task<MenuRead> CreateMenu(MenuWrite? menu, Region.Codes? regCodeOrigine, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu(MenuWrite menu, Region.Codes regCodeOrigine, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
-        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/menus"), HttpCompletionOption.ResponseHeadersRead, ct);
+        var formData = new FormUrlEncodedContent(new Dictionary<string, string?>
+        {
+            ["nom"] = menu.Nom,
+            ["description"] = menu.Description,
+            ["prix"] = menu.Prix?.ToString(CultureInfo.InvariantCulture),
+            ["disponible"] = menu.Disponible?.ToString(),
+            ["dateDebut"] = menu.DateDebut?.ToString("o"),
+            ["dateFin"] = menu.DateFin?.ToString("o"),
+            ["restaurantId"] = menu.RestaurantId?.ToString(),
+            ["categoriesPlat"] = menu.CategoriesPlat?.ToString(),
+            ["regCodeOrigine"] = regCodeOrigine.ToString(),
+        }.Where(kv => kv.Value != null));
+        using var res = await client.SendAsync(new(HttpMethod.Post, $"api/restaurants/menus") { Content = formData }, HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
         return (await res.Content.ReadFromJsonAsync<MenuRead>(_jsOptions, ct))!;
@@ -98,13 +111,13 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats.</returns>
-    public async Task<ICollection<IPlatItem>> GetPlats(int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats(int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
-            ["restaurantId"] = restaurantId?.ToString(),
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
+            ["restaurantId"] = restaurantId.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode.ToString(),
             ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
@@ -154,14 +167,14 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Plats correspondant aux critères de recherche.</returns>
-    public async Task<ICollection<IPlatItem>> SearchPlats(string? nom = null, int? restaurantId = null, CategoriePlat.Codes? categoriePlatCode = null, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> SearchPlats(string nom, int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
         {
             ["nom"] = nom,
-            ["restaurantId"] = restaurantId?.ToString(),
-            ["categoriePlatCode"] = categoriePlatCode?.ToString(),
+            ["restaurantId"] = restaurantId.ToString(),
+            ["categoriePlatCode"] = categoriePlatCode.ToString(),
             ["disponible"] = disponible.ToString(),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);

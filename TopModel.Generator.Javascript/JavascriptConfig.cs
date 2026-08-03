@@ -1,6 +1,5 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -191,7 +190,7 @@ public class JavascriptConfig : GeneratorConfigBase
             .Concat(
                 endpoints
                     .SelectMany(GetParams)
-                    .Where(p => p.IsQueryParam(this))
+                    .Where(p => p.ParamLocation == ParamLocation.Query)
                     .SelectMany(dep => GetValueImportPaths(fileName, dep))
             )
             .Where(import => import.Path != null)

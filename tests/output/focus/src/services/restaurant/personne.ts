@@ -65,7 +65,7 @@ export async function deleteClient(perId: number, options: RequestInit = {}): Pr
  * @param options Options pour 'fetch'.
  * @returns Liste des avis correspondant aux critères
  */
-export async function getAvisClients(resId?: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<AvisClientRead[]> {
+export async function getAvisClients(resId: number, noteMin?: number, approuve: boolean = false, dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<AvisClientRead[]> {
     const query = new URLSearchParams();
     if (resId !== undefined) {
         query.append("resId", `${resId}`)
@@ -138,7 +138,7 @@ export async function getClientCommandes(perId: number, options: RequestInit = {
  * @param options Options pour 'fetch'.
  * @returns Liste des clients
  */
-export async function getClients(nom?: string, email?: string, options: RequestInit = {}): Promise<ClientItem[]> {
+export async function getClients(nom: string, email?: string, options: RequestInit = {}): Promise<ClientItem[]> {
     const query = new URLSearchParams();
     if (nom !== undefined) {
         query.append("nom", nom)

@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using TopModel.Generator.Core;
+using TopModel.Generator.Javascript.ApiClient;
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Javascript;
@@ -53,10 +54,6 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
                 if (config.ApiMode == TargetFramework.ANGULAR || config.ApiMode == TargetFramework.ANGULAR_PROMISE)
                 {
                     services.AddGenerator<AngularApiClientGenerator, JavascriptConfig>(config, number);
-                }
-                else if (config.ApiMode == TargetFramework.NUXT)
-                {
-                    services.AddGenerator<NuxtApiClientGenerator, JavascriptConfig>(config, number);
                 }
                 else if (config.ApiMode == TargetFramework.LEGACY)
                 {

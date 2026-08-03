@@ -107,7 +107,7 @@ export async function getRestaurantMenu(resId: number, menId: number, options: R
  * @param options Options pour 'fetch'.
  * @returns Liste des plats du restaurant
  */
-export async function getRestaurantPlats(resId: number, categoriePlatCode?: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
+export async function getRestaurantPlats(resId: number, categoriePlatCode: CategoriePlatCode, disponible: boolean = true, options: RequestInit = {}): Promise<PlatItem[]> {
     const query = new URLSearchParams();
     if (categoriePlatCode !== undefined) {
         query.append("categoriePlatCode", categoriePlatCode)
@@ -130,7 +130,7 @@ export async function getRestaurantPlats(resId: number, categoriePlatCode?: Cate
  * @param options Options pour 'fetch'.
  * @returns Statistiques du restaurant
  */
-export async function getRestaurantStatistiques(resId: number, dateDebut?: string, dateFin?: string, options: RequestInit = {}): Promise<StatistiquesRestaurant> {
+export async function getRestaurantStatistiques(resId: number, dateDebut: string, dateFin: string, options: RequestInit = {}): Promise<StatistiquesRestaurant> {
     const query = new URLSearchParams();
     if (dateDebut !== undefined) {
         query.append("dateDebut", dateDebut)
@@ -198,7 +198,7 @@ export async function getTable(tabId: number, options: RequestInit = {}): Promis
  * @param options Options pour 'fetch'.
  * @returns Liste des tables
  */
-export async function getTables(restaurantId?: number, disponible: boolean = true, options: RequestInit = {}): Promise<TableItem[]> {
+export async function getTables(restaurantId: number, disponible: boolean = true, options: RequestInit = {}): Promise<TableItem[]> {
     const query = new URLSearchParams();
     if (restaurantId !== undefined) {
         query.append("restaurantId", `${restaurantId}`)
@@ -221,7 +221,7 @@ export async function getTables(restaurantId?: number, disponible: boolean = tru
  * @param options Options pour 'fetch'.
  * @returns Liste des restaurants correspondant aux critères
  */
-export async function searchRestaurants(nom?: string, adresse?: string, noteMin?: number, options: RequestInit = {}): Promise<RestaurantAvecStatistiques[]> {
+export async function searchRestaurants(nom: string, adresse?: string, noteMin?: number, options: RequestInit = {}): Promise<RestaurantAvecStatistiques[]> {
     const query = new URLSearchParams();
     if (nom !== undefined) {
         query.append("nom", nom)
