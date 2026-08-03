@@ -2,7 +2,6 @@ import { autorun, makeAutoObservable } from "mobx";
 import {
     commands,
     ExtensionContext,
-    Position,
     StatusBarAlignment,
     StatusBarItem,
     window,
@@ -316,7 +315,6 @@ export class State {
 
     private registerCommands() {
         this.registerPreviewCommand();
-        this.registerGoToLocation();
         this.registerChooseCommand();
         this.registerReleaseNote();
         this.registerRestartLanguageServer();
@@ -346,20 +344,6 @@ export class State {
 
             this.preview?.panel.reveal();
         });
-    }
-
-    private registerGoToLocation() {
-        this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.findRef, async (line: number) => {
-                await commands.executeCommand(
-                    "editor.action.goToLocations",
-                    window.activeTextEditor!.document.uri,
-                    new Position(line, 0),
-                    [],
-                );
-                await commands.executeCommand("editor.action.goToReferences");
-            }),
-        );
     }
 
     private registerReleaseNote() {

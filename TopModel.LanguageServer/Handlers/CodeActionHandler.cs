@@ -40,14 +40,18 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                 codeActions.Add(GetCodeActionOrganizeImports(request, firstFile, uselessImports));
             }
 
-            foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
+            foreach (var diagnostic in request.Context.Diagnostics.Where(d => d.Code?.IsString == true))
             {
+                if (!Enum.TryParse<ErrorType>(diagnostic.Code!.Value.String, out var modelErrorType))
+                {
+                    continue;
+                }
+
                 if (diagnostic.Severity == DiagnosticSeverity.Warning)
                 {
                     codeActions.Add(GetCodeActionIgnoreWarning(request, diagnostic, firstFile));
                 }
 
-                var modelErrorType = Enum.Parse<ErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
                     case ErrorType.TMD0002:

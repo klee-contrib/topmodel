@@ -7,6 +7,8 @@ namespace TopModel.LanguageServer.Handlers;
 
 public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
 {
+    private MarkupKind _markupKind = MarkupKind.PlainText;
+
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />
     public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
     {
@@ -42,17 +44,21 @@ public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
 
         if (reference != null)
         {
+            var contents = string.Join(
+                $"{Environment.NewLine}{Environment.NewLine}",
+                reference.Distinct().Select(r => r.Contents).Where(c => !string.IsNullOrWhiteSpace(c))
+            );
+
+            // Pas de contenu à afficher : renvoyer un hover vide n'afficherait qu'une infobulle vide.
+            if (string.IsNullOrWhiteSpace(contents))
+            {
+                return null;
+            }
+
             return new Hover
             {
                 Range = reference.Key.ToRange(),
-                Contents = new(
-                    new MarkedString(
-                        string.Join(
-                            $"{Environment.NewLine}{Environment.NewLine}",
-                            reference.Distinct().Select(r => r.Contents)
-                        )
-                    )
-                ),
+                Contents = new(new MarkupContent { Kind = _markupKind, Value = contents }),
             };
         }
 
@@ -64,6 +70,13 @@ public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
         ClientCapabilities clientCapabilities
     )
     {
+        // `MarkedString` est déprécié depuis LSP 3.3 : on renvoie du `MarkupContent`, en Markdown
+        // seulement si le client l'annonce dans `contentFormat`.
+        _markupKind =
+            capability?.ContentFormat?.Contains(MarkupKind.Markdown) == true
+                ? MarkupKind.Markdown
+                : MarkupKind.PlainText;
+
         return new HoverRegistrationOptions { DocumentSelector = workerStore.TmdFiles };
     }
 }

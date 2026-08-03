@@ -9,7 +9,6 @@ export const COMMANDS = {
     modgen: "topmodel.modgen",
     modgenWatch: "topmodel.modgen.watch",
     preview: "topmodel.preview",
-    findRef: "topmodel.findRef",
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
     restartLanguageServer: "topmodel.modls.restart",

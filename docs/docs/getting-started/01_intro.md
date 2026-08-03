@@ -36,7 +36,7 @@ dotnet tool update --global TopModel.Generator
 
 ### Installation du language server (`modls`)
 
-Depuis sa version 4.5.0, l'extension VSCode s'appuie sur le language server `TopModel.LanguageServer`, distribué séparément comme outil .NET global (commande `modls`). L'extension l'installe automatiquement à son démarrage. Vous pouvez aussi l'installer manuellement :
+Depuis sa version 4.7.0, l'extension VSCode s'appuie sur le language server `TopModel.LanguageServer`, distribué séparément comme outil .NET global (commande `modls`). L'extension l'installe automatiquement à son démarrage. Vous pouvez aussi l'installer manuellement :
 
 ```bash
 dotnet tool install --global TopModel.LanguageServer
@@ -54,27 +54,27 @@ Si vous utilisez Linux ou WSL, suivez ces étapes supplémentaires :
 
 2. **Installer TopModel via dotnet** :
 
-    ```bash
-    dotnet tool install --global TopModel.Generator
-    ```
+   ```bash
+   dotnet tool install --global TopModel.Generator
+   ```
 
 3. **Ajouter le chemin des outils .NET au PATH** en modifiant le fichier de profil :
 
-    ```bash
-    export PATH="$HOME/.dotnet/tools:$PATH"
-    ```
+   ```bash
+   export PATH="$HOME/.dotnet/tools:$PATH"
+   ```
 
 4. **Recharger le profil** :
 
-    ```bash
-    source ~/.bashrc  # ou source ~/.zshrc pour zsh
-    ```
+   ```bash
+   source ~/.bashrc  # ou source ~/.zshrc pour zsh
+   ```
 
 5. **Vérifier l'installation** :
 
-    ```bash
-    modgen --version
-    ```
+   ```bash
+   modgen --version
+   ```
 
 ## Initialisation du fichier de configuration
 

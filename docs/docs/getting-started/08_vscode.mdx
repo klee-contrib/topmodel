@@ -105,9 +105,29 @@ Le language server `modls` communique via le protocole standard LSP (stdio), il 
 
    - **Working Directory** : le répertoire racine du projet, contenant le(s) fichier(s) `topmodel.config`. C'est indispensable : sans cela, le language server ne retrouve pas la configuration du modèle.
 
-5. Onglet **Mappings** : associez l'extension de fichier `*.tmd` à ce serveur
+5. Onglet **Mappings** : associez les fichiers du modèle à ce serveur via un **File name pattern** (recommandé) :
+   - `*.tmd`
+   - `topmodel*.config`
+   - `tmdgen*.config`
+
+   Préférez un *file name pattern* (ou le File Type YAML existant) plutôt qu'un File Type custom « TopModel » : un type custom peut faire perdre la coloration syntaxique YAML.
 
 Redémarrez le projet après cette configuration.
+
+### Coloration syntaxique YAML
+
+Comme sous VSCode (où l'extension TopModel dépend de [`redhat.vscode-yaml`](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) et enregistre les fichiers `.tmd` / configs comme du langage `yaml`), **LSP4IJ et `modls` ne gèrent pas la coloration** : ils fournissent l'autocomplétion, la validation et la navigation. La coloration reste à la charge de l'éditeur.
+
+Pour obtenir une coloration YAML comparable à VSCode dans IntelliJ :
+
+1. Vérifiez que le support YAML est disponible (intégré dans IntelliJ IDEA Ultimate ; plugin YAML à installer éventuellement en Community)
+2. Ouvrez `Settings` → `Editor` → `File Types` → sélectionnez **YAML**
+3. Ajoutez les motifs suivants :
+   - `*.tmd`
+   - `topmodel*.config`
+   - `tmdgen*.config`
+
+En option, pour une validation de schéma proche de celle de l'extension VSCode, vous pouvez aussi associer les schémas JSON fournis dans le dépôt (`TopModel.VSCode/schemas/`) via `Settings` → `Languages & Frameworks` → `Schemas and DTDs` → `JSON Schema Mappings`.
 
 ### Diagnostiquer un problème de connexion
 
