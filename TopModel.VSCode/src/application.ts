@@ -131,7 +131,7 @@ export class Application {
                     documentSelector: [{ pattern: folderPattern }],
                     errorHandler: {
                         error: () => ({ action: ErrorAction.Continue }),
-                        closed: () => ({ action: CloseAction.DoNotRestart }),
+                        closed: () => ({ action: CloseAction.DoNotRestart, message: t("languageServerWillRestart") }),
                     },
                     middleware: {
                         provideCodeLenses: async (document, token, next) => {

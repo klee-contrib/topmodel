@@ -35,6 +35,7 @@ type LangTranslations = {
     restartLanguageServer: string;
     customLanguageServer: string;
     languageServerStartFailed: string;
+    languageServerWillRestart: string;
 };
 type AvailableLanguages = "fr" | "en";
 
@@ -75,6 +76,7 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         restartLanguageServer: "Redémarrer le language server",
         customLanguageServer: "Language server personnalisé ({0})",
         languageServerStartFailed: "Impossible de démarrer le language server « {0} » : {1}",
+        languageServerWillRestart: "Le language server s'est arrêté inopinément. Il va redémarrer dans 3 secondes.",
     },
     en: {
         startGeneration: "Start Generation",
@@ -112,6 +114,7 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         restartLanguageServer: "Restart the language server",
         customLanguageServer: "Custom language server ({0})",
         languageServerStartFailed: "Failed to start the language server « {0} »: {1}",
+        languageServerWillRestart: "The language server has stopped unexpectedly. It will restart in 3 seconds.",
     },
 };
 
