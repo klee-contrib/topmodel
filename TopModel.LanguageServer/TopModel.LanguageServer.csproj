@@ -5,7 +5,6 @@
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>modls</ToolCommandName>
-    <PublishDir>../TopModel.VSCode/language-server</PublishDir>
     <ResourceLanguages>en</ResourceLanguages>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
@@ -18,6 +17,16 @@
     <ProjectReference Include="..\TopModel.Utils.Cli\TopModel.Utils.Cli.csproj" />
     <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>
+  <Target Name="KillLanguageServerBeforeBuild" BeforeTargets="BeforeBuild">
+    <Exec
+      Condition="'$(OS)' == 'Windows_NT'"
+      Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Get-CimInstance Win32_Process -Filter 'Name = ''dotnet.exe''' -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*TopModel.LanguageServer*' } | ForEach-Object { taskkill /PID $_.ProcessId /F &gt; $null 2&gt;&amp;1 }; exit 0&quot;"
+    />
+    <Exec
+      Condition="'$(OS)' != 'Windows_NT'"
+      Command="sh -c &quot;pkill -f 'dotnet .*TopModel.LanguageServer\.dll' || true&quot;"
+    />
+  </Target>
   <Target Name="PostPublish" AfterTargets="Publish">
     <Delete Files="$(PublishDir)/System.Reactive.xml" />
   </Target>
