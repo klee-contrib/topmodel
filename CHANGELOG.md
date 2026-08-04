@@ -7,6 +7,22 @@ Changelogs des modules :
 - [`jpa`](./TopModel.Generator.Jpa/CHANGELOG.md)
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
+- [`documentation`](./TopModel.Generator.Documentation/CHANGELOG.md)
+
+> Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
+
+## 4.7.0
+
+- [#593](https://github.com/klee-contrib/topmodel/pull/593) - `paramLocation` sur les domaines et propriétés
+
+  **breaking changes** :
+  - Remplacer `bodyParam: true` par `paramLocation: json-body` sur les domaines.
+  - Ajouter `paramLocation: form-data` sur les domaines avec `mediaType: multipart/form-data`.
+  - (warning) Les paramètres obligatoires doivent précéder les paramètres facultatifs dans les endpoints.
+
+    Il s'agit d'une évolution du warning existant qui demandait à ce que les query params soient en dernier. Ce warning implique une génération invalide en C# et en JS, mais pas en Java (qui ne gère pas de paramètres faculatifs sur les méthodes...), c'est pour ça qu'il n'est pas bloquant dans le modèle.
+
+  Les générateurs C#, JS et JPA ont été mis à jour pour gérer `paramLocation` sur les propriétés, mais les versions actuelles continueront de fonctionner en traitant les breaking changes ci-dessus (en ne générant que les usages existants). Les générateurs C# et JS ont d'autres breaking changes à prendre en compte.
 
 ## 4.6.2
 

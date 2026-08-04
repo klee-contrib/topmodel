@@ -1,5 +1,14 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 4.2.0
+
+**breaking changes**
+
+- Les paramètres de route sont désormais générés en premier (devant le paramètre de body)
+- Les paramètres de body sont générés avec `required: true` (ce qui n'a pas d'impact sur le résultat final car ils sont toujours obligatoires de fait)
+
+De plus, puisque l'extension VSCode n'embarque plus les schémas JSON, elle ne contient désormais plus celui du fichier `tmdgen.config`. Par conséquent, vous pouvez désormais lancer la commande `tmdgen -s` ou `tmdgen --schema` pour gérer le schéma, de la même façon que pour `modgen`.
+
 ## 4.1.0
 
 Intégration des évolutions sur la gestion des configs de `modgen`, mais `tmdgen` pouvant déjà relancer la génération en mode `--watch`, la seule nouveauté est le mode `--parallel`.

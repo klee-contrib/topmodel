@@ -1,3 +1,12 @@
+## 4.5.0
+
+Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).
+
+**breaking changes**
+
+- Dans les clients d'API, les paramètres obligatoires sont désormais toujours générés comme non nullables (auparavant, les params `query` étaient toujours facultatifs).
+- Le générateur d'API Nuxt a été retiré.
+
 ## 4.4.1
 
 - [`8fc7bcb`](https://github.com/klee-contrib/topmodel/commit/8fc7bcb4c4dc842eccaffea12151ef0ba2edb880) - [JS] Fix génération interface simple qui prenait pas en compte optionalPrimaryKeys

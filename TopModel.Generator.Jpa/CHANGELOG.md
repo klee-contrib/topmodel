@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.6.0
+
+Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).
+
 ## 4.5.0
 
 - [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`

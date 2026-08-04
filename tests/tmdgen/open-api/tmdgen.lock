@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.1.0
+version: 4.2.0
 generatedFiles:
   - ./Petstore/Model.tmd
   - ./Petstore/Pet.tmd

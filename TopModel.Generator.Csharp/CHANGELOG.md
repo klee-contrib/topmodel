@@ -1,3 +1,14 @@
+## 4.4.0
+
+Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).
+
+Le générateur client C# gère proprement les paramètres en `form-data`.
+
+**breaking changes**
+
+- Dans le générateur client, les paramètres obligatoires sont désormais toujours générés comme non nullables (auparavant, les params `query` étaient toujours facultatifs).
+- Dans le générateur serveur, les paramètres obligatoires `query` et `form-data` n'ont désormais plus de valeur par défaut à 'null'.
+
 ## 4.3.4
 
 Support des tags pour `useLowerCaseSqlNames` (par utilisation du socle commun).
