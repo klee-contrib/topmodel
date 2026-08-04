@@ -54,7 +54,9 @@ generatedFiles:
   - ../output/angular/src/appgenerated/resources/de/restaurant.json
   - ../output/angular/src/appgenerated/resources/en/common.json
   - ../output/angular/src/appgenerated/resources/en/restaurant.json
+  - ../output/angular/src/appgenerated/resources/fr/common.comments.json
   - ../output/angular/src/appgenerated/resources/fr/common.json
+  - ../output/angular/src/appgenerated/resources/fr/restaurant.comments.json
   - ../output/angular/src/appgenerated/resources/fr/restaurant.json
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/NpgsqlDbContextOptionsBuilderExtensions.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
@@ -159,10 +161,13 @@ generatedFiles:
   - ../output/documentation/mermaid/common.md
   - ../output/documentation/mermaid/restaurant.md
   - ../output/focus/src/locale/de/common.ts
+  - ../output/focus/src/locale/de/index.ts
   - ../output/focus/src/locale/de/restaurant.ts
   - ../output/focus/src/locale/en/common.ts
+  - ../output/focus/src/locale/en/index.ts
   - ../output/focus/src/locale/en/restaurant.ts
   - ../output/focus/src/locale/fr/common.ts
+  - ../output/focus/src/locale/fr/index.ts
   - ../output/focus/src/locale/fr/restaurant.ts
   - ../output/focus/src/model/restaurant/avis-client-read.ts
   - ../output/focus/src/model/restaurant/avis-client-write.ts

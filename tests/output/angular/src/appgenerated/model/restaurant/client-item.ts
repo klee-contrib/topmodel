@@ -14,5 +14,6 @@ export const ClientItemEntity = entity({
     ...PersonneItemEntity,
     nomComplet: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.clientItem.nomComplet")
+        .comment("comments.restaurant.clientItem.nomComplet")
     )
 });

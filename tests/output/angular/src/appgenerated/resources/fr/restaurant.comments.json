@@ -1,0 +1,216 @@
+{
+    "avisClient": {
+        "approuve": "Indique si l'avis est approuvé par le restaurant",
+        "clientId": "Client ayant donné l'avis",
+        "commentaire": "Commentaire de l'avis",
+        "dateAvis": "Date de l'avis",
+        "id": "Identifiant de l'avis",
+        "note": "Note sur 5",
+        "restaurantId": "Restaurant concerné par l'avis"
+    },
+    "categoriePlat": {
+        "code": "Code de la catégorie",
+        "libelle": "Libellé de la catégorie",
+        "ordre": "Ordre d'affichage dans le menu.",
+        "prixMoyen": "Prix moyen de la catégorie, à titre indicatif.",
+        "values": {
+            "Autre": "Autre",
+            "Entree": "Entrée",
+            "Principal": "Plat principal",
+            "Dessert": "Dessert",
+            "Boisson": "Boisson"
+        }
+    },
+    "categoriePlatRegion": {
+        "categoriePlatCode": "Catégorie de plat",
+        "regionCode": "Région"
+    },
+    "client": {
+        "avisClients": "Association réciproque de AvisClient.Client",
+        "email": "Adresse email du client"
+    },
+    "clientAvecCommandes": {
+        "commandeAvisClientId": "Liste des commandes du client",
+        "commandeClientId": "Liste des commandes du client",
+        "commandeDateCommande": "Liste des commandes du client",
+        "commandeDateCreation": "Liste des commandes du client",
+        "commandeDateLivraison": "Liste des commandes du client",
+        "commandeId": "Liste des commandes du client",
+        "commandeLignes": "Liste des commandes du client",
+        "commandeMontantTotal": "Liste des commandes du client",
+        "commandeReservationId": "Liste des commandes du client",
+        "commandeStatutCommande": "Liste des commandes du client",
+        "commandeTableId": "Liste des commandes du client"
+    },
+    "clientItem": {
+        "nomComplet": "Nom complet du client (calculé)"
+    },
+    "commande": {
+        "avisClientId": "Avis laissé par le client sur la commande.",
+        "clientId": "Client ayant passé la commande",
+        "dateCommande": "Date et heure de la commande",
+        "dateLivraison": "Date et heure de livraison",
+        "id": "Identifiant de la commande",
+        "lignes": "Association réciproque de LigneCommande.Commande",
+        "montantTotal": "Montant total de la commande",
+        "statutCommande": "Statut de la commande",
+        "tableId": "Table associée à la commande"
+    },
+    "commandeRead": {
+        "reservation": "Réservation."
+    },
+    "departement": {
+        "code": "Code du département.",
+        "libelle": "Libellé du département.",
+        "regionCode": "Région associée.",
+        "values": {
+            "Paris": "Paris",
+            "HautsDeSeine": "Hauts de Seine",
+            "SeineSaintDenis": "Seine Saint Denis",
+            "SeineEtMarne": "Seine et Marne"
+        }
+    },
+    "employe": {
+        "dateEmbauche": "Date d'embauche",
+        "dateNaissance": "Date de naissance",
+        "matricule": "Matricule de l'employé",
+        "restaurantId": "Restaurant où travaille l'employé",
+        "salaire": "Salaire de l'employé"
+    },
+    "employeBase": {
+        "telephone": "Numéro de téléphone de l'employé."
+    },
+    "employeItem": {
+        "autresEmployes": "Liste des autres employés"
+    },
+    "lieu": {
+        "adresse": "Adresse du restaurant",
+        "id": "Identifiant du restaurant",
+        "nom": "Nom du restaurant"
+    },
+    "ligneCommande": {
+        "commandeId": "Commande à laquelle appartient la ligne",
+        "id": "Identifiant de la ligne",
+        "platId": "Plat commandé",
+        "prixTotal": "Prix total de la ligne",
+        "prixUnitaire": "Prix unitaire au moment de la commande",
+        "quantite": "Quantité commandée"
+    },
+    "menu": {
+        "dateDebut": "Date de début de validité du menu",
+        "dateFin": "Date de fin de validité du menu",
+        "description": "Description du menu",
+        "disponible": "Indique si le menu est disponible",
+        "id": "Identifiant du menu",
+        "nom": "Nom du menu",
+        "prix": "Prix du menu",
+        "restaurantId": "Restaurant proposant ce menu"
+    },
+    "menuRead": {
+        "categoriesPlat": "Catégories de plat dans le menu.",
+        "plats": "Liste des plats du menu"
+    },
+    "menuWrite": {
+        "categoriesPlat": "Catégories de plat disponibles dans le menu."
+    },
+    "nombreVuesBase": {
+        "nombreVues": "Nombre de vues de l'avis (calculé)"
+    },
+    "personne": {
+        "departementCode": "Département de résidence de la personne."
+    },
+    "personneBase": {
+        "id": "Identifiant de la personne",
+        "nom": "Nom de la personne",
+        "prenom": "Prénom de la personne"
+    },
+    "personneItem": {
+        "id": "Identifiant de l'employé",
+        "nom": "Nom de l'employé",
+        "prenom": "Prénom de l'employé"
+    },
+    "plat": {
+        "categoriePlatCode": "Catégorie du plat",
+        "description": "Description du plat",
+        "disponible": "Indique si le plat est disponible",
+        "id": "Identifiant du plat",
+        "nom": "Nom du plat",
+        "prix": "Prix du plat",
+        "restaurantId": "Restaurant proposant ce plat"
+    },
+    "promotion": {
+        "active": "Indique si la promotion est active",
+        "dateDebut": "Date de début de la promotion",
+        "dateFin": "Date de fin de la promotion",
+        "libelle": "Libellé de la promotion",
+        "platId": "Plat concerné par la promotion.",
+        "pourcentageReduction": "Pourcentage de réduction (0-100)",
+        "restaurantId": "Restaurant concerné par la promotion (null si globale)"
+    },
+    "region": {
+        "code": "Code de la région.",
+        "libelle": "Libellé de la région.",
+        "nomResponsable": "Nom du responsable de la région.",
+        "values": {
+            "Idf": "Île de France"
+        }
+    },
+    "reservation": {
+        "clientId": "Client ayant fait la réservation",
+        "commentaire": "Commentaire sur la réservation",
+        "confirmee": "Indique si la réservation est confirmée",
+        "dateReservation": "Date et heure de la réservation",
+        "id": "Identifiant de la réservation",
+        "nombrePersonnes": "Nombre de personnes",
+        "restaurantId": "Restaurant concerné par la réservation",
+        "tableId": "Table réservée"
+    },
+    "reservationRead": {
+        "clientEmail": "Informations du client ayant fait la réservation",
+        "clientNom": "Informations du client ayant fait la réservation",
+        "clientPrenom": "Informations du client ayant fait la réservation",
+        "tableCapacite": "Table réservée",
+        "tableNumero": "Table réservée"
+    },
+    "restaurant": {
+        "avisClients": "Association réciproque de AvisClient.Restaurant",
+        "menus": "Association réciproque de Menu.Restaurant",
+        "plats": "Association réciproque de Plat.Restaurant",
+        "promotions": "Association réciproque de Promotion.Restaurant",
+        "tableIds": "Association réciproque de Table.RestaurantId",
+        "telephone": "Numéro de téléphone"
+    },
+    "restaurantAvecStatistiques": {
+        "nombrePlats": "Nombre de plats du restaurant",
+        "nombreTables": "Nombre de tables du restaurant",
+        "tables": "Tables du restaurant."
+    },
+    "statistiquesRestaurant": {
+        "chiffreAffaires": "Chiffre d'affaires total",
+        "nombreClients": "Nombre de clients uniques",
+        "nombreCommandes": "Nombre total de commandes",
+        "noteMoyenne": "Note moyenne des avis",
+        "restaurantId": "Identifiant du restaurant"
+    },
+    "statutCommande": {
+        "code": "Code du statut",
+        "libelle": "Libellé du statut",
+        "values": {
+            "EnAttente": "En attente",
+            "EnPreparation": "En préparation",
+            "Prete": "Prête",
+            "Servie": "Servie",
+            "Annulee": "Annulée"
+        }
+    },
+    "table": {
+        "capacite": "Capacité de la table (nombre de places)",
+        "disponible": "Indique si la table est disponible",
+        "id": "Identifiant de la table",
+        "numero": "Numéro de la table",
+        "restaurantId": "Restaurant auquel appartient la table"
+    },
+    "typeTerrasse": {
+        "code": "Code du type de terrase"
+    }
+}

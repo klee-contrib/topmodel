@@ -13,23 +13,30 @@ export type ClientReadEntityType = typeof ClientReadEntity;
 export const ClientReadEntity = entity({
     id: e.field(DO_ID, f => f
         .label("restaurant.personneBase.id")
+        .comment("comments.restaurant.personneBase.id")
     ),
     nom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personneBase.nom")
+        .comment("comments.restaurant.personneBase.nom")
     ),
     prenom: e.field(DO_LIBELLE, f => f
         .label("restaurant.personneBase.prenom")
+        .comment("comments.restaurant.personneBase.prenom")
     ),
     departementCode: e.field(DO_CODE, f => f.type<DepartementCode>().optional()
         .label("restaurant.personne.departementCode")
+        .comment("comments.restaurant.personne.departementCode")
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
+        .comment("comments.common.dateCreation.dateCreation")
     ),
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
+        .comment("comments.restaurant.client.email")
     ),
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.client.avisClients")
+        .comment("comments.restaurant.client.avisClients")
     )
 });

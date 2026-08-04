@@ -13,17 +13,22 @@ export type CommandeItemEntityType = typeof CommandeItemEntity;
 export const CommandeItemEntity = entity({
     id: e.field(DO_ID_2, f => f
         .label("restaurant.commande.id")
+        .comment("comments.restaurant.commande.id")
     ),
     dateCommande: e.field(DO_DATE_HEURE, f => f
         .label("restaurant.commande.dateCommande")
+        .comment("comments.restaurant.commande.dateCommande")
     ),
     montantTotal: e.field(DO_PRIX, f => f
         .label("restaurant.commande.montantTotal")
+        .comment("comments.restaurant.commande.montantTotal")
     ),
     statutCommande: e.field(DO_CODE, f => f.type<StatutCommande>().defaultValue("EN_ATT")
         .label("restaurant.commande.statutCommande")
+        .comment("comments.restaurant.commande.statutCommande")
     ),
     clientId: e.field(DO_ID, f => f
         .label("restaurant.commande.clientId")
+        .comment("comments.restaurant.commande.clientId")
     )
 });

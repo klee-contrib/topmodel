@@ -11,5 +11,6 @@ export type CommandeResumeEntityType = typeof CommandeResumeEntity;
 export const CommandeResumeEntity = entity({
     id: e.field(DO_ID_2, f => f
         .label("restaurant.commande.id")
+        .comment("comments.restaurant.commande.id")
     )
 });

@@ -13,17 +13,22 @@ export type PlatItemEntityType = typeof PlatItemEntity;
 export const PlatItemEntity = entity({
     id: e.field(DO_SEQ_ID, f => f
         .label("restaurant.plat.id")
+        .comment("comments.restaurant.plat.id")
     ),
     nom: e.field(DO_LIBELLE, f => f
         .label("restaurant.plat.nom")
+        .comment("comments.restaurant.plat.nom")
     ),
     prix: e.field(DO_PRIX, f => f
         .label("restaurant.plat.prix")
+        .comment("comments.restaurant.plat.prix")
     ),
     disponible: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.plat.disponible")
+        .comment("comments.restaurant.plat.disponible")
     ),
     categoriePlatCode: e.field(DO_CODE, f => f.type<CategoriePlatCode>()
         .label("restaurant.plat.categoriePlatCode")
+        .comment("comments.restaurant.plat.categoriePlatCode")
     )
 });

@@ -11,29 +11,38 @@ export type AvisClientReadEntityType = typeof AvisClientReadEntity;
 export const AvisClientReadEntity = entity({
     id: e.field(DO_ID, f => f
         .label("restaurant.avisClient.id")
+        .comment("comments.restaurant.avisClient.id")
     ),
     note: e.field(DO_QUANTITE, f => f
         .label("restaurant.avisClient.note")
+        .comment("comments.restaurant.avisClient.note")
     ),
     commentaire: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.avisClient.commentaire")
+        .comment("comments.restaurant.avisClient.commentaire")
     ),
     dateAvis: e.field(DO_DATE_HEURE, f => f
         .label("restaurant.avisClient.dateAvis")
+        .comment("comments.restaurant.avisClient.dateAvis")
     ),
     approuve: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.avisClient.approuve")
+        .comment("comments.restaurant.avisClient.approuve")
     ),
     clientId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.clientId")
+        .comment("comments.restaurant.avisClient.clientId")
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.restaurantId")
+        .comment("comments.restaurant.avisClient.restaurantId")
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
+        .comment("comments.common.dateCreation.dateCreation")
     ),
     nombreVues: e.field(DO_QUANTITE, f => f.defaultValue(0)
         .label("restaurant.nombreVuesBase.nombreVues")
+        .comment("comments.restaurant.nombreVuesBase.nombreVues")
     )
 });

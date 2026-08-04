@@ -11,17 +11,22 @@ export type AvisClientWriteEntityType = typeof AvisClientWriteEntity;
 export const AvisClientWriteEntity = entity({
     note: e.field(DO_QUANTITE, f => f
         .label("restaurant.avisClient.note")
+        .comment("comments.restaurant.avisClient.note")
     ),
     commentaire: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.avisClient.commentaire")
+        .comment("comments.restaurant.avisClient.commentaire")
     ),
     approuve: e.field(DO_BOOLEEN, f => f.defaultValue(false)
         .label("restaurant.avisClient.approuve")
+        .comment("comments.restaurant.avisClient.approuve")
     ),
     clientId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.clientId")
+        .comment("comments.restaurant.avisClient.clientId")
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.avisClient.restaurantId")
+        .comment("comments.restaurant.avisClient.restaurantId")
     )
 });

@@ -11,26 +11,34 @@ export type PromotionReadEntityType = typeof PromotionReadEntity;
 export const PromotionReadEntity = entity({
     platId: e.field(DO_SEQ_ID, f => f
         .label("restaurant.promotion.platId")
+        .comment("comments.restaurant.promotion.platId")
     ),
     libelle: e.field(DO_LIBELLE, f => f
         .label("restaurant.promotion.libelle")
+        .comment("comments.restaurant.promotion.libelle")
     ),
     pourcentageReduction: e.field(DO_QUANTITE, f => f
         .label("restaurant.promotion.pourcentageReduction")
+        .comment("comments.restaurant.promotion.pourcentageReduction")
     ),
     dateDebut: e.field(DO_DATE_HEURE, f => f
         .label("restaurant.promotion.dateDebut")
+        .comment("comments.restaurant.promotion.dateDebut")
     ),
     dateFin: e.field(DO_DATE_HEURE, f => f
         .label("restaurant.promotion.dateFin")
+        .comment("comments.restaurant.promotion.dateFin")
     ),
     active: e.field(DO_BOOLEEN, f => f.defaultValue(true)
         .label("restaurant.promotion.active")
+        .comment("comments.restaurant.promotion.active")
     ),
     restaurantId: e.field(DO_ID, f => f.optional()
         .label("restaurant.promotion.restaurantId")
+        .comment("comments.restaurant.promotion.restaurantId")
     ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
+        .comment("comments.common.dateCreation.dateCreation")
     )
 });

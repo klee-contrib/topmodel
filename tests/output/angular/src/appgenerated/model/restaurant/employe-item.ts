@@ -14,11 +14,14 @@ export const EmployeItemEntity = entity({
     ...PersonneItemEntity,
     matricule: e.field(DO_CODE, f => f
         .label("restaurant.employe.matricule")
+        .comment("comments.restaurant.employe.matricule")
     ),
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.employe.restaurantId")
+        .comment("comments.restaurant.employe.restaurantId")
     ),
     autresEmployes: e.recursiveList(f => f
         .label("restaurant.employeItem.autresEmployes")
+        .comment("comments.restaurant.employeItem.autresEmployes")
     )
 });
