@@ -1,10 +1,12 @@
 # VSCode
 
-## 4.5.0
+## 4.7.0
 
 - Le Language Server est désormais distribué comme un tool .NET global (`modls`, package NuGet `TopModel.LanguageServer`) publié séparément de l'extension, au lieu d'être embarqué. Il est installé/mis à jour automatiquement comme `modgen` et `tmdgen`.
 - Ajout d'une vérification de l'alignement des versions entre `modls`, `modgen` et `tmdgen`, avec proposition de mise à jour en cas de désalignement.
 - Affichage d'une erreur au démarrage de l'extension si le language server `modls` n'est pas installé.
+
+Ainsi, les prochaines, et à priori rares, versions de l'extensions VSCode ne concerneront que le client d'extension, spécifique VSCode. Il n'y aura plus de release de l'extension pour un update du Core ou du LanguageServer.
 
 ## 3.6.7
 
