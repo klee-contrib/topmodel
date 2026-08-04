@@ -1,8 +1,12 @@
 import { autorun, makeAutoObservable } from "mobx";
 import {
     commands,
+    DocumentSelector,
     ExtensionContext,
     extensions,
+    languages,
+    LanguageStatusItem,
+    LanguageStatusSeverity,
     StatusBarAlignment,
     StatusBarItem,
     window,
@@ -15,11 +19,18 @@ import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
-import { getLanguageServerPath, killAllLanguageServers } from "./utils";
+import { getLanguageServerPath, getServerCommand, killAllLanguageServers } from "./utils";
 import { SchemaContentProvider, YamlExtensionApi } from "./schemas";
 
 const SCHEME = "topmodel";
 const MODEL_SCHEMA_URI = `${SCHEME}:/schema.json`;
+
+/** Fichiers TopModel : c'est sur ceux-ci que le cartouche des versions des outils est affiché. */
+const TOPMODEL_SELECTOR: DocumentSelector = [
+    { pattern: "**/*.tmd" },
+    { pattern: "**/topmodel*.config" },
+    { pattern: "**/tmdgen*.config" },
+];
 
 const open = require("open").default;
 
@@ -30,6 +41,7 @@ export class State {
         ls: new TmdTool("TopModel.LanguageServer", "modls"),
     };
     topModelStatusBar: StatusBarItem;
+    private toolLanguageStatusItems: Record<string, LanguageStatusItem>;
     applications: Application[] = [];
     error?: string;
     preview?: TopModelPreviewPanel;
@@ -42,29 +54,69 @@ export class State {
         makeAutoObservable(this);
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
         this.context.subscriptions.push(this.topModelStatusBar);
+        this.toolLanguageStatusItems = this.createToolLanguageStatusItems();
         autorun(() => this.updateStatusBar());
+        autorun(() => this.updateToolLanguageStatusItems());
         autorun(() => this.notifyVersionMismatch());
         this.initTools();
         this.registerCommands();
         this.watchLanguageServerPath();
     }
 
+    /** Un {@link LanguageStatusItem} par outil, affiché dans le cartouche natif au survol des fichiers TopModel. */
+    private createToolLanguageStatusItems(): Record<string, LanguageStatusItem> {
+        const items: Record<string, LanguageStatusItem> = {};
+        for (const tool of Object.values(this.tools)) {
+            const item = languages.createLanguageStatusItem(`topmodel.status.${tool.command}`, TOPMODEL_SELECTOR);
+            item.name = tool.name;
+            this.context.subscriptions.push(item);
+            items[tool.command] = item;
+        }
+
+        return items;
+    }
+
+    private updateToolLanguageStatusItems() {
+        for (const tool of Object.values(this.tools)) {
+            const item = this.toolLanguageStatusItems[tool.command];
+            item.text = tool.statusText;
+            item.detail = tool.name;
+            item.busy = tool.status === "LOADING" || tool.status === "INSTALLING";
+            item.severity =
+                tool.status === "ERROR"
+                    ? LanguageStatusSeverity.Error
+                    : tool.updateAvailable
+                      ? LanguageStatusSeverity.Warning
+                      : LanguageStatusSeverity.Information;
+            if (tool.installed === false && tool.status !== "INSTALLING") {
+                item.command = {
+                    title: t("installToolButton", [tool.command]),
+                    command: `topmodel.${tool.command}.install`,
+                };
+            } else if (tool.updateAvailable && tool.status !== "INSTALLING") {
+                item.command = { title: t("updateTool", [tool.command]), command: `topmodel.${tool.command}.update` };
+            } else {
+                item.command = undefined;
+            }
+        }
+    }
+
     get status(): Status {
-        if (this.appStatus === "ERROR" || this.error) {
+        if (this.appStatus === "ERROR" || this.error || this.tools.ls.status === "ERROR") {
             return "ERROR";
         }
 
-        if (this.toolsStatus === "INSTALLING") {
+        if (this.tools.ls.status === "INSTALLING") {
             return "INSTALLING";
         }
 
-        // Tant qu'un client LSP ou un outil n'est pas prêt, on reste en chargement (spinner)
-        // sans repasser par WARNING/READY : cela évite que la double-coche clignote au démarrage.
-        if (this.appStatus !== "READY" || this.toolsStatus === "LOADING") {
+        // Tant que le client LSP ou modls n'est pas prêt, on reste en chargement (spinner)
+        // sans repasser par WARNING/READY : cela évite que la coche clignote au démarrage.
+        if (this.appStatus !== "READY" || this.tools.ls.status === "LOADING") {
             return "LOADING";
         }
 
-        if (this.toolsStatus === "WARNING") {
+        if (this.tools.ls.updateAvailable || !this.versionsAligned) {
             return "WARNING";
         }
 
@@ -110,32 +162,14 @@ export class State {
         }
     }
 
-    get statusText() {
-        let text = "";
-
-        const { statusText: stModgen } = this.tools.modgen;
-        const { installed: stInstalled, statusText: stTmdgen } = this.tools.tmdgen;
-
-        // L'icône est dérivée du statut global (this.status), même source de vérité que le
-        // tooltip, pour éviter que l'icône et le tooltip divergent et fassent clignoter la coche.
+    get statusIcon() {
         switch (this.status) {
             case "LOADING":
-            case "INSTALLING":
-                text += "$(loading~spin) ";
-                break;
             case "WARNING":
-                text += "$(warning) ";
-                break;
+                return "$(warning)";
             default:
-                text += "$(check-all) ";
+                return "$(check-all)";
         }
-
-        text += stModgen;
-        if (stInstalled) {
-            text += " | " + stTmdgen;
-        }
-
-        return text;
     }
 
     /** Agrège le statut des clients LSP de tous les workspace folders. */
@@ -146,24 +180,6 @@ export class State {
 
         if (this.applications.some((a) => a.clientStatus === "LOADING")) {
             return "LOADING";
-        }
-
-        return "READY";
-    }
-
-    get toolsStatus(): Status {
-        const { status: mStatus, updateAvailable: mUpdate } = this.tools.modgen;
-        const { installed: tInstalled, status: tStatus, updateAvailable: tUpdate } = this.tools.tmdgen;
-        const { status: lsStatus, updateAvailable: lsUpdate } = this.tools.ls;
-
-        if (tStatus === "INSTALLING" || mStatus === "INSTALLING" || lsStatus === "INSTALLING") {
-            return "INSTALLING";
-        } else if ((tInstalled && tStatus === "ERROR") || mStatus === "ERROR" || lsStatus === "ERROR") {
-            return "ERROR";
-        } else if ((tInstalled && tStatus === "LOADING") || mStatus === "LOADING" || lsStatus === "LOADING") {
-            return "LOADING";
-        } else if ((tInstalled && tUpdate) || mUpdate || lsUpdate || !this.versionsAligned) {
-            return "WARNING";
         }
 
         return "READY";
@@ -204,6 +220,7 @@ export class State {
         // contrôle d'alignement des versions.
         if (getLanguageServerPath()) {
             this.tools.ls.status = "READY";
+            await this.loadCustomLanguageServerVersion();
             return true;
         }
 
@@ -224,6 +241,22 @@ export class State {
         this._lsToolInitialized = true;
         await this.tools.ls.init(this.context);
         return this.tools.ls.installed === true;
+    }
+
+    /**
+     * Récupère la version du language server lancé depuis un chemin custom, via `--version` sur
+     * l'exécutable réellement configuré (et non le tool global `modls`), pour l'afficher dans la
+     * barre de statut même hors du tool global.
+     */
+    private async loadCustomLanguageServerVersion() {
+        const folder = workspace.workspaceFolders?.[0];
+        if (!folder) {
+            return;
+        }
+
+        const { command, args } = getServerCommand(folder);
+        const quoted = [command, ...args, "--version"].map((part) => (part.includes(" ") ? `"${part}"` : part));
+        await this.tools.ls.loadCurrentVersion(quoted.join(" "));
     }
 
     /**
@@ -349,7 +382,7 @@ export class State {
     }
 
     private updateStatusBar() {
-        this.topModelStatusBar.text = this.statusText;
+        this.topModelStatusBar.text = `${this.statusIcon} TopModel`;
         this.topModelStatusBar.tooltip = this.statusTooltip;
         this.topModelStatusBar.command = COMMANDS.chooseCommand;
         this.topModelStatusBar.show();

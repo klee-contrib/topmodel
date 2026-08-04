@@ -68,6 +68,7 @@ export class TmdTool {
 
     public async init(context: ExtensionContext) {
         await this.checkInstall();
+        this.registerInstallCommand(context);
         // Le language server est requis au démarrage de l'extension : on l'installe automatiquement.
         if (!this.installed && this.name === "TopModel.LanguageServer") {
             await this.install();
@@ -104,7 +105,7 @@ export class TmdTool {
         }
     }
 
-    private async install() {
+    public async install() {
         this.status = "INSTALLING";
         if (this.name === "TopModel.LanguageServer") {
             window.showInformationMessage(t("languageServerInstalling"));
@@ -117,9 +118,9 @@ export class TmdTool {
         this.status = "READY";
     }
 
-    private async loadCurrentVersion() {
+    public async loadCurrentVersion(overrideCommand?: string) {
         try {
-            this.currentVersion = ((await execute(`${this.command} --version`)) as string).trim();
+            this.currentVersion = ((await execute(overrideCommand ?? `${this.command} --version`)) as string).trim();
             if (!this.currentVersion) {
                 throw new Error(t("versionNotFound", [this.name]));
             }
@@ -224,6 +225,18 @@ export class TmdTool {
             this.registerStartCommand(false, context);
             this.registerStartCommand(true, context);
         }
+    }
+
+    private registerInstallCommand(context: ExtensionContext) {
+        const installCommandDisposable = commands.registerCommand(`topmodel.${this.command}.install`, () =>
+            this.install(),
+        );
+        COMMANDS_OPTIONS[`topmodel.${this.command}.install`] = {
+            title: `${this.command} - ${t("installToolButton", [this.command])}`,
+            description: `${t("installToolButton", [this.command])}`,
+            command: `topmodel.${this.command}.install`,
+        };
+        context.subscriptions.push(installCommandDisposable);
     }
 
     private registerUpdateCommand(context: ExtensionContext) {

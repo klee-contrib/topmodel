@@ -50,6 +50,21 @@
         },
         "commands": [
             {
+                "command": "topmodel.modgen.install",
+                "title": "Install TopModel.Generator",
+                "category": "TopModel.Generator"
+            },
+            {
+                "command": "topmodel.tmdgen.install",
+                "title": "Install TopModel.ModelGenerator",
+                "category": "TopModel.ModelGenerator"
+            },
+            {
+                "command": "topmodel.modls.install",
+                "title": "Install TopModel.LanguageServer",
+                "category": "TopModel.LanguageServer"
+            },
+            {
                 "command": "topmodel.modgen.update",
                 "title": "Update TopModel.Generator",
                 "category": "TopModel.Generator"

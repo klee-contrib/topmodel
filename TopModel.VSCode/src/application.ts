@@ -1,12 +1,42 @@
 import { ChildProcess, spawn } from "child_process";
 import { makeAutoObservable } from "mobx";
-import { Terminal, Uri, window, WorkspaceFolder } from "vscode";
+import { CodeLens, Location, Position, Range, Terminal, Uri, window, WorkspaceFolder } from "vscode";
 import { CloseAction, ErrorAction, LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
 import { t } from "./i18n";
 import { Status, TopModelConfig } from "./types";
 import { getServerCommand, killProcessTree } from "./utils";
 import path = require("path");
+
+function convertShowReferencesArguments(lens: CodeLens): CodeLens {
+    if (lens.command?.command !== "editor.action.showReferences" || !lens.command.arguments) {
+        return lens;
+    }
+
+    const [uri, position, locations] = lens.command.arguments;
+    lens.command = {
+        ...lens.command,
+        arguments: [
+            Uri.parse(uri),
+            new Position(position.line, position.character),
+            locations.map(
+                (location: {
+                    uri: string;
+                    range: { start: { line: number; character: number }; end: { line: number; character: number } };
+                }) =>
+                    new Location(
+                        Uri.parse(location.uri),
+                        new Range(
+                            new Position(location.range.start.line, location.range.start.character),
+                            new Position(location.range.end.line, location.range.end.character),
+                        ),
+                    ),
+            ),
+        ],
+    };
+
+    return lens;
+}
 
 export class Application {
     /** Délai avant redémarrage auto : laisse à une mise à jour en cours (autre fenêtre) le temps
@@ -102,6 +132,16 @@ export class Application {
                     errorHandler: {
                         error: () => ({ action: ErrorAction.Continue }),
                         closed: () => ({ action: CloseAction.DoNotRestart }),
+                    },
+                    middleware: {
+                        provideCodeLenses: async (document, token, next) => {
+                            const lenses = await next(document, token);
+                            return lenses?.map(convertShowReferencesArguments);
+                        },
+                        resolveCodeLens: async (codeLens, token, next) => {
+                            const resolved = await next(codeLens, token);
+                            return resolved && convertShowReferencesArguments(resolved);
+                        },
                     },
                 },
             );
