@@ -1,49 +1,74 @@
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
+import {
+    commands,
+    ExtensionContext,
+    extensions,
+    StatusBarAlignment,
+    StatusBarItem,
+    window,
+    workspace,
+    WorkspaceFolder,
+} from "vscode";
 import { Application } from "./application";
-import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { COMMANDS, COMMANDS_OPTIONS, SETTINGS } from "./const";
 import { t } from "./i18n";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
+import { getLanguageServerPath, killAllLanguageServers } from "./utils";
+import { SchemaContentProvider, YamlExtensionApi } from "./schemas";
 
-const open = require("open");
+const SCHEME = "topmodel";
+const MODEL_SCHEMA_URI = `${SCHEME}:/schema.json`;
+
+const open = require("open").default;
 
 export class State {
     tools = {
         modgen: new TmdTool("TopModel.Generator", "modgen"),
         tmdgen: new TmdTool("TopModel.ModelGenerator", "tmdgen"),
+        ls: new TmdTool("TopModel.LanguageServer", "modls"),
     };
     topModelStatusBar: StatusBarItem;
     applications: Application[] = [];
     error?: string;
     preview?: TopModelPreviewPanel;
+    /** Schéma des fichiers de modèle, servi par le language server. @see loadSchemas */
+    private modelSchema?: string;
+    private _versionMismatchNotified = false;
+    /** Vrai une fois le tool modls initialisé, pour ne pas le réinitialiser (ni réenregistrer ses commandes). */
+    private _lsToolInitialized = false;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
         this.context.subscriptions.push(this.topModelStatusBar);
         autorun(() => this.updateStatusBar());
+        autorun(() => this.notifyVersionMismatch());
         this.initTools();
         this.registerCommands();
+        this.watchLanguageServerPath();
     }
 
     get status(): Status {
-        let status: Status = "LOADING";
-        if (this.appStatus === "READY" && this.toolsStatus === "READY") {
-            status = "READY";
+        if (this.appStatus === "ERROR" || this.error) {
+            return "ERROR";
         }
 
         if (this.toolsStatus === "INSTALLING") {
-            status = "INSTALLING";
-        } else if (this.toolsStatus === "WARNING") {
-            status = "WARNING";
+            return "INSTALLING";
         }
 
-        if (this.error) {
-            status = "ERROR";
+        // Tant qu'un client LSP ou un outil n'est pas prêt, on reste en chargement (spinner)
+        // sans repasser par WARNING/READY : cela évite que la double-coche clignote au démarrage.
+        if (this.appStatus !== "READY" || this.toolsStatus === "LOADING") {
+            return "LOADING";
         }
 
-        return status;
+        if (this.toolsStatus === "WARNING") {
+            return "WARNING";
+        }
+
+        return "READY";
     }
 
     get statusTooltip(): string {
@@ -66,6 +91,19 @@ export class State {
                     tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.tmdgen.name])}`;
                 }
 
+                if (this.tools.ls.updateAvailable) {
+                    tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.ls.name])}`;
+                }
+
+                if (!this.versionsAligned) {
+                    tooltip += ` | ${t("toolsVersionMismatch", [this.mismatchedTools])}`;
+                }
+
+                const languageServerPath = getLanguageServerPath();
+                if (languageServerPath) {
+                    tooltip += ` | ${t("customLanguageServer", [languageServerPath])}`;
+                }
+
                 return tooltip;
             default:
                 return "";
@@ -75,16 +113,21 @@ export class State {
     get statusText() {
         let text = "";
 
-        const { appStatus, toolsStatus } = this;
         const { statusText: stModgen } = this.tools.modgen;
         const { installed: stInstalled, statusText: stTmdgen } = this.tools.tmdgen;
 
-        if (appStatus === "LOADING" || toolsStatus === "INSTALLING" || toolsStatus === "LOADING") {
-            text += "$(loading~spin) ";
-        } else if (toolsStatus === "WARNING") {
-            text += "$(warning) ";
-        } else {
-            text += "$(check-all) ";
+        // L'icône est dérivée du statut global (this.status), même source de vérité que le
+        // tooltip, pour éviter que l'icône et le tooltip divergent et fassent clignoter la coche.
+        switch (this.status) {
+            case "LOADING":
+            case "INSTALLING":
+                text += "$(loading~spin) ";
+                break;
+            case "WARNING":
+                text += "$(warning) ";
+                break;
+            default:
+                text += "$(check-all) ";
         }
 
         text += stModgen;
@@ -95,34 +138,214 @@ export class State {
         return text;
     }
 
+    /** Agrège le statut des clients LSP de tous les workspace folders. */
     get appStatus(): Status {
-        return this.applications.some((a) => a.status === "ERROR")
-            ? "ERROR"
-            : this.applications.some((a) => a.status === "LOADING")
-              ? "LOADING"
-              : "READY";
+        if (this.applications.some((a) => a.clientStatus === "ERROR")) {
+            return "ERROR";
+        }
+
+        if (this.applications.some((a) => a.clientStatus === "LOADING")) {
+            return "LOADING";
+        }
+
+        return "READY";
     }
 
     get toolsStatus(): Status {
         const { status: mStatus, updateAvailable: mUpdate } = this.tools.modgen;
         const { installed: tInstalled, status: tStatus, updateAvailable: tUpdate } = this.tools.tmdgen;
+        const { status: lsStatus, updateAvailable: lsUpdate } = this.tools.ls;
 
-        if (tStatus === "INSTALLING" || mStatus === "INSTALLING") {
+        if (tStatus === "INSTALLING" || mStatus === "INSTALLING" || lsStatus === "INSTALLING") {
             return "INSTALLING";
-        } else if ((tInstalled && tStatus === "ERROR") || mStatus === "ERROR") {
+        } else if ((tInstalled && tStatus === "ERROR") || mStatus === "ERROR" || lsStatus === "ERROR") {
             return "ERROR";
-        } else if ((tInstalled && tStatus === "LOADING") || mStatus === "LOADING") {
+        } else if ((tInstalled && tStatus === "LOADING") || mStatus === "LOADING" || lsStatus === "LOADING") {
             return "LOADING";
-        } else if ((tInstalled && tUpdate) || mUpdate) {
+        } else if ((tInstalled && tUpdate) || mUpdate || lsUpdate || !this.versionsAligned) {
             return "WARNING";
         }
 
         return "READY";
     }
 
+    /**
+     * Vérifie que les versions installées de modls, modgen et tmdgen sont alignées
+     * (même version majeure), ces outils étant publiés ensemble dans une release TopModel.
+     */
+    get versionsAligned(): boolean {
+        const major = (version?: string) => version?.split(".")[0];
+        const versions = Object.values(this.tools)
+            .filter((tool) => tool.installed && tool.currentVersion)
+            .map((tool) => major(tool.currentVersion));
+
+        return new Set(versions).size <= 1;
+    }
+
+    get mismatchedTools(): string {
+        return Object.values(this.tools)
+            .filter((tool) => tool.installed && tool.currentVersion)
+            .map((tool) => `${tool.command} v${tool.currentVersion}`)
+            .join(", ");
+    }
+
     private async initTools() {
         this.tools.modgen.init(this.context);
         this.tools.tmdgen.init(this.context);
+    }
+
+    /**
+     * Initialise (et installe si nécessaire) le tool modls, partagé par tous les workspace folders.
+     * Les clients LSP eux-mêmes (un par workspace folder) sont démarrés par les {@link Application}.
+     */
+    public async installLanguageServerTool(): Promise<boolean> {
+        // Un language server lancé depuis un chemin custom (build local à debugger, autre version
+        // sur le poste) ne passe pas par le tool global : ni installation, ni mise à jour, ni
+        // contrôle d'alignement des versions.
+        if (getLanguageServerPath()) {
+            this.tools.ls.status = "READY";
+            return true;
+        }
+
+        if (this._lsToolInitialized) {
+            return this.tools.ls.installed === true;
+        }
+
+        // La mise à jour de modls doit arrêter les serveurs (qui verrouillent leurs fichiers) avant
+        // `dotnet tool update`, puis les redémarrer. On câble ces hooks avant l'init du tool.
+        // On arrête proprement nos propres clients, puis on tue tous les modls de la machine (ceux
+        // des autres fenêtres VSCode comprises) afin de libérer l'ensemble des verrous fichiers.
+        this.tools.ls.onBeforeUpdate = async () => {
+            await this.stopLanguageServer();
+            await killAllLanguageServers();
+        };
+        this.tools.ls.onAfterUpdate = () => this.startLanguageServer();
+
+        this._lsToolInitialized = true;
+        await this.tools.ls.init(this.context);
+        return this.tools.ls.installed === true;
+    }
+
+    /**
+     * Applique à chaud un changement de `topmodel.languageServerPath` : le serveur en cours est
+     * arrêté puis relancé depuis le nouveau chemin, sans avoir à recharger la fenêtre. Le tool
+     * global modls est initialisé à ce moment-là s'il ne l'avait pas été (retour au serveur par
+     * défaut alors que l'extension avait démarré sur un chemin custom).
+     */
+    private watchLanguageServerPath() {
+        this.context.subscriptions.push(
+            workspace.onDidChangeConfiguration(async (event) => {
+                if (!event.affectsConfiguration(`topmodel.${SETTINGS.languageServerPath}`)) {
+                    return;
+                }
+
+                await this.stopLanguageServer();
+                if (await this.installLanguageServerTool()) {
+                    await this.startLanguageServer();
+                }
+            }),
+        );
+    }
+
+    /**
+     * Prend en charge de nouveaux workspace folders : enregistre leurs {@link Application} et démarre
+     * leurs clients LSP. Les folders déjà gérés sont ignorés, si bien que l'appel est idempotent.
+     */
+    public async addApplications(applications: Application[]) {
+        const added = applications.filter(
+            (app) => !this.applications.some((a) => a.workspaceFolder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+        );
+
+        // Mutation en place : la preview conserve une référence sur ce tableau.
+        this.applications.push(...added);
+        await Promise.all(added.map((app) => app.startLanguageServer()));
+        await this.loadSchemas();
+    }
+
+    /**
+     * Charge les schémas JSON servis par le language server, pour ne pas avoir à les lui redemander
+     * à chaque fichier ouvert.
+     *
+     * Un seul chargement suffit : les schémas ne dépendent pas du modèle chargé, seulement de la
+     * version de modls, si bien que n'importe lequel des serveurs peut les fournir.
+     */
+    private async loadSchemas() {
+        const client = this.applications[0]?.client;
+        if (this.modelSchema || !client) {
+            return;
+        }
+
+        try {
+            const response = await client.sendRequest<{ content: string } | null>("schema");
+            this.modelSchema = response?.content;
+            if (this.modelSchema) {
+                this.context.subscriptions.push(
+                    workspace.registerTextDocumentContentProvider(SCHEME, new SchemaContentProvider(this.modelSchema!)),
+                );
+
+                const api = await extensions.getExtension<YamlExtensionApi>("redhat.vscode-yaml")?.activate();
+                api?.registerContributor(
+                    SCHEME,
+                    (resource) => (resource.endsWith(".tmd") ? MODEL_SCHEMA_URI : undefined),
+                    () => this.modelSchema!,
+                    "TopModel",
+                );
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * Abandonne les workspace folders retirés du workspace : arrête leurs clients LSP (et tue les
+     * processus modls correspondants, qui verrouillent les fichiers de l'outil) puis les déréférence.
+     */
+    public async removeApplications(folders: readonly WorkspaceFolder[]) {
+        const removed = this.applications.filter((app) =>
+            folders.some((folder) => folder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+        );
+
+        for (const app of removed) {
+            this.applications.splice(this.applications.indexOf(app), 1);
+        }
+
+        await Promise.all(removed.map((app) => app.stopLanguageServer()));
+    }
+
+    /** Démarre le language server de chaque workspace folder (idempotent). */
+    public async startLanguageServer() {
+        await Promise.all(this.applications.map((app) => app.startLanguageServer()));
+    }
+
+    /** Arrête le language server de chaque workspace folder (libération des verrous fichiers). */
+    public async stopLanguageServer() {
+        await Promise.all(this.applications.map((app) => app.stopLanguageServer()));
+    }
+
+    /** Arrête puis redémarre le language server de chaque workspace folder (commande utilisateur). */
+    public async restartLanguageServer() {
+        await Promise.all(this.applications.map((app) => app.restartLanguageServer()));
+    }
+
+    private async notifyVersionMismatch() {
+        const toolsReady = Object.values(this.tools).every(
+            (tool) => !tool.installed || (tool.status !== "LOADING" && tool.status !== "INSTALLING"),
+        );
+
+        if (this._versionMismatchNotified || this.versionsAligned || !toolsReady) {
+            return;
+        }
+
+        this._versionMismatchNotified = true;
+        const updateAll = t("updateAllTools");
+        const selection = await window.showWarningMessage(t("toolsVersionMismatch", [this.mismatchedTools]), updateAll);
+        if (selection === updateAll) {
+            await Promise.all(
+                Object.values(this.tools)
+                    .filter((tool) => tool.installed && tool.updateAvailable)
+                    .map((tool) => tool.update(true)),
+            );
+        }
     }
 
     private updateStatusBar() {
@@ -134,9 +357,20 @@ export class State {
 
     private registerCommands() {
         this.registerPreviewCommand();
-        this.registerGoToLocation();
         this.registerChooseCommand();
         this.registerReleaseNote();
+        this.registerRestartLanguageServer();
+    }
+
+    private registerRestartLanguageServer() {
+        this.context.subscriptions.push(
+            commands.registerCommand(COMMANDS.restartLanguageServer, () => this.restartLanguageServer()),
+        );
+        COMMANDS_OPTIONS[COMMANDS.restartLanguageServer] = {
+            title: `modls - ${t("restartLanguageServer")}`,
+            description: t("restartLanguageServer"),
+            command: COMMANDS.restartLanguageServer,
+        };
     }
 
     private registerPreviewCommand() {
@@ -152,20 +386,6 @@ export class State {
 
             this.preview?.panel.reveal();
         });
-    }
-
-    private registerGoToLocation() {
-        this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.findRef, async (line: number) => {
-                await commands.executeCommand(
-                    "editor.action.goToLocations",
-                    window.activeTextEditor!.document.uri,
-                    new Position(line, 0),
-                    [],
-                );
-                await commands.executeCommand("editor.action.goToReferences");
-            }),
-        );
     }
 
     private registerReleaseNote() {

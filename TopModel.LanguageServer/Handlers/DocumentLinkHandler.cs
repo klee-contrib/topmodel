@@ -29,8 +29,8 @@ public class DocumentLinkHandler(LSWorkerStore workerStore) : DocumentLinkHandle
         {
             using var file = lockFile.OpenText();
             var text = (await file.ReadToEndAsync(cancellationToken)).Split('\n').ToList();
-            var indexOfGeneratedFiles = text.IndexOf(text.First(l => l.StartsWith("generatedFiles:")));
-            if (indexOfGeneratedFiles > 0)
+            var indexOfGeneratedFiles = text.FindIndex(l => l.StartsWith("generatedFiles:"));
+            if (indexOfGeneratedFiles >= 0)
             {
                 var end = text.Count;
                 List<DocumentLink> documentLinks = [];

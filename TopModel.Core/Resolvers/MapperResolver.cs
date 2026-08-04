@@ -41,7 +41,12 @@ internal class MapperResolver(
 
         foreach (var classe in modelFiles.SelectMany(mf => mf.Classes))
         {
-            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
+            foreach (
+                var mappings in classe
+                    .FromMappers.SelectMany(m => m.ClassParams)
+                    .Concat(classe.ToMappers)
+                    .Where(m => m.Class != null)
+            )
             {
                 mappings.Mappings.Clear();
 

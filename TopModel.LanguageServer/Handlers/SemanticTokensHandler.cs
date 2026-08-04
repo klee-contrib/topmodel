@@ -7,6 +7,12 @@ namespace TopModel.LanguageServer.Handlers;
 
 public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHandlerBase
 {
+    private static readonly SemanticTokensLegend ServerLegend = new()
+    {
+        TokenTypes = new Container<SemanticTokenType>(SemanticTokenType.Defaults),
+        TokenModifiers = new Container<SemanticTokenModifier>(SemanticTokenModifier.Defaults),
+    };
+
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
         SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities
@@ -14,12 +20,8 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = TextDocumentSelector.TmdFiles,
-            Legend = new()
-            {
-                TokenModifiers = capability?.TokenModifiers ?? [],
-                TokenTypes = capability?.TokenTypes ?? [],
-            },
+            DocumentSelector = workerStore.TmdFiles,
+            Legend = ServerLegend,
             Full = new SemanticTokensCapabilityRequestFull { Delta = true },
             Range = true,
         };
@@ -30,7 +32,7 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
         CancellationToken cancellationToken
     )
     {
-        return Task.FromResult(new SemanticTokensDocument(RegistrationOptions.Legend));
+        return Task.FromResult(new SemanticTokensDocument(ServerLegend));
     }
 
     protected override async Task Tokenize(
@@ -49,7 +51,11 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
             {
                 if (files.All(f => f.Store.Files.Any(f => f.Name == reference.ReferenceName)))
                 {
-                    builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
+                    builder.Push(
+                        reference.ToRange()!,
+                        SemanticTokenType.Parameter,
+                        Array.Empty<SemanticTokenModifier>()
+                    );
                 }
             }
 
@@ -72,7 +78,7 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
                     _ => SemanticTokenType.Function,
                 };
 
-                builder.Push(reference.ToRange()!, type, SemanticTokenModifier.Definition);
+                builder.Push(reference.ToRange()!, type, Array.Empty<SemanticTokenModifier>());
             }
         }
     }

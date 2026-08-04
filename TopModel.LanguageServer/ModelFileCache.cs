@@ -8,7 +8,14 @@ public class ModelFileCache
 
     public string[] GetFile(string filePath)
     {
-        return _fileCache[filePath];
+        return _fileCache.TryGetValue(filePath, out var lines)
+            ? lines
+            : SplitToLines(File.ReadAllText(filePath)).ToArray();
+    }
+
+    public void RemoveFile(string filePath)
+    {
+        _fileCache.TryRemove(filePath, out _);
     }
 
     public void UpdateFile(string filePath, string content)

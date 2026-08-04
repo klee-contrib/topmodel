@@ -40,14 +40,18 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                 codeActions.Add(GetCodeActionOrganizeImports(request, firstFile, uselessImports));
             }
 
-            foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
+            foreach (var diagnostic in request.Context.Diagnostics.Where(d => d.Code?.IsString == true))
             {
+                if (!Enum.TryParse<ErrorType>(diagnostic.Code!.Value.String, out var modelErrorType))
+                {
+                    continue;
+                }
+
                 if (diagnostic.Severity == DiagnosticSeverity.Warning)
                 {
                     codeActions.Add(GetCodeActionIgnoreWarning(request, diagnostic, firstFile));
                 }
 
-                var modelErrorType = Enum.Parse<ErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
                     case ErrorType.TMD0002:
@@ -89,7 +93,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
     {
         return new()
         {
-            DocumentSelector = TextDocumentSelector.TmdFiles,
+            DocumentSelector = workerStore.TmdFiles,
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>
             {
@@ -205,7 +209,7 @@ class:
             .Select(g => g.First().file)
             .Select(f =>
             {
-                var lastLine = File.ReadAllLines(facade.GetFilePath(f)).Length;
+                var lastLine = modelFileCache.GetFile(facade.GetFilePath(f)).Length;
                 return (CommandOrCodeAction)
                     new CodeAction
                     {
@@ -377,7 +381,7 @@ domain:
 
         var objet = objets.First()!;
         var targetFile = objet.GetFile();
-        var fileText = File.ReadAllLines(facade.GetFilePath(targetFile));
+        var fileText = modelFileCache.GetFile(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
         return files

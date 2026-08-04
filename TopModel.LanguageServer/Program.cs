@@ -62,6 +62,7 @@ using var server = await LanguageServer.From(options =>
         .WithHandler<RenameHandler>()
         .WithHandler<DocumentLinkHandler>()
         .AddHandler<MermaidHandler>("mermaid")
+        .AddHandler<SchemaHandler>("schema")
         .OnInitialize(
             async (provider, _, _) =>
             {

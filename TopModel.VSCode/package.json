@@ -20,7 +20,7 @@
         "directory": "TopModel.VSCode",
         "type": "git"
     },
-    "version": "4.6.0",
+    "version": "4.6.1",
     "license": "MIT",
     "engines": {
         "vscode": "^1.118.0"
@@ -55,6 +55,16 @@
                 "category": "TopModel.Generator"
             },
             {
+                "command": "topmodel.modls.update",
+                "title": "Update TopModel.LanguageServer",
+                "category": "TopModel.LanguageServer"
+            },
+            {
+                "command": "topmodel.modls.restart",
+                "title": "Restart Language Server",
+                "category": "TopModel.LanguageServer"
+            },
+            {
                 "command": "topmodel.modgen",
                 "title": "Run Model Generation",
                 "category": "TopModel.Generator"
@@ -77,20 +87,6 @@
                     "light": "Preview.svg",
                     "dark": "Preview_inverse.svg"
                 }
-            }
-        ],
-        "yamlValidation": [
-            {
-                "fileMatch": "topmodel*.config",
-                "url": "./language-server/schema.config.json"
-            },
-            {
-                "fileMatch": "tmdgen*.config",
-                "url": "./language-server/schema.tmdgen.config.json"
-            },
-            {
-                "fileMatch": "*.tmd",
-                "url": "./language-server/schema.json"
             }
         ],
         "languages": [
@@ -140,6 +136,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Automatically updates TopModel"
+                },
+                "topmodel.languageServerPath": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Path to the language server executable to launch, instead of the globally installed `modls` tool. Useful to debug a local build of the language server, or to use another version than the one installed globally. Accepts `${workspaceFolder}` and relative paths (resolved from the workspace folder). A `.dll` is launched with `dotnet`. When set, the extension no longer installs or updates the `TopModel.LanguageServer` tool."
                 }
             }
         }
@@ -170,8 +171,8 @@
         "@types/node": "25.7.0",
         "@types/vscode": "1.118.0",
         "@vscode/vsce": "3.9.1",
-        "concurrently": "9.2.1",
-        "esbuild": "0.28.0",
+        "concurrently": "10.0.3",
+        "esbuild": "0.28.1",
         "glob": "13.0.6",
         "oxlint": "1.64.0",
         "typescript": "6.0.3"

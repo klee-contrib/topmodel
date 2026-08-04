@@ -31,7 +31,7 @@ TopModel est décomposé en différents modules :
 
 - **TopModel.ModelGenerator** : Générateur de fichiers `.tmd` à partir de sources externes (OpenAPI, PostgreSQL, Oracle, etc.) - outil `tmdgen`
 - **TopModel.Utils** : Utilitaires partagés entre les différents modules
-- **TopModel.LanguageServer** : Language Server Protocol (LSP) utilisé par l'extension VSCode pour fournir l'auto-complétion, la validation et l'auto-import
+- **TopModel.LanguageServer** : Language Server Protocol (LSP) utilisé par l'extension VSCode pour fournir l'auto-complétion, la validation, l'auto-import... Publié comme tool .NET global (`modls`, package NuGet `TopModel.LanguageServer`)
 - **TopModel.VSCode** : Extension VSCode qui intègre TopModel dans l'éditeur
 
 ## Debbugger l'extension VSCode et le Language Server
@@ -44,11 +44,19 @@ TopModel est décomposé en différents modules :
 
 ### Etapes
 
-- Lancer la commande `dotnet publish -c debug` dans le dossier TopModel.LanguageServer. Cela permet de builder le language server et de le mettre à disposition de l'extension.
+- Le language server est consommé par l'extension comme tool .NET global (`modls`). Pour tester une version locale, le packager puis utiliser le dll généré dans l'extension VSCode :
+
+```bash
+# Depuis la racine du dépôt
+dotnet publish -c debug
+```
+
 - Ouvrir le projet TopModel.VSCode avec VsCode
 - Lancer la commande `npm ci` pour installer les dépendances
 - Lancer la commande `npm run start` pour lancer le build de l'extension en mode watch
 - Le fichier `.vscode/launch.json` contient la configuration pour lancer le debug de l'extension. Il suffit de démarrer une session de debug avec la touche `F5`
+
+Paramétrer l'extension pour qu'elle utilise le dll généré.
 
 Pour débugger le Language Server, ouvrir le projet `TopModel.LanguageServer` avec VSCode, puis lancer une session de debug en mode .NET Core Attach. Il faut ensuite sélectionner la bonne instance du language server dans la liste des processus.
 
@@ -58,7 +66,7 @@ La documentation est construite avec [Docusaurus](https://docusaurus.io/) et vit
 
 ### [Docs] Prérequis
 
-- Installer NodeJS (≥ 20)
+- Installer NodeJS (≥ 24)
 
 ### Structure
 

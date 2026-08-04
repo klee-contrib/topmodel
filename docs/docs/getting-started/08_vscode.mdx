@@ -54,3 +54,85 @@ En cliquant sur la barre d'état de l'extension, il vous sera proposé les diff�
 ## Mettre à jour TopModel (`F1` : `Mettre à jour TopModel.Generator`)
 
 Vous pouvez mettre à jour TopModel en utilisant la commande `Mettre à jour TopModel.Generator`.
+
+## Utiliser un language server spécifique (`topmodel.languageServerPath`)
+
+Par défaut, l'extension installe et met à jour automatiquement l'outil global `modls` (le language server de TopModel), et l'utilise pour tous vos workspaces.
+
+Le paramètre `topmodel.languageServerPath` permet de renseigner le chemin d'un exécutable (ou d'une dll) à lancer à la place, par exemple pour :
+
+- déboguer un build local du language server
+- utiliser une autre version que celle installée globalement
+
+Ce paramètre accepte :
+
+- un chemin absolu, ou relatif (résolu depuis la racine du workspace)
+- la variable `${workspaceFolder}`
+- un fichier `.dll`, qui sera alors lancé via `dotnet`
+
+```json title="settings.json"
+{
+  "topmodel.languageServerPath": "${workspaceFolder}/TopModel.LanguageServer/bin/Debug/net8.0/TopModel.LanguageServer.dll"
+}
+```
+
+Dès que ce paramètre est renseigné, l'extension n'installe et ne met plus à jour l'outil `TopModel.LanguageServer` global.
+
+## Utiliser le language server dans IntelliJ
+
+Le language server `modls` communique via le protocole standard LSP (stdio), il est donc possible de le brancher manuellement dans les IDE JetBrains grâce au plugin [LSP4IJ](https://plugins.jetbrains.com/plugin/23257-lsp4ij) (Red Hat). Ce plugin n'est pas installé par défaut : sans lui, le menu `Language Servers` décrit ci-dessous n'apparaît pas.
+
+1. Installez le plugin `LSP4IJ` : `Settings/Preferences` → `Plugins` → `Marketplace` → rechercher `LSP4IJ` → `Install`, puis redémarrez l'IDE
+2. Installez `modls`, si ce n'est pas déjà fait :
+
+   ```bash
+   dotnet tool install --global TopModel.LanguageServer
+   ```
+
+3. Ouvrez `Settings` → `Languages & Frameworks` → `Language Servers`
+4. Ajoutez un nouveau serveur (`+`), onglet **Server** :
+   - **Command** : la commande complète à lancer, par exemple :
+
+     ```text
+     modls
+     ```
+
+     Ou, pour utiliser un build local (une dll plutôt que le tool global), en passant par `dotnet` :
+
+     ```text
+     dotnet /chemin/vers/TopModel.LanguageServer.dll
+     ```
+
+   - **Working Directory** : le répertoire racine du projet, contenant le(s) fichier(s) `topmodel.config`. C'est indispensable : sans cela, le language server ne retrouve pas la configuration du modèle.
+
+5. Onglet **Mappings** : associez les fichiers du modèle à ce serveur via un **File name pattern** (recommandé) :
+   - `*.tmd`
+   - `topmodel*.config`
+   - `tmdgen*.config`
+
+   Préférez un *file name pattern* (ou le File Type YAML existant) plutôt qu'un File Type custom « TopModel » : un type custom peut faire perdre la coloration syntaxique YAML.
+
+Redémarrez le projet après cette configuration.
+
+### Coloration syntaxique YAML
+
+Comme sous VSCode (où l'extension TopModel dépend de [`redhat.vscode-yaml`](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) et enregistre les fichiers `.tmd` / configs comme du langage `yaml`), **LSP4IJ et `modls` ne gèrent pas la coloration** : ils fournissent l'autocomplétion, la validation et la navigation. La coloration reste à la charge de l'éditeur.
+
+Pour obtenir une coloration YAML comparable à VSCode dans IntelliJ :
+
+1. Vérifiez que le support YAML est disponible (intégré dans IntelliJ IDEA Ultimate ; plugin YAML à installer éventuellement en Community)
+2. Ouvrez `Settings` → `Editor` → `File Types` → sélectionnez **YAML**
+3. Ajoutez les motifs suivants :
+   - `*.tmd`
+   - `topmodel*.config`
+   - `tmdgen*.config`
+
+En option, pour une validation de schéma proche de celle de l'extension VSCode, vous pouvez aussi associer les schémas JSON fournis dans le dépôt (`TopModel.VSCode/schemas/`) via `Settings` → `Languages & Frameworks` → `Schemas and DTDs` → `JSON Schema Mappings`.
+
+### Diagnostiquer un problème de connexion
+
+Si le language server ne démarre pas (par exemple si `modls` n'est pas accessible dans le `PATH` utilisé par l'IDE), utilisez la [console LSP](https://github.com/redhat-developer/lsp4ij/blob/main/docs/UserGuide.md#lsp-console) fournie par LSP4IJ :
+
+1. Ouvrez le tool window `Language Servers` (en bas de l'IDE)
+2. Sélectionnez le serveur `TopModel`, clic droit → `Copy Command` pour récupérer la commande exacte lancée par l'IDE, et vérifiez qu'elle fonctionne dans un terminal
+3. Passez le niveau de trace à `verbose` pour voir le détail des échanges JSON-RPC avec le language server, ou consultez l'onglet `Logs` si le language server émet des messages via `window/logMessage`

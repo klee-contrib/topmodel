@@ -10,6 +10,7 @@ Avant de commencer, vous devez installer les éléments suivants :
 2. **L'[extension TopModel](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel)** : Pour l'autocomplétion, la validation et la navigation
 3. **Le [SDK .NET](https://dotnet.microsoft.com/download)** : Version 8.0 ou supérieure
 4. **TopModel.Generator** : Le générateur de code
+5. **TopModel.LanguageServer** : Le language server, utilisé par l'extension VSCode
 
 ### Installation de TopModel.Generator
 
@@ -33,6 +34,18 @@ dotnet tool update --global TopModel.Generator
 
 > **💡 Astuce** : L'extension VSCode propose également la commande `Mettre à jour TopModel.Generator` via `F1`.
 
+### Installation du language server (`modls`)
+
+Depuis sa version 4.7.0, l'extension VSCode s'appuie sur le language server `TopModel.LanguageServer`, distribué séparément comme outil .NET global (commande `modls`). L'extension l'installe automatiquement à son démarrage. Vous pouvez aussi l'installer manuellement :
+
+```bash
+dotnet tool install --global TopModel.LanguageServer
+```
+
+> **⚠️ Important** : Si `modls` n'est pas installé (par exemple en l'absence de connexion réseau au démarrage), l'extension affiche une erreur et les fonctionnalités d'autocomplétion, de validation et de navigation ne sont pas disponibles. Installez `modls` avec la commande ci-dessus, puis redémarrez VSCode.
+
+> **💡 Note** : Les versions de `modls`, `modgen` et `tmdgen` sont publiées ensemble. L'extension vérifie qu'elles sont alignées et propose une mise à jour si ce n'est pas le cas.
+
 ## Installation sous Linux / WSL
 
 Si vous utilisez Linux ou WSL, suivez ces étapes supplémentaires :
@@ -41,27 +54,27 @@ Si vous utilisez Linux ou WSL, suivez ces étapes supplémentaires :
 
 2. **Installer TopModel via dotnet** :
 
-    ```bash
-    dotnet tool install --global TopModel.Generator
-    ```
+   ```bash
+   dotnet tool install --global TopModel.Generator
+   ```
 
 3. **Ajouter le chemin des outils .NET au PATH** en modifiant le fichier de profil :
 
-    ```bash
-    export PATH="$HOME/.dotnet/tools:$PATH"
-    ```
+   ```bash
+   export PATH="$HOME/.dotnet/tools:$PATH"
+   ```
 
 4. **Recharger le profil** :
 
-    ```bash
-    source ~/.bashrc  # ou source ~/.zshrc pour zsh
-    ```
+   ```bash
+   source ~/.bashrc  # ou source ~/.zshrc pour zsh
+   ```
 
 5. **Vérifier l'installation** :
 
-    ```bash
-    modgen --version
-    ```
+   ```bash
+   modgen --version
+   ```
 
 ## Initialisation du fichier de configuration
 
@@ -88,5 +101,7 @@ Une fois le fichier de configuration créé :
    - La coloration syntaxique
 
 > **✅ Vérification** : Si l'extension fonctionne correctement, vous devriez voir l'icône TopModel dans la barre de statut de VSCode.
+
+> **⚠️ En cas d'erreur** : Si la barre de statut affiche une erreur indiquant que le language server (`modls`) n'est pas installé, installez-le avec `dotnet tool install --global TopModel.LanguageServer`, puis redémarrez VSCode.
 
 C'est parti ! Vous êtes maintenant prêt à créer votre premier modèle TopModel.

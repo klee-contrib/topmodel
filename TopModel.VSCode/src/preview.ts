@@ -251,6 +251,7 @@ export class TopModelPreviewPanel {
                 }
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
+        <script>const i18n = {codeCopied: ${JSON.stringify(t("codeCopied"))}}</script>
         <script src="${this.previewSrcUri}"></script>
         <title>TopModel</title>
     </head>
@@ -281,7 +282,7 @@ export class TopModelPreviewPanel {
             </div>
             <div class="code-element code-wrapper" style="display: none;">
             <button style="display: none;" class="copy-button code-element" onclick="copyCode(currentDiagram)">
-                Copier
+                ${t("copyButton")}
             </button>
             <code id="sourceCode" style="display: none; overflow: auto;" class="code-element">
                     ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}

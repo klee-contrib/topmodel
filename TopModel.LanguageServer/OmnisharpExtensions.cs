@@ -165,7 +165,7 @@ public static class OmnisharpExtensions
                             (Reference: parameter.GetLocation()!, File: parameter.GetFile()!),
                             .. modelStore.GetParameterReferences(parameter),
                         ],
-                        _ => null!,
+                        _ => [],
                     }
                 )
                 .Distinct()
