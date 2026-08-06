@@ -1,14 +1,12 @@
 # Changelog JPA
 
+## 4.6.1
+
+- [312d0](https://github.com/klee-contrib/topmodel/commit/312d0758d1e8390d81c9f7351fe2f08626431488) - Gestion des commentaires multi-lignes : les commentaires qui contiennent des retours à la lignes sont maintenant ajoutés ligne par ligne
+
 ## 4.6.0
 
 Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).
-
-## 4.5.0
-
-- [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`
-
-  **petit breaking change** : Les noms SQL sont générés en minuscule par défaut, en concordance avec les identifiants SQL générés pour Postgres. Vous pouvez renseigner `useLowerCaseSqlNames: false` si vous voulez garder les identifiants en majuscule, mais si vous utilisez Postgres vous vous basez à priori sur le fait qu'Hibernate ne respecte pas la casse des identifiants...
 
 ## 4.4.1
 
