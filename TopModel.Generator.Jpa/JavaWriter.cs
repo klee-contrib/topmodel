@@ -75,18 +75,18 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     public void WriteDocStart(int indentationLevel, string value)
     {
         value = value.Trim();
-
-        var sb = new StringBuilder();
-        sb.Append($"/**{Environment.NewLine}");
-        sb.Append(" * ").Append(value.Replace(Environment.NewLine, $"{Environment.NewLine} * "));
-        if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+        WriteLine(indentationLevel, "/**");
+        var lines = value.Split([Environment.NewLine[0], '\n', '\r'], StringSplitOptions.None);
+        foreach (var line in lines)
         {
-            sb.Append('.');
-        }
-
-        if (!string.IsNullOrEmpty(value))
-        {
-            WriteLine(indentationLevel, sb.ToString());
+            if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
+            {
+                WriteLine(indentationLevel, $" * {line}.");
+            }
+            else
+            {
+                WriteLine(indentationLevel, $" * {line}");
+            }
         }
     }
 
