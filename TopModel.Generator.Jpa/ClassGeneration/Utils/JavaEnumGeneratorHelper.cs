@@ -118,9 +118,9 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             Final = true,
             Visibility = "public",
             DefaultValue = $"List.of({stringValues})",
-            Comment = [$"Liste de toutes les valeurs de l'énumération {classe.NamePascal}."],
-        };
-        field.AddImports("java.util.List");
+        }
+            .AddCommentLine($"Liste de toutes les valeurs de l'énumération {classe.NamePascal}.")
+            .AddImports("java.util.List");
         return field;
     }
 

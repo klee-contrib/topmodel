@@ -267,12 +267,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         )
         {
             var javaField = new JavaField(Config.GetType(ap, forceAssociationPropertyType: true), pk.PropertyNameCamel)
-            {
-                Comment =
-                {
-                    @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}",
-                },
-            }.Add(JpaModelPropertyGenerator.IdAnnotation);
+                .AddCommentLine(
+                    @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}"
+                )
+                .Add(JpaModelPropertyGenerator.IdAnnotation);
             javaField.AddImports(ap.GetTypeImports(Config, tag));
             javaField.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(ap, tag));
             if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(ap))

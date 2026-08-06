@@ -140,10 +140,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var javaField = new JavaField(
             Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
             property.NameCamel
-        )
-        {
-            Comment = { property.Comment },
-        };
+        ).AddCommentLine(property.Comment);
 
         if (
             property is { OriginalProperty: IProperty op }
@@ -152,7 +149,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         )
         {
             var getter = $"#{GetGetterName(op)}()";
-            javaField.Comment.Add(
+            javaField.AddCommentLine(
                 $"Alias of {{@link {op.Class.GetImport(Config, tag)}{getter} {op.Class.NamePascal}{getter}}}"
             );
         }

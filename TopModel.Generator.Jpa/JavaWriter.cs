@@ -385,12 +385,12 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     private void WriteField(int indentationLevel, JavaField field, JavaClass? classe)
     {
         WriteLine();
-        if (field.Comment.Any())
+        if (field.Comments.Any())
         {
-            WriteDocStart(indentationLevel, field.Comment[0]);
-            for (var i = 1; i < field.Comment.Count; i++)
+            WriteDocStart(indentationLevel, field.Comments.First());
+            for (var i = 1; i < field.Comments.Count; i++)
             {
-                WriteLine(indentationLevel, $" * {field.Comment[i]}");
+                WriteLine(indentationLevel, $" * {field.Comments[i]}");
             }
             WriteDocEnd(indentationLevel);
         }

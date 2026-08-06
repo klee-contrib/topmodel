@@ -105,7 +105,7 @@ public class JavaUniqueValuedPropertyGenerator(
             };
             if (classe.DefaultProperty != null)
             {
-                staticField.Comment = [value.Value[classe.DefaultProperty]];
+                staticField.AddCommentLine(value.Value[classe.DefaultProperty]);
             }
 
             javaClass.Add(staticField);

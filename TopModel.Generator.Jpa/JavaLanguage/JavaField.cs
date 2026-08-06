@@ -20,11 +20,29 @@ public class JavaField(string type, string name)
 
     public IEnumerable<string> Imports => _imports.Concat(Annotations.SelectMany(a => a.Imports)).Distinct();
 
-    public IList<string> Comment { get; set; } = [];
+    private IList<string> _comments { get; set; } = [];
 
     public JavaField Add(JavaAnnotation annotation)
     {
         Annotations.Add(annotation);
+        return this;
+    }
+
+    public JavaField AddCommentLine(string line)
+    {
+        if (!string.IsNullOrWhiteSpace(line))
+        {
+            if (line.Contains(Environment.NewLine) || line.Contains('\n') || line.Contains('\r'))
+            {
+                foreach (var subLine in line.Split([Environment.NewLine[0], '\n', '\r'], StringSplitOptions.None))
+                {
+                    AddCommentLine(subLine);
+                }
+                return this;
+            }
+            _comments.Add(line);
+        }
+
         return this;
     }
 
@@ -42,4 +60,6 @@ public class JavaField(string type, string name)
         }
         return this;
     }
+
+    public IList<string> Comments => _comments;
 }

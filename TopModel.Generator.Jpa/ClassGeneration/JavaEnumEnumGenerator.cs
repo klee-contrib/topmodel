@@ -166,10 +166,8 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
             Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
             property.NameCamel
         )
-        {
-            Comment = { property.Comment },
-        };
-        field.AddImports(property.GetTypeImports(Config, tag));
+            .AddCommentLine(property.Comment)
+            .AddImports(property.GetTypeImports(Config, tag));
         return field;
     }
 }

@@ -61,9 +61,10 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         {
             Static = true,
             Final = true,
-            Comment = { "Serial ID" },
             DefaultValue = "1L",
-        }.Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
+        }
+            .AddCommentLine("Serial ID")
+            .Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
         foreach (var property in base.GetFields(classe, tag))
         {
             yield return property;
