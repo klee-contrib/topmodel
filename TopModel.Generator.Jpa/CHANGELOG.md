@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.6.2
+
+- [35fc1](https://github.com/klee-contrib/topmodel/commit/35fc15413c163565b372a0feaa772be532e05a72) - Gestion des commentaires multi-lignes : les commentaires qui contiennent des retours à la lignes sont maintenant ajoutés ligne par ligne (pour les classes)
+
 ## 4.6.1
 
 - [312d0](https://github.com/klee-contrib/topmodel/commit/312d0758d1e8390d81c9f7351fe2f08626431488) - Gestion des commentaires multi-lignes : les commentaires qui contiennent des retours à la lignes sont maintenant ajoutés ligne par ligne
