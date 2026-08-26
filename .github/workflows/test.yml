@@ -34,14 +34,14 @@ jobs:
             PGPASSWORD=demo psql -h localhost -p 5962 -U demo -d demo -f "$f"
           done
 
-      - name: run tests - tmdgen (
-        run: dotnet-coverage collect --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
+      - name: run tests - tmdgen
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
 
       - name: run tests - modgen
-        run: dotnet-coverage collect --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -s -u all -c Release"
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -s -u all -c Release"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./modgen-coverage-results.xml,./tmdgen-coverage-results.xml,./tmdgen-database-coverage-results.xml
+          files: ./modgen-coverage-results.xml,./tmdgen-database-coverage-results.xml
