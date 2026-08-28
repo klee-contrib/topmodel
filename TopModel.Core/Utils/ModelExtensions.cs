@@ -245,7 +245,7 @@ public static class ModelExtensions
             Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter.Domain?.ModelFile
                 ?? templateParameter.Decorator?.ModelFile
                 ?? templateParameter.Annotation!.ModelFile,
-            Variable => new ModelFile { Name = string.Empty },
+            Variable => new ModelFile { Name = string.Empty, Path = string.Empty },
             ReverseAssociationDefinition { Property.Decorator: Decorator decorator } => decorator.ModelFile,
             ReverseAssociationDefinition { Property.Class: Class classe } => classe.ModelFile,
             ReverseAssociationDefinition { Property.Endpoint: Endpoint endpoint } => endpoint.ModelFile,

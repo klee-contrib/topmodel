@@ -38,7 +38,7 @@ public class FileChecker()
         {
             switch (kv)
             {
-                case (YamlScalarNode { Value: "app" }, YamlScalarNode { Value: var value }):
+                case (YamlScalarNode { Value: "app" }, YamlScalarNode { Value: string value }):
                     config.App = value;
                     break;
                 case (YamlScalarNode { Value: "modelRoot" }, YamlScalarNode { Value: var value }):
@@ -73,7 +73,7 @@ public class FileChecker()
                 case (YamlScalarNode { Value: "ignoredFiles" }, YamlSequenceNode seq):
                     config.IgnoredFiles = ParseNode<IList<IgnoredFile>>(seq);
                     break;
-                case (YamlScalarNode { Value: var value }, YamlSequenceNode seq):
+                case (YamlScalarNode { Value: string value }, YamlSequenceNode seq):
                     config.Generators.Add(value, ParseNode<IEnumerable<IDictionary<string, object>>>(seq));
                     break;
                 default:

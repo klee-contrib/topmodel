@@ -4,15 +4,12 @@ namespace TopModel.Core.FileModel;
 
 public class ModelFileOptions
 {
-    public EndpointOptions Endpoints { get; set; } = new();
+    public EndpointOptions Endpoints { get; } = new();
 }
 
 public class EndpointOptions
 {
-#nullable disable
-    public string FileName { get; set; }
+    public string FileName { get; internal set; } = null!;
 
-#nullable enable
-
-    public LocatedString? Prefix { get; set; }
+    public LocatedString? Prefix { get; internal set; }
 }

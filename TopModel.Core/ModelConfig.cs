@@ -1,26 +1,24 @@
-﻿#nullable disable
-
-using TopModel.Core.Model;
+﻿using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core;
 
 public class ModelConfig : ConfigBase
 {
-    public string App { get; set; }
+    public string App { get; internal set; } = null!;
 
-    public bool PluralizeTableNames { get; set; }
+    public bool PluralizeTableNames { get; internal set; }
 
-    public bool DefaultAssociationUseClass { get; set; }
+    public bool DefaultAssociationUseClass { get; internal set; }
 
-    public bool UseLegacyRoleNames { get; set; }
+    public bool UseLegacyRoleNames { get; internal set; }
 
-    public I18nConfig I18n { get; set; } = new();
+    public I18nConfig I18n { get; internal set; } = new();
 
     public IDictionary<string, IEnumerable<IDictionary<string, object>>> Generators { get; } =
         new Dictionary<string, IEnumerable<IDictionary<string, object>>>();
 
-    public IList<string> CustomGenerators { get; set; } = [];
+    public IList<string> CustomGenerators { get; } = [];
 
     public IDictionary<string, WatcherConfigBase> Configs { get; } = new Dictionary<string, WatcherConfigBase>();
 
