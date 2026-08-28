@@ -156,7 +156,7 @@ public class SqlConfig : GeneratorConfigBase
         var domain = property.Domain;
         /* Pour savoir si un domaine est booléen, on regarde grossièrement le mot bool dans le nom du domaine, le label du domaine, un type d'implémeentation de domaine. */
         return domain.Name.Value.Contains("bool", StringComparison.InvariantCultureIgnoreCase)
-            || domain.Label.Contains("bool", StringComparison.InvariantCultureIgnoreCase)
+            || (domain.Label?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false)
             || domain.Implementations.Values.Any(di =>
                 di.Type?.Contains("bool", StringComparison.InvariantCultureIgnoreCase) ?? false
             );

@@ -27,7 +27,7 @@ public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
                     Class c => c.Comment,
                     Endpoint e => e.Description,
                     IProperty p => p.Comment,
-                    Domain d => d.Label,
+                    Domain d => d.Label ?? d.Name,
                     Decorator d => d.Description,
                     DecoratorInstance { Decorator: Decorator d } => d.Description,
                     Annotation a => a.Description,

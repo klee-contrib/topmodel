@@ -841,10 +841,7 @@
         "domain": {
           "type": "object",
           "description": "Domaine.",
-          "required": [
-            "name",
-            "label"
-          ],
+          "required": [ "name" ],
           "properties": {
             "name": {
               "type": "string",

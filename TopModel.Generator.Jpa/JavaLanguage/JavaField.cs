@@ -4,14 +4,19 @@ namespace TopModel.Generator.Jpa;
 
 public class JavaField(string type, string name)
 {
+    private readonly IList<string> _comments = [];
     private readonly IList<string> _imports = [];
 
     public string Type { get; set; } = type;
+
     public string Visibility { get; set; } = "private";
 
     public string Name { get; set; } = name;
+
     public string DefaultValue { get; set; } = "";
+
     public bool Static { get; set; } = false;
+
     public bool Final { get; set; } = false;
 
     public bool Volatile { get; set; } = false;
@@ -20,7 +25,7 @@ public class JavaField(string type, string name)
 
     public IEnumerable<string> Imports => _imports.Concat(Annotations.SelectMany(a => a.Imports)).Distinct();
 
-    private IList<string> _comments { get; set; } = [];
+    public IList<string> Comments => _comments;
 
     public JavaField Add(JavaAnnotation annotation)
     {
@@ -60,6 +65,4 @@ public class JavaField(string type, string name)
         }
         return this;
     }
-
-    public IList<string> Comments => _comments;
 }

@@ -5,38 +5,34 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Domain : IAnnotationContainer, IVariableContainer
+public class Domain(Reference location) : IAnnotationContainer, IVariableContainer
 {
-#nullable disable
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
-    public string Label { get; set; }
+    public string? Label { get; internal set; }
 
-#nullable enable
+    public ISet<Converter> ConvertersFrom { get; } = new HashSet<Converter>();
 
-    // Liste des converter pour lesquels le converter est présent dans la liste des domains From
-    public ISet<Converter> ConvertersFrom { get; set; } = new HashSet<Converter>();
+    public ISet<Converter> ConvertersTo { get; } = new HashSet<Converter>();
 
-    public ISet<Converter> ConvertersTo { get; set; } = new HashSet<Converter>();
+    public int? Length { get; internal set; }
 
-    public int? Length { get; set; }
+    public int? Scale { get; internal set; }
 
-    public int? Scale { get; set; }
-
-    public GeneratedValueDefinition? GeneratedValue { get; set; }
+    public GeneratedValueDefinition? GeneratedValue { get; internal set; }
 
     [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
     public bool BodyParam => ParamLocation == Model.ParamLocation.JsonBody;
 
-    public ParamLocation? ParamLocation { get; set; }
+    public ParamLocation? ParamLocation { get; internal set; }
 
-    public bool Collection { get; set; }
+    public bool Collection { get; internal set; }
 
     public bool NonGeneric => Implementations.Values.All(i => i.Type != null);
 
     public bool Generic => Implementations.Values.All(i => i.GenericType != null);
 
-    public IDictionary<string, Domain> AsDomains { get; set; } = new Dictionary<string, Domain>();
+    public IDictionary<string, Domain> AsDomains { get; internal set; } = new Dictionary<string, Domain>();
 
     public IList<AnnotationInstance> Annotations { get; } = [];
 
@@ -54,7 +50,7 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
-    public string? MediaType { get; set; }
+    public string? MediaType { get; internal set; }
 
     [Obsolete("Utiliser ParamLocation == ParamLocation.FormData")]
     public bool IsMultipart => ParamLocation == Model.ParamLocation.FormData;
@@ -94,10 +90,9 @@ public class Domain : IAnnotationContainer, IVariableContainer
             .Concat(GeneratedValue?.SequenceName?.Transforms ?? [])
             .Where(pr => pr.ReferenceName.IsValidTransform());
 
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     public override string ToString()
     {

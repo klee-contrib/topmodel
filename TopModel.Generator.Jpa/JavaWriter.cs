@@ -387,7 +387,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         WriteLine();
         if (field.Comments.Any())
         {
-            WriteDocStart(indentationLevel, field.Comments.First());
+            WriteDocStart(indentationLevel, field.Comments[0]);
             for (var i = 1; i < field.Comments.Count; i++)
             {
                 WriteLine(indentationLevel, $" * {field.Comments[i]}");

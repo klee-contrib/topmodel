@@ -154,7 +154,7 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             )
             .Concat(
                 file.Domains.Select(d =>
-                    CreateSymbol(d.Name.GetLocation(), d.GetLocation(), d.Name, SymbolKind.Struct, d.Label)
+                    CreateSymbol(d.Name.GetLocation(), d.GetLocation(), d.Name, SymbolKind.Struct, d.Label ?? d.Name)
                 )
             )
             .Concat(
@@ -243,4 +243,3 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
         );
     }
 }
-

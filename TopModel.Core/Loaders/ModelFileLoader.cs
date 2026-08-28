@@ -395,7 +395,7 @@ public class ModelFileLoader(
         newFile.Domains.AddRange(
             file.Domains.Select(d =>
             {
-                var nd = new Domain
+                var nd = new Domain(d.Location)
                 {
                     AnnotationReferences = d.AnnotationReferences,
                     AsDomainReferences = d.AsDomainReferences,
@@ -405,7 +405,6 @@ public class ModelFileLoader(
                     Implementations = d.Implementations,
                     Label = d.Label,
                     Length = d.Length,
-                    Location = d.Location,
                     MediaType = d.MediaType,
                     ModelFile = newFile,
                     Name = d.Name,

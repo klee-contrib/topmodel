@@ -12,7 +12,7 @@ public class DomainLoader(FileChecker fileChecker) : ILoader
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var domain = new Domain() { ModelFile = modelFile, Location = location };
+        var domain = new Domain(location) { ModelFile = modelFile };
         modelFile.Domains.Add(domain);
         parser.ConsumeMapping(prop =>
         {
