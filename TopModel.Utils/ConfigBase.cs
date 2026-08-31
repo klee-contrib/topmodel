@@ -2,8 +2,6 @@
 
 namespace TopModel.Utils;
 
-#nullable disable
-
 /// <summary>
 /// Configuration commune aux générateurs.
 /// </summary>
@@ -12,17 +10,17 @@ public abstract class ConfigBase
     /// <summary>
     /// Répertoire contenant le fichier de config.
     /// </summary>
-    public string ConfigRoot { get; set; }
+    public string ConfigRoot { get; set; } = null!;
 
     /// <summary>
     /// Racine du modèle.
     /// </summary>
-    public string ModelRoot { get; set; }
+    public string ModelRoot { get; set; } = null!;
 
     /// <summary>
     /// Nom du lockfile.
     /// </summary>
-    public string LockFileName { get; set; }
+    public string LockFileName { get; set; } = null!;
 
     /// <summary>
     /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.

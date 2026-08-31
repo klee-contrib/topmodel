@@ -4,24 +4,22 @@ namespace TopModel.Core.Model;
 
 public class DataFlowSource
 {
-#nullable disable
-    public string Source { get; set; }
+    public string Source { get; internal set; } = null!;
 
-    public Class Class { get; set; }
+    public Class Class { get; internal set; } = null!;
 
-    public ClassReference ClassReference { get; set; }
+    public ClassReference ClassReference { get; internal set; } = null!;
 
-    public DataFlowSourceMode Mode { get; set; }
+    public DataFlowSourceMode Mode { get; internal set; }
 
     public IList<IProperty> JoinProperties { get; } = [];
 
-    public IList<Reference> JoinPropertyReferences { get; set; } = [];
+    public IList<Reference> JoinPropertyReferences { get; internal set; } = [];
 
-    public bool InnerJoin { get; set; }
+    public bool InnerJoin { get; internal set; }
 
-    public DataFlow DataFlow { get; set; }
+    public required DataFlow DataFlow { get; init; }
 
-#nullable enable
     public FromMapper? TargetFromMapper
     {
         get =>

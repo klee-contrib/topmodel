@@ -109,7 +109,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     {
         var values =
             (classe.OrderProperty ?? classe.DefaultProperty) != null
-                ? classe.Values.OrderBy(v => v.Value[classe.OrderProperty ?? classe.DefaultProperty]).ToList()
+                ? classe.Values.OrderBy(v => v.Value[classe.OrderProperty ?? classe.DefaultProperty!]).ToList()
                 : classe.Values;
         var stringValues = string.Join(", ", values.Select(refValue => refValue.Name.ToConstantCase()));
         var field = new JavaField($"List<{classe.NamePascal}>", "VALUES")
@@ -124,7 +124,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         return field;
     }
 
-    private IList<string> GetAllArgsConstructorCallImports(Class classe, string tag)
+    private List<string> GetAllArgsConstructorCallImports(Class classe, string tag)
     {
         return Config
             .GetProperties(classe)

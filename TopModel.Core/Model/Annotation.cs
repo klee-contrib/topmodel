@@ -5,32 +5,28 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Annotation : IVariableContainer
+public class Annotation(Reference location) : IVariableContainer
 {
-#nullable disable
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
     public string NamePascal => Name.Value.ToPascalCase();
 
     public string NameCamel => Name.Value.ToCamelCase();
 
-    public string Description { get; set; }
+    public string Description { get; internal set; } = null!;
 
-#nullable enable
+    public IList<Target> Target { get; internal set; } = [];
 
-    public IList<Target> Target { get; set; } = [];
-
-    public bool Global { get; set; }
+    public bool Global { get; internal set; }
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
-    public IDictionary<string, IList<AnnotationImplementation>> Implementations { get; set; } =
+    public IDictionary<string, IList<AnnotationImplementation>> Implementations { get; internal set; } =
         new Dictionary<string, IList<AnnotationImplementation>>();
 
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
-    public Namespace Namespace { get; set; }
+    public required Namespace Namespace { get; init; }
 
     public IEnumerable<ParameterReference> VariableReferences =>
         Implementations.Values.SelectMany(i =>
@@ -51,7 +47,7 @@ public class Annotation : IVariableContainer
             )
             .Where(pr => pr.ReferenceName.IsValidTransform());
 
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     public override string ToString()
     {

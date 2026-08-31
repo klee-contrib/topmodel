@@ -1,15 +1,14 @@
-﻿#nullable disable
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 
 namespace TopModel.Core.Model;
 
 public class ClassValue
 {
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
-    public Class Class { get; set; }
+    public required Class Class { get; init; }
 
-    public Reference Reference { get; set; }
+    public required Reference Reference { get; init; }
 
     public IDictionary<IProperty, string> Value { get; } = new Dictionary<IProperty, string>();
 

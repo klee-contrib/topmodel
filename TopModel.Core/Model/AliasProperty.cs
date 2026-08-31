@@ -17,9 +17,7 @@ internal class AliasProperty : IProperty
     private string? _name;
     private ParamLocation? _paramLocation;
     private bool? _primaryKey;
-#nullable disable
-    private IProperty _property;
-#nullable enable
+    private IProperty _property = null!;
     private bool? _readonly;
     private bool? _required;
     private bool? _useClass;
@@ -39,17 +37,13 @@ internal class AliasProperty : IProperty
         set => _property = value;
     }
 
-#nullable disable
+    public Class Class { get; set; } = null!;
 
-    public Class Class { get; set; }
+    public Endpoint? Endpoint { get; set; }
 
-    public Endpoint Endpoint { get; set; }
+    public Decorator? Decorator { get; set; }
 
-    public Decorator Decorator { get; set; }
-
-    public PropertyMapping PropertyMapping { get; set; }
-
-#nullable enable
+    public PropertyMapping? PropertyMapping { get; set; }
 
     public LocatedString? Trigram { get; set; }
 
@@ -421,7 +415,7 @@ internal class AliasProperty : IProperty
         {
             SourceProperty = SourceProperty ?? this,
             As = As,
-            Class = container as Class,
+            Class = (container as Class)!,
             Comment = _comment!,
             CustomProperties = _customProperties,
             Decorator = container as Decorator,

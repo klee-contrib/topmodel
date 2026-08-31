@@ -5,28 +5,24 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Decorator : IPropertyContainer, IVariableContainer
+public class Decorator(Reference location) : IPropertyContainer, IVariableContainer
 {
-#nullable disable
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
     public string NamePascal => Name.Value.ToPascalCase();
 
     public string NameCamel => Name.Value.ToCamelCase();
 
-    public string Description { get; set; }
+    public string Description { get; internal set; } = null!;
 
-    public Target? Target { get; set; }
-
-#nullable enable
+    public Target? Target { get; internal set; }
 
     public IDictionary<string, DecoratorImplementation> Implementations { get; internal set; } =
         new Dictionary<string, DecoratorImplementation>();
 
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
-    public Namespace Namespace { get; set; }
+    public required Namespace Namespace { get; init; }
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 
@@ -38,7 +34,7 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     public IList<IProperty> Properties { get; } = [];
 
-    public bool PreservePropertyCasing { get; set; }
+    public bool PreservePropertyCasing { get; internal set; }
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
@@ -88,7 +84,7 @@ public class Decorator : IPropertyContainer, IVariableContainer
 
     internal IList<IProperty> OwnProperties { get; } = [];
 
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     public override string ToString()
     {

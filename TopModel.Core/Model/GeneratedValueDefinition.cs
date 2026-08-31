@@ -4,9 +4,9 @@ namespace TopModel.Core.Model;
 
 public class GeneratedValueDefinition
 {
-    public StringWithVariables? SequenceName { get; set; }
+    public StringWithVariables? SequenceName { get; init; }
 
-    public int Start { get; set; } = 1;
+    public int Start { get; init; } = 1;
 
-    public int Increment { get; set; } = 1;
+    public int Increment { get; init; } = 1;
 }

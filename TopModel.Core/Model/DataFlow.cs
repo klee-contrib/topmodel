@@ -2,36 +2,33 @@
 
 namespace TopModel.Core.Model;
 
-public class DataFlow
+public class DataFlow(Reference location)
 {
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
-    public Reference Location { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
-    public LocatedString Name { get; set; }
+    public string Target { get; internal set; } = null!;
 
-    public string Target { get; set; }
+    public Class Class { get; internal set; } = null!;
 
-    public Class Class { get; set; }
+    public ClassReference ClassReference { get; internal set; } = null!;
 
-    public ClassReference ClassReference { get; set; }
+    public DataFlowType Type { get; internal set; }
 
-    public DataFlowType Type { get; set; }
+    public IList<DataFlow> DependsOn { get; } = [];
 
-#nullable enable
+    public IList<DataFlowReference> DependsOnReference { get; internal set; } = [];
 
-    public IList<DataFlow> DependsOn { get; set; } = [];
+    public IList<FlowHook> Hooks { get; internal set; } = [];
 
-    public IList<DataFlowReference> DependsOnReference { get; set; } = [];
+    public IProperty? ActiveProperty { get; internal set; }
 
-    public IList<FlowHook> Hooks { get; set; } = [];
+    public Reference? ActivePropertyReference { get; internal set; }
 
-    public IProperty? ActiveProperty { get; set; }
+    public IList<DataFlowSource> Sources { get; } = [];
 
-    public Reference? ActivePropertyReference { get; set; }
-
-    public IList<DataFlowSource> Sources { get; set; } = [];
+    internal Reference Location { get; } = location;
 
     public override string ToString()
     {

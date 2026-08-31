@@ -11,7 +11,7 @@ public class ConverterLoader(FileChecker fileChecker) : ILoader
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var converter = new Converter() { ModelFile = modelFile, Location = location };
+        var converter = new Converter(location) { ModelFile = modelFile };
         modelFile.Converters.Add(converter);
         parser.ConsumeMapping(prop =>
         {

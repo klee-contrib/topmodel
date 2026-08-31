@@ -2,7 +2,5 @@
 
 public class TmdCompositionProperty : TmdProperty
 {
-#nullable disable
-
-    public TmdClass Composition { get; set; }
+    public TmdClass Composition { get; set; } = null!;
 }

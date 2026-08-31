@@ -4,9 +4,9 @@ namespace TopModel.Core.Model.Implementation;
 
 public class DecoratorImplementation
 {
-    public StringWithVariables? Extends { get; internal set; }
+    public StringWithVariables? Extends { get; init; }
 
-    public IList<StringWithVariables> Implements { get; set; } = [];
+    public IList<StringWithVariables> Implements { get; init; } = [];
 
-    public IList<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; init; } = [];
 }

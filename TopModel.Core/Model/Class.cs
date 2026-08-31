@@ -4,29 +4,27 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Class : IPropertyContainer
+public class Class(Reference location) : IPropertyContainer
 {
     private string? _pluralName;
 
-    public LocatedString? Trigram { get; set; }
+    public LocatedString? Trigram { get; internal set; }
 
-#nullable disable
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
     public string NamePascal => Name.Value.ToPascalCase(strictIfUppercase: true);
 
     public string NameCamel => Name.Value.ToCamelCase(strictIfUppercase: true);
 
-    public string SqlName { get; set; }
+    public string SqlName { get; internal set; } = null!;
 
-    public string Comment { get; set; }
+    public string Comment { get; internal set; } = null!;
 
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
     public IEnumerable<string> Tags => ModelFile.Tags.Concat(OwnTags).Distinct();
 
-#nullable enable
-    public Class? Extends { get; set; }
+    public Class? Extends { get; internal set; }
 
     public IList<DecoratorInstance> Decorators { get; } = [];
 
@@ -38,39 +36,39 @@ public class Class : IPropertyContainer
 
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
 
-    public string? Label { get; set; }
+    public string? Label { get; internal set; }
 
-    public bool Reference { get; set; }
+    public bool Reference { get; internal set; }
 
-    public ClassType Type { get; set; }
+    public ClassType Type { get; internal set; }
 
     [Obsolete("Utiliser `Type` à la place.")]
     public bool Abstract => Type == ClassType.Interface;
 
-    public bool Readonly { get; set; }
+    public bool Readonly { get; internal set; }
 
-    public InheritanceStrategy InheritanceStrategy { get; set; } = InheritanceStrategy.JoinedTables;
+    public InheritanceStrategy InheritanceStrategy { get; internal set; } = InheritanceStrategy.JoinedTables;
 
-    public IProperty? OrderProperty { get; set; }
+    public IProperty? OrderProperty { get; internal set; }
 
-    public IProperty? DefaultProperty { get; set; }
+    public IProperty? DefaultProperty { get; internal set; }
 
-    public IProperty? FlagProperty { get; set; }
+    public IProperty? FlagProperty { get; internal set; }
 
-    public IProperty? LocaleProperty { get; set; }
+    public IProperty? LocaleProperty { get; internal set; }
 
-    public IProperty? DiscriminatorProperty { get; set; }
+    public IProperty? DiscriminatorProperty { get; internal set; }
 
-    public string? DiscriminatorValue { get; set; }
+    public string? DiscriminatorValue { get; internal set; }
 
     public IList<IProperty> Properties { get; } = [];
 
     public IList<IProperty> ExtendedProperties =>
         Extends != null ? [.. Extends.ExtendedProperties, .. Properties] : Properties;
 
-    public bool PreservePropertyCasing { get; set; }
+    public bool PreservePropertyCasing { get; internal set; }
 
-    public Namespace Namespace { get; set; }
+    public required Namespace Namespace { get; init; }
 
     public IEnumerable<IProperty> PrimaryKey => Properties.Where(p => p.PrimaryKey);
 
@@ -83,9 +81,9 @@ public class Class : IPropertyContainer
 
     public IProperty? EnumKey => Enum != null ? ReferenceKey : null;
 
-    public EnumMode? Enum { get; set; }
+    public EnumMode? Enum { get; internal set; }
 
-    public bool Translation { get; set; }
+    public bool Translation { get; internal set; }
 
     public IList<ClassValue> Values { get; } = [];
 
@@ -116,17 +114,17 @@ public class Class : IPropertyContainer
 
     public bool IsPersistent => Properties.Any(p => p.PrimaryKey) || Extends != null && Extends.IsPersistent;
 
-    public ClassReference? ExtendsReference { get; set; }
+    public ClassReference? ExtendsReference { get; internal set; }
 
-    public Reference? OrderPropertyReference { get; set; }
+    public Reference? OrderPropertyReference { get; internal set; }
 
-    public Reference? DefaultPropertyReference { get; set; }
+    public Reference? DefaultPropertyReference { get; internal set; }
 
-    public Reference? FlagPropertyReference { get; set; }
+    public Reference? FlagPropertyReference { get; internal set; }
 
-    public Reference? LocalePropertyReference { get; set; }
+    public Reference? LocalePropertyReference { get; internal set; }
 
-    public Reference? DiscriminatorPropertyReference { get; set; }
+    public Reference? DiscriminatorPropertyReference { get; internal set; }
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
@@ -157,8 +155,7 @@ public class Class : IPropertyContainer
     internal IEnumerable<IProperty> FromMapperOwnProperties =>
         FromMappers.SelectMany(fm => fm.OwnPropertyParams.Select(pp => pp.Property));
 
-#nullable disable
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     internal IList<string> OwnTags { get; set; } = [];
 

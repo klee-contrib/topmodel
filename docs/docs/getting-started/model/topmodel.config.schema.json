@@ -1162,7 +1162,6 @@
               "fetch",
               "angular",
               "angular_promise",
-              "nuxt",
               "legacy"
             ]
           },

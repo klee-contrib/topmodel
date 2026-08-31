@@ -241,7 +241,7 @@ public static class ScriptUtils
             ", ",
             config
                 .GetAllValues(classe)
-                .Select(value => $"{config.FormatValue(classe.EnumKey!, value.Value[classe.EnumKey])}")
+                .Select(value => $"{config.FormatValue(classe.EnumKey!, value.Value[classe.EnumKey!])}")
         );
 
         writer.Write($"create type {config.GetSqlName(classe, tag)} as enum ({values}); ");

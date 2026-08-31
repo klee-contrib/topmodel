@@ -104,9 +104,8 @@ public class PropertyLoader(FileChecker fileChecker)
                 return rp;
 
             case Scalar { Value: "association" } s:
-                var ap = new AssociationProperty
+                var ap = new AssociationProperty(new Reference(s))
                 {
-                    Location = new Reference(s),
                     DefaultAssociationUseClass = config.DefaultAssociationUseClass,
                     UseLegacyRoleName = config.UseLegacyRoleNames,
                 };
@@ -154,7 +153,7 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "withReverse":
                             if (value?.Value != "false")
                             {
-                                ap.WithReverse = new() { Property = ap, Location = new Reference(prop) };
+                                ap.WithReverse = new(new Reference(prop)) { Property = ap };
 
 #pragma warning disable S3247
                                 if (parser.Current is MappingStart)
@@ -277,13 +276,13 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 if (ap.Multiple && ap.WithReverse == null)
                 {
-                    ap.WithReverse = new() { Property = ap, Location = ap.Location };
+                    ap.WithReverse = new(ap.Location) { Property = ap };
                 }
 
                 return ap;
 
             case Scalar { Value: "composition" } s:
-                var cp = new CompositionProperty { Location = new Reference(s) };
+                var cp = new CompositionProperty(new Reference(s));
 
                 while (parser.Current is not MappingEnd)
                 {

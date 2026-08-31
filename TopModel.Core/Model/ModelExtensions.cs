@@ -405,7 +405,7 @@ public static class ModelExtensions
         /// </summary>
         public IProperty? ParentAssociationProperty =>
             classe.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.JoinedTables
-                ? new AssociationProperty
+                ? new AssociationProperty(null!)
                 {
                     Association = classe.Extends,
                     Class = classe,

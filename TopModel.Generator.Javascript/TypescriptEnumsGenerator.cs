@@ -192,7 +192,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         fw.WriteLine();
         var values =
             (reference.OrderProperty ?? reference.DefaultProperty) != null
-                ? reference.Values.OrderBy(v => v.Value[reference.OrderProperty ?? reference.DefaultProperty]).ToList()
+                ? reference.Values.OrderBy(v => v.Value[reference.OrderProperty ?? reference.DefaultProperty!]).ToList()
                 : reference.Values;
         foreach (var refValue in values)
         {

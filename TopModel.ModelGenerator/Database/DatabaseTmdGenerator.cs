@@ -217,8 +217,7 @@ public abstract class DatabaseTmdGenerator(
         TmdRegularProperty tmdProperty;
         if (foreignConstraint != null && _classes.TryGetValue(foreignConstraint.ForeignTableName, out var foreignClass))
         {
-            tmdProperty = new TmdAssociationProperty();
-            ((TmdAssociationProperty)tmdProperty).Association = foreignClass;
+            tmdProperty = new TmdAssociationProperty { Association = foreignClass };
         }
         else
         {

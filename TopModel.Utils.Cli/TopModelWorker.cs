@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace TopModel.Utils.Cli;
 
@@ -8,13 +6,13 @@ public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
     where TConfig : ConfigBase
     where TFileChecker : AbstractFileChecker<TConfig>
 {
-    public LoggingScope StoreConfig { get; private set; }
+    public LoggingScope StoreConfig { get; private set; } = null!;
 
     public bool HasError { get; protected set; }
 
-    public TFileChecker FileChecker { get; init; }
+    public TFileChecker FileChecker { get; init; } = null!;
 
-    public LoggerProvider LoggerProvider { get; init; }
+    public LoggerProvider LoggerProvider { get; init; } = null!;
 
     public int ConfigIndex
     {
@@ -26,11 +24,11 @@ public abstract class TopModelWorker<TConfig, TFileChecker> : IDisposable
         }
     }
 
-    public string ConfigFullName { get; init; }
+    public string ConfigFullName { get; init; } = null!;
 
-    public string ConfigDirectoryName { get; init; }
+    public string ConfigDirectoryName { get; init; } = null!;
 
-    public TConfig Config { get; init; }
+    public TConfig Config { get; init; } = null!;
 
     public bool WatchMode { get; set; }
 

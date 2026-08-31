@@ -4,9 +4,8 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Converter : IVariableContainer
+public class Converter(Reference location) : IVariableContainer
 {
-#nullable disable
     /// <summary>
     /// Domains sources du convertisseur
     /// </summary>
@@ -20,16 +19,14 @@ public class Converter : IVariableContainer
     /// <summary>
     /// Domains sources du convertisseur
     /// </summary>
-    public IList<Domain> From { get; set; } = [];
+    public IList<Domain> From { get; } = [];
 
     /// <summary>
     /// Domains cibles du convertisseur
     /// </summary>
-    public IList<Domain> To { get; set; } = [];
+    public IList<Domain> To { get; } = [];
 
     public IEnumerable<(Domain From, Domain To)> Conversions => From.SelectMany(f => To.Select(t => (f, t))).Distinct();
-
-#nullable enable
 
     public IDictionary<string, ConverterImplementation> Implementations { get; internal set; } =
         new Dictionary<string, ConverterImplementation>();
@@ -42,8 +39,7 @@ public class Converter : IVariableContainer
     public IEnumerable<TransformReference> TransformReferences =>
         Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.ReferenceName.IsValidTransform());
 
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 }

@@ -2,13 +2,14 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+
 import { UtilisateurCreateDto } from "../../model/users/utilisateur-create-dto";
 import { UtilisateurDetailDto } from "../../model/users/utilisateur-detail-dto";
 import { UtilisateurUpdateDto } from "../../model/users/utilisateur-update-dto";
+
 @Injectable({
     providedIn: 'root'
 })
@@ -17,7 +18,7 @@ export class EndpointsService {
     private readonly http = inject(HttpClient);
 
     /**
-     * @description Créé un nouvel Utilisateur
+     * Créé un nouvel Utilisateur
      * @param detail Le détail de l'utilisateur à créer
      * @returns Le détail de l'utilisateur créé
      */
@@ -26,7 +27,7 @@ export class EndpointsService {
     }
 
     /**
-     * @description Supprime un Utilisateur
+     * Supprime un Utilisateur
      * @param utiId Identifiant unique de l'utilisateur
      */
     deleteUtilisateur(utiId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<void> {
@@ -34,7 +35,7 @@ export class EndpointsService {
     }
 
     /**
-     * @description Charge le détail d'un Utilisateur
+     * Charge le détail d'un Utilisateur
      * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail d'un Utilisateur
      */
@@ -43,7 +44,7 @@ export class EndpointsService {
     }
 
     /**
-     * @description Modifie un Utilisateur
+     * Modifie un Utilisateur
      * @param detail Le détail de l'utilisateur à modifier
      * @param utiId Identifiant unique de l'utilisateur
      * @returns Le détail de l'utilisateur modifié

@@ -11,7 +11,7 @@ public class DataFlowLoader : ILoader
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var dataFlow = new DataFlow() { ModelFile = modelFile, Location = location };
+        var dataFlow = new DataFlow(location) { ModelFile = modelFile };
         modelFile.DataFlows.Add(dataFlow);
         parser.ConsumeMapping(prop =>
         {

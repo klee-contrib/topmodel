@@ -245,7 +245,7 @@ public class TmdWriter : IDisposable
         else if (property is TmdAliasProperty sp)
         {
             _writer.WriteLine($"    {(noList ? string.Empty : "- ")}alias:");
-            _writer.WriteLine($"    {listPrefix}  class: {sp.Alias.Class.Name}");
+            _writer.WriteLine($"    {listPrefix}  class: {sp.Alias.Class!.Name}");
             _writer.WriteLine($"    {listPrefix}  property: {sp.Alias.Name}");
             _writer.WriteLine($"    {listPrefix}name: {property.Name}");
 

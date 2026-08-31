@@ -11,12 +11,7 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var decorator = new Decorator()
-        {
-            ModelFile = modelFile,
-            Location = location,
-            Namespace = modelFile.Namespace,
-        };
+        var decorator = new Decorator(location) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Decorators.Add(decorator);
 
         parser.ConsumeMapping(prop =>

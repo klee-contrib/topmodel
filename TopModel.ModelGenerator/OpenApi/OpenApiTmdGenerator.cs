@@ -14,10 +14,7 @@ public class OpenApiTmdGenerator : TmdGenerator
     private readonly ILogger<OpenApiTmdGenerator> _logger;
     private readonly IFileWriterProvider _writerProvider;
 
-#nullable disable
-    private OpenApiDocument _model;
-
-#nullable enable
+    private OpenApiDocument _model = null!;
 
     public OpenApiTmdGenerator(
         ILogger<OpenApiTmdGenerator> logger,
@@ -252,7 +249,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                             property = new TmdAliasProperty()
                             {
                                 Alias = enumClass.Properties[0],
-                                Name = param.Name,
+                                Name = param.Name!,
                                 Class = enumClass,
                             };
                         }
@@ -260,7 +257,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                         {
                             property = new TmdRegularProperty()
                             {
-                                Name = param.Name,
+                                Name = param.Name!,
                                 Domain = _config.GetDomain(param.Name!, param.Schema!),
                             };
                         }

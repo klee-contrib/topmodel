@@ -89,14 +89,10 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public virtual string? ReferenceAccessorsInterfacePath { get; set; }
 
-#nullable disable
-
     /// <summary>
     /// Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference.
     /// </summary>
-    public virtual string ReferenceAccessorsImplementationPath { get; set; }
-
-#nullable enable
+    public virtual string ReferenceAccessorsImplementationPath { get; set; } = null!;
 
     /// <summary>
     /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). Par défaut : {module}ReferenceAccessors.

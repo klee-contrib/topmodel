@@ -4,11 +4,8 @@ namespace TopModel.ModelGenerator;
 
 public class TmdAssociationProperty : TmdRegularProperty
 {
-#nullable disable
+    public required TmdClass Association { get; init; }
 
-    public TmdClass Association { get; set; }
-
-#nullable enable
     public TmdRegularProperty? ForeignProperty { get; set; }
 
     public string Role =>

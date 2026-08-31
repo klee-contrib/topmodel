@@ -479,7 +479,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         IEnumerable<ClassValue> values =
             (item.OrderProperty ?? item.DefaultProperty) != null
-                ? item.Values.OrderBy(v => v.Value[item.OrderProperty ?? item.DefaultProperty])
+                ? item.Values.OrderBy(v => v.Value[item.OrderProperty ?? item.DefaultProperty!])
                 : item.Values;
 
         w.Write(string.Join(", ", values.Select(r => r.Name.ToPascalCase(strictIfUppercase: true))));

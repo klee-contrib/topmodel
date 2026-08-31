@@ -8,11 +8,7 @@ internal class RegularProperty : IProperty
 {
     private ParamLocation? _paramLocation;
 
-#nullable disable
-
-    public string Name { get; set; }
-
-#nullable enable
+    public string Name { get; set; } = null!;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -36,15 +32,11 @@ internal class RegularProperty : IProperty
 
     public string? FinalTrigram => Trigram ?? Class?.Trigram;
 
-#nullable disable
-
-    public Domain Domain { get; set; }
+    public Domain Domain { get; set; } = null!;
 
     public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
 
-    public string Comment { get; set; }
-
-#nullable enable
+    public string Comment { get; set; } = null!;
 
     public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
@@ -58,19 +50,15 @@ internal class RegularProperty : IProperty
 
     public IList<string>? Tags { get; set; }
 
-#nullable disable
+    public Class Class { get; set; } = null!;
 
-    public Class Class { get; set; }
+    public Endpoint? Endpoint { get; set; }
 
-    public Endpoint Endpoint { get; set; }
+    public Decorator? Decorator { get; set; }
 
-    public Decorator Decorator { get; set; }
+    public PropertyMapping? PropertyMapping { get; set; }
 
-    public PropertyMapping PropertyMapping { get; set; }
-
-    public DomainReference DomainReference { get; set; }
-
-#nullable enable
+    public DomainReference DomainReference { get; set; } = null!;
 
     public string? DefaultValue { get; set; }
 
@@ -98,11 +86,7 @@ internal class RegularProperty : IProperty
         set => _paramLocation = value;
     }
 
-#nullable disable
-
-    internal Reference Location { get; set; }
-
-#nullable enable
+    internal Reference Location { get; set; } = null!;
 
     string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
@@ -146,7 +130,7 @@ internal class RegularProperty : IProperty
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
-            Class = container as Class,
+            Class = (container as Class)!,
             Comment = Comment,
             CustomProperties = CustomProperties,
             Decorator = container as Decorator,

@@ -124,8 +124,10 @@ internal class MapperResolver(
                                 mapping.TargetPropertyReference
                             );
                         }
-
-                        mapping.TargetProperty = currentProperty;
+                        else
+                        {
+                            mapping.TargetProperty = currentProperty;
+                        }
                     }
                     else
                     {
@@ -142,8 +144,10 @@ internal class MapperResolver(
                                 mapping.Property.GetLocation()
                             );
                         }
-
-                        mapping.TargetProperty = mappedProperty;
+                        else
+                        {
+                            mapping.TargetProperty = mappedProperty;
+                        }
                     }
 
                     if (mapping.TargetProperty != null)

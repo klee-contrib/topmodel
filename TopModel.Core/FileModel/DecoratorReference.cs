@@ -7,6 +7,6 @@ public class DecoratorReference : Reference
     internal DecoratorReference(Scalar scalar)
         : base(scalar) { }
 
-    public IDictionary<ParameterReference, StringWithVariables> ParameterReferences { get; set; } =
+    public IDictionary<ParameterReference, StringWithVariables> ParameterReferences { get; internal set; } =
         new Dictionary<ParameterReference, StringWithVariables>();
 }

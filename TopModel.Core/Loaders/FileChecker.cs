@@ -41,7 +41,7 @@ public class FileChecker()
                 case (YamlScalarNode { Value: "app" }, YamlScalarNode { Value: string value }):
                     config.App = value;
                     break;
-                case (YamlScalarNode { Value: "modelRoot" }, YamlScalarNode { Value: var value }):
+                case (YamlScalarNode { Value: "modelRoot" }, YamlScalarNode { Value: string value }):
                     config.ModelRoot = value;
                     break;
                 case (YamlScalarNode { Value: "modelFilePaths" }, YamlSequenceNode seq):
@@ -49,7 +49,7 @@ public class FileChecker()
                         .Select(n => n.Value!.EndsWith(".tmd") ? n.Value : $"{n.Value}/*.tmd")
                         .ToList();
                     break;
-                case (YamlScalarNode { Value: "lockFileName" }, YamlScalarNode { Value: var value }):
+                case (YamlScalarNode { Value: "lockFileName" }, YamlScalarNode { Value: string value }):
                     config.LockFileName = value;
                     break;
                 case (YamlScalarNode { Value: "noWarn" }, YamlSequenceNode seq):

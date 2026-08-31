@@ -12,11 +12,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 {
     private readonly Dictionary<string, string> _passwords = [];
 
-#nullable disable
-
-    private ILogger _logger;
-
-#nullable enable
+    private ILogger _logger = null!;
 
     public bool SchemaMode { get; set; }
 

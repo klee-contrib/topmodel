@@ -4,29 +4,23 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class CompositionProperty : IProperty
+internal class CompositionProperty(Reference location) : IProperty
 {
     private ParamLocation? _paramLocation;
 
-#nullable disable
+    public Class Composition { get; set; } = null!;
 
-    public Class Composition { get; set; }
-
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
-    public Domain Domain { get; set; }
+    public Domain Domain { get; set; } = null!;
 
     public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
 
-#nullable enable
-
     public IList<string>? Tags { get; set; }
 
-#nullable disable
-
-    public string Comment { get; set; }
+    public string Comment { get; set; } = null!;
 
     public bool Readonly
     {
@@ -64,15 +58,13 @@ internal class CompositionProperty : IProperty
         set => _paramLocation = value;
     }
 
-    public Class Class { get; set; }
+    public Class Class { get; set; } = null!;
 
-    public Endpoint Endpoint { get; set; }
+    public Endpoint? Endpoint { get; set; }
 
-    public Decorator Decorator { get; set; }
+    public Decorator? Decorator { get; set; }
 
-    public PropertyMapping PropertyMapping { get; set; }
-
-#nullable enable
+    public PropertyMapping? PropertyMapping { get; set; }
 
     public string? Label { get; set; }
 
@@ -107,13 +99,9 @@ internal class CompositionProperty : IProperty
 
     public DomainReference? DomainReference { get; set; }
 
-#nullable disable
+    public ClassReference Reference { get; set; } = null!;
 
-    public ClassReference Reference { get; set; }
-
-#nullable enable
-
-    internal required Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
@@ -124,7 +112,7 @@ internal class CompositionProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var cp = new CompositionProperty
+        var cp = new CompositionProperty(Location)
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -132,7 +120,6 @@ internal class CompositionProperty : IProperty
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
-            Location = Location,
             Name = Name,
             Readonly = Readonly,
             Reference = Reference,
@@ -152,11 +139,11 @@ internal class CompositionProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var cp = new CompositionProperty
+        var cp = new CompositionProperty(Location)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
-            Class = container as Class,
+            Class = (container as Class)!,
             Comment = Comment,
             Composition = Composition,
             CustomProperties = CustomProperties,
@@ -164,7 +151,6 @@ internal class CompositionProperty : IProperty
             Domain = Domain,
             DomainParameters = DomainParameters,
             Endpoint = container as Endpoint,
-            Location = Location,
             Name = Name,
             Required = Required,
             Readonly = Readonly,

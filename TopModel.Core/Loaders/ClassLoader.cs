@@ -11,12 +11,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var classe = new Class()
-        {
-            ModelFile = modelFile,
-            Location = location,
-            Namespace = modelFile.Namespace,
-        };
+        var classe = new Class(location) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Classes.Add(classe);
 
         parser.ConsumeMapping(prop =>

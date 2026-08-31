@@ -610,7 +610,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         )
         {
             var refName = GetAllValues(property.UniqueValuedProperty!.Class)
-                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty] == value)
+                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty!] == value)
                 ?.Name;
             if (refName != null)
             {
@@ -639,7 +639,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         )
         {
             var refName = GetAllValues(property.UniqueValuedProperty!.Class)
-                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty] == value)
+                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty!] == value)
                 ?.Name;
             if (refName != null)
             {

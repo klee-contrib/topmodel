@@ -172,7 +172,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)
     {
         var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
-        if (bodyParam.Endpoint.IsMultipart)
+        if (bodyParam.Endpoint!.IsMultipart)
         {
             if (bodyParam.Composition != null)
             {

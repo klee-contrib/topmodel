@@ -19,11 +19,11 @@ public class Reference
         Scalar = scalar;
     }
 
-    public Mark Start { get; set; }
+    public Mark Start { get; init; }
 
-    public Mark End { get; set; }
+    public Mark End { get; init; }
 
-    public string ReferenceName { get; set; }
+    public string ReferenceName { get; init; }
 
     public string Position => $"[{Start.Line},{Start.Column}]";
 

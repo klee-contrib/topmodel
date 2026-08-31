@@ -4,19 +4,17 @@ namespace TopModel.Core.Model;
 
 public class ClassMappings
 {
-#nullable disable
-    public bool To { get; set; }
+    public bool To { get; init; }
 
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
-    public Class Class { get; set; }
+    public Class Class { get; internal set; } = null!;
 
-    public ClassReference ClassReference { get; set; }
+    public ClassReference ClassReference { get; internal set; } = null!;
 
-    public bool Required { get; set; } = true;
+    public bool Required { get; internal set; } = true;
 
-#nullable enable
-    public string? Comment { get; set; }
+    public string? Comment { get; internal set; }
 
     public IDictionary<IProperty, IProperty> Mappings { get; } = new Dictionary<IProperty, IProperty>();
 

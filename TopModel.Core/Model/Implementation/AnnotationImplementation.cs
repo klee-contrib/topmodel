@@ -4,9 +4,9 @@ namespace TopModel.Core.Model.Implementation;
 
 public class AnnotationImplementation
 {
-    public required StringWithVariables Text { get; set; }
+    public required StringWithVariables Text { get; init; }
 
-    public IList<AnnotationConstraint> When { get; set; } = [];
+    public IList<AnnotationConstraint> When { get; init; } = [];
 
-    public IList<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; init; } = [];
 }

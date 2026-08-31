@@ -10,12 +10,7 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
     /// <inheritdoc cref="ILoader.Load" />
     public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
     {
-        var endpoint = new Endpoint()
-        {
-            ModelFile = modelFile,
-            Location = location,
-            Namespace = modelFile.Namespace,
-        };
+        var endpoint = new Endpoint(location) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Endpoints.Add(endpoint);
 
         parser.ConsumeMapping(prop =>

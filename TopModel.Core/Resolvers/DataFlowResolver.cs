@@ -101,8 +101,10 @@ internal class DataFlowResolver(
                             joinPropertyReference
                         );
                     }
-
-                    source.JoinProperties.Add(joinProperty);
+                    else
+                    {
+                        source.JoinProperties.Add(joinProperty);
+                    }
                 }
             }
         }

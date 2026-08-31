@@ -4,15 +4,15 @@ namespace TopModel.Core.Model.Implementation;
 
 public class DomainImplementation
 {
-    public StringWithVariables? Type { get; set; }
+    public StringWithVariables? Type { get; internal set; }
 
-    public StringWithVariables? GenericType { get; set; }
+    public StringWithVariables? GenericType { get; internal set; }
 
-    public IList<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; internal set; } = [];
 
-    public string? Collector { get; set; }
+    public string? Collector { get; internal set; }
 
-    public IDictionary<string, ValueTemplate> ValueTemplates { get; set; } = new Dictionary<string, ValueTemplate>();
+    public IDictionary<string, ValueTemplate> ValueTemplates { get; } = new Dictionary<string, ValueTemplate>();
 
     public ValueTemplate? GetValueTemplate(string value)
     {

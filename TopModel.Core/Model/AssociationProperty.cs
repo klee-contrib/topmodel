@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class AssociationProperty : IProperty
+internal class AssociationProperty(Reference location) : IProperty
 {
     private ParamLocation? _paramLocation;
     private IProperty? _property;
@@ -17,11 +17,7 @@ internal class AssociationProperty : IProperty
 
     public virtual string? ClassName { get; set; }
 
-#nullable disable
-
-    public virtual Class Association { get; set; }
-
-#nullable enable
+    public virtual Class Association { get; set; } = null!;
 
     public IProperty Property
     {
@@ -48,19 +44,15 @@ internal class AssociationProperty : IProperty
 
     public virtual string? Label { get; set; }
 
-#nullable disable
+    public virtual string Comment { get; set; } = null!;
 
-    public virtual string Comment { get; set; }
+    public Class Class { get; set; } = null!;
 
-    public Class Class { get; set; }
+    public Endpoint? Endpoint { get; set; }
 
-    public Endpoint Endpoint { get; set; }
+    public Decorator? Decorator { get; set; }
 
-    public Decorator Decorator { get; set; }
-
-    public PropertyMapping PropertyMapping { get; set; }
-
-#nullable enable
+    public PropertyMapping? PropertyMapping { get; set; }
 
     public virtual string? Role { get; set; }
 
@@ -146,13 +138,9 @@ internal class AssociationProperty : IProperty
 
     public DomainReference? DomainReference => null;
 
-#nullable disable
+    public ClassReference Reference { get; set; } = null!;
 
-    public ClassReference Reference { get; set; }
-
-    internal Reference Location { get; set; }
-
-#nullable enable
+    internal Reference Location { get; } = location;
 
     internal string RawSqlName
     {
@@ -180,7 +168,7 @@ internal class AssociationProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var ap = new AssociationProperty
+        var ap = new AssociationProperty(Location)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -191,7 +179,6 @@ internal class AssociationProperty : IProperty
             DefaultValue = DefaultValue,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
-            Location = Location,
             Multiple = Multiple,
             PrimaryKey = PrimaryKey,
             PropertyReference = PropertyReference,
@@ -216,14 +203,13 @@ internal class AssociationProperty : IProperty
 
         if (WithReverse != null)
         {
-            ap.WithReverse = new ReverseAssociationDefinition
+            ap.WithReverse = new ReverseAssociationDefinition(WithReverse.Location)
             {
                 AnnotationReferences = WithReverse.AnnotationReferences,
                 ClassName = WithReverse.ClassName,
                 Comment = WithReverse.Comment,
                 ExcludedAnnotationReferences = WithReverse.ExcludedAnnotationReferences,
                 Label = WithReverse.Label,
-                Location = WithReverse.Location,
                 Property = ap,
             };
         }
@@ -234,12 +220,12 @@ internal class AssociationProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var ap = new AssociationProperty
+        var ap = new AssociationProperty(Location)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
             Association = Association,
-            Class = container as Class,
+            Class = (container as Class)!,
             ClassName = ClassName,
             Comment = Comment,
             CustomProperties = CustomProperties,
@@ -248,7 +234,6 @@ internal class AssociationProperty : IProperty
             DefaultValue = DefaultValue,
             Endpoint = container as Endpoint,
             Label = Label,
-            Location = Location,
             Multiple = Multiple,
             PrimaryKey = PrimaryKey,
             Readonly = Readonly,

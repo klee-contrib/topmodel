@@ -1,17 +1,16 @@
-﻿#nullable disable
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 
 namespace TopModel.Core.Model;
 
 public class PropertyMapping : IPropertyContainer
 {
-    public IProperty Property { get; set; }
+    public IProperty Property { get; internal set; } = null!;
 
-    public IProperty TargetProperty { get; set; }
+    public IProperty TargetProperty { get; internal set; } = null!;
 
-    public Reference TargetPropertyReference { get; set; }
+    public Reference TargetPropertyReference { get; internal set; } = null!;
 
-    public FromMapper FromMapper { get; set; }
+    public required FromMapper FromMapper { get; init; }
 
     public ModelFile ModelFile => throw new NotSupportedException();
 

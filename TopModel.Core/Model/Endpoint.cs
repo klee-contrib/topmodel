@@ -4,24 +4,23 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Endpoint : IPropertyContainer
+public class Endpoint(Reference location) : IPropertyContainer
 {
-    public Namespace Namespace { get; set; }
+    public required Namespace Namespace { get; init; }
 
-#nullable disable
-    public ModelFile ModelFile { get; set; }
+    public required ModelFile ModelFile { get; init; }
 
     public IEnumerable<string> Tags => ModelFile.Tags.Concat(OwnTags).Distinct();
 
-    public LocatedString Name { get; set; }
+    public LocatedString Name { get; internal set; } = null!;
 
     public string NamePascal => Name.Value.ToPascalCase();
 
     public string NameCamel => Name.Value.ToCamelCase();
 
-    public string Method { get; set; }
+    public string Method { get; internal set; } = null!;
 
-    public StringWithVariables Route { get; set; }
+    public StringWithVariables Route { get; internal set; } = null!;
 
     public string FullRoute
     {
@@ -33,19 +32,17 @@ public class Endpoint : IPropertyContainer
         }
     }
 
-    public string Description { get; set; }
+    public string Description { get; internal set; } = null!;
 
-#nullable enable
+    public IProperty? Returns { get; internal set; }
 
-    public IProperty? Returns { get; set; }
-
-    public IList<IProperty> Params { get; set; } = [];
+    public IList<IProperty> Params { get; } = [];
 
     public bool IsMultipart => Params.Any(p => p.ParamLocation == ParamLocation.FormData);
 
     public IList<IProperty> Properties => Params.Concat([Returns!]).Where(p => p != null).ToList();
 
-    public bool PreservePropertyCasing { get; set; }
+    public bool PreservePropertyCasing { get; internal set; }
 
     public IDictionary<string, string> CustomProperties { get; internal set; } = new Dictionary<string, string>();
 
@@ -75,13 +72,9 @@ public class Endpoint : IPropertyContainer
 
     internal IList<IProperty> OwnParams { get; set; } = [];
 
-#nullable disable
-
-    internal Reference Location { get; set; }
+    internal Reference Location { get; } = location;
 
     internal IList<string> OwnTags { get; set; } = [];
-
-#nullable enable
 
     public override string ToString()
     {

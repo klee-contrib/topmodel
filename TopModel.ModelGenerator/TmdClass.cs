@@ -2,12 +2,10 @@
 
 public class TmdClass
 {
-#nullable disable
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public string SqlName { get; set; }
+    public string? SqlName { get; set; }
 
-#nullable enable
     public string Comment { get; set; } = "Non documenté";
 
     public IList<TmdProperty> Properties { get; set; } = [];
@@ -16,7 +14,7 @@ public class TmdClass
         Properties
             .OfType<TmdAssociationProperty>()
             .Select(p => p.Association!)
-            .Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class))
+            .Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class!))
             .Where(c => c != this)
             .Distinct()
             .ToList();

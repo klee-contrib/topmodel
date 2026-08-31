@@ -11,10 +11,7 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 {
     public abstract string Name { get; }
 
-#nullable disable
-    public T Config { get; internal set; }
-
-#nullable enable
+    public T Config { get; internal set; } = null!;
 
     public int Number { get; internal set; }
 

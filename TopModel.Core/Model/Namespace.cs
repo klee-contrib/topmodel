@@ -2,11 +2,11 @@
 
 namespace TopModel.Core.Model;
 
-public struct Namespace
+public readonly struct Namespace
 {
-    public string App { get; set; }
+    public string App { get; init; }
 
-    public string Module { get; set; }
+    public string Module { get; init; }
 
     public string ModuleFlat => Module.Replace(".", string.Empty);
 

@@ -5,17 +5,17 @@
 version: 4.7.0
 modules:
   jpa:
-    version: 4.5.0
-    hash: 496cc3b3be6983b9471d1738a2ad36b3
+    version: 4.6.2
+    hash: 4439ee36e40306ae0aabe74f2bdb8709
   csharp:
-    version: 4.3.4
-    hash: 2b0e8abf2a8abbbd51a0b8ad4a21af51
+    version: 4.4.0
+    hash: 4c29977b3d98aa655d6fe2386e66ff45
   sql:
     version: 4.5.0
     hash: 2a426321c8c8e6b6dfd4c7a23dc05dfc
   javascript:
-    version: 4.4.1
-    hash: bc2a904677a7fc70ee50bb0fa7e3fa23
+    version: 4.5.0
+    hash: bbaba0202fa35c36f93d5b49a2c9e68f
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
   - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs

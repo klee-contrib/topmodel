@@ -147,7 +147,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
                 .Where(p => p.EnumProperty != p)
                 .Select(prop => JavaEnumGeneratorHelper.GetPropertyValue(classe, prop, refValue))
                 .ToArray();
-            var value = new JavaEnumValue(refValue.Value[classe.EnumKey]);
+            var value = new JavaEnumValue(refValue.Value[classe.EnumKey!]);
             if (
                 classe.DefaultProperty != null
                 && refValue.Value.TryGetValue(classe.DefaultProperty, out var defaultValue)

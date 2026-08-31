@@ -171,12 +171,11 @@ public class ModelFileLoader(
         newFile.Annotations.AddRange(
             file.Annotations.Select(a =>
             {
-                var na = new Annotation
+                var na = new Annotation(a.Location)
                 {
                     Description = a.Description,
                     Global = a.Global,
                     Implementations = a.Implementations,
-                    Location = a.Location,
                     ModelFile = newFile,
                     Name = a.Name,
                     Namespace = a.Namespace,
@@ -201,7 +200,7 @@ public class ModelFileLoader(
         newFile.Classes.AddRange(
             file.Classes.Select(c =>
             {
-                var nc = new Class
+                var nc = new Class(c.Location)
                 {
                     AnnotationReferences = c.AnnotationReferences,
                     Comment = c.Comment,
@@ -218,7 +217,6 @@ public class ModelFileLoader(
                     InheritanceStrategy = c.InheritanceStrategy,
                     Label = c.Label,
                     LocalePropertyReference = c.LocalePropertyReference,
-                    Location = c.Location,
                     ModelFile = newFile,
                     Name = c.Name,
                     Namespace = c.Namespace,
@@ -309,12 +307,11 @@ public class ModelFileLoader(
         );
 
         newFile.Converters.AddRange(
-            file.Converters.Select(c => new Converter
+            file.Converters.Select(c => new Converter(c.Location)
             {
                 DomainsFromReferences = c.DomainsFromReferences,
                 DomainsToReferences = c.DomainsToReferences,
                 Implementations = c.Implementations,
-                Location = c.Location,
                 ModelFile = newFile,
             })
         );
@@ -322,13 +319,12 @@ public class ModelFileLoader(
         newFile.DataFlows.AddRange(
             file.DataFlows.Select(df =>
             {
-                var ndf = new DataFlow
+                var ndf = new DataFlow(df.Location)
                 {
                     ActivePropertyReference = df.ActivePropertyReference,
                     ClassReference = df.ClassReference,
                     DependsOnReference = df.DependsOnReference,
                     Hooks = df.Hooks,
-                    Location = df.Location,
                     ModelFile = newFile,
                     Name = df.Name,
                     Target = df.Target,
@@ -354,14 +350,13 @@ public class ModelFileLoader(
         newFile.Decorators.AddRange(
             file.Decorators.Select(d =>
             {
-                var nd = new Decorator
+                var nd = new Decorator(d.Location)
                 {
                     AnnotationReferences = d.AnnotationReferences,
                     DecoratorReferences = d.DecoratorReferences,
                     Description = d.Description,
                     ExcludedAnnotationReferences = d.ExcludedAnnotationReferences,
                     Implementations = d.Implementations,
-                    Location = d.Location,
                     ModelFile = newFile,
                     Name = d.Name,
                     Namespace = d.Namespace,
@@ -430,14 +425,13 @@ public class ModelFileLoader(
         newFile.Endpoints.AddRange(
             file.Endpoints.Select(e =>
             {
-                var ne = new Endpoint
+                var ne = new Endpoint(e.Location)
                 {
                     AnnotationReferences = e.AnnotationReferences,
                     CustomProperties = e.CustomProperties,
                     DecoratorReferences = e.DecoratorReferences,
                     Description = e.Description,
                     ExcludedAnnotationReferences = e.ExcludedAnnotationReferences,
-                    Location = e.Location,
                     Method = e.Method,
                     ModelFile = newFile,
                     Name = e.Name,

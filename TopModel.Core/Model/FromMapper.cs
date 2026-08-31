@@ -5,7 +5,7 @@ namespace TopModel.Core.Model;
 
 public class FromMapper
 {
-    public string? Comment { get; set; }
+    public string? Comment { get; internal set; }
 
     public IList<OneOf<ClassMappings, PropertyMapping>> Params { get; } = [];
 
@@ -13,12 +13,11 @@ public class FromMapper
 
     public IEnumerable<PropertyMapping> PropertyParams => Params.Where(p => p.IsT1).Select(p => p.AsT1);
 
-#nullable disable
-    public Class Class { get; set; }
+    public required Class Class { get; init; }
 
     internal IList<OneOf<ClassMappings, PropertyMapping>> OwnParams { get; } = [];
 
     internal IEnumerable<PropertyMapping> OwnPropertyParams => OwnParams.Where(p => p.IsT1).Select(p => p.AsT1);
 
-    internal LocatedString Reference { get; set; }
+    internal LocatedString Reference { get; set; } = null!;
 }

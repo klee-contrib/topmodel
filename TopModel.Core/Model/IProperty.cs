@@ -33,9 +33,9 @@ public interface IProperty : IAnnotationContainer
 
     string? DefaultValue { get; }
 
-    bool Readonly { get; set; }
+    bool Readonly { get; }
 
-    LocatedString? Trigram { get; set; }
+    LocatedString? Trigram { get; }
 
     ParamLocation? ParamLocation { get; }
 
@@ -43,22 +43,22 @@ public interface IProperty : IAnnotationContainer
 
     IDictionary<string, string> CustomProperties { get; }
 
-    IList<string>? Tags { get; set; }
+    IList<string>? Tags { get; }
 
-    Class Class { get; set; }
+    Class Class { get; internal set; }
 
-    Endpoint Endpoint { get; set; }
+    Endpoint? Endpoint { get; internal set; }
 
-    Decorator Decorator { get; set; }
+    Decorator? Decorator { get; internal set; }
 
     IProperty? SourceProperty { get; }
 
     IPropertyContainer? SourceContainer => SourceProperty?.Parent;
 
-    PropertyMapping PropertyMapping { get; set; }
+    PropertyMapping? PropertyMapping { get; internal set; }
 
     IPropertyContainer Parent =>
-        Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
+        Class ?? (IPropertyContainer)Endpoint! ?? (IPropertyContainer)Decorator! ?? PropertyMapping!;
 
     IProperty ResourceProperty =>
         SourceContainer != null ? SourceContainer.Properties.First(p => p.Name == Name).ResourceProperty

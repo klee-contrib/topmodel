@@ -4,19 +4,19 @@ namespace TopModel.Core.Model;
 
 public class TemplateParameter
 {
-    public required LocatedString Name { get; set; }
+    public required LocatedString Name { get; init; }
 
-    public required string Comment { get; set; }
+    public required string Comment { get; init; }
 
-    public bool Required { get; set; }
+    public required bool Required { get; init; }
 
-    public string DefaultValue { get; set; } = string.Empty;
+    public required string DefaultValue { get; init; }
 
-    public Annotation? Annotation { get; set; }
+    public Annotation? Annotation { get; internal set; }
 
-    public Decorator? Decorator { get; set; }
+    public Decorator? Decorator { get; internal set; }
 
-    public Domain? Domain { get; set; }
+    public Domain? Domain { get; internal set; }
 
     public string Description => $"**{Name}** ({Comment})";
 }

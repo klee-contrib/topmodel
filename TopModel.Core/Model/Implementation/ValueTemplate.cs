@@ -6,10 +6,7 @@ public class ValueTemplate
 {
     public const string Default = "$$default$$";
 
-#nullable disable
-    public StringWithVariables Value { get; set; }
+    public StringWithVariables Value { get; internal set; } = null!;
 
-#nullable enable
-
-    public IList<StringWithVariables> Imports { get; set; } = [];
+    public IList<StringWithVariables> Imports { get; } = [];
 }

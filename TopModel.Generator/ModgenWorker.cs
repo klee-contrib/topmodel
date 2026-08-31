@@ -27,15 +27,11 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     private readonly IList<Type> _generators = [];
     private readonly Dictionary<string, string> _resolvedConfigKeys = [];
 
-#nullable disable
-
-    private IList<CustomModule> _customModules;
-    private IDisposable _logScope;
-    private Microsoft.Extensions.Logging.ILogger _logger;
-    private string _modgenRoot;
-    private TopModelLock _topModelLock;
-
-#nullable enable
+    private IList<CustomModule> _customModules = null!;
+    private IDisposable? _logScope;
+    private Microsoft.Extensions.Logging.ILogger _logger = null!;
+    private string _modgenRoot = null!;
+    private TopModelLock _topModelLock = null!;
 
     private bool hasInstalled = false;
     private ModelStore? modelStore;
