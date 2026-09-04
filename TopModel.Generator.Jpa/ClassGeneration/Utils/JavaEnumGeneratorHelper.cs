@@ -39,7 +39,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
                 Visibility = "public",
                 DefaultValue = GetAllArgsConstructorCall(classe, refValue, tag),
             };
-            field.AddImports(GetAllArgsConstructorCallImports(classe, tag));
+            field.AddImports(GetAllArgsConstructorCallImports(classe, refValue, tag));
             yield return field;
         }
     }
@@ -124,20 +124,18 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         return field;
     }
 
-    private List<string> GetAllArgsConstructorCallImports(Class classe, string tag)
+    private List<string> GetAllArgsConstructorCallImports(Class classe, ClassValue refValue, string tag)
     {
         return Config
             .GetProperties(classe)
             .SelectMany(prop =>
             {
-                if (Config.UniqueValueGeneration.CanConst && prop.UniqueValuedProperty != null)
-                {
-                    return new[]
-                    {
-                        $"{Config.GetEnumPackageName(prop.UniqueValuedProperty!.Class, tag)}.{prop.UniqueValuedProperty!.Class.NamePascal}{prop.UniqueValuedProperty!.NamePascal}",
-                    };
-                }
-                return [];
+                var rawValue =
+                    prop == classe.EnumKey ? refValue.Value[prop]
+                    : refValue.Value.TryGetValue(prop, out var v) ? v
+                    : null;
+
+                return rawValue != null ? Config.GetDefaultValueImports(prop, tag, rawValue) : [];
             })
             .ToList();
     }

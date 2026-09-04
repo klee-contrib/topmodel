@@ -76,14 +76,6 @@ public class SpringRestTemplateApiGenerator(
         return methodParams;
     }
 
-    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        var properties = endpoints
-            .SelectMany(Config.GetParams)
-            .Concat(endpoints.Select(endpoint => Config.GetReturns(endpoint)!).Where(r => r != null));
-        return properties.SelectMany(property => property.GetTypeImports(Config, tag));
-    }
-
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = GetClassName(fileName, tag);
@@ -123,21 +115,21 @@ public class SpringRestTemplateApiGenerator(
 
         foreach (var endpoint in endpoints)
         {
-            WriteEndpoint(fw, endpoint);
+            WriteEndpoint(fw, endpoint, tag);
         }
 
         fw.WriteLine("}");
     }
 
-    protected virtual void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    protected virtual void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteLine();
         WriteUriBuilderMethod(fw, endpoint);
         fw.WriteLine();
-        WriteEndpointCallMethod(fw, endpoint);
+        WriteEndpointCallMethod(fw, endpoint, tag);
     }
 
-    protected virtual void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint)
+    protected virtual void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteDocStart(1, endpoint.Description);
 
@@ -151,7 +143,10 @@ public class SpringRestTemplateApiGenerator(
         if (returns != null)
         {
             fw.WriteLine(1, $" * @return {returns.Comment}");
+            fw.AddImports(returns.GetTypeImports(Config, tag));
         }
+
+        AddMethodParamsImports(fw, endpoint, tag);
 
         fw.WriteLine(1, " */");
         var returnType = "ResponseEntity";
@@ -192,19 +187,33 @@ public class SpringRestTemplateApiGenerator(
         fw.WriteLine(1, "}");
     }
 
+    protected virtual void AddMethodParamsImports(JavaWriter fw, Endpoint endpoint, string tag)
+    {
+        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
+        {
+            fw.AddImports(param.GetTypeImports(Config, tag));
+        }
+
+        if (endpoint.GetJsonBodyParam(Config) is IProperty bodyParam)
+        {
+            fw.AddImports(bodyParam.GetTypeImports(Config, tag));
+        }
+    }
+
     protected virtual void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        var imports = new List<string>();
-        imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
-        imports.Add("jakarta.annotation.Generated");
-        imports.Add("org.springframework.web.util.UriComponentsBuilder");
-        imports.Add("org.springframework.web.client.RestTemplate");
-        imports.Add("java.net.URI");
-        imports.Add("org.springframework.http.HttpMethod");
-        imports.Add("org.springframework.http.HttpEntity");
-        imports.Add("org.springframework.http.HttpHeaders");
-        imports.Add("org.springframework.http.ResponseEntity");
-        fw.AddImports(imports);
+        fw.AddImports(
+            [
+                "jakarta.annotation.Generated",
+                "org.springframework.web.util.UriComponentsBuilder",
+                "org.springframework.web.client.RestTemplate",
+                "java.net.URI",
+                "org.springframework.http.HttpMethod",
+                "org.springframework.http.HttpEntity",
+                "org.springframework.http.HttpHeaders",
+                "org.springframework.http.ResponseEntity",
+            ]
+        );
     }
 
     protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)

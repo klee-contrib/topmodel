@@ -621,7 +621,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 }
             }
         }
-        else if (
+
+        if (
             HasEnumSupport
             && UseValueNameForValues
             && property.EnumProperty != null
@@ -631,7 +632,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             return $"{GetEnumType(property.EnumProperty!).TrimEnd('?')}.{value}";
         }
-        else if (
+
+        if (
             UseValueNameForValues
             && UniqueValueGeneration.CanConst
             && property.UniqueValuedProperty != null

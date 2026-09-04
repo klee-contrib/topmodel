@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.EntityManagerFactory;
@@ -47,12 +46,11 @@ public class ExportMenusFlow {
 	@Bean("ExportMenusStep")
 	public static Step exportMenusStep(
 			JobRepository jobRepository, //
-			PlatformTransactionManager transactionManager, //
 			@Qualifier("ExportMenusReader") ItemReader<Menu> reader, //
 			@Qualifier("ExportMenusWriter") ItemWriter<MenuRead> writer //
 	) {
 		return new StepBuilder("ExportMenusStep", jobRepository) //
-			.<Menu, MenuRead>chunk(100000, transactionManager) //
+			.<Menu, MenuRead>chunk(100000) //
 			.reader(reader) //
 			.processor((Menu item) -> new MenuRead(item)) //
 			.faultTolerant() //

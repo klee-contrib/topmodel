@@ -23,10 +23,10 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
 public class CategoriePlatRegion {
 
 	@Transient
-	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, "DESSERT");
+	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Dessert);
 
 	@Transient
-	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, "ENTREE");
+	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Entree);
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.

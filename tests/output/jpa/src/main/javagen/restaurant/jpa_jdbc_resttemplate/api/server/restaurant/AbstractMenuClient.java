@@ -18,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import jakarta.annotation.Generated;
 
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.MenuRead;
-import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.MenuWrite;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatItem;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatRead;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatWrite;

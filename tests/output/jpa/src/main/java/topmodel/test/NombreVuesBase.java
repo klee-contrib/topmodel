@@ -1,6 +1,5 @@
 package topmodel.test;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Transient;
 
 public class NombreVuesBase {
@@ -22,6 +21,7 @@ public class NombreVuesBase {
 
     /**
      * Set the value of {@link #nombreVues nombreVues}.
+     * 
      * @param nombreVues value to set.
      */
     public void setNombreVues(Integer nombreVues) {

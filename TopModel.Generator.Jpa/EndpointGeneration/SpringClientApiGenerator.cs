@@ -31,11 +31,6 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
-    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        return endpoints.SelectMany(p => p.Properties).SelectMany(c => c.GetTypeImports(Config, tag));
-    }
-
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = GetClassName(fileName, tag);
@@ -91,6 +86,10 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             Comment = endpoint.Description,
             ReturnComment = returns != null ? returns.Comment : "Aucun retour",
         };
+        if (returns != null)
+        {
+            method.AddImports(returns.GetTypeImports(Config, tag));
+        }
         var javaAnnotations = Config
             .GetAnnotations(endpoint, tag)
             .Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
@@ -134,7 +133,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             }
                 .AddRange(Config.GetDomainJavaAnnotations(param, tag))
                 .Add(pathParamAnnotation);
-            parameter.Imports.AddRange(Config.GetDomainImports(param, tag));
+            parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
             method.AddParameter(parameter);
         }
 
@@ -152,6 +151,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             }
                 .AddRange(Config.GetDomainJavaAnnotations(param, tag))
                 .Add(requestParamAnnotation);
+            parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
             method.AddParameter(parameter);
         }
 
@@ -195,6 +195,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                     }
                         .AddRange(Config.GetDomainJavaAnnotations(param, tag))
                         .Add(requestPartAnnotation);
+                    parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
                     method.AddParameter(parameter);
                 }
             }
@@ -215,6 +216,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 }
                     .Add(requestBodyAnnotation)
                     .Add(validAnnotation);
+                parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
                 method.AddParameter(parameter);
             }
         }
@@ -224,7 +226,6 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
     protected virtual void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        fw.AddImports(GetTypeImports(endpoints, tag));
         fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
     }
 }

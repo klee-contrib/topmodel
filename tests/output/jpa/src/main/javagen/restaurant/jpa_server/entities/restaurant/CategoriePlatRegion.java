@@ -19,7 +19,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
 import restaurant.jpa_server.enums.restaurant.RegionCode;
 
 /**

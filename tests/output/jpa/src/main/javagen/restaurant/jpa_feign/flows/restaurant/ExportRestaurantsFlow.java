@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.EntityManagerFactory;
@@ -48,13 +47,12 @@ public class ExportRestaurantsFlow {
 	@Bean("ExportRestaurantsStep")
 	public static Step exportRestaurantsStep(
 			JobRepository jobRepository, //
-			PlatformTransactionManager transactionManager, //
 			@Qualifier("ExportRestaurantsReader") ItemReader<Restaurant> reader, //
 			ExportRestaurantsPartialFlow exportRestaurantsPartialFlow,
 			@Qualifier("ExportRestaurantsWriter") ItemWriter<RestaurantRead> writer //
 	) {
 		return new StepBuilder("ExportRestaurantsStep", jobRepository) //
-			.<Restaurant, RestaurantRead>chunk(100000, transactionManager) //
+			.<Restaurant, RestaurantRead>chunk(100000) //
 			.reader(reader) //
 			.processor(new CompositeItemProcessor<>(exportRestaurantsPartialFlow.afterSource(), exportRestaurantsPartialFlow.map(), exportRestaurantsPartialFlow.beforeTarget())) //
 			.faultTolerant() //

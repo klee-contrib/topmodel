@@ -23,7 +23,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
 import restaurant.jpa_server.dtos.restaurant.MenuRead;
-import restaurant.jpa_server.dtos.restaurant.MenuWrite;
 import restaurant.jpa_server.dtos.restaurant.PlatItem;
 import restaurant.jpa_server.dtos.restaurant.PlatRead;
 import restaurant.jpa_server.dtos.restaurant.PlatWrite;
