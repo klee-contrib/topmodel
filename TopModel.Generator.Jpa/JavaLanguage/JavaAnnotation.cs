@@ -71,4 +71,16 @@ public class JavaAnnotation
         Attributes[name] = value.ToList();
         return this;
     }
+
+    public JavaAnnotation AddImport(string import)
+    {
+        _imports.Add(import);
+        return this;
+    }
+
+    public JavaAnnotation AddImports(IEnumerable<string> imports)
+    {
+        _imports.AddRange(imports);
+        return this;
+    }
 }

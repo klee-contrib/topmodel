@@ -98,7 +98,7 @@ public interface MenuApi {
 	 */
 	@GetMapping(path = "api/restaurants/plats")
 	@Operation(description = "Liste tous les plats")
-	List<PlatItem> getPlats(@Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<PlatItem> getPlats(@Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true, defaultValue = "true") Boolean disponible);
 
 	/**
 	 * Met à jour partiellement un plat.
@@ -133,7 +133,7 @@ public interface MenuApi {
 	 */
 	@GetMapping(path = "api/restaurants/plats/search")
 	@Operation(description = "Recherche de plats avec critères multiples")
-	List<PlatItem> searchPlats(@Parameter(description = "Nom du plat") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<PlatItem> searchPlats(@Parameter(description = "Nom du plat") @RequestParam(value = "nom", required = true) String nom, @Parameter(description = "Restaurant proposant ce plat") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true, defaultValue = "true") Boolean disponible);
 
 	/**
 	 * Met à jour un plat.

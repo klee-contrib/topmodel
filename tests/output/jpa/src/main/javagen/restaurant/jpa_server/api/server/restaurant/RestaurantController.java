@@ -110,7 +110,7 @@ public interface RestaurantController {
 	 */
 	@GetMapping(path = "{resId}/plats")
 	@Operation(description = "Liste les plats d'un restaurant")
-	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<PlatItem> getRestaurantPlats(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Catégorie du plat") @RequestParam(value = "categoriePlatCode", required = true) CategoriePlatCode categoriePlatCode, @Parameter(description = "Indique si le plat est disponible") @RequestParam(value = "disponible", required = true, defaultValue = "true") Boolean disponible);
 
 	/**
 	 * Récupère les statistiques d'un restaurant.
@@ -134,7 +134,7 @@ public interface RestaurantController {
 	 */
 	@GetMapping(path = "{resId}/tables")
 	@Operation(description = "Liste les tables d'un restaurant")
-	List<TableItem> getRestaurantTables(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<TableItem> getRestaurantTables(@Parameter(description = "Identifiant du restaurant") @PathVariable("resId") Integer resId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true, defaultValue = "true") Boolean disponible);
 
 	/**
 	 * Liste tous les restaurants.
@@ -164,7 +164,7 @@ public interface RestaurantController {
 	 */
 	@GetMapping(path = "tables")
 	@Operation(description = "Liste toutes les tables")
-	List<TableItem> getTables(@Parameter(description = "Restaurant auquel appartient la table") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true) Boolean disponible);
+	List<TableItem> getTables(@Parameter(description = "Restaurant auquel appartient la table") @RequestParam(value = "restaurantId", required = true) Integer restaurantId, @Parameter(description = "Indique si la table est disponible") @RequestParam(value = "disponible", required = true, defaultValue = "true") Boolean disponible);
 
 	/**
 	 * Recherche avancée de restaurants.

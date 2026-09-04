@@ -161,8 +161,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         }
 
         javaField.AddRange(annotations);
-        javaField.DefaultValue = GetDefaultValue(property);
-        javaField.AddImports(GetDefaultValueImports(property, tag));
+        javaField.DefaultValue = Config.GetDefaultValue(property);
+        javaField.AddImports(Config.GetDefaultValueImports(property, tag));
         javaField.AddImports(property.GetTypeImports(Config, tag));
         return javaField;
     }
@@ -421,44 +421,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             import
         );
         return convert;
-    }
-
-    protected virtual string GetDefaultValue(IProperty property)
-    {
-        var defaultValue = Config.GetValue(property);
-        return defaultValue != "null" ? defaultValue : string.Empty;
-    }
-
-    protected virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)
-    {
-        var defaultValue = Config.GetValue(property);
-
-        if (
-            defaultValue != "null"
-            && property is { EnumProperty: IProperty ep }
-            && Config.UniqueValueGeneration != UniqueValueGenerationMode.None
-        )
-        {
-            return
-            [
-                $"{Config.GetEnumPackageName(ep.Class, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(ep)}",
-            ];
-        }
-        else if (
-            defaultValue != "null"
-            && property is { UniqueValuedProperty: IProperty uvp }
-            && Config.UniqueValueGeneration.CanConst
-        )
-        {
-            return
-            [
-                $"{Config.GetEnumPackageName(uvp.Class, Config.GetBestClassTag(property.Class, tag))}.{Config.GetEnumType(uvp)}",
-            ];
-        }
-        else
-        {
-            return Config.GetValueImports(property, tag);
-        }
     }
 
     protected virtual IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property, string tag)

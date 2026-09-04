@@ -23,13 +23,6 @@ public class JdbcModelPropertyGenerator(JpaConfig config, IDictionary<string, st
         return false;
     }
 
-    protected override string GetDefaultValue(IProperty property)
-    {
-        var defaultValue = Config.GetValue(property);
-        var suffix = defaultValue != "null" ? $"{defaultValue}" : string.Empty;
-        return suffix;
-    }
-
     protected override IEnumerable<JavaAnnotation> GetIdAnnotations(IProperty property, string tag)
     {
         yield return IdAnnotation;

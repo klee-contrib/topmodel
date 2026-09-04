@@ -229,6 +229,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             imports: "org.springframework.web.bind.annotation.RequestParam",
             value: @$"""{queryParam.GetParamName()}"""
         ).AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
+        if (queryParam.DefaultValue != "null" && !string.IsNullOrEmpty(queryParam.DefaultValue))
+        {
+            queryParamAnnotation.AddAttribute("defaultValue", $@"""{queryParam.DefaultValue}""");
+        }
+
         param.Add(queryParamAnnotation);
         param.Comment = queryParam.Comment;
         param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));

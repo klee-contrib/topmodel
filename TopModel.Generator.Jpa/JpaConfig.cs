@@ -273,6 +273,38 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
+    public virtual string GetDefaultValue(IProperty property)
+    {
+        var defaultValue = GetValue(property);
+        return defaultValue != "null" ? defaultValue : string.Empty;
+    }
+
+    public virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag)
+    {
+        var defaultValue = GetValue(property);
+
+        if (
+            defaultValue != "null"
+            && property is { EnumProperty: IProperty ep }
+            && UniqueValueGeneration != UniqueValueGenerationMode.None
+        )
+        {
+            return [$"{GetEnumPackageName(ep.Class, GetBestClassTag(property.Class, tag))}.{GetEnumType(ep)}"];
+        }
+        else if (
+            defaultValue != "null"
+            && property is { UniqueValuedProperty: IProperty uvp }
+            && UniqueValueGeneration.CanConst
+        )
+        {
+            return [$"{GetEnumPackageName(uvp.Class, GetBestClassTag(property.Class, tag))}.{GetEnumType(uvp)}"];
+        }
+        else
+        {
+            return GetValueImports(property, tag);
+        }
+    }
+
     public virtual IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)
     {
         return GetAnnotations(property, tag)

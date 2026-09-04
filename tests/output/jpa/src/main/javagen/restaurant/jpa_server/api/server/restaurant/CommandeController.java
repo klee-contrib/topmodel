@@ -109,7 +109,7 @@ public interface CommandeController {
 	 */
 	@GetMapping(path = "commandes")
 	@Operation(description = "Liste toutes les commandes")
-	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
+	List<CommandeItem> getCommandes(@Parameter(description = "Client ayant passé la commande") @RequestParam(value = "clientId", required = true) Integer clientId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true, defaultValue = "EN_ATT") StatutCommande statutCommande, @Parameter(description = "Table associée à la commande") @RequestParam(value = "tableId", required = false) Integer tableId);
 
 	/**
 	 * Récupère les commandes par date.
@@ -161,5 +161,5 @@ public interface CommandeController {
 	 */
 	@PatchMapping(path = "commandes/{comId}/statut")
 	@Operation(description = "Met à jour uniquement le statut d'une commande")
-	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true) StatutCommande statutCommande);
+	CommandeRead updateCommandeStatut(@Parameter(description = "Identifiant de la commande") @PathVariable("comId") Integer comId, @Parameter(description = "Statut de la commande") @RequestParam(value = "statutCommande", required = true, defaultValue = "EN_ATT") StatutCommande statutCommande);
 }
