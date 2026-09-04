@@ -3,6 +3,7 @@
 ## 4.6.3
 
 - [4d5448](https://github.com/klee-contrib/topmodel/commit/4d544863f0db2f0265304db771f87d79beeaf4c5) - Default value des queryParams dans les controllers
+- [ca24c2](https://github.com/klee-contrib/topmodel/commit/ca24c2cd2c24ea9a1a98f787251b562ab9dadd51) - Ajout de check sur les api deprecated utilisées par le générateur, et les imports inutiles. Correction des bugs remontés ainsi
 
 ## 4.6.2
 

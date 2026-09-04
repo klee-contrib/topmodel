@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.7.1
+
+- [ca24c2](https://github.com/klee-contrib/topmodel/commit/ca24c2cd2c24ea9a1a98f787251b562ab9dadd51) - Fix GetValue dans des cas particuliers rencontrés par le générateur JPA.
+
 ## 4.7.0
 
 - [#593](https://github.com/klee-contrib/topmodel/pull/593) - `paramLocation` sur les domaines et propriétés
