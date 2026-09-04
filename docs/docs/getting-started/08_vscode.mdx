@@ -103,14 +103,14 @@ Le language server `modls` communique via le protocole standard LSP (stdio), il 
      dotnet /chemin/vers/TopModel.LanguageServer.dll
      ```
 
-   - **Working Directory** : le répertoire racine du projet, contenant le(s) fichier(s) `topmodel.config`. C'est indispensable : sans cela, le language server ne retrouve pas la configuration du modèle.
+   - **Working Directory** : utiliser la valeur `$PROJECT_DIR$` pour que le serveur soit lancé depuis la racine du projet courant
 
 5. Onglet **Mappings** : associez les fichiers du modèle à ce serveur via un **File name pattern** (recommandé) :
    - `*.tmd`
    - `topmodel*.config`
    - `tmdgen*.config`
 
-   Préférez un *file name pattern* (ou le File Type YAML existant) plutôt qu'un File Type custom « TopModel » : un type custom peut faire perdre la coloration syntaxique YAML.
+   Préférez un _file name pattern_ (ou le File Type YAML existant) plutôt qu'un File Type custom « TopModel » : un type custom peut faire perdre la coloration syntaxique YAML.
 
 Redémarrez le projet après cette configuration.
 
