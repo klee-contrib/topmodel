@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.6.3
+
+- [4d5448](https://github.com/klee-contrib/topmodel/commit/4d544863f0db2f0265304db771f87d79beeaf4c5) - Default value des queryParams dans les controllers
+
 ## 4.6.2
 
 - [35fc1](https://github.com/klee-contrib/topmodel/commit/35fc15413c163565b372a0feaa772be532e05a72) - Gestion des commentaires multi-lignes : les commentaires qui contiennent des retours à la lignes sont maintenant ajoutés ligne par ligne (pour les classes)
