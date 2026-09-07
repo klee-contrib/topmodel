@@ -75,6 +75,12 @@ public class ClientAvecCommandes implements Serializable {
 	private String email;
 
 	/**
+	 * Carte Swile du client.
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
+	 */
+	private Integer swileCardId;
+
+	/**
 	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
@@ -207,6 +213,15 @@ public class ClientAvecCommandes implements Serializable {
 	 */
 	public String getEmail() {
 		return this.email;
+	}
+
+	/**
+	 * Getter for swileCardId.
+	 *
+	 * @return value of {@link #swileCardId swileCardId}.
+	 */
+	public Integer getSwileCardId() {
+		return this.swileCardId;
 	}
 
 	/**
@@ -366,6 +381,14 @@ public class ClientAvecCommandes implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #swileCardId swileCardId}.
+	 * @param swileCardId value to set.
+	 */
+	public void setSwileCardId(Integer swileCardId) {
+		this.swileCardId = swileCardId;
+	}
+
+	/**
 	 * Set the value of {@link #avisClients avisClients}.
 	 * @param avisClients value to set.
 	 */
@@ -471,6 +494,7 @@ public class ClientAvecCommandes implements Serializable {
 		DEPARTEMENT_CODE(String.class),
 		DATE_CREATION(LocalDateTime.class),
 		EMAIL(String.class),
+		SWILE_CARD_ID(Integer.class),
 		AVIS_CLIENTS(List.class),
 		COMMANDE_ID(List.class),
 		COMMANDE_DATE_COMMANDE(List.class),

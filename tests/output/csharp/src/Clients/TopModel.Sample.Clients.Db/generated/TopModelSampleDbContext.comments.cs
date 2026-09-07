@@ -46,6 +46,7 @@ public partial class TopModelSampleDbContext
         var client = modelBuilder.Entity<Client>();
         client.ToTable(t => t.HasComment("Client du restaurant"));
         client.Property(p => p.Email).HasComment("Adresse email du client");
+        client.Property("SwileCardId").HasComment("Carte Swile du client");
 
         var commande = modelBuilder.Entity<Commande>();
         commande.ToTable(t => t.HasComment("Commande d'un client"));
@@ -90,6 +91,10 @@ public partial class TopModelSampleDbContext
         employe.Property(p => p.DateEmbauche).HasComment("Date d'embauche");
         employe.Property(p => p.Salaire).HasComment("Salaire de l'employé");
         employe.Property("RestaurantId").HasComment("Restaurant où travaille l'employé");
+
+        var facture = modelBuilder.Entity<Facture>();
+        facture.ToTable(t => t.HasComment("Facture"));
+        facture.Property(p => p.Id).HasComment("Identifiant de la facture");
 
         var fournisseur = modelBuilder.Entity<Fournisseur>();
         fournisseur.Property(p => p.Telephone).HasComment("Numéro de téléphone");
@@ -139,6 +144,11 @@ public partial class TopModelSampleDbContext
         menuPlat.Property("PlatId").HasComment("Plat du menu");
         menuPlat.Property(p => p.Ordre).HasComment("Ordre d'affichage du plat dans le menu");
         menuPlat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
+
+        var paiement = modelBuilder.Entity<Paiement>();
+        paiement.ToTable(t => t.HasComment("Paiement"));
+        paiement.Property("FactureId").HasComment("Facture associée au paiement");
+        paiement.Property(p => p.SwileCardId).HasComment("Carte Swile utilisée pour le paiement");
 
         var personne = modelBuilder.Entity<Personne>();
         personne.ToTable(t => t.HasComment("Classe de base représentant une personne"));

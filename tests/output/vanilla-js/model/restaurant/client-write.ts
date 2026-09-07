@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_LIBELLE, DO_LISTE} from "../../domains";
+import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "../../domains";
 
 import {DepartementCode} from "./enums";
 
@@ -11,6 +11,7 @@ export interface ClientWrite {
     prenom: string;
     departementCode?: DepartementCode;
     email?: string;
+    swileCardId?: number;
     avisClients: number[];
 }
 
@@ -43,6 +44,13 @@ export const ClientWriteEntity = {
         domain: DO_LIBELLE,
         isRequired: false,
         label: "Courriel"
+    },
+    swileCardId: {
+        type: "field",
+        name: "swileCardId",
+        domain: DO_ID,
+        isRequired: false,
+        label: "SwileCardId"
     },
     avisClients: {
         type: "field",

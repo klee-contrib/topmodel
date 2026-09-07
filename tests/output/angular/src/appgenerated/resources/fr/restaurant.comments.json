@@ -27,7 +27,8 @@
     },
     "client": {
         "avisClients": "Association réciproque de AvisClient.Client",
-        "email": "Adresse email du client"
+        "email": "Adresse email du client",
+        "swileCardId": "Carte Swile du client"
     },
     "clientAvecCommandes": {
         "commandeAvisClientId": "Liste des commandes du client",

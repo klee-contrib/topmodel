@@ -13,6 +13,7 @@ export interface ClientRead {
     departementCode?: DepartementCode;
     dateCreation: string;
     email?: string;
+    swileCardId?: number;
     avisClients: number[];
 }
 
@@ -58,6 +59,13 @@ export const ClientReadEntity = {
         domain: DO_LIBELLE,
         isRequired: false,
         label: "Courriel"
+    },
+    swileCardId: {
+        type: "field",
+        name: "swileCardId",
+        domain: DO_ID,
+        isRequired: false,
+        label: "SwileCardId"
     },
     avisClients: {
         type: "field",

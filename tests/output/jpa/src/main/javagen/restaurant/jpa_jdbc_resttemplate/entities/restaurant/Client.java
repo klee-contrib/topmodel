@@ -23,6 +23,12 @@ public class Client extends Personne {
 	private String email;
 
 	/**
+	 * Carte Swile du client.
+	 */
+	@Column("swi_id")
+	private Integer swileCard;
+
+	/**
 	 * Getter for email.
 	 *
 	 * @return value of {@link #email email}.
@@ -32,10 +38,27 @@ public class Client extends Personne {
 	}
 
 	/**
+	 * Getter for swileCard.
+	 *
+	 * @return value of {@link #swileCard swileCard}.
+	 */
+	public Integer getSwileCard() {
+		return this.swileCard;
+	}
+
+	/**
 	 * Set the value of {@link #email email}.
 	 * @param email value to set.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	/**
+	 * Set the value of {@link #swileCard swileCard}.
+	 * @param swileCard value to set.
+	 */
+	public void setSwileCard(Integer swileCard) {
+		this.swileCard = swileCard;
 	}
 }

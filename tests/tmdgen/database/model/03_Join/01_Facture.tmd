@@ -1,0 +1,19 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Join
+tags:
+  - Back
+---
+class:
+  name: Facture
+  sqlName: facture
+  comment: Facture
+  properties:
+    - name: Id
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Identifiant de la facture

@@ -5,6 +5,7 @@ tags:
 uses:
   - meta/decorators
   - Restaurant/Entities/Restaurant
+  - Restaurant/Entities/External
 
 ---
 class:
@@ -122,6 +123,8 @@ class:
       domain: DO_LIBELLE
       comment: Adresse email du client
       label: Courriel
+    - association: SwileCard
+      comment: Carte Swile du client
 ---
 decorator:
   name: NombreVuesBase

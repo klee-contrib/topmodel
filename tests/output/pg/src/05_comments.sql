@@ -50,6 +50,7 @@ comment on column categorie_plat_region.cat_code is 'Catégorie de plat';
  **/
 comment on table client is 'Client du restaurant';
 comment on column client.cli_email is 'Adresse email du client';
+comment on column client.swi_id is 'Carte Swile du client';
 comment on column client.per_id is 'Association vers la clé primaire de la classe parente';
 
 /**
@@ -110,6 +111,12 @@ comment on column employe.lie_id is 'Restaurant où travaille l''employé';
 comment on column employe.per_id is 'Association vers la clé primaire de la classe parente';
 
 /**
+  * Commentaires pour la table facture
+ **/
+comment on table facture is 'Facture';
+comment on column facture.id is 'Identifiant de la facture';
+
+/**
   * Commentaires pour la table lieu
  **/
 comment on table lieu is 'Lieu';
@@ -168,6 +175,13 @@ comment on column menu_plat.men_id is 'Menu contenant ce plat';
 comment on column menu_plat.pla_id is 'Plat du menu';
 comment on column menu_plat.mpl_ordre is 'Ordre d''affichage du plat dans le menu';
 comment on column menu_plat.mpl_date_creation is 'Date de création de l''enregistrement';
+
+/**
+  * Commentaires pour la table paiement
+ **/
+comment on table paiement is 'Paiement';
+comment on column paiement.id is 'Facture associée au paiement';
+comment on column paiement.swi_id is 'Carte Swile utilisée pour le paiement';
 
 /**
   * Commentaires pour la table personne

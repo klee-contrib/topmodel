@@ -58,6 +58,12 @@ public partial record ClientAvecCommandes
     public string? Email { get; set; }
 
     /// <summary>
+    /// Carte Swile du client.
+    /// </summary>
+    [Domain(Domains.Id)]
+    public int? SwileCardId { get; set; }
+
+    /// <summary>
     /// Association réciproque de AvisClient.Client.
     /// </summary>
     [Domain(Domains.Liste)]

@@ -15,9 +15,13 @@ public class Client_ extends Personne_ {
 
 	public static volatile SingularAttribute<Client, String> email;
 
+	public static volatile SingularAttribute<Client, Integer> swileCard;
+
 	public static volatile ListAttribute<Client, AvisClient> avisClients;
 
 	public static final String EMAIL = "email";
+
+	public static final String SWILE_CARD = "swileCard";
 
 	public static final String AVIS_CLIENTS = "avisClients";
 }

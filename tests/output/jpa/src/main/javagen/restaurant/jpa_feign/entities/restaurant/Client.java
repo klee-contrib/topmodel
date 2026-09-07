@@ -30,6 +30,12 @@ public class Client extends Personne {
 	private String email;
 
 	/**
+	 * Carte Swile du client.
+	 */
+	@Column(name = "swi_id", columnDefinition = "int")
+	private Integer swileCard;
+
+	/**
 	 * Association réciproque de AvisClient.Client.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client")
@@ -42,6 +48,15 @@ public class Client extends Personne {
 	 */
 	public String getEmail() {
 		return this.email;
+	}
+
+	/**
+	 * Getter for swileCard.
+	 *
+	 * @return value of {@link #swileCard swileCard}.
+	 */
+	public Integer getSwileCard() {
+		return this.swileCard;
 	}
 
 	/**
@@ -62,6 +77,14 @@ public class Client extends Personne {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	/**
+	 * Set the value of {@link #swileCard swileCard}.
+	 * @param swileCard value to set.
+	 */
+	public void setSwileCard(Integer swileCard) {
+		this.swileCard = swileCard;
 	}
 
 	/**
@@ -95,6 +118,7 @@ public class Client extends Personne {
 	 */
 	public enum Fields {
 		EMAIL(String.class),
+		SWILE_CARD(Integer.class),
 		AVIS_CLIENTS(List.class);
 
 		private final Class<?> type;

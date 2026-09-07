@@ -29,6 +29,9 @@ export const ClientAvecCommandesEntity = entity({
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
     ),
+    swileCardId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.client.swileCardId")
+    ),
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.client.avisClients")
     ),

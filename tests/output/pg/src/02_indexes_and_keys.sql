@@ -65,6 +65,13 @@ alter table categorie_plat_region
 		references categorie_plat (cat_code);
 
 /**
+  * Création de l'index de clef étrangère pour client.swi_id
+ **/
+create index idx_cli_swi_id_fk on client (
+	swi_id ASC
+);
+
+/**
   * Création de l'index de clef étrangère pour client.per_id
  **/
 create index idx_cli_per_id_fk on client (
@@ -266,6 +273,27 @@ create index idx_mpl_pla_id_fk on menu_plat (
 alter table menu_plat
 	add constraint fk_menu_plat_pla_id foreign key (pla_id)
 		references plat (pla_id);
+
+/**
+  * Création de l'index de clef étrangère pour paiement.id
+ **/
+create index idx_paiement_id_fk on paiement (
+	id ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour paiement.id
+ **/
+alter table paiement
+	add constraint fk_paiement_id foreign key (id)
+		references facture (id);
+
+/**
+  * Création de l'index de clef étrangère pour paiement.swi_id
+ **/
+create index idx_paiement_swi_id_fk on paiement (
+	swi_id ASC
+);
 
 /**
   * Création de l'index de clef étrangère pour personne.dep_code

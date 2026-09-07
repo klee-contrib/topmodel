@@ -1,0 +1,28 @@
+---
+uses:
+  - Restaurant/Entities/External
+module: Restaurant
+tags:
+  - back
+---
+class:
+  name: Facture
+  comment: Facture
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la facture
+---
+class:
+  name: Paiement
+  comment: Paiement
+  properties:
+    - association: Facture
+      required: true
+      comment: Facture associée au paiement
+      primaryKey: true
+    - association: SwileCard
+      comment: Carte Swile utilisée pour le paiement
+      primaryKey: true
+      useClass: false

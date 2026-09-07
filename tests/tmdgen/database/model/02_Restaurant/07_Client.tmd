@@ -18,6 +18,10 @@ class:
       domain: DO_LIBELLE
       comment: Adresse email du client
 
+    - name: SwiId
+      domain: DO_ID
+      comment: Carte Swile du client
+
     - association: Personne
       comment: Association vers la clé primaire de la classe parente
       required: true

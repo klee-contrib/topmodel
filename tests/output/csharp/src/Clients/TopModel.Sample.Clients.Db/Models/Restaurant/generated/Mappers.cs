@@ -68,6 +68,7 @@ public static class Mappers
             DepartementCode = client.DepartementCode,
             DateCreation = client.DateCreation,
             Email = client.Email,
+            SwileCardId = client.SwileCard,
             AvisClients = client.AvisClients.Select(p => p.Id!.Value).ToList()
         };
     }

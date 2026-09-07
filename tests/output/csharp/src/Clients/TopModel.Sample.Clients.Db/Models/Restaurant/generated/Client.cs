@@ -24,6 +24,11 @@ public partial record Client : Personne
     public string? Email { get; set; }
 
     /// <summary>
+    /// Carte Swile du client.
+    /// </summary>
+    public int? SwileCard { get; set; }
+
+    /// <summary>
     /// Association réciproque de AvisClient.Client.
     /// </summary>
     public ICollection<AvisClient> AvisClients { get; set; } = [];

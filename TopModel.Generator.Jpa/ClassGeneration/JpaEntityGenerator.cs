@@ -164,7 +164,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             var annotations = new List<JavaAnnotation>();
             annotations.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(pk, tag));
-            if (pk is { Association: Class { Enum: not EnumMode.Enum } })
+            if (pk is { Association: Class { Enum: not EnumMode.Enum } a } && Config.AvailableClasses.Contains(a))
             {
                 annotations.AddRange(JpaModelPropertyGenerator.GetJpaAssociationAnnotations(pk, tag));
             }
@@ -204,7 +204,9 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             .AddBodyLine("}")
             .AddBodyLine()
             .AddBodyLine($"{classe.NamePascal}Id oId = ({classe.NamePascal}Id) o;");
-        var associations = classe.PrimaryKey.Where(p => p.Association != null);
+        var associations = classe.PrimaryKey.Where(p =>
+            p is { Association: Class { Enum: not EnumMode.Enum } a } && Config.AvailableClasses.Contains(a)
+        );
         if (associations.Any())
         {
             equalsMethod.AddBodyLine();
@@ -400,8 +402,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     protected virtual string GetterToCompareCompositePkPk(IProperty pk)
     {
         if (
-            pk is
-            { AssociationProperty: IProperty ap, Association.Enum: not EnumMode.Enum, UseClassForAssociation: true }
+            pk
+                is {
+                    AssociationProperty: IProperty ap,
+                    Association.Enum: not EnumMode.Enum,
+                    UseClassForAssociation: true
+                }
+            && Config.AvailableClasses.Contains(ap.Association)
         )
         {
             return $".{Config.GetGetterName(ap)}()";
@@ -412,7 +419,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetAdders(Class classe, string tag)
     {
-        foreach (var ap in Config.GetProperties(classe).Where(p => p.AssociationMultiple && p.UseClassForAssociation))
+        foreach (
+            var ap in Config
+                .GetProperties(classe)
+                .Where(p =>
+                    p.AssociationMultiple && p.UseClassForAssociation && Config.AvailableClasses.Contains(p.Association)
+                )
+        )
         {
             if (ap.ReverseProperty != null)
             {
@@ -444,7 +457,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
     private IEnumerable<JavaMethod> GetRemovers(Class classe, string tag)
     {
-        foreach (var ap in Config.GetProperties(classe).Where(p => p.AssociationMultiple && p.UseClassForAssociation))
+        foreach (
+            var ap in Config
+                .GetProperties(classe)
+                .Where(p =>
+                    p.AssociationMultiple && p.UseClassForAssociation && Config.AvailableClasses.Contains(p.Association)
+                )
+        )
         {
             if (ap.ReverseProperty != null)
             {

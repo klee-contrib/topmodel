@@ -18,3 +18,5 @@ generatedFiles:
   - ./model/02_Restaurant/10_Reservation.tmd
   - ./model/02_Restaurant/11_Commande.tmd
   - ./model/02_Restaurant/12_LigneCommande.tmd
+  - ./model/03_Join/01_Facture.tmd
+  - ./model/03_Join/02_Paiement.tmd

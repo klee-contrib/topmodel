@@ -218,13 +218,13 @@ public class MenuPlat {
 				return false;
 			}
 
-			return Objects.equals(this.menu.getId(), oId.menu.getId())
-			 && Objects.equals(this.plat.getId(), oId.plat.getId());
+			return Objects.equals(this.menu, oId.menu)
+			 && Objects.equals(this.plat, oId.plat);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(menu == null ? null : menu.getId(), plat == null ? null : plat.getId());
+			return Objects.hash(menu == null ? null : menu, plat == null ? null : plat);
 		}
 	}
 }

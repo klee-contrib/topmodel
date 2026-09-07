@@ -223,7 +223,12 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             }
             else
             {
-                if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)
+                if (
+                    source.MappingType.TryPickT1(out var t1, out _)
+                    && Config.AvailableClasses.Contains(t1.Class)
+                    && t1.Property != null
+                    && target.MappingType.IsT0
+                )
                 {
                     source = t1.Property;
                     value += $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.{t1.Property.NamePascal}";

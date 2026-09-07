@@ -66,6 +66,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     public DbSet<Employe> Employes { get; set; }
 
     /// <summary>
+    /// Accès à l'entité Facture.
+    /// </summary>
+    public DbSet<Facture> Factures { get; set; }
+
+    /// <summary>
     /// Accès à l'entité Fournisseur.
     /// </summary>
     public DbSet<Fournisseur> Fournisseurs { get; set; }
@@ -94,6 +99,11 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// Accès à l'entité MenuPlat.
     /// </summary>
     public DbSet<MenuPlat> MenuPlats { get; set; }
+
+    /// <summary>
+    /// Accès à l'entité Paiement.
+    /// </summary>
+    public DbSet<Paiement> Paiements { get; set; }
 
     /// <summary>
     /// Accès à l'entité Personne.
@@ -201,6 +211,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Menu>().HasOne(p => p.Restaurant).WithMany(p => p.Menus).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne(p => p.Menu).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MenuPlat>().HasOne(p => p.Plat).WithMany().OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Paiement>().HasOne(p => p.Facture).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Personne>().HasOne<Departement>().WithMany().HasForeignKey(p => p.DepartementCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.CategoriePlat).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.Restaurant).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
@@ -213,6 +224,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<CategoriePlatRegion>().HasKey("RegionCode", "CategoriePlatCode");
         modelBuilder.Entity<MenuPlat>().HasKey("MenuId", "PlatId");
+        modelBuilder.Entity<Paiement>().HasKey("FactureId", "SwileCardId");
         modelBuilder.Entity<Promotion>().HasKey("PlatId");
         modelBuilder.Entity<Translation>().HasKey(p => new { p.ResourceKey, p.Lang });
 
@@ -256,6 +268,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<AvisClient>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasColumnName("cat_code");
+        modelBuilder.Entity<Client>().Property("SwileCardId").HasColumnName("swi_id");
         modelBuilder.Entity<Commande>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
         modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");
@@ -267,6 +280,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Menu>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<MenuPlat>().Property("MenuId").HasColumnName("men_id");
         modelBuilder.Entity<MenuPlat>().Property("PlatId").HasColumnName("pla_id");
+        modelBuilder.Entity<Paiement>().Property("FactureId").HasColumnName("id");
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasColumnName("cat_code");
         modelBuilder.Entity<Plat>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<Promotion>().Property("PlatId").HasColumnName("pla_id");

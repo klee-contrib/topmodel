@@ -1,0 +1,26 @@
+﻿####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Join
+tags:
+  - Back
+uses:
+  - 03_Join/01_Facture
+---
+class:
+  name: Paiement
+  sqlName: paiement
+  comment: Paiement
+  properties:
+    - association: Facture
+      comment: Facture associée au paiement
+      required: true
+      primaryKey: true
+
+    - name: SwiId
+      domain: DO_ID
+      required: true
+      primaryKey: true
+      comment: Carte Swile utilisée pour le paiement

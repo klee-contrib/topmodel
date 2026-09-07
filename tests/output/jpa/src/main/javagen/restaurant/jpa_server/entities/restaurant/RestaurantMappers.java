@@ -158,6 +158,7 @@ public class RestaurantMappers {
 		target.setDepartementCode(client.getDepartementCode());
 		target.setDateCreation(client.getDateCreation());
 		target.setEmail(client.getEmail());
+		target.setSwileCardId(client.getSwileCard());
 		if (client.getAvisClients() != null) {
 			target.setAvisClients(client.getAvisClients().stream().filter(Objects::nonNull).map(AvisClient::getId).collect(Collectors.toList()));
 		} else {

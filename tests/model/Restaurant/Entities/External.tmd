@@ -1,0 +1,13 @@
+---
+module: Restaurant
+tags: []
+---
+class:
+  name: SwileCard
+  trigram: SWI
+  comment: Carte Swile d'un client
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant de la carte Swile

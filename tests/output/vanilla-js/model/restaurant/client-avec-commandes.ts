@@ -13,6 +13,7 @@ export interface ClientAvecCommandes {
     departementCode?: DepartementCode;
     dateCreation: string;
     email?: string;
+    swileCardId?: number;
     avisClients: number[];
     commandeId: number[];
     commandeDateCommande: string[];
@@ -69,6 +70,13 @@ export const ClientAvecCommandesEntity = {
         domain: DO_LIBELLE,
         isRequired: false,
         label: "Courriel"
+    },
+    swileCardId: {
+        type: "field",
+        name: "swileCardId",
+        domain: DO_ID,
+        isRequired: false,
+        label: "SwileCardId"
     },
     avisClients: {
         type: "field",

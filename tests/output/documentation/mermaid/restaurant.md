@@ -61,6 +61,12 @@ class Reservation{
 Reservation "1" --> "0..*" Client
 Reservation "0..1" --> "0..*" Table
 Reservation "1" --> "0..*" Restaurant
+%% Facture
+class Facture{
+ DO_ID Id
+}
+Paiement "1" --> "0..*" Facture
+Paiement "1" --> "0..*" SwileCard
 %% Menu du restaurant
 class Menu{
  DO_SEQ_ID Id
@@ -128,6 +134,7 @@ AvisClient "1" --> "0..*" Restaurant
 class Client{
  DO_LIBELLE Email
 }
+Client "0..1" --> "0..*" SwileCard
 Client "1..*" --> "1" AvisClient
 %% Employé du restaurant
 class Employe{
@@ -235,6 +242,10 @@ class TypeTerrasse{
 EXT
 INT
 }
+%% Carte Swile d'un client
+class SwileCard:::fileReference
+%% Carte Swile d'un client
+class SwileCard:::fileReference
 Plat <|--  PlatBoisson
 Plat <|--  PlatDessert
 Plat <|--  PlatEntree

@@ -58,6 +58,12 @@ public class ClientWrite implements Serializable {
 	private String email;
 
 	/**
+	 * Carte Swile du client.
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
+	 */
+	private Integer swileCardId;
+
+	/**
 	 * Association réciproque de AvisClient.Client.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
@@ -98,6 +104,15 @@ public class ClientWrite implements Serializable {
 	 */
 	public String getEmail() {
 		return this.email;
+	}
+
+	/**
+	 * Getter for swileCardId.
+	 *
+	 * @return value of {@link #swileCardId swileCardId}.
+	 */
+	public Integer getSwileCardId() {
+		return this.swileCardId;
 	}
 
 	/**
@@ -142,6 +157,14 @@ public class ClientWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #swileCardId swileCardId}.
+	 * @param swileCardId value to set.
+	 */
+	public void setSwileCardId(Integer swileCardId) {
+		this.swileCardId = swileCardId;
+	}
+
+	/**
 	 * Set the value of {@link #avisClients avisClients}.
 	 * @param avisClients value to set.
 	 */
@@ -167,6 +190,7 @@ public class ClientWrite implements Serializable {
 		PRENOM(String.class),
 		DEPARTEMENT_CODE(String.class),
 		EMAIL(String.class),
+		SWILE_CARD_ID(Integer.class),
 		AVIS_CLIENTS(List.class);
 
 		private final Class<?> type;

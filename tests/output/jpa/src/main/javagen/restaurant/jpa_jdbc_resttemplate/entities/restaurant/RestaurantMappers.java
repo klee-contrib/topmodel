@@ -145,6 +145,7 @@ public class RestaurantMappers {
 		target.setDepartementCode(client.getDepartementCode());
 		target.setDateCreation(client.getDateCreation());
 		target.setEmail(client.getEmail());
+		target.setSwileCardId(client.getSwileCard());
 		return target;
 	}
 

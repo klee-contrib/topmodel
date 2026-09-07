@@ -31,7 +31,8 @@ export const restaurant = {
     },
     client: {
         avisClients: "AvisClients",
-        email: "Email"
+        email: "Email",
+        swileCardId: "SwileCard"
     },
     clientItem: {
         nomComplet: "NomComplet"

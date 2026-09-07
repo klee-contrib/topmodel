@@ -381,7 +381,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         }
         else
         {
-            if (source.MappingType.TryPickT1(out var t1, out _) && t1.Property != null && target.MappingType.IsT0)
+            if (
+                source.MappingType.TryPickT1(out var t1, out _)
+                && Config.AvailableClasses.Contains(t1.Class)
+                && t1.Property != null
+                && target.MappingType.IsT0
+            )
             {
                 checkSourceNull = true;
                 source = t1.Property;

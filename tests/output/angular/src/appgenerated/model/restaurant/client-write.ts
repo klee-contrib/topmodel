@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_LIBELLE, DO_LISTE} from "@/domains";
+import {DO_CODE, DO_ID, DO_LIBELLE, DO_LISTE} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 import {DepartementCode} from "./enums";
@@ -26,6 +26,10 @@ export const ClientWriteEntity = entity({
     email: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.client.email")
         .comment("comments.restaurant.client.email")
+    ),
+    swileCardId: e.field(DO_ID, f => f.optional()
+        .label("restaurant.client.swileCardId")
+        .comment("comments.restaurant.client.swileCardId")
     ),
     avisClients: e.field(DO_LISTE, f => f.type<number[]>()
         .label("restaurant.client.avisClients")

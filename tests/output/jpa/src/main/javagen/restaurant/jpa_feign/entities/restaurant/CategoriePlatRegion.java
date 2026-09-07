@@ -176,12 +176,12 @@ public class CategoriePlatRegion {
 			}
 
 			return Objects.equals(this.regionCode, oId.regionCode)
-			 && Objects.equals(this.categoriePlat.getCode(), oId.categoriePlat.getCode());
+			 && Objects.equals(this.categoriePlat, oId.categoriePlat);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(regionCode == null ? null : regionCode, categoriePlat == null ? null : categoriePlat.getCode());
+			return Objects.hash(regionCode == null ? null : regionCode, categoriePlat == null ? null : categoriePlat);
 		}
 	}
 }
