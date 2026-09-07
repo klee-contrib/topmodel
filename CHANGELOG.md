@@ -13,7 +13,8 @@ Changelogs des modules :
 
 ## 4.7.1
 
-- [ca24c2](https://github.com/klee-contrib/topmodel/commit/ca24c2cd2c24ea9a1a98f787251b562ab9dadd51) - Fix GetValue dans des cas particuliers rencontrés par le générateur JPA.
+- [`04462b0`](https://github.com/klee-contrib/topmodel/commit/04462b04c19b1b421feef590c93a76032adda8bb) - [Core] label du domaine facultatif
+- [`ca24c2c`](https://github.com/klee-contrib/topmodel/commit/ca24c2cd2c24ea9a1a98f787251b562ab9dadd51) - Fix GetValue dans des cas particuliers rencontrés par le générateur JPA.
 
 ## 4.7.0
 

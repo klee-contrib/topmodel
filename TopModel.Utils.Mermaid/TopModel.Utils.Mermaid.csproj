@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>4.7.0</Version>
+    <Version>4.7.1</Version>
     <Description>Génération de diagrammes Mermaid pour TopModel.</Description>
   </PropertyGroup>
   <ItemGroup>

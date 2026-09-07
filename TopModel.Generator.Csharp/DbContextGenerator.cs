@@ -248,6 +248,8 @@ public class DbContextGenerator(
         w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
         w.WriteLine(1, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
         w.WriteLine(1, "{");
+        w.WriteLine(2, "base.OnModelCreating(modelBuilder);");
+        w.WriteLine();
 
         var hasPropConfig = false;
         foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(Config.GetProperties))

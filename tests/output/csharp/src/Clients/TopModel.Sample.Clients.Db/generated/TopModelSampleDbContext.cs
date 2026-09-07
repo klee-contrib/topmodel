@@ -176,6 +176,8 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
     /// <param name="modelBuilder">L'objet de construction du modèle.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<CategoriePlat>().Property(p => p.Code).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CategoriePlatRegion>().Property(p => p.RegionCode).HasConversion<string>().HasMaxLength(10);
         modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasMaxLength(10);
