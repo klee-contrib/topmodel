@@ -1,3 +1,8 @@
+## 4.4.1
+
+- [`d2fdcae`](https://github.com/klee-contrib/topmodel/commit/d2fdcae78daa7168442e6b2f5788dc8ef95e117c) - [C#] Ajout `base.OnModelCreating(modelBuilder)` dans le DbContext
+- [`073932c`](https://github.com/klee-contrib/topmodel/commit/073932ce60d170c8f270c38a980fe3462e32e062) - [C#] Fix conditions de génération des traductions DbContext et/ou ResX
+
 ## 4.4.0
 
 Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).
