@@ -1,3 +1,9 @@
+# Changelog CSharp
+
+## 4.4.2
+
+- [817647](https://github.com/klee-contrib/topmodel/commit/8176476c447504be5321d1555dfbec76927e7ad7) - [JPA] Gestion du cas où une pk composite référence une classe qui n'est pas disponible. Ajout des cas de tests correspondants
+
 ## 4.4.1
 
 - [`d2fdcae`](https://github.com/klee-contrib/topmodel/commit/d2fdcae78daa7168442e6b2f5788dc8ef95e117c) - [C#] Ajout `base.OnModelCreating(modelBuilder)` dans le DbContext

@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.6.4
+
+- [817647](https://github.com/klee-contrib/topmodel/commit/8176476c447504be5321d1555dfbec76927e7ad7) - [JPA] Gestion du cas où une pk composite référence une classe qui n'est pas disponible. Ajout des cas de tests correspondants
+
 ## 4.6.3
 
 - [4d5448](https://github.com/klee-contrib/topmodel/commit/4d544863f0db2f0265304db771f87d79beeaf4c5) - Default value des queryParams dans les controllers
