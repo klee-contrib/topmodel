@@ -516,6 +516,18 @@ public class DbContextGenerator(
             w.WriteLine();
         }
 
+        var resourceProperties = classes
+            .Where(c => c.DefaultProperty != null && c.Enum != null && c.Values.Count > 0)
+            .Select(c => c.DefaultProperty!.ResourceProperty)
+            .Distinct()
+            .OrderBy(c => c.SqlName);
+        var hasResourcePartial =
+            (
+                Config.PersistedPropertiesResources
+                    && classes.SelectMany(p => p.Properties).Any(p => p.ResourceProperty.Label != null)
+                || Config.PersistedReferencesResources && resourceProperties.Any()
+            ) && Config.AvailableClasses.Any(c => c.Translation);
+
         if (Config.UseEFMigrations)
         {
             var hasIndex = false;
@@ -578,13 +590,10 @@ public class DbContextGenerator(
             }
 
             var hasResourceIndex = false;
+
             if (Config.PersistedReferencesResources && Config.AvailableClasses.Any(c => c.Translation))
             {
-                foreach (
-                    var translationClass in Config.AvailableClasses.Where(c =>
-                        c.Translation && c.LocaleProperty != null
-                    )
-                )
+                foreach (var translationClass in classes.Where(c => c.Translation))
                 {
                     hasResourceIndex = true;
                     w.WriteLine(
@@ -592,11 +601,6 @@ public class DbContextGenerator(
                         $"modelBuilder.Entity<{GetClassName(translationClass, tag)}>().HasIndex(p => p.{translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal});"
                     );
                 }
-
-                var resourceProperties = classes
-                    .Where(c => c.DefaultProperty != null && c.Values.Count > 0 && c.Enum != null)
-                    .OrderBy(c => c.SqlName)
-                    .Select(c => c.DefaultProperty!);
 
                 foreach (var fkProperty in resourceProperties)
                 {
@@ -676,10 +680,7 @@ public class DbContextGenerator(
                 w.WriteLine(2, "AddComments(modelBuilder);");
             }
 
-            if (
-                (Config.PersistedPropertiesResources || Config.PersistedReferencesResources)
-                && Config.AvailableClasses.Any(c => c.Translation)
-            )
+            if (hasResourcePartial)
             {
                 foreach (var lang in translationStore.Translations.Keys)
                 {
@@ -697,11 +698,7 @@ public class DbContextGenerator(
             w.WriteLine(1, "partial void AddComments(ModelBuilder modelBuilder);");
         }
 
-        if (
-            Config.UseEFMigrations
-            && (Config.PersistedPropertiesResources || Config.PersistedReferencesResources)
-            && Config.AvailableClasses.Any(c => c.Translation)
-        )
+        if (hasResourcePartial)
         {
             foreach (var lang in translationStore.Translations.Keys.Order(StringComparer.Ordinal))
             {

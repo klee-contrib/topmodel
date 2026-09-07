@@ -18,7 +18,15 @@ public class DbContextResourcesGenerator(
 
     protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
-        if (Config.AvailableClasses.Any(c => c.Translation))
+        if (
+            Config.AvailableClasses.Any(c => c.Translation)
+            && (
+                Config.PersistedPropertiesResources && property.ResourceProperty.Label != null
+                || Config.PersistedReferencesResources
+                    && property.ResourceProperty.Class
+                        is { DefaultProperty: not null, Enum: not null, Values.Count: > 0 }
+            )
+        )
         {
             return Config.GetDbContextFilePath(tag).Replace(".cs", $".resources.{lang}.cs").Replace("..", ".");
         }
@@ -63,7 +71,7 @@ public class DbContextResourcesGenerator(
                 .Select(container =>
                     (
                         container,
-                        values: container.Key is Class { Reference: true, DefaultProperty: not null } classe
+                        values: container.Key is Class { Enum: not null, DefaultProperty: not null } classe
                         && Config.PersistedReferencesResources
                             ? classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal).ToList()
                             : []

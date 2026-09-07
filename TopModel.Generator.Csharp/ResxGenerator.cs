@@ -141,8 +141,11 @@ public class ResxGenerator(
     protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
         if (
-            property.ResourceProperty.Label != null && Config.ResourcesInResx != ResxResource.References
-            || property.ResourceProperty.Class is Class { DefaultProperty: not null, Reference: true }
+            Config.TranslateProperties == true
+                && property.ResourceProperty.Label != null
+                && Config.ResourcesInResx != ResxResource.References
+            || Config.TranslateReferences == true
+                && property.ResourceProperty.Class is { DefaultProperty: not null, Enum: not null, Values.Count: > 0 }
                 && Config.ResourcesInResx != ResxResource.Properties
         )
         {
@@ -170,7 +173,7 @@ public class ResxGenerator(
                 .OrderBy(p => p.Key.NamePascal, StringComparer.Ordinal)
         )
         {
-            if (Config.ResourcesInResx != ResxResource.References)
+            if (Config.TranslateProperties == true && Config.ResourcesInResx != ResxResource.References)
             {
                 foreach (var property in container.OrderBy(p => p.NamePascal, StringComparer.Ordinal))
                 {
@@ -184,8 +187,9 @@ public class ResxGenerator(
             }
 
             if (
-                Config.ResourcesInResx != ResxResource.Properties
-                && container.Key is Class { Reference: true, DefaultProperty: not null } classe
+                Config.TranslateReferences == true
+                && Config.ResourcesInResx != ResxResource.Properties
+                && container.Key is Class { DefaultProperty: not null, Enum: not null } classe
             )
             {
                 foreach (var value in classe.Values.OrderBy(p => p.ResourceKey, StringComparer.Ordinal))
