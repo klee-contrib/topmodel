@@ -31,6 +31,11 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
+        if (Config.IsRecord(classe, tag))
+        {
+            return [];
+        }
+
         if (classe.Enum == EnumMode.Class && classe.Readonly)
         {
             var allArgsConstructor = JavaConstructorGenerator.GetAllArgsConstructor(classe, tag);
@@ -57,14 +62,18 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             yield return JavaConstructorGenerator.GetStaticValuesList(classe);
         }
 
-        yield return new JavaField("long", "serialVersionUID")
+        if (!Config.IsRecord(classe, tag))
         {
-            Static = true,
-            Final = true,
-            DefaultValue = "1L",
+            yield return new JavaField("long", "serialVersionUID")
+            {
+                Static = true,
+                Final = true,
+                DefaultValue = "1L",
+            }
+                .AddCommentLine("Serial ID")
+                .Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
         }
-            .AddCommentLine("Serial ID")
-            .Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
+
         foreach (var property in base.GetFields(classe, tag))
         {
             yield return property;
@@ -78,6 +87,16 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             Config.ResolveVariables(Config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
             $"{classe.NamePascal}.java"
         );
+    }
+
+    protected override IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
+    {
+        if (classe.Enum == EnumMode.Class && classe.Readonly || Config.IsRecord(classe, tag))
+        {
+            return [];
+        }
+
+        return base.GetGetters(classe, tag);
     }
 
     protected override IEnumerable<JavaClass> GetInnerClasses(Class classe, string tag)
@@ -106,7 +125,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
     protected override IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        if (classe.Enum == EnumMode.Class && classe.Readonly)
+        if (classe.Enum == EnumMode.Class && classe.Readonly || Config.IsRecord(classe, tag))
         {
             return [];
         }
@@ -117,8 +136,11 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     protected override JavaClass InitClass(Class classe, string tag)
     {
         var javaClass = base.InitClass(classe, tag);
-        javaClass.Implements.Add("Serializable");
-        javaClass.AddImports("java.io.Serializable");
+        if (!Config.IsRecord(classe, tag))
+        {
+            javaClass.Implements.Add("Serializable");
+            javaClass.AddImports("java.io.Serializable");
+        }
         return javaClass;
     }
 }

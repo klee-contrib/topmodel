@@ -14,9 +14,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.Employe;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un employé en lecture.
  */
@@ -107,23 +104,6 @@ public class EmployeRead implements Serializable {
 	 */
 	@NotNull
 	private Integer restaurantId;
-
-	/**
-	 * No arg constructor.
-	 */
-	public EmployeRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'EmployeRead'.
-	 * @param employe Instance de 'Employe'.
-	 *
-	 * @return Une nouvelle instance de 'EmployeRead'.
-	 */
-	public EmployeRead(Employe employe) {
-		RestaurantMappers.mapEmployeRead(employe, this);
-	}
 
 	/**
 	 * Getter for id.

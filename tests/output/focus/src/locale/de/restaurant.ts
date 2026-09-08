@@ -76,6 +76,10 @@ export const restaurant = {
     employeItem: {
         autresEmployes: "AutresEmployes"
     },
+    facture: {
+        commandeId: "Commande",
+        id: "Id"
+    },
     lieu: {
         adresse: "Adresse",
         id: "Id",
@@ -105,6 +109,10 @@ export const restaurant = {
     },
     nombreVuesBase: {
         nombreVues: "NombreVues"
+    },
+    paiement: {
+        factureId: "Facture",
+        swileCardId: "SwileCardId"
     },
     personne: {
         departementCode: "DepartementCode"

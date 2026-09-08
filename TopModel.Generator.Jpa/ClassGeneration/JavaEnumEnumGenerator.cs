@@ -34,7 +34,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
     public virtual JavaMethod GetGetter(string tag, IProperty property)
     {
         var field = GetField(property, tag);
-        var method = new JavaMethod(field.Type, Config.GetGetterName(property))
+        var method = new JavaMethod(field.Type, Config.GetGetterName(property, tag))
         {
             Comment = $"Getter for {field.Name}",
             Body =

@@ -16,10 +16,6 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_feign.entities.restaurant.Restaurant;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_feign.entities.restaurant.Table;
-
 /**
  * Restaurant avec ses statistiques.
  */
@@ -120,26 +116,6 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 * Note moyenne des avis clients.
 	 */
 	private BigDecimal noteMoyenne;
-
-	/**
-	 * No arg constructor.
-	 */
-	public RestaurantAvecStatistiques() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'RestaurantAvecStatistiques'.
-	 * @param restaurant Instance de 'Restaurant'.
-	 * @param tables Tables.
-	 * @param nombrePlats Nombre de plats.
-	 * @param noteMoyenne Note moyenne.
-	 *
-	 * @return Une nouvelle instance de 'RestaurantAvecStatistiques'.
-	 */
-	public RestaurantAvecStatistiques(Restaurant restaurant, List<Table> tables, Integer nombrePlats, BigDecimal noteMoyenne) {
-		RestaurantMappers.mapRestaurantAvecStatistiques(restaurant, tables, nombrePlats, noteMoyenne, this);
-	}
 
 	/**
 	 * Getter for id.

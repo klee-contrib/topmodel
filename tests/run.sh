@@ -14,7 +14,7 @@ fi
 docker compose down
 
 # Génération des fichiers TopModel
-dotnet run --project ../TopModel.Generator -- --check --file ./model/topmodel.config --file ./tmdgen/database/topmodel.config --file ./tmdgen/open-api/topmodel.config -s
+dotnet run --project ../TopModel.Generator -- --check --schema --file ./model/topmodel.config --file ./tmdgen/database/topmodel.config --file ./tmdgen/open-api/topmodel.config -s
 
 # Vérification que la génération s'est bien passée
 if [ $? -ne 0 ]; then

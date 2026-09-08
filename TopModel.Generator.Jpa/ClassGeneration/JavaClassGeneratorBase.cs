@@ -56,21 +56,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaConstructor> GetConstuctors(Class classe, string tag)
     {
-        if (
-            Config.MappersInClass
-            && classe.FromMappers.Any(c => c.ClassParams.All(p => Config.AvailableClasses.Contains(p.Class)))
-        )
-        {
-            yield return JavaConstructorGenerator.GetNoArgConstructor(classe, tag);
-        }
-
-        if (Config.MappersInClass)
-        {
-            foreach (var constructor in JavaConstructorGenerator.GetFromMappers(classe, tag))
-            {
-                yield return constructor;
-            }
-        }
+        return [];
     }
 
     protected virtual IEnumerable<JavaField> GetFields(Class classe, string tag)
@@ -173,14 +159,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             yield return method;
         }
-
-        if (Config.MappersInClass && classe.Type != ClassType.Interface)
-        {
-            foreach (var method in GetToMappers(classe, tag))
-            {
-                yield return method;
-            }
-        }
     }
 
     protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
@@ -197,45 +175,6 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected virtual IEnumerable<JavaMethod> GetToMappers(Class classe, string tag)
-    {
-        var toMappers = classe
-            .ToMappers.Where(p => Config.AvailableClasses.Contains(p.Class))
-            .Select(m => (classe, m))
-            .OrderBy(m => m.m.Name)
-            .ToList();
-
-        foreach (var toMapper in toMappers)
-        {
-            var (_, mapper) = toMapper;
-            var method = new JavaMethod(mapper.Class.NamePascal, mapper.Name.Value.ToCamelCase())
-            {
-                Visibility = "public",
-                Comment = $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'",
-            };
-            method.AddImports(mapper.Class.GetImport(Config, tag));
-            if (mapper.Comment != null)
-            {
-                method.Comment += $"{mapper.Comment}";
-            }
-
-            method.AddParameter(
-                new JavaMethodParameter(mapper.Class.NamePascal, "target")
-                {
-                    Comment =
-                        $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.",
-                }
-            );
-            method.ReturnComment = $"Une instance de '{mapper.Class.NamePascal}'";
-            var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
-            method.AddBodyLine(
-                @$"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);"
-            );
-            method.AddImports(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
-            yield return method;
-        }
-    }
-
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
@@ -248,11 +187,19 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual JavaClass InitClass(Class classe, string tag)
     {
-        var javaClass = new JavaClass(classe.NamePascal)
+        JavaClass javaClass;
+        if (Config.IsRecord(classe, tag))
         {
-            Comment = classe.Comment,
-            Modifier = classe.Type == ClassType.Abstract ? "abstract" : null,
-        };
+            javaClass = new JavaRecord(classe.NamePascal) { Comment = classe.Comment };
+        }
+        else
+        {
+            javaClass = new JavaClass(classe.NamePascal)
+            {
+                Comment = classe.Comment,
+                Modifier = classe.Type == ClassType.Abstract ? "abstract" : null,
+            };
+        }
         javaClass.AddRange(GetAnnotations(classe, tag));
         var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)

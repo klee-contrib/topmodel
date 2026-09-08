@@ -14,9 +14,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.Client;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un client en lecture.
  */
@@ -86,23 +83,6 @@ public class ClientRead implements Serializable {
 	 */
 	@NotNull
 	private List<Integer> avisClients;
-
-	/**
-	 * No arg constructor.
-	 */
-	public ClientRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'ClientRead'.
-	 * @param client Instance de 'Client'.
-	 *
-	 * @return Une nouvelle instance de 'ClientRead'.
-	 */
-	public ClientRead(Client client) {
-		RestaurantMappers.mapClientRead(client, this);
-	}
 
 	/**
 	 * Getter for id.

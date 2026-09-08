@@ -14,8 +14,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.Menu;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
 import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 
 /**
@@ -219,26 +217,6 @@ public class MenuWrite implements Serializable {
 	 */
 	public void setCategoriesPlat(List<CategoriePlatCode> categoriesPlat) {
 		this.categoriesPlat = categoriesPlat;
-	}
-
-	/**
-	 * Mappe 'MenuWrite' vers 'Menu'.
-	 * @param target Instance pré-existante de 'Menu'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Menu'.
-	 */
-	public Menu toMenu(Menu target) {
-		return RestaurantMappers.toMenu(this, target);
-	}
-
-	/**
-	 * Mappe 'MenuWrite' vers 'MenuRead'.
-	 * @param target Instance pré-existante de 'MenuRead'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'MenuRead'.
-	 */
-	public MenuRead toMenuRead(MenuRead target) {
-		return RestaurantDTOMappers.toMenuRead(this, target);
 	}
 
 	/**

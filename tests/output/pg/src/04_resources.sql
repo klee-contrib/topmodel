@@ -145,8 +145,11 @@ insert into translation(tra_resource_key, tra_lang, tra_value) values('restauran
 
 /**		Initialisation des traductions des propriétés de la table facture		**/
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.id', 'fr', 'Id');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.commandeId', 'fr', 'Commande');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.id', 'de', 'Id');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.commandeId', 'de', 'Commande');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.id', 'en', 'Id');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.facture.commandeId', 'en', 'Commande');
 
 /**		Initialisation des traductions des propriétés de la table lieu		**/
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.lieu.id', 'fr', 'Id');

@@ -7,9 +7,12 @@ package restaurant.jpa_server.entities.restaurant;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -29,12 +32,28 @@ public class Facture {
 	private Integer id;
 
 	/**
+	 * Commande associée à la facture.
+	 */
+	@JoinColumn(name = "com_id", referencedColumnName = "com_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Commande.class)
+	private Commande commande;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
+	}
+
+	/**
+	 * Getter for commande.
+	 *
+	 * @return value of {@link #commande commande}.
+	 */
+	public Commande getCommande() {
+		return this.commande;
 	}
 
 	/**
@@ -46,10 +65,19 @@ public class Facture {
 	}
 
 	/**
+	 * Set the value of {@link #commande commande}.
+	 * @param commande value to set.
+	 */
+	public void setCommande(Commande commande) {
+		this.commande = commande;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Facture Facture}.
 	 */
 	public enum Fields {
-		ID(Integer.class);
+		ID(Integer.class),
+		COMMANDE(Commande.class);
 
 		private final Class<?> type;
 

@@ -906,9 +906,9 @@
             "description": "Précise l'interface des Daos générés.",
             "default": "false"
           },
-          "mappersInClass": {
+          "useRecords": {
             "type": "boolean",
-            "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent",
+            "description": "Indique s'il faut générer les classes non persitées qui ont 'ReadOnly' en tant que record java",
             "default": "false"
           },
           "mapperTagsOverrides": {
