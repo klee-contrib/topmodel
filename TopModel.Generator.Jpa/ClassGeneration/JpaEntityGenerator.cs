@@ -219,7 +219,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         equalsMethod.AddBodyLine();
         equalsMethod.AddBodyLine(
-            $@"return {string.Join($"{Environment.NewLine} && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameCamel}{GetterToCompareCompositePkPk(pk)})"))};"
+            $@"return {string.Join($"{Environment.NewLine} && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)}, oId.{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)})"))};"
         );
 
         javaClass.Add(equalsMethod);
@@ -228,7 +228,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             new JavaAnnotation("Override")
         );
         hashCodeMethod.AddBodyLine(
-            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk)}"))});"
+            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)}"))});"
         );
         hashCodeMethod.AddImports("java.util.Objects");
         javaClass.Add(hashCodeMethod);
@@ -399,7 +399,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         }
     }
 
-    protected virtual string GetterToCompareCompositePkPk(IProperty pk)
+    protected virtual string GetterToCompareCompositePkPk(IProperty pk, string tag)
     {
         if (
             pk
@@ -411,7 +411,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && Config.AvailableClasses.Contains(ap.Association)
         )
         {
-            return $".{Config.GetGetterName(ap)}()";
+            return $".{Config.GetGetterName(ap, tag)}()";
         }
 
         return string.Empty;

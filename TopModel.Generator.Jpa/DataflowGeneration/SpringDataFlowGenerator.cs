@@ -1,5 +1,6 @@
 using System.Data;
 using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -280,7 +281,9 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
         else if (dataFlow.Sources[0].Class != dataFlow.Class)
         {
-            processors.Add($"({dataFlow.Sources[0].Class.NamePascal} item) -> new {dataFlow.Class.NamePascal}(item)");
+            processors.Add(
+                $"({dataFlow.Sources[0].Class.NamePascal} item) -> {GetDataFlowMapperCall(fw, dataFlow.Sources[0].Class, dataFlow.Class, tag)}"
+            );
         }
 
         i = 0;
@@ -312,6 +315,36 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(3, ".writer(writer) //");
         fw.WriteLine(3, ".build();");
         fw.WriteLine(1, "}");
+    }
+
+    protected virtual string GetDataFlowMapperCall(JavaWriter fw, Class sourceClass, Class targetClass, string tag)
+    {
+        var mapper = sourceClass.GetMapperTo(targetClass);
+        if (mapper == null)
+        {
+            throw new ModelException(
+                targetClass,
+                $"Aucun mapper depuis '{sourceClass.NamePascal}' vers '{targetClass.NamePascal}' n'a été trouvé pour ce flow."
+            );
+        }
+
+        return mapper.Value.Match(
+            fromMapper =>
+            {
+                var (mapperNs, mapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
+                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+                return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{targetClass.NamePascal}(item)";
+            },
+            toMapper =>
+            {
+                var (mapperNs, mapperModelPath) = Config.GetMapperLocation((sourceClass, toMapper));
+                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+                var methodName = Config.IsRecord(targetClass, tag)
+                    ? $"create{targetClass.NamePascal}"
+                    : toMapper.Name.Value.ToCamelCase();
+                return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.{methodName}(item)";
+            }
+        );
     }
 
     protected void WriteBeanTruncateStep(JavaWriter fw, DataFlow dataFlow, string tag)

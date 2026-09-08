@@ -156,9 +156,9 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? DaosInterface { get; set; }
 
     /// <summary>
-    /// Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent.
+    /// Indique s'il faut générer les classes non persitées qui ont "ReadOnly" en tant que record java
     /// </summary>
-    public virtual bool MappersInClass { get; set; } = false;
+    public virtual string UseRecords { get; set; } = "false";
 
     /// <summary>
     /// Taille des chunks à extraire et insérer
@@ -192,6 +192,7 @@ public class JpaConfig : GeneratorConfigBase
             nameof(ApiGeneration),
             nameof(DbSchema),
             nameof(ApisName),
+            nameof(UseRecords),
         ];
 
     public override string[] PropertiesWithModuleVariableSupport =>
@@ -372,10 +373,14 @@ public class JpaConfig : GeneratorConfigBase
         return GetPackageName(classe.Namespace, EnumsPath, tag);
     }
 
-    public virtual string GetGetterName(IProperty property)
+    public virtual string GetGetterName(IProperty property, string tag)
     {
         var propertyName = property.NameCamel;
         var propertyType = GetType(property);
+        if (IsRecord(property.Class, tag))
+        {
+            return propertyName;
+        }
         var getterPrefix = propertyType == "boolean" ? "is" : "get";
         if (property.Class.PreservePropertyCasing)
         {
@@ -505,5 +510,13 @@ public class JpaConfig : GeneratorConfigBase
         return classe
             .Annotations.SelectMany(a => GetImplementation(a.Annotation))
             .Any(a => a.Text.Trim('@') == annotation.Trim('@'));
+    }
+
+    public bool IsRecord(Class classe, string tag)
+    {
+        return !classe.IsPersistent
+            && classe.Readonly
+            && classe.Type == ClassType.Regular
+            && ResolveTagVariables(UseRecords, tag).ToLower() == "true";
     }
 }

@@ -14,8 +14,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_feign.entities.restaurant.Commande;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
 import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
 /**
@@ -243,16 +241,6 @@ public class CommandeWrite implements Serializable {
 	 */
 	public void setLignes(List<LigneCommandeWrite> lignes) {
 		this.lignes = lignes;
-	}
-
-	/**
-	 * Mappe 'CommandeWrite' vers 'Commande'.
-	 * @param target Instance pré-existante de 'Commande'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Commande'.
-	 */
-	public Commande toCommande(Commande target) {
-		return RestaurantMappers.toCommande(this, target);
 	}
 
 	/**

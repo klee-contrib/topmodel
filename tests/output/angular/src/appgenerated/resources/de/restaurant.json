@@ -72,6 +72,10 @@
     "employeItem": {
         "autresEmployes": "AutresEmployes"
     },
+    "facture": {
+        "commandeId": "Commande",
+        "id": "Id"
+    },
     "lieu": {
         "adresse": "Adresse",
         "id": "Id",
@@ -101,6 +105,10 @@
     },
     "nombreVuesBase": {
         "nombreVues": "NombreVues"
+    },
+    "paiement": {
+        "factureId": "Facture",
+        "swileCardId": "SwileCardId"
     },
     "personne": {
         "departementCode": "DepartementCode"

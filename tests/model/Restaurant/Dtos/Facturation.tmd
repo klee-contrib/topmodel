@@ -1,0 +1,42 @@
+---
+uses:
+  - Restaurant/Entities/Commande
+  - Restaurant/Entities/Facturation
+module: Restaurant
+tags:
+  - front
+  - back
+---
+class:
+  name: FactureItem
+  comment: Détail d'une facture
+  readonly: true
+  properties:
+    - alias:
+        class: Facture
+  mappers:
+    from:
+      - params:
+          - class: Facture
+---
+class:
+  name: PaiementItem
+  comment: Détail d'un paiement
+  readonly: true
+  properties:
+    - alias:
+        class: Paiement
+    - alias:
+        class: Commande
+        include:
+          - DateCommande
+          - MontantTotal
+  mappers:
+    from:
+      - params:
+          - class: Paiement
+          - class: Commande
+    to:
+      - class: FactureItem
+        mappings:
+          FactureId: Id

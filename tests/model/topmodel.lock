@@ -6,7 +6,7 @@ version: 4.7.2
 custom:
   ../../TopModel.Generator.Csharp: 50e6b196714caedc2077286356b8b939
   ../../TopModel.Generator.Javascript: fb2edb3200c82d096b05922924b2c53b
-  ../../TopModel.Generator.Jpa: 91a77d00b1a4cf5148bb36610b7a0189
+  ../../TopModel.Generator.Jpa: 180782e5ccd9a2cbf231f98e4663c70f
   ../../TopModel.Generator.Sql: bbb2a34424dda411c4af989cdf27d3a7
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
   ../../TopModel.Generator.Documentation: 3d001b960bf811f1939a4cca440464c5
@@ -29,10 +29,12 @@ generatedFiles:
   - ../output/angular/src/appgenerated/model/restaurant/employe-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/employe-write.ts
   - ../output/angular/src/appgenerated/model/restaurant/enums.ts
+  - ../output/angular/src/appgenerated/model/restaurant/facture-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/ligne-commande-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/ligne-commande-write.ts
   - ../output/angular/src/appgenerated/model/restaurant/menu-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/menu-write.ts
+  - ../output/angular/src/appgenerated/model/restaurant/paiement-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/personne-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/plat-item-readonly.ts
   - ../output/angular/src/appgenerated/model/restaurant/plat-item.ts
@@ -124,6 +126,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeWrite.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/FactureItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ICommandeItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ICommandeResume.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/IPlatItem.cs
@@ -135,6 +138,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/Mappers.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/MenuRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/MenuWrite.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PaiementItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PersonneItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PlatRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PlatWrite.cs
@@ -185,10 +189,12 @@ generatedFiles:
   - ../output/focus/src/model/restaurant/employe-read.ts
   - ../output/focus/src/model/restaurant/employe-write.ts
   - ../output/focus/src/model/restaurant/enums.ts
+  - ../output/focus/src/model/restaurant/facture-item.ts
   - ../output/focus/src/model/restaurant/ligne-commande-read.ts
   - ../output/focus/src/model/restaurant/ligne-commande-write.ts
   - ../output/focus/src/model/restaurant/menu-read.ts
   - ../output/focus/src/model/restaurant/menu-write.ts
+  - ../output/focus/src/model/restaurant/paiement-item.ts
   - ../output/focus/src/model/restaurant/personne-item.ts
   - ../output/focus/src/model/restaurant/plat-item-readonly.ts
   - ../output/focus/src/model/restaurant/plat-item.ts
@@ -258,10 +264,12 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/EmployeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/EmployeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/EmployeWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/FactureItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/LigneCommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/LigneCommandeWrite.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/MenuRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/MenuWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/PaiementItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/PersonneItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/PlatItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/dtos/restaurant/PlatItemReadonly.java
@@ -402,10 +410,12 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/EmployeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/EmployeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/EmployeWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/FactureItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/LigneCommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/LigneCommandeWrite.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/MenuRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/MenuWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/PaiementItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/PersonneItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/PlatItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_jdbc_resttemplate/dtos/restaurant/PlatItemReadonly.java
@@ -520,10 +530,12 @@ generatedFiles:
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/EmployeItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/EmployeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/EmployeWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/FactureItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/LigneCommandeRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/LigneCommandeWrite.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/MenuRead.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/MenuWrite.java
+  - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/PaiementItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/PersonneItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/PlatItem.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_server/dtos/restaurant/PlatItemReadonly.java
@@ -689,10 +701,12 @@ generatedFiles:
   - ../output/vanilla-js/model/restaurant/employe-read.ts
   - ../output/vanilla-js/model/restaurant/employe-write.ts
   - ../output/vanilla-js/model/restaurant/enums.ts
+  - ../output/vanilla-js/model/restaurant/facture-item.ts
   - ../output/vanilla-js/model/restaurant/ligne-commande-read.ts
   - ../output/vanilla-js/model/restaurant/ligne-commande-write.ts
   - ../output/vanilla-js/model/restaurant/menu-read.ts
   - ../output/vanilla-js/model/restaurant/menu-write.ts
+  - ../output/vanilla-js/model/restaurant/paiement-item.ts
   - ../output/vanilla-js/model/restaurant/personne-item.ts
   - ../output/vanilla-js/model/restaurant/plat-item-readonly.ts
   - ../output/vanilla-js/model/restaurant/plat-item.ts

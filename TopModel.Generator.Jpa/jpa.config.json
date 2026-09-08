@@ -2,7 +2,10 @@
   "type": "object",
   "description": "Config pour la génération de Jpa.",
   "additionalProperties": false,
-  "required": ["tags", "outputDirectory"],
+  "required": [
+    "tags",
+    "outputDirectory"
+  ],
   "properties": {
     "name": {
       "type": "string",
@@ -127,7 +130,12 @@
     "uniqueValueGeneration": {
       "type": "string",
       "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
-      "enum": [ "none", "const-only", "enum-only", "enum-or-const" ]
+      "enum": [
+        "none",
+        "const-only",
+        "enum-only",
+        "enum-or-const"
+      ]
     },
     "rootModule": {
       "type": "string",
@@ -179,7 +187,10 @@
         {
           "type": "string",
           "description": "Mode de génération de l'API ('Client' ou 'Server')",
-          "enum": [ "Client", "Server" ]
+          "enum": [
+            "Client",
+            "Server"
+          ]
         },
         {
           "type": "string",
@@ -194,7 +205,11 @@
           "type": "string",
           "description": "Mode de génération de l'API Client",
           "default": "RestClient",
-          "enum": [ "RestTemplate", "RestClient", "FeignClient" ]
+          "enum": [
+            "RestTemplate",
+            "RestClient",
+            "FeignClient"
+          ]
         },
         {
           "type": "string",
@@ -217,7 +232,10 @@
       "type": "string",
       "description": "Encodage des fichiers de resource.",
       "default": "Latin1",
-      "enum": [ "Latin1", "UTF8" ]
+      "enum": [
+        "Latin1",
+        "UTF8"
+      ]
     },
     "useJdbc": {
       "type": "boolean",
@@ -234,9 +252,9 @@
       "description": "Précise l'interface des Daos générés.",
       "default": "false"
     },
-    "mappersInClass": {
+    "useRecords": {
       "type": "boolean",
-      "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent",
+      "description": "Indique s'il faut générer les classes non persitées qui ont 'ReadOnly' en tant que record java",
       "default": "false"
     },
     "mapperTagsOverrides": {
@@ -250,8 +268,12 @@
       "type": "object",
       "description": "Types de cascade à ajouter aux associations générées.",
       "default": {
-        "oneToOne": [ "all" ],
-        "oneToMany": [ "all" ]
+        "oneToOne": [
+          "all"
+        ],
+        "oneToMany": [
+          "all"
+        ]
       },
       "properties": {
         "oneToOne": {
@@ -309,7 +331,10 @@
       "type": "string",
       "description": "Writer à utiliser pour les flux de données.",
       "default": "jpa",
-      "enum": [ "bulk", "jpa" ]
+      "enum": [
+        "bulk",
+        "jpa"
+      ]
     },
     "dataFlowsBulkSize": {
       "type": "number",
@@ -347,7 +372,10 @@
       "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
       "items": {
         "type": "string",
-        "enum": [ "non-persisted", "persisted" ]
+        "enum": [
+          "non-persisted",
+          "persisted"
+        ]
       }
     },
     "fieldsEnumInterface": {

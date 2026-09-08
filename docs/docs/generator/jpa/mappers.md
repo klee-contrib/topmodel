@@ -250,16 +250,6 @@ if (source.getCategoriesPlat() != null) {
 }
 ```
 
-## Intégration dans les classes (`mappersInClass`)
-
-Lorsque `mappersInClass: true`, les mappers sont également exposés directement sur les classes qui les déclarent :
-
-- **Pour chaque mapper `from`**, un **constructeur** est généré. Ce constructeur prend en paramètre les `classParams` et `propertyParams` du mapper, et délègue à la méthode `Mappers.map[Nom de la classe](..., this)` de la classe utilitaire.
-- **Si au moins un `FromMapper`** a tous ses `classParams` disponibles, un **constructeur sans argument** est également généré (afin de préserver la possibilité d'instancier la classe sans paramètre).
-- **Pour chaque mapper `to`**, une méthode `toXXX(target)` est générée sur la classe source. Cette méthode délègue à `Mappers.toXXX(this, target)`. La version sans `target` n'est pas ajoutée dans la classe (elle n'est disponible que sur la classe utilitaire).
-
-Cette option est désactivable (et l'est par défaut) via `mappersInClass: false`.
-
 ## Spécificités JDBC (`useJdbc: true`)
 
 Lorsque le mode JDBC est activé (`useJdbc: true`), certains mappings sont filtrés ou simplifiés :
@@ -269,6 +259,33 @@ Lorsque le mode JDBC est activé (`useJdbc: true`), certains mappings sont filtr
 - Les `null`-checks sur les getters des associations ne sont pas générés : la conversion de domaine est appliquée directement sur le getter source.
 
 Ces restrictions reflètent le fait que, en mode JDBC, les relations objet ne sont pas matérialisées par des graphes d'entités.
+
+## Spécificités des records (`useRecords: true`)
+
+Lorsque la classe cible d'un mapper est générée en tant que `record` Java (voir la section "Classes non persistées" de la page [Classes](/generator/jpa/classes)), la génération du mapper est adaptée car l'instance n'est pas mutable : elle ne peut être obtenue que via son constructeur, il n'existe donc pas de variante "sur une instance existante" (`target`).
+
+### Mapper `from` vers un `record`
+
+Seule la méthode **`create[Nom de la classe à créer]`** est générée : elle construit directement une nouvelle instance du `record` via son constructeur, en lui passant chacune des propriétés disponibles de la classe (dans leur ordre de déclaration), calculées à partir des `classParams`/`propertyParams` du mapper. Une propriété qui ne peut pas être mappée est passée à `null`. La méthode `mapXXX` (mapping sur une instance existante) n'est pas générée.
+
+Les contrôles de nullité (`IllegalArgumentException`) sur les `classParams`/`propertyParams` obligatoires restent générés en tête de méthode, avant la construction du `record`.
+
+```java
+public static RestaurantRead createRestaurantRead(Restaurant restaurant) {
+    if (restaurant == null) {
+        throw new IllegalArgumentException("restaurant cannot be null");
+    }
+
+    return new RestaurantRead(
+        restaurant.getNom(),
+        restaurant.getAdresse()
+    );
+}
+```
+
+### Mapper `to` vers un `record`
+
+Un mapper `to` dont la classe cible est un `record` n'est **pas généré** : les mappers `to` reposent sur le principe d'un mapping sur une instance `target` existante (via des setters), ce qui est incompatible avec l'immutabilité d'un `record`. Pour alimenter un `record` à partir d'une autre classe, il faut déclarer un mapper `from` sur la classe `record`, plutôt qu'un mapper `to` sur la classe source.
 
 ## Gestion des erreurs
 
@@ -280,12 +297,6 @@ Si un paramètre d'entrée obligatoire n'est pas renseigné, l'exception `Illega
 - chaque `propertyParam` dont la propriété est `required` (sauf association persistante sur classe persistante).
 
 ## Configuration
-
-### `mappersInClass`
-
-Indique s'il faut ajouter les mappers en tant que méthode (`to...`) ou constructeur dans les classes qui les déclarent. Si `true`, les mappers `from` sont générés comme constructeurs et les mappers `to` comme méthodes dans les classes concernées.
-
-_Valeur par défaut_: `false`
 
 ### `mapperTagsOverrides`
 

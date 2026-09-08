@@ -3,9 +3,11 @@
 ####
 
 ---
-module: Join
+module: Restaurant
 tags:
   - Back
+uses:
+  - 02_Restaurant/12_Commande
 ---
 class:
   name: Facture
@@ -17,3 +19,7 @@ class:
       required: true
       primaryKey: true
       comment: Identifiant de la facture
+
+    - association: Commande
+      comment: Commande associée à la facture
+      required: true

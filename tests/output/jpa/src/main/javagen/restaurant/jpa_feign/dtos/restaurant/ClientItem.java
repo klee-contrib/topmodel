@@ -10,9 +10,6 @@ import java.io.Serializable;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.Client;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un client en liste.
  */
@@ -30,24 +27,6 @@ public class ClientItem extends PersonneItem implements Serializable {
 	 */
 	@Size(max = 100)
 	private String nomComplet;
-
-	/**
-	 * No arg constructor.
-	 */
-	public ClientItem() {
-		super();
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'ClientItem'.
-	 * @param client Instance de 'Client'.
-	 *
-	 * @return Une nouvelle instance de 'ClientItem'.
-	 */
-	public ClientItem(Client client) {
-		super();
-		RestaurantMappers.mapClientItem(client, this);
-	}
 
 	/**
 	 * Getter for nomComplet.

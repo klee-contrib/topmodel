@@ -191,6 +191,20 @@ alter table employe
 		references personne (per_id);
 
 /**
+  * Création de l'index de clef étrangère pour facture.com_id
+ **/
+create index idx_facture_com_id_fk on facture (
+	com_id ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour facture.com_id
+ **/
+alter table facture
+	add constraint fk_facture_com_id foreign key (com_id)
+		references commande (com_id);
+
+/**
   * Création de l'index de clef étrangère pour ligne_commande.com_id
  **/
 create index idx_lig_com_id_fk on ligne_commande (
