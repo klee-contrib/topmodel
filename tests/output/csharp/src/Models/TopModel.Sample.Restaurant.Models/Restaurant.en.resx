@@ -234,6 +234,9 @@
   <data name="restaurant.employeItem.autresEmployes" xml:space="preserve">
     <value>AutresEmployes</value>
   </data>
+  <data name="restaurant.facture.commandeId" xml:space="preserve">
+    <value>Commande</value>
+  </data>
   <data name="restaurant.facture.id" xml:space="preserve">
     <value>Id</value>
   </data>

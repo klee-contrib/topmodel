@@ -13,9 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.Promotion;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'une promotion en lecture.
  */
@@ -84,23 +81,6 @@ public class PromotionRead implements Serializable {
 	@NotNull
 	@PastOrPresent
 	private LocalDateTime dateCreation;
-
-	/**
-	 * No arg constructor.
-	 */
-	public PromotionRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'PromotionRead'.
-	 * @param promotion Instance de 'Promotion'.
-	 *
-	 * @return Une nouvelle instance de 'PromotionRead'.
-	 */
-	public PromotionRead(Promotion promotion) {
-		RestaurantMappers.mapPromotionRead(promotion, this);
-	}
 
 	/**
 	 * Getter for platId.

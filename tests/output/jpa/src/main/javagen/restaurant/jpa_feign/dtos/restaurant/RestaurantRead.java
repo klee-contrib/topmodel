@@ -15,9 +15,6 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_feign.entities.restaurant.Restaurant;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un restaurant en lecture.
  */
@@ -101,23 +98,6 @@ public class RestaurantRead implements Serializable {
 	@Valid
 	@NotNull
 	private List<TableItem> tables;
-
-	/**
-	 * No arg constructor.
-	 */
-	public RestaurantRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'RestaurantRead'.
-	 * @param restaurant Instance de 'Restaurant'.
-	 *
-	 * @return Une nouvelle instance de 'RestaurantRead'.
-	 */
-	public RestaurantRead(Restaurant restaurant) {
-		RestaurantMappers.mapRestaurantRead(restaurant, this);
-	}
 
 	/**
 	 * Getter for id.

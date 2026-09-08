@@ -1,6 +1,7 @@
 ---
 uses:
   - Restaurant/Entities/External
+  - Restaurant/Entities/Commande
 module: Restaurant
 tags:
   - back
@@ -13,6 +14,9 @@ class:
       domain: DO_ID
       primaryKey: true
       comment: Identifiant de la facture
+    - association: Commande
+      required: true
+      comment: Commande associée à la facture
 ---
 class:
   name: Paiement

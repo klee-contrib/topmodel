@@ -11,9 +11,6 @@ import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.AvisClient;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un avis en écriture.
  */
@@ -144,16 +141,6 @@ public class AvisClientWrite implements Serializable {
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
-	}
-
-	/**
-	 * Mappe 'AvisClientWrite' vers 'AvisClient'.
-	 * @param target Instance pré-existante de 'AvisClient'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'AvisClient'.
-	 */
-	public AvisClient toAvisClient(AvisClient target) {
-		return RestaurantMappers.toAvisClient(this, target);
 	}
 
 	/**

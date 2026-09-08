@@ -7,10 +7,10 @@ module: Restaurant
 tags:
   - Back
 uses:
-  - 02_Restaurant/02_Plat
-  - 02_Restaurant/07_Client
-  - 02_Restaurant/09_AvisClient
-  - 02_Restaurant/10_Reservation
+  - 02_Restaurant/03_Plat
+  - 02_Restaurant/08_Client
+  - 02_Restaurant/10_AvisClient
+  - 02_Restaurant/11_Reservation
 ---
 class:
   name: Commande

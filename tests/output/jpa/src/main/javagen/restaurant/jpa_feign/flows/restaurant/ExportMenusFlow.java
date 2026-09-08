@@ -26,6 +26,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import restaurant.jpa_feign.dtos.restaurant.MenuRead;
 import restaurant.jpa_feign.entities.restaurant.Menu;
+import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
 
 @Configuration
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -52,7 +53,7 @@ public class ExportMenusFlow {
 		return new StepBuilder("ExportMenusStep", jobRepository) //
 			.<Menu, MenuRead>chunk(100000) //
 			.reader(reader) //
-			.processor((Menu item) -> new MenuRead(item)) //
+			.processor((Menu item) -> RestaurantMappers.createMenuRead(item)) //
 			.faultTolerant() //
 			.skipPolicy(new AlwaysSkipItemSkipPolicy()) //
 			.writer(writer) //

@@ -115,6 +115,7 @@ comment on column employe.per_id is 'Association vers la clé primaire de la cla
  **/
 comment on table facture is 'Facture';
 comment on column facture.id is 'Identifiant de la facture';
+comment on column facture.com_id is 'Commande associée à la facture';
 
 /**
   * Commentaires pour la table lieu

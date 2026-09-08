@@ -84,6 +84,10 @@
     "employeItem": {
         "autresEmployes": "Liste des autres employés"
     },
+    "facture": {
+        "commandeId": "Commande associée à la facture",
+        "id": "Identifiant de la facture"
+    },
     "lieu": {
         "adresse": "Adresse du restaurant",
         "id": "Identifiant du restaurant",
@@ -116,6 +120,10 @@
     },
     "nombreVuesBase": {
         "nombreVues": "Nombre de vues de l'avis (calculé)"
+    },
+    "paiement": {
+        "factureId": "Facture associée au paiement",
+        "swileCardId": "Carte Swile utilisée pour le paiement"
     },
     "personne": {
         "departementCode": "Département de résidence de la personne."

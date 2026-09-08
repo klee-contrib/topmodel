@@ -22,4 +22,10 @@ public partial record Facture
     [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
+
+    /// <summary>
+    /// Commande associée à la facture.
+    /// </summary>
+    [Required]
+    public Commande? Commande { get; set; }
 }

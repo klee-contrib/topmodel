@@ -8,8 +8,8 @@ tags:
   - Back
 uses:
   - 02_Restaurant/01_Lieu
-  - 02_Restaurant/02_Plat
-  - 02_Restaurant/07_Client
+  - 02_Restaurant/03_Plat
+  - 02_Restaurant/08_Client
 ---
 class:
   name: Reservation

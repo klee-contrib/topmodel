@@ -95,6 +95,7 @@ public partial class TopModelSampleDbContext
         var facture = modelBuilder.Entity<Facture>();
         facture.ToTable(t => t.HasComment("Facture"));
         facture.Property(p => p.Id).HasComment("Identifiant de la facture");
+        facture.Property("CommandeId").HasComment("Commande associée à la facture");
 
         var fournisseur = modelBuilder.Entity<Fournisseur>();
         fournisseur.Property(p => p.Telephone).HasComment("Numéro de téléphone");

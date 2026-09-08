@@ -65,6 +65,7 @@ Reservation "1" --> "0..*" Restaurant
 class Facture{
  DO_ID Id
 }
+Facture "1" --> "0..*" Commande
 Paiement "1" --> "0..*" Facture
 Paiement "1" --> "0..*" SwileCard
 %% Menu du restaurant
