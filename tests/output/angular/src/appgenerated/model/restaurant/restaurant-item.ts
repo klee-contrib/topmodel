@@ -21,7 +21,7 @@ export const RestaurantItemEntity = entity({
         .label("restaurant.lieu.adresse")
         .comment("comments.restaurant.lieu.adresse")
     ),
-    telephone: e.field(DO_TELEPHONE, f => f.optional()
+    telephone: e.field(DO_TELEPHONE, f => f.defaultValue("XX.XX.XX.XX.XX").optional()
         .label("restaurant.restaurant.telephone")
         .comment("comments.restaurant.restaurant.telephone")
     )

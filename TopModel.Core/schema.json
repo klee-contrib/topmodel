@@ -892,6 +892,10 @@
               "description": "Localisation par défaut d'un paramètre d'endpoint utilisant ce domaine.",
               "enum": [ "route", "query", "form-data", "json-body" ]
             },
+            "defaultValue": {
+              "type": "string",
+              "description": "Valeur par défaut des propriétés de ce domaine. Pourra être surchargée (ou retirée) localement sur la propriété."
+            },
             "collection": {
               "type": "boolean",
               "description": "Définit ce domaine comme étant un domaine de collection, pour pouvoir définir des mappings entre éléments de collection."

@@ -61,7 +61,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 */
 	@Size(max = 20)
 	@Column("res_telephone")
-	private String telephone;
+	private String telephone = "XX.XX.XX.XX.XX";
 
 	/**
 	 * Association réciproque de Menu.Restaurant.

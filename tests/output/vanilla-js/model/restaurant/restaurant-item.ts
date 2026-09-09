@@ -37,6 +37,7 @@ export const RestaurantItemEntity = {
         type: "field",
         name: "telephone",
         domain: DO_TELEPHONE,
+        defaultValue: "XX.XX.XX.XX.XX",
         isRequired: false,
         label: "Telephone"
     }

@@ -59,7 +59,7 @@ public class RestaurantAvecStatistiques implements Serializable {
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Restaurant#getTelephone() Restaurant#getTelephone()}
 	 */
 	@Size(max = 20)
-	private String telephone;
+	private String telephone = "XX.XX.XX.XX.XX";
 
 	/**
 	 * Association réciproque de Menu.Restaurant.

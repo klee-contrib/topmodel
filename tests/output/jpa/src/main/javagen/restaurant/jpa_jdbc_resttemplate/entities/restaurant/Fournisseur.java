@@ -20,7 +20,7 @@ public class Fournisseur extends Lieu {
 	 * Numéro de téléphone.
 	 */
 	@Column("frn_telephone")
-	private String telephone;
+	private String telephone = "xx.xx.xx.xx.xx";
 
 	/**
 	 * Si le fournisseur fait du bio.

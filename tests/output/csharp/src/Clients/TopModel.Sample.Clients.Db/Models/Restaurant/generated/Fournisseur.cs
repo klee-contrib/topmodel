@@ -20,7 +20,7 @@ public partial record Fournisseur : Lieu
     [Column("frn_telephone")]
     [Domain(Domains.Telephone)]
     [StringLength(20)]
-    public string? Telephone { get; set; }
+    public string? Telephone { get; set; } = "xx.xx.xx.xx.xx";
 
     /// <summary>
     /// Si le fournisseur fait du bio.

@@ -11,9 +11,9 @@ create table LIEU (
 	LIE_NOM varchar(100) not null,
 	LIE_ADRESSE varchar(100),
 	LIE_DISCRIMINATOR varchar(128) not null,
-	RES_TELEPHONE varchar(20),
+	RES_TELEPHONE varchar(20) default N'XX.XX.XX.XX.XX',
 	RES_DATE_CREATION timestamp,
-	FRN_TELEPHONE varchar(20),
+	FRN_TELEPHONE varchar(20) default N'xx.xx.xx.xx.xx',
 	FRN_BIO boolean,
 	constraint PK_LIEU primary key clustered (LIE_ID asc))
 go

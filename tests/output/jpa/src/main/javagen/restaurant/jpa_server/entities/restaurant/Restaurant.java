@@ -34,7 +34,7 @@ public class Restaurant extends Lieu {
 	 * Numéro de téléphone.
 	 */
 	@Column(name = "res_telephone", length = 20, columnDefinition = "varchar")
-	private String telephone;
+	private String telephone = "XX.XX.XX.XX.XX";
 
 	/**
 	 * Association réciproque de Menu.Restaurant.

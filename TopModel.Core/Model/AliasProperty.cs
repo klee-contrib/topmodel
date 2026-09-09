@@ -182,7 +182,10 @@ internal class AliasProperty : IProperty
 
     public string? DefaultValue
     {
-        get => _defaultValue ?? (As is null && _property?.DefaultValue != null ? _property?.DefaultValue : null);
+        get =>
+            _defaultValue
+            ?? (As is null && _property?.DefaultValue != null ? _property?.DefaultValue : null)
+            ?? Domain?.DefaultValue;
         set => _defaultValue = value;
     }
 

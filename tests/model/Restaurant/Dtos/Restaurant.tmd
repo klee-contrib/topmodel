@@ -30,6 +30,7 @@ class:
     - alias:
         class: Restaurant
         exclude: TableIds
+      defaultValue: null
 
     - alias:
         class: Restaurant

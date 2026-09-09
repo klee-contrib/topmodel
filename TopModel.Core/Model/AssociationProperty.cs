@@ -6,6 +6,7 @@ namespace TopModel.Core.Model;
 
 internal class AssociationProperty(Reference location) : IProperty
 {
+    private string? _defaultValue;
     private ParamLocation? _paramLocation;
     private IProperty? _property;
 
@@ -72,7 +73,11 @@ internal class AssociationProperty(Reference location) : IProperty
         set;
     }
 
-    public string? DefaultValue { get; set; }
+    public string? DefaultValue
+    {
+        get => _defaultValue ?? Domain?.DefaultValue;
+        set => _defaultValue = value;
+    }
 
     public ParamLocation? ParamLocation
     {
@@ -176,7 +181,7 @@ internal class AssociationProperty(Reference location) : IProperty
             Comment = Comment,
             CustomProperties = CustomProperties,
             DefaultAssociationUseClass = DefaultAssociationUseClass,
-            DefaultValue = DefaultValue,
+            DefaultValue = _defaultValue,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
             Multiple = Multiple,
@@ -231,7 +236,7 @@ internal class AssociationProperty(Reference location) : IProperty
             CustomProperties = CustomProperties,
             Decorator = container as Decorator,
             DefaultAssociationUseClass = DefaultAssociationUseClass,
-            DefaultValue = DefaultValue,
+            DefaultValue = _defaultValue,
             Endpoint = container as Endpoint,
             Label = Label,
             Multiple = Multiple,

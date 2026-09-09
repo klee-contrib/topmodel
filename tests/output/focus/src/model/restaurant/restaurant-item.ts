@@ -18,7 +18,7 @@ export const RestaurantItemEntity = entity({
     adresse: e.field(DO_LIBELLE, f => f.optional()
         .label("restaurant.lieu.adresse")
     ),
-    telephone: e.field(DO_TELEPHONE, f => f.optional()
+    telephone: e.field(DO_TELEPHONE, f => f.defaultValue("XX.XX.XX.XX.XX").optional()
         .label("restaurant.restaurant.telephone")
     )
 });

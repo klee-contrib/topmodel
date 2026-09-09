@@ -48,6 +48,9 @@ public class DomainLoader(FileChecker fileChecker) : ILoader
                 case "collection":
                     domain.Collection = value!.Value == "true";
                     break;
+                case "defaultValue":
+                    domain.DefaultValue = value!.Value;
+                    break;
                 case "asDomains":
                     parser.ConsumeMapping(prop =>
                     {

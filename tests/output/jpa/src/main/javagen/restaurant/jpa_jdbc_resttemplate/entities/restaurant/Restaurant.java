@@ -27,7 +27,7 @@ public class Restaurant extends Lieu {
 	 * Numéro de téléphone.
 	 */
 	@Column("res_telephone")
-	private String telephone;
+	private String telephone = "XX.XX.XX.XX.XX";
 
 	/**
 	 * Date de création de l'enregistrement.

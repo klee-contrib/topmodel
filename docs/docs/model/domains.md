@@ -13,6 +13,7 @@ domain:
   label: Identifiant
   length: # Longueur du champ, si applicable.
   scale: # Nombre de décimales du champ, si applicable.
+  defaultValue: # Valeur par défaut des propriétés de ce domaine (surchargable localement).
   asDomains:
     list: DO_ID_LIST # Domaine a utiliser s'il faut transformer le domaine du champ en 'list'.
   annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine.

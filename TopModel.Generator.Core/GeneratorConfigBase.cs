@@ -71,7 +71,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// </summary>
     protected virtual bool UseValueNameForValues => true;
 
-    protected virtual string NullValue => "null";
+    protected virtual string NullValue => ClassValue.Null;
 
     /// <summary>
     /// Formatte une valeur de propriété.
@@ -598,7 +598,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             value ??= property?.DefaultValue;
         }
 
-        if (property == null || value == null || value == "null" || value == "undefined")
+        if (property == null || value == null || value == ClassValue.Null || value == ClassValue.Undefined)
         {
             return NullValue;
         }

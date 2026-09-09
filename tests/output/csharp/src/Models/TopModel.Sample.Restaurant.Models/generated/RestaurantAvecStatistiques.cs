@@ -39,7 +39,7 @@ public partial record RestaurantAvecStatistiques
     /// </summary>
     [Domain(Domains.Telephone)]
     [StringLength(20)]
-    public string? Telephone { get; set; }
+    public string? Telephone { get; set; } = "XX.XX.XX.XX.XX";
 
     /// <summary>
     /// Association réciproque de Menu.Restaurant.

@@ -4,6 +4,9 @@ namespace TopModel.Core.Model;
 
 public class ClassValue
 {
+    public const string Null = "null";
+    public const string Undefined = "undefined";
+
     public required string Name { get; init; }
 
     public required Class Class { get; init; }

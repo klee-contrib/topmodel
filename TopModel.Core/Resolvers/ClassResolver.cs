@@ -132,6 +132,8 @@ internal class ClassResolver(
                 foreach (
                     var property in classe.Properties.Where(p =>
                         p.DefaultValue != null
+                        && p.DefaultValue != ClassValue.Null
+                        && p.DefaultValue != ClassValue.Undefined
                         && (
                             p.AssociationMultiple
                             || p.UseClassForAssociation
@@ -152,14 +154,18 @@ internal class ClassResolver(
 
                 foreach (var value in classe.Values)
                 {
-                    foreach (var (property, _) in value.Value)
+                    foreach (var (property, v) in value.Value)
                     {
                         if (
-                            property.AssociationMultiple
-                            || classe.Enum != null
-                                && property.UseClassForAssociation
-                                && property.ReadonlyEnumClassAssociation == null
-                                && property.TrueEnumClassAssociation == null
+                            v != ClassValue.Null
+                            && v != ClassValue.Undefined
+                            && (
+                                property.AssociationMultiple
+                                || classe.Enum != null
+                                    && property.UseClassForAssociation
+                                    && property.ReadonlyEnumClassAssociation == null
+                                    && property.TrueEnumClassAssociation == null
+                            )
                         )
                         {
                             yield return new ModelError(

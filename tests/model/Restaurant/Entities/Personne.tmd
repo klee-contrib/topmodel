@@ -57,6 +57,7 @@ class:
   properties:
     - name: Telephone
       domain: DO_TELEPHONE
+      defaultValue: null
       comment: Numéro de téléphone de l'employé.
 ---
 class:

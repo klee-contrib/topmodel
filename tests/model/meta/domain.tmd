@@ -125,6 +125,7 @@ domain:
   asDomains:
     list: DO_LISTE
   length: 20
+  defaultValue: XX.XX.XX.XX.XX
   ts:
     type: string
   csharp:

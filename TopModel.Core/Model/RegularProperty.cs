@@ -6,6 +6,7 @@ namespace TopModel.Core.Model;
 
 internal class RegularProperty : IProperty
 {
+    private string? _defaultValue;
     private ParamLocation? _paramLocation;
 
     public string Name { get; set; } = null!;
@@ -60,7 +61,11 @@ internal class RegularProperty : IProperty
 
     public DomainReference DomainReference { get; set; } = null!;
 
-    public string? DefaultValue { get; set; }
+    public string? DefaultValue
+    {
+        get => _defaultValue ?? Domain?.DefaultValue;
+        set => _defaultValue = value;
+    }
 
     public IProperty? SourceProperty { get; private set; }
 
@@ -102,7 +107,7 @@ internal class RegularProperty : IProperty
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
             CustomProperties = CustomProperties,
-            DefaultValue = DefaultValue,
+            DefaultValue = _defaultValue,
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
@@ -134,7 +139,7 @@ internal class RegularProperty : IProperty
             Comment = Comment,
             CustomProperties = CustomProperties,
             Decorator = container as Decorator,
-            DefaultValue = DefaultValue,
+            DefaultValue = _defaultValue,
             Domain = Domain,
             DomainParameters = DomainParameters,
             Endpoint = container as Endpoint,

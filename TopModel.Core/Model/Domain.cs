@@ -28,6 +28,8 @@ public class Domain(Reference location) : IAnnotationContainer, IVariableContain
 
     public bool Collection { get; internal set; }
 
+    public string? DefaultValue { get; internal set; }
+
     public bool NonGeneric => Implementations.Values.All(i => i.Type != null);
 
     public bool Generic => Implementations.Values.All(i => i.GenericType != null);

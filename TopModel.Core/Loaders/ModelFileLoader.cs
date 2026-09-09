@@ -396,6 +396,7 @@ public class ModelFileLoader(
                     AsDomainReferences = d.AsDomainReferences,
                     GeneratedValue = d.GeneratedValue,
                     Collection = d.Collection,
+                    DefaultValue = d.DefaultValue,
                     ExcludedAnnotationReferences = d.ExcludedAnnotationReferences,
                     Implementations = d.Implementations,
                     Label = d.Label,
