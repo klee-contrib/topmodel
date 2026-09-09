@@ -596,10 +596,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             switch (property)
             {
-                case { Association: Class a, AssociationProperty: IProperty ap }
+                case { Association: Class a, AssociationProperty: IProperty ap, UseClassForAssociation: var useClass }
                     when Config.AvailableClasses.Contains(a)
-                        && ap.EnumProperty != null
-                        && Config.UniqueValueGeneration.CanEnum:
+                        && (ap.EnumProperty != null && Config.UniqueValueGeneration.CanEnum || useClass):
                     usings.Add(GetNamespace(a, tag));
                     break;
                 case { EnumProperty: IProperty ep }
