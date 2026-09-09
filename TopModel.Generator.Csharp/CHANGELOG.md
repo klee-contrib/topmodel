@@ -1,8 +1,12 @@
 # Changelog CSharp
 
+## 4.4.3
+
+- [`b636a47`](https://github.com/klee-contrib/topmodel/commit/b636a4746cac2979efd35414569b379b6561d732) - [C#] Fix using manquant pour association `useClass: true`
+
 ## 4.4.2
 
-- [817647](https://github.com/klee-contrib/topmodel/commit/8176476c447504be5321d1555dfbec76927e7ad7) - [JPA] Gestion du cas où une pk composite référence une classe qui n'est pas disponible. Ajout des cas de tests correspondants
+- [`8176476`](https://github.com/klee-contrib/topmodel/commit/8176476c447504be5321d1555dfbec76927e7ad7) - [JPA/C#] Gestion du cas où une pk composite référence une classe qui n'est pas disponible. Ajout des cas de tests correspondants
 
 ## 4.4.1
 
