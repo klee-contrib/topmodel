@@ -65,6 +65,11 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
         IEnumerable<DocumentSymbol>? children = null
     )
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
         var selectionRange = nameLocation.ToRange() ?? objectLocation.ToRange();
         if (selectionRange == null)
         {
