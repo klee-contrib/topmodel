@@ -1,5 +1,13 @@
 # Changelog JPA
 
+## 4.7.0
+
+- [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
+
+  **impact génération** : Le générateurs de traductions de propriétés inclut désormais par défaut toutes les propriétés, même celles qui n'ont pas de libellé en utilisant leur nom à la place. Il s'agit du même comportement que celui qu'à toujours eu le générateur JS équivalent.
+
+  Vous pouvez revenir au comportement précédent en renseignant `i18n.allowPropertyLabelFallback: false` dans la configuration globale TopModel, mais cela s'appliquera pour tous les générateurs.
+
 ## 4.6.4
 
 - [817647](https://github.com/klee-contrib/topmodel/commit/8176476c447504be5321d1555dfbec76927e7ad7) - [JPA] Gestion du cas où une pk composite référence une classe qui n'est pas disponible. Ajout des cas de tests correspondants

@@ -1,3 +1,11 @@
+## 4.6.0
+
+- [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
+
+  **impact génération** : Le générateurs de traductions de propriétés inclut désormais par défaut toutes les propriétés, même celles qui n'ont pas de libellé en utilisant leur nom à la place. Il s'agit du même comportement que celui qu'à toujours eu le générateur JS équivalent.
+
+  Vous pouvez revenir au comportement précédent en renseignant `i18n.allowPropertyLabelFallback: false` dans la configuration globale TopModel, mais cela s'appliquera pour tous les générateurs.
+
 ## 4.5.0
 
 - [#591](https://github.com/klee-contrib/topmodel/pull/591) - `useLowerCaseSqlNames`

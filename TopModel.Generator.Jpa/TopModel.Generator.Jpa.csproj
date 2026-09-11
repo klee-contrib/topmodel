@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>4.6.4</Version>
+    <Version>4.7.0</Version>
     <Description>Générateurs Java/JPA pour TopModel</Description>
   </PropertyGroup>
   <ItemGroup>

@@ -1,3 +1,13 @@
+## 4.5.1
+
+- [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
+
+  Le générateur JS respecte la nouvelle option `i18n.allowPropertyLabelFallback: false`, pour ne plus générer des clés de resources pour des propriétés sans libellé (en utilisant leur nom à la place). Avec cette option, les libellés manquants ne seront donc plus générés dans les entités non plus.
+
+- [`f84d376`](https://github.com/klee-contrib/topmodel/commit/f84d376540494b3cdb8429949493d08ab2937e83) - `i18n.defaultLang: null`
+
+  Le générateur JS de ressources de commentaires ignore `defaultLang: null` et le considère comme `defaultLang: ""`, puisque les commentaires ne sont générés que pour la langue par défaut.
+
 ## 4.5.0
 
 Compatibilité avec TopModel 4.7 (support pour `paramLocation` sur les propriétés).

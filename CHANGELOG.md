@@ -11,6 +11,22 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.0
+
+- [`6f04042`](https://github.com/klee-contrib/topmodel/commit/6f04042d9d875825baedda159d80ed42ed218f9c) - [Core] Valeur par défaut sur le domaine
+
+  Vous pouvez désormais définir une valeur par défaut sur le domaine, qui sera appliquée à toutes les propriétés de ce domaine. Renseigner `defaultValue` sur la propriété surchargera cette valeur (et vous pouvez mettre `null` pour la retirer).
+
+- [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
+
+  (Voir impacts dans les divers générateurs)
+
+- [`f84d376`](https://github.com/klee-contrib/topmodel/commit/f84d376540494b3cdb8429949493d08ab2937e83) - `i18n.defaultLang: null`
+
+  Vous pouvez désormais renseigner `defaultLang: null` (ce qui n'est pas la même chose que `defaultLang: ""` qui est d'ailleurs la valeur par défaut), pour ne plus générer de fichiers de ressources pour la langue par défaut (celle utilisée pour les libellés dans le modèle).
+
+- [`41e8f5f`](https://github.com/klee-contrib/topmodel/commit/41e8f5f2848b3f0ff9418899789565f7eea0acc4) - [LS] Fix bug sur documentsymbol si le nom est vide (à cause d'une erreur de résolution)
+
 ## 4.7.2
 
 - [`04462b0`](https://github.com/klee-contrib/topmodel/commit/04462b04c19b1b421feef590c93a76032adda8bb) - [Core] label du domaine facultatif
