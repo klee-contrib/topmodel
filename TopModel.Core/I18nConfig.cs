@@ -8,7 +8,7 @@ public class I18nConfig
     /// <summary>
     /// Langue par défaut de l'application.
     /// </summary>
-    public string DefaultLang { get; set; } = string.Empty;
+    public string? DefaultLang { get; set; } = string.Empty;
 
     /// <summary>
     /// Liste des langues de l'application (autre que la langue par défaut).

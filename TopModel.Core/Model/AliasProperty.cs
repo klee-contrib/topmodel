@@ -115,6 +115,8 @@ internal class AliasProperty : IProperty
         set => _label = value;
     }
 
+    public bool OverridesLabel => _label != null;
+
     public bool PrimaryKey
     {
         get => _primaryKey ?? (PreservePrimaryKey && (_property?.PrimaryKey ?? false));
@@ -179,6 +181,8 @@ internal class AliasProperty : IProperty
         get => _comment ?? _property.Comment;
         set => _comment = value;
     }
+
+    public bool OverridesComment => _comment != null;
 
     public string? DefaultValue
     {

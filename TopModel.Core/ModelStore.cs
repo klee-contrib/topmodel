@@ -685,7 +685,10 @@ public class ModelStore(
 
     private async Task LoadTranslations(CancellationToken ct = default)
     {
-        translationStore.Translations[config.I18n.DefaultLang] = [];
+        if (config.I18n.DefaultLang != null)
+        {
+            translationStore.Translations[config.I18n.DefaultLang] = [];
+        }
 
         foreach (var lang in config.I18n.Langs)
         {
@@ -947,7 +950,10 @@ public class ModelStore(
             yield return error;
         }
 
-        classResolver.ResolveTranslations(translationStore, config.I18n.DefaultLang);
+        if (config.I18n.DefaultLang != null)
+        {
+            classResolver.ResolveTranslations(translationStore, config.I18n.DefaultLang);
+        }
 
         foreach (var modelFile in modelFiles)
         {

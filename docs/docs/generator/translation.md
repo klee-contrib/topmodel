@@ -11,7 +11,9 @@ Pour une langue donnée, une entrée est produite lorsque :
 - la propriété possède un `label` non déjà traduit dans cette langue ;
 - ou la propriété appartient à une **liste de référence** (`reference: true`) qui définit une `defaultProperty` **et** dont au moins une des `values` n'a pas de traduction connue dans cette langue.
 
-La langue de développement (celle déclarée comme `defaultLang` dans la configuration globale) est automatiquement ignorée : aucun fichier n'est généré pour elle puisqu'elle sert de source et n'a pas besoin d'être traduite.
+La langue par défaut (celle déclarée comme `defaultLang` dans la configuration globale) est automatiquement ignorée : aucun fichier n'est généré pour elle puisqu'elle sert de source et n'a pas besoin d'être traduite.
+
+_Remarque : `allowPropertyLabelFallback` est bien ignoré par le générateur, seuls les `label` explicitement définis sur les propriétés font l'objet d'une traduction. Si vous utilisez `defaultLang: null`, vous pouvez utiliser `label: ""` par exemple si vous ne voulez pas du tout écrire de libellé dans le modèle._
 
 ## Configuration
 

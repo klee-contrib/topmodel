@@ -62,7 +62,7 @@ public interface IProperty : IAnnotationContainer
 
     IProperty ResourceProperty =>
         SourceContainer != null ? SourceContainer.Properties.First(p => p.Name == Name).ResourceProperty
-        : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label ? alp.OriginalProperty!.ResourceProperty
+        : this is AliasProperty { OverridesLabel: false, OriginalProperty: IProperty op } ? op.ResourceProperty
         : this;
 
     string ResourceKey =>
@@ -70,8 +70,7 @@ public interface IProperty : IAnnotationContainer
 
     IProperty CommentResourceProperty =>
         SourceContainer != null ? SourceContainer.Properties.First(p => p.Name == Name).CommentResourceProperty
-        : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
-            ? alp.OriginalProperty!.CommentResourceProperty
+        : this is AliasProperty { OverridesComment: false, OriginalProperty: IProperty op } ? op.CommentResourceProperty
         : this;
 
     string CommentResourceKey =>

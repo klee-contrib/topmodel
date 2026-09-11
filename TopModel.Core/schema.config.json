@@ -60,8 +60,16 @@
           "default": "{lang}"
         },
         "defaultLang": {
-          "type": "string",
-          "description": "Langue par défaut de l'application."
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Langue par défaut de l'application. Laisser vide si votre application n'a qu'une seule langue (non nommée)."
+            },
+            {
+              "type": "null",
+              "description": "Désactive la langue par défaut et n'utilise pas les libellés définis dans le modèle dans une langue par défaut."
+            }
+          ]
         },
         "langs": {
           "type": "array",
