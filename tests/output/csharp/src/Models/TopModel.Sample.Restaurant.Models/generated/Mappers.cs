@@ -27,6 +27,32 @@ public static class Mappers
     }
 
     /// <summary>
+    /// Mappe 'PaiementItem' vers 'FactureItem'.
+    /// </summary>
+    /// <param name="source">Instance de 'PaiementItem'.</param>
+    /// <param name="commandeId">Commande associée à la facture.</param>
+    /// <returns>Une nouvelle instance de 'FactureItem'.</returns>
+    public static FactureItem ToFactureItem(this PaiementItem source, int? commandeId = null)
+    {
+        return new FactureItem
+        {
+            Id = source.FactureId,
+            CommandeId = commandeId
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'PaiementItem' vers 'FactureItem'.
+    /// </summary>
+    /// <param name="source">Instance de 'PaiementItem'.</param>
+    /// <param name="dest">Instance pré-existante de 'FactureItem'.</param>
+    /// <returns>L'instance pré-existante de 'FactureItem'.</returns>
+    public static FactureItem ToFactureItem(this PaiementItem source, FactureItem dest)
+    {
+        return dest;
+    }
+
+    /// <summary>
     /// Mappe 'MenuWrite' vers 'MenuRead'.
     /// </summary>
     /// <param name="source">Instance de 'MenuWrite'.</param>

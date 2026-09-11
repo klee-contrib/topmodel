@@ -8,7 +8,7 @@ tags:
   - Back
 uses:
   - 02_Restaurant/01_Lieu
-  - 02_Restaurant/05_Personne
+  - 02_Restaurant/06_Personne
 ---
 class:
   name: Employe

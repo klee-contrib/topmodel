@@ -361,6 +361,21 @@ private String nom;
 
 - Ne pas composer avec une entité persistée.
 
+### Génération en `record` (`useRecords`)
+
+Les classes non persistées, `readonly` et de type `regular` (donc ni `abstract`, ni `interface`, ni `enum`) peuvent être générées sous la forme d'un `record` Java plutôt que d'une classe, via l'option [`useRecords`](#userecords).
+
+Exemple :
+
+```java
+public record RestaurantRead(
+    @NotNull String nom,
+    @Size(max = 100) String adresse
+) {}
+```
+
+**Précaution d'emploi :** un `record` étant immuable, il ne peut pas être utilisé comme cible d'un mapping "sur instance existante" (`target`). Voir les spécificités des mappers pour les records dans la page [Mappers](/generator/jpa/mappers).
+
 ## Interfaces
 
 Pour générer des interfaces à partir d'une classe du modèle, vous pouvez passer la propriété `type` d'une classe à `inteface`.
@@ -562,4 +577,21 @@ Et une association `@OneToOne` produira :
 @JoinColumn(name = "AVI_ID", referencedColumnName = "AVI_ID", unique = true)
 @OneToOne(cascade = { CascadeType.ALL, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
 private AvisClient avisClient;
+```
+
+### `useRecords`
+
+Option pour générer les classes non persistées `readonly` de type `regular` sous forme de `record` Java plutôt que de classe classique (voir la section "Classes non persistées" ci-dessus).
+
+_Valeur par défaut_: `false`
+
+_Variables par tag_: **oui** (une classe utilisée avec plusieurs tags pourrait être générée en `record` pour certains tags et en classe classique pour d'autres)
+
+**Exemple :**
+
+```yaml
+jpa:
+  - tags:
+      - dto
+    useRecords: true
 ```

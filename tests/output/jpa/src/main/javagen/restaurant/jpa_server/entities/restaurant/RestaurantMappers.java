@@ -20,10 +20,12 @@ import restaurant.jpa_server.dtos.restaurant.CommandeRead;
 import restaurant.jpa_server.dtos.restaurant.CommandeWrite;
 import restaurant.jpa_server.dtos.restaurant.EmployeRead;
 import restaurant.jpa_server.dtos.restaurant.EmployeWrite;
+import restaurant.jpa_server.dtos.restaurant.FactureItem;
 import restaurant.jpa_server.dtos.restaurant.LigneCommandeRead;
 import restaurant.jpa_server.dtos.restaurant.LigneCommandeWrite;
 import restaurant.jpa_server.dtos.restaurant.MenuRead;
 import restaurant.jpa_server.dtos.restaurant.MenuWrite;
+import restaurant.jpa_server.dtos.restaurant.PaiementItem;
 import restaurant.jpa_server.dtos.restaurant.PlatItem;
 import restaurant.jpa_server.dtos.restaurant.PlatRead;
 import restaurant.jpa_server.dtos.restaurant.PlatWrite;
@@ -274,6 +276,24 @@ public class RestaurantMappers {
 	}
 
 	/**
+	 * Mappe les champs sources sur l'instance de la classe 'FactureItem' passée en paramètre.
+	 * @param facture Instance de 'Facture' source.
+	 *
+	 * @return L'instance de 'FactureItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 */
+	public static FactureItem createFactureItem(Facture facture) {
+
+		if (facture == null) {
+			throw new IllegalArgumentException("facture cannot be null");
+		}
+
+		return new FactureItem (
+			facture.getId(),
+			facture.getCommande() == null ? null : facture.getCommande().getId()
+		);
+	}
+
+	/**
 	 * Crée une nouvelle instance de la classe 'LigneCommandeRead' en mappant les champs sources.
 	 * @param ligneCommande Instance de 'LigneCommande' source.
 	 *
@@ -360,6 +380,31 @@ public class RestaurantMappers {
 
 		target.setDateCreation(menu.getDateCreation());
 		return target;
+	}
+
+	/**
+	 * Mappe les champs sources sur l'instance de la classe 'PaiementItem' passée en paramètre.
+	 * @param paiement Instance de 'Paiement' source.
+	 * @param commande Instance de 'Commande' source.
+	 *
+	 * @return L'instance de 'PaiementItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 */
+	public static PaiementItem createPaiementItem(Paiement paiement, Commande commande) {
+
+		if (paiement == null) {
+			throw new IllegalArgumentException("paiement cannot be null");
+		}
+
+		if (commande == null) {
+			throw new IllegalArgumentException("commande cannot be null");
+		}
+
+		return new PaiementItem (
+			paiement.getFacture() == null ? null : paiement.getFacture().getId(),
+			paiement.getSwileCardId(),
+			commande.getDateCommande(),
+			commande.getMontantTotal()
+		);
 	}
 
 	/**

@@ -40,6 +40,23 @@ public class RestaurantDTOMappers {
 	}
 
 	/**
+	 * Mappe les champs sources sur une nouvelle instance de la classe 'FactureItem'.
+	 * @param source Instance de 'PaiementItem' à mapper.
+	 *
+	 * @return Une nouvelle instance de 'FactureItem' sur lesquels les champs sources ont été mappés.
+	 */
+	public static FactureItem createFactureItem(PaiementItem source) {
+		if (source == null) {
+			throw new IllegalArgumentException("source cannot be null");
+		}
+
+		return new FactureItem (
+			source.factureId(),
+			null
+		);
+	}
+
+	/**
 	 * Mappe 'MenuRead' vers une nouvelle instance de 'MenuWrite'.
 	 * @param source Instance de 'MenuWrite' à mapper.
 	 *

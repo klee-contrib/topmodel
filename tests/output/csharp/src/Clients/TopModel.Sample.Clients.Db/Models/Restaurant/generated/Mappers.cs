@@ -124,6 +124,22 @@ public static class Mappers
     }
 
     /// <summary>
+    /// Crée une nouvelle instance de 'FactureItem'.
+    /// </summary>
+    /// <param name="facture">Instance de 'Facture'.</param>
+    /// <returns>Une nouvelle instance de 'FactureItem'.</returns>
+    public static FactureItem CreateFactureItem(Facture facture)
+    {
+        ArgumentNullException.ThrowIfNull(facture);
+
+        return new FactureItem
+        {
+            Id = facture.Id,
+            CommandeId = facture.Commande?.Id
+        };
+    }
+
+    /// <summary>
     /// Crée une nouvelle instance de 'LigneCommandeRead'.
     /// </summary>
     /// <param name="ligneCommande">Instance de 'LigneCommande'.</param>
@@ -164,6 +180,26 @@ public static class Mappers
             DateFin = menu.DateFin,
             RestaurantId = menu.Restaurant?.Id,
             DateCreation = menu.DateCreation
+        };
+    }
+
+    /// <summary>
+    /// Crée une nouvelle instance de 'PaiementItem'.
+    /// </summary>
+    /// <param name="paiement">Instance de 'Paiement'.</param>
+    /// <param name="commande">Instance de 'Commande'.</param>
+    /// <returns>Une nouvelle instance de 'PaiementItem'.</returns>
+    public static PaiementItem CreatePaiementItem(Paiement paiement, Commande commande)
+    {
+        ArgumentNullException.ThrowIfNull(paiement);
+        ArgumentNullException.ThrowIfNull(commande);
+
+        return new PaiementItem
+        {
+            FactureId = paiement.Facture?.Id,
+            SwileCardId = paiement.SwileCardId,
+            DateCommande = commande.DateCommande,
+            MontantTotal = commande.MontantTotal
         };
     }
 

@@ -13,9 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.Valid;
 
-import restaurant.jpa_feign.entities.restaurant.Restaurant;
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-
 /**
  * Détail d'un restaurant en écriture.
  */
@@ -219,16 +216,6 @@ public class RestaurantWrite implements Serializable {
 	 */
 	public void setTables(List<TableItem> tables) {
 		this.tables = tables;
-	}
-
-	/**
-	 * Mappe 'RestaurantWrite' vers 'Restaurant'.
-	 * @param target Instance pré-existante de 'Restaurant'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'Restaurant'.
-	 */
-	public Restaurant toRestaurant(Restaurant target) {
-		return RestaurantMappers.toRestaurant(this, target);
 	}
 
 	/**

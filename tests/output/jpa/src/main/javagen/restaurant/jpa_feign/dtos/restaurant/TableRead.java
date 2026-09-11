@@ -13,9 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
-import restaurant.jpa_feign.entities.restaurant.RestaurantMappers;
-import restaurant.jpa_feign.entities.restaurant.Table;
-
 /**
  * Détail d'une table en lecture.
  */
@@ -71,23 +68,6 @@ public class TableRead implements TableItem, Serializable {
 	@NotNull
 	@PastOrPresent
 	private LocalDateTime dateCreation;
-
-	/**
-	 * No arg constructor.
-	 */
-	public TableRead() {
-		// No arg constructor
-	}
-
-	/**
-	 * Crée une nouvelle instance de 'TableRead'.
-	 * @param table Instance de 'Table'.
-	 *
-	 * @return Une nouvelle instance de 'TableRead'.
-	 */
-	public TableRead(Table table) {
-		RestaurantMappers.mapTableRead(table, this);
-	}
 
 	/**
 	 * Getter for id.

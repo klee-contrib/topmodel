@@ -148,7 +148,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             && (op.Class.Enum != EnumMode.Enum || op != op.Class.EnumKey)
         )
         {
-            var getter = $"#{GetGetterName(op)}()";
+            var getter = $"#{Config.GetGetterName(op, tag)}()";
             javaField.AddCommentLine(
                 $"Alias of {{@link {op.Class.GetImport(Config, tag)}{getter} {op.Class.NamePascal}{getter}}}"
             );
@@ -179,7 +179,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
     public virtual JavaMethod GetGetter(string tag, IProperty property)
     {
         var field = GetField(property, tag);
-        var method = new JavaMethod(field.Type, GetGetterName(property))
+        var method = new JavaMethod(field.Type, Config.GetGetterName(property, tag))
         {
             Comment = $"Getter for {field.Name}",
             Body =
@@ -203,19 +203,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         }
 
         return method;
-    }
-
-    public virtual string GetGetterName(IProperty property)
-    {
-        var propertyName = property.NameCamel;
-        var propertyType = Config.GetType(property);
-        var getterPrefix = propertyType == "boolean" ? "is" : "get";
-        if (property.Class.PreservePropertyCasing)
-        {
-            return propertyName.ToFirstUpper().WithPrefix(getterPrefix);
-        }
-
-        return propertyName.ToPascalCase().WithPrefix(getterPrefix);
     }
 
     public IEnumerable<JavaAnnotation> GetJpaAssociationAnnotations(IProperty property, string tag)

@@ -3,11 +3,11 @@
 ####
 
 ---
-module: Join
+module: Restaurant
 tags:
   - Back
 uses:
-  - 03_Join/01_Facture
+  - 02_Restaurant/13_Facture
 ---
 class:
   name: Paiement

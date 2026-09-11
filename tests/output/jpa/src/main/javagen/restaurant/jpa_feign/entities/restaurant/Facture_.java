@@ -14,5 +14,9 @@ public class Facture_ {
 
 	public static volatile SingularAttribute<Facture, Integer> id;
 
+	public static volatile SingularAttribute<Facture, Commande> commande;
+
 	public static final String ID = "id";
+
+	public static final String COMMANDE = "commande";
 }

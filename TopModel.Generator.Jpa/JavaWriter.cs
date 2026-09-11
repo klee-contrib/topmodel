@@ -271,7 +271,14 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         }
 
         WriteAnnotations(indentationLevel, javaClass.Annotations, javaClass);
-        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
+        if (javaClass is JavaRecord javaRecord)
+        {
+            WriteRecordDeclaration(indentationLevel, javaRecord);
+        }
+        else
+        {
+            WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
+        }
         if (javaClass is JavaEnum javaEnum)
         {
             var i = -1;
@@ -310,7 +317,10 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         }
         foreach (var field in javaClass.Fields)
         {
-            WriteField(indentationLevel + 1, field, javaClass);
+            if (javaClass.ClassType != "record")
+            {
+                WriteField(indentationLevel + 1, field, javaClass);
+            }
         }
 
         foreach (var constructor in javaClass.Constructors)
@@ -517,5 +527,28 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
             WriteLine(indentationLevel, sb.ToString());
         }
+    }
+
+    private void WriteRecordDeclaration(int indentationLevel, JavaRecord javaRecord)
+    {
+        WriteLine(indentationLevel, $"{javaRecord.Visibility} {javaRecord.ClassType} {javaRecord.Name}(");
+        foreach (var field in javaRecord.Fields)
+        {
+            var annotations = string.Join(
+                ' ',
+                field
+                    .Annotations.DistinctBy(e => e.Name.Split('(')[0])
+                    .OrderBy(a => a.Name)
+                    .Select(a => GetAnnotation(a, javaRecord))
+            );
+            var line = string.Empty;
+            if (!string.IsNullOrEmpty(annotations))
+            {
+                line += $"{annotations} ";
+            }
+            line += $"{field.Type} {field.Name}{(field != javaRecord.Fields.Last() ? "," : string.Empty)}";
+            WriteLine(indentationLevel + 1, line);
+        }
+        WriteLine(indentationLevel, $@") {{");
     }
 }
