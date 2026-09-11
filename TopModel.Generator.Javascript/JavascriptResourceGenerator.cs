@@ -27,7 +27,11 @@ public class JavascriptResourceGenerator(
             return null;
         }
 
-        return Config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, modelConfig.I18n.DefaultLang);
+        return Config.GetCommentResourcesFilePath(
+            property.Parent.Namespace,
+            tag,
+            modelConfig.I18n.DefaultLang ?? string.Empty
+        );
     }
 
     protected override string? GetMainResourceFilePath(string tag, string lang)
@@ -40,9 +44,21 @@ public class JavascriptResourceGenerator(
         return Config.GetMainResourceFilePath(tag, lang);
     }
 
-    protected override string GetResourceFilePath(IProperty property, string tag, string lang)
+    protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
-        return Config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
+        var p = property.ResourceProperty;
+        if (
+            p.Label != null
+            || _translationStore.AllowPropertyLabelFallback
+            || p.Class?.Values.Count > 0 && p.Class?.DefaultProperty != null
+        )
+        {
+            return Config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
@@ -63,7 +79,7 @@ public class JavascriptResourceGenerator(
 
         WriteSubModule(
             fw,
-            modelConfig.I18n.DefaultLang,
+            modelConfig.I18n.DefaultLang ?? string.Empty,
             properties.Where(p =>
                 Config.ExtendedCompositions
                 || Config.EntityMode == EntityMode.FOCUS
@@ -181,21 +197,21 @@ public class JavascriptResourceGenerator(
         var pi = 1;
         if (Config.TranslateProperties == true)
         {
-            foreach (var property in container.OrderBy(p => p.PropertyNameCamel, StringComparer.Ordinal))
+            var properties = container
+                .Where(c => isComment || c.Label != null || _translationStore.AllowPropertyLabelFallback)
+                .OrderBy(p => p.PropertyNameCamel, StringComparer.Ordinal)
+                .ToList();
+
+            foreach (var property in properties)
             {
                 var translation = isComment
                     ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace('"', '\'')
                     : _translationStore.GetTranslation(property, lang);
 
-                if (translation == string.Empty)
-                {
-                    translation = property.Name;
-                }
-
                 fw.Write(indentLevel + 1, $"{Quote(property.PropertyNameCamel)}: ");
                 fw.Write($@"""{translation}""");
                 fw.WriteLine(
-                    container.Count() == pi++
+                    properties.Count == pi++
                     && !onlyProperties
                     && !(
                         Config.TranslateReferences == true

@@ -16,7 +16,21 @@ public class SpringRestTemplateApiGenerator(
 ) : EndpointsGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     public override string Name => "SpringRestTemplateGen";
+
     private static string DefaultApiClassName => "Abstract{fileName}Client";
+
+    protected virtual void AddMethodParamsImports(JavaWriter fw, Endpoint endpoint, string tag)
+    {
+        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
+        {
+            fw.AddImports(param.GetTypeImports(Config, tag));
+        }
+
+        if (endpoint.GetJsonBodyParam(Config) is IProperty bodyParam)
+        {
+            fw.AddImports(bodyParam.GetTypeImports(Config, tag));
+        }
+    }
 
     protected override bool FilterTag(string tag)
     {
@@ -187,33 +201,18 @@ public class SpringRestTemplateApiGenerator(
         fw.WriteLine(1, "}");
     }
 
-    protected virtual void AddMethodParamsImports(JavaWriter fw, Endpoint endpoint, string tag)
-    {
-        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
-        {
-            fw.AddImports(param.GetTypeImports(Config, tag));
-        }
-
-        if (endpoint.GetJsonBodyParam(Config) is IProperty bodyParam)
-        {
-            fw.AddImports(bodyParam.GetTypeImports(Config, tag));
-        }
-    }
-
     protected virtual void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        fw.AddImports(
-            [
-                "jakarta.annotation.Generated",
-                "org.springframework.web.util.UriComponentsBuilder",
-                "org.springframework.web.client.RestTemplate",
-                "java.net.URI",
-                "org.springframework.http.HttpMethod",
-                "org.springframework.http.HttpEntity",
-                "org.springframework.http.HttpHeaders",
-                "org.springframework.http.ResponseEntity",
-            ]
-        );
+        fw.AddImports([
+            "jakarta.annotation.Generated",
+            "org.springframework.web.util.UriComponentsBuilder",
+            "org.springframework.web.client.RestTemplate",
+            "java.net.URI",
+            "org.springframework.http.HttpMethod",
+            "org.springframework.http.HttpEntity",
+            "org.springframework.http.HttpHeaders",
+            "org.springframework.http.ResponseEntity",
+        ]);
     }
 
     protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)

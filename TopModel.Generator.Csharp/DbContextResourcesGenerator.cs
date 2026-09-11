@@ -21,7 +21,8 @@ public class DbContextResourcesGenerator(
         if (
             Config.AvailableClasses.Any(c => c.Translation)
             && (
-                Config.PersistedPropertiesResources && property.ResourceProperty.Label != null
+                Config.PersistedPropertiesResources
+                    && (property.ResourceProperty.Label != null || _translationStore.AllowPropertyLabelFallback)
                 || Config.PersistedReferencesResources
                     && property.ResourceProperty.Class
                         is { DefaultProperty: not null, Enum: not null, Values.Count: > 0 }
@@ -89,7 +90,7 @@ public class DbContextResourcesGenerator(
                     var orderedProperties = container.OrderBy(p => p.NamePascal, StringComparer.Ordinal).ToList();
                     foreach (var property in orderedProperties)
                     {
-                        if (property.Label != null)
+                        if (property.Label != null || _translationStore.AllowPropertyLabelFallback)
                         {
                             cw.Write(
                                 3,

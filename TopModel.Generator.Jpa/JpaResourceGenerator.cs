@@ -23,7 +23,11 @@ public class JpaResourceGenerator(
     protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
         var p = property.ResourceProperty;
-        if (p.Label != null || p.Class?.Values.Count > 0 && p.Class?.DefaultProperty != null)
+        if (
+            p.Label != null
+            || _translationStore.AllowPropertyLabelFallback
+            || p.Class?.Values.Count > 0 && p.Class?.DefaultProperty != null
+        )
         {
             return Path.Combine(
                 Config.OutputDirectory,
@@ -81,7 +85,7 @@ public class JpaResourceGenerator(
         {
             foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
             {
-                if (property.Label != null)
+                if (property.Label != null || _translationStore.AllowPropertyLabelFallback)
                 {
                     fw.WriteLine($"{property.ResourceKey}={_translationStore.GetTranslation(property, lang)}");
                 }

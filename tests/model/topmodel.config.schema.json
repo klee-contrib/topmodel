@@ -74,12 +74,17 @@
         "translateReferences": {
           "type": "boolean",
           "description": "Si les libellés des listes de références doivent être traduits.",
-          "default": "true"
+          "default": true
         },
         "translateProperties": {
           "type": "boolean",
           "description": "Si les libellés des propriétés doivent être traduits.",
-          "default": "true"
+          "default": true
+        },
+        "allowPropertyLabelFallback": {
+          "type": "boolean",
+          "description": "Si le libellé d'une propriété n'est pas renseigné, autorise l'usage de son nom comme libellé.",
+          "default": true
         }
       }
     },

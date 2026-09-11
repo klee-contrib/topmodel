@@ -120,4 +120,13 @@
   <data name="common.dateCreation.dateCreation" xml:space="preserve">
     <value>Date de création</value>
   </data>
+  <data name="common.translation.lang" xml:space="preserve">
+    <value>Lang</value>
+  </data>
+  <data name="common.translation.resourceKey" xml:space="preserve">
+    <value>ResourceKey</value>
+  </data>
+  <data name="common.translation.value" xml:space="preserve">
+    <value>Value</value>
+  </data>
 </root>

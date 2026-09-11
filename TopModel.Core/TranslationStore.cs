@@ -2,20 +2,29 @@
 
 namespace TopModel.Core;
 
-public class TranslationStore
+public class TranslationStore(ModelConfig config)
 {
     private readonly object _lock = new();
 
     public IDictionary<string, Dictionary<string, string>> Translations { get; } =
         new Dictionary<string, Dictionary<string, string>>();
 
-    public string GetTranslation(IProperty property, string lang)
+    public bool AllowPropertyLabelFallback => config.I18n.AllowPropertyLabelFallback;
+
+    public string? GetTranslation(IProperty property, string lang)
     {
-        return
+        var label =
             Translations.TryGetValue(lang, out var dict)
             && dict.TryGetValue(property.ResourceKey, out var translatedValue)
-            ? translatedValue
-            : property.Label ?? string.Empty;
+                ? translatedValue
+                : property.Label;
+
+        if (label == null && config.I18n.AllowPropertyLabelFallback)
+        {
+            return property.Name;
+        }
+
+        return label;
     }
 
     public string GetTranslation(ClassValue refValue, string lang)

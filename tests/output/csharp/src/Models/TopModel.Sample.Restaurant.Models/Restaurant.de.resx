@@ -117,16 +117,391 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="restaurant.assiette.taille" xml:space="preserve">
+    <value>Taille</value>
+  </data>
+  <data name="restaurant.avisClient.approuve" xml:space="preserve">
+    <value>Approuve</value>
+  </data>
+  <data name="restaurant.avisClient.clientId" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="restaurant.avisClient.commentaire" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="restaurant.avisClient.dateAvis" xml:space="preserve">
+    <value>DateAvis</value>
+  </data>
+  <data name="restaurant.avisClient.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.avisClient.note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="restaurant.avisClient.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.categoriePlat.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.categoriePlat.libelle" xml:space="preserve">
+    <value>Libelle</value>
+  </data>
+  <data name="restaurant.categoriePlat.ordre" xml:space="preserve">
+    <value>Ordre</value>
+  </data>
+  <data name="restaurant.categoriePlat.prixMoyen" xml:space="preserve">
+    <value>PrixMoyen</value>
+  </data>
+  <data name="restaurant.categoriePlatRegion.categoriePlatCode" xml:space="preserve">
+    <value>CategoriePlat</value>
+  </data>
+  <data name="restaurant.categoriePlatRegion.regionCode" xml:space="preserve">
+    <value>RegionCode</value>
+  </data>
+  <data name="restaurant.client.avisClients" xml:space="preserve">
+    <value>AvisClients</value>
+  </data>
   <data name="restaurant.client.email" xml:space="preserve">
     <value>Courriel</value>
   </data>
+  <data name="restaurant.client.swileCardId" xml:space="preserve">
+    <value>SwileCard</value>
+  </data>
+  <data name="restaurant.clientItem.nomComplet" xml:space="preserve">
+    <value>NomComplet</value>
+  </data>
+  <data name="restaurant.commande.avisClientId" xml:space="preserve">
+    <value>AvisClient</value>
+  </data>
+  <data name="restaurant.commande.clientId" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="restaurant.commande.dateCommande" xml:space="preserve">
+    <value>DateCommande</value>
+  </data>
+  <data name="restaurant.commande.dateLivraison" xml:space="preserve">
+    <value>DateLivraison</value>
+  </data>
+  <data name="restaurant.commande.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.commande.lignes" xml:space="preserve">
+    <value>Lignes</value>
+  </data>
   <data name="restaurant.commande.montantTotal" xml:space="preserve">
     <value>Montant total</value>
+  </data>
+  <data name="restaurant.commande.reservationId" xml:space="preserve">
+    <value>Reservation</value>
+  </data>
+  <data name="restaurant.commande.statutCommande" xml:space="preserve">
+    <value>StatutCommande</value>
+  </data>
+  <data name="restaurant.commande.tableId" xml:space="preserve">
+    <value>TableId</value>
+  </data>
+  <data name="restaurant.commandeRead.reservation" xml:space="preserve">
+    <value>Reservation</value>
+  </data>
+  <data name="restaurant.departement.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.departement.libelle" xml:space="preserve">
+    <value>Libelle</value>
+  </data>
+  <data name="restaurant.departement.regionCode" xml:space="preserve">
+    <value>RegionCode</value>
+  </data>
+  <data name="restaurant.employe.dateEmbauche" xml:space="preserve">
+    <value>DateEmbauche</value>
+  </data>
+  <data name="restaurant.employe.dateNaissance" xml:space="preserve">
+    <value>DateNaissance</value>
+  </data>
+  <data name="restaurant.employe.matricule" xml:space="preserve">
+    <value>Matricule</value>
+  </data>
+  <data name="restaurant.employe.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.employe.salaire" xml:space="preserve">
+    <value>Salaire</value>
+  </data>
+  <data name="restaurant.employeBase.telephone" xml:space="preserve">
+    <value>Telephone</value>
+  </data>
+  <data name="restaurant.employeItem.autresEmployes" xml:space="preserve">
+    <value>AutresEmployes</value>
+  </data>
+  <data name="restaurant.facture.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.fournisseur.bio" xml:space="preserve">
+    <value>Bio</value>
+  </data>
+  <data name="restaurant.fournisseur.telephone" xml:space="preserve">
+    <value>Telephone</value>
+  </data>
+  <data name="restaurant.lieu.adresse" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="restaurant.lieu.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.lieu.nom" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="restaurant.ligneCommande.commandeId" xml:space="preserve">
+    <value>Commande</value>
+  </data>
+  <data name="restaurant.ligneCommande.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.ligneCommande.platId" xml:space="preserve">
+    <value>Plat</value>
+  </data>
+  <data name="restaurant.ligneCommande.prixTotal" xml:space="preserve">
+    <value>PrixTotal</value>
+  </data>
+  <data name="restaurant.ligneCommande.prixUnitaire" xml:space="preserve">
+    <value>PrixUnitaire</value>
+  </data>
+  <data name="restaurant.ligneCommande.quantite" xml:space="preserve">
+    <value>Quantite</value>
+  </data>
+  <data name="restaurant.ligneCommandeHistorique.commandeHistoriqueId" xml:space="preserve">
+    <value>CommandeHistoriqueId</value>
+  </data>
+  <data name="restaurant.menu.dateDebut" xml:space="preserve">
+    <value>DateDebut</value>
+  </data>
+  <data name="restaurant.menu.dateFin" xml:space="preserve">
+    <value>DateFin</value>
+  </data>
+  <data name="restaurant.menu.description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="restaurant.menu.disponible" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="restaurant.menu.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.menu.nom" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="restaurant.menu.plats" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="restaurant.menu.prix" xml:space="preserve">
+    <value>Prix</value>
+  </data>
+  <data name="restaurant.menu.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.menuPlat.menuId" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="restaurant.menuPlat.ordre" xml:space="preserve">
+    <value>Ordre</value>
+  </data>
+  <data name="restaurant.menuPlat.platId" xml:space="preserve">
+    <value>Plat</value>
+  </data>
+  <data name="restaurant.menuRead.categoriesPlat" xml:space="preserve">
+    <value>CategoriesPlat</value>
+  </data>
+  <data name="restaurant.menuRead.plats" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="restaurant.nombreVuesBase.nombreVues" xml:space="preserve">
+    <value>NombreVues</value>
+  </data>
+  <data name="restaurant.paiement.factureId" xml:space="preserve">
+    <value>Facture</value>
+  </data>
+  <data name="restaurant.paiement.swileCardId" xml:space="preserve">
+    <value>SwileCardId</value>
+  </data>
+  <data name="restaurant.personne.departementCode" xml:space="preserve">
+    <value>DepartementCode</value>
+  </data>
+  <data name="restaurant.personneBase.id" xml:space="preserve">
+    <value>Id</value>
   </data>
   <data name="restaurant.personneBase.nom" xml:space="preserve">
     <value>Nom</value>
   </data>
   <data name="restaurant.personneBase.prenom" xml:space="preserve">
     <value>Prénom</value>
+  </data>
+  <data name="restaurant.personneItem.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.personneItem.nom" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="restaurant.personneItem.prenom" xml:space="preserve">
+    <value>Prenom</value>
+  </data>
+  <data name="restaurant.plat.categoriePlatCode" xml:space="preserve">
+    <value>CategoriePlat</value>
+  </data>
+  <data name="restaurant.plat.description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="restaurant.plat.disponible" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="restaurant.plat.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.plat.nom" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="restaurant.plat.prix" xml:space="preserve">
+    <value>Prix</value>
+  </data>
+  <data name="restaurant.plat.promotionPlatId" xml:space="preserve">
+    <value>Promotion</value>
+  </data>
+  <data name="restaurant.plat.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.platBoisson.volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="restaurant.platPrincipal.vegetarien" xml:space="preserve">
+    <value>Vegetarien</value>
+  </data>
+  <data name="restaurant.promotion.active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="restaurant.promotion.dateDebut" xml:space="preserve">
+    <value>DateDebut</value>
+  </data>
+  <data name="restaurant.promotion.dateFin" xml:space="preserve">
+    <value>DateFin</value>
+  </data>
+  <data name="restaurant.promotion.libelle" xml:space="preserve">
+    <value>Libelle</value>
+  </data>
+  <data name="restaurant.promotion.platId" xml:space="preserve">
+    <value>Plat</value>
+  </data>
+  <data name="restaurant.promotion.pourcentageReduction" xml:space="preserve">
+    <value>PourcentageReduction</value>
+  </data>
+  <data name="restaurant.promotion.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.region.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.region.libelle" xml:space="preserve">
+    <value>Libelle</value>
+  </data>
+  <data name="restaurant.region.nomResponsable" xml:space="preserve">
+    <value>NomResponsable</value>
+  </data>
+  <data name="restaurant.reservation.clientId" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="restaurant.reservation.commentaire" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="restaurant.reservation.confirmee" xml:space="preserve">
+    <value>Confirmee</value>
+  </data>
+  <data name="restaurant.reservation.dateReservation" xml:space="preserve">
+    <value>DateReservation</value>
+  </data>
+  <data name="restaurant.reservation.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.reservation.nombrePersonnes" xml:space="preserve">
+    <value>NombrePersonnes</value>
+  </data>
+  <data name="restaurant.reservation.restaurantId" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="restaurant.reservation.tableId" xml:space="preserve">
+    <value>TableId</value>
+  </data>
+  <data name="restaurant.restaurant.avisClients" xml:space="preserve">
+    <value>AvisClients</value>
+  </data>
+  <data name="restaurant.restaurant.menus" xml:space="preserve">
+    <value>Menus</value>
+  </data>
+  <data name="restaurant.restaurant.plats" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="restaurant.restaurant.promotions" xml:space="preserve">
+    <value>Promotions</value>
+  </data>
+  <data name="restaurant.restaurant.tableIds" xml:space="preserve">
+    <value>TableIds</value>
+  </data>
+  <data name="restaurant.restaurant.telephone" xml:space="preserve">
+    <value>Telephone</value>
+  </data>
+  <data name="restaurant.restaurantAvecStatistiques.nombrePlats" xml:space="preserve">
+    <value>NombrePlats</value>
+  </data>
+  <data name="restaurant.restaurantAvecStatistiques.noteMoyenne" xml:space="preserve">
+    <value>NoteMoyenne</value>
+  </data>
+  <data name="restaurant.restaurantAvecStatistiques.tables" xml:space="preserve">
+    <value>Tables</value>
+  </data>
+  <data name="restaurant.statistiquesRestaurant.chiffreAffaires" xml:space="preserve">
+    <value>ChiffreAffaires</value>
+  </data>
+  <data name="restaurant.statistiquesRestaurant.nombreClients" xml:space="preserve">
+    <value>NombreClients</value>
+  </data>
+  <data name="restaurant.statistiquesRestaurant.nombreCommandes" xml:space="preserve">
+    <value>NombreCommandes</value>
+  </data>
+  <data name="restaurant.statistiquesRestaurant.noteMoyenne" xml:space="preserve">
+    <value>NoteMoyenne</value>
+  </data>
+  <data name="restaurant.statistiquesRestaurant.restaurantId" xml:space="preserve">
+    <value>RestaurantId</value>
+  </data>
+  <data name="restaurant.statutCommande.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.statutCommande.libelle" xml:space="preserve">
+    <value>Libelle</value>
+  </data>
+  <data name="restaurant.table.capacite" xml:space="preserve">
+    <value>Capacite</value>
+  </data>
+  <data name="restaurant.table.disponible" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="restaurant.table.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.table.numero" xml:space="preserve">
+    <value>Numero</value>
+  </data>
+  <data name="restaurant.table.restaurantId" xml:space="preserve">
+    <value>RestaurantId</value>
+  </data>
+  <data name="restaurant.typeTerrasse.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.vaisselle.description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="restaurant.vaisselle.id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="restaurant.verre.aPied" xml:space="preserve">
+    <value>APied</value>
   </data>
 </root>

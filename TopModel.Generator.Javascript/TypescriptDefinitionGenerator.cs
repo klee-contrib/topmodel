@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -10,7 +11,8 @@ namespace TopModel.Generator.Javascript;
 /// </summary>
 public class TypescriptDefinitionGenerator(
     ILogger<TypescriptDefinitionGenerator> logger,
-    IFileWriterProvider writerProvider
+    IFileWriterProvider writerProvider,
+    TranslationStore translationStore
 ) : ClassGeneratorBase<JavascriptConfig>(logger, writerProvider)
 {
     public override string Name => "JSDefinitionGen";
@@ -279,19 +281,22 @@ public class TypescriptDefinitionGenerator(
                         $"isRequired: {(property.Required && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null))).ToString().ToFirstLower()},"
                     );
 
-                    if (Config.TranslateProperties == true)
+                    if (property.Label != null || translationStore.AllowPropertyLabelFallback)
                     {
-                        fw.WriteLine(
-                            2,
-                            $"label: \"{property.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}"
-                        );
-                    }
-                    else
-                    {
-                        fw.WriteLine(
-                            2,
-                            $"label: \"{property.Label ?? property.Name}\"{(Config.GenerateComments ? "," : string.Empty)}"
-                        );
+                        if (Config.TranslateProperties == true)
+                        {
+                            fw.WriteLine(
+                                2,
+                                $"label: \"{property.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}"
+                            );
+                        }
+                        else
+                        {
+                            fw.WriteLine(
+                                2,
+                                $"label: \"{property.Label ?? property.Name}\"{(Config.GenerateComments ? "," : string.Empty)}"
+                            );
+                        }
                     }
 
                     if (Config.GenerateComments)
@@ -357,6 +362,25 @@ public class TypescriptDefinitionGenerator(
 
                 fw.Write("(");
 
+                var hasType =
+                    property.Composition == null && type != Config.GetImplementation(property.Domain)?.Type
+                    || property.Composition != null
+                        && type != property.Composition!.NamePascal
+                        && !Config.IsListComposition(property);
+                var defaultValue = Config.GetValue(property);
+                var hasOptional = !(
+                    property.Required
+                    && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null))
+                );
+                var hasLabel = property.Label != null || translationStore.AllowPropertyLabelFallback;
+
+                var hasConfigurator =
+                    hasType
+                    || defaultValue != ClassValue.Undefined
+                    || hasOptional
+                    || hasLabel
+                    || Config.GenerateComments;
+
                 if (
                     property.Composition != null
                     && (
@@ -365,59 +389,64 @@ public class TypescriptDefinitionGenerator(
                     )
                 )
                 {
-                    fw.Write($"{property.Composition!.NamePascal}Entity, ");
+                    fw.Write($"{property.Composition!.NamePascal}Entity");
+                    if (hasConfigurator)
+                    {
+                        fw.Write(", ");
+                    }
                 }
                 else if (!Config.IsListComposition(property))
                 {
-                    fw.Write($"{property.Domain!.Name}, ");
+                    fw.Write($"{property.Domain!.Name}");
+                    if (hasConfigurator)
+                    {
+                        fw.Write(", ");
+                    }
                 }
 
-                fw.Write("f => f");
-
-                if (
-                    property.Composition == null && type != Config.GetImplementation(property.Domain)?.Type
-                    || property.Composition != null
-                        && type != property.Composition!.NamePascal
-                        && !Config.IsListComposition(property)
-                )
+                if (hasConfigurator)
                 {
-                    fw.Write($".type<{type}>()");
+                    fw.Write("f => f");
+
+                    if (hasType)
+                    {
+                        fw.Write($".type<{type}>()");
+                    }
+
+                    if (defaultValue != "undefined")
+                    {
+                        fw.Write($".defaultValue({defaultValue})");
+                    }
+
+                    if (hasOptional)
+                    {
+                        fw.Write(".optional()");
+                    }
+
+                    if (hasLabel)
+                    {
+                        fw.WriteLine();
+                        fw.WriteLine(
+                            2,
+                            $".label(\"{(Config.TranslateProperties == true ? property.ResourceKey : (property.Label ?? property.Name))}\")"
+                        );
+                    }
+
+                    if (Config.GenerateComments)
+                    {
+                        if (!hasLabel)
+                        {
+                            fw.WriteLine();
+                        }
+
+                        fw.WriteLine(
+                            2,
+                            $".comment(\"{(Config.TranslateProperties == true ? property.CommentResourceKey : property.Comment)}\")"
+                        );
+                    }
                 }
 
-                var defaultValue = Config.GetValue(property);
-                if (defaultValue != "undefined")
-                {
-                    fw.Write($".defaultValue({defaultValue})");
-                }
-
-                if (
-                    !(
-                        property.Required
-                        && (!Config.OptionalPrimaryKeys || !(property.PrimaryKeyish && property.GeneratedValue != null))
-                    )
-                )
-                {
-                    fw.WriteLine(".optional()");
-                }
-                else
-                {
-                    fw.WriteLine();
-                }
-
-                fw.WriteLine(
-                    2,
-                    $".label(\"{(Config.TranslateProperties == true ? property.ResourceKey : (property.Label ?? property.Name))}\")"
-                );
-
-                if (Config.GenerateComments)
-                {
-                    fw.WriteLine(
-                        2,
-                        $".comment(\"{(Config.TranslateProperties == true ? property.CommentResourceKey : property.Comment)}\")"
-                    );
-                }
-
-                fw.Write(1, ")");
+                fw.Write(hasLabel || Config.GenerateComments ? 1 : 0, ")");
                 fw.WriteLine(property == Config.GetProperties(classe).Last() ? "" : ",");
             }
 

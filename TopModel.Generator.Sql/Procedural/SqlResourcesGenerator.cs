@@ -25,7 +25,11 @@ public class SqlResourcesGenerator(
             && classe.Enum != EnumMode.Enum
             && (
                 Config.TranslateReferences == true && classe.DefaultProperty != null && classe.Values.Any()
-                || Config.TranslateProperties == true && Config.GetProperties(classe).Any(c => c.Label != null)
+                || Config.TranslateProperties == true
+                    && (
+                        Config.GetProperties(classe).Any(c => c.Label != null)
+                        || translationStore.AllowPropertyLabelFallback
+                    )
             )
         )
         {
@@ -50,7 +54,7 @@ public class SqlResourcesGenerator(
             var propertiesMap = classes
                 .OrderBy(c => c.SqlName)
                 .SelectMany(Config.GetProperties)
-                .Where(p => p.Label != null)
+                .Where(p => p.Label != null || translationStore.AllowPropertyLabelFallback)
                 .DistinctBy(property => property.ResourceKey)
                 .GroupBy(property => property.Class)
                 .ToDictionary(g => g.Key);
@@ -70,14 +74,14 @@ public class SqlResourcesGenerator(
                     {
                         foreach (
                             var property in properties
-                                .Where(p => p.Label != null)
+                                .Where(p => p.Label != null || translationStore.AllowPropertyLabelFallback)
                                 .DistinctBy(property => property.ResourceKey)
                         )
                         {
                             foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                             {
                                 writer.WriteLine(
-                                    $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(property, language))});"
+                                    $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(property, language)!)});"
                                 );
                             }
                         }

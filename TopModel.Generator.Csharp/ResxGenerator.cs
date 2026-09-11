@@ -142,7 +142,7 @@ public class ResxGenerator(
     {
         if (
             Config.TranslateProperties == true
-                && property.ResourceProperty.Label != null
+                && (property.ResourceProperty.Label != null || _translationStore.AllowPropertyLabelFallback)
                 && Config.ResourcesInResx != ResxResource.References
             || Config.TranslateReferences == true
                 && property.ResourceProperty.Class is { DefaultProperty: not null, Enum: not null, Values.Count: > 0 }
@@ -177,7 +177,7 @@ public class ResxGenerator(
             {
                 foreach (var property in container.OrderBy(p => p.NamePascal, StringComparer.Ordinal))
                 {
-                    if (property.Label != null)
+                    if (property.Label != null || _translationStore.AllowPropertyLabelFallback)
                     {
                         w.WriteLine(1, $"<data name=\"{property.ResourceKey}\" xml:space=\"preserve\">");
                         w.WriteLine(2, $"<value>{_translationStore.GetTranslation(property, lang)}</value>");

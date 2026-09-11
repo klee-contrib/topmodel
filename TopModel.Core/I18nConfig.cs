@@ -29,4 +29,9 @@ public class I18nConfig
     /// Si les libellés des propriétés doivent être traduits.
     /// </summary>
     public bool TranslateProperties { get; set; } = true;
+
+    /// <summary>
+    /// Si le libellé d'une propriété n'est pas renseigné, autorise l'usage de son nom comme libellé.
+    /// </summary>
+    public bool AllowPropertyLabelFallback { get; set; } = true;
 }

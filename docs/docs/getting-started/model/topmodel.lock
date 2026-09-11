@@ -5,11 +5,11 @@
 version: 4.7.2
 modules:
   jpa:
-    version: 4.6.3
-    hash: 909c0eac3dbe72b32c30c55bf8986f4e
+    version: 4.6.4
+    hash: 27954ecd17d0302be4f22053f18aeed2
   csharp:
-    version: 4.4.1
-    hash: de38955875f6e57ba73ae3cba86c0a2f
+    version: 4.4.3
+    hash: 2173aa03b4a98fcdd58d5a987df5ea7f
   sql:
     version: 4.5.0
     hash: 2a426321c8c8e6b6dfd4c7a23dc05dfc
