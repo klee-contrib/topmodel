@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.7.1
+
+- [`44009cf`](https://github.com/klee-contrib/topmodel/commit/44009cf6f808a1eb21f3896273d5b52a1c7a589a) - Fix imports pour les valeurs (par défaut).
+
 ## 4.7.0
 
 - [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
