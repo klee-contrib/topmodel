@@ -1,5 +1,4 @@
 using TopModel.Core.Model;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
@@ -162,7 +161,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
 
         javaField.AddRange(annotations);
         javaField.DefaultValue = Config.GetDefaultValue(property);
-        javaField.AddImports(Config.GetDefaultValueImports(property, tag));
+        javaField.AddImports(Config.GetValueImportsJpa(property, tag));
         javaField.AddImports(property.GetTypeImports(Config, tag));
         return javaField;
     }

@@ -279,72 +279,23 @@ public class JpaConfig : GeneratorConfigBase
         return defaultValue != "null" ? defaultValue : string.Empty;
     }
 
-    public virtual IEnumerable<string> GetDefaultValueImports(IProperty property, string tag, string? value = null)
+    public virtual IEnumerable<string> GetValueImportsJpa(IProperty property, string tag, string? value = null)
     {
-        if (!IgnoreDefaultValues && property is not { Composition: not null })
-        {
-            value ??= property.DefaultValue;
-        }
-
-        if (value == null || value == "null" || value == "undefined")
-        {
-            return GetValueImports(property, value);
-        }
-
-        // Même arbre de décision que GetValue : n'importer que ce qui est réellement référencé.
-        if (
-            UseValueNameForValues
-            && property is { ReadonlyEnumClassAssociation: Class a }
-            && AvailableClasses.Contains(a)
-        )
-        {
-            var refName = GetAllValues(property.UniqueValuedProperty!.Class)
-                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty!] == value)
-                ?.Name;
-            if (refName != null)
-            {
-                var instanceName = GetReadonlyEnumClassInstanceName(a, refName);
-                if (!string.IsNullOrEmpty(instanceName))
-                {
-                    return [a.GetImport(this, GetBestClassTag(a, tag))];
-                }
-            }
-        }
+        value ??= GetValue(property);
 
         if (
-            HasEnumSupport
-            && UseValueNameForValues
-            && property.EnumProperty != null
-            && AvailableClasses.Contains(property.EnumProperty!.Class)
-            && (UniqueValueGeneration.CanEnum || property.EnumProperty?.Class.Enum == EnumMode.Enum)
-        )
-        {
-            return
-            [
-                $"{GetEnumPackageName(property.EnumProperty!.Class, GetBestClassTag(property.EnumProperty!.Class, tag))}.{GetEnumType(property.EnumProperty!)}",
-            ];
-        }
-
-        if (
-            UseValueNameForValues
+            value != NullValue
+            && property is { UniqueValuedProperty: IProperty uvp }
             && UniqueValueGeneration.CanConst
-            && property.UniqueValuedProperty != null
-            && AvailableClasses.Contains(property.UniqueValuedProperty!.Class)
+            && (property.EnumProperty == null || UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
         )
         {
-            var refName = GetAllValues(property.UniqueValuedProperty!.Class)
-                .SingleOrDefault(rv => rv.Value[property.UniqueValuedProperty!] == value)
-                ?.Name;
-            if (refName != null)
-            {
-                return
-                [
-                    $"{GetEnumPackageName(property.UniqueValuedProperty!.Class, GetBestClassTag(property.UniqueValuedProperty!.Class, tag))}.{GetEnumType(property.UniqueValuedProperty!)}",
-                ];
-            }
+            return [$"{GetEnumPackageName(uvp.Class, GetBestClassTag(property.Class, tag))}.{GetEnumType(uvp)}"];
         }
-
-        return GetValueImports(property, value);
+        else
+        {
+            return GetValueImports(property, tag);
+        }
     }
 
     public virtual IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)

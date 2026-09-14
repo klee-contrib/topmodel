@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.Model;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
@@ -135,7 +134,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
                     : refValue.Value.TryGetValue(prop, out var v) ? v
                     : null;
 
-                return rawValue != null ? Config.GetDefaultValueImports(prop, tag, rawValue) : [];
+                return rawValue != null ? Config.GetValueImportsJpa(prop, tag, rawValue) : [];
             })
             .ToList();
     }
