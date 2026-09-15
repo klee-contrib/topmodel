@@ -2,20 +2,20 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.8.0
+version: 4.8.1
 modules:
   jpa:
-    version: 4.6.4
-    hash: 27954ecd17d0302be4f22053f18aeed2
+    version: 4.7.1
+    hash: adbb679d6486866f8b5f67e724f15c81
   csharp:
-    version: 4.4.3
-    hash: 2173aa03b4a98fcdd58d5a987df5ea7f
+    version: 4.5.0
+    hash: 5eefb9d574ca4e82652b20f0cfa8e52b
   sql:
-    version: 4.5.0
-    hash: 2a426321c8c8e6b6dfd4c7a23dc05dfc
+    version: 4.6.0
+    hash: 2c51c24c72d7b05a798bd14f2c3136ce
   javascript:
-    version: 4.5.0
-    hash: bbaba0202fa35c36f93d5b49a2c9e68f
+    version: 4.5.1
+    hash: 29712f607b12d2d17e6aab7b948c7166
 generatedFiles:
   - ./output/csharp/Hello World.Refs.Models/generated/TypeUtilisateur.cs
   - ./output/csharp/Hello World.Users.Models/Dto/generated/AdresseDto.cs
