@@ -210,6 +210,7 @@ generatedFiles:
   - ../output/focus/src/services/restaurant/menu.ts
   - ../output/focus/src/services/restaurant/personne.ts
   - ../output/focus/src/services/restaurant/restaurant.ts
+  - ../output/jpa/src/main/javagen/restaurant/entities/restaurant/RestaurantExternalSystemMapping.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/api/server/restaurant/CommandeApi.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/api/server/restaurant/MenuApi.java
   - ../output/jpa/src/main/javagen/restaurant/jpa_feign/api/server/restaurant/PersonneApi.java

@@ -1,0 +1,17 @@
+---
+uses:
+  - Restaurant/Entities/Restaurant
+module: Restaurant
+tags:
+  - back-external-ms
+---
+class:
+  name: RestaurantExternalSystemMapping
+  comment: Classe de mapping entre les id technique et les id de restaurants
+  properties:
+    - name: Id
+      domain: DO_ID
+      primaryKey: true
+      comment: Identifiant du restaurant
+    - association: Restaurant
+      comment: Identifiant distant du restaurant
