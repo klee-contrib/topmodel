@@ -1,5 +1,14 @@
 # Changelog JPA
 
+## 4.8.0
+
+- [`#597`](https://github.com/klee-contrib/topmodel/pull/597) - [JPA] Suppression du mode "mappersInClass" inutilisé
+  Ajout du mode "useRecords"
+
+**Breaking change** : Suppression du mode mappersInClass. Cette option était inutilisée, à priori cela ne dérange personne du coup 😉. Historiquement elle permettait la projection hibernate par des constructeurs dans les Dtos. Mais cela nécessitait que les dtos aient une dépendance vers les entités, ce que personne ne voulait / ne faisait
+
+**UseRecords** : Le générateur JPA peut désormais générer des records. Plus d'info dans la [documentation](https://klee-contrib.github.io/topmodel/generator/jpa/classes#g%C3%A9n%C3%A9ration-en-record-userecords)
+
 ## 4.7.1
 
 - [`44009cf`](https://github.com/klee-contrib/topmodel/commit/44009cf6f808a1eb21f3896273d5b52a1c7a589a) - Fix imports pour les valeurs (par défaut).
