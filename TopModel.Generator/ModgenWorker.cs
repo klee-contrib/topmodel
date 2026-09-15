@@ -13,6 +13,7 @@ using NuGet.Versioning;
 using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 using TopModel.Utils.Cli;
@@ -532,20 +533,30 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
             if (Config.Generators.TryGetValue(configName, out var genConfigMaps))
             {
-                for (var j = 0; j < genConfigMaps.Count(); j++)
+                var unsortedConfigs = genConfigMaps
+                    .Select(genConfigMap =>
+                        (GeneratorConfigBase)FileChecker.GetGenConfig(configName, configType, genConfigMap)
+                    )
+                    .ToList();
+
+                try
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    var sortedConfigs = CoreUtils.Sort(
+                        unsortedConfigs,
+                        genConfig =>
+                            genConfig
+                                .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
+                                ?.OfType<GeneratorConfigBase>()
+                            ?? []
+                    );
+                    for (var j = 0; j < sortedConfigs.Count; j++)
                     {
-                        return;
-                    }
-
-                    var genConfigMap = genConfigMaps.ElementAt(j);
-                    var number = j + 1;
-
-                    try
-                    {
-                        var genConfig = (GeneratorConfigBase)
-                            FileChecker.GetGenConfig(configName, configType, genConfigMap);
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+                        var genConfig = sortedConfigs[j];
+                        var number = j + 1;
                         genConfig.InitVariables(Config.App, number, _logger);
 
                         genConfig.ExcludedTags = ExcludedTags.ToList();
@@ -594,13 +605,13 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                         var instance = Activator.CreateInstance(generator);
                         instance!.GetType().GetMethod("Register")!.Invoke(instance, [Services, genConfig, number]);
                     }
-                    catch (LegitException me)
-                    {
-                        HasError = true;
-                        AnsiConsole.MarkupLine($"[red]{me.Message.EscapeMarkup()}[/]");
-                        AnsiConsole.WriteLine();
-                        return;
-                    }
+                }
+                catch (LegitException me)
+                {
+                    HasError = true;
+                    AnsiConsole.MarkupLine($"[red]{me.Message.EscapeMarkup()}[/]");
+                    AnsiConsole.WriteLine();
+                    return;
                 }
             }
         }

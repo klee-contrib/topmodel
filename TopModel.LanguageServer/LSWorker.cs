@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
 using TopModel.Core.Loaders;
+using TopModel.Core.Utils;
 using TopModel.Utils.Cli;
 
 namespace TopModel.LanguageServer;
@@ -24,12 +25,29 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
     {
         foreach (var (configName, genConfigMaps) in Config.Generators)
         {
-            for (var j = 0; j < genConfigMaps.Count(); j++)
+            var unsortedConfigs = genConfigMaps.Select(FileChecker.GetWatcherConfigBase).ToList();
+
+            IList<WatcherConfigBase> sortedConfigs;
+            try
             {
-                var genConfigMap = genConfigMaps.ElementAt(j);
+                sortedConfigs = CoreUtils.Sort(
+                    unsortedConfigs,
+                    genConfig =>
+                        genConfig
+                            .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
+                            .OfType<WatcherConfigBase>()
+                );
+            }
+            catch (ModelException)
+            {
+                sortedConfigs = unsortedConfigs;
+            }
+
+            for (var j = 0; j < sortedConfigs.Count; j++)
+            {
+                var genConfig = sortedConfigs[j];
                 var number = j + 1;
 
-                var genConfig = FileChecker.GetWatcherConfigBase(genConfigMap);
                 genConfig.InitVariables(Config.App, number);
                 genConfig.Name ??= $"{configName}@{number}";
                 try
