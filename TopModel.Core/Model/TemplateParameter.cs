@@ -10,7 +10,7 @@ public class TemplateParameter
 
     public required bool Required { get; init; }
 
-    public required string DefaultValue { get; init; }
+    public string DefaultValue { get; init; } = string.Empty;
 
     public Annotation? Annotation { get; internal set; }
 
