@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.2
+
+- [`8b30900`](https://github.com/klee-contrib/topmodel/commit/8b30900f03313a0dbace1d63de02caaaf3583269) - [Core] Fix régression valeur par défaut des paramètres
+
 ## 4.8.1
 
 - [#599](https://github.com/klee-contrib/topmodel/pull/599) - [Core] Tri des configs par dépendances. Permet de les déclarer dans n'importe quel ordre dans le fichier de configuration
