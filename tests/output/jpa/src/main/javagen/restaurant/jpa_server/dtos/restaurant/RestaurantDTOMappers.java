@@ -52,6 +52,7 @@ public class RestaurantDTOMappers {
 
 		return new FactureItem (
 			source.factureId(),
+			null,
 			null
 		);
 	}

@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Column;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une facture.
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record FactureItem(
 	@Column("id") @NotNull Integer id,
-	@Column("com_id") @NotNull Integer commandeId
+	@Column("com_id") @NotNull Integer commandeId,
+	@Column("tfa_code") @Size(max = 10) String typeFactureCode
 ) {
 }

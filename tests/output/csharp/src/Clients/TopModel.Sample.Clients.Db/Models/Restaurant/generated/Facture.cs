@@ -28,4 +28,11 @@ public partial record Facture
     /// </summary>
     [Required]
     public Commande? Commande { get; set; }
+
+    /// <summary>
+    /// type de facture.
+    /// </summary>
+    [Column("tfa_code")]
+    [Domain(Domains.Code)]
+    public TypeFacture.Codes? TypeFactureCode { get; set; }
 }

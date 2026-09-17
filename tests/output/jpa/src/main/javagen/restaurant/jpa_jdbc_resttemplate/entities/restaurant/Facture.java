@@ -33,6 +33,12 @@ public class Facture {
 	private Integer commande;
 
 	/**
+	 * type de facture.
+	 */
+	@Column("tfa_code")
+	private String typeFactureCode;
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link #id id}.
@@ -51,6 +57,15 @@ public class Facture {
 	}
 
 	/**
+	 * Getter for typeFactureCode.
+	 *
+	 * @return value of {@link #typeFactureCode typeFactureCode}.
+	 */
+	public String getTypeFactureCode() {
+		return this.typeFactureCode;
+	}
+
+	/**
 	 * Set the value of {@link #id id}.
 	 * @param id value to set.
 	 */
@@ -64,5 +79,13 @@ public class Facture {
 	 */
 	public void setCommande(Integer commande) {
 		this.commande = commande;
+	}
+
+	/**
+	 * Set the value of {@link #typeFactureCode typeFactureCode}.
+	 * @param typeFactureCode value to set.
+	 */
+	public void setTypeFactureCode(String typeFactureCode) {
+		this.typeFactureCode = typeFactureCode;
 	}
 }

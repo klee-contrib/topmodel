@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_ID_2} from "@/domains";
+import {DO_CODE, DO_ID, DO_ID_2} from "@/domains";
 import {e, entity, EntityToType} from "@focus4/entities";
 
 export type FactureItem = EntityToType<FactureItemEntityType>;
@@ -16,5 +16,9 @@ export const FactureItemEntity = entity({
     commandeId: e.field(DO_ID_2, f => f
         .label("restaurant.facture.commandeId")
         .comment("comments.restaurant.facture.commandeId")
+    ),
+    typeFactureCode: e.field(DO_CODE, f => f.optional()
+        .label("restaurant.facture.typeFactureCode")
+        .comment("comments.restaurant.facture.typeFactureCode")
     )
 });

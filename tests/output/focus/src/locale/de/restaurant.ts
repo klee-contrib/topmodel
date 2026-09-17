@@ -78,7 +78,8 @@ export const restaurant = {
     },
     facture: {
         commandeId: "Commande",
-        id: "Id"
+        id: "Id",
+        typeFactureCode: "TypeFactureCode"
     },
     lieu: {
         adresse: "Adresse",

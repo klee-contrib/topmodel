@@ -240,6 +240,9 @@
   <data name="restaurant.facture.id" xml:space="preserve">
     <value>Id</value>
   </data>
+  <data name="restaurant.facture.typeFactureCode" xml:space="preserve">
+    <value>TypeFactureCode</value>
+  </data>
   <data name="restaurant.fournisseur.bio" xml:space="preserve">
     <value>Bio</value>
   </data>
@@ -494,6 +497,12 @@
   </data>
   <data name="restaurant.table.restaurantId" xml:space="preserve">
     <value>RestaurantId</value>
+  </data>
+  <data name="restaurant.typeFacture.code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="restaurant.typeFacture.libelle" xml:space="preserve">
+    <value>Libelle</value>
   </data>
   <data name="restaurant.typeTerrasse.code" xml:space="preserve">
     <value>Code</value>

@@ -66,6 +66,7 @@ class Facture{
  DO_ID Id
 }
 Facture "1" --> "0..*" Commande
+Facture "0..1" --> "0..*" TypeFacture
 Paiement "1" --> "0..*" Facture
 Paiement "1" --> "0..*" SwileCard
 %% Menu du restaurant
@@ -243,6 +244,8 @@ class TypeTerrasse{
 EXT
 INT
 }
+%% Type de facture
+class TypeFacture:::fileReference
 %% Carte Swile d'un client
 class SwileCard:::fileReference
 %% Carte Swile d'un client

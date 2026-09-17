@@ -9,6 +9,7 @@
 create table FACTURE (
 	ID int identity,
 	COM_ID int not null,
+	TFA_CODE varchar(10),
 	constraint PK_FACTURE primary key clustered (ID asc),
 	constraint FK_FACTURE_COM_ID foreign key (COM_ID) references COMMANDE (COM_ID))
 go
@@ -16,6 +17,11 @@ go
 /* Index on foreign key column for FACTURE.COM_ID */
 create nonclustered index IDX_FACTURE_COM_ID_FK
 	on FACTURE (COM_ID asc)
+go
+
+/* Index on foreign key column for FACTURE.TFA_CODE */
+create nonclustered index IDX_FACTURE_TFA_CODE_FK
+	on FACTURE (TFA_CODE asc)
 go
 
 /**
@@ -26,4 +32,6 @@ go
 execute sp_addextendedproperty 'MS_Description', 'Identifiant de la facture', 'SCHEMA', 'dbo', 'TABLE', 'FACTURE', 'COLUMN', 'ID'
 go
 execute sp_addextendedproperty 'MS_Description', 'Commande associée à la facture', 'SCHEMA', 'dbo', 'TABLE', 'FACTURE', 'COLUMN', 'COM_ID'
+go
+execute sp_addextendedproperty 'MS_Description', 'type de facture', 'SCHEMA', 'dbo', 'TABLE', 'FACTURE', 'COLUMN', 'TFA_CODE'
 go

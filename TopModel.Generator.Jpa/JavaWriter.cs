@@ -317,7 +317,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         }
         foreach (var field in javaClass.Fields)
         {
-            if (javaClass.ClassType != "record")
+            if (javaClass.ClassType != "record" || field.Static)
             {
                 WriteField(indentationLevel + 1, field, javaClass);
             }
@@ -532,7 +532,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     private void WriteRecordDeclaration(int indentationLevel, JavaRecord javaRecord)
     {
         WriteLine(indentationLevel, $"{javaRecord.Visibility} {javaRecord.ClassType} {javaRecord.Name}(");
-        foreach (var field in javaRecord.Fields)
+        foreach (var field in javaRecord.Fields.Where(f => !f.Static))
         {
             var annotations = string.Join(
                 ' ',

@@ -242,7 +242,8 @@ public class RestaurantMappers {
 
 		return new FactureItem (
 			facture.getId(),
-			facture.getCommande()
+			facture.getCommande(),
+			facture.getTypeFactureCode()
 		);
 	}
 

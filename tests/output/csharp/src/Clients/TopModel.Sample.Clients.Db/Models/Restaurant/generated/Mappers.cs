@@ -135,7 +135,8 @@ public static class Mappers
         return new FactureItem
         {
             Id = facture.Id,
-            CommandeId = facture.Commande?.Id
+            CommandeId = facture.Commande?.Id,
+            TypeFactureCode = facture.TypeFactureCode
         };
     }
 

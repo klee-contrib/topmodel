@@ -2,11 +2,12 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_ID_2} from "../../domains";
+import {DO_CODE, DO_ID, DO_ID_2} from "../../domains";
 
 export interface FactureItem {
     id: number;
     commandeId: number;
+    typeFactureCode?: string;
 }
 
 export const FactureItemEntity = {
@@ -23,5 +24,12 @@ export const FactureItemEntity = {
         domain: DO_ID_2,
         isRequired: true,
         label: "CommandeId"
+    },
+    typeFactureCode: {
+        type: "field",
+        name: "typeFactureCode",
+        domain: DO_CODE,
+        isRequired: false,
+        label: "TypeFactureCode"
     }
 } as const;

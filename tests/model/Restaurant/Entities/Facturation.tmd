@@ -17,6 +17,9 @@ class:
     - association: Commande
       required: true
       comment: Commande associée à la facture
+    - association: TypeFacture
+      comment: type de facture
+      property: Code
 ---
 class:
   name: Paiement
@@ -30,3 +33,21 @@ class:
       comment: Carte Swile utilisée pour le paiement
       primaryKey: true
       useClass: false
+---
+class:
+  name: TypeFacture
+  comment: Type de facture
+  trigram: TFA
+  readonly: true
+  properties:
+    - name: Code
+      comment: Code du type de facture
+      domain: DO_CODE
+    - name: Libelle
+      comment: Libellé du type de facture
+      domain: DO_LIBELLE
+  values:
+    ELE: { Code: ELE, Libelle: Facture électronique }
+    PHY: { Code: PHY, Libelle: Facture physique }
+  unique:
+    - [Code]

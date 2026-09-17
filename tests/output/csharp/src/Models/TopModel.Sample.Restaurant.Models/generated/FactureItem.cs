@@ -25,4 +25,10 @@ public partial record FactureItem
     [Required]
     [Domain(Domains.Id2)]
     public int? CommandeId { get; init; }
+
+    /// <summary>
+    /// type de facture.
+    /// </summary>
+    [Domain(Domains.Code)]
+    public TypeFacture.Codes? TypeFactureCode { get; init; }
 }

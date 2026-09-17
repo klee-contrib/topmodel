@@ -29,7 +29,9 @@ public partial class TopModelSampleDbContext
             new Translation { ResourceKey = "restaurant.statutCommande.values.EnAttente", Lang = "de", Value = "En attente" },
             new Translation { ResourceKey = "restaurant.statutCommande.values.EnPreparation", Lang = "de", Value = "En préparation" },
             new Translation { ResourceKey = "restaurant.statutCommande.values.Prete", Lang = "de", Value = "Prête" },
-            new Translation { ResourceKey = "restaurant.statutCommande.values.Servie", Lang = "de", Value = "Servie" }
+            new Translation { ResourceKey = "restaurant.statutCommande.values.Servie", Lang = "de", Value = "Servie" },
+            new Translation { ResourceKey = "restaurant.typeFacture.values.ELE", Lang = "de", Value = "Facture électronique" },
+            new Translation { ResourceKey = "restaurant.typeFacture.values.PHY", Lang = "de", Value = "Facture physique" }
         );
     }
 }

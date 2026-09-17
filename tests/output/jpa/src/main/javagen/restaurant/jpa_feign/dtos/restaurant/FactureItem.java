@@ -7,13 +7,16 @@ package restaurant.jpa_feign.dtos.restaurant;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotNull;
 
+import restaurant.jpa_feign.enums.restaurant.TypeFactureCode;
+
 /**
  * Détail d'une facture.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record FactureItem(
 	@NotNull Integer id,
-	@NotNull Integer commandeId
+	@NotNull Integer commandeId,
+	TypeFactureCode typeFactureCode
 ) {
 
 	/**
@@ -21,7 +24,8 @@ public record FactureItem(
 	 */
 	public enum Fields {
 		ID(Integer.class),
-		COMMANDE_ID(Integer.class);
+		COMMANDE_ID(Integer.class),
+		TYPE_FACTURE_CODE(TypeFactureCode.class);
 
 		private final Class<?> type;
 

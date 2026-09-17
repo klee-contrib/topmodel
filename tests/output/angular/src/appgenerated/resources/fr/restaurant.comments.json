@@ -86,7 +86,8 @@
     },
     "facture": {
         "commandeId": "Commande associée à la facture",
-        "id": "Identifiant de la facture"
+        "id": "Identifiant de la facture",
+        "typeFactureCode": "type de facture"
     },
     "lieu": {
         "adresse": "Adresse du restaurant",
