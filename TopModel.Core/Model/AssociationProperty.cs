@@ -125,7 +125,7 @@ internal class AssociationProperty(Reference location) : IProperty
     {
         get =>
             Property?.Class.Enum == EnumMode.Enum
-            || Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass);
+            || Class?.IsPersistent == true && (_useClass ?? DefaultAssociationUseClass) && Association.IsPersistent;
         set => _useClass = value;
     }
 
