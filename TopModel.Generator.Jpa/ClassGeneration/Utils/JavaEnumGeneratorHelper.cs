@@ -63,13 +63,14 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             var code = Config.GetValue(key, refValue.Value[key]);
-            if (key.EnumProperty != null)
+            if (key.EnumProperty != null && Config.UniqueValueGeneration != Core.UniqueValueGenerationMode.ConstOnly)
             {
                 code = code.Replace($"{Config.GetEnumType(key)}.", string.Empty);
             }
             method.AddBodyLine(1, $"case {code} -> {refValue.Name.ToConstantCase()};");
         }
-        if (key.EnumProperty == null)
+
+        if (key.EnumProperty == null || Config.UniqueValueGeneration == Core.UniqueValueGenerationMode.ConstOnly)
         {
             method.AddBodyLine(
                 1,

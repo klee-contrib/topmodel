@@ -23,3 +23,7 @@ class:
     - association: Commande
       comment: Commande associée à la facture
       required: true
+
+    - name: TfaCode
+      domain: DO_LIBELLE
+      comment: type de facture

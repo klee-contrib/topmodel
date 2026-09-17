@@ -39,8 +39,9 @@ public record TypeFacture(
 	 */
 	public static TypeFacture getValue(String code) {
 		return switch (code) {
-			case Ele -> ELE;
-			case Phy -> PHY;
+			case TypeFactureCode.Ele -> ELE;
+			case TypeFactureCode.Phy -> PHY;
+			default -> throw new IllegalArgumentException("Clé d'énumération inconnue : " + code);
 		};
 	}
 }
