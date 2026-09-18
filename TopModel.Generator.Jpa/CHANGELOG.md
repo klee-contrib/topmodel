@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 4.8.1
+
+- [`3bb5947`](https://github.com/klee-contrib/topmodel/commit/3bb5947d592b6011c1e9fe95ce18d109d48574fa) - [JPA] Records : gestion des champs statiques
+
+- [`dad5f15`](https://github.com/klee-contrib/topmodel/commit/dad5f1588f1a952b192a8035acadd3f430cede0f) - [JPA] Gestion du cas ConstOnly dans la méthode getValue, pour récupérer l'instance d'une entité non persistée dont les valeurs sont générées en constOnly
+
 ## 4.8.0
 
 - [`#597`](https://github.com/klee-contrib/topmodel/pull/597) - [JPA] Suppression du mode "mappersInClass" inutilisé
