@@ -2,14 +2,14 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.8.2
+version: 4.8.3
 custom:
   ../../TopModel.Generator.Csharp: 50e6b196714caedc2077286356b8b939
   ../../TopModel.Generator.Javascript: fb2edb3200c82d096b05922924b2c53b
   ../../TopModel.Generator.Jpa: 42d5c7152df1b4e9ab9563abb3b84760
   ../../TopModel.Generator.Sql: bbb2a34424dda411c4af989cdf27d3a7
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
-  ../../TopModel.Generator.Documentation: 3d001b960bf811f1939a4cca440464c5
+  ../../TopModel.Generator.Documentation: f2a176bf4e8b6e06a0e58900b428d050
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/menu.service.ts

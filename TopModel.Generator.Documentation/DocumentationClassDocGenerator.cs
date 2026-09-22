@@ -17,7 +17,10 @@ public class DocumentationClassDocGenerator(
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        yield return ("main", Config.GetClassesFilePath(tag, classe));
+        if (classe.IsPersistent)
+        {
+            yield return ("main", Config.GetClassesFilePath(tag, classe));
+        }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
@@ -58,24 +61,26 @@ public class DocumentationClassDocGenerator(
                     constraints.Add("Clé primaire");
                 }
 
-                table.AddRow([
-                    schema,
-                    tableName,
-                    property.Name,
-                    Config.GetSqlName(property, tag),
-                    property.Label,
-                    Config.GetType(property),
-                    $"{property.Domain?.Length}",
-                    property.Comment,
-                    string.Join("<br>", constraints),
-                    property.Required ? "Oui" : string.Empty,
-                    string.Join(
-                        ", ",
-                        property.Class.Values.Select(v =>
-                            v.Value.TryGetValue(property, out var val) ? val : string.Empty
-                        )
-                    ),
-                ]);
+                table.AddRow(
+                    [
+                        schema,
+                        tableName,
+                        property.Name,
+                        Config.GetSqlName(property, tag),
+                        property.Label,
+                        Config.GetType(property),
+                        $"{property.Domain?.Length}",
+                        property.Comment,
+                        string.Join("<br>", constraints),
+                        property.Required ? "Oui" : string.Empty,
+                        string.Join(
+                            ", ",
+                            property.Class.Values.Select(v =>
+                                v.Value.TryGetValue(property, out var val) ? val : string.Empty
+                            )
+                        ),
+                    ]
+                );
 
                 schema = string.Empty;
                 tableName = string.Empty;
