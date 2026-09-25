@@ -103,7 +103,9 @@ public class DbContextGenerator(
             }
 
             foreach (
-                var property in Config.GetProperties(classe).Where(p => !p.AssociationMultiple && !p.IsReverseProperty)
+                var property in Config
+                    .GetProperties(classe)
+                    .Where(p => !p.AssociationMultiple && !p.IsReverseProperty && p.Composition == null)
             )
             {
                 cw.WriteLine(
@@ -301,7 +303,7 @@ public class DbContextGenerator(
             hasJson = true;
             w.WriteLine(
                 2,
-                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{Config.GetSqlName(cp, tag)}""));"
+                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Complex{(cp.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{cp.NamePascal}, p => p.ToJson(""{Config.GetSqlName(cp, tag)}""));"
             );
         }
 

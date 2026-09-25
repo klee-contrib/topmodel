@@ -349,6 +349,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
                 && !property.AssociationMultiple
+                && property.Composition == null
                 && !Config.UseClassForAssociation(property)
                 && !Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column"))
             )
