@@ -108,7 +108,7 @@ public class DbContextGenerator(
             {
                 cw.WriteLine(
                     2,
-                    $"{classe.NameCamel}.Property({(property.NamePascal == property.PropertyNamePascal ? $"p => p.{property.NamePascal}" : $"\"{property.PropertyNamePascal}\"")}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");"
+                    $"{classe.NameCamel}.Property({(property.NamePascal == property.PropertyNamePascal || !Config.UseClassForAssociation(property) ? $"p => p.{property.NamePascal}" : $"\"{property.PropertyNamePascal}\"")}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");"
                 );
             }
 
@@ -258,7 +258,7 @@ public class DbContextGenerator(
             {
                 hasPropConfig = true;
                 if (
-                    !fp.UseClassForAssociation
+                    !Config.UseClassForAssociation(fp)
                     || fp.EnumProperty?.Class.Enum == EnumMode.Enum && !Config.UsePostgresEnums
                 )
                 {
@@ -321,7 +321,7 @@ public class DbContextGenerator(
                         c.Association,
                         c.Unique,
                         c.AssociationRole,
-                        c.UseClassForAssociation,
+                        UseClassForAssociation = Config.UseClassForAssociation(c),
                     })
             )
             {
@@ -372,12 +372,12 @@ public class DbContextGenerator(
         foreach (
             var classe in classes
                 .Distinct()
-                .Where(c => c.PrimaryKey.Count() > 1 || c.PrimaryKey.Any(p => p.UseClassForAssociation))
+                .Where(c => c.PrimaryKey.Count() > 1 || c.PrimaryKey.Any(p => Config.UseClassForAssociation(p)))
                 .OrderBy(c => c.NamePascal)
         )
         {
             hasPk = true;
-            var expr = classe.PrimaryKey.Any(p => p.UseClassForAssociation)
+            var expr = classe.PrimaryKey.Any(p => Config.UseClassForAssociation(p))
                 ? string.Join(", ", classe.PrimaryKey.Select(p => $"\"{p.PropertyNamePascal}\""))
                 : $"p => new {{ {string.Join(", ", classe.PrimaryKey.Select(p => $"p.{p.NamePascal}"))} }}";
             w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey({expr});");
@@ -420,7 +420,7 @@ public class DbContextGenerator(
                 {
                     w.Write(2, $"modelBuilder.Entity<{GetClassName(classeWithSequence, tag)}>().Property(");
 
-                    if (property.UseClassForAssociation)
+                    if (Config.UseClassForAssociation(property))
                     {
                         w.Write($"\"{property.PropertyNamePascal}\"");
                     }
@@ -436,7 +436,7 @@ public class DbContextGenerator(
             {
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(property.Class, tag)}>().Property(");
 
-                if (property.UseClassForAssociation)
+                if (Config.UseClassForAssociation(property))
                 {
                     w.Write($"\"{property.PropertyNamePascal}\"");
                 }
@@ -468,7 +468,7 @@ public class DbContextGenerator(
             w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>()");
             if (Config.GetProperties(classe).Contains(classe.DiscriminatorProperty))
             {
-                if (classe.DiscriminatorProperty.UseClassForAssociation)
+                if (Config.UseClassForAssociation(classe.DiscriminatorProperty))
                 {
                     w.WriteLine(
                         3,
@@ -550,7 +550,7 @@ public class DbContextGenerator(
             {
                 hasIndex = true;
                 var expr =
-                    idx.Properties.Any(p => p.UseClassForAssociation)
+                    idx.Properties.Any(p => Config.UseClassForAssociation(p))
                         ? string.Join(", ", idx.Properties.Select(p => $"\"{p.PropertyNamePascal}\""))
                     : idx.Properties.Count == 1 ? $"p => p.{idx.Properties.Single().NamePascal}"
                     : $"p => new {{ {string.Join(", ", idx.Properties.Select(p => $"p.{p.NamePascal}"))} }}";
@@ -573,7 +573,9 @@ public class DbContextGenerator(
                     .SelectMany(c =>
                         Config
                             .GetProperties(c)
-                            .Where(p => !p.AssociationMultiple && !p.IsReverseProperty && p.UseClassForAssociation)
+                            .Where(p =>
+                                !p.AssociationMultiple && !p.IsReverseProperty && Config.UseClassForAssociation(p)
+                            )
                     )
             )
             {
@@ -622,7 +624,7 @@ public class DbContextGenerator(
             {
                 hasData = true;
 
-                var hasClassAssociations = Config.GetProperties(classe).Any(p => p.UseClassForAssociation);
+                var hasClassAssociations = Config.GetProperties(classe).Any(p => Config.UseClassForAssociation(p));
 
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
                 if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)

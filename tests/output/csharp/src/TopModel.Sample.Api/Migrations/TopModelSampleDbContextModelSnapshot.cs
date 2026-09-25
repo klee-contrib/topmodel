@@ -164,6 +164,18 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
+                            ResourceKey = "restaurant.typeFacture.values.ELE",
+                            Lang = "fr",
+                            Value = "Facture électronique"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.typeFacture.values.PHY",
+                            Lang = "fr",
+                            Value = "Facture physique"
+                        },
+                        new
+                        {
                             ResourceKey = "restaurant.categoriePlat.values.Autre",
                             Lang = "de",
                             Value = "Autre"
@@ -254,6 +266,18 @@ namespace TopModel.Sample.Api.Migrations
                         },
                         new
                         {
+                            ResourceKey = "restaurant.typeFacture.values.ELE",
+                            Lang = "de",
+                            Value = "Facture électronique"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.typeFacture.values.PHY",
+                            Lang = "de",
+                            Value = "Facture physique"
+                        },
+                        new
+                        {
                             ResourceKey = "restaurant.categoriePlat.values.Autre",
                             Lang = "en",
                             Value = "Autre"
@@ -341,6 +365,18 @@ namespace TopModel.Sample.Api.Migrations
                             ResourceKey = "restaurant.statutCommande.values.Servie",
                             Lang = "en",
                             Value = "Served"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.typeFacture.values.ELE",
+                            Lang = "en",
+                            Value = "Facture électronique"
+                        },
+                        new
+                        {
+                            ResourceKey = "restaurant.typeFacture.values.PHY",
+                            Lang = "en",
+                            Value = "Facture physique"
                         });
                 });
 
@@ -569,6 +605,37 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("commande_historique", t =>
                         {
                             t.HasComment("Commande pour historique avec préservation des clés primaires");
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Facture", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasComment("Identifiant de la facture");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommandeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("com_id")
+                        .HasComment("Commande associée à la facture");
+
+                    b.Property<string>("TypeFactureCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("tfa_code")
+                        .HasComment("type de facture");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommandeId");
+
+                    b.ToTable("facture", t =>
+                        {
+                            t.HasComment("Facture");
                         });
                 });
 
@@ -808,6 +875,26 @@ namespace TopModel.Sample.Api.Migrations
                     b.ToTable("menu_plat", t =>
                         {
                             t.HasComment("Plat dans un menu");
+                        });
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Paiement", b =>
+                {
+                    b.Property<int>("FactureId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasComment("Facture associée au paiement");
+
+                    b.Property<int>("SwileCardId")
+                        .HasColumnType("integer")
+                        .HasColumnName("swi_id")
+                        .HasComment("Carte Swile utilisée pour le paiement");
+
+                    b.HasKey("FactureId", "SwileCardId");
+
+                    b.ToTable("paiement", t =>
+                        {
+                            t.HasComment("Paiement");
                         });
                 });
 
@@ -1096,7 +1183,7 @@ namespace TopModel.Sample.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", b =>
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Table", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1138,7 +1225,7 @@ namespace TopModel.Sample.Api.Migrations
                     b.HasIndex("RestaurantId", "Numero")
                         .IsUnique();
 
-                    b.ToTable("table_restaurant", t =>
+                    b.ToTable("table", t =>
                         {
                             t.HasComment("Table du restaurant");
                         });
@@ -1362,7 +1449,8 @@ namespace TopModel.Sample.Api.Migrations
                         {
                             Id = 2,
                             Nom = "Pomona",
-                            Bio = true
+                            Bio = true,
+                            Telephone = "xx.xx.xx.xx.xx"
                         });
                 });
 
@@ -1403,6 +1491,11 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("cli_email")
                         .HasComment("Adresse email du client");
+
+                    b.Property<int?>("SwileCard")
+                        .HasColumnType("integer")
+                        .HasColumnName("swi_id")
+                        .HasComment("Carte Swile du client");
 
                     b.ToTable("client", t =>
                         {
@@ -1632,7 +1725,7 @@ namespace TopModel.Sample.Api.Migrations
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Table", null)
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1642,6 +1735,17 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Reservation");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Facture", b =>
+                {
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Commande", "Commande")
+                        .WithMany()
+                        .HasForeignKey("CommandeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Commande");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.LigneCommande", b =>
@@ -1700,6 +1804,17 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Menu");
 
                     b.Navigation("Plat");
+                });
+
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Paiement", b =>
+                {
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Facture", "Facture")
+                        .WithMany()
+                        .HasForeignKey("FactureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Facture");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Personne", b =>
@@ -1761,7 +1876,7 @@ namespace TopModel.Sample.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", null)
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Table", null)
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1771,7 +1886,7 @@ namespace TopModel.Sample.Api.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.TableRestaurant", b =>
+            modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Table", b =>
                 {
                     b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", null)
                         .WithMany()

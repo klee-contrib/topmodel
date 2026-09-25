@@ -685,6 +685,17 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return property.Domain == null || GetImplementation(property.Domain)?.Type?.ToLower() == "string";
     }
 
+    /// <summary>
+    /// Vérifie que la propriété est une association avec `useClass: true` et que la classe cible est disponible dans la configuration.
+    /// </summary>
+    /// <param name="property">Propriété à vérifier.</param>
+    /// <returns>true/false.</returns>
+    public virtual bool UseClassForAssociation(IProperty property)
+    {
+        return property.UseClassForAssociation
+            && (property.Association == null || AvailableClasses.Contains(property.Association));
+    }
+
     public bool UseLowerCaseSqlNames(string tag)
     {
         if (string.IsNullOrEmpty(UseLowerCaseSqlNamesParam))

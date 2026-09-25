@@ -26,6 +26,8 @@ public partial record Client : Personne
     /// <summary>
     /// Carte Swile du client.
     /// </summary>
+    [Column("swi_id")]
+    [Domain(Domains.Id)]
     public int? SwileCard { get; set; }
 
     /// <summary>

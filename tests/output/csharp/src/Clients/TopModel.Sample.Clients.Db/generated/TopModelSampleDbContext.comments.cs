@@ -46,7 +46,7 @@ public partial class TopModelSampleDbContext
         var client = modelBuilder.Entity<Client>();
         client.ToTable(t => t.HasComment("Client du restaurant"));
         client.Property(p => p.Email).HasComment("Adresse email du client");
-        client.Property("SwileCardId").HasComment("Carte Swile du client");
+        client.Property(p => p.SwileCard).HasComment("Carte Swile du client");
 
         var commande = modelBuilder.Entity<Commande>();
         commande.ToTable(t => t.HasComment("Commande d'un client"));

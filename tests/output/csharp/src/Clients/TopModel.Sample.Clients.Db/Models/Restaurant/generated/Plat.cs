@@ -60,7 +60,7 @@ public partial record Plat
     /// Catégorie du plat.
     /// </summary>
     [Required]
-    public CategoriePlat? CategoriePlat { get; set; }
+    public virtual CategoriePlat CategoriePlat { get; init; } = CategoriePlat.Autre;
 
     /// <summary>
     /// Restaurant proposant ce plat.

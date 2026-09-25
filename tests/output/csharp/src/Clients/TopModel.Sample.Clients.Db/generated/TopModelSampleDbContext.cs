@@ -270,7 +270,6 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<AvisClient>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<AvisClient>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<CategoriePlatRegion>().Property("CategoriePlatCode").HasColumnName("cat_code");
-        modelBuilder.Entity<Client>().Property("SwileCardId").HasColumnName("swi_id");
         modelBuilder.Entity<Commande>().Property("ClientId").HasColumnName("per_id");
         modelBuilder.Entity<Commande>().Property("ReservationId").HasColumnName("rev_id");
         modelBuilder.Entity<Commande>().Property("StatutCommande").HasColumnName("stc_code");

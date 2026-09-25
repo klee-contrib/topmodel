@@ -284,13 +284,26 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 .Select(g => g.Key)
         );
 
+        var hasDiscriminator =
+            item.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
+            && Config.GetProperties(item.Extends).Contains(item.Extends.DiscriminatorProperty!);
+
+        if (hasDiscriminator)
+        {
+            var dp = item.Extends!.DiscriminatorProperty!;
+            w.WriteLine(
+                1,
+                $"public override {Config.GetType(dp, nonNullable: true)} {dp.NamePascal} => {Config.GetValue(dp, item.DiscriminatorValue ?? item.SqlName)};"
+            );
+        }
+
         foreach (
             var property in Config
                 .GetProperties(item)
                 .Where(p => p is not { Composition: Class cpc } || Config.AvailableClasses.Contains(cpc))
         )
         {
-            if (property != Config.GetProperties(item).First())
+            if (property != Config.GetProperties(item).First() || hasDiscriminator)
             {
                 w.WriteLine();
             }
@@ -315,9 +328,12 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteExample(1, example);
         }
 
+        var isDiscriminator = property.Class.DiscriminatorProperty == property;
+
         var type = Config.GetType(
             property,
-            nonNullable: property.AssociationMultiple && property.UseClassForAssociation
+            nonNullable: isDiscriminator
+                || property.AssociationMultiple && Config.UseClassForAssociation(property)
                 || property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
         );
 
@@ -333,7 +349,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !Config.NoPersistence(tag)
                 && !sameColumnSet.Contains(property.SqlName)
                 && !property.AssociationMultiple
-                && !property.UseClassForAssociation
+                && !Config.UseClassForAssociation(property)
                 && !Config.GetAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column"))
             )
             {
@@ -361,7 +377,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(refClass)})");
             }
 
-            if (Config.Kinetix && property.Composition == null && !property.UseClassForAssociation)
+            if (Config.Kinetix && property.Composition == null && !Config.UseClassForAssociation(property))
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -379,7 +395,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             if (
                 Config.IsPersistent(property.Class, tag)
                 && property.AssociationMultiple
-                && !property.UseClassForAssociation
+                && !Config.UseClassForAssociation(property)
             )
             {
                 w.WriteAttribute(1, "NotMapped");
@@ -389,7 +405,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 property.Class.IsPersistent
                 && property.PrimaryKey
                 && property.Class.PrimaryKey.Count() == 1
-                && !property.UseClassForAssociation;
+                && !Config.UseClassForAssociation(property);
 
             if (isPk)
             {
@@ -406,7 +422,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 }
             }
 
-            var defaultValue = Config.GetDefaultValue(property, tag);
+            var defaultValue = isDiscriminator
+                ? Config.GetValue(property, property.Class.DiscriminatorValue)
+                : Config.GetDefaultValue(property, tag);
 
             w.Write(1, "public");
 
@@ -420,8 +438,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.Write(" required");
             }
 
+            if (isDiscriminator)
+            {
+                w.Write(" virtual");
+            }
+
             w.WriteLine(
-                $" {type} {property.NamePascal} {{ get; {(property.Readonly ? "init" : "set")}; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}"
+                $" {type} {property.NamePascal} {{ get; {(property.Readonly || isDiscriminator ? "init" : "set")}; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}"
             );
         }
         else
@@ -529,6 +552,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         var usings = new List<string>();
 
+        var properties = Config
+            .GetProperties(item)
+            .Concat(
+                item.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
+                && Config.GetProperties(item.Extends).Contains(item.Extends.DiscriminatorProperty)
+                    ? [item.Extends.DiscriminatorProperty!]
+                    : []
+            );
+
         if (item.Type != ClassType.Interface)
         {
             if (item.Reference && item.DefaultProperty != null)
@@ -537,30 +569,30 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             if (
-                Config
-                    .GetProperties(item)
-                    .Any(p =>
+                properties.Any(p =>
+                    !Config.UseClassForAssociation(p)
+                    && (
                         p.Required && !Config.RequiredNonNullable(tag)
                         || p.PrimaryKey
                         || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null
                     )
+                )
             )
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
             if (
-                Config
-                    .GetProperties(item)
-                    .Any(property =>
-                        property.PersistentClass != null
-                        && (
-                            property.PersistentClass == property.Class
-                            || !Config.NoColumnOnAlias && property.DomainChain.Count() == 1
-                        )
-                        && Config.AvailableClasses.Contains(property.PersistentClass)
-                        && !Config.NoPersistence(tag)
+                properties.Any(property =>
+                    !Config.UseClassForAssociation(property)
+                    && property.PersistentClass != null
+                    && (
+                        property.PersistentClass == property.Class
+                        || !Config.NoColumnOnAlias && property.DomainChain.Count() == 1
                     )
+                    && Config.AvailableClasses.Contains(property.PersistentClass)
+                    && !Config.NoPersistence(tag)
+                )
                 || Config.IsPersistent(item, tag)
                     && (
                         item.InheritanceStrategy != InheritanceStrategy.DistinctTables || item.Type == ClassType.Regular
@@ -571,7 +603,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (Config.GetProperties(item).Any(p => p is not { Composition: not null }) && Config.Kinetix)
+            if (properties.Any(p => p.Composition == null && !Config.UseClassForAssociation(p)) && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -588,7 +620,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         usings.AddRange(Config.GetDecoratorImports(item, tag));
         usings.AddRange(Config.GetAnnotations(item, tag).SelectMany(a => a.Imports));
 
-        foreach (var property in Config.GetProperties(item))
+        foreach (var property in properties)
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
             usings.AddRange(Config.GetAnnotations(property, tag).SelectMany(a => a.Imports));

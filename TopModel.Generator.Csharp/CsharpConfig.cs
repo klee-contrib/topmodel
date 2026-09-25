@@ -373,7 +373,7 @@ public class CsharpConfig : GeneratorConfigBase
 
         if (
             property.Composition != null && property.Required && property.Class != null
-            || property.AssociationMultiple && property.UseClassForAssociation
+            || property.AssociationMultiple && UseClassForAssociation(property)
         )
         {
             var genericType = type.Split('<')[0];
