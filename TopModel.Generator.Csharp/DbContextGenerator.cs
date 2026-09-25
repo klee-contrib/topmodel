@@ -303,8 +303,35 @@ public class DbContextGenerator(
             hasJson = true;
             w.WriteLine(
                 2,
-                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Complex{(cp.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{cp.NamePascal}, p => p.ToJson(""{Config.GetSqlName(cp, tag)}""));"
+                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Complex{(cp.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{cp.NamePascal}, p =>"
             );
+            w.WriteLine(2, "{");
+            w.WriteLine(3, $"p.ToJson(\"{Config.GetSqlName(cp, tag)}\");");
+
+            void HandleComposition(Class classe, int indentLevel)
+            {
+                foreach (var prop in classe.Properties.Where(p => p.Composition != null))
+                {
+                    w.Write(
+                        indentLevel,
+                        $"p.Complex{(prop.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{prop.NamePascal}"
+                    );
+                    if (prop.Composition!.Properties.Any(p => p.Composition != null))
+                    {
+                        w.WriteLine(", p =>");
+                        w.WriteLine(indentLevel, "{");
+                        HandleComposition(prop.Composition!, indentLevel + 1);
+                        w.WriteLine(indentLevel, "});");
+                    }
+                    else
+                    {
+                        w.WriteLine(");");
+                    }
+                }
+            }
+
+            HandleComposition(cp.Composition!, 3);
+            w.WriteLine(2, "});");
         }
 
         if (hasJson)
