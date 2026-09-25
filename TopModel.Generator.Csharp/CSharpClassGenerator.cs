@@ -291,6 +291,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         if (hasDiscriminator)
         {
             var dp = item.Extends!.DiscriminatorProperty!;
+            w.WriteLine(1, "/// <inheritdoc />");
             w.WriteLine(
                 1,
                 $"public override {Config.GetType(dp, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, item.DiscriminatorValue ?? item.SqlName)};"

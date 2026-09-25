@@ -1,5 +1,11 @@
 # Changelog CSharp
 
+## 4.5.2
+
+- [`a50f905`](https://github.com/klee-contrib/topmodel/commit/a50f905b63370666d6d8b742e444d5fd58052888) - [C#] Fix HasDiscriminator avec requiredNonNullable: true
+- [`c9629c6`](https://github.com/klee-contrib/topmodel/commit/c9629c60cd62c66c6c68a2334a3d01af53974bf3) - [C#] Fix génération discriminateurs avec classe de base abstraite
+- [`05e6d04`](https://github.com/klee-contrib/topmodel/commit/05e6d04c411ba7dfd489986ef7f1155ddab88838) - [C#] Compositions persistées => fix commentaire en trop + migration vers complex property
+
 ## 4.5.1
 
 - [`1599d8c`](https://github.com/klee-contrib/topmodel/commit/1599d8ccd5d353f49f5be0c1b37ac3aff41df7a0) - [C#] Génération de la valeur du discriminant dans les héritages + fix useClass quand la classe est pas disponible.
