@@ -626,7 +626,6 @@ public static class Mappers
             Nom = source.Nom,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
             Restaurant = restaurant,
             DateCreation = dateCreation
         };
@@ -644,7 +643,6 @@ public static class Mappers
         dest.Nom = source.Nom;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
-        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 
@@ -662,7 +660,6 @@ public static class Mappers
             Description = source.Description,
             Prix = source.Prix,
             Disponible = source.Disponible,
-            CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null,
             DateCreation = source.DateCreation,
             Restaurant = restaurant
         };
@@ -680,7 +677,6 @@ public static class Mappers
         dest.Description = source.Description;
         dest.Prix = source.Prix;
         dest.Disponible = source.Disponible;
-        dest.CategoriePlat = source.CategoriePlatCode != null ? CategoriePlat.GetValue(source.CategoriePlatCode.Value) : null;
         return dest;
     }
 

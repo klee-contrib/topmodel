@@ -443,6 +443,12 @@ internal class MapperResolver(
 
     private bool CheckPossibleMapping(IProperty sourceProperty, IProperty targetProperty)
     {
+        // Pas de mapping sur un discriminateur.
+        if (targetProperty == targetProperty.Class.DiscriminatorProperty)
+        {
+            return false;
+        }
+
         // Mapping primitif => primitif
         if (
             sourceProperty.MappingType.IsT0

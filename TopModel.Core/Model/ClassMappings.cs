@@ -25,6 +25,7 @@ public class ClassMappings
         Class
             .Properties.Where(p =>
                 p.Required
+                && p != Class.DiscriminatorProperty
                 && (p is ({ Composition: not null } or { DefaultValue: null }) and { AssociationMultiple: false })
                 && !(
                     p.Class.IsPersistent && p.PrimaryKey && p.Class.PrimaryKey.Count() == 1 && p.GeneratedValue != null

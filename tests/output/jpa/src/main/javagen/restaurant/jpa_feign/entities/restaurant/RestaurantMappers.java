@@ -1032,12 +1032,6 @@ public class RestaurantMappers {
 		target.setNom(source.getNom());
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
-		if (source.getCategoriePlatCode() != null) {
-			target.setCategoriePlat(CategoriePlat.getValue(source.getCategoriePlatCode()));
-		} else {
-			target.setCategoriePlat(null);
-		}
-
 		return target;
 	}
 
@@ -1071,12 +1065,6 @@ public class RestaurantMappers {
 		target.setDescription(source.getDescription());
 		target.setPrix(source.getPrix());
 		target.setDisponible(source.getDisponible());
-		if (source.getCategoriePlatCode() != null) {
-			target.setCategoriePlat(CategoriePlat.getValue(source.getCategoriePlatCode()));
-		} else {
-			target.setCategoriePlat(null);
-		}
-
 		target.setDateCreation(source.getDateCreation());
 		return target;
 	}
