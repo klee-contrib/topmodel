@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.1
+
+- [`1599d8c`](https://github.com/klee-contrib/topmodel/commit/1599d8ccd5d353f49f5be0c1b37ac3aff41df7a0) - [C#] Génération de la valeur du discriminant dans les héritages + fix useClass quand la classe est pas disponible.
+
 ## 4.5.0
 
 - [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom
