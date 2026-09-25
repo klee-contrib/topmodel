@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.3
+
+- [`235e739`](https://github.com/klee-contrib/topmodel/commit/235e7390c1eb391c198f653df97c2c81e1e9fdf6) - [C#] DBContext : génération des complex properties nestées
+
 ## 4.5.2
 
 - [`a50f905`](https://github.com/klee-contrib/topmodel/commit/a50f905b63370666d6d8b742e444d5fd58052888) - [C#] Fix HasDiscriminator avec requiredNonNullable: true
