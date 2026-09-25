@@ -472,7 +472,7 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         3,
-                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, forceAssociationPropertyType: true)}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
+                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, forceAssociationPropertyType: true, nonNullable: Config.RequiredNonNullable(tag))}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
                     );
                 }
                 else
