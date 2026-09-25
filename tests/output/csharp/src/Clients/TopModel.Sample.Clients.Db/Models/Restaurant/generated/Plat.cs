@@ -59,7 +59,6 @@ public partial record Plat
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    [Required]
     public virtual CategoriePlat CategoriePlat { get; init; } = CategoriePlat.Autre;
 
     /// <summary>

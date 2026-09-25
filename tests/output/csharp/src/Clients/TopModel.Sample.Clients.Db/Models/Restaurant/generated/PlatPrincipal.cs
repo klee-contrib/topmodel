@@ -14,7 +14,7 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 /// </summary>
 public partial record PlatPrincipal : Plat
 {
-    public override CategoriePlat CategoriePlat => CategoriePlat.Principal;
+    public override CategoriePlat CategoriePlat { get; init; } = CategoriePlat.Principal;
 
     /// <summary>
     /// Si le plat est végétarien.

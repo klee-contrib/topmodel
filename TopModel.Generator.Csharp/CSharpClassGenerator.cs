@@ -293,7 +293,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             var dp = item.Extends!.DiscriminatorProperty!;
             w.WriteLine(
                 1,
-                $"public override {Config.GetType(dp, nonNullable: true)} {dp.NamePascal} => {Config.GetValue(dp, item.DiscriminatorValue ?? item.SqlName)};"
+                $"public override {Config.GetType(dp, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, item.DiscriminatorValue ?? item.SqlName)};"
             );
         }
 
@@ -358,7 +358,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             if (
-                property.Required
+                !isDiscriminator
+                    && property.Required
                     && !Config.RequiredNonNullable(tag)
                     && !property.PrimaryKey
                     && !property.AssociationMultiple
@@ -430,7 +431,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.Write(1, "public");
 
             if (
-                Config.RequiredNonNullable(tag)
+                !isDiscriminator
+                && Config.RequiredNonNullable(tag)
                 && property.Required
                 && (!isPk || property.GeneratedValue == null)
                 && defaultValue == "null"
@@ -441,7 +443,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             if (isDiscriminator)
             {
-                w.Write(" virtual");
+                w.Write(property.Class.Type == ClassType.Abstract ? " abstract" : " virtual");
             }
 
             w.WriteLine(
