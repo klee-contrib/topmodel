@@ -460,7 +460,10 @@ public class ModelStore(
         foreach (var fileName in fileNames.Except(foundFiles))
         {
             foundFiles.Add(fileName);
-            yield return _modelFiles[fileName];
+            if (_modelFiles.TryGetValue(fileName, out var modelFile))
+            {
+                yield return modelFile;
+            }
 
             foreach (
                 var file in GetAffectedFiles(

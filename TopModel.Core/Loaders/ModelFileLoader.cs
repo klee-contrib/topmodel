@@ -521,28 +521,44 @@ public class ModelFileLoader(
                             ) c
                         )
                         {
+                            bool IsMatch(string fullPath)
+                            {
+                                return c.ModelFilePaths.IsMatch(fullPath.ToRelative(modelRoot)[2..]);
+                            }
+
                             var files = new List<(string FullPath, ModelFile? ModelFile, ModelFileStatus Status)>();
 
                             if (e is RenamedEventArgs re)
                             {
-                                files.Add(
-                                    await LoadModelFile(
-                                        c.Config,
-                                        re.OldFullPath,
-                                        WatcherChangeTypes.Deleted,
-                                        ct: default
-                                    )
-                                );
-                                files.Add(
-                                    await LoadModelFile(c.Config, re.FullPath, WatcherChangeTypes.Created, ct: default)
-                                );
+                                if (IsMatch(re.OldFullPath))
+                                {
+                                    files.Add(
+                                        await LoadModelFile(
+                                            c.Config,
+                                            re.OldFullPath,
+                                            WatcherChangeTypes.Deleted,
+                                            ct: default
+                                        )
+                                    );
+                                }
+                                if (IsMatch(re.FullPath))
+                                {
+                                    files.Add(
+                                        await LoadModelFile(
+                                            c.Config,
+                                            re.FullPath,
+                                            WatcherChangeTypes.Created,
+                                            ct: default
+                                        )
+                                    );
+                                }
                             }
-                            else
+                            else if (IsMatch(e.FullPath))
                             {
                                 files.Add(await LoadModelFile(c.Config, e.FullPath, e.ChangeType, ct: default));
                             }
 
-                            if (!c.ModelFilePaths.IsMatch(e.FullPath.ToRelative(modelRoot)[2..]))
+                            if (files.Count == 0)
                             {
                                 return;
                             }
