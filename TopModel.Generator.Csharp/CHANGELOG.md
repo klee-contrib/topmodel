@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.4
+
+- [`8dcae32`](https://github.com/klee-contrib/topmodel/commit/8dcae32b54ead2bf66bf270f774615ea42e804a7) - [C#] Fix génération MapEnums avec instance statique de nameTranslator
+
 ## 4.5.3
 
 - [`235e739`](https://github.com/klee-contrib/topmodel/commit/235e7390c1eb391c198f653df97c2c81e1e9fdf6) - [C#] DBContext : génération des complex properties nestées
