@@ -137,16 +137,18 @@ public class DbContextGenerator(
         w.WriteSummary("Extension du builder Npgsql pour enregistrer les enums Postgres.");
         w.WriteClassDeclaration(BuilderOptions, isStatic: true);
 
+        w.WriteLine(1, "private static readonly NpgsqlNullNameTranslator _nameTranslator = new();");
+        w.WriteLine();
+
         w.WriteSummary(1, "Enregistre les enums Postgres.");
         w.WriteParam("builder", "Le builder Npgsql.");
         w.WriteLine(1, $"public static void MapEnums(this NpgsqlDbContextOptionsBuilder builder)");
         w.WriteLine(1, "{");
-        w.WriteLine(2, "var nameTranslator = new NpgsqlNullNameTranslator();");
         foreach (var classe in classList)
         {
             w.WriteLine(
                 2,
-                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{Config.GetSqlName(classe, tag)}\", nameTranslator: nameTranslator);"
+                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{Config.GetSqlName(classe, tag)}\", nameTranslator: _nameTranslator);"
             );
         }
         w.WriteLine(1, "}");

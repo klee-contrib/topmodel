@@ -14,14 +14,15 @@ namespace TopModel.Sample.Clients.Db;
 /// </summary>
 public static class NpgsqlDbContextOptionsBuilderExtensions
 {
+    private static readonly NpgsqlNullNameTranslator _nameTranslator = new();
+
     /// <summary>
     /// Enregistre les enums Postgres.
     /// </summary>
     /// <param name="builder">Le builder Npgsql.</param>
     public static void MapEnums(this NpgsqlDbContextOptionsBuilder builder)
     {
-        var nameTranslator = new NpgsqlNullNameTranslator();
-        builder.MapEnum<StatutCommande>("statut_commande", nameTranslator: nameTranslator);
-        builder.MapEnum<TypeTerrasse>("type_terrasse", nameTranslator: nameTranslator);
+        builder.MapEnum<StatutCommande>("statut_commande", nameTranslator: _nameTranslator);
+        builder.MapEnum<TypeTerrasse>("type_terrasse", nameTranslator: _nameTranslator);
     }
 }
