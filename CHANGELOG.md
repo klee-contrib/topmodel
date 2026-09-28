@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.5
+
+- [`a0a02ca`](https://github.com/klee-contrib/topmodel/commit/a0a02caeab3a559faa96075ed809e7f6621cc0b7) - [Core] Fix rename des fichiers tmd qui impactent la disponibilité dans le modèle
+
 ## 4.8.4
 
 - [`836956a`](https://github.com/klee-contrib/topmodel/commit/836956a942832b59b56cc6ef4e80fdb3cd7a5e29) - [Core] Fix mappings possibles à tort sur les discriminateurs
