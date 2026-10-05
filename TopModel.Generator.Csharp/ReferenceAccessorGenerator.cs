@@ -91,7 +91,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 usings.Add(contextNs);
             }
 
-            if (Config.UseAsyncReferenceAccessors)
+            if (Config.UseAsyncReferenceAccessors || !Config.PersistedReferencesResources)
             {
                 usings.Add("Microsoft.EntityFrameworkCore");
             }
@@ -400,7 +400,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
             w.WriteLine(
                 2,
-                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{dbContext}.{classe.PluralNamePascal}{queryParameter}.ToList{(Config.UseAsyncReferenceAccessors ? "Async(ct)" : "()")};"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{dbContext}.{classe.PluralNamePascal}.AsNoTracking(){queryParameter}.ToList{(Config.UseAsyncReferenceAccessors ? "Async(ct)" : "()")};"
             );
         }
         else
