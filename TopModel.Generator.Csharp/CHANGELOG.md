@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.5
+
+- [`be7b56a`](https://github.com/klee-contrib/topmodel/commit/be7b56aab63e7a029315e34b4a18e9750aacd542) - [C#] Ajout AsNoTracking() sur les accesseurs de liste de références sans traduction
+
 ## 4.5.4
 
 - [`8dcae32`](https://github.com/klee-contrib/topmodel/commit/8dcae32b54ead2bf66bf270f774615ea42e804a7) - [C#] Fix génération MapEnums avec instance statique de nameTranslator
