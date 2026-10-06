@@ -454,7 +454,7 @@ domain:
     )
     {
         var useIndex =
-            modelFile!.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
+            modelFile.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
             : fileText[0].StartsWith('-') ? 1
             : 0;
 

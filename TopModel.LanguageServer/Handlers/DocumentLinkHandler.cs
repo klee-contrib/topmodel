@@ -45,7 +45,7 @@ public class DocumentLinkHandler(LSWorkerStore workerStore) : DocumentLinkHandle
                         var target = new Uri(
                             Path.GetFullPath(
                                 Path.Combine(
-                                    lockFileDir!,
+                                    lockFileDir,
                                     text[i][lineStart.Length..].Replace('/', Path.DirectorySeparatorChar)
                                 )
                             )

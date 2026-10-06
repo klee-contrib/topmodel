@@ -48,7 +48,7 @@ public class TopModelLock : TopModelLockFile
             }
         }
 
-        var assembly = Assembly.GetEntryAssembly()!.GetName()!;
+        var assembly = Assembly.GetEntryAssembly()!.GetName();
         var version = Assembly
             .GetEntryAssembly()!
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!

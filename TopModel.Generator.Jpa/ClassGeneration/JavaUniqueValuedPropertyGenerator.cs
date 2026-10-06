@@ -10,7 +10,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
 public class JavaUniqueValuedPropertyGenerator(
-    ILogger<JavaEnumClassPropertyGenerator> logger,
+    ILogger<JavaUniqueValuedPropertyGenerator> logger,
     IFileWriterProvider writerProvider
 ) : GeneratorBase<JpaConfig>(logger, writerProvider)
 {

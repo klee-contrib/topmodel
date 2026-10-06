@@ -7,7 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Csharp;
 
 public class DbContextResourcesGenerator(
-    ILogger<TranslationGeneratorBase<CsharpConfig>> logger,
+    ILogger<DbContextResourcesGenerator> logger,
     TranslationStore translationStore,
     IFileWriterProvider writerProvider
 ) : TranslationGeneratorBase<CsharpConfig>(logger, translationStore, writerProvider)

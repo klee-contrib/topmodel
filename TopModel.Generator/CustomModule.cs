@@ -205,7 +205,7 @@ public class CustomModule(
         {
             await using var registration = cancellationToken.Register(() => build?.Kill());
             var stdoutTask = build!.StandardOutput.ReadToEndAsync(cancellationToken);
-            await build!.WaitForExitAsync(cancellationToken);
+            await build.WaitForExitAsync(cancellationToken);
             stdout = await stdoutTask;
         }
         catch (OperationCanceledException)

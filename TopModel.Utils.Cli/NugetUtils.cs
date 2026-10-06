@@ -4,7 +4,6 @@ using NuGet.Packaging;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
-using TopModel.Utils;
 
 namespace TopModel.Utils.Cli;
 
@@ -131,15 +130,15 @@ public static class NugetUtils
         }
     }
 
-    private static async Task<FindPackageByIdResource> GetNugetResourceAsync(CancellationToken Ct)
+    private static async Task<FindPackageByIdResource> GetNugetResourceAsync(CancellationToken ct)
     {
         if (_nugetResource == null)
         {
             var nugetRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
-            _nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>(Ct);
+            _nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>(ct);
         }
 
-        return _nugetResource;
+        return _nugetResource!;
     }
 
     private static async Task WriteAsync(CancellationToken Ct)

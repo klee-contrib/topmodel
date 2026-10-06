@@ -13,7 +13,7 @@ public class TmdClass
     public IList<TmdClass> Dependencies =>
         Properties
             .OfType<TmdAssociationProperty>()
-            .Select(p => p.Association!)
+            .Select(p => p.Association)
             .Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class!))
             .Where(c => c != this)
             .Distinct()

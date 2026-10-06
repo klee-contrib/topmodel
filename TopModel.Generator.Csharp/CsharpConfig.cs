@@ -620,7 +620,7 @@ public class CsharpConfig : GeneratorConfigBase
         {
             { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
             { Composition: not null } => false,
-            _ => AllValueTypes.Contains(GetType(prop!, nonNullable: true)),
+            _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
         };
     }
 

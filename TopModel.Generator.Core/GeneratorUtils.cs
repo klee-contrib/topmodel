@@ -27,7 +27,7 @@ public static class GeneratorUtils
     {
         return services.AddSingleton<IModelWatcher>(p =>
         {
-            var generator = ActivatorUtilities.CreateInstance<TGenerator>(p)!;
+            var generator = ActivatorUtilities.CreateInstance<TGenerator>(p);
             generator.Config = config;
             generator.Number = number;
             return generator;

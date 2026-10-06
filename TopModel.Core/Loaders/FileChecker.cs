@@ -96,7 +96,7 @@ public class FileChecker()
 
     public WatcherConfigBase GetWatcherConfigBase(IDictionary<string, object> genConfigMap)
     {
-        return Deserializer.Deserialize<WatcherConfigBase>(_serializer.Serialize(genConfigMap))!;
+        return Deserializer.Deserialize<WatcherConfigBase>(_serializer.Serialize(genConfigMap));
     }
 
     private T ParseNode<T>(YamlNode node)

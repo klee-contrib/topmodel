@@ -296,7 +296,7 @@ public static class ModelExtensions
             get
             {
                 var propMappingType = new PropertyMappingType(
-                    prop.Domain!,
+                    prop.Domain,
                     prop.Domain?.Collection == true && prop.DomainChain.Count() > 1 && prop.DomainChain.First().Generic
                         ? prop.DomainChain.ElementAt(1).Domain
                         : null

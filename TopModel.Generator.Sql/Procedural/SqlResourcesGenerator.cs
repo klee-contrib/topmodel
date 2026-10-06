@@ -81,7 +81,7 @@ public class SqlResourcesGenerator(
                             foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                             {
                                 writer.WriteLine(
-                                    $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(property, language)!)});"
+                                    $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(property.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(property, language)!)});"
                                 );
                             }
                         }
@@ -111,7 +111,7 @@ public class SqlResourcesGenerator(
                         foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
                         {
                             writer.WriteLine(
-                                $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty!, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(value.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(value, language))});"
+                                $@"insert into {Config.GetSqlName(classe, tag)}({Config.GetSqlName(classe.PrimaryKey.Single(p => p != classe.LocaleProperty), tag)}{(classe.LocaleProperty != null ? $", {Config.GetSqlName(classe.LocaleProperty, tag)}" : string.Empty)}, {Config.GetSqlName(classe.DefaultProperty!, tag)}) values({SingleQuote(value.ResourceKey)}{(classe.LocaleProperty == null ? string.Empty : @$", {SingleQuote(language)}")}, {SingleQuote(translationStore.GetTranslation(value, language))});"
                             );
                         }
                     }

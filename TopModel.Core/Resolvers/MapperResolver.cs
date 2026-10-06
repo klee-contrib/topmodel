@@ -312,7 +312,9 @@ internal class MapperResolver(
                         foreach (
                             var param in mapper.Params.Where(
                                 (p, i) =>
+#pragma warning disable S2971
                                     p.GetRequired() && mapper.Params.Where((q, j) => !q.GetRequired() && j < i).Any()
+#pragma warning restore S2971
                             )
                         )
                         {
@@ -504,7 +506,7 @@ internal class MapperResolver(
             && tt1pc.Class.Readonly
             && tt1pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt1pc.Class.EnumKey
-            && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey!.Domain)
+            && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey.Domain)
         )
         {
             return true;
@@ -519,7 +521,7 @@ internal class MapperResolver(
             && tt2pc.Class.Readonly
             && tt2pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt2pc.Class.EnumKey
-            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey!.Domain)
+            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey.Domain)
         )
         {
             return true;

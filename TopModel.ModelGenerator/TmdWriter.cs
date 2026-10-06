@@ -37,7 +37,7 @@ public class TmdWriter : IDisposable
     public void Write()
     {
         _writer.WriteLine($"---");
-        var module = _file.Module?.Contains('_') ?? false ? _file.Module!.Split('_')[1] : _file.Module;
+        var module = _file.Module?.Contains('_') ?? false ? _file.Module.Split('_')[1] : _file.Module;
         _writer.WriteLine($"module: {module}");
         _writer.WriteLine($"tags:");
         foreach (var tag in _file.Tags)

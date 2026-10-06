@@ -6,7 +6,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
-public class JpaMetaModelGenerator(ILogger<JavaClassGeneratorBase> logger, IFileWriterProvider writerProvider)
+public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGeneratorBase<JpaConfig>(logger, writerProvider)
 {
     private JpaModelPropertyGenerator? _jpaModelConstructorGenerator;

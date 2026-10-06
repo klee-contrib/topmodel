@@ -424,7 +424,7 @@ internal class PropertyResolver(
             if (ap.PropertyReference != null)
             {
                 var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p =>
-                    p.Name == ap.PropertyReference!.ReferenceName
+                    p.Name == ap.PropertyReference.ReferenceName
                 );
                 if (referencedProperty == null)
                 {
@@ -527,7 +527,7 @@ internal class PropertyResolver(
 
             if (alp.Reference?.ClassReference != null)
             {
-                if (!referencedClasses!.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
+                if (!referencedClasses.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
                 {
                     yield return new ModelError(
                         localizer,
@@ -544,7 +544,7 @@ internal class PropertyResolver(
             else if (alp.Reference?.EndpointReference != null)
             {
                 if (
-                    !referencedEndpoints!.TryGetValue(
+                    !referencedEndpoints.TryGetValue(
                         alp.Reference.EndpointReference.ReferenceName,
                         out var aliasedEndpoint
                     )
@@ -565,7 +565,7 @@ internal class PropertyResolver(
             else if (alp.Reference?.DecoratorReference != null)
             {
                 if (
-                    !referencedDecorators!.TryGetValue(
+                    !referencedDecorators.TryGetValue(
                         alp.Reference.DecoratorReference.ReferenceName,
                         out var aliasedDecorator
                     )

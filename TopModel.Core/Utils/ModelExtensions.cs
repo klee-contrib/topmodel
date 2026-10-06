@@ -301,7 +301,7 @@ public static class ModelExtensions
                             Reference: vc.VariableReferences.FirstOrDefault(vr =>
                                 vr.ReferenceName == v.TemplateParameter!.Name
                             )!,
-                            File: v.GetFile()!
+                            File: v.GetFile()
                         )
                     )
             )
@@ -316,7 +316,7 @@ public static class ModelExtensions
                                             ac.ReferenceName == a.Annotation.Name
                                         )
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: ac.GetFile()!
+                                    File: ac.GetFile()
                                 )
                             )
                     )
@@ -331,7 +331,7 @@ public static class ModelExtensions
                                     Reference: pc
                                         .DecoratorReferences.FirstOrDefault(ac => ac.ReferenceName == d.Decorator.Name)
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: pc.GetFile()!
+                                    File: pc.GetFile()
                                 )
                             )
                     )
@@ -348,7 +348,7 @@ public static class ModelExtensions
                                             ac.ReferenceName == d.Annotation.Name
                                         )
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: pc.GetFile()!
+                                    File: pc.GetFile()
                                 )
                             )
                     )
@@ -363,7 +363,7 @@ public static class ModelExtensions
                                 Reference: ac.DomainReference?.ParameterReferences.Keys.FirstOrDefault(pr =>
                                     pr.ReferenceName == tp.Name
                                 )!,
-                                File: ac.GetFile()!
+                                File: ac.GetFile()
                             )
                         )
                 )

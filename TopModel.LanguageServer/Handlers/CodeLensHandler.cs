@@ -93,7 +93,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                         .Select(item => new Location
                         {
                             Uri = new Uri(facade.GetFilePath(item.File)),
-                            Range = item.Reference!.ToRange()!,
+                            Range = item.Reference.ToRange()!,
                         })
                         .ToArray();
                     return new CodeLens

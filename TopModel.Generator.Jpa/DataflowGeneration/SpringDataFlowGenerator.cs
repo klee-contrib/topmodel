@@ -42,14 +42,12 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
     protected static void WriteBeanFlow(JavaWriter fw, DataFlow dataFlow)
     {
-        fw.AddImports(
-            [
-                "org.springframework.context.annotation.Bean",
-                "org.springframework.batch.core.job.flow.Flow",
-                "org.springframework.beans.factory.annotation.Qualifier",
-                "org.springframework.batch.core.step.Step",
-            ]
-        );
+        fw.AddImports([
+            "org.springframework.context.annotation.Bean",
+            "org.springframework.batch.core.job.flow.Flow",
+            "org.springframework.beans.factory.annotation.Qualifier",
+            "org.springframework.batch.core.step.Step",
+        ]);
 
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Flow"")");
@@ -114,13 +112,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             fromMapper =>
             {
                 var (mapperNs, mapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
-                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
                 return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{targetClass.NamePascal}(item)";
             },
             toMapper =>
             {
                 var (mapperNs, mapperModelPath) = Config.GetMapperLocation((sourceClass, toMapper));
-                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+                fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
                 var methodName = Config.IsRecord(targetClass, tag)
                     ? $"create{targetClass.NamePascal}"
                     : toMapper.Name.Value.ToCamelCase();
@@ -200,7 +198,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         }
 
         var query =
-            $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{Config.GetSqlName(dataFlow.Sources[0].Class, tag)}";
+            $"select * from {(Config.ResolveVariables(Config.DbSchema, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema, tag: tagToUse)}.")}{Config.GetSqlName(dataFlow.Sources[0].Class, tag)}";
         fw.AddImport("org.springframework.batch.infrastructure.item.database.builder.JdbcCursorItemReaderBuilder");
 
         string rowMapperImport;
@@ -472,20 +470,18 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         var packageName = Config.ResolveVariables(Config.DataFlowsPath!, module: module).ToPackageName();
         flows = flows.OrderBy(f => f.Name);
         using var fw = this.OpenJavaWriter(configFilePath, packageName);
-        fw.AddImports(
-            [
-                "org.springframework.context.annotation.Configuration",
-                "org.springframework.context.annotation.Bean",
-                "org.springframework.batch.core.job.Job",
-                "org.springframework.batch.core.repository.JobRepository",
-                "org.springframework.beans.factory.annotation.Qualifier",
-                "org.springframework.batch.core.job.flow.Flow",
-                "org.springframework.batch.core.job.builder.JobBuilder",
-                "org.springframework.batch.core.job.parameters.RunIdIncrementer",
-                "org.springframework.core.task.TaskExecutor",
-                "org.springframework.context.annotation.Import",
-            ]
-        );
+        fw.AddImports([
+            "org.springframework.context.annotation.Configuration",
+            "org.springframework.context.annotation.Bean",
+            "org.springframework.batch.core.job.Job",
+            "org.springframework.batch.core.repository.JobRepository",
+            "org.springframework.beans.factory.annotation.Qualifier",
+            "org.springframework.batch.core.job.flow.Flow",
+            "org.springframework.batch.core.job.builder.JobBuilder",
+            "org.springframework.batch.core.job.parameters.RunIdIncrementer",
+            "org.springframework.core.task.TaskExecutor",
+            "org.springframework.context.annotation.Import",
+        ]);
         fw.WriteLine();
         fw.WriteLine("@Configuration");
 

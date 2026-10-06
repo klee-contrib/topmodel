@@ -103,7 +103,7 @@ public class TopModelCommand<TDescription, TConfig, TFileChecker, TWorker> : IDi
                 );
                 if (latestVersion != null && latestVersion.Version != version)
                 {
-                    AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version!);
+                    AnsiConsole.LogWarning(CliMessage.NewVersionAvailable, latestVersion.Version);
                     AnsiConsole.LogWarning(CliMessage.DotnetUpdateCommand, nugetPackageName);
                     AnsiConsole.WriteLine();
                 }
@@ -170,7 +170,7 @@ public class TopModelCommand<TDescription, TConfig, TFileChecker, TWorker> : IDi
 
         if (Args?.GetResult(helpOption) != null || Args?.GetResult(versionOption) != null)
         {
-            await Args.InvokeAsync(cancellationToken: default);
+            await Args.InvokeAsync(cancellationToken: _cts.Token);
             return true;
         }
 

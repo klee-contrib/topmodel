@@ -343,7 +343,7 @@ public static class ScriptUtils
             }
 
             writer.Write(
-                $"start with {primaryKey.Domain.GeneratedValue!.Start} increment by {primaryKey.Domain.GeneratedValue!.Increment}"
+                $"start with {primaryKey.Domain.GeneratedValue.Start} increment by {primaryKey.Domain.GeneratedValue.Increment}"
             );
 
             if (config.TargetDBMS == TargetDBMS.Oracle)

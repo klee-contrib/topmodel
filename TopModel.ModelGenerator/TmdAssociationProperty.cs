@@ -10,7 +10,7 @@ public class TmdAssociationProperty : TmdRegularProperty
 
     public string Role =>
         Association != Class
-            ? Name.Replace(Association!.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty)
+            ? Name.Replace(Association.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty)
             : Name.Replace(
                 Association.Properties.OfType<TmdRegularProperty>().First(p => p.PrimaryKey).Name,
                 string.Empty

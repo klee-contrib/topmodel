@@ -442,7 +442,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 fromMapper =>
                 {
                     var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
-                    imports.Add(Config.GetMapperImport(targetMapperNs, targetMapperModelPath, tag)!);
+                    imports.Add(Config.GetMapperImport(targetMapperNs, targetMapperModelPath, tag));
 
                     var createMapper =
                         $"{Config.GetMapperName(targetMapperNs, targetMapperModelPath)}.create{targetClass.NamePascal}({value})";
@@ -459,7 +459,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 toMapper =>
                 {
                     var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((sourceClass, toMapper));
-                    imports.Add(Config.GetMapperImport(targetMapperNs, targetMapperModelPath, tag)!);
+                    imports.Add(Config.GetMapperImport(targetMapperNs, targetMapperModelPath, tag));
                     var mapperTo =
                         $"{Config.GetMapperName(targetMapperNs, targetMapperModelPath)}.to{targetClass.NamePascal}";
 

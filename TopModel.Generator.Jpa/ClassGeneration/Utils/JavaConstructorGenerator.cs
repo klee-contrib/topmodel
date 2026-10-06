@@ -93,7 +93,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             }
 
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(fromMapper);
-            constructor.AddImports(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+            constructor.AddImports(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
             constructor.AddBodyLine(
                 $"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);"
             );

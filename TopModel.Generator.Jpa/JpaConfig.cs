@@ -280,25 +280,6 @@ public class JpaConfig : GeneratorConfigBase
         return defaultValue != "null" ? defaultValue : string.Empty;
     }
 
-    public virtual IEnumerable<string> GetValueImportsJpa(IProperty property, string tag, string? value = null)
-    {
-        value ??= GetValue(property);
-
-        if (
-            value != NullValue
-            && property is { UniqueValuedProperty: IProperty uvp }
-            && UniqueValueGeneration.CanConst
-            && (property.EnumProperty == null || UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
-        )
-        {
-            return [$"{GetEnumPackageName(uvp.Class, GetBestClassTag(property.Class, tag))}.{GetEnumType(uvp)}"];
-        }
-        else
-        {
-            return GetValueImports(property, tag);
-        }
-    }
-
     public virtual IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)
     {
         return GetAnnotations(property, tag)
@@ -454,6 +435,25 @@ public class JpaConfig : GeneratorConfigBase
     public override string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
     {
         return $"{property.Class.NamePascal}{property.NamePascal}.{refName.ToPascalCase(strictIfUppercase: true)}";
+    }
+
+    public virtual IEnumerable<string> GetValueImportsJpa(IProperty property, string tag, string? value = null)
+    {
+        value ??= GetValue(property);
+
+        if (
+            value != NullValue
+            && property is { UniqueValuedProperty: IProperty uvp }
+            && UniqueValueGeneration.CanConst
+            && (property.EnumProperty == null || UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
+        )
+        {
+            return [$"{GetEnumPackageName(uvp.Class, GetBestClassTag(property.Class, tag))}.{GetEnumType(uvp)}"];
+        }
+        else
+        {
+            return GetValueImports(property, tag);
+        }
     }
 
     public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)

@@ -19,8 +19,7 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
         {
             yield return (
                 "main",
-                Path.Combine(Config.Ssdt!.InitListScriptFolder!, Config.Ssdt!.InitListMainScriptName!)
-                    .Replace('\\', '/')
+                Path.Combine(Config.Ssdt!.InitListScriptFolder!, Config.Ssdt.InitListMainScriptName!).Replace('\\', '/')
             );
         }
     }

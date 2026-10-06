@@ -8,8 +8,6 @@ namespace TopModel.LanguageServer;
 
 public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
 {
-    private ModelStore? _modelStore;
-
     public ModelConfig ModelConfig => ServiceProvider.GetRequiredService<ModelConfig>();
 
     public ModelFileLoader ModelFileLoader => ServiceProvider.GetRequiredService<ModelFileLoader>();
@@ -73,16 +71,12 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
             }
         }
 
-        _modelStore = ServiceProvider.GetRequiredService<ModelStore>();
-        _modelStore.KeepFileErrorsInReferenceResolution = true;
-        await _modelStore.LoadFromConfig(WatchMode, ParallelMode, ct: cancellationToken);
+        ModelStore.KeepFileErrorsInReferenceResolution = true;
+        await ModelStore.LoadFromConfig(WatchMode, ParallelMode, ct: cancellationToken);
     }
 
     public override async Task WaitForFinished(CancellationToken cancellationToken)
     {
-        if (_modelStore != null)
-        {
-            await _modelStore.WaitForUpdates(cancellationToken);
-        }
+        await ModelStore.WaitForUpdates(cancellationToken);
     }
 }

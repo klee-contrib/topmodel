@@ -8,7 +8,7 @@ namespace TopModel.Generator.Sql.Procedural;
 /// <summary>
 /// Générateur SQL procédural pour les valeurs de classes.
 /// </summary>
-public class SqlValuesGenerator(ILogger<ClassGroupGeneratorBase<SqlConfig>> logger, IFileWriterProvider writerProvider)
+public class SqlValuesGenerator(ILogger<SqlValuesGenerator> logger, IFileWriterProvider writerProvider)
     : ClassGroupGeneratorBase<SqlConfig>(logger, writerProvider)
 {
     public override string Name => "SqlValuesGen";

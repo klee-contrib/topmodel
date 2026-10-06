@@ -17,7 +17,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
     {
         if (classe.HasTable && Config.GetProperties(classe).Any(p => p.Name == ScriptUtils.InsertKeyName))
         {
-            yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName!));
+            yield return ("type", Path.Combine(Config.OutputDirectory, Config.Procedural!.TypesFileName));
         }
     }
 

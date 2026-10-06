@@ -26,6 +26,6 @@ internal static class DependenciesExtensions
                     )
                     .Select(p => new ClassDependency(p.EnumLikeProperty!.Class, p))
             )
-            .Where(d => d != null)!;
+            .Where(d => d != null);
     }
 }

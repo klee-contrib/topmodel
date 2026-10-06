@@ -7,7 +7,7 @@ using TopModel.Utils;
 namespace TopModel.Generator.Csharp;
 
 public class ResxGenerator(
-    ILogger<TranslationGeneratorBase<CsharpConfig>> logger,
+    ILogger<ResxGenerator> logger,
     TranslationStore translationStore,
     IFileWriterProvider writerProvider
 ) : TranslationGeneratorBase<CsharpConfig>(logger, translationStore, writerProvider)

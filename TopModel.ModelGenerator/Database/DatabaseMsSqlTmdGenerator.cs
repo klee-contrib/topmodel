@@ -6,7 +6,7 @@ using TopModel.Utils;
 namespace TopModel.ModelGenerator.Database;
 
 public class DatabaseMsSqlTmdGenerator(
-    ILogger<DatabaseTmdGenerator> logger,
+    ILogger<DatabaseMsSqlTmdGenerator> logger,
     DatabaseConfig config,
     IFileWriterProvider writerProvider
 ) : DatabaseTmdGenerator(logger, config, writerProvider)

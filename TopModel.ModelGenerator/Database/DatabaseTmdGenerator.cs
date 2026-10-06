@@ -374,7 +374,7 @@ public abstract class DatabaseTmdGenerator(
                 if (mainClass.Value != null)
                 {
                     mainClass.Value.File!.Module = moduleName;
-                    mainClass.Value.File!.Tags = config.Tags.Concat(module.Tags ?? []).ToList();
+                    mainClass.Value.File.Tags = config.Tags.Concat(module.Tags ?? []).ToList();
                 }
             }
         }
@@ -678,7 +678,8 @@ public abstract class DatabaseTmdGenerator(
             foreach (var fk in classe.Properties.OfType<TmdAssociationProperty>())
             {
                 var foreignColumnName = foreignKeys.First(p => p.ColumnName == fk.SqlName).ForeignColumnName;
-                fk.ForeignProperty = fk.Association!.Properties.OfType<TmdRegularProperty>()
+                fk.ForeignProperty = fk
+                    .Association.Properties.OfType<TmdRegularProperty>()
                     .First(p => p.SqlName == foreignColumnName);
             }
         }

@@ -334,7 +334,7 @@ internal class ClassResolver(
                     ErrorType.TMD0002,
                     [classe.ExtendsReference.ReferenceName],
                     classe,
-                    classe.ExtendsReference!
+                    classe.ExtendsReference
                 );
                 continue;
             }
@@ -349,7 +349,7 @@ internal class ClassResolver(
                     ErrorType.TMD3006,
                     [classe.Name, classe.ExtendsReference.ReferenceName],
                     classe,
-                    classe.ExtendsReference!
+                    classe.ExtendsReference
                 );
                 continue;
             }

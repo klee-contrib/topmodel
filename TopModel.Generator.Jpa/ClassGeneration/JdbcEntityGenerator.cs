@@ -99,7 +99,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         var properties = Config.GetAvailableProperties(classe);
         foreach (var property in properties)
         {
-            yield return JpaModelPropertyGenerator!.GetGetter(tag, property);
+            yield return JpaModelPropertyGenerator.GetGetter(tag, property);
         }
     }
 
@@ -119,7 +119,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         {
             foreach (var property in properties)
             {
-                yield return JpaModelPropertyGenerator!.GetSetter(tag, property);
+                yield return JpaModelPropertyGenerator.GetSetter(tag, property);
             }
         }
     }

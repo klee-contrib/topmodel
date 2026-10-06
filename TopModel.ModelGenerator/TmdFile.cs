@@ -20,7 +20,7 @@ public class TmdFile
             .Where(d => d.File != this)
             .Concat(Endpoints.SelectMany(e => e.Dependencies))
             .Where(c => c.File != null)
-            .Select(f => f!.File!)
+            .Select(f => f.File!)
             .Distinct()
             .OrderBy(u => u.Name)
             .ToList();

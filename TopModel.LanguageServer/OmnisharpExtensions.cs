@@ -127,42 +127,42 @@ public static class OmnisharpExtensions
                     {
                         Class classe =>
                         [
-                            (Reference: classe.Name.GetLocation()!, File: classe.GetFile()!),
+                            (Reference: classe.Name.GetLocation()!, File: classe.GetFile()),
                             .. modelStore.GetClassReferences(classe, includeTransitive),
                         ],
                         Domain domain =>
                         [
-                            (Reference: domain.Name.GetLocation()!, File: domain.GetFile()!),
+                            (Reference: domain.Name.GetLocation()!, File: domain.GetFile()),
                             .. modelStore.GetDomainReferences(domain),
                         ],
                         Annotation annotation =>
                         [
-                            (Reference: annotation.Name.GetLocation()!, File: annotation.GetFile()!),
+                            (Reference: annotation.Name.GetLocation()!, File: annotation.GetFile()),
                             .. modelStore.GetAnnotationReferences(annotation),
                         ],
                         Decorator decorator =>
                         [
-                            (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!),
+                            (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()),
                             .. modelStore.GetDecoratorReferences(decorator),
                         ],
                         DataFlow dataFlow =>
                         [
-                            (Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()!),
+                            (Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()),
                             .. modelStore.GetDataFlowReferences(dataFlow),
                         ],
                         Endpoint endpoint =>
                         [
-                            (Reference: endpoint.Name.GetLocation()!, File: endpoint.GetFile()!),
+                            (Reference: endpoint.Name.GetLocation()!, File: endpoint.GetFile()),
                             .. modelStore.GetEndpointReferences(endpoint),
                         ],
                         IProperty property =>
                         [
-                            (Reference: property.GetLocation()!, File: property.GetFile()!),
+                            (Reference: property.GetLocation()!, File: property.GetFile()),
                             .. modelStore.GetPropertyReferences(property, includeTransitive),
                         ],
                         TemplateParameter parameter =>
                         [
-                            (Reference: parameter.GetLocation()!, File: parameter.GetFile()!),
+                            (Reference: parameter.GetLocation()!, File: parameter.GetFile()),
                             .. modelStore.GetParameterReferences(parameter),
                         ],
                         _ => [],

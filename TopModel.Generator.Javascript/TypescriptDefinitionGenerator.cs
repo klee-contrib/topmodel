@@ -179,7 +179,7 @@ public class TypescriptDefinitionGenerator(
 
                             break;
                         default:
-                            fw.Write($"FieldEntry2<typeof {property.Domain!.Name}, {type}>;");
+                            fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {type}>;");
                             break;
                     }
                 }
@@ -250,7 +250,7 @@ public class TypescriptDefinitionGenerator(
                 )
                 {
                     fw.WriteLine(2, $"name: \"{property.NameCamel}\",");
-                    fw.WriteLine(2, $"domain: {property.Domain!.Name},");
+                    fw.WriteLine(2, $"domain: {property.Domain.Name},");
 
                     var defaultValue = Config.GetValue(property);
                     if (defaultValue != "undefined")
@@ -397,7 +397,7 @@ public class TypescriptDefinitionGenerator(
                 }
                 else if (!Config.IsListComposition(property))
                 {
-                    fw.Write($"{property.Domain!.Name}");
+                    fw.Write($"{property.Domain.Name}");
                     if (hasConfigurator)
                     {
                         fw.Write(", ");
