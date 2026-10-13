@@ -360,11 +360,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             if (
                 !isDiscriminator
-                    && property.Required
-                    && !Config.RequiredNonNullable(tag)
-                    && !property.PrimaryKey
-                    && !property.AssociationMultiple
-                || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
+                && !Config.RequiredNonNullable(tag)
+                && (
+                    property.Required && !property.PrimaryKey && !property.AssociationMultiple
+                    || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1
+                )
             )
             {
                 w.WriteAttribute(1, "Required");

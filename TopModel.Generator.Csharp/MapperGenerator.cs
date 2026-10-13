@@ -230,8 +230,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     && target.MappingType.IsT0
                 )
                 {
+                    var required = source.Required;
                     source = t1.Property;
-                    value += $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.{t1.Property.NamePascal}";
+                    value += $"{(!rrnSource || !required ? "?" : string.Empty)}.{t1.Property.NamePascal}";
                 }
 
                 value = HandleConversion(value, source, target, rrnSource, rrnTarget, paramRequired);
