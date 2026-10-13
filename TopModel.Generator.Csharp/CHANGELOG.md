@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.7
+
+- [`692115d`](https://github.com/klee-contrib/topmodel/commit/692115d7e3471b442480b9bb7c72677776c380a9) - [C#] Fix check de nullabilité en double sur mapper class => class avec sous mapper
+
 ## 4.5.6
 
 - [`0c36451`](https://github.com/klee-contrib/topmodel/commit/0c36451188f8b6e7247e2c490f14fc2ca69125d1) - [C#] Fixes génération mapper useClass facultatif + [Required] en trop
