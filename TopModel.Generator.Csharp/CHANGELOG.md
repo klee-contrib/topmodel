@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.6
+
+- [`0c36451`](https://github.com/klee-contrib/topmodel/commit/0c36451188f8b6e7247e2c490f14fc2ca69125d1) - [C#] Fixes génération mapper useClass facultatif + [Required] en trop
+
 ## 4.5.5
 
 - [`be7b56a`](https://github.com/klee-contrib/topmodel/commit/be7b56aab63e7a029315e34b4a18e9750aacd542) - [C#] Ajout AsNoTracking() sur les accesseurs de liste de références sans traduction
