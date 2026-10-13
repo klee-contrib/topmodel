@@ -132,7 +132,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{targetClass.NamePascal}({value})";
                         return
                             nullCheck
-                            && (!rrnSource && !rrnTarget && paramName != null || !source.Required || !paramRequired)
+                            && (
+                                !rrnSource && !rrnTarget && paramName != null
+                                || (!source.Required || !paramRequired) && !target.Required
+                            )
                             ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
                             : mapped;
                     },
