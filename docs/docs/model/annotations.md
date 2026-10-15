@@ -190,11 +190,11 @@ L'objet cible devra être de l'un des types listés pour que l'annotation puisse
 
 En plus de la `target`, il est possible d'ajouter des conditions de génération par annotation sur chaque implémentation via la propriété `when`. C'est aussi une liste qui peut prendre les valeurs suivantes :
 
-- `class-property`
-- `endpoint-param`
-- `non-persisted`
-- `persisted`
-- `primary-key`
+- `class-property` : la propriété doit être une propriété de classe.
+- `endpoint-param` : la propriété doit être un paramètre d'endpoint.
+- `non-persisted` : l'objet ne doit pas être une classe [persisté]e(/model/classes#classe-persistée). (Ca peut être un endpoint par exemple).
+- `persisted` : l'objet doit être [persisté](/model/classes#classe-persistée).
+- `primary-key` : la propriété doit faire partie de la clé primaire de sa classe, **et ne doit pas être une [association](/model/properties#association)**.
 
 A l'inverse de la `target`, l'**ensemble des conditions doit être respecté**.
 

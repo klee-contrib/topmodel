@@ -275,8 +275,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Tags.Contains(tag)
             ? tag
-            : classe.Tags.Intersect(Tags).FirstOrDefault()
-                ?? classe.Tags.Intersect(ReferencedTagConfigs.Keys).FirstOrDefault()
+            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
+                    .Tags.Intersect(ReferencedTagConfigs.Keys)
+                    .FirstOrDefault()
                 ?? tag;
     }
 
@@ -764,7 +765,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     AnnotationConstraint.ClassProperty => container is IProperty { Class: not null },
                     AnnotationConstraint.EndpointParam => container is IProperty { Endpoint: Endpoint e } p
                         && GetParams(e).Contains(p),
-                    AnnotationConstraint.PrimaryKey => container is IProperty { PrimaryKey: true },
+                    AnnotationConstraint.PrimaryKey => container is IProperty { PrimaryKey: true, Association: null },
                     _ => true,
                 }
             );

@@ -20,6 +20,7 @@ public partial record Reservation
     /// </summary>
     [Column("rev_id")]
     [Domain(Domains.SeqId)]
+    [Editable(false)]
     [Key]
     public int? Id { get; set; }
 

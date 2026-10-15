@@ -29,7 +29,7 @@ public enum AnnotationConstraint
     EndpointParam,
 
     /// <summary>
-    /// Clé primaire.
+    /// Clé primaire (hors association).
     /// </summary>
     [EnumMember(Value = "primary-key")]
     PrimaryKey,

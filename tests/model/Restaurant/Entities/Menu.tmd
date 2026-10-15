@@ -3,6 +3,7 @@ module: Restaurant
 tags:
   - back
 uses:
+  - meta/annotations
   - meta/decorators
   - Restaurant/Entities/Restaurant
   - Restaurant/References

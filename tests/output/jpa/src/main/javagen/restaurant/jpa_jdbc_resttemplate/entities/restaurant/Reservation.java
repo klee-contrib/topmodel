@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -28,6 +29,7 @@ public class Reservation {
 	 * Identifiant de la réservation.
 	 */
 	@Id
+	@ReadOnlyProperty
 	@Column("rev_id")
 	private Integer id;
 
