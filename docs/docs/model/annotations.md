@@ -190,13 +190,15 @@ L'objet cible devra être de l'un des types listés pour que l'annotation puisse
 
 En plus de la `target`, il est possible d'ajouter des conditions de génération par annotation sur chaque implémentation via la propriété `when`. C'est aussi une liste qui peut prendre les valeurs suivantes :
 
-- `class-property`
-- `endpoint-param`
-- `non-persisted`
-- `persisted`
-- `primary-key`
+- `class-property` : la propriété doit être une propriété de classe.
+- `endpoint-param` : la propriété doit être un paramètre d'endpoint.
+- `non-persisted` : l'objet ne doit pas être [persisté](/model/classes#classe-persistée).
+- `persisted` : l'objet doit être [persisté](/model/classes#classe-persistée).
+- `primary-key` : la propriété doit faire partie de la clé primaire de sa classe, **et ne doit pas être une [association](/model/properties#association)**.
 
 A l'inverse de la `target`, l'**ensemble des conditions doit être respecté**.
+
+Remarque sur `primary-key` : une association peut [faire partie de la clé primaire de sa classe](/model/properties#association) (par exemple dans une classe d'association, dont la clé primaire est composée des clés étrangères vers les classes associées). Dans ce cas, la condition `primary-key` n'est malgré tout **pas** respectée, et l'annotation ne sera donc pas posée sur cette propriété. En effet, les annotations conditionnées à `primary-key` décrivent en général la façon dont la valeur de la clé est portée ou générée (identité, séquence, générateur d'UUID...), ce qui n'a pas de sens sur une clé étrangère, dont la valeur vient de la classe associée. Si vous souhaitez poser une annotation sur ce type de propriété, utilisez la `target` `association-property`.
 
 ```yaml
 annotation:
