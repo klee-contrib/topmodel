@@ -39,6 +39,26 @@ annotation:
       imports:
         - System.ComponentModel.DataAnnotations
 ---
+# Annotation pour les clés primaires "techniques", qui ne doit pas se poser sur les clés étrangères
+annotation:
+  name: IdentifiantTechnique
+  description: Marque une propriété comme étant l'identifiant technique de sa classe
+  target:
+    - property
+  java:
+    - text: "@ReadOnlyProperty"
+      imports:
+        - org.springframework.data.annotation.ReadOnlyProperty
+      when:
+        - primary-key
+
+  csharp:
+    - text: Editable(false)
+      imports:
+        - System.ComponentModel.DataAnnotations
+      when:
+        - primary-key
+---
 # Annotation pour les endpoints nécessitant une authentification
 annotation:
   name: Authenticated

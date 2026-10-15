@@ -8,6 +8,7 @@ uses:
   - Restaurant/Entities/Restaurant
   - Restaurant/References
   - meta/decorators
+  - meta/annotations
 ---
 class:
   name: Commande
@@ -112,6 +113,8 @@ class:
       domain: DO_SEQ_ID
       primaryKey: true
       comment: Identifiant de la réservation
+      annotations:
+        - IdentifiantTechnique
 
     - name: DateReservation
       domain: DO_DATE_HEURE

@@ -7,6 +7,7 @@ package restaurant.jpa_feign.entities.restaurant;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Generated;
@@ -41,6 +42,7 @@ public class Reservation {
 	 * Identifiant de la réservation.
 	 */
 	@Id
+	@ReadOnlyProperty
 	@Column(name = "rev_id", nullable = false, columnDefinition = "int")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_RESERVATION")
 	@SequenceGenerator(sequenceName = "SEQ_RESERVATION", name = "SEQ_RESERVATION", initialValue = 1000, allocationSize = 50)
