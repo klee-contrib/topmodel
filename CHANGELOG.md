@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.7
+
+- [#604](https://github.com/klee-contrib/topmodel/pull/604) - [Core] Annotations: `when: primary-key` ne s'applique plus sur les associations
+
 ## 4.8.6
 
 Montée de version des dépendances internes.
