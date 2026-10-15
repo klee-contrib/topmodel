@@ -27,12 +27,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
     protected override string GetFileName((Class Classe, FromMapper Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, Config.GetBestClassTag(mapper.Classe, tag));
+        return Config.GetMapperFilePath(mapper, tag);
     }
 
     protected override string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, Config.GetBestClassTag(mapper.Classe, tag));
+        return Config.GetMapperFilePath(mapper, tag);
     }
 
     protected virtual JavaMethod GetFromMapperNoTarget(Class classe, FromMapper mapper, string tag)
@@ -746,11 +746,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 ? Config.GetMapperLocation(sampleFromMapper)
                 : Config.GetMapperLocation(sampleToMapper);
 
-        var package = Config.GetPackageName(
-            mapperNs,
-            modelPath,
-            Config.GetBestClassTag(sampleFromMapper.Classe ?? sampleToMapper.Classe, tag)
-        );
+        var package = Config.GetPackageName(mapperNs, modelPath, tag);
         var mapperClass = new JavaClass(Config.GetMapperName(mapperNs, modelPath))
         {
             Package = package,
