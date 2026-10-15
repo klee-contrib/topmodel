@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.8.2
+
+- [`faa64c`](https://github.com/klee-contrib/topmodel/commit/faa64ccf363c435e695bb5bedc8ac64827de4979) - [JPA] Fix génération mapper pour les cas mapperTagsOverrides
+
 ## 4.8.1
 
 - [`3bb5947`](https://github.com/klee-contrib/topmodel/commit/3bb5947d592b6011c1e9fe95ce18d109d48574fa) - [JPA] Records : gestion des champs statiques
