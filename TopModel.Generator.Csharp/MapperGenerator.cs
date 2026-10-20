@@ -157,7 +157,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                         var missingRequiredProperties = GetMissingRequiredProperties(toMapper, tag);
                         var dest =
-                            missingRequiredProperties.Count > 1
+                            missingRequiredProperties.Count > 0
                             && !missingRequiredProperties[0].IsReverseProperty
                             && missingRequiredProperties[0].ReverseProperty == targetProperty
                                 ? "dest"
