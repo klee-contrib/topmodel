@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.9
+
+- [`290a8af`](https://github.com/klee-contrib/topmodel/commit/290a8afc186690bbf3b4bbe6a9b7ec79a706e855) - [C#] Fix évol précédente
+
 ## 4.5.8
 
 - [`21abec9`](https://github.com/klee-contrib/topmodel/commit/21abec908a8f15b486f855630acb2d53b2fb1eb4) - [C#] Gestion des appels de mappers to avec référence vers la classe cible dans un mapper pour les associations réciproques.
