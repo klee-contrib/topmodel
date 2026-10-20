@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.8
+
+- [`21abec9`](https://github.com/klee-contrib/topmodel/commit/21abec908a8f15b486f855630acb2d53b2fb1eb4) - [C#] Gestion des appels de mappers to avec référence vers la classe cible dans un mapper pour les associations réciproques.
+
 ## 4.5.7
 
 - [`692115d`](https://github.com/klee-contrib/topmodel/commit/692115d7e3471b442480b9bb7c72677776c380a9) - [C#] Fix check de nullabilité en double sur mapper class => class avec sous mapper
