@@ -111,7 +111,13 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             bool rrnTarget
         )
         {
-            string GetMappedValue(string value, Class sourceClass, Class targetClass, bool nullCheck)
+            string GetMappedValue(
+                string value,
+                Class sourceClass,
+                Class targetClass,
+                IProperty targetProperty,
+                bool nullCheck
+            )
             {
                 var mapper = sourceClass.GetMapperTo(targetClass)!.Value;
                 return mapper.Match(
@@ -149,8 +155,16 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             w.AddUsing(targetMapperNs);
                         }
 
+                        var missingRequiredProperties = GetMissingRequiredProperties(toMapper, tag);
+                        var dest =
+                            missingRequiredProperties.Count > 1
+                            && !missingRequiredProperties[0].IsReverseProperty
+                            && missingRequiredProperties[0].ReverseProperty == targetProperty
+                                ? "dest"
+                                : string.Empty;
+
                         value =
-                            $"{value}{(nullCheck && (!rrnSource && !rrnTarget || !source.Required) ? "?" : string.Empty)}.To{targetClass}()";
+                            $"{value}{(nullCheck && (!rrnSource && !rrnTarget || !source.Required) ? "?" : string.Empty)}.To{targetClass}({dest})";
                         if (nullCheck && !rrnTarget && target.Required && target.Composition != null)
                         {
                             value += " ?? new()";
@@ -188,7 +202,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
                 else if (target.MappingType.TryPickT2(out var tt2, out _) && st2.Class != tt2.Class)
                 {
-                    var selector = $"p => {GetMappedValue("p", st2.Class, tt2.Class, nullCheck: false)}";
+                    var selector = $"p => {GetMappedValue("p", st2.Class, tt2.Class, target, nullCheck: false)}";
                     if (!selector.StartsWith("p => p."))
                     {
                         selector = selector[5..^3];
@@ -203,7 +217,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 && st1.Class != tt1.Class
             )
             {
-                value = GetMappedValue(value, st1.Class, tt1.Class, nullCheck: true);
+                value = GetMappedValue(value, st1.Class, tt1.Class, target, nullCheck: true);
             }
             else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
             {
@@ -545,19 +559,27 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
             }
 
+            var reverseAssociationMappings = mappings.Where(m =>
+                m.Value.UseClassForAssociation && m.Value.IsReverseProperty
+            );
+
             w.WriteLine(
                 2,
-                $"return new {(mapper.Class.Type != ClassType.Regular ? "T" : Config.GetTypeName(mapper.Class))}"
+                $"{(reverseAssociationMappings.Any() ? "var dest =" : "return")} new {(mapper.Class.Type != ClassType.Regular ? "T" : Config.GetTypeName(mapper.Class))}"
             );
             w.WriteLine(2, "{");
 
-            foreach (var mapping in mapper.Mappings)
+            foreach (var mapping in mappings.Except(reverseAssociationMappings))
             {
                 var value = GetValue("source", paramRequired: true, mapping.Key, mapping.Value, rrnSource, rrnTarget);
 
                 w.Write(3, $"{mapping.Value.NamePascal} = {value}");
 
-                if (mappings.IndexOf(mapping) < mappings.Count - 1 || missingRequiredProperties.Count > 0)
+                if (
+                    mappings.Except(reverseAssociationMappings).ToList().IndexOf(mapping)
+                        < mappings.Except(reverseAssociationMappings).Count() - 1
+                    || missingRequiredProperties.Count > 0
+                )
                 {
                     w.WriteLine(",");
                 }
@@ -582,6 +604,18 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             }
 
             w.WriteLine(2, "};");
+
+            foreach (var mapping in reverseAssociationMappings)
+            {
+                var value = GetValue("source", paramRequired: true, mapping.Key, mapping.Value, rrnSource, rrnTarget);
+                w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
+            }
+
+            if (reverseAssociationMappings.Any())
+            {
+                w.WriteLine(2, "return dest;");
+            }
+
             w.WriteLine(1, "}");
             w.WriteLine();
 

@@ -463,7 +463,7 @@ public static class Mappers
     /// <returns>Une nouvelle instance de 'Commande'.</returns>
     public static Commande ToCommande(this CommandeWrite source, DateTime? dateCreation = null)
     {
-        return new Commande
+        var dest = new Commande
         {
             DateCommande = source.DateCommande,
             DateLivraison = source.DateLivraison,
@@ -471,10 +471,11 @@ public static class Mappers
             TableId = source.TableId,
             StatutCommande = source.StatutCommande,
             Client = source.Client?.ToClient(),
-            Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList(),
             Reservation = source.Reservation?.ToReservation(),
             DateCreation = dateCreation
         };
+        dest.Lignes = source.Lignes.Select(p => p.ToLigneCommande(dest)).ToList();
+        return dest;
     }
 
     /// <summary>
@@ -491,7 +492,7 @@ public static class Mappers
         dest.TableId = source.TableId;
         dest.StatutCommande = source.StatutCommande;
         dest.Client = source.Client?.ToClient();
-        dest.Lignes = source.Lignes.Select(p => p.ToLigneCommande()).ToList();
+        dest.Lignes = source.Lignes.Select(p => p.ToLigneCommande(dest)).ToList();
         dest.Reservation = source.Reservation?.ToReservation();
         return dest;
     }
