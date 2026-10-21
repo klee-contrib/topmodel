@@ -33,6 +33,26 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
             )
             .Select(c => (c.classe, c.mapper));
 
+    protected virtual string GetBestMapperTag((Class Classe, FromMapper Mapper) mapper, string tag)
+    {
+        var mapperTags = GetMapperTags(mapper);
+        return mapperTags.Contains(tag)
+            ? tag
+            : mapperTags.Intersect(Config.Tags).FirstOrDefault()
+                ?? mapperTags.Intersect(Config.ReferencedTagConfigs.Keys).FirstOrDefault()
+                ?? tag;
+    }
+
+    protected virtual string GetBestMapperTag((Class Classe, ClassMappings Mapper) mapper, string tag)
+    {
+        var mapperTags = GetMapperTags(mapper);
+        return mapperTags.Contains(tag)
+            ? tag
+            : mapperTags.Intersect(Config.Tags).FirstOrDefault()
+                ?? mapperTags.Intersect(Config.ReferencedTagConfigs.Keys).FirstOrDefault()
+                ?? tag;
+    }
+
     protected abstract string GetFileName((Class Classe, FromMapper Mapper) mapper, string tag);
 
     protected abstract string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag);

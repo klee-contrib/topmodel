@@ -78,7 +78,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             switch (property)
             {
-                case { EnumProperty: IProperty ep } when Config.AvailableClasses.Contains(ep.Class):
+                case { EnumProperty: IProperty ep }
+                    when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
                     usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
                     break;
                 case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
@@ -123,10 +124,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 return mapper.Match(
                     fromMapper =>
                     {
-                        var targetTag = Config.GetBestClassTag(targetClass, tag);
+                        var mapperTag = GetBestMapperTag((targetClass, fromMapper), tag);
                         var (targetMapperName, targetMapperNs, _) = Config.GetMapperInfo(
                             (targetClass, fromMapper),
-                            targetTag
+                            mapperTag
                         );
 
                         if (targetMapperNs != mapperNs)
@@ -147,8 +148,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     },
                     toMapper =>
                     {
-                        var targetTag = Config.GetBestClassTag(sourceClass, tag);
-                        var (_, targetMapperNs, _) = Config.GetMapperInfo((targetClass, toMapper), targetTag);
+                        var mapperTag = GetBestMapperTag((sourceClass, toMapper), tag);
+                        var (_, targetMapperNs, _) = Config.GetMapperInfo((targetClass, toMapper), mapperTag);
 
                         if (targetMapperNs != mapperNs)
                         {
