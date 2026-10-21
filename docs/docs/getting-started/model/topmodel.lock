@@ -2,14 +2,14 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 4.8.7
+version: 4.8.8
 modules:
   jpa:
-    version: 4.8.1
-    hash: f800aabaf8c46d9c39e461350299addd
+    version: 4.8.2
+    hash: 650c55e7fb8cc6d492ea940a4da1d6ce
   csharp:
-    version: 4.5.6
-    hash: 28ebdf77175efaf8346c61ae3b118eaa
+    version: 4.5.9
+    hash: a1e482f358a3e45d09383d72b9d9384e
   sql:
     version: 4.6.0
     hash: 2c51c24c72d7b05a798bd14f2c3136ce

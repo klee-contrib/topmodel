@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.10
+
+- [`7f4a82c`](https://github.com/klee-contrib/topmodel/commit/7f4a82cbf82767a5296a1efdd2adeb69a9185b98) - [Core/C#/JPA] Fix mauvais tag utilisé pour les sous mappers
+
 ## 4.5.9
 
 - [`290a8af`](https://github.com/klee-contrib/topmodel/commit/290a8afc186690bbf3b4bbe6a9b7ec79a706e855) - [C#] Fix évol précédente

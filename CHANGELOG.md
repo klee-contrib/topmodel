@@ -11,9 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
-## Next
+## 4.8.8
 
-- [`ecd22`](https://github.com/klee-contrib/topmodel/commit/ecd227fc6a8f49e68df3d5ac5dcdef8aca90a3cf) - [Core] Gestion du cas où le fichier de config est vide
+- [`ecd227f`](https://github.com/klee-contrib/topmodel/commit/ecd227fc6a8f49e68df3d5ac5dcdef8aca90a3cf) - [Core] Gestion du cas où le fichier de config est vide
+- [`7f4a82c`](https://github.com/klee-contrib/topmodel/commit/7f4a82cbf82767a5296a1efdd2adeb69a9185b98) - [Core/C#/JPA] Fix mauvais tag utilisé pour les sous mappers
 
 ## 4.8.7
 

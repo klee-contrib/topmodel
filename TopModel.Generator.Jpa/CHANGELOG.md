@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 4.8.3
+
+- [`7f4a82c`](https://github.com/klee-contrib/topmodel/commit/7f4a82cbf82767a5296a1efdd2adeb69a9185b98) - [Core/C#/JPA] Fix mauvais tag utilisé pour les sous mappers
+
 ## 4.8.2
 
 - [`faa64c`](https://github.com/klee-contrib/topmodel/commit/faa64ccf363c435e695bb5bedc8ac64827de4979) - [JPA] Fix génération mapper pour les cas mapperTagsOverrides
