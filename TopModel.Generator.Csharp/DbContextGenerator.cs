@@ -389,7 +389,7 @@ public class DbContextGenerator(
                 {
                     w.Write($".HasForeignKey<{GetClassName(g.Key.Class, tag)}>(\"{g.Single().PropertyNamePascal}\")");
                 }
-                if (g.Key.AssociationRole != null)
+                else if (g.Key.AssociationRole != null)
                 {
                     w.Write($".HasForeignKey(\"{g.Single().PropertyNamePascal}\")");
                 }
