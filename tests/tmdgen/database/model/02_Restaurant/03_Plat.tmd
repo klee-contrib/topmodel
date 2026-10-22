@@ -135,6 +135,11 @@ class:
       comment: Restaurant proposant ce plat
       required: true
 
+    - association: Lieu
+      comment: Restaurant qui a créé ce plat
+      role: Createur
+      required: true
+
     - name: PlaDateCreation
       domain: DO_DATE_TIME
       required: true

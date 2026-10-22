@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.11
+
+- [`5796b61`](https://github.com/klee-contrib/topmodel/commit/5796b613ac769dfa322a8f7a24ef9d5a80cf6334) - [C#] Fix génération DbContext association useClass avec rôle
+
 ## 4.5.10
 
 - [`7f4a82c`](https://github.com/klee-contrib/topmodel/commit/7f4a82cbf82767a5296a1efdd2adeb69a9185b98) - [Core/C#/JPA] Fix mauvais tag utilisé pour les sous mappers
