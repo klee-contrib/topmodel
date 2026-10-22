@@ -273,6 +273,7 @@ insert into translation(tra_resource_key, tra_lang, tra_value) values('restauran
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.disponible', 'fr', 'Disponible');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.categoriePlatCode', 'fr', 'CategoriePlat');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantId', 'fr', 'Restaurant');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantIdCreateur', 'fr', 'RestaurantCreateur');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.id', 'de', 'Id');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.nom', 'de', 'Nom');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.description', 'de', 'Description');
@@ -280,6 +281,7 @@ insert into translation(tra_resource_key, tra_lang, tra_value) values('restauran
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.disponible', 'de', 'Disponible');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.categoriePlatCode', 'de', 'CategoriePlat');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantId', 'de', 'Restaurant');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantIdCreateur', 'de', 'RestaurantCreateur');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.id', 'en', 'Id');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.nom', 'en', 'Nom');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.description', 'en', 'Description');
@@ -287,6 +289,7 @@ insert into translation(tra_resource_key, tra_lang, tra_value) values('restauran
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.disponible', 'en', 'Disponible');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.categoriePlatCode', 'en', 'CategoriePlat');
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantId', 'en', 'Restaurant');
+insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.plat.restaurantIdCreateur', 'en', 'RestaurantCreateur');
 
 /**		Initialisation des traductions des propriétés de la table plat_boisson		**/
 insert into translation(tra_resource_key, tra_lang, tra_value) values('restaurant.platBoisson.volume', 'fr', 'Volume');

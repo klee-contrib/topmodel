@@ -32,6 +32,9 @@ export const PlatReadEntity = entity({
     restaurantId: e.field(DO_ID, f => f
         .label("restaurant.plat.restaurantId")
     ),
+    restaurantIdCreateur: e.field(DO_ID, f => f
+        .label("restaurant.plat.restaurantIdCreateur")
+    ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
     )

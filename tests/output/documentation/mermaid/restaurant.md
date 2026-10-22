@@ -100,6 +100,7 @@ class Plat{
 }
 Plat "1" --> "0..*" CategoriePlat
 Plat "1" --> "0..*" Restaurant
+Plat "1" --> "0..*" Restaurant : Createur
 Plat "0..1" --> "1" Promotion
 %% Boisson
 class PlatBoisson{

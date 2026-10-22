@@ -74,6 +74,13 @@ public class Plat {
 	private Integer restaurant;
 
 	/**
+	 * Restaurant qui a créé ce plat.
+	 */
+	@NotNull
+	@Column("lie_id_createur")
+	private Integer restaurantCreateur;
+
+	/**
 	 * Date de création de l'enregistrement.
 	 */
 	@NotNull
@@ -145,6 +152,15 @@ public class Plat {
 	}
 
 	/**
+	 * Getter for restaurantCreateur.
+	 *
+	 * @return value of {@link #restaurantCreateur restaurantCreateur}.
+	 */
+	public Integer getRestaurantCreateur() {
+		return this.restaurantCreateur;
+	}
+
+	/**
 	 * Getter for dateCreation.
 	 *
 	 * @return value of {@link #dateCreation dateCreation}.
@@ -207,6 +223,14 @@ public class Plat {
 	 */
 	public void setRestaurant(Integer restaurant) {
 		this.restaurant = restaurant;
+	}
+
+	/**
+	 * Set the value of {@link #restaurantCreateur restaurantCreateur}.
+	 * @param restaurantCreateur value to set.
+	 */
+	public void setRestaurantCreateur(Integer restaurantCreateur) {
+		this.restaurantCreateur = restaurantCreateur;
 	}
 
 	/**

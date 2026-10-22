@@ -29,6 +29,8 @@ public class Plat_ {
 
 	public static volatile SingularAttribute<Plat, Restaurant> restaurant;
 
+	public static volatile SingularAttribute<Plat, Restaurant> restaurantCreateur;
+
 	public static volatile SingularAttribute<Plat, Promotion> promotion;
 
 	public static volatile SingularAttribute<Plat, LocalDateTime> dateCreation;
@@ -46,6 +48,8 @@ public class Plat_ {
 	public static final String CATEGORIE_PLAT = "categoriePlat";
 
 	public static final String RESTAURANT = "restaurant";
+
+	public static final String RESTAURANT_CREATEUR = "restaurantCreateur";
 
 	public static final String PROMOTION = "promotion";
 

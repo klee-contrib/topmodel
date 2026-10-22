@@ -375,6 +375,9 @@
   <data name="restaurant.plat.restaurantId" xml:space="preserve">
     <value>Restaurant</value>
   </data>
+  <data name="restaurant.plat.restaurantIdCreateur" xml:space="preserve">
+    <value>RestaurantCreateur</value>
+  </data>
   <data name="restaurant.platBoisson.volume" xml:space="preserve">
     <value>Volume</value>
   </data>

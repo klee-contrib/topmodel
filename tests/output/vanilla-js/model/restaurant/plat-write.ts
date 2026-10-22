@@ -13,6 +13,7 @@ export interface PlatWrite {
     disponible: boolean;
     categoriePlatCode: CategoriePlatCode;
     restaurantId: number;
+    restaurantIdCreateur: number;
     dateCreation: string;
 }
 
@@ -59,6 +60,13 @@ export const PlatWriteEntity = {
         domain: DO_ID,
         isRequired: true,
         label: "RestaurantId"
+    },
+    restaurantIdCreateur: {
+        type: "field",
+        name: "restaurantIdCreateur",
+        domain: DO_ID,
+        isRequired: true,
+        label: "RestaurantIdCreateur"
     },
     dateCreation: {
         type: "field",

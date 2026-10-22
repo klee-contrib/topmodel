@@ -480,6 +480,12 @@ public class RestaurantMappers {
 			target.setRestaurantId(null);
 		}
 
+		if (plat.getRestaurantCreateur() != null) {
+			target.setRestaurantIdCreateur(plat.getRestaurantCreateur().getId());
+		} else {
+			target.setRestaurantIdCreateur(null);
+		}
+
 		target.setDateCreation(plat.getDateCreation());
 		return target;
 	}

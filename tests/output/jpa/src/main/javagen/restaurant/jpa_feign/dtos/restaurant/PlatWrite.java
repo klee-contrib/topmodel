@@ -72,6 +72,13 @@ public class PlatWrite implements Serializable {
 	private Integer restaurantId;
 
 	/**
+	 * Restaurant qui a créé ce plat.
+	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Plat#getRestaurantCreateur() Plat#getRestaurantCreateur()}
+	 */
+	@NotNull
+	private Integer restaurantIdCreateur;
+
+	/**
 	 * Date de création de l'enregistrement.
 	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Plat#getDateCreation() Plat#getDateCreation()}
 	 */
@@ -134,6 +141,15 @@ public class PlatWrite implements Serializable {
 	}
 
 	/**
+	 * Getter for restaurantIdCreateur.
+	 *
+	 * @return value of {@link #restaurantIdCreateur restaurantIdCreateur}.
+	 */
+	public Integer getRestaurantIdCreateur() {
+		return this.restaurantIdCreateur;
+	}
+
+	/**
 	 * Getter for dateCreation.
 	 *
 	 * @return value of {@link #dateCreation dateCreation}.
@@ -191,6 +207,14 @@ public class PlatWrite implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link #restaurantIdCreateur restaurantIdCreateur}.
+	 * @param restaurantIdCreateur value to set.
+	 */
+	public void setRestaurantIdCreateur(Integer restaurantIdCreateur) {
+		this.restaurantIdCreateur = restaurantIdCreateur;
+	}
+
+	/**
 	 * Set the value of {@link #dateCreation dateCreation}.
 	 * @param dateCreation value to set.
 	 */
@@ -208,6 +232,7 @@ public class PlatWrite implements Serializable {
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT_CODE(CategoriePlatCode.class),
 		RESTAURANT_ID(Integer.class),
+		RESTAURANT_ID_CREATEUR(Integer.class),
 		DATE_CREATION(LocalDateTime.class);
 
 		private final Class<?> type;

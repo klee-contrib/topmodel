@@ -242,6 +242,7 @@ public static class Mappers
             Disponible = plat.Disponible,
             CategoriePlatCode = plat.CategoriePlat?.Code,
             RestaurantId = plat.Restaurant?.Id,
+            RestaurantIdCreateur = plat.RestaurantCreateur?.Id,
             DateCreation = plat.DateCreation
         };
     }
@@ -617,9 +618,10 @@ public static class Mappers
     /// </summary>
     /// <param name="source">Instance de 'IPlatItem'.</param>
     /// <param name="restaurant">Restaurant proposant ce plat.</param>
+    /// <param name="restaurantCreateur">Restaurant qui a créé ce plat.</param>
     /// <param name="dateCreation">Date de création de l'enregistrement.</param>
     /// <returns>Une nouvelle instance de 'Plat'.</returns>
-    public static Plat ToPlat(this IPlatItem source, Restaurant? restaurant = null, DateTime? dateCreation = null)
+    public static Plat ToPlat(this IPlatItem source, Restaurant? restaurant = null, Restaurant? restaurantCreateur = null, DateTime? dateCreation = null)
     {
         return new Plat
         {
@@ -628,6 +630,7 @@ public static class Mappers
             Prix = source.Prix,
             Disponible = source.Disponible,
             Restaurant = restaurant,
+            RestaurantCreateur = restaurantCreateur,
             DateCreation = dateCreation
         };
     }
@@ -652,8 +655,9 @@ public static class Mappers
     /// </summary>
     /// <param name="source">Instance de 'PlatWrite'.</param>
     /// <param name="restaurant">Restaurant proposant ce plat.</param>
+    /// <param name="restaurantCreateur">Restaurant qui a créé ce plat.</param>
     /// <returns>Une nouvelle instance de 'Plat'.</returns>
-    public static Plat ToPlat(this PlatWrite source, Restaurant? restaurant = null)
+    public static Plat ToPlat(this PlatWrite source, Restaurant? restaurant = null, Restaurant? restaurantCreateur = null)
     {
         return new Plat
         {
@@ -662,7 +666,8 @@ public static class Mappers
             Prix = source.Prix,
             Disponible = source.Disponible,
             DateCreation = source.DateCreation,
-            Restaurant = restaurant
+            Restaurant = restaurant,
+            RestaurantCreateur = restaurantCreateur
         };
     }
 

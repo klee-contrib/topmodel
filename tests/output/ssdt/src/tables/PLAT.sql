@@ -14,12 +14,14 @@ create table PLAT (
 	PLA_DISPONIBLE boolean not null default true,
 	CAT_CODE varchar(10) not null,
 	LIE_ID int not null,
+	LIE_ID_CREATEUR int not null,
 	PLA_DATE_CREATION timestamp not null,
 	PBO_VOLUME int,
 	PPR_VEGETARIEN boolean,
 	constraint PK_PLAT primary key clustered (PLA_ID asc),
 	constraint FK_PLAT_CAT_CODE foreign key (CAT_CODE) references CATEGORIE_PLAT (CAT_CODE),
-	constraint FK_PLAT_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID))
+	constraint FK_PLAT_LIE_ID foreign key (LIE_ID) references LIEU (LIE_ID),
+	constraint FK_PLAT_LIE_ID_CREATEUR foreign key (LIE_ID_CREATEUR) references LIEU (LIE_ID))
 go
 
 /**
@@ -36,6 +38,11 @@ go
 /* Index on foreign key column for PLAT.LIE_ID */
 create nonclustered index IDX_PLA_LIE_ID_FK
 	on PLAT (LIE_ID asc)
+go
+
+/* Index on foreign key column for PLAT.LIE_ID_CREATEUR */
+create nonclustered index IDX_PLA_LIE_ID_CREATEUR_FK
+	on PLAT (LIE_ID_CREATEUR asc)
 go
 
 /**
@@ -56,6 +63,8 @@ go
 execute sp_addextendedproperty 'MS_Description', 'Catégorie du plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'CAT_CODE'
 go
 execute sp_addextendedproperty 'MS_Description', 'Restaurant proposant ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID'
+go
+execute sp_addextendedproperty 'MS_Description', 'Restaurant qui a créé ce plat', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'LIE_ID_CREATEUR'
 go
 execute sp_addextendedproperty 'MS_Description', 'Date de création de l''enregistrement', 'SCHEMA', 'dbo', 'TABLE', 'PLAT', 'COLUMN', 'PLA_DATE_CREATION'
 go

@@ -206,6 +206,7 @@ comment on column plat.pla_prix is 'Prix du plat';
 comment on column plat.pla_disponible is 'Indique si le plat est disponible';
 comment on column plat.cat_code is 'Catégorie du plat';
 comment on column plat.lie_id is 'Restaurant proposant ce plat';
+comment on column plat.lie_id_createur is 'Restaurant qui a créé ce plat';
 comment on column plat.pla_date_creation is 'Date de création de l''enregistrement';
 comment on column plat.pbo_volume is 'Volume de la boisson';
 comment on column plat.ppr_vegetarien is 'Si le plat est végétarien.';

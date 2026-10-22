@@ -217,6 +217,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Personne>().HasOne<Departement>().WithMany().HasForeignKey(p => p.DepartementCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.CategoriePlat).WithMany().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Plat>().HasOne(p => p.Restaurant).WithMany(p => p.Plats).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Plat>().HasOne(p => p.RestaurantCreateur).WithMany().HasForeignKey("RestaurantIdCreateur").OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Promotion>().HasOne(p => p.Plat).WithOne(p => p.Promotion).HasForeignKey<Promotion>("PlatId").OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Promotion>().HasOne(p => p.Restaurant).WithMany(p => p.Promotions).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Reservation>().HasOne(p => p.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -285,6 +286,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Paiement>().Property("FactureId").HasColumnName("id");
         modelBuilder.Entity<Plat>().Property("CategoriePlatCode").HasColumnName("cat_code");
         modelBuilder.Entity<Plat>().Property("RestaurantId").HasColumnName("lie_id");
+        modelBuilder.Entity<Plat>().Property("RestaurantIdCreateur").HasColumnName("lie_id_createur");
         modelBuilder.Entity<Promotion>().Property("PlatId").HasColumnName("pla_id");
         modelBuilder.Entity<Promotion>().Property("RestaurantId").HasColumnName("lie_id");
         modelBuilder.Entity<Reservation>().Property("ClientId").HasColumnName("per_id");

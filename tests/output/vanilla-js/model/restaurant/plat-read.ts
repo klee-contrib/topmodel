@@ -14,6 +14,7 @@ export interface PlatRead {
     disponible: boolean;
     categoriePlatCode: CategoriePlatCode;
     restaurantId: number;
+    restaurantIdCreateur: number;
     dateCreation: string;
 }
 
@@ -67,6 +68,13 @@ export const PlatReadEntity = {
         domain: DO_ID,
         isRequired: true,
         label: "RestaurantId"
+    },
+    restaurantIdCreateur: {
+        type: "field",
+        name: "restaurantIdCreateur",
+        domain: DO_ID,
+        isRequired: true,
+        label: "RestaurantIdCreateur"
     },
     dateCreation: {
         type: "field",

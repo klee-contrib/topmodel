@@ -135,7 +135,8 @@ export const restaurant = {
         id: "Id",
         nom: "Nom",
         prix: "Prix",
-        restaurantId: "Restaurant"
+        restaurantId: "Restaurant",
+        restaurantIdCreateur: "RestaurantCreateur"
     },
     promotion: {
         active: "Active",

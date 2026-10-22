@@ -403,6 +403,7 @@ public class RestaurantMappers {
 		target.setDisponible(plat.getDisponible());
 		target.setCategoriePlatCode(plat.getCategoriePlat());
 		target.setRestaurantId(plat.getRestaurant());
+		target.setRestaurantIdCreateur(plat.getRestaurantCreateur());
 		target.setDateCreation(plat.getDateCreation());
 		return target;
 	}

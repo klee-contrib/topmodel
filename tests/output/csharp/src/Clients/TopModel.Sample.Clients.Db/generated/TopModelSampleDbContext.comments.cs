@@ -169,6 +169,7 @@ public partial class TopModelSampleDbContext
         plat.Property(p => p.Disponible).HasComment("Indique si le plat est disponible");
         plat.Property("CategoriePlatCode").HasComment("Catégorie du plat");
         plat.Property("RestaurantId").HasComment("Restaurant proposant ce plat");
+        plat.Property("RestaurantIdCreateur").HasComment("Restaurant qui a créé ce plat");
         plat.Property(p => p.DateCreation).HasComment("Date de création de l'enregistrement");
 
         var platBoisson = modelBuilder.Entity<PlatBoisson>();

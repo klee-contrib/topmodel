@@ -146,7 +146,8 @@
         "id": "Identifiant du plat",
         "nom": "Nom du plat",
         "prix": "Prix du plat",
-        "restaurantId": "Restaurant proposant ce plat"
+        "restaurantId": "Restaurant proposant ce plat",
+        "restaurantIdCreateur": "Restaurant qui a créé ce plat"
     },
     "promotion": {
         "active": "Indique si la promotion est active",

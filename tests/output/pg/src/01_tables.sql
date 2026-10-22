@@ -257,6 +257,7 @@ create table plat (
 	pla_disponible boolean not null,
 	cat_code varchar(10) not null,
 	lie_id int not null,
+	lie_id_createur int not null,
 	pla_date_creation timestamp not null,
 	pbo_volume int,
 	ppr_vegetarien boolean,

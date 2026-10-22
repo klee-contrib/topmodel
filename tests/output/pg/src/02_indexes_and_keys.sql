@@ -352,6 +352,20 @@ alter table plat
 		references lieu (lie_id);
 
 /**
+  * Création de l'index de clef étrangère pour plat.lie_id_createur
+ **/
+create index idx_pla_lie_id_createur_fk on plat (
+	lie_id_createur ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour plat.lie_id_createur
+ **/
+alter table plat
+	add constraint fk_plat_lie_id_createur foreign key (lie_id_createur)
+		references lieu (lie_id);
+
+/**
   * Génération de la contrainte de clef étrangère pour promotion.pla_id
  **/
 alter table promotion

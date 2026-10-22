@@ -1005,11 +1005,18 @@ namespace TopModel.Sample.Api.Migrations
                         .HasColumnName("lie_id")
                         .HasComment("Restaurant proposant ce plat");
 
+                    b.Property<int>("RestaurantIdCreateur")
+                        .HasColumnType("integer")
+                        .HasColumnName("lie_id_createur")
+                        .HasComment("Restaurant qui a créé ce plat");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriePlatCode");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("RestaurantIdCreateur");
 
                     b.ToTable("plat", t =>
                         {
@@ -1839,9 +1846,17 @@ namespace TopModel.Sample.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TopModel.Sample.Clients.Db.Models.Restaurant.Restaurant", "RestaurantCreateur")
+                        .WithMany()
+                        .HasForeignKey("RestaurantIdCreateur")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("CategoriePlat");
 
                     b.Navigation("Restaurant");
+
+                    b.Navigation("RestaurantCreateur");
                 });
 
             modelBuilder.Entity("TopModel.Sample.Clients.Db.Models.Restaurant.Promotion", b =>

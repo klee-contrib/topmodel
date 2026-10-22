@@ -89,6 +89,13 @@ public class Plat {
 	private Restaurant restaurant;
 
 	/**
+	 * Restaurant qui a créé ce plat.
+	 */
+	@JoinColumn(name = "lie_id_createur", referencedColumnName = "lie_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Restaurant.class)
+	private Restaurant restaurantCreateur;
+
+	/**
 	 * Association réciproque de Promotion.Plat.
 	 */
 	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, mappedBy = "plat")
@@ -162,6 +169,15 @@ public class Plat {
 	 */
 	public Restaurant getRestaurant() {
 		return this.restaurant;
+	}
+
+	/**
+	 * Getter for restaurantCreateur.
+	 *
+	 * @return value of {@link #restaurantCreateur restaurantCreateur}.
+	 */
+	public Restaurant getRestaurantCreateur() {
+		return this.restaurantCreateur;
 	}
 
 	/**
@@ -239,6 +255,14 @@ public class Plat {
 	}
 
 	/**
+	 * Set the value of {@link #restaurantCreateur restaurantCreateur}.
+	 * @param restaurantCreateur value to set.
+	 */
+	public void setRestaurantCreateur(Restaurant restaurantCreateur) {
+		this.restaurantCreateur = restaurantCreateur;
+	}
+
+	/**
 	 * Set the value of {@link #promotion promotion}.
 	 * @param promotion value to set.
 	 */
@@ -265,6 +289,7 @@ public class Plat {
 		DISPONIBLE(Boolean.class),
 		CATEGORIE_PLAT(CategoriePlat.class),
 		RESTAURANT(Restaurant.class),
+		RESTAURANT_CREATEUR(Restaurant.class),
 		PROMOTION(Promotion.class),
 		DATE_CREATION(LocalDateTime.class);
 

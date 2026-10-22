@@ -97,6 +97,11 @@ class:
       required: true
       withReverse: true
       comment: Restaurant proposant ce plat
+
+    - association: Restaurant
+      required: true
+      role: Createur
+      comment: Restaurant qui a créé ce plat
 ---
 class:
   name: PlatBoisson

@@ -64,6 +64,13 @@ public partial record PlatRead
     public int? RestaurantId { get; set; }
 
     /// <summary>
+    /// Restaurant qui a créé ce plat.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Id)]
+    public int? RestaurantIdCreateur { get; set; }
+
+    /// <summary>
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]

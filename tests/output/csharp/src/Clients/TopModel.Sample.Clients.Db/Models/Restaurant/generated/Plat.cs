@@ -68,6 +68,12 @@ public partial record Plat
     public Restaurant? Restaurant { get; set; }
 
     /// <summary>
+    /// Restaurant qui a créé ce plat.
+    /// </summary>
+    [Required]
+    public Restaurant? RestaurantCreateur { get; set; }
+
+    /// <summary>
     /// Association réciproque de Promotion.Plat.
     /// </summary>
     public Promotion? Promotion { get; set; }

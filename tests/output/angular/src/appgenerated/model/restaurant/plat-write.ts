@@ -35,6 +35,10 @@ export const PlatWriteEntity = entity({
         .label("restaurant.plat.restaurantId")
         .comment("comments.restaurant.plat.restaurantId")
     ),
+    restaurantIdCreateur: e.field(DO_ID, f => f
+        .label("restaurant.plat.restaurantIdCreateur")
+        .comment("comments.restaurant.plat.restaurantIdCreateur")
+    ),
     dateCreation: e.field(DO_DATE_HEURE, f => f
         .label("common.dateCreation.dateCreation")
         .comment("comments.common.dateCreation.dateCreation")
