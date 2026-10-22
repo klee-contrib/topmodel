@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.5.12
+
+- [`528d856`](https://github.com/klee-contrib/topmodel/commit/528d856adbc4bd217a8f91e5e3dfd0ce01962b30) - [C#] else
+
 ## 4.5.11
 
 - [`5796b61`](https://github.com/klee-contrib/topmodel/commit/5796b613ac769dfa322a8f7a24ef9d5a80cf6334) - [C#] Fix génération DbContext association useClass avec rôle
