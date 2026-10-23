@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Catégorie de plat.
 /// </summary>
-[Reference(true)]
+[Reference]
 [DefaultProperty(nameof(Libelle))]
 [Table("categorie_plat")]
 public partial record CategoriePlat
@@ -107,7 +107,6 @@ public partial record CategoriePlat
     /// Code de la catégorie.
     /// </summary>
     [Column("cat_code")]
-    [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; init; }
 
@@ -116,7 +115,6 @@ public partial record CategoriePlat
     /// </summary>
     [Column("cat_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; init; }
 
@@ -125,14 +123,12 @@ public partial record CategoriePlat
     /// </summary>
     [Column("cat_ordre")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Ordre { get; init; }
 
     /// <summary>
     /// Prix moyen de la catégorie, à titre indicatif.
     /// </summary>
     [Column("cat_prix_moyen")]
-    [Domain(Domains.Prix)]
     public decimal? PrixMoyen { get; init; }
 
     /// <summary>

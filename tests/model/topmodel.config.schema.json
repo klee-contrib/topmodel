@@ -350,12 +350,17 @@
             "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
           },
           "kinetix": {
-            "type": "boolean",
-            "description": "Si on génère avec Kinetix."
+            "type": "string",
+            "description": "Ce qu'il faut générer pour Kinetix : `references` pour les annotations et accesseurs de listes de réference, `legacy` pour générer en plus des annotations de domaines, et `none` pour ne rien générer. Par défaut: `references`.",
+            "enum": [
+              "none",
+              "references",
+              "legacy"
+            ]
           },
           "domainNamespace": {
             "type": "string",
-            "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
+            "description": "Namespace de l'enum de domaine pour Kinetix (mode legacy). Par défaut : '{app}.Common'."
           },
           "valueTypes": {
             "type": "array",
@@ -452,7 +457,7 @@
           },
           "enumCols": {
             "type": "boolean",
-            "description": "Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `dbContextPath` est vide et si `kinetix` est `true`."
+            "description": "Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `dbContextPath` est vide et si `kinetix` est renseigné."
           }
         }
       }

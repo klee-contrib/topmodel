@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Région.
 /// </summary>
-[Reference(true)]
+[Reference]
 [DefaultProperty(nameof(Libelle))]
 [Table("region")]
 public partial record Region
@@ -32,7 +32,6 @@ public partial record Region
     /// Code de la région.
     /// </summary>
     [Column("reg_code")]
-    [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
 
@@ -41,7 +40,6 @@ public partial record Region
     /// </summary>
     [Column("reg_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; set; }
 
@@ -49,7 +47,6 @@ public partial record Region
     /// Nom du responsable de la région.
     /// </summary>
     [Column("reg_nom_responsable")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? NomResponsable { get; set; }
 }

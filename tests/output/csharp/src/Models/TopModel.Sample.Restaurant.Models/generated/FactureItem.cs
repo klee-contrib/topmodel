@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,19 +15,16 @@ public partial record FactureItem
     /// Identifiant de la facture.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? Id { get; init; }
 
     /// <summary>
     /// Commande associée à la facture.
     /// </summary>
     [Required]
-    [Domain(Domains.Id2)]
     public int? CommandeId { get; init; }
 
     /// <summary>
     /// type de facture.
     /// </summary>
-    [Domain(Domains.Code)]
     public TypeFacture.Codes? TypeFactureCode { get; init; }
 }

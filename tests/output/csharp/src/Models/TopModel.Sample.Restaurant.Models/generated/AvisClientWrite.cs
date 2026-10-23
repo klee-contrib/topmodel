@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,13 +15,11 @@ public partial record AvisClientWrite
     /// Note sur 5.
     /// </summary>
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Note { get; set; }
 
     /// <summary>
     /// Commentaire de l'avis.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Commentaire { get; set; }
 
@@ -30,20 +27,17 @@ public partial record AvisClientWrite
     /// Indique si l'avis est approuvé par le restaurant.
     /// </summary>
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Approuve { get; set; } = false;
 
     /// <summary>
     /// Client ayant donné l'avis.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? ClientId { get; set; }
 
     /// <summary>
     /// Restaurant concerné par l'avis.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 }

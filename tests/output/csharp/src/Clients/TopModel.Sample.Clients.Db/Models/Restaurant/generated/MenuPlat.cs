@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -32,7 +30,6 @@ public partial record MenuPlat
     /// </summary>
     [Column("mpl_ordre")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Ordre { get; set; }
 
     /// <summary>
@@ -40,6 +37,5 @@ public partial record MenuPlat
     /// </summary>
     [Column("mpl_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record Menu
     /// Identifiant du menu.
     /// </summary>
     [Column("men_id")]
-    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +25,6 @@ public partial record Menu
     /// </summary>
     [Column("men_nom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -36,7 +32,6 @@ public partial record Menu
     /// Description du menu.
     /// </summary>
     [Column("men_description")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Description { get; set; }
 
@@ -45,7 +40,6 @@ public partial record Menu
     /// </summary>
     [Column("men_prix")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? Prix { get; set; }
 
     /// <summary>
@@ -53,21 +47,18 @@ public partial record Menu
     /// </summary>
     [Column("men_disponible")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Disponible { get; set; } = true;
 
     /// <summary>
     /// Date de début de validité du menu.
     /// </summary>
     [Column("men_date_debut")]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateDebut { get; set; }
 
     /// <summary>
     /// Date de fin de validité du menu.
     /// </summary>
     [Column("men_date_fin")]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateFin { get; set; }
 
     /// <summary>
@@ -86,6 +77,5 @@ public partial record Menu
     /// </summary>
     [Column("men_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public abstract partial record Lieu
     /// Identifiant du restaurant.
     /// </summary>
     [Column("lie_id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +25,6 @@ public abstract partial record Lieu
     /// </summary>
     [Column("lie_nom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -36,7 +32,6 @@ public abstract partial record Lieu
     /// Adresse du restaurant.
     /// </summary>
     [Column("lie_adresse")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Adresse { get; set; }
 }

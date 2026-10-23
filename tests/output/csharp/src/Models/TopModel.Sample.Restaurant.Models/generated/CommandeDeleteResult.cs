@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,13 +15,11 @@ public partial record CommandeDeleteResult
     /// Identifiant de la commande.
     /// </summary>
     [Required]
-    [Domain(Domains.Id2)]
     public int? Id { get; set; }
 
     /// <summary>
     /// Date et heure de la commande.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCommande { get; set; }
 }

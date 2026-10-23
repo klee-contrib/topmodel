@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -26,6 +24,5 @@ public partial record Paiement
     /// </summary>
     [Column("swi_id")]
     [Required]
-    [Domain(Domains.Id)]
     public int? SwileCardId { get; set; }
 }

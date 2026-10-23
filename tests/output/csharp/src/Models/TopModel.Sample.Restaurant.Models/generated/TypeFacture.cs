@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -46,13 +45,11 @@ public partial record TypeFacture
     /// <summary>
     /// Code du type de facture.
     /// </summary>
-    [Domain(Domains.Code)]
     public Codes? Code { get; init; }
 
     /// <summary>
     /// Libellé du type de facture.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; init; }
 

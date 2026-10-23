@@ -10,9 +10,10 @@ namespace TopModel.Generator.Csharp;
 public class CSharpWriter(IFileWriter writer) : IDisposable
 {
     private readonly List<WriterLine> _lines = [];
-    private readonly List<string> _usings = [];
+    private readonly HashSet<string> _usings = [];
 
     private WriterLine? _currentLine;
+    private string? _namespace;
 
     public bool EnableHeader
     {
@@ -41,16 +42,21 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="nsNames">Noms des classes/namespaces à importer.</param>
     public void AddUsings(IEnumerable<string> nsNames)
     {
-        _usings.AddRange(nsNames);
+        foreach (var nsName in nsNames)
+        {
+            _usings.Add(nsName);
+        }
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
-        if (_usings.Count > 0)
+        var finalUsings = _namespace != null ? _usings.Where(u => !_namespace.StartsWith(u)) : _usings;
+
+        if (finalUsings.Any())
         {
-            var systemUsings = _usings.Where(name => name.StartsWith("System"));
-            var otherUsings = _usings.Except(systemUsings);
+            var systemUsings = finalUsings.Where(name => name.StartsWith("System"));
+            var otherUsings = finalUsings.Except(systemUsings);
 
             foreach (
                 var nsName in systemUsings
@@ -294,6 +300,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="value">Valeur du namespace.</param>
     public virtual void WriteNamespace(string value)
     {
+        _namespace = value;
         WriteLine($"namespace {value};");
         WriteLine();
     }

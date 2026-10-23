@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,34 +15,29 @@ public partial record LigneCommandeWrite
     /// Quantité commandée.
     /// </summary>
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Quantite { get; set; }
 
     /// <summary>
     /// Prix unitaire au moment de la commande.
     /// </summary>
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixUnitaire { get; set; }
 
     /// <summary>
     /// Prix total de la ligne.
     /// </summary>
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixTotal { get; set; }
 
     /// <summary>
     /// Commande à laquelle appartient la ligne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id2)]
     public int? CommandeId { get; set; }
 
     /// <summary>
     /// Plat commandé.
     /// </summary>
     [Required]
-    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 }

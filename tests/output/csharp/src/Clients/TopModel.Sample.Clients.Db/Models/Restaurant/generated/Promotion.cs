@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -25,7 +23,6 @@ public partial record Promotion
     /// </summary>
     [Column("pro_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; set; }
 
@@ -34,7 +31,6 @@ public partial record Promotion
     /// </summary>
     [Column("pro_pourcentage_reduction")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? PourcentageReduction { get; set; }
 
     /// <summary>
@@ -42,7 +38,6 @@ public partial record Promotion
     /// </summary>
     [Column("pro_date_debut")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateDebut { get; set; }
 
     /// <summary>
@@ -50,7 +45,6 @@ public partial record Promotion
     /// </summary>
     [Column("pro_date_fin")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateFin { get; set; }
 
     /// <summary>
@@ -58,7 +52,6 @@ public partial record Promotion
     /// </summary>
     [Column("pro_active")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Active { get; set; } = true;
 
     /// <summary>
@@ -71,6 +64,5 @@ public partial record Promotion
     /// </summary>
     [Column("pro_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

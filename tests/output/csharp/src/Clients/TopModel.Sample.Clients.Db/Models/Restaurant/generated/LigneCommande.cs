@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record LigneCommande
     /// Identifiant de la ligne.
     /// </summary>
     [Column("lig_id")]
-    [Domain(Domains.Id2)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +25,6 @@ public partial record LigneCommande
     /// </summary>
     [Column("lig_quantite")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Quantite { get; set; }
 
     /// <summary>
@@ -36,7 +32,6 @@ public partial record LigneCommande
     /// </summary>
     [Column("lig_prix_unitaire")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixUnitaire { get; set; }
 
     /// <summary>
@@ -44,7 +39,6 @@ public partial record LigneCommande
     /// </summary>
     [Column("lig_prix_total")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixTotal { get; set; }
 
     /// <summary>
@@ -64,6 +58,5 @@ public partial record LigneCommande
     /// </summary>
     [Column("lig_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

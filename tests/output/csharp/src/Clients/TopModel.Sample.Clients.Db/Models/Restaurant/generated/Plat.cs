@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
@@ -19,7 +18,6 @@ public partial record Plat
     /// Identifiant du plat.
     /// </summary>
     [Column("pla_id")]
-    [Domain(Domains.SeqId)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +26,6 @@ public partial record Plat
     /// </summary>
     [Column("pla_nom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -36,7 +33,6 @@ public partial record Plat
     /// Description du plat.
     /// </summary>
     [Column("pla_description")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Description { get; set; }
 
@@ -45,7 +41,6 @@ public partial record Plat
     /// </summary>
     [Column("pla_prix")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? Prix { get; set; }
 
     /// <summary>
@@ -53,7 +48,6 @@ public partial record Plat
     /// </summary>
     [Column("pla_disponible")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Disponible { get; set; } = true;
 
     /// <summary>
@@ -83,6 +77,5 @@ public partial record Plat
     /// </summary>
     [Column("pla_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

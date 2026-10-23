@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record Prestataire : IEmployeBase
     /// Identifiant de la personne.
     /// </summary>
     [Column("pst_id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +25,6 @@ public partial record Prestataire : IEmployeBase
     /// </summary>
     [Column("pst_nom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -37,7 +33,6 @@ public partial record Prestataire : IEmployeBase
     /// </summary>
     [Column("pst_prenom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Prenom { get; set; }
 
@@ -45,7 +40,6 @@ public partial record Prestataire : IEmployeBase
     /// Numéro de téléphone de l'employé.
     /// </summary>
     [Column("pst_telephone")]
-    [Domain(Domains.Telephone)]
     [StringLength(20)]
     public string? Telephone { get; set; }
 }

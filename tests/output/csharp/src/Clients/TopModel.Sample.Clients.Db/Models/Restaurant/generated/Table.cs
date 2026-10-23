@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record Table
     /// Identifiant de la table.
     /// </summary>
     [Column("tab_id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,7 +25,6 @@ public partial record Table
     /// </summary>
     [Column("tab_numero")]
     [Required]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? Numero { get; set; }
 
@@ -37,7 +33,6 @@ public partial record Table
     /// </summary>
     [Column("tab_capacite")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Capacite { get; set; }
 
     /// <summary>
@@ -45,7 +40,6 @@ public partial record Table
     /// </summary>
     [Column("tab_disponible")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Disponible { get; set; } = true;
 
     /// <summary>
@@ -53,7 +47,6 @@ public partial record Table
     /// </summary>
     [Column("lie_id")]
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 
     /// <summary>
@@ -61,6 +54,5 @@ public partial record Table
     /// </summary>
     [Column("tab_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

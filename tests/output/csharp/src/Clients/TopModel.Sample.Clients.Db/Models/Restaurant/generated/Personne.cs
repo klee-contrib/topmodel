@@ -29,7 +29,6 @@ public partial record Personne : IPersonneBase
     /// Identifiant de la personne.
     /// </summary>
     [Column("per_id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -38,7 +37,6 @@ public partial record Personne : IPersonneBase
     /// </summary>
     [Column("per_nom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -47,7 +45,6 @@ public partial record Personne : IPersonneBase
     /// </summary>
     [Column("per_prenom")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Prenom { get; set; }
 
@@ -56,7 +53,6 @@ public partial record Personne : IPersonneBase
     /// </summary>
     [Column("dep_code")]
     [ReferencedType(typeof(Departement))]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? DepartementCode { get; set; } = Departement.ParisCode;
 
@@ -65,6 +61,5 @@ public partial record Personne : IPersonneBase
     /// </summary>
     [Column("per_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

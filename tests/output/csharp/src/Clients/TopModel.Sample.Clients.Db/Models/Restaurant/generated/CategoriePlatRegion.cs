@@ -36,7 +36,6 @@ public partial record CategoriePlatRegion
     [Column("reg_code")]
     [Required]
     [ReferencedType(typeof(Region))]
-    [Domain(Domains.Code)]
     public Region.Codes? RegionCode { get; init; }
 
     /// <summary>

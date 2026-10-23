@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record LigneCommandeHistorique
     /// Identifiant de la ligne.
     /// </summary>
     [Column("lig_id")]
-    [Domain(Domains.Id2)]
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int? Id { get; set; }
@@ -29,7 +26,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("lig_quantite")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Quantite { get; set; }
 
     /// <summary>
@@ -37,7 +33,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("lig_prix_unitaire")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixUnitaire { get; set; }
 
     /// <summary>
@@ -45,7 +40,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("lig_prix_total")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? PrixTotal { get; set; }
 
     /// <summary>
@@ -53,7 +47,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("pla_id")]
     [Required]
-    [Domain(Domains.SeqId)]
     public int? PlatId { get; set; }
 
     /// <summary>
@@ -61,7 +54,6 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("lig_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
 
     /// <summary>
@@ -69,6 +61,5 @@ public partial record LigneCommandeHistorique
     /// </summary>
     [Column("com_id")]
     [Required]
-    [Domain(Domains.Id2)]
     public int? CommandeHistoriqueId { get; set; }
 }

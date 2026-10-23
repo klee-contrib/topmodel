@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record Client : Personne
     /// Adresse email du client.
     /// </summary>
     [Column("cli_email")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Email { get; set; }
 
@@ -27,7 +24,6 @@ public partial record Client : Personne
     /// Carte Swile du client.
     /// </summary>
     [Column("swi_id")]
-    [Domain(Domains.Id)]
     public int? SwileCard { get; set; }
 
     /// <summary>

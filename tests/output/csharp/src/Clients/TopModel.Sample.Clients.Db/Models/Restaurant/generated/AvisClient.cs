@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record AvisClient : NombreVuesBase
     /// Identifiant de l'avis.
     /// </summary>
     [Column("avi_id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,14 +25,12 @@ public partial record AvisClient : NombreVuesBase
     /// </summary>
     [Column("avi_note")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? Note { get; set; }
 
     /// <summary>
     /// Commentaire de l'avis.
     /// </summary>
     [Column("avi_commentaire")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Commentaire { get; set; }
 
@@ -44,7 +39,6 @@ public partial record AvisClient : NombreVuesBase
     /// </summary>
     [Column("avi_date_avis")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateAvis { get; set; }
 
     /// <summary>
@@ -52,7 +46,6 @@ public partial record AvisClient : NombreVuesBase
     /// </summary>
     [Column("avi_approuve")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Approuve { get; set; } = false;
 
     /// <summary>
@@ -72,6 +65,5 @@ public partial record AvisClient : NombreVuesBase
     /// </summary>
     [Column("avi_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

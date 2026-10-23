@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,7 +15,6 @@ public partial record EmployeItem : PersonneItem
     /// Matricule de l'employé.
     /// </summary>
     [Required]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? Matricule { get; set; }
 
@@ -24,7 +22,6 @@ public partial record EmployeItem : PersonneItem
     /// Restaurant où travaille l'employé.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 
     /// <summary>

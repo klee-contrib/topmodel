@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -18,7 +16,6 @@ public partial record Restaurant : Lieu
     /// Numéro de téléphone.
     /// </summary>
     [Column("res_telephone")]
-    [Domain(Domains.Telephone)]
     [StringLength(20)]
     public string? Telephone { get; set; } = "XX.XX.XX.XX.XX";
 
@@ -45,7 +42,6 @@ public partial record Restaurant : Lieu
     /// <summary>
     /// Association réciproque de Table.RestaurantId.
     /// </summary>
-    [Domain(Domains.Liste)]
     [NotMapped]
     public ICollection<int>? TableIds { get; set; }
 
@@ -54,6 +50,5 @@ public partial record Restaurant : Lieu
     /// </summary>
     [Column("res_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

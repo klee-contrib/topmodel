@@ -21,7 +21,7 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
 
-        if (config.Kinetix && config.DbContextPath == null)
+        if (config.Kinetix != KinetixMode.None && config.DbContextPath == null)
         {
             config.EnumCols = true;
         }
@@ -39,7 +39,7 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
             }
         }
 
-        if (config.Kinetix && config.ReferenceAccessorsInterfacePath != null)
+        if (config.Kinetix != KinetixMode.None && config.ReferenceAccessorsInterfacePath != null)
         {
             services.AddGenerator<ReferenceAccessorGenerator, CsharpConfig>(config, number);
         }

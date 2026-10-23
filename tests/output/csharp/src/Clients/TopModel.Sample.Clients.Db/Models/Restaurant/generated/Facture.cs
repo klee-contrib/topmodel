@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
@@ -19,7 +18,6 @@ public partial record Facture
     /// Identifiant de la facture.
     /// </summary>
     [Column("id")]
-    [Domain(Domains.Id)]
     [Key]
     public int? Id { get; set; }
 
@@ -33,6 +31,5 @@ public partial record Facture
     /// type de facture.
     /// </summary>
     [Column("tfa_code")]
-    [Domain(Domains.Code)]
     public TypeFacture.Codes? TypeFactureCode { get; set; }
 }

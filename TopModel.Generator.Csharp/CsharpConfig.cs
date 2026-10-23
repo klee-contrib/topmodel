@@ -117,9 +117,9 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string? DbSchema { get; set; }
 
     /// <summary>
-    /// Si on génère avec Kinetix.
+    /// Ce qu'il faut générer pour Kinetix : `References` pour les annotations et accesseurs de listes de réference, `Legacy` pour générer en plus des annotations de domaines, et `None` pour ne rien générer. Par défaut: `References`.
     /// </summary>
-    public virtual bool Kinetix { get; set; } = true;
+    public virtual KinetixMode Kinetix { get; set; } = KinetixMode.References;
 
     /// <summary>
     /// Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'.
@@ -207,7 +207,7 @@ public class CsharpConfig : GeneratorConfigBase
     public ResxResource ResourcesInResx { get; set; } = ResxResource.All;
 
     /// <summary>
-    /// Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `DbContextPath` est null et si `Kinetix` est `true`.
+    /// Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `DbContextPath` est null et si `Kinetix` est renseigné.
     /// </summary>
     public virtual bool EnumCols { get; set; }
 

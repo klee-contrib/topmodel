@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
@@ -19,7 +18,6 @@ public partial record Commande
     /// Identifiant de la commande.
     /// </summary>
     [Column("com_id")]
-    [Domain(Domains.Id2)]
     [Key]
     public int? Id { get; set; }
 
@@ -28,14 +26,12 @@ public partial record Commande
     /// </summary>
     [Column("com_date_commande")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCommande { get; set; }
 
     /// <summary>
     /// Date et heure de livraison.
     /// </summary>
     [Column("com_date_livraison")]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateLivraison { get; set; }
 
     /// <summary>
@@ -43,7 +39,6 @@ public partial record Commande
     /// </summary>
     [Column("com_montant_total")]
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? MontantTotal { get; set; }
 
     /// <summary>
@@ -56,7 +51,6 @@ public partial record Commande
     /// Table associée à la commande.
     /// </summary>
     [Column("tab_id")]
-    [Domain(Domains.Id)]
     public int? TableId { get; set; }
 
     /// <summary>
@@ -85,6 +79,5 @@ public partial record Commande
     /// </summary>
     [Column("com_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

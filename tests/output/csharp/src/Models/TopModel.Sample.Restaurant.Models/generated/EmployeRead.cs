@@ -16,14 +16,12 @@ public partial record EmployeRead
     /// Identifiant de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? Id { get; set; }
 
     /// <summary>
     /// Nom de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -31,7 +29,6 @@ public partial record EmployeRead
     /// Prénom de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Prenom { get; set; }
 
@@ -39,7 +36,6 @@ public partial record EmployeRead
     /// Département de résidence de la personne.
     /// </summary>
     [ReferencedType(typeof(Departement))]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? DepartementCode { get; set; }
 
@@ -47,27 +43,23 @@ public partial record EmployeRead
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
 
     /// <summary>
     /// Numéro de téléphone de l'employé.
     /// </summary>
-    [Domain(Domains.Telephone)]
     [StringLength(20)]
     public string? Telephone { get; set; }
 
     /// <summary>
     /// Date de naissance.
     /// </summary>
-    [Domain(Domains.DateHeure)]
     public DateTime? DateNaissance { get; set; }
 
     /// <summary>
     /// Matricule de l'employé.
     /// </summary>
     [Required]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? Matricule { get; set; }
 
@@ -75,19 +67,16 @@ public partial record EmployeRead
     /// Date d'embauche.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateEmbauche { get; set; }
 
     /// <summary>
     /// Salaire de l'employé.
     /// </summary>
-    [Domain(Domains.Prix)]
     public decimal? Salaire { get; set; }
 
     /// <summary>
     /// Restaurant où travaille l'employé.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 }

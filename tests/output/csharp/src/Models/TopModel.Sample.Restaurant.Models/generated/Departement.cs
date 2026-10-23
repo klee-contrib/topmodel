@@ -12,7 +12,7 @@ namespace TopModel.Sample.Restaurant.Models;
 /// <summary>
 /// Département.
 /// </summary>
-[Reference(true)]
+[Reference]
 [DefaultProperty(nameof(Libelle))]
 [Table("departement")]
 public partial record Departement
@@ -66,7 +66,6 @@ public partial record Departement
     /// Code du département.
     /// </summary>
     [Column("dep_code")]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     [Key]
     public string? Code { get; init; }
@@ -76,7 +75,6 @@ public partial record Departement
     /// </summary>
     [Column("dep_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Libelle { get; init; }
 
@@ -86,7 +84,6 @@ public partial record Departement
     [Column("reg_code")]
     [Required]
     [ReferencedType(typeof(Region))]
-    [Domain(Domains.Code)]
     public Region.Codes? RegionCode { get; init; }
 
     /// <summary>

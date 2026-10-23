@@ -16,21 +16,18 @@ public partial record PlatRead
     /// Identifiant du plat.
     /// </summary>
     [Required]
-    [Domain(Domains.SeqId)]
     public int? Id { get; set; }
 
     /// <summary>
     /// Nom du plat.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
     /// <summary>
     /// Description du plat.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Description { get; set; }
 
@@ -38,14 +35,12 @@ public partial record PlatRead
     /// Prix du plat.
     /// </summary>
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? Prix { get; set; }
 
     /// <summary>
     /// Indique si le plat est disponible.
     /// </summary>
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Disponible { get; set; } = true;
 
     /// <summary>
@@ -53,27 +48,23 @@ public partial record PlatRead
     /// </summary>
     [Required]
     [ReferencedType(typeof(CategoriePlat))]
-    [Domain(Domains.Code)]
     public CategoriePlat.Codes? CategoriePlatCode { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce plat.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 
     /// <summary>
     /// Restaurant qui a créé ce plat.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantIdCreateur { get; set; }
 
     /// <summary>
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
 }

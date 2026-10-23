@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 
@@ -19,7 +17,6 @@ public partial record Reservation
     /// Identifiant de la réservation.
     /// </summary>
     [Column("rev_id")]
-    [Domain(Domains.SeqId)]
     [Editable(false)]
     [Key]
     public int? Id { get; set; }
@@ -29,7 +26,6 @@ public partial record Reservation
     /// </summary>
     [Column("rev_date_reservation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateReservation { get; set; }
 
     /// <summary>
@@ -37,14 +33,12 @@ public partial record Reservation
     /// </summary>
     [Column("rev_nombre_personnes")]
     [Required]
-    [Domain(Domains.Quantite)]
     public int? NombrePersonnes { get; set; }
 
     /// <summary>
     /// Commentaire sur la réservation.
     /// </summary>
     [Column("rev_commentaire")]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Commentaire { get; set; }
 
@@ -53,7 +47,6 @@ public partial record Reservation
     /// </summary>
     [Column("rev_confirmee")]
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Confirmee { get; set; } = false;
 
     /// <summary>
@@ -66,7 +59,6 @@ public partial record Reservation
     /// Table réservée.
     /// </summary>
     [Column("tab_id")]
-    [Domain(Domains.Id)]
     public int? TableId { get; set; }
 
     /// <summary>
@@ -80,6 +72,5 @@ public partial record Reservation
     /// </summary>
     [Column("rev_date_creation")]
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; init; }
 }

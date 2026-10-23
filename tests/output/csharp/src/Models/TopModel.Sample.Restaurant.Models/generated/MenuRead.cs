@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Kinetix.Modeling.Annotations;
 
 namespace TopModel.Sample.Restaurant.Models;
 
@@ -16,21 +15,18 @@ public partial record MenuRead
     /// Identifiant du menu.
     /// </summary>
     [Required]
-    [Domain(Domains.SeqId)]
     public int? Id { get; set; }
 
     /// <summary>
     /// Nom du menu.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
     /// <summary>
     /// Description du menu.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Description { get; set; }
 
@@ -38,40 +34,34 @@ public partial record MenuRead
     /// Prix du menu.
     /// </summary>
     [Required]
-    [Domain(Domains.Prix)]
     public decimal? Prix { get; set; }
 
     /// <summary>
     /// Indique si le menu est disponible.
     /// </summary>
     [Required]
-    [Domain(Domains.Booleen)]
     public bool? Disponible { get; set; } = true;
 
     /// <summary>
     /// Date de début de validité du menu.
     /// </summary>
-    [Domain(Domains.DateHeure)]
     public DateTime? DateDebut { get; set; }
 
     /// <summary>
     /// Date de fin de validité du menu.
     /// </summary>
-    [Domain(Domains.DateHeure)]
     public DateTime? DateFin { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce menu.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? RestaurantId { get; set; }
 
     /// <summary>
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
 
     /// <summary>

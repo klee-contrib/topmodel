@@ -4,8 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kinetix.Modeling.Annotations;
-using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db.Models.Common;
 
@@ -20,7 +18,6 @@ public partial record Translation
     /// </summary>
     [Column("tra_resource_key")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? ResourceKey { get; set; }
 
@@ -29,7 +26,6 @@ public partial record Translation
     /// </summary>
     [Column("tra_value")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Value { get; set; }
 
@@ -38,7 +34,6 @@ public partial record Translation
     /// </summary>
     [Column("tra_lang")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Lang { get; set; }
 }

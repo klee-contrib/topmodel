@@ -16,14 +16,12 @@ public partial record ClientRead
     /// Identifiant de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Id)]
     public int? Id { get; set; }
 
     /// <summary>
     /// Nom de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Nom { get; set; }
 
@@ -31,7 +29,6 @@ public partial record ClientRead
     /// Prénom de la personne.
     /// </summary>
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Prenom { get; set; }
 
@@ -39,7 +36,6 @@ public partial record ClientRead
     /// Département de résidence de la personne.
     /// </summary>
     [ReferencedType(typeof(Departement))]
-    [Domain(Domains.Code)]
     [StringLength(10)]
     public string? DepartementCode { get; set; }
 
@@ -47,25 +43,21 @@ public partial record ClientRead
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]
-    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
 
     /// <summary>
     /// Adresse email du client.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string? Email { get; set; }
 
     /// <summary>
     /// Carte Swile du client.
     /// </summary>
-    [Domain(Domains.Id)]
     public int? SwileCardId { get; set; }
 
     /// <summary>
     /// Association réciproque de AvisClient.Client.
     /// </summary>
-    [Domain(Domains.Liste)]
     public ICollection<int>? AvisClients { get; set; }
 }
