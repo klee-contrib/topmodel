@@ -1,5 +1,15 @@
 # Changelog CSharp
 
+## 4.6.0
+
+- [`5e3f159e`](https://github.com/klee-contrib/topmodel/commit/5e3f15902969ef86587d468f402e3be8d0569ed2) - [C#] Modes kinetix references et legacy, pour ne plus générer d'annotations de domaines
+
+  **breaking change** : `kinetix: true/false` a été remplacé par `kinetix: none/references/legacy`. `none` est équivalent à `false`, `legacy` à `true`. Le nouveau mode `references` (**qui est sélectionné par défaut**) ne génère plus que les annotations et les accesseurs pour les listes de référence. En particulier, il ne génère plus les annotations de domaine.
+
+  (Le mode `references` ne génère également plus `[Reference(true)]` pour les listes "statiques" et renseigne juste `[Reference]` partout. Il n'y avait aucune différence entre les deux depuis un moment déjà).
+
+  Remarque : La version 10.1 de Kinetix ne supportera plus que le mode `references`.
+
 ## 4.5.12
 
 - [`528d856`](https://github.com/klee-contrib/topmodel/commit/528d856adbc4bd217a8f91e5e3dfd0ce01962b30) - [C#] else
