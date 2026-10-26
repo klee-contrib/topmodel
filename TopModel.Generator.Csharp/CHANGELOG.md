@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.6.1
+
+- [`bff3d79`](https://github.com/klee-contrib/topmodel/commit/bff3d7942ab71c2a670e328ae5e6163ab70b3460) - [C#] Fix imports d'annotations ajoutés à tort pour les valeurs de discriminateurs
+
 ## 4.6.0
 
 - [`5e3f159e`](https://github.com/klee-contrib/topmodel/commit/5e3f15902969ef86587d468f402e3be8d0569ed2) - [C#] Modes kinetix references et legacy, pour ne plus générer d'annotations de domaines
