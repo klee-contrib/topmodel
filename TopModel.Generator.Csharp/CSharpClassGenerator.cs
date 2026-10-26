@@ -40,7 +40,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         )
         {
             w.AddUsings(Config.GetDomainImports(property, tag));
-            w.AddUsings(Config.GetAnnotations(property, tag).SelectMany(a => a.Imports));
             w.AddUsings(Config.GetValueImports(property));
 
             switch (property)
@@ -461,8 +460,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "StringLength", $"{property.Domain.Length}");
             }
 
-            foreach (var (annotation, _) in Config.GetAnnotations(property, tag))
+            foreach (var (annotation, imports) in Config.GetAnnotations(property, tag))
             {
+                w.AddUsings(imports);
                 w.WriteAttribute(1, annotation);
             }
 
