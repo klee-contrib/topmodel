@@ -57,6 +57,7 @@ public partial record TypeFacture
     /// Récupère l'instance correspondante à la clé primaire demandée.
     /// </summary>
     /// <param name="code">Code du type de facture.</param>
+    /// <returns>L'instance correspondante.</returns>
     public static TypeFacture GetValue(Codes code)
     {
         return code switch

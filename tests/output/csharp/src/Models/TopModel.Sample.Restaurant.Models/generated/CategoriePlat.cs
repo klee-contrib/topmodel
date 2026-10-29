@@ -135,6 +135,7 @@ public partial record CategoriePlat
     /// Récupère l'instance correspondante à la clé primaire demandée.
     /// </summary>
     /// <param name="code">Code de la catégorie.</param>
+    /// <returns>L'instance correspondante.</returns>
     public static CategoriePlat GetValue(Codes code)
     {
         return code switch

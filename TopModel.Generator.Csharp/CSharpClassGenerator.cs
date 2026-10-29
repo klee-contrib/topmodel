@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -553,9 +554,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
             foreach (var refProp in refValue.Value.ToList())
             {
-                var value = Config
-                    .GetValue(refProp.Key, refProp.Value)
-                    .Replace($"{Config.GetTypeName(item)}.", string.Empty);
+                var value = Regex.Replace(
+                    Config.GetValue(refProp.Key, refProp.Value),
+                    $"^{Config.GetTypeName(item)}\\.",
+                    string.Empty
+                );
 
                 if (item.Reference && refProp.Key == item.DefaultProperty && Config.TranslateReferences == true)
                 {
@@ -601,6 +604,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         w.WriteSummary(1, "Récupère l'instance correspondante à la clé primaire demandée.");
         w.WriteParam(key.NameCamel, key.Comment);
+        w.WriteReturns(1, "L'instance correspondante.");
         w.WriteLine(
             1,
             $"public static {Config.GetTypeName(item)} GetValue({Config.GetType(key, nonNullable: true)} {key.NameCamel})"

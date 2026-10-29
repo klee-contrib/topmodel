@@ -90,6 +90,7 @@ public partial record Departement
     /// Récupère l'instance correspondante à la clé primaire demandée.
     /// </summary>
     /// <param name="code">Code du département.</param>
+    /// <returns>L'instance correspondante.</returns>
     public static Departement GetValue(string code)
     {
         return code switch
