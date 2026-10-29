@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.6.2
+
+- [`3509a36`](https://github.com/klee-contrib/topmodel/commit/3509a36fa8de78d7db4c8cbaa0da612d5beee4d7) - [C#] Fix génération enum readonly avec références vers des constantes
+
 ## 4.6.1
 
 - [`bff3d79`](https://github.com/klee-contrib/topmodel/commit/bff3d7942ab71c2a670e328ae5e6163ab70b3460) - [C#] Fix imports d'annotations ajoutés à tort pour les valeurs de discriminateurs
