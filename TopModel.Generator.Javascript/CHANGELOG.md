@@ -1,3 +1,7 @@
+## 4.5.2
+
+- [`9a5c8d7`](https://github.com/klee-contrib/topmodel/commit/9a5c8d7d5dbb085d7e4894ed2b78498b20b74297) - [Javascript] Fix génération du fichier de commentaire ne tenant pas compte de la langue
+
 ## 4.5.1
 
 - [`6c99eab`](https://github.com/klee-contrib/topmodel/commit/6c99eab393440838ade979c057e2502b8795ed1a) - `i18n.allowPropertyLabelFallback`, pour uniformiser le fallback du label vers le nom

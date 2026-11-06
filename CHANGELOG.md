@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.9
+
+- [`ba75565`](https://github.com/klee-contrib/topmodel/commit/ba755650cd3872de72279e0bdd0fbbc8d8d3d506) - [Core] `modgen` finit en erreur lorsqu'une exception survient pendant la génération
+
 ## 4.8.8
 
 - [`ecd227f`](https://github.com/klee-contrib/topmodel/commit/ecd227fc6a8f49e68df3d5ac5dcdef8aca90a3cf) - [Core] Gestion du cas où le fichier de config est vide
