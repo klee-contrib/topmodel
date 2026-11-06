@@ -126,7 +126,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
                     name: "Digits",
                     imports: "jakarta.validation.constraints.Digits"
                 )
-                    .AddAttribute("integer", value: property.Domain.Length.ToString()!)
+                    .AddAttribute("integer", value: (property.Domain.Length - property.Domain.Scale).ToString()!)
                     .AddAttribute("fraction", value: property.Domain.Scale.ToString()!);
 
                 yield return digitsAnnotation;
