@@ -316,7 +316,6 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
-    /// <returns>Code généré.</returns>
     protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
@@ -413,7 +412,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
             w.WriteLine(
                 2,
-                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{Config.GetTypeName(classe)}>().GetAll({queryParameter}{(Config.UseAsyncReferenceAccessors ? ", ct" : string.Empty)});"
+                $"return {(Config.UseAsyncReferenceAccessors ? "await " : string.Empty)}{(PrimaryConstructor ? string.Empty : "_")}brokerManager.GetBroker<{Config.GetTypeName(classe)}>().GetAll{(Config.UseAsyncReferenceAccessors ? "Async" : string.Empty)}({queryParameter}{(Config.UseAsyncReferenceAccessors ? $"{(defaultProperty != null ? ", " : "ct: ")}ct" : string.Empty)});"
             );
         }
     }

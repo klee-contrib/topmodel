@@ -174,7 +174,7 @@ public class {className} : Controller
                 wd.AppendLine($@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>");
             }
 
-            if (Config.UseCancellationTokens)
+            if (Config.UseCancellationTokens && !Config.NoAsyncControllers)
             {
                 wd.AppendLine(
                     $@"{indent}/// <param name=""{ct}"">CancellationToken (HttpContext.RequestAborted).</param>"
@@ -200,7 +200,7 @@ public class {className} : Controller
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(returns)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
+                $"{indent}public {Config.GetReturnTypeName(returns)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens && !Config.NoAsyncControllers ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
