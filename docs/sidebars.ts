@@ -85,6 +85,7 @@ const sidebars: SidebarsConfig = {
       items: ["tmdgen/openapi", "tmdgen/database"],
     },
     "cli",
+    "skill",
   ],
 };
 
