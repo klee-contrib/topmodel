@@ -30,20 +30,18 @@ Un `SKILL.md` (~3,8 k tokens) et cinq références (~26 k tokens : syntaxe, règ
 
 ## Premiers bancs de test
 
-| Configuration     | Note /10 | Durée    | Coût par cas (API) |
-| ----------------- | -------- | -------- | ------------------ |
-| Haiku sans skill  | 9,28     | 5,1 min  | 0,042 $            |
-| Haiku avec skill  | 9,66     | 4,8 min  | 0,116 $            |
-| Sonnet sans skill | 9,34     | 1,7 min  | 0,168 $            |
-| Sonnet avec skill | 9,59     | 2,4 min  | 0,264 $            |
-| Opus sans skill   | 9,77     | 2,7 min  | 0,478 $            |
-| Opus avec skill   | 9,79     | 4,3 min  | 0,839 $            |
-| Qwen sans skill   | 8,58     | 30,7 min | 0,5–2,5 $          |
-| Qwen avec skill   | 9,24     | 34,7 min | 0,5–2,5 $          |
+| Configuration     | Note /10 | Durée   | Coût par cas (API) |
+| ----------------- | -------- | ------- | ------------------ |
+| Haiku sans skill  | 9,28     | 5,1 min | 0,042 $            |
+| Haiku avec skill  | 9,66     | 4,8 min | 0,116 $            |
+| Sonnet sans skill | 9,34     | 1,7 min | 0,168 $            |
+| Sonnet avec skill | 9,59     | 2,4 min | 0,264 $            |
+| Opus sans skill   | 9,77     | 2,7 min | 0,478 $            |
+| Opus avec skill   | 9,79     | 4,3 min | 0,839 $            |
 
 ### À retenir
 
-À part pour Qwen qui a un écart significatif sur la qualité avec et sans skill, on retient essentiellement que les résultats sont équivalents pour des coûts et un temps d'exécution qui doublent.
+On retient essentiellement que les résultats sont équivalents pour des coûts et un temps d'exécution qui doublent.
 On retiendra aussi que Opus est un modèle beaucoup trop cher pour effectuer des tâches TopModel, puisque Sonnet obtient des résultats équivalents.
 
 Il nous faut donc un cas de test plus compliqué pour vraiment mettre à l'épreuve nos skills.
@@ -61,10 +59,6 @@ Nous allons maintenant tester en parallèle un skill beaucoup plus simple, qui d
 | Sonnet sans skill         | 65/67 (97 %) | 6,0 min  | 0,76 $   |
 | Sonnet avec tiny-skill    | 67/67        | 6,5 min  | 0,89 $   |
 | Sonnet avec skill complet | 67/67        | 8,0 min  | 1,13 $   |
-
-Pourquoi Qwen est-il absent ?
-
-Sur ce cas il est parti, mais n'est jamais revenu...
 
 ### À retenir
 
@@ -96,3 +90,18 @@ En termes de qualité, les modèles sont donc équivalents quelle que soit la co
 Le skill permet de compenser le manque de connaissances d'un modèle, et l'écart semble se creuser en fonction de la complexité de la tâche. Pour les cas simples il semble complexifier la tâche sans réel gain.
 
 Nous mettons donc à disposition le skill complet, à utiliser de préférence avec un modèle économique 😉, et plutôt pour les cas avancés.
+
+## Annexe : Relance de 5 cas simples avec la version optimisée du skill
+
+Nous avons rejoué 5 des 7 premiers cas (les cas 1, 2, 4, 5 et 6) avec la version actuelle du skill, découpée en fichiers par sujet, et avec Qwen3.8-27B. Les cas 3 et 7 sont écartés pour tous les modèles, afin de comparer les mêmes cas : Qwen n'a pas réussi à terminer le cas 3. Chaque cas est joué une fois par modèle et par configuration..
+
+| Modèle      | Skill | Qualité | Durée par cas | Tokens, 5 cas (entrée + sortie) | Tokens par cas | Coût par cas     | Coût, 5 cas      |
+| ----------- | ----- | ------- | ------------- | ------------------------------- | -------------- | ---------------- | ---------------- |
+| Haiku       | sans  | 92,3 %  | 2,7 min       | 5,58 M                          | 1,12 M         | 0,03 $           | 0,14 $           |
+| Haiku       | avec  | 96,3 %  | 2,9 min       | 6,94 M                          | 1,39 M         | 0,07 $           | 0,35 $           |
+| Sonnet      | sans  | 97,2 %  | 1,1 min       | 1,75 M                          | 0,35 M         | 0,18 $           | 0,88 $           |
+| Sonnet      | avec  | 94,4 %  | 1,5 min       | 2,62 M                          | 0,52 M         | 0,23 $           | 1,17 $           |
+| Qwen3.8-27B | sans  | 97,8 %  | 15,5 min      | 9,96 M                          | 1,99 M         | 0,97 € (≈ 1,1 $) | 4,83 € (≈ 5,7 $) |
+| Qwen3.8-27B | avec  | 96,7 %  | 8,7 min       | 7,21 M                          | 1,44 M         | 0,67 € (≈ 0,8 $) | 3,37 € (≈ 4,0 $) |
+
+Le skill apporte globalement soit de la qualité, soit de la rapidité. Ça reste quand même surprenant que l'apport soit de nature différente selon le modèle.
