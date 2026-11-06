@@ -66,7 +66,7 @@ public class TopModelLock : TopModelLockFile
 
     public void UpdateFiles(IEnumerable<string> generatedFiles)
     {
-        if (!_config.NoWarn.Contains(ErrorType.TMD0006))
+        if (!_config.NoWarn.Contains(ErrorType.TMD1006))
         {
             var unique = new HashSet<string>();
             foreach (var fichier in generatedFiles)
