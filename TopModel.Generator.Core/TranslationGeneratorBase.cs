@@ -107,7 +107,6 @@ public abstract class TranslationGeneratorBase<T>(
                                 .GetProperties(classe)
                                 .SelectMany(p =>
                                     GetCommentResourceFileNames(p, tag)
-                                        .Distinct()
                                         .Select(f =>
                                             (
                                                 key: (

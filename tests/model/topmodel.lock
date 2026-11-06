@@ -5,7 +5,7 @@
 version: 4.8.8
 custom:
   ../../TopModel.Generator.Csharp: 5b790521f60a29c1d0f7c4ed27a818dd
-  ../../TopModel.Generator.Javascript: f194cefa09d071f412613e36918664c7
+  ../../TopModel.Generator.Javascript: 9d63d015fe3917240bbca5fa0c9dd475
   ../../TopModel.Generator.Jpa: 839e8aa8ebd0d4d2b5259cd07fc3b4d4
   ../../TopModel.Generator.Sql: a3c735c1727850b5dbbf383f95a6e99e
   ../../TopModel.Generator.Translation: 37bcf602b3079fdf3556fff547655e8f
@@ -52,9 +52,13 @@ generatedFiles:
   - ../output/angular/src/appgenerated/model/restaurant/table-item.ts
   - ../output/angular/src/appgenerated/model/restaurant/table-read.ts
   - ../output/angular/src/appgenerated/model/restaurant/table-write.ts
+  - ../output/angular/src/appgenerated/resources/de/common.comments.json
   - ../output/angular/src/appgenerated/resources/de/common.json
+  - ../output/angular/src/appgenerated/resources/de/restaurant.comments.json
   - ../output/angular/src/appgenerated/resources/de/restaurant.json
+  - ../output/angular/src/appgenerated/resources/en/common.comments.json
   - ../output/angular/src/appgenerated/resources/en/common.json
+  - ../output/angular/src/appgenerated/resources/en/restaurant.comments.json
   - ../output/angular/src/appgenerated/resources/en/restaurant.json
   - ../output/angular/src/appgenerated/resources/fr/common.comments.json
   - ../output/angular/src/appgenerated/resources/fr/common.json
