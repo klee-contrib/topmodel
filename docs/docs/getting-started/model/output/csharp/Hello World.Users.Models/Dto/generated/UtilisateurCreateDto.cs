@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Hello World.Common;
 using Hello World.Refs.Models;
 using Kinetix.Modeling.Annotations;
 
@@ -18,27 +17,23 @@ public partial record UtilisateurCreateDto
     /// Adresse mail de l'utilisateur.
     /// </summary>
     [Required]
-    [Domain(Domains.Email)]
     [StringLength(50)]
     public string UtilisateurEmail { get; set; }
 
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(15)]
     public string UtilisateurNom { get; set; }
 
     /// <summary>
     /// Date d'inscription.
     /// </summary>
-    [Domain(Domains.Date)]
     public DateTime? UtilisateurDateInscription { get; set; }
 
     /// <summary>
     /// Type de l'utilisateur.
     /// </summary>
     [ReferencedType(typeof(TypeUtilisateur))]
-    [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? UtilisateurTypeUtilisateurCode { get; set; }
 }

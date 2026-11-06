@@ -5,7 +5,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Hello World.Common;
 using Kinetix.Modeling.Annotations;
 
 namespace Hello World.Refs.Models;
@@ -13,7 +12,7 @@ namespace Hello World.Refs.Models;
 /// <summary>
 /// Type d'utilisateur.
 /// </summary>
-[Reference(true)]
+[Reference]
 [DefaultProperty(nameof(Libelle))]
 [Table("type_utilisateur")]
 public partial record TypeUtilisateur
@@ -63,7 +62,6 @@ public partial record TypeUtilisateur
     /// Code du type d'utilisateur.
     /// </summary>
     [Column("tut_code")]
-    [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
 
@@ -72,7 +70,6 @@ public partial record TypeUtilisateur
     /// </summary>
     [Column("tut_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
     [StringLength(15)]
     public string Libelle { get; set; }
 }

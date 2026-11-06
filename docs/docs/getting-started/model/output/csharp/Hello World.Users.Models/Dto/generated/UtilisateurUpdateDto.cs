@@ -3,8 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using Hello World.Common;
-using Kinetix.Modeling.Annotations;
 
 namespace Hello World.Users.Models;
 
@@ -16,7 +14,6 @@ public partial record UtilisateurUpdateDto
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Domain(Domains.Libelle)]
     [StringLength(15)]
     public string Nom { get; set; }
 }

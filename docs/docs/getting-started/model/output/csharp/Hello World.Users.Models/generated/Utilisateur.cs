@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Hello World.Common;
 using Hello World.Refs.Models;
 using Kinetix.Modeling.Annotations;
 
@@ -55,7 +54,6 @@ public partial record Utilisateur
     /// Identifiant unique de l'utilisateur.
     /// </summary>
     [Column("uti_id")]
-    [Domain(Domains.Id)]
     [Key]
     public long? Id { get; set; }
 
@@ -64,7 +62,6 @@ public partial record Utilisateur
     /// </summary>
     [Column("uti_email")]
     [Required]
-    [Domain(Domains.Email)]
     [StringLength(50)]
     public string Email { get; set; }
 
@@ -72,7 +69,6 @@ public partial record Utilisateur
     /// Nom de l'utilisateur.
     /// </summary>
     [Column("uti_nom")]
-    [Domain(Domains.Libelle)]
     [StringLength(15)]
     public string Nom { get; set; }
 
@@ -80,7 +76,6 @@ public partial record Utilisateur
     /// Date d'inscription.
     /// </summary>
     [Column("uti_date_inscription")]
-    [Domain(Domains.Date)]
     public DateTime? DateInscription { get; set; }
 
     /// <summary>
@@ -88,6 +83,5 @@ public partial record Utilisateur
     /// </summary>
     [Column("tut_code")]
     [ReferencedType(typeof(TypeUtilisateur))]
-    [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; }
 }
