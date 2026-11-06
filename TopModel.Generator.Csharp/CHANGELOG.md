@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## 4.6.3
+
+- [`4d97444`](https://github.com/klee-contrib/topmodel/commit/4d9744426790f47785ac0b9bba14ecd2fa247f44) - [C#] Fix génération reference accessors async avec kinetix legacy, et cancellation tokens en trop avec noAsyncControllers
+
 ## 4.6.2
 
 - [`3509a36`](https://github.com/klee-contrib/topmodel/commit/3509a36fa8de78d7db4c8cbaa0da612d5beee4d7) - [C#] Fix génération enum readonly avec références vers des constantes
