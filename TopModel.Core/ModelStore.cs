@@ -445,6 +445,7 @@ public class ModelStore(
                 }
 
                 logger.LogError(e, $"Une erreur s'est produite lors de la mise à jour : {e.Message}");
+                OnResolve?.Invoke(true);
             }
         }
     }
