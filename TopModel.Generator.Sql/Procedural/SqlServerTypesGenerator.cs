@@ -59,7 +59,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         foreach (var property in Config.GetProperties(classe))
         {
-            var type = Config.GetColumnType(property);
+            var type = Config.GetColumnType(property, tag);
 
             if (!property.PrimaryKey && property.Name != ScriptUtils.InsertKeyName)
             {

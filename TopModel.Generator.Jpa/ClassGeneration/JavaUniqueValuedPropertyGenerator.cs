@@ -74,11 +74,11 @@ public class JavaUniqueValuedPropertyGenerator(
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
         using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName, codePage: null);
-        var staticClass = GetStaticClass(property, classe);
+        var staticClass = GetStaticClass(property, classe, tag);
         fw.Write(staticClass);
     }
 
-    private JavaClass GetStaticClass(IProperty property, Class classe)
+    private JavaClass GetStaticClass(IProperty property, Class classe, string tag)
     {
         var javaClass = new JavaClass(Config.GetEnumType(property))
         {
@@ -96,12 +96,15 @@ public class JavaUniqueValuedPropertyGenerator(
         {
             i++;
 
-            var staticField = new JavaField(Config.GetType(property), value.Name.ToPascalCase(strictIfUppercase: true))
+            var staticField = new JavaField(
+                Config.GetType(property, tag),
+                value.Name.ToPascalCase(strictIfUppercase: true)
+            )
             {
                 Visibility = "public",
                 Static = true,
                 Final = true,
-                DefaultValue = Config.FormatValue(property, value.Value[property]),
+                DefaultValue = Config.FormatValue(property, value.Value[property], tag),
             };
             if (classe.DefaultProperty != null)
             {

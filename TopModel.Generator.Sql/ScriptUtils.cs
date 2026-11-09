@@ -33,12 +33,13 @@ public static class ScriptUtils
     /// </summary>
     /// <param name="config">Config.</param>
     /// <param name="property">Propriété correspondant à la colonne.</param>
+    /// <param name="tag">Tag.</param>
     /// <returns>Type SQL de la colonne.</returns>
-    public static string GetColumnType(this SqlConfig config, IProperty property)
+    public static string GetColumnType(this SqlConfig config, IProperty property, string tag)
     {
         return property switch
         {
-            { Composition: null, Domain: not null } => config.GetType(property),
+            { Composition: null, Domain: not null } => config.GetType(property, tag),
             { Composition: null, Domain: null } => $"varchar({config.SqlIdentifierLengthLimit})",
             _ => config.JsonType,
         };
@@ -121,7 +122,7 @@ public static class ScriptUtils
         string tag
     )
     {
-        var type = config.GetColumnType(property);
+        var type = config.GetColumnType(property, tag);
 
         writer.Write("\t");
         writer.Write(config.GetSqlName(property, tag));
@@ -137,7 +138,7 @@ public static class ScriptUtils
             && property.PrimaryKey
             && property.GeneratedValue != null
             && property.GeneratedValue.SequenceName == null
-            && config.GetType(property).Contains("int")
+            && config.GetType(property, tag).Contains("int")
             && (config.Ssdt == null || !config.Ssdt.DisableIdentity)
             && (classe.Extends == null || classe.Extends.InheritanceStrategy != InheritanceStrategy.DistinctTables)
         )
@@ -174,7 +175,7 @@ public static class ScriptUtils
             }
         }
 
-        var defaultValue = config.GetValue(property);
+        var defaultValue = config.GetValue(property, tag);
         if (defaultValue != "null")
         {
             writer.Write($" default {defaultValue}");
@@ -237,7 +238,7 @@ public static class ScriptUtils
             ", ",
             config
                 .GetAllValues(classe)
-                .Select(value => $"{config.FormatValue(classe.EnumKey!, value.Value[classe.EnumKey!])}")
+                .Select(value => $"{config.FormatValue(classe.EnumKey!, value.Value[classe.EnumKey!], tag)}")
         );
 
         writer.Write($"create type {config.GetSqlName(classe, tag)} as enum ({values}); ");
@@ -335,7 +336,7 @@ public static class ScriptUtils
 
             if (config.TargetDBMS != TargetDBMS.Oracle)
             {
-                writer.Write($" as {config.GetType(primaryKey)} ");
+                writer.Write($" as {config.GetType(primaryKey, tag)} ");
             }
 
             writer.Write(
@@ -426,7 +427,7 @@ public static class ScriptUtils
                 return $@"{(config.TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{refValue.ResourceKey}'";
             }
 
-            return config.GetValue(property, value);
+            return config.GetValue(property, tag, value);
         }
 
         if (property.GeneratedValue != null && property.PrimaryKey)
@@ -436,7 +437,7 @@ public static class ScriptUtils
 
         if (property == classe.DiscriminatorProperty && !classe.Properties.Contains(property))
         {
-            return config.GetValue(property, refValue.Class.DiscriminatorValue ?? refValue.Class.SqlName);
+            return config.GetValue(property, tag, refValue.Class.DiscriminatorValue ?? refValue.Class.SqlName);
         }
 
         return property.GeneratedValue != null ? null : "null";

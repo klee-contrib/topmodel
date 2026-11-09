@@ -109,7 +109,7 @@ public class WatcherConfigBase
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.
     /// </summary>
-    public virtual string[] PropertiesWithTagVariableSupport => [];
+    public virtual string[] PropertiesWithTagVariableSupport => [nameof(Language)];
 
     public virtual IDictionary<string, ModelFile> Files { get; } = new Dictionary<string, ModelFile>();
 
@@ -200,40 +200,44 @@ public class WatcherConfigBase
     /// Récupère les implémentations de l'annotation pour la config.
     /// </summary>
     /// <param name="annotation">Annotation.</param>
+    /// <param name="tag">Nom du tag.</param>
     /// <returns>Implémentations.</returns>
-    public virtual IList<AnnotationImplementation> GetImplementation(Annotation? annotation)
+    public virtual IList<AnnotationImplementation> GetImplementation(Annotation? annotation, string tag)
     {
-        return GetImplementation(annotation?.Implementations) ?? [];
+        return GetImplementation(annotation?.Implementations, tag) ?? [];
     }
 
     /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
     /// </summary>
     /// <param name="domain">Décorateur.</param>
+    /// <param name="tag">Nom du tag.</param>
     /// <returns>Implémentation.</returns>
-    public virtual DomainImplementation? GetImplementation(Domain? domain)
+    public virtual DomainImplementation? GetImplementation(Domain? domain, string tag)
     {
-        return GetImplementation(domain?.Implementations);
+        return GetImplementation(domain?.Implementations, tag);
     }
 
     /// <summary>
     /// Récupère l'implémentation du décorateur pour la config.
     /// </summary>
     /// <param name="decorator">Décorateur.</param>
+    /// <param name="tag">Nom du tag.</param>
     /// <returns>Implémentation.</returns>
-    public virtual DecoratorImplementation? GetImplementation(Decorator? decorator)
+    public virtual DecoratorImplementation? GetImplementation(Decorator? decorator, string tag)
     {
-        return GetImplementation(decorator?.Implementations);
+        return GetImplementation(decorator?.Implementations, tag);
     }
 
     /// <summary>
     /// Récupère l'implémentation du convertisseur pour la config.
     /// </summary>
     /// <param name="converter">Convertisseur.</param>
+    /// <param name="tag">Nom du tag.</param>
     /// <returns>Implémentation.</returns>
-    public virtual ConverterImplementation? GetImplementation(Converter? converter)
+    public virtual ConverterImplementation? GetImplementation(Converter? converter, string tag)
     {
-        return GetImplementation(converter?.Implementations);
+        return GetImplementation(converter?.Implementations, tag);
     }
 
     public virtual IEnumerable<IProperty> GetParams(Endpoint? endpoint)
@@ -413,22 +417,26 @@ public class WatcherConfigBase
         if (Language.Count > 0)
         {
             foreach (
-                var domain in handledFiles
+                var t in handledFiles
                     .SelectMany(f => f.Properties)
                     .Where(p =>
                         (p.Class?.IsPersistent ?? false)
                         && (p.Class != null && FilterClass(p.Class) || p.Endpoint != null && FilterEndpoint(p.Endpoint))
                     )
-                    .Select(p => p.Domain)
-                    .Where(domain => domain != null && GetImplementation(domain) == null)
+                    .SelectMany(p => p.Parent.Tags.Intersect(Tags).Except(ExcludedTags).Select(tag => (p.Domain, tag)))
+                    .Where(t => t.Domain != null && GetImplementation(t.Domain, t.tag) == null)
                     .Distinct()
             )
             {
                 yield return new ModelError(
                     localizer,
                     ErrorType.TMD6003,
-                    [Name ?? string.Empty, domain.ToString(), string.Join(", ", Language.Select(l => $"'{l}'"))],
-                    domain
+                    [
+                        Name ?? string.Empty,
+                        t.Domain.ToString(),
+                        string.Join(", ", Language.Select(l => $"'{ResolveTagVariables(l, t.tag)}'")),
+                    ],
+                    t.Domain
                 );
             }
         }
@@ -456,7 +464,7 @@ public class WatcherConfigBase
     /// <param name="value">Chaîne de caractères.</param>
     /// <param name="tag">Nom du tag.</param>
     /// <returns>Value avec les variables remplacées..</returns>
-    protected virtual string ResolveTagVariables(string value, string tag)
+    protected internal virtual string ResolveTagVariables(string value, string tag)
     {
         if (TagVariables.TryGetValue(tag, out var tagVariables))
         {
@@ -480,14 +488,17 @@ public class WatcherConfigBase
     /// </summary>
     /// <typeparam name="T">Type d'implémentation</typeparam>
     /// <param name="implementations">Dictionnaire de toutes les implémentations</param>
+    /// <param name="tag">Nom du tag.</param>
     /// <returns>L'implémentation sélectionnée si elle existe</returns>
-    private T? GetImplementation<T>(IDictionary<string, T>? implementations)
+    private T? GetImplementation<T>(IDictionary<string, T>? implementations, string tag)
     {
         foreach (var language in Language)
         {
-            if (implementations?.ContainsKey(language) ?? false)
+            var resolvedLanguage = ResolveTagVariables(language, tag);
+
+            if (implementations?.ContainsKey(resolvedLanguage) ?? false)
             {
-                return implementations[language];
+                return implementations[resolvedLanguage];
             }
         }
 

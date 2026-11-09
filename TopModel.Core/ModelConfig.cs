@@ -30,7 +30,9 @@ public class ModelConfig : ConfigBase
                     Name = v,
                     ConfigName = c.Key,
                     c.Value.Tags,
-                    c.Value.Language,
+                    Language = c
+                        .Value.Tags.SelectMany(tag => c.Value.Language.Select(l => c.Value.ResolveTagVariables(l, tag)))
+                        .Distinct(),
                 })
             )
             .GroupBy(v => v.Name)
@@ -52,7 +54,9 @@ public class ModelConfig : ConfigBase
                     Name = v,
                     ConfigName = c.Key,
                     c.Value.Tags,
-                    c.Value.Language,
+                    Language = c
+                        .Value.Tags.SelectMany(tag => c.Value.Language.Select(l => c.Value.ResolveTagVariables(l, tag)))
+                        .Distinct(),
                 })
             )
             .GroupBy(v => v.Name)

@@ -207,7 +207,7 @@ public class DbContextGenerator(
 
         foreach (var value in classes.SelectMany(c => c.Values.SelectMany(v => v.Value)))
         {
-            foreach (var import in Config.GetValueImports(value.Key, value.Value))
+            foreach (var import in Config.GetValueImports(value.Key, tag, value.Value))
             {
                 usings.Add(import);
             }
@@ -278,7 +278,7 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain, tag)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
                     );
                 }
                 else if (fp.Domain?.Length != null && fp.EnumProperty?.Class.Enum != EnumMode.Enum)
@@ -519,7 +519,7 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         3,
-                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, forceAssociationPropertyType: true, nonNullable: Config.RequiredNonNullable(tag))}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
+                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, tag, forceAssociationPropertyType: true, nonNullable: Config.RequiredNonNullable(tag))}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
                     );
                 }
                 else
@@ -778,7 +778,7 @@ public class DbContextGenerator(
     private string? GetValue(IProperty property, string rawValue, string tag, string contextNs)
     {
         var targetClass = property.Association ?? property.Class;
-        var value = Config.GetValue(property, rawValue);
+        var value = Config.GetValue(property, tag, rawValue);
         if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
         {
             value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";

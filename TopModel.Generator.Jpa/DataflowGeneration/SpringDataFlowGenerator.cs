@@ -670,7 +670,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             };
             fw.WriteLine(
                 3,
-                $@"map(""{Config.GetSqlName(property, tag)}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
+                $@"map(""{Config.GetSqlName(property, tag)}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property, tag) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});"
             );
         }
 

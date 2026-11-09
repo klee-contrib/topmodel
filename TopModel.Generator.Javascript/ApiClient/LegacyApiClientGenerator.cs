@@ -39,11 +39,11 @@ public class LegacyApiClientGenerator(ILogger<LegacyApiClientGenerator> logger, 
         );
     }
 
-    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint)
+    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint, string tag)
     {
         var options = GetSafeVariableName(endpoint, "options");
 
-        WriteEndpointSignature(fw, endpoint, (options, "Options pour 'fetch'.", "RequestInit", "{}"));
+        WriteEndpointSignature(fw, endpoint, tag, (options, "Options pour 'fetch'.", "RequestInit", "{}"));
 
         var body = GetSafeVariableName(endpoint, "body");
 

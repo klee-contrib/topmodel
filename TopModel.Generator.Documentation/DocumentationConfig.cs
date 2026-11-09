@@ -47,10 +47,20 @@ public class DocumentationConfig : GeneratorConfigBase
     public virtual IList<string> AuthorizationAnnotations { get; set; } = [];
 
     public override string[] PropertiesWithModuleVariableSupport =>
-        [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
+        [
+            .. base.PropertiesWithModuleVariableSupport,
+            nameof(EndpointsFilePath),
+            nameof(ClassesFilePath),
+            nameof(MermaidFilePath),
+        ];
 
     public override string[] PropertiesWithFileNameVariableSupport =>
-        [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
+        [
+            .. base.PropertiesWithFileNameVariableSupport,
+            nameof(EndpointsFilePath),
+            nameof(ClassesFilePath),
+            nameof(MermaidFilePath),
+        ];
 
     public override string[] PropertiesWithTagVariableSupport =>
         [

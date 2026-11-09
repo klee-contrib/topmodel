@@ -119,7 +119,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             .Select(prop =>
             {
                 string name = prop.NameCamel.ToConstantCase();
-                var javaType = Config.GetType(prop);
+                var javaType = Config.GetType(prop, tag);
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)
                 {
@@ -131,11 +131,11 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        if (!(Config.HasAnnotation(classe, "Getter") || Config.HasAnnotation(classe, "Data")))
+        if (!(Config.HasAnnotation(classe, "Getter", tag) || Config.HasAnnotation(classe, "Data", tag)))
         {
             foreach (var property in Config.GetAvailableProperties(classe))
             {
-                if (!Config.HasAnnotation(property, "Getter") || Config.HasAnnotation(classe, "Data"))
+                if (!Config.HasAnnotation(property, "Getter", tag) || Config.HasAnnotation(classe, "Data", tag))
                 {
                     yield return JpaModelPropertyGenerator.GetGetter(tag, property);
                 }
@@ -163,11 +163,11 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
     protected virtual IEnumerable<JavaMethod> GetSetters(Class classe, string tag)
     {
-        if (!(Config.HasAnnotation(classe, "Setter") || Config.HasAnnotation(classe, "Data")))
+        if (!(Config.HasAnnotation(classe, "Setter", tag) || Config.HasAnnotation(classe, "Data", tag)))
         {
             foreach (var property in Config.GetAvailableProperties(classe))
             {
-                if (!(Config.HasAnnotation(property, "Setter") || Config.HasAnnotation(classe, "Data")))
+                if (!(Config.HasAnnotation(property, "Setter", tag) || Config.HasAnnotation(classe, "Data", tag)))
                 {
                     yield return JpaModelPropertyGenerator.GetSetter(tag, property);
                 }

@@ -67,7 +67,7 @@ public class DocumentationClassDocGenerator(
                     property.Name,
                     Config.GetSqlName(property, tag),
                     property.Label,
-                    Config.GetType(property),
+                    Config.GetType(property, tag),
                     $"{property.Domain?.Length}",
                     property.Comment,
                     string.Join("<br>", constraints),

@@ -5,8 +5,23 @@
   "required": ["outputDirectory", "tags"],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Pas de valeur par défaut."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Supporte les variables par tag.",
+          "default": "csharp"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée. Supporte les variables par tag.",
+          "default": "sql",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Supporte les variables par tag. Par défaut : 'sql'.",
+            "default": "sql"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",
@@ -33,7 +48,14 @@
           "type": "object",
           "patternProperties": {
             ".*": {
-              "type": "string"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
             }
           }
         }

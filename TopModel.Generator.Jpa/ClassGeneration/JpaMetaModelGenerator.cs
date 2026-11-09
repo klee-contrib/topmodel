@@ -56,7 +56,7 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
 
         foreach (var property in Config.GetAvailableProperties(classe))
         {
-            var javaType = Config.GetType(property);
+            var javaType = Config.GetType(property, tag);
             var genericType = javaType.Split("<")[0];
             var attributeType = genericType switch
             {
@@ -67,7 +67,7 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
                 _ => "SingularAttribute",
             };
 
-            var propertyType = Config.GetType(property);
+            var propertyType = Config.GetType(property, tag);
 
             if (javaType != genericType)
             {

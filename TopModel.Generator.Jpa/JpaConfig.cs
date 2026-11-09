@@ -172,7 +172,8 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string? DefaultLanguage => "java";
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(ResourcesPath)];
 
     /// <summary>
     /// Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
@@ -197,6 +198,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [
+            .. base.PropertiesWithModuleVariableSupport,
             nameof(EntitiesPath),
             nameof(DaosPath),
             nameof(DtosPath),
@@ -241,9 +243,9 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetCollector(Domain domain)
+    public virtual string GetCollector(Domain domain, string tag)
     {
-        var impl = GetImplementation(domain)!;
+        var impl = GetImplementation(domain, tag)!;
         return $"collect(Collectors.{impl.Collector ?? $"to{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type)}()"})";
     }
 
@@ -274,9 +276,9 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetDefaultValue(IProperty property)
+    public virtual string GetDefaultValue(IProperty property, string tag)
     {
-        var defaultValue = GetValue(property);
+        var defaultValue = GetValue(property, tag);
         return defaultValue != "null" ? defaultValue : string.Empty;
     }
 
@@ -308,7 +310,7 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string GetGetterName(IProperty property, string tag)
     {
         var propertyName = property.NameCamel;
-        var propertyType = GetType(property);
+        var propertyType = GetType(property, tag);
         if (IsRecord(property.Class, tag))
         {
             return propertyName;
@@ -439,10 +441,10 @@ public class JpaConfig : GeneratorConfigBase
 
     public virtual IEnumerable<string> GetValueImportsJpa(IProperty property, string tag, string? value = null)
     {
-        value ??= GetValue(property);
+        var formattedValue = GetValue(property, tag, value);
 
         if (
-            value != NullValue
+            formattedValue != NullValue
             && property is { UniqueValuedProperty: IProperty uvp }
             && UniqueValueGeneration.CanConst
             && (property.EnumProperty == null || UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
@@ -452,14 +454,14 @@ public class JpaConfig : GeneratorConfigBase
         }
         else
         {
-            return GetValueImports(property, tag);
+            return GetValueImports(property, tag, value);
         }
     }
 
-    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)
+    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation, string tag)
     {
         return classe
-            .Annotations.SelectMany(a => GetImplementation(a.Annotation))
+            .Annotations.SelectMany(a => GetImplementation(a.Annotation, tag))
             .Any(a => a.Text.Trim('@') == annotation.Trim('@'));
     }
 
