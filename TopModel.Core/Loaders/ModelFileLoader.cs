@@ -5,7 +5,6 @@ using Meziantou.Framework.Globbing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using OneOf;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
@@ -247,22 +246,27 @@ public class ModelFileLoader(
 
                         nfm.OwnParams.AddRange(
                             fm.OwnParams.Select(p =>
-                                p.Match<OneOf<ClassMappings, PropertyMapping>>(
-                                    pc => new ClassMappings
-                                    {
-                                        ClassReference = pc.ClassReference,
-                                        Comment = pc.Comment,
-                                        MappingReferences = pc.MappingReferences,
-                                        Name = pc.Name,
-                                        Required = pc.Required,
-                                    },
-                                    pp => new PropertyMapping
-                                    {
-                                        FromMapper = nfm,
-                                        Property = pp.Property.CloneDefinition(),
-                                        TargetPropertyReference = pp.TargetPropertyReference,
-                                    }
-                                )
+                                p switch
+                                {
+                                    ClassMappings pc => new MapperParam(
+                                        new ClassMappings
+                                        {
+                                            ClassReference = pc.ClassReference,
+                                            Comment = pc.Comment,
+                                            MappingReferences = pc.MappingReferences,
+                                            Name = pc.Name,
+                                            Required = pc.Required,
+                                        }
+                                    ),
+                                    PropertyMapping pp => new MapperParam(
+                                        new PropertyMapping
+                                        {
+                                            FromMapper = nfm,
+                                            Property = pp.Property.CloneDefinition(),
+                                            TargetPropertyReference = pp.TargetPropertyReference,
+                                        }
+                                    ),
+                                }
                             )
                         );
 

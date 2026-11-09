@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -33,7 +32,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
     protected virtual string GetSourceMapping(IProperty property)
     {
-        if (property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
+        if (property.MappingType is ClassMappingType t1 && t1.Property != null)
         {
             return $"{property.NamePascal}?.{t1.Property.NamePascal}";
         }
@@ -121,8 +120,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             )
             {
                 var mapper = sourceClass.GetMapperTo(targetClass)!.Value;
-                return mapper.Match(
-                    fromMapper =>
+
+                switch (mapper)
+                {
+                    case FromMapper fromMapper:
                     {
                         var mapperTag = GetBestMapperTag((targetClass, fromMapper), tag);
                         var (targetMapperName, targetMapperNs, _) = Config.GetMapperInfo(
@@ -137,6 +138,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
                         var mapped =
                             $"{(targetMapperNs != mapperNs || targetMapperName != mapperName ? $"{targetMapperName}." : string.Empty)}Create{targetClass.NamePascal}({value})";
+
                         return
                             nullCheck
                             && (
@@ -145,8 +147,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                             )
                             ? $"{value} != null ? {mapped} : {(!rrnTarget && target.Required && target.Composition != null ? "new()" : "null")}"
                             : mapped;
-                    },
-                    toMapper =>
+                    }
+                    case ClassMappings toMapper:
                     {
                         var mapperTag = GetBestMapperTag((sourceClass, toMapper), tag);
                         var (_, targetMapperNs, _) = Config.GetMapperInfo((targetClass, toMapper), mapperTag);
@@ -172,7 +174,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         }
                         return value;
                     }
-                );
+                    default:
+                        return value;
+                }
             }
 
             var value =
@@ -180,14 +184,15 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     ? source.NameCamel
                     : $"{paramName}{(!paramRequired ? "?" : string.Empty)}.{source.NamePascal}";
 
-            if (source.MappingType.TryPickT2(out var st2, out _))
+            if (source.MappingType is ClassCollectionMappingType st2)
             {
-                if (target.MappingType.IsT0 && st2.Property != null)
+                if (target.MappingType is PropertyMappingType && st2.Property != null)
                 {
                     value += $"{(rrnSource && !source.Required ? "?" : string.Empty)}";
 
                     var innerProp = st2.Property.NamePascal;
-                    if (st2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
+                    var t1 = st2.Property.MappingType is ClassMappingType t ? t : null;
+                    if (t1?.Property != null)
                     {
                         if (Config.NullableEnable && st2.Property.Required)
                         {
@@ -201,7 +206,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     value +=
                         $".Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain)}";
                 }
-                else if (target.MappingType.TryPickT2(out var tt2, out _) && st2.Class != tt2.Class)
+                else if (target.MappingType is ClassCollectionMappingType tt2 && st2.Class != tt2.Class)
                 {
                     var selector = $"p => {GetMappedValue("p", st2.Class, tt2.Class, target, nullCheck: false)}";
                     if (!selector.StartsWith("p => p."))
@@ -213,14 +218,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
             }
             else if (
-                source.MappingType.TryPickT1(out var st1, out _)
-                && target.MappingType.TryPickT1(out var tt1, out _)
+                source.MappingType is ClassMappingType st1
+                && target.MappingType is ClassMappingType tt1
                 && st1.Class != tt1.Class
             )
             {
                 value = GetMappedValue(value, st1.Class, tt1.Class, target, nullCheck: true);
             }
-            else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
+            else if (source.MappingType is PropertyMappingType && target.MappingType is ClassMappingType tt1rec)
             {
                 var mapped =
                     $"{Config.GetTypeName(tt1rec.Class)}.GetValue({HandleConversion(value, source, tt1rec.Class.EnumKey!, rrnSource, rrnTarget: true, paramRequired)})";
@@ -228,7 +233,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 value =
                     !rrnSource || !source.Required && !target.Required ? $"{value} != null ? {mapped} : null" : mapped;
             }
-            else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
+            else if (
+                source.MappingType is PropertyMappingType
+                && target.MappingType is ClassCollectionMappingType tt2rec
+            )
             {
                 value +=
                     $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({Config.GetTypeName(tt2rec.Class)}.GetValue).{Config.GetCollector(tt2rec.Domain)}";
@@ -242,10 +250,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             else
             {
                 if (
-                    source.MappingType.TryPickT1(out var t1, out _)
+                    source.MappingType is ClassMappingType t1
                     && Config.AvailableClasses.Contains(t1.Class)
                     && t1.Property != null
-                    && target.MappingType.IsT0
+                    && target.MappingType is PropertyMappingType
                 )
                 {
                     var required = source.Required;
@@ -363,7 +371,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             );
             foreach (var param in mapper.Params)
             {
-                w.WriteParam(param.GetNameCamel(), param.GetComment());
+                w.WriteParam(param.NameCamel, param.Comment);
             }
 
             w.WriteReturns(1, $"Une nouvelle instance de '{Config.GetTypeName(classe)}'");
@@ -374,9 +382,11 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             );
 
             w.WriteLine(
-                $"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
-                c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}")))})"
+                $"({string.Join(", ", mapper.Params.Select(mp => mp switch
+                {
+                    ClassMappings c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
+                    PropertyMapping p => $"{Config.GetType(p.Property, nonNullable: mp.Required || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.Required ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}"
+                }))})"
             );
 
             if (classe.Type != ClassType.Regular)
@@ -387,19 +397,20 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             w.WriteLine(1, "{");
 
             var requiredParams = mapper.Params.Where(p =>
-                p.GetRequired()
+                p.Required
                 && (
-                    p.IsT0
-                    || !Config.AllValueTypes.Contains(
-                        Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty
-                    )
+                    p is ClassMappings
+                    || p is PropertyMapping pm
+                        && !Config.AllValueTypes.Contains(
+                            Config.GetImplementation(pm.Property.Domain)?.Type ?? string.Empty
+                        )
                 )
             );
             var wlForCheck = false;
 
             foreach (var param in requiredParams)
             {
-                w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.GetNameCamel()});");
+                w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.NameCamel});");
                 wlForCheck = true;
             }
 
@@ -440,57 +451,60 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             foreach (var p in mapper.Params)
             {
-                p.Switch(
-                    param =>
-                    {
-                        var rrnSource = Config.RequiredNonNullable(Config.GetBestClassTag(param.Class, tag));
+                switch (p)
+                {
+                    case ClassMappings param:
+                        {
+                            var rrnSource = Config.RequiredNonNullable(Config.GetBestClassTag(param.Class, tag));
 
-                        var mappings = param.Mappings.ToList();
-                        foreach (var mapping in mappings)
+                            var mappings = param.Mappings.ToList();
+                            foreach (var mapping in mappings)
+                            {
+                                var value = GetValue(
+                                    param.Name,
+                                    param.Required,
+                                    mapping.Value,
+                                    mapping.Key,
+                                    rrnSource,
+                                    rrnTarget
+                                );
+
+                                w.Write(3, $"{mapping.Key.NamePascal} = {value}");
+
+                                if (
+                                    mapper.Params.IndexOf(param) < mapper.Params.Count - 1
+                                    || mappings.IndexOf(mapping) < mappings.Count - 1
+                                )
+                                {
+                                    w.Write(",");
+                                }
+
+                                w.WriteLine();
+                            }
+                        }
+                        break;
+                    case PropertyMapping param:
                         {
                             var value = GetValue(
-                                param.Name,
-                                param.Required,
-                                mapping.Value,
-                                mapping.Key,
-                                rrnSource,
+                                paramName: null,
+                                param.Property.Required,
+                                param.Property,
+                                param.TargetProperty,
+                                rrnTarget,
                                 rrnTarget
                             );
 
-                            w.Write(3, $"{mapping.Key.NamePascal} = {value}");
+                            w.Write(3, $"{param.TargetProperty.NamePascal} = {value}");
 
-                            if (
-                                mapper.Params.IndexOf(param) < mapper.Params.Count - 1
-                                || mappings.IndexOf(mapping) < mappings.Count - 1
-                            )
+                            if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
                             {
                                 w.Write(",");
                             }
 
                             w.WriteLine();
                         }
-                    },
-                    param =>
-                    {
-                        var value = GetValue(
-                            paramName: null,
-                            param.Property.Required,
-                            param.Property,
-                            param.TargetProperty,
-                            rrnTarget,
-                            rrnTarget
-                        );
-
-                        w.Write(3, $"{param.TargetProperty.NamePascal} = {value}");
-
-                        if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
-                        {
-                            w.Write(",");
-                        }
-
-                        w.WriteLine();
-                    }
-                );
+                        break;
+                }
             }
 
             w.WriteLine(2, "};");

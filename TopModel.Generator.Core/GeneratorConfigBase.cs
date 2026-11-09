@@ -304,7 +304,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
     {
-        var converter = fromDomain.GetConverter(toDomain);
+        var converter = fromDomain?.GetConverter(toDomain);
         if (converter != null && fromDomain != null && toDomain != null)
         {
             var text = GetImplementation(converter)?.Text;

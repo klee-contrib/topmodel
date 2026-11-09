@@ -1,6 +1,4 @@
-﻿#pragma warning disable KTA1200
-
-using System.Text;
+﻿using System.Text;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Generator.Core;

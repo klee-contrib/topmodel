@@ -13,8 +13,9 @@ public class SqlConfig : GeneratorConfigBase
     /// <summary>
     /// Mots-clés SQL réservés.
     /// </summary>
-    private static readonly HashSet<string> ReservedSqlKeywords = new(StringComparer.OrdinalIgnoreCase)
-    {
+    private static readonly HashSet<string> ReservedSqlKeywords =
+    [
+        with(StringComparer.OrdinalIgnoreCase),
         "add",
         "all",
         "alter",
@@ -83,7 +84,7 @@ public class SqlConfig : GeneratorConfigBase
         "when",
         "where",
         "with",
-    };
+    ];
 
     /// <summary>
     /// Config pour la génération en mode procédural.

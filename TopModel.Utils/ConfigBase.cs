@@ -26,7 +26,7 @@ public abstract class ConfigBase
     /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.
     /// </summary>
     public GlobCollection ModelFilePaths =>
-        new(ModelFilePathsGlobs.Select(g => Glob.Parse(g, GlobOptions.IgnoreCase)).ToArray());
+        new(ModelFilePathsGlobs.Select(g => Glob.Parse(g, GlobDialect.Standard, GlobOptions.IgnoreCase)).ToArray());
 
     /// <summary>
     /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `ModelRoot`) seront chargés par TopModel.

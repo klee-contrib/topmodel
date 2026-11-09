@@ -99,23 +99,21 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
     protected virtual string GetDataFlowMapperCall(JavaWriter fw, Class sourceClass, Class targetClass, string tag)
     {
-        var mapper = sourceClass.GetMapperTo(targetClass);
-        if (mapper == null)
-        {
-            throw new ModelException(
+        var mapper = sourceClass.GetMapperTo(targetClass)
+            ?? throw new ModelException(
                 targetClass,
                 $"Aucun mapper depuis '{sourceClass.NamePascal}' vers '{targetClass.NamePascal}' n'a été trouvé pour ce flow."
             );
-        }
 
-        return mapper.Value.Match(
-            fromMapper =>
+        switch (mapper)
+        {
+            case FromMapper fromMapper:
             {
                 var (mapperNs, mapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
                 fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
                 return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{targetClass.NamePascal}(item)";
-            },
-            toMapper =>
+            }
+            case ClassMappings toMapper:
             {
                 var (mapperNs, mapperModelPath) = Config.GetMapperLocation((sourceClass, toMapper));
                 fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag));
@@ -124,7 +122,9 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                     : toMapper.Name.Value.ToCamelCase();
                 return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.{methodName}(item)";
             }
-        );
+            default:
+                return string.Empty;
+        }
     }
 
     protected virtual string GetProcessorName(DataFlow dataFlow, FlowHook flowHook, int index)

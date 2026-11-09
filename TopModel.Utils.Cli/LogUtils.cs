@@ -1,5 +1,3 @@
-#pragma warning disable KTA1200
-
 using System.Resources;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
@@ -9,11 +7,6 @@ namespace TopModel.Utils.Cli;
 public static class LogUtils
 {
     private static readonly string[] Colors = ["teal", "olive", "yellow", "aqua"];
-
-    public static LoggingScope GetScope(int index)
-    {
-        return new LoggingScope(index + 1, Colors[index % Colors.Length]);
-    }
 
     extension<T>(T messageType)
         where T : struct, Enum
@@ -80,6 +73,11 @@ public static class LogUtils
         {
             logger.LogWarning(key.GetMessage(args));
         }
+    }
+
+    public static LoggingScope GetScope(int index)
+    {
+        return new LoggingScope(index + 1, Colors[index % Colors.Length]);
     }
 
     private static class ResourceManagerCache<T>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
@@ -83,10 +82,7 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
                             .Distinct()
                             .OrderBy(m => m.Classe.NamePascal, StringComparer.Ordinal)
                             .ThenBy(m => m.Mapper.Params.Count)
-                            .ThenBy(
-                                m => string.Join(',', m.Mapper.Params.Select(p => p.GetName())),
-                                StringComparer.Ordinal
-                            )
+                            .ThenBy(m => string.Join(',', m.Mapper.Params.Select(p => p.Name)), StringComparer.Ordinal)
                             .ToArray(),
                         Tags: tags
                     );
