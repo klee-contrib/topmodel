@@ -159,9 +159,6 @@ public class WatcherConfigBase
         }
     }
 
-    [Obsolete("Surcharger 'FilterClass' à la place.")]
-    protected virtual bool PersistentOnly => false;
-
     /// <summary>
     /// Précise si une classe doit être incluse dans cette config.
     /// </summary>
@@ -419,7 +416,7 @@ public class WatcherConfigBase
                 var domain in handledFiles
                     .SelectMany(f => f.Properties)
                     .Where(p =>
-                        (!PersistentOnly || (p.Class?.IsPersistent ?? false))
+                        (p.Class?.IsPersistent ?? false)
                         && (p.Class != null && FilterClass(p.Class) || p.Endpoint != null && FilterEndpoint(p.Endpoint))
                     )
                     .Select(p => p.Domain)
