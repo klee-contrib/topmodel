@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -41,9 +40,6 @@ public class Class(Reference location) : IPropertyContainer
     public bool Reference { get; internal set; }
 
     public ClassType Type { get; internal set; }
-
-    [Obsolete("Utiliser `Type` à la place.")]
-    public bool Abstract => Type == ClassType.Interface;
 
     public bool Readonly { get; internal set; }
 
@@ -88,10 +84,6 @@ public class Class(Reference location) : IPropertyContainer
     public IList<ClassValue> Values { get; } = [];
 
     public IList<IndexDefinition> Indexes { get; } = [];
-
-    [Obsolete("Utiliser `Indexes` à la place.")]
-    public IList<IList<IProperty>> UniqueKeys =>
-        Indexes.Where(idx => idx.Unique).Select(idx => idx.Properties).ToList();
 
     public IList<FromMapper> FromMappers { get; } = [];
 
@@ -138,12 +130,6 @@ public class Class(Reference location) : IPropertyContainer
 
     public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; internal set; } =
         new Dictionary<Reference, IDictionary<Reference, string>>();
-
-    [Obsolete("Utiliser `Config.GetClassDependencies(classe)`.")]
-    public IEnumerable<ClassDependency> ClassDependencies =>
-        Properties
-            .GetClassDependencies(this)
-            .Concat(Extends != null ? [new ClassDependency(Extends, this)] : Array.Empty<ClassDependency>());
 
     public IList<PropertySource> PropertySourceOrder { get; internal set; } =
     [PropertySource.Properties, PropertySource.Implements, PropertySource.Decorators];
