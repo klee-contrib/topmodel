@@ -157,12 +157,12 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         else if (
             annotation.Attributes.Count == 1
             && annotation.Attributes.Any(a => a.Key == "value")
-            && !annotation.Attributes.First().Value.TryPickT2(out var _, out var value)
+            && annotation.Attributes.First().Value is not List<JavaAnnotation>
         )
         {
-            return $"{name}({value.Match(s => s, v => GetAnnotation(v, classe))})";
+            return $"{name}({annotation.Attributes.First().Value switch { string s => s, JavaAnnotation v => GetAnnotation(v, classe), _ => string.Empty }})";
         }
-        else if (annotation.Attributes.Values.Any(v => v.IsT2))
+        else if (annotation.Attributes.Values.Any(v => v is List<JavaAnnotation>))
         {
             var sb = new StringBuilder();
             sb.Append($"{name}(");
@@ -172,7 +172,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
                 var attr = attrList[i];
                 var isLast = i == attrList.Count - 1;
                 sb.Append($"{Environment.NewLine}\t");
-                if (attr.Value.TryPickT2(out var annotations, out var v))
+                if (attr.Value is List<JavaAnnotation> annotations)
                 {
                     sb.Append($"{attr.Key} = {{");
                     for (var j = 0; j < annotations.Count; j++)
@@ -187,7 +187,9 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
                 }
                 else
                 {
-                    sb.Append($"{attr.Key} = {v.Match(s => s, value => GetAnnotation(value, classe))}");
+                    sb.Append(
+                        $"{attr.Key} = {attr.Value switch { string s => s, JavaAnnotation v => GetAnnotation(v, classe), _ => string.Empty }}"
+                    );
                 }
 
                 if (!isLast)
@@ -204,7 +206,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             var attributes = string.Join(
                 ", ",
                 annotation.Attributes.Select(a =>
-                    $"{a.Key} = {a.Value.Match(s => s, value => GetAnnotation(value, classe), s => throw new NotSupportedException())}"
+                    $"{a.Key} = {a.Value switch { string s => s, JavaAnnotation v => GetAnnotation(v, classe), _ => string.Empty }}"
                 )
             );
             return $"{name}({attributes})";

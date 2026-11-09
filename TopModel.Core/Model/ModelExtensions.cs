@@ -1,10 +1,7 @@
 ﻿using System.Text;
-using OneOf;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
-
-#pragma warning disable KTA1200, S2325 // Jusqu'à ce qu'on supporte les blocs d'extension...
 
 public static class ModelExtensions
 {
@@ -291,7 +288,7 @@ public static class ModelExtensions
         /// <summary>
         /// Détermine le type de la propriété pour déterminer comment elle doit être mappée.
         /// </summary>
-        public OneOf<PropertyMappingType, ClassMappingType, ClassCollectionMappingType> MappingType
+        public MappingType MappingType
         {
             get
             {
@@ -420,7 +417,7 @@ public static class ModelExtensions
         /// </summary>
         /// <param name="targetClass">Classe cible.</param>
         /// <returns>Mapper (from ou to), s'il existe.</returns>
-        public OneOf<FromMapper, ClassMappings>? GetMapperTo(Class targetClass)
+        public Mapper? GetMapperTo(Class targetClass)
         {
             var fromMapper = targetClass.FromMappers.FirstOrDefault(fm =>
                 fm.Params.Count == 1 && fm.ClassParams.SingleOrDefault()?.Class == classe

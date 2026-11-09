@@ -1,6 +1,4 @@
-﻿#pragma warning disable KTA1200
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
 using TopModel.Core.Model;
 
@@ -8,6 +6,27 @@ namespace TopModel.Generator.Core;
 
 public static class GeneratorUtils
 {
+    extension(UniqueValueGenerationMode mode)
+    {
+        public bool CanEnum => (mode & UniqueValueGenerationMode.EnumOnly) > 0;
+
+        public bool CanConst => (mode & UniqueValueGenerationMode.ConstOnly) > 0;
+    }
+
+    extension(IndexDefinition index)
+    {
+        public string SqlName =>
+            $"{(index.Unique ? $"UK_{index.Class.SqlName}" : $"IDX_{index.Class.Trigram ?? index.Class.SqlName}")}_{string.Join('_', index.Properties.Select(c => c.SqlName))}";
+    }
+
+    extension(IProperty prop)
+    {
+        public string? ForeignKeyName => prop.Association != null ? $"FK_{prop.Class.SqlName}_{prop.SqlName}" : null;
+
+        public string? IndexForeignKeyName =>
+            prop.Association != null ? $"IDX_{prop.Class.Trigram ?? prop.Class.SqlName}_{prop.SqlName}_FK" : null;
+    }
+
     /// <summary>
     /// Enregistre un générateur dans la DI.
     /// </summary>
@@ -32,26 +51,5 @@ public static class GeneratorUtils
             generator.Number = number;
             return generator;
         });
-    }
-
-    extension(UniqueValueGenerationMode mode)
-    {
-        public bool CanEnum => (mode & UniqueValueGenerationMode.EnumOnly) > 0;
-
-        public bool CanConst => (mode & UniqueValueGenerationMode.ConstOnly) > 0;
-    }
-
-    extension(IndexDefinition index)
-    {
-        public string SqlName =>
-            $"{(index.Unique ? $"UK_{index.Class.SqlName}" : $"IDX_{index.Class.Trigram ?? index.Class.SqlName}")}_{string.Join('_', index.Properties.Select(c => c.SqlName))}";
-    }
-
-    extension(IProperty prop)
-    {
-        public string? ForeignKeyName => prop.Association != null ? $"FK_{prop.Class.SqlName}_{prop.SqlName}" : null;
-
-        public string? IndexForeignKeyName =>
-            prop.Association != null ? $"IDX_{prop.Class.Trigram ?? prop.Class.SqlName}_{prop.SqlName}_FK" : null;
     }
 }

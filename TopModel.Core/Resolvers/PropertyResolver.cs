@@ -688,7 +688,7 @@ internal class PropertyResolver(
                 {
                     var index = alp
                         .PropertyMapping.FromMapper.Params.ToList()
-                        .FindIndex(param => param.TryPickT1(out var pm, out var _) && pm.Property == alp);
+                        .FindIndex(param => param is PropertyMapping mp && mp.Property == alp);
                     if (index >= 0)
                     {
                         var mapping = new PropertyMapping
@@ -717,7 +717,7 @@ internal class PropertyResolver(
                 foreach (
                     var param in alp
                         .PropertyMapping.FromMapper.Params.Where(param =>
-                            param.TryPickT1(out var pm, out var _) && pm.Property == alp
+                            param is PropertyMapping mp && mp.Property == alp
                         )
                         .ToList()
                 )

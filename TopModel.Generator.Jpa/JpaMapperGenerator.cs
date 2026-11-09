@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
@@ -114,108 +113,111 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var p in mapper.Params)
         {
-            p.Switch(
-                param =>
-                {
-                    var mappings = param.Mappings.ToList();
-                    var indent = 0;
-                    if (!param.Required)
+            switch (p)
+            {
+                case ClassMappings param:
                     {
-                        fromMapperMethod.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
-                        indent++;
-                    }
+                        var mappings = param.Mappings.ToList();
+                        var indent = 0;
+                        if (!param.Required)
+                        {
+                            fromMapperMethod.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
+                            indent++;
+                        }
 
-                    foreach (var mapping in mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value)))
+                        foreach (var mapping in mappings.Where(mapping => FilterMapping(mapping.Key, mapping.Value)))
+                        {
+                            var propertyTarget = mapping.Key;
+                            var propertySource = mapping.Value;
+                            var (getter, checkSourceNull, imports) = GetSourceGetter(
+                                propertySource,
+                                propertyTarget,
+                                param.Name.ToCamelCase(),
+                                tag
+                            );
+                            fromMapperMethod.AddImports(imports);
+
+                            if (getter != string.Empty)
+                            {
+                                if (checkSourceNull)
+                                {
+                                    fromMapperMethod.AddBodyLine(
+                                        indent,
+                                        $"if ({param.Name}.{Config.GetGetterName(propertySource, tag)}() != null) {{"
+                                    );
+                                }
+
+                                fromMapperMethod.AddBodyLine(
+                                    indent + (checkSourceNull ? 1 : 0),
+                                    $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
+                                );
+
+                                if (checkSourceNull)
+                                {
+                                    fromMapperMethod.AddBodyLine(indent, $"}} else {{");
+                                    fromMapperMethod.AddBodyLine(
+                                        indent + 1,
+                                        $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
+                                    );
+                                    fromMapperMethod.AddBodyLine(indent, $"}}");
+                                    fromMapperMethod.AddBodyLine();
+                                }
+                            }
+                        }
+
+                        if (!param.Required)
+                        {
+                            fromMapperMethod.AddBodyLine(indent - 1, "}");
+                            fromMapperMethod.AddBodyLine();
+                        }
+                    }
+                    break;
+                case PropertyMapping param:
                     {
-                        var propertyTarget = mapping.Key;
-                        var propertySource = mapping.Value;
+                        var propertyTarget = param.TargetProperty;
+                        var propertySource = param.Property;
+
+                        if (!FilterMapping(propertySource, propertyTarget))
+                        {
+                            break;
+                        }
+
                         var (getter, checkSourceNull, imports) = GetSourceGetter(
                             propertySource,
                             propertyTarget,
-                            param.Name.ToCamelCase(),
+                            paramName: null,
                             tag
                         );
                         fromMapperMethod.AddImports(imports);
+
+                        checkSourceNull &= !propertySource.Required;
 
                         if (getter != string.Empty)
                         {
                             if (checkSourceNull)
                             {
-                                fromMapperMethod.AddBodyLine(
-                                    indent,
-                                    $"if ({param.Name}.{Config.GetGetterName(propertySource, tag)}() != null) {{"
-                                );
+                                fromMapperMethod.AddBodyLine($"if ({param.NameCamel} != null) {{");
                             }
 
                             fromMapperMethod.AddBodyLine(
-                                indent + (checkSourceNull ? 1 : 0),
+                                checkSourceNull ? 1 : 0,
                                 $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
                             );
 
                             if (checkSourceNull)
                             {
-                                fromMapperMethod.AddBodyLine(indent, $"}} else {{");
+                                fromMapperMethod.AddBodyLine($"}} else {{");
                                 fromMapperMethod.AddBodyLine(
-                                    indent + 1,
+                                    1,
                                     $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
                                 );
-                                fromMapperMethod.AddBodyLine(indent, $"}}");
+                                fromMapperMethod.AddBodyLine($"}}");
                                 fromMapperMethod.AddBodyLine();
                             }
                         }
                     }
-
-                    if (!param.Required)
-                    {
-                        fromMapperMethod.AddBodyLine(indent - 1, "}");
-                        fromMapperMethod.AddBodyLine();
-                    }
-                },
-                param =>
-                {
-                    var propertyTarget = param.TargetProperty;
-                    var propertySource = param.Property;
-
-                    if (!FilterMapping(propertySource, propertyTarget))
-                    {
-                        return;
-                    }
-
-                    var (getter, checkSourceNull, imports) = GetSourceGetter(
-                        propertySource,
-                        propertyTarget,
-                        paramName: null,
-                        tag
-                    );
-                    fromMapperMethod.AddImports(imports);
-
-                    checkSourceNull &= !propertySource.Required;
-
-                    if (getter != string.Empty)
-                    {
-                        if (checkSourceNull)
-                        {
-                            fromMapperMethod.AddBodyLine($"if ({param.NameCamel} != null) {{");
-                        }
-
-                        fromMapperMethod.AddBodyLine(
-                            checkSourceNull ? 1 : 0,
-                            $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});"
-                        );
-
-                        if (checkSourceNull)
-                        {
-                            fromMapperMethod.AddBodyLine($"}} else {{");
-                            fromMapperMethod.AddBodyLine(
-                                1,
-                                $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);"
-                            );
-                            fromMapperMethod.AddBodyLine($"}}");
-                            fromMapperMethod.AddBodyLine();
-                        }
-                    }
-                }
-            );
+                    break;
+            }
         }
 
         fromMapperMethod.AddBodyLine("return target;");
@@ -416,7 +418,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var checkSourceNull = false;
         var getter = paramName == null ? source.NameCamel : $"{paramName}.{Config.GetGetterName(source, tag)}()";
 
-        var converter = source.Domain.GetConverter(target.Domain);
+        var converter = source.Domain?.GetConverter(target.Domain);
         if (converter != null && Config.GetImplementation(converter) != null)
         {
             var impl = Config.GetImplementation(converter);
@@ -438,8 +440,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         string GetMappedValue(string value, Class sourceClass, Class targetClass, IProperty? targetProperty = null)
         {
             var mapper = sourceClass.GetMapperTo(targetClass)!.Value;
-            return mapper.Match(
-                fromMapper =>
+            switch (mapper)
+            {
+                case FromMapper fromMapper:
                 {
                     var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((targetClass, fromMapper));
                     var mapperTag = GetBestMapperTag((targetClass, fromMapper), tag);
@@ -456,8 +459,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         return createMapper;
                     }
-                },
-                toMapper =>
+                }
+                case ClassMappings toMapper:
                 {
                     var (targetMapperNs, targetMapperModelPath) = Config.GetMapperLocation((sourceClass, toMapper));
                     var mapperTag = GetBestMapperTag((sourceClass, toMapper), tag);
@@ -475,18 +478,20 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         return $"{mapperTo}({value})";
                     }
                 }
-            );
+                default:
+                    return value;
+            }
         }
 
-        if (source.MappingType.TryPickT2(out var st2, out _))
+        if (source.MappingType is ClassCollectionMappingType st2)
         {
-            if (target.MappingType.IsT0 && st2.Property != null)
+            if (target.MappingType is PropertyMappingType && st2.Property != null)
             {
                 checkSourceNull = true;
                 getter += $".stream().filter(Objects::nonNull)";
 
                 var sourceProp = st2.Property;
-                if (st2.Property.MappingType.TryPickT1(out var t1, out _) && t1.Property != null)
+                if (st2.Property.MappingType is ClassMappingType t1 && t1.Property != null)
                 {
                     imports.Add(sourceProp.Class.GetImport(Config, tag));
                     getter +=
@@ -507,7 +512,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                 getter += $".map({selector}).{Config.GetCollector(st2.Domain)}";
             }
-            else if (target.MappingType.TryPickT2(out var tt2, out _) && st2.Class != tt2.Class)
+            else if (target.MappingType is ClassCollectionMappingType tt2 && st2.Class != tt2.Class)
             {
                 checkSourceNull = true;
                 imports.Add("java.util.stream.Collectors");
@@ -523,15 +528,15 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
         }
         else if (
-            source.MappingType.TryPickT1(out var st1, out _)
-            && target.MappingType.TryPickT1(out var tt1, out _)
+            source.MappingType is ClassMappingType st1
+            && target.MappingType is ClassMappingType tt1
             && st1.Class != tt1.Class
         )
         {
             checkSourceNull = true;
             getter = GetMappedValue(getter, st1.Class, tt1.Class, target);
         }
-        else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
+        else if (source.MappingType is PropertyMappingType && target.MappingType is ClassMappingType tt1rec)
         {
             checkSourceNull = true;
             imports.Add(
@@ -541,7 +546,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             getter =
                 $"{Config.GetTypeName(tt1rec.Class)}.getValue({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
         }
-        else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
+        else if (source.MappingType is PropertyMappingType && target.MappingType is ClassCollectionMappingType tt2rec)
         {
             checkSourceNull = true;
             imports.Add("java.util.stream.Collectors");
@@ -556,10 +561,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         else
         {
             if (
-                source.MappingType.TryPickT1(out var t1, out _)
+                source.MappingType is ClassMappingType t1
                 && Config.AvailableClasses.Contains(t1.Class)
                 && t1.Property != null
-                && target.MappingType.IsT0
+                && target.MappingType is PropertyMappingType
             )
             {
                 checkSourceNull = true;

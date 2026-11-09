@@ -96,6 +96,16 @@ public class Domain(Reference location) : IAnnotationContainer, IVariableContain
 
     internal Reference Location { get; } = location;
 
+    public Converter? GetConverter(Domain? toDomain)
+    {
+        if (toDomain != null && this != toDomain)
+        {
+            return ConvertersFrom.FirstOrDefault(c => c.From.Contains(this) && c.To.Contains(toDomain));
+        }
+
+        return null;
+    }
+
     public override string ToString()
     {
         return Name;
