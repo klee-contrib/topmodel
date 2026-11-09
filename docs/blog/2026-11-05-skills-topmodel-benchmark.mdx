@@ -1,0 +1,165 @@
+---
+title: "Des Skills IA pour TopModel"
+description: "Un skill TopModel pour agents IA existe. Nous avons mesuré son effet sur 9 cas, avec 4 modèles (Haiku, Sonnet, Opus, Qwen), avec et sans skill : qualité, durée et coût."
+slug: skills-ia-topmodel
+authors:
+  - name: Gildéric Deruette
+    title: Contributeur
+    url: https://github.com/gideruette
+    image_url: https://avatars.githubusercontent.com/u/15626856
+tags: [IA, benchmark]
+date: 2026-11-05
+---
+
+import BenchmarkChart from "@site/src/components/BenchmarkChart";
+import { benchmark } from "@site/src/data/benchmark";
+
+Il nous a été posé maintes et maintes fois la question des Skills IA pour TopModel. Sans être IA sceptiques, notre intuition initiale était que les modèles de langages étaient suffisamment forts pour s'appuyer sur les outils que nous avions déjà mis en place : le language server et la documentation.
+
+Néanmoins, nous avons eu l'occasion de réaliser des observations plus concrètes. Un utilisateur nous a proposé un skill relativement simple qu'il avait pu construire pas à pas dans son projet. Nous avons donc cherché à mesurer réellement sa performance.
+
+## Le skill
+
+Un `SKILL.md` (~3,8 k tokens) et cinq références (~26 k tokens : syntaxe, règles, exemples, outillage, générateurs). Il impose une boucle de travail : éditer le `.tmd`, lancer les diagnostics, valider sur copie temporaire (`modgen --check` régénère le code, il n'est donc pas en lecture seule), puis générer.
+
+## Protocole
+
+- **Base** : le modèle de l'`asta-starter-kit`, avec les générateurs JPA, Angular et SQL.
+- **Un agent par cas et par configuration**, dans une copie isolée du modèle et de son code généré. Il reçoit en plus le dossier du skill pour les cas avec Skill. La consigne est identique.
+- **7 cas** : catalogue de produits, évolution de l'utilisateur, commandes (deux adresses), historique de connexions, groupes (N-N), renommage d'une propriété, listes de référence existantes.
+- **Modèles** : Haiku 5.5, Sonnet 5.5, Opus 5.5 et Qwen 27B, chacun avec et sans skill : 56 exécutions.
+- **Validité** : `modgen --check` sort en 0 pour les 56. Aucun modèle invalide, aucun fichier généré modifié à la main.
+- **Qualité** : note sur 10 par grille (4 points de conventions et de rapport, 6 points propres au cas), attribuée par un modèle correcteur.
+
+## Premiers bancs de test
+
+| Configuration     | Note /10 | Durée   | Coût par cas (API) |
+| ----------------- | -------- | ------- | ------------------ |
+| Haiku sans skill  | 9,28     | 5,1 min | 0,042 $            |
+| Haiku avec skill  | 9,66     | 4,8 min | 0,116 $            |
+| Sonnet sans skill | 9,34     | 1,7 min | 0,168 $            |
+| Sonnet avec skill | 9,59     | 2,4 min | 0,264 $            |
+| Opus sans skill   | 9,77     | 2,7 min | 0,478 $            |
+| Opus avec skill   | 9,79     | 4,3 min | 0,839 $            |
+
+### À retenir
+
+On retient essentiellement que les résultats sont équivalents pour des coûts et un temps d'exécution qui doublent.
+On retiendra aussi que Opus est un modèle beaucoup trop cher pour effectuer des tâches TopModel, puisque Sonnet obtient des résultats équivalents.
+
+Il nous faut donc un cas de test plus compliqué pour vraiment mettre à l'épreuve nos skills.
+
+Reprenons donc quelques cas tordus de notre projet de test.
+Nous allons maintenant tester en parallèle un skill beaucoup plus simple, qui donne des informations générales sur TopModel, le lien vers la documentation, le repo github etc.
+
+## Un cas d'usage plus compliqué
+
+| Configuration             | Critères     | Durée    | Coût API |
+| ------------------------- | ------------ | -------- | -------- |
+| Haiku sans skill          | 59/67 (88 %) | 17,4 min | 0,74 $   |
+| Haiku avec tiny-skill     | 66/67 (99 %) | 14,8 min | 0,58 $   |
+| Haiku avec skill complet  | 67/67        | 10,1 min | 0,50 $   |
+| Sonnet sans skill         | 65/67 (97 %) | 6,0 min  | 0,76 $   |
+| Sonnet avec tiny-skill    | 67/67        | 6,5 min  | 0,89 $   |
+| Sonnet avec skill complet | 67/67        | 8,0 min  | 1,13 $   |
+
+### À retenir
+
+Ici on constate tout de même un écart plus significatif, notamment pour Haiku. Sans skill, Haiku est presque 2 fois plus lent, et 1,5 fois plus cher.
+
+En revanche, Sonnet avec ou sans skill est encore une fois presque aussi performant. Mais la version avec le skill complet est encore une fois significativement plus onéreuse (26 %), et plus lente (33%).
+
+Avec le skill minimaliste, la différence de qualité avec le skill complet est marginale, pour Haiku comme pour Sonnet. En revanche les coûts sont plus avantageux.
+
+On peut déjà tirer une première conclusion : sur des modèles bon marché, l'apport d'un skill est intéressant, mais uniquement pour les tâches complexes, ou les modèles bas de gamme.
+
+## Cas de test n°7
+
+| Configuration             | Critères           | Durée    | Coût API |
+| ------------------------- | ------------------ | -------- | -------- |
+| Haiku sans skill          | 118,5/129,5 (92 %) | 12,9 min | 0,38 $   |
+| Haiku avec tiny-skill     | 126,5/129,5 (98 %) | 20,3 min | 0,44 $   |
+| Haiku avec skill complet  | 129,5/129,5        | 13,9 min | 0,67 $   |
+| Sonnet sans skill         | 118,5/129,5 (92 %) | 22,3 min | 1,04 $   |
+| Sonnet avec tiny-skill    | 127,5/129,5 (98 %) | 11,8 min | 1,31 $   |
+| Sonnet avec skill complet | 129,5/129,5        | 11,0 min | 1,50 $   |
+
+### À retenir
+
+On voit apparaitre une corrélation entre le skill et la qualité du résultat. En termes de qualité, les modèles sont équivalents quelle que soit la configuration. Au niveau du temps passé, n'avoir aucun skill, ou bien la nécessité d'aller chercher des informations, font perdre trop de temps sur ce cas.
+
+## Rétro-ingénierie complète d'un modèle
+
+Comparons maintenant les modèles sur un cas beaucoup plus complexe.
+
+A partir d'un petit modèle de départ (6 fichiers `.tmd`, 21 fichiers générés), réécrire le modèle complet des tests du repo topmodel pour que `modgen` régénère à l'identique les 720 fichiers du lock. La limite est fixée à 30 minutes par agent.
+
+L'objectif est de comparer la qualité, le temps et le coût des modèles avec et sans skill.
+L'exercice est volontairement très compliqué, et il est attendu que les modèles ne parviennent pas à terminer le run dans le temps imparti.
+
+<BenchmarkChart
+  title="Fichiers du lock régénérés à l'identique au fil du run (30 min)"
+  yLabel="fichiers identiques (sur 720)"
+  yMax={720}
+  yStep={120}
+  series={benchmark.identiques}
+/>
+
+<BenchmarkChart
+  title="Lignes de code dans les .tmd au fil du run (30 min)"
+  yLabel="lignes de code dans les .tmd"
+  yMax={2600}
+  yStep={650}
+  series={benchmark.tmdLines}
+/>
+
+<BenchmarkChart
+  title="Coût API cumulé au fil du run (30 min)"
+  yLabel="coût API cumulé (USD)"
+  yMax={7}
+  yStep={1}
+  series={benchmark.cout}
+  unit=" $"
+/>
+
+| Configuration     | Fichiers identiques | Durée  | Coût API |
+| ----------------- | ------------------- | ------ | -------- |
+| Opus avec skill   | 594/720 (82 %)      | 21 min | 6,52 $   |
+| Opus sans skill   | 451/720 (63 %)      | 21 min | 5,17 $   |
+| Sonnet avec skill | 538/720 (75 %)      | 26 min | 4,24 $   |
+| Sonnet sans skill | 405/720 (56 %)      | 24 min | 3,75 $   |
+| Haiku avec skill  | 65/720 (9 %)        | 15 min | 0,48 $   |
+| Haiku sans skill  | 73/720 (10 %)       | 21 min | 0,40 $   |
+
+### Bilan du run
+
+Haiku et Qwen se sont arrêtés avant la fin du run, et n'ont pas réussi à générer plus de 10 % des fichiers.
+
+Sonnet s'est également arrêté avant la fin du run, mais a réussi à générer 56 % des fichiers sans skill, et 75 % avec skill.
+
+Opus a été le seul modèle à générer plus de 80 % des fichiers, et ce uniquement avec le skill.
+
+### À retenir
+
+Sur cette tâche très compliquée, le skill apporte un gain net pour Opus (+143 fichiers) et Sonnet (+133), mais pas pour Haiku (légèrement en retrait). Opus avec skill obtient le meilleur résultat (82 %) mais reste quand même extrêmement cher ; Sonnet avec skill offre le meilleur rapport qualité/coût. Haiku reste très en retrait quelle que soit la configuration.
+
+## Conclusion
+
+Le skill permet de compenser le manque de connaissances d'un modèle, et l'écart semble se creuser en fonction de la complexité de la tâche. Pour les cas simples il semble complexifier la tâche sans réel gain.
+
+Nous mettons donc à disposition le skill complet, à utiliser de préférence avec un modèle économique 😉, et plutôt pour les cas avancés.
+
+## Annexe : Relance de 5 cas simples avec la version optimisée du skill
+
+Nous avons rejoué 5 des 7 premiers cas (les cas 1, 2, 4, 5 et 6) avec la version actuelle du skill, découpée en fichiers par sujet, et avec Qwen3.8-27B. Les cas 3 et 7 sont écartés pour tous les modèles, afin de comparer les mêmes cas : Qwen n'a pas réussi à terminer le cas 3. Chaque cas est joué une fois par modèle et par configuration..
+
+| Modèle      | Skill | Qualité | Durée par cas | Tokens, 5 cas (entrée + sortie) | Tokens par cas | Coût par cas     | Coût, 5 cas      |
+| ----------- | ----- | ------- | ------------- | ------------------------------- | -------------- | ---------------- | ---------------- |
+| Haiku       | sans  | 92,3 %  | 2,7 min       | 5,58 M                          | 1,12 M         | 0,03 $           | 0,14 $           |
+| Haiku       | avec  | 96,3 %  | 2,9 min       | 6,94 M                          | 1,39 M         | 0,07 $           | 0,35 $           |
+| Sonnet      | sans  | 97,2 %  | 1,1 min       | 1,75 M                          | 0,35 M         | 0,18 $           | 0,88 $           |
+| Sonnet      | avec  | 94,4 %  | 1,5 min       | 2,62 M                          | 0,52 M         | 0,23 $           | 1,17 $           |
+| Qwen3.8-27B | sans  | 97,8 %  | 15,5 min      | 9,96 M                          | 1,99 M         | 0,97 € (≈ 1,1 $) | 4,83 € (≈ 5,7 $) |
+| Qwen3.8-27B | avec  | 96,7 %  | 8,7 min       | 7,21 M                          | 1,44 M         | 0,67 € (≈ 0,8 $) | 3,37 € (≈ 4,0 $) |
+
+Le skill apporte globalement soit de la qualité, soit de la rapidité. Ça reste quand même surprenant que l'apport soit de nature différente selon le modèle.
