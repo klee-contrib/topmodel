@@ -173,6 +173,9 @@ domain:
   csharp:
     genericType: ICollection<{T}>
     collector: ToList()
+  csharp-client:
+    genericType: IList<{T}>
+    collector: ToList()
   java:
     genericType: List<{T}>
     imports:

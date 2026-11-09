@@ -75,7 +75,7 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="dateFin">Date de l'avis.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des avis correspondant aux critères.</returns>
-    public async Task<ICollection<AvisClientRead>> GetAvisClients(int resId, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
+    public async Task<IList<AvisClientRead>> GetAvisClients(int resId, int? noteMin = null, bool approuve = false, DateTime? dateDebut = null, DateTime? dateFin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -89,7 +89,7 @@ public partial class PersonneClient(HttpClient _client)
         using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/avis?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<AvisClientRead>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<AvisClientRead>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -128,13 +128,13 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="perId">Identifiant de la personne.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des commandes du client.</returns>
-    public async Task<ICollection<ICommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
+    public async Task<IList<ICommandeItem>> GetClientCommandes(int perId, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients/{perId}/commandes"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ICommandeItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ICommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public partial class PersonneClient(HttpClient _client)
     /// <param name="email">Adresse email du client.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des clients.</returns>
-    public async Task<ICollection<ClientItem>> GetClients(string nom, string? email = null, CancellationToken ct = default)
+    public async Task<IList<ClientItem>> GetClients(string nom, string? email = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -155,7 +155,7 @@ public partial class PersonneClient(HttpClient _client)
         using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/restaurants/clients?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ClientItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ClientItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>

@@ -419,9 +419,9 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var getter = paramName == null ? source.NameCamel : $"{paramName}.{Config.GetGetterName(source, tag)}()";
 
         var converter = source.Domain?.GetConverter(target.Domain);
-        if (converter != null && Config.GetImplementation(converter) != null)
+        if (converter != null && Config.GetImplementation(converter, tag) != null)
         {
-            var impl = Config.GetImplementation(converter);
+            var impl = Config.GetImplementation(converter, tag);
             if (impl != null)
             {
                 imports.AddRange(impl.Imports);
@@ -431,7 +431,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         if (Config.UseJdbc)
         {
             return (
-                Getter: Config.GetConvertedValue(getter, source.Domain, target.Domain),
+                Getter: Config.GetConvertedValue(getter, source.Domain, target.Domain, tag),
                 CheckSourceNull: false,
                 Imports: imports
             );
@@ -503,14 +503,14 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 imports.Add("java.util.Objects");
 
                 var selector =
-                    $"p -> {HandleConversion($"p.{Config.GetGetterName(sourceProp, tag)}()", sourceProp, target, collection: true)}";
+                    $"p -> {HandleConversion($"p.{Config.GetGetterName(sourceProp, tag)}()", sourceProp, target, tag, collection: true)}";
                 if (selector.StartsWith("p -> p") && selector.Count(c => c == '.') == 1)
                 {
                     imports.Add(sourceProp.Class.GetImport(Config, tag));
                     selector = $"{sourceProp.Class.NamePascal}::{selector[7..^2]}";
                 }
 
-                getter += $".map({selector}).{Config.GetCollector(st2.Domain)}";
+                getter += $".map({selector}).{Config.GetCollector(st2.Domain, tag)}";
             }
             else if (target.MappingType is ClassCollectionMappingType tt2 && st2.Class != tt2.Class)
             {
@@ -524,7 +524,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     selector = selector[5..^3].Replace("Mappers.", "Mappers::");
                 }
 
-                getter += $".stream().filter(Objects::nonNull).map({selector}).{Config.GetCollector(st2.Domain)}";
+                getter += $".stream().filter(Objects::nonNull).map({selector}).{Config.GetCollector(st2.Domain, tag)}";
             }
         }
         else if (
@@ -544,7 +544,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             );
 
             getter =
-                $"{Config.GetTypeName(tt1rec.Class)}.getValue({HandleConversion(getter, source, tt1rec.Class.EnumKey!)})";
+                $"{Config.GetTypeName(tt1rec.Class)}.getValue({HandleConversion(getter, source, tt1rec.Class.EnumKey!, tag)})";
         }
         else if (source.MappingType is PropertyMappingType && target.MappingType is ClassCollectionMappingType tt2rec)
         {
@@ -556,7 +556,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             );
 
             getter +=
-                $".stream().filter(Objects::nonNull).map({tt2rec.Class.NamePascal}::getValue).{Config.GetCollector(tt2rec.Domain)}";
+                $".stream().filter(Objects::nonNull).map({tt2rec.Class.NamePascal}::getValue).{Config.GetCollector(tt2rec.Domain, tag)}";
         }
         else
         {
@@ -572,7 +572,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 getter += $".{Config.GetGetterName(t1.Property, tag)}()";
             }
 
-            getter = HandleConversion(getter, source, target);
+            getter = HandleConversion(getter, source, target, tag);
         }
 
         return (Getter: getter, CheckSourceNull: checkSourceNull, Imports: imports);
@@ -680,9 +680,15 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         }
     }
 
-    protected virtual string HandleConversion(string value, IProperty source, IProperty target, bool collection = false)
+    protected virtual string HandleConversion(
+        string value,
+        IProperty source,
+        IProperty target,
+        string tag,
+        bool collection = false
+    )
     {
-        return Config.GetConvertedValue(value, source.Domain, target.Domain);
+        return Config.GetConvertedValue(value, source.Domain, target.Domain, tag);
     }
 
     protected override void HandleFile(
@@ -730,7 +736,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         foreach (var param in mapper.PropertyParams)
         {
-            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property), param.Property.NameCamel)
+            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property, tag), param.Property.NameCamel)
             {
                 Comment = param.Property.Comment,
             };

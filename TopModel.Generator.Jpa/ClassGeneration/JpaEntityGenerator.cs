@@ -177,7 +177,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     annotations.Add(JpaModelPropertyGenerator.EnumAnnotation);
                 }
             }
-            var field = new JavaField(Config.GetType(pk), pk.NameCamel).AddRange(annotations);
+            var field = new JavaField(Config.GetType(pk, tag), pk.NameCamel).AddRange(annotations);
             javaClass.Add(field);
         }
 
@@ -268,7 +268,10 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             && classe.PrimaryKey.First() is { Association: Class association, AssociationProperty: IProperty ap } pk
         )
         {
-            var javaField = new JavaField(Config.GetType(ap, forceAssociationPropertyType: true), pk.PropertyNameCamel)
+            var javaField = new JavaField(
+                Config.GetType(ap, tag, forceAssociationPropertyType: true),
+                pk.PropertyNameCamel
+            )
                 .AddCommentLine(
                     @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}"
                 )
@@ -333,7 +336,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         )
         {
             var propertyName = classe.PrimaryKey.First().PropertyNameCamel;
-            var propertyType = Config.GetType(ap);
+            var propertyType = Config.GetType(ap, tag);
             string setterName = $"set{classe.PrimaryKey.First().PropertyNamePascal}";
             var method = new JavaMethod("void", setterName)
             {
@@ -376,7 +379,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
         {
-            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe);
+            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe, tag);
         }
     }
 

@@ -59,7 +59,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             {
                 foreach (var value in classe.Values.SelectMany(v => v.Value))
                 {
-                    foreach (var @using in Config.GetValueImports(value.Key, value.Value))
+                    foreach (var @using in Config.GetValueImports(value.Key, tag, value.Value))
                     {
                         usings.Add(@using);
                     }
@@ -190,7 +190,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     + serviceName
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)}){Environment.NewLine}{{"
             );
-            WriteReferenceAccessorBody(w, classe);
+            WriteReferenceAccessorBody(w, classe, tag);
             w.WriteLine(1, "}");
 
             if (classList.IndexOf(classe) != classList.Count - 1)
@@ -316,7 +316,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
-    protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
         {
@@ -329,7 +330,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 2,
                 $@"return new List<{Config.GetTypeName(classe)}>
 {{
-    {string.Join($",{Environment.NewLine}    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
+    {string.Join($",{Environment.NewLine}    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, tag, prop.Value)}"))} }}"))}
 }};"
             );
             return;

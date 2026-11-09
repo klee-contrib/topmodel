@@ -270,10 +270,11 @@ public class SqlConfig : GeneratorConfigBase
     /// Retourne le type SQL d'une propriété.
     /// </summary>
     /// <param name="property">Propriété.</param>
+    /// <param name="tag">Tag.</param>
     /// <returns>Type SQL.</returns>
-    public virtual string GetType(IProperty property)
+    public virtual string GetType(IProperty property, string tag)
     {
-        var type = GetType(property, forceAssociationPropertyType: true);
+        var type = GetType(property, tag, forceAssociationPropertyType: true);
 
         if (type.ToLower().Equals("varchar") && property.Domain?.Length != null)
         {
@@ -289,7 +290,7 @@ public class SqlConfig : GeneratorConfigBase
         return type;
     }
 
-    public override string GetValue(IProperty property, string? value = null)
+    public override string GetValue(IProperty property, string tag, string? value = null)
     {
         /* Cas spécifique d'un booléen sous Oracle, typé comme un numeric(1) */
         bool NeedsBooleanConversionToNumeric()
@@ -299,7 +300,7 @@ public class SqlConfig : GeneratorConfigBase
                 return false;
             }
 
-            return TargetDBMS == TargetDBMS.Oracle && GetType(property) == "number(1)" && IsBoolean(property);
+            return TargetDBMS == TargetDBMS.Oracle && GetType(property, tag) == "number(1)" && IsBoolean(property);
         }
 
         if (NeedsBooleanConversionToNumeric())
@@ -307,12 +308,12 @@ public class SqlConfig : GeneratorConfigBase
             return bool.Parse(value!) ? "1" : "0";
         }
 
-        return base.GetValue(property, value);
+        return base.GetValue(property, tag, value);
     }
 
-    public override bool ShouldQuoteValue(IProperty property)
+    public override bool ShouldQuoteValue(IProperty property, string tag)
     {
-        var type = GetImplementation(property.Domain)?.Type?.ToLower();
+        var type = GetImplementation(property.Domain, tag)?.Type?.ToLower();
         return property.Domain == null
             || (type ?? string.Empty).Contains("varchar")
             || type == "text"

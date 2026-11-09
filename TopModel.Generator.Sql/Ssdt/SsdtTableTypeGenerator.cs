@@ -52,7 +52,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="tag">Tag.</param>
     protected virtual void WriteColumn(StringBuilder sb, IProperty property, string tag)
     {
-        var persistentType = Config.GetType(property);
+        var persistentType = Config.GetType(property, tag);
         sb.Append(Config.GetSqlName(property, tag)).Append(' ').Append(persistentType).Append(" null");
     }
 
@@ -120,7 +120,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         foreach (var property in Config.GetProperties(classe))
         {
             if (
-                (!property.PrimaryKey || Config.ShouldQuoteValue(property))
+                (!property.PrimaryKey || Config.ShouldQuoteValue(property, tag))
                 && property.Name != ScriptUtils.InsertKeyName
             )
             {

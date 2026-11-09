@@ -73,7 +73,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         )
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
-            usings.AddRange(Config.GetValueImports(property));
+            usings.AddRange(Config.GetValueImports(property, tag));
 
             switch (property)
             {
@@ -89,12 +89,12 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
         foreach (var mapping in fromMappers.SelectMany(fm => fm.Mapper.ClassParams.Select(c => c.Mappings)))
         {
-            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Value.Domain, m.Key.Domain)));
+            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Value.Domain, m.Key.Domain, tag)));
         }
 
         foreach (var mapping in toMappers.Select(fm => fm.Mapper.Mappings))
         {
-            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Key.Domain, m.Value.Domain)));
+            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Key.Domain, m.Value.Domain, tag)));
         }
 
         if (usings.Exists(@using => !mapperNs.Contains(@using)))
@@ -204,7 +204,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     }
 
                     value +=
-                        $".Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain)}";
+                        $".Select(p => {HandleConversion($"p.{innerProp}", t1?.Property ?? st2.Property, target, rrnSource, rrnTarget, paramRequired: true, collection: true)}).{Config.GetCollector(st2.Domain, tag)}";
                 }
                 else if (target.MappingType is ClassCollectionMappingType tt2 && st2.Class != tt2.Class)
                 {
@@ -214,7 +214,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                         selector = selector[5..^3];
                     }
                     value =
-                        $"{value}{(rrnSource && !source.Required ? "?" : string.Empty)}.Select({selector}).{Config.GetCollector(st2.Domain)}";
+                        $"{value}{(rrnSource && !source.Required ? "?" : string.Empty)}.Select({selector}).{Config.GetCollector(st2.Domain, tag)}";
                 }
             }
             else if (
@@ -239,7 +239,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             )
             {
                 value +=
-                    $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({Config.GetTypeName(tt2rec.Class)}.GetValue).{Config.GetCollector(tt2rec.Domain)}";
+                    $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({Config.GetTypeName(tt2rec.Class)}.GetValue).{Config.GetCollector(tt2rec.Domain, tag)}";
 
                 var defaultTargetValue = Config.GetDefaultValue(target, tag);
                 if (defaultTargetValue != "null" && target.Required)
@@ -277,10 +277,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             bool collection = false
         )
         {
-            var isValueType = Config.IsValueType(source);
+            var isValueType = Config.IsValueType(source, tag);
 
-            var targetType = Config.GetType(target, skipChain: collection ? 1 : 0, nonNullable: true);
-            var sourceType = Config.GetType(source, nonNullable: true);
+            var targetType = Config.GetType(target, tag, skipChain: collection ? 1 : 0, nonNullable: true);
+            var sourceType = Config.GetType(source, tag, nonNullable: true);
             if (
                 !sourceType.EndsWith(targetType)
                 && !targetType.EndsWith(sourceType)
@@ -323,7 +323,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             }
             else if (isValueType && rrnSource && target.Required && !paramRequired)
             {
-                var type = Config.GetType(source, nonNullable: true);
+                var type = Config.GetType(source, tag, nonNullable: true);
                 var enumType = Config.GetEnumType(source);
                 var cast = enumType.Contains($".{type}") ? enumType : type;
 
@@ -350,6 +350,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 value,
                 source.Domain,
                 target.Domain,
+                tag,
                 isValueType && (!rrnSource || !source.Required)
             );
         }
@@ -385,7 +386,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 $"({string.Join(", ", mapper.Params.Select(mp => mp switch
                 {
                     ClassMappings c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                    PropertyMapping p => $"{Config.GetType(p.Property, nonNullable: mp.Required || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.Required ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}"
+                    PropertyMapping p => $"{Config.GetType(p.Property, tag, nonNullable: mp.Required || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.Required ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}"
                 }))})"
             );
 
@@ -402,7 +403,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     p is ClassMappings
                     || p is PropertyMapping pm
                         && !Config.AllValueTypes.Contains(
-                            Config.GetImplementation(pm.Property.Domain)?.Type ?? string.Empty
+                            Config.GetImplementation(pm.Property.Domain, tag)?.Type ?? string.Empty
                         )
                 )
             );
@@ -543,7 +544,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             if (missingRequiredProperties.Count > 0)
             {
                 extraParams =
-                    $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
+                    $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, tag, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
             }
 
             w.WriteLine(

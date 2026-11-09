@@ -72,6 +72,29 @@ Toutes les configurations partagent le même socle commun de propriétés :
 
 - **`language`** : Le (ou les, le champ accepte aussi une liste) langage(s) d'implémentation(s) utilisé(s) par cette configuration. Il doit correspondre à l'un des langages définis sur les domaines, décorateurs, annotations et converters du modèle. Chaque module définit déjà un langage par défaut (`csharp` pour `csharp`, `java` pour `jpa`...), ce qui sera souvent suffisant. Si vous spécifiez plusieurs languages, alors l'implémentation sera choisie par ordre de priorité parmi les implémentations existantes sur l'objet en question.
 
+  `language` supporte également les variables par tag : vous pouvez donc vous en servir pour définir des surcharges d'implémentation pour un tag en particulier, par exemple :
+
+  ```yaml
+  # Le domaine :
+  domain:
+    name: DO_LISTE
+    csharp:
+      genericType: ICollection<{T}>
+      collector: ToList()
+    csharp-client:
+      genericType: IList<{T}>
+      collector: ToList()
+
+  # Dans la config C# :
+  tagVariables:
+    api-client:
+      language: csharp-client
+    language: ["{language}", csharp]
+
+  # Ainsi, les fichiers taggués "api-client" utiliseront l'implémentation "csharp-client" si elle a été définie
+  # Remarque : Si la variable `language` n'est pas définie, elle est remplacée par une chaîne vide qui ne correspond pas à un langage existant, et est donc ignorée.
+  ```
+
 - **`referencedTags`** : Chaque configuration considère par défaut que les objets "disponibles" sont limités aux objets générés, donc aux objets qui ont les tags du générateur. Cela veut dire que si un objet en référence un autre (via une composition/association, un mapper...) qui n'a **pas de tag en commun** avec ceux de la configuration, alors la référence sera **omise** de la génération, puisqu'elle référence un objet qui ne sera pas généré ici. Cette propriété permet donc de **référencer des tags d'autres configurations**, afin de pouvoir résoudre ces références d'objet et les inclure au lieu de les omettre. Cela demandera nécessairement à ce que la référence puisse être effectivement résolue dans le code généré, mais ce n'est pas le problème du générateur de code 😉
 
   Exemple :

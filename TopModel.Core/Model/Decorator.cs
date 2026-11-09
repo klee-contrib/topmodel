@@ -22,6 +22,8 @@ public class Decorator(Reference location) : IPropertyContainer, IVariableContai
 
     public required ModelFile ModelFile { get; init; }
 
+    public IEnumerable<string> Tags => ModelFile.Tags;
+
     public required Namespace Namespace { get; init; }
 
     public IList<DecoratorInstance> Decorators { get; } = [];

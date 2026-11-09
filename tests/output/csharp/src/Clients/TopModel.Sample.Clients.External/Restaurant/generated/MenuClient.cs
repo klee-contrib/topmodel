@@ -79,13 +79,13 @@ public partial class MenuClient(HttpClient client)
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des catégories de plats.</returns>
-    public async Task<ICollection<CategoriePlat>> GetCategoriePlats(CancellationToken ct = default)
+    public async Task<IList<CategoriePlat>> GetCategoriePlats(CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/categorie-plats"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<CategoriePlat>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<CategoriePlat>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats.</returns>
-    public async Task<ICollection<IPlatItem>> GetPlats(int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<IList<IPlatItem>> GetPlats(int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -123,7 +123,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<IPlatItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<IPlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Plats correspondant aux critères de recherche.</returns>
-    public async Task<ICollection<IPlatItem>> SearchPlats(string nom, int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<IList<IPlatItem>> SearchPlats(string nom, int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -180,7 +180,7 @@ public partial class MenuClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/plats/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<IPlatItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<IPlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>

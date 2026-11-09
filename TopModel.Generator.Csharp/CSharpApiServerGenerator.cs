@@ -38,6 +38,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
         var type = Config.GetType(
             param,
+            tag,
             nonNullable: param.Required
                 && (
                     param.ParamLocation != ParamLocation.Query
@@ -92,7 +93,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
         return sb.ToString();
     }
 
-    protected virtual string GetRoute(Endpoint endpoint)
+    protected virtual string GetRoute(Endpoint endpoint, string tag)
     {
         var split = endpoint.FullRoute.Split("/");
 
@@ -105,7 +106,7 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
 
                 var paramType =
                     param != null
-                        ? Config.GetType(param) switch
+                        ? Config.GetType(param, tag) switch
                         {
                             "int" => "int",
                             "int?" => "int",
@@ -198,9 +199,11 @@ public class {className} : Controller
                 wd.AppendLine($"{indent}[{annotation}]");
             }
 
-            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(returns)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens && !Config.NoAsyncControllers ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
+                $@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint, tag)}"")]"
+            );
+            wd.AppendLine(
+                $"{indent}public {Config.GetReturnTypeName(returns, tag)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens && !Config.NoAsyncControllers ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();

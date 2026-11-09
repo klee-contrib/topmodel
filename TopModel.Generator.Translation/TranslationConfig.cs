@@ -14,7 +14,9 @@ public class TranslationConfig : GeneratorConfigBase
     /// </summary>
     public virtual string RootPath { get; set; } = "{lang}";
 
-    public override string[] PropertiesWithTagVariableSupport => [nameof(RootPath)];
+    public override string[] PropertiesWithTagVariableSupport =>
+        [.. base.PropertiesWithTagVariableSupport, nameof(RootPath)];
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(RootPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(RootPath)];
 }

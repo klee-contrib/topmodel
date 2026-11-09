@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using YamlDotNet.Serialization;
 
@@ -223,6 +222,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [
+            .. base.PropertiesWithModuleVariableSupport,
             nameof(PersistentModelPath),
             nameof(ReferencesModelPath),
             nameof(NonPersistentModelPath),
@@ -260,7 +260,8 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ResourcesResxPath),
         ];
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesResxPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(ResourcesResxPath)];
 
     protected virtual IDictionary<string, string> CollectionTypes { get; } =
         new Dictionary<string, string>()
@@ -287,21 +288,27 @@ public class CsharpConfig : GeneratorConfigBase
         return Path.Combine(OutputDirectory, GetModelPath(classe, tag), "generated", GetTypeName(classe) + ".cs");
     }
 
-    public virtual string GetCollector(Domain domain)
+    public virtual string GetCollector(Domain domain, string tag)
     {
-        var impl = GetImplementation(domain)!;
+        var impl = GetImplementation(domain, tag)!;
         return impl.Collector
             ?? $"To{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type).TrimStart("I")}()";
     }
 
-    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
+    public virtual string GetConvertedValue(
+        string value,
+        Domain? fromDomain,
+        Domain? toDomain,
+        string tag,
+        bool nullableValueType
+    )
     {
         if (nullableValueType && fromDomain != null && toDomain != null)
         {
             var converter = fromDomain.GetConverter(toDomain);
             if (converter != null)
             {
-                var text = GetImplementation(converter)?.Text;
+                var text = GetImplementation(converter, tag)?.Text;
                 if (text != null && text.Contains("{value}."))
                 {
                     value += "?";
@@ -309,7 +316,7 @@ public class CsharpConfig : GeneratorConfigBase
             }
         }
 
-        return GetConvertedValue(value, fromDomain, toDomain);
+        return GetConvertedValue(value, fromDomain, toDomain, tag);
     }
 
     public virtual string GetDataFlowFilePath(DataFlow df, string tag)
@@ -360,8 +367,8 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetDefaultValue(IProperty property, string tag)
     {
-        var defaultValue = GetValue(property);
-        var type = GetType(property, nonNullable: true);
+        var defaultValue = GetValue(property, tag);
+        var type = GetType(property, tag, nonNullable: true);
 
         if (
             property.EnumProperty != null
@@ -567,25 +574,26 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetReturnTypeName(IProperty? prop)
+    public virtual string GetReturnTypeName(IProperty? prop, string tag)
     {
         if (prop == null)
         {
             return NoAsyncControllers ? "void" : "async Task";
         }
 
-        var typeName = GetType(prop, nonNullable: prop.Required);
+        var typeName = GetType(prop, tag, nonNullable: prop.Required);
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers ? typeName : $"async Task<{typeName}>";
     }
 
     public virtual string GetType(
         IProperty prop,
+        string tag,
         bool forceAssociationPropertyType = false,
         int skipChain = 0,
         bool nonNullable = false
     )
     {
-        var type = base.GetType(prop, forceAssociationPropertyType, skipChain);
+        var type = base.GetType(prop, tag, forceAssociationPropertyType, skipChain);
 
         if (
             !nonNullable
@@ -618,13 +626,14 @@ public class CsharpConfig : GeneratorConfigBase
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
     }
 
-    public virtual bool IsValueType(IProperty prop)
+    public virtual bool IsValueType(IProperty prop, string tag)
     {
         return prop switch
         {
-            { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
+            { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain, tag)?.GenericType) =>
+                true,
             { Composition: not null } => false,
-            _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
+            _ => AllValueTypes.Contains(GetType(prop, tag, nonNullable: true)),
         };
     }
 

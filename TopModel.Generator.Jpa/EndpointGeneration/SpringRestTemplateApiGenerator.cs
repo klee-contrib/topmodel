@@ -47,14 +47,19 @@ public class SpringRestTemplateApiGenerator(
         return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
-    protected virtual IList<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
+    protected virtual IList<string> GetMethodParams(
+        Endpoint endpoint,
+        string tag,
+        bool withType = true,
+        bool withBody = true
+    )
     {
         var methodParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams())
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetType(param, tag)} {param.GetParamName()}");
             }
             else
             {
@@ -66,7 +71,7 @@ public class SpringRestTemplateApiGenerator(
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetType(param, tag)} {param.GetParamName()}");
             }
             else
             {
@@ -79,7 +84,7 @@ public class SpringRestTemplateApiGenerator(
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
+                methodParams.Add($"{Config.GetType(bodyParam, tag)} {bodyParam.GetParamName()}");
             }
             else
             {
@@ -138,7 +143,7 @@ public class SpringRestTemplateApiGenerator(
     protected virtual void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteLine();
-        WriteUriBuilderMethod(fw, endpoint);
+        WriteUriBuilderMethod(fw, endpoint, tag);
         fw.WriteLine();
         WriteEndpointCallMethod(fw, endpoint, tag);
     }
@@ -167,29 +172,32 @@ public class SpringRestTemplateApiGenerator(
         var returnClass = "(Class<?>) null";
         if (returns != null)
         {
-            if (Config.GetType(returns) == "ResponseEntity" && Config.GetType(returns).Split('<').Length > 1)
+            if (Config.GetType(returns, tag) == "ResponseEntity" && Config.GetType(returns, tag).Split('<').Length > 1)
             {
-                returnType = $"ResponseEntity<{Config.GetType(returns).Split('<')[1].Split('>')[0]}>";
-                returnClass = $"{Config.GetType(returns).Split('<')[1].Split('>')[0]}.class";
+                returnType = $"ResponseEntity<{Config.GetType(returns, tag).Split('<')[1].Split('>')[0]}>";
+                returnClass = $"{Config.GetType(returns, tag).Split('<')[1].Split('>')[0]}.class";
             }
-            else if (Config.GetType(returns).Contains('<'))
+            else if (Config.GetType(returns, tag).Contains('<'))
             {
-                returnType = $"ResponseEntity<{Config.GetType(returns)}>";
-                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(returns)}>() {{}}";
+                returnType = $"ResponseEntity<{Config.GetType(returns, tag)}>";
+                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(returns, tag)}>() {{}}";
                 fw.AddImport("org.springframework.core.ParameterizedTypeReference");
             }
             else
             {
-                returnType = $"ResponseEntity<{Config.GetType(returns)}>";
-                returnClass = $"{Config.GetType(returns)}.class";
+                returnType = $"ResponseEntity<{Config.GetType(returns, tag)}>";
+                returnClass = $"{Config.GetType(returns, tag)}.class";
             }
         }
 
-        fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
+        fw.WriteLine(
+            1,
+            $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint, tag))}){{"
+        );
         fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
         fw.WriteLine(
             2,
-            $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, withType: false, withBody: false))});"
+            $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, tag, withType: false, withBody: false))});"
         );
         var body =
             $"new HttpEntity<>({(endpoint.GetJsonBodyParam(Config)?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam(Config)?.GetParamName()}, " : string.Empty)}headers)";
@@ -215,7 +223,7 @@ public class SpringRestTemplateApiGenerator(
         ]);
     }
 
-    protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)
+    protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.NameCamel}");
 
@@ -231,7 +239,7 @@ public class SpringRestTemplateApiGenerator(
 
         fw.WriteLine(1, " */");
         var returnType = "UriComponentsBuilder";
-        var methodParams = GetMethodParams(endpoint, withType: true, withBody: false);
+        var methodParams = GetMethodParams(endpoint, tag, withType: true, withBody: false);
 
         fw.WriteLine(
             1,
@@ -272,7 +280,7 @@ public class SpringRestTemplateApiGenerator(
                 indentLevel++;
             }
 
-            if (Config.GetType(p).StartsWith("List"))
+            if (Config.GetType(p, tag).StartsWith("List"))
             {
                 fw.AddImport("java.util.stream.Collectors");
                 fw.WriteLine(

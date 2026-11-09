@@ -119,7 +119,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
 
         if (classe.Enum == EnumMode.Class && classe.Readonly && classe.EnumKey != null)
         {
-            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe);
+            yield return JavaConstructorGenerator.GetGetValueStaticMethod(classe, tag);
         }
     }
 

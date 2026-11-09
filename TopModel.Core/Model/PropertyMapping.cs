@@ -14,6 +14,8 @@ public class PropertyMapping : IPropertyContainer
 
     public ModelFile ModelFile => throw new NotSupportedException();
 
+    public IEnumerable<string> Tags => throw new NotSupportedException();
+
     public LocatedString Name => throw new NotSupportedException();
 
     public string NamePascal => Property.NamePascal;
