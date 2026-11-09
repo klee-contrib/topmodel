@@ -226,7 +226,10 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(PersistentModelPath),
             nameof(ReferencesModelPath),
             nameof(NonPersistentModelPath),
+            nameof(ApiRootPath),
             nameof(ApiFilePath),
+            nameof(DbContextPath),
+            nameof(DbContextName),
             nameof(DbSchema),
             nameof(ReferenceAccessorsName),
             nameof(ReferenceAccessorsInterfacePath),
@@ -273,7 +276,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ApiRootPath, tag: tag).ToFilePath(),
+            ResolveVariables(ApiRootPath, tag: tag, module: file.Namespace.Module).ToFilePath(),
             withControllers ? "Controllers" : string.Empty,
             ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.Module)
         );
@@ -329,13 +332,13 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetDbContextFilePath(string tag)
+    public virtual string GetDbContextFilePath(string tag, string? module = null)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(DbContextPath!, tag: tag).ToFilePath(),
+            ResolveVariables(DbContextPath!, tag: tag, module: module).ToFilePath(),
             "generated",
-            $"{GetDbContextName(tag)}.cs"
+            $"{GetDbContextName(tag, module)}.cs"
         );
     }
 
@@ -343,15 +346,16 @@ public class CsharpConfig : GeneratorConfigBase
     /// Récupère le nom du DbContext.
     /// </summary>
     /// <param name="tag">tag</param>
+    /// <param name="module">Module.</param>
     /// <returns>Nom.</returns>
-    public virtual string GetDbContextName(string tag)
+    public virtual string GetDbContextName(string tag, string? module = null)
     {
-        return ResolveVariables(DbContextName, tag: tag).Replace(".", string.Empty);
+        return ResolveVariables(DbContextName, tag: tag, module: module).Replace(".", string.Empty);
     }
 
-    public virtual string GetDbContextNamespace(string tag)
+    public virtual string GetDbContextNamespace(string tag, string? module = null)
     {
-        return ResolveVariables(DbContextPath!, tag: tag).ToNamespace();
+        return ResolveVariables(DbContextPath!, tag: tag, module: module).ToNamespace();
     }
 
     public virtual string GetDefaultValue(IProperty property, string tag)

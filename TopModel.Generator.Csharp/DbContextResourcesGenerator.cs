@@ -29,7 +29,10 @@ public class DbContextResourcesGenerator(
             )
         )
         {
-            return Config.GetDbContextFilePath(tag).Replace(".cs", $".resources.{lang}.cs").Replace("..", ".");
+            return Config
+                .GetDbContextFilePath(tag, property.Parent.Namespace.Module)
+                .Replace(".cs", $".resources.{lang}.cs")
+                .Replace("..", ".");
         }
 
         return null;
@@ -44,9 +47,10 @@ public class DbContextResourcesGenerator(
     {
         using var cw = this.OpenCSharpWriter(filePath);
 
-        var dbContextName = Config.GetDbContextName(tag);
+        var module = properties.First().Parent.Namespace.Module;
+        var dbContextName = Config.GetDbContextName(tag, module);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = Config.GetDbContextNamespace(tag);
+        var contextNs = Config.GetDbContextNamespace(tag, module);
 
         foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
         {
