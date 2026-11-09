@@ -27,7 +27,11 @@ public class JavascriptResourceGenerator(
             return null;
         }
 
-        return Config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, lang);
+        return Config.GetCommentResourcesFilePath(
+            property.Parent.Namespace,
+            tag,
+            modelConfig.I18n.DefaultLang ?? string.Empty
+        );
     }
 
     protected override string? GetMainResourceFilePath(string tag, string lang)
