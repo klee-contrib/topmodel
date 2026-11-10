@@ -16,12 +16,12 @@ public class SsdtConfig
     public string? TableTypeScriptFolder { get; set; }
 
     /// <summary>
-    /// Dossier du projet pour les scripts d'initialisation des listes statiques.
+    /// Dossier du projet pour les scripts d'initialisation des listes de références.
     /// </summary>
     public string? InitListScriptFolder { get; set; }
 
     /// <summary>
-    /// Fichier du projet référençant les scripts d'initialisation des listes statiques.
+    /// Fichier du projet référençant les scripts d'initialisation des listes de références.
     /// </summary>
     public string? InitListMainScriptName { get; set; }
 

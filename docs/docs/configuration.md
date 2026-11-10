@@ -51,6 +51,7 @@ TopModel fournit les modules de générateurs suivants :
 - **`jpa`** : Module de générateurs Java/JPA
 - **`javascript`** : Module de générateurs JavaScript/TypeScript (Angular, React, etc.)
 - **`sql`** : Module de générateurs SQL (PostgreSQL, Oracle, SQL Server, etc.)
+- **`documentation`** : Module de génération de documentation
 - **`translation`** : Module de générateurs de traductions manquantes
 
 Chaque module a son propre nom (par exemple `csharp` pour le module de générateurs C#, `jpa` pour le module de générateurs Java/JPA), qui sera le nom de la propriété à utiliser dans le fichier de configuration, et qui prendra une liste de configurations.
@@ -59,18 +60,41 @@ Pour plus de détails sur chaque module, consultez la [page dédiée à la gén�
 
 ### Propriétés communes
 
-Toutes les configurations partagent le même socle commun de propriétés :
+Les schémas JSON des modules définissent un socle commun de propriétés. `tags` et `outputDirectory` sont obligatoires pour les modules de génération. Les autres propriétés disponibles peuvent varier selon le module ; les options spécifiques sont décrites dans les pages dédiées.
 
 #### Propriétés obligatoires
 
-- **`tags`** : Les tags des objets qui seront générés par cette configuration de générateurs. Ce champ est **obligatoire**.
-- **`outputDirectory`** : Chemin vers la racine du répertoire de génération. Ce champ est **obligatoire**.
+- **`tags`**
+
+  Tags pris en compte par cette configuration.
+
+  Ce champ est **obligatoire**. L'exclusion de tags est gérée par l'option de ligne de commande `--exclude` (ou `-e`), et non par une propriété de cette configuration YAML.
+
+- **`outputDirectory`**
+
+  Racine du répertoire de génération.
+
+  Ce champ est **obligatoire**.
 
 #### Propriétés optionnelles
 
-- **`name`** : Le nom de cette configuration. Il pourra être utilisé pour référencer cette configuration dans certains messages d'erreurs ou d'autres configurations. Il vaudra `{nom de la config}@{index de la config + 1}` si non renseigné.
+- **`name`**
 
-- **`language`** : Le (ou les, le champ accepte aussi une liste) langage(s) d'implémentation(s) utilisé(s) par cette configuration. Il doit correspondre à l'un des langages définis sur les domaines, décorateurs, annotations et converters du modèle. Chaque module définit déjà un langage par défaut (`csharp` pour `csharp`, `java` pour `jpa`...), ce qui sera souvent suffisant. Si vous spécifiez plusieurs languages, alors l'implémentation sera choisie par ordre de priorité parmi les implémentations existantes sur l'objet en question.
+  Nom de cette configuration.
+
+  _Valeur par défaut_ : `{module}@{index}`
+
+  Il peut être utilisé dans les messages d'erreur ou pour référencer cette configuration avec `referencedTags`. S'il n'est pas renseigné, il est défini automatiquement sous la forme `{module}@{index}`, par exemple `csharp@1`.
+
+- **`language`**
+
+  Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
+
+  _Valeur par défaut_ : `csharp` pour `csharp`, `java` pour `jpa`, `ts` pour `javascript`, et `sql` pour `sql` et `documentation`
+
+  _Variables par tag_ : **oui**
+
+  Il doit correspondre à l'un des langages définis sur les domaines, décorateurs, annotations et converters du modèle. Le module `translation` n'expose pas cette option. Si plusieurs langages sont spécifiés, les implémentations sont recherchées par ordre de priorité.
 
   `language` supporte également les variables par tag : vous pouvez donc vous en servir pour définir des surcharges d'implémentation pour un tag en particulier, par exemple :
 
@@ -95,7 +119,13 @@ Toutes les configurations partagent le même socle commun de propriétés :
   # Remarque : Si la variable `language` n'est pas définie, elle est remplacée par une chaîne vide qui ne correspond pas à un langage existant, et est donc ignorée.
   ```
 
-- **`referencedTags`** : Chaque configuration considère par défaut que les objets "disponibles" sont limités aux objets générés, donc aux objets qui ont les tags du générateur. Cela veut dire que si un objet en référence un autre (via une composition/association, un mapper...) qui n'a **pas de tag en commun** avec ceux de la configuration, alors la référence sera **omise** de la génération, puisqu'elle référence un objet qui ne sera pas généré ici. Cette propriété permet donc de **référencer des tags d'autres configurations**, afin de pouvoir résoudre ces références d'objet et les inclure au lieu de les omettre. Cela demandera nécessairement à ce que la référence puisse être effectivement résolue dans le code généré, mais ce n'est pas le problème du générateur de code 😉
+- **`referencedTags`**
+
+  Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.
+
+  Chaque configuration considère par défaut que les objets disponibles sont limités aux objets générés, donc à ceux qui ont les tags de cette configuration. Si un objet référence un autre objet qui n'a **pas de tag en commun** avec la configuration (via une composition, une association, un mapper, etc.), la référence est omise de la génération.
+
+  Cette propriété permet de **référencer des tags d'autres configurations**, afin de résoudre ces références et de les inclure au lieu de les omettre. La référence doit toutefois pouvoir être résolue dans le code généré.
 
   Exemple :
 
@@ -111,19 +141,85 @@ Toutes les configurations partagent le même socle commun de propriétés :
       outputDirectory: ../sources/back/service
   ```
 
-- **`disable`** : Liste des générateurs à désactiver dans le module.
+- **`rootModule`**
 
-- **`variables`** : Variables globales utilisables dans la configuration (voir section [Variables](#variables) ci-dessous).
+  Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).
 
-- **`tagVariables`** : Variables spécifiques par tag (voir section [Variables](#variables) ci-dessous).
+  _Valeur par défaut_ : `{module:head}`
 
-- **`translateProperties`** : Si les libellés des propriétés doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supportent pas la traduction).
+  _Templating_ : `{module}`
 
-- **`translateReferences`** : Si les libellés des listes de références doivent être traduits par les générateurs de ce module. Si oui, une clé de traduction sera générée, et les traductions seront incluses dans les fichiers de traductions générés, si non la valeur renseignée dans le modèle sera générée directement. Par défaut : `true` (en revanche, certains générateurs ne supportent pas la traduction).
+  Cette option est disponible dans les modules `csharp`, `javascript`, `jpa`, `sql` et `translation`.
 
-- **`ignoreDefaultValues`** : Si renseigné, les valeurs par défaut des propriétés dans les classes et les endpoints ne seront pas générées dans cette configuration. La valeur par défaut de cette propriété dépend du module de générateurs.
+- **`variables`**
 
-- **`useLowerCaseSqlNames`** : Si les noms d'identifiants SQL dans le code généré doivent être écrits en minuscule. Cela permet de s'adapter aux conventions du (ou des) SGBD cible(s) (Postgres utilise des minuscules, tandis que SQL Server ou Oracle préfèrent les majuscules). **La valeur par défaut est `true`**, car Postgres est de loin le SGBD le plus courant. Cette propriété supporte également les _variables par tag_.
+  Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.
+
+  Voir la section [Variables](#variables) ci-dessous.
+
+- **`tagVariables`**
+
+  Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.
+
+  Voir la section [Variables](#variables) ci-dessous.
+
+- **`translateProperties`**
+
+  Si les libellés des propriétés doivent être traduits dans cette configuration.
+
+  _Valeur par défaut_ : la valeur renseignée dans le bloc `i18n` global
+
+  Si oui, une clé de traduction est générée et les traductions sont incluses dans les fichiers générés ; sinon, la valeur renseignée dans le modèle est utilisée.
+
+- **`translateReferences`**
+
+  Si les libellés des listes de références doivent être traduits dans cette configuration.
+
+  _Valeur par défaut_ : la valeur renseignée dans le bloc `i18n` global
+
+  Si oui, une clé de traduction est générée et les traductions sont incluses dans les fichiers générés ; sinon, la valeur renseignée dans le modèle est utilisée.
+
+Certaines options ne sont présentes que dans les schémas des modules qui les prennent en charge :
+
+- **`disable`**
+
+  Générateurs à désactiver pour cette configuration.
+
+  Les valeurs autorisées sont celles énumérées dans le schéma du module.
+
+- **`ignoreDefaultValues`**
+
+  Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
+
+  _Valeur par défaut_ : `false` pour `csharp`, `documentation`, `javascript` et `jpa` ; `true` pour `sql`
+
+- **`useLowerCaseSqlNames`**
+
+  Utilise des noms de tables et de colonnes en minuscules.
+
+  _Valeur par défaut_ : `true`
+
+  _Variables par tag_ : **oui**
+
+  Cette option est disponible dans les modules `csharp`, `documentation`, `jpa` et `sql`.
+
+- **`uniqueValueGeneration`**
+
+  Mode de génération des valeurs de propriétés avec clé d'unicité.
+
+  _Valeurs possibles_ : `none`, `const-only`, `enum-only`, `enum-or-const`
+
+  _Valeur par défaut_ : `enum-or-const`
+
+- **`apiGeneration`**
+
+  Mode de génération de l'API (`Client` ou `Server`).
+
+  _Valeurs possibles_ : `Client`, `Server`
+
+  _Variables par tag_ : **oui**
+
+Ces deux options sont disponibles dans les modules `csharp` et `jpa`.
 
 Exemple de configuration de module :
 
@@ -143,7 +239,7 @@ javascript:
 
 Chaque générateur peut définir et utiliser des **variables** dans sa configuration. Une variable n'est donc scopée qu'au générateur qui la définit.
 
-Les variables sont nécessairement des strings et ne peuvent donc être utilisées que dans des paramètres de type string. Il n'est pas exclu par la suite de gérer par la suite les nombres et les booléens, mais pour rester simple dans un premier temps ils ont été exclus.
+Une variable peut être définie comme un string, un nombre, ou un booléen, mais sera toujours convertie en string lorsqu'elle est utilisée dans un template. Certains paramètres booléens de configuration autorisent les variables, mais cela passe par une implémentation dédiée qui reconvertit le string en booléen en interne.
 
 Elles se définissent entre crochets (`{variable}`) et peuvent faire l'objet de [transformations](/model/templating#transformations).
 
@@ -204,31 +300,68 @@ Les variables globales sont résolues en premier (une fois que celles qui devaie
 
 Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe `A`, si cette classe a besoin d'importer une classe `B` qui n'est générée qu'avec le tag `tag-b` ce qui a un impact sur l'import à ajouter à A. Dans ce cas, le tag utilisé pour la résolution des variables par tag dans l'écriture de l'import de `B` dans `A` est `tag-b`.
 
-## Autres propriétés de configuration globales
+## Options de configuration globales
+
+- **`app`** (**obligatoire**)
+
+  Nom de l'application.
+
+  La variable globale `{app}` est automatiquement définie à partir de cette valeur.
 
 - **`modelRoot`**
 
-  Permet de définir une autre racine pour le modèle que l'emplacement du fichier de configuration. À utiliser si vous voulez séparer l'emplacement du fichier de config du reste du modèle.
+  Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé.
+
+  _Valeur par défaut_ : dossier contenant le fichier de configuration
+
+  Permet de séparer l'emplacement du fichier de configuration du reste du modèle.
 
   > **Attention** : Tous les chemins de fichiers dans les `uses` sont relatifs au `modelRoot`, et tous les fichiers `.tmd` doivent être dedans.
 
 - **`modelFilePaths`**
 
-  Permet de spécifier une liste de patterns (globs) de fichiers de modèle à inclure dans la génération, relatif au `modelRoot`. Si non renseigné, tous les fichiers `.tmd` trouvés seront chargés (la propriété sera renseignée avec `**/*.tmd`).
+  Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `modelRoot`) seront chargés par TopModel.
 
-  _Remarque : Si vos patterns ne se terminent pas par `.tmd`, alors TopModel rajoutera automatiquement `/*.tmd` à la fin._
+  _Valeur par défaut_ : `["**/*.tmd"]`
+
+  Si un pattern ne se termine pas par `.tmd`, TopModel lui ajoute `/*.tmd`.
 
 - **`lockFileName`**
 
-  Permet de surcharger le lockfile (`topmodel.lock` par défaut).
+  Nom du fichier de lock.
+
+  _Valeur par défaut_ : `topmodel.lock`
 
 - **`ignoredFiles`**
 
-  Permet de lister des chemins de fichiers générés qu'il ne faudra pas regénérer lors de générations successives. À utiliser avec parcimonie, pour contourner un manquement du générateur utilisé, en attendant un correctif du générateur ou de trouver une meilleure solution. Un fichier ignoré enregistrera un warning lors de la génération, et il est obligatoire de spécifier un commentaire pour chaque exclusion pour la justifier.
+  Liste des fichiers à ignorer après première génération (relatif au fichier de config).
+
+
+  Chaque entrée doit renseigner un chemin (`path`) et un motif (`comment`). À utiliser avec parcimonie, pour contourner un manquement du générateur en attendant un correctif ou une meilleure solution. Un fichier ignoré déclenche un warning lors de la génération.
+
+  _Valeur par défaut_ : `[]`
+
+  - **`path`** (**obligatoire**)
+
+    Chemin du fichier à ignorer, relatif au fichier de config.
+
+  - **`comment`** (**obligatoire**)
+
+    Motif.
+
+  ```yaml
+  ignoredFiles:
+    - path: src/Generated/Custom.cs
+      comment: "Fichier personnalisé à conserver"
+  ```
 
 - **`noWarn`**
 
-  Permet de désactiver les warnings listés. À utiliser avec parcimonie également, en général ces warnings ne sont pas là pour rien 😉.
+  Liste des warnings à ignorer.
+
+  _Valeur par défaut_ : `[]`
+
+  À utiliser avec parcimonie également, en général ces warnings ne sont pas là pour rien 😉.
 
   Exemple :
 
@@ -250,15 +383,77 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
 - **`pluralizeTableNames`**
 
-  Permet de renseigner le `sqlName` des classes par défaut avec leur `pluralName`, au lieu d'utiliser le `name`.
+  Utilise le nom au pluriel des classes pour générer leurs noms de table SQL.
+
+  _Valeur par défaut_ : `false`
+
+  Le nom utilisé est le `pluralName` de la classe, plutôt que son `name`.
 
 - **`defaultAssociationUseClass`**
 
-  Valeur par défaut de `useClass` sur les propriétés d'[association](./model/properties#association).
+  Détermine la valeur par défaut de `useClass` sur les propriétés d'association du modèle.
+
+  _Valeur par défaut_ : `false`
+
+  Voir les propriétés d'[association](./model/properties#association).
+
+- **`useLegacyRoleNames`**
+
+  Transforme les noms de rôles d'associations en majuscules au lieu du constant case pour déterminer le nom SQL des propriétés.
+
+  _Valeur par défaut_ : `false`
+
+- **`i18n`**
+
+  Configuration de la localisation de l'application.
+
+  Voir [page dédiée](./model/i18n.md) pour plus d'informations.
+
+  - **`defaultLang`**
+
+    Langue par défaut de l'application. Laisser vide si votre application n'a qu'une seule langue (non nommée). Une valeur nulle désactive la langue par défaut et l'utilisation des libellés définis dans le modèle dans une langue par défaut.
+
+    _Valeur par défaut_ : `""`
+
+  - **`langs`**
+
+    Liste des langues de l'application (autres que la langue par défaut), indiquées par leur code.
+
+    _Valeur par défaut_ : `[]`
+
+  - **`rootPath`**
+
+    Template du chemin des dossiers de traductions entrants. Doit contenir le template `{lang}`.
+
+    _Valeur par défaut_ : `{lang}`
+
+    _Templating_ : `{lang}`
+
+  - **`translateReferences`**
+
+    Si les libellés des listes de références doivent être traduits.
+
+    _Valeur par défaut_ : `true`
+
+  - **`translateProperties`**
+
+    Si les libellés des propriétés doivent être traduits.
+
+    _Valeur par défaut_ : `true`
+
+  - **`allowPropertyLabelFallback`**
+
+    Si le libellé d'une propriété n'est pas renseigné, autorise l'usage de son nom comme libellé.
+
+    _Valeur par défaut_ : `true`
 
 - **`generators`**
 
-  Liste de chemins vers des projets C# contenant des générateurs personnalisés. Ces projets doivent implémenter un module de générateurs personnalisé (voir la [page dédiée aux générateurs personnalisés](./generator#générateurs-personnalisés) pour plus de détails).
+  Chemins vers des projets C# contenant des générateurs personnalisés.
+
+  _Valeur par défaut_ : `[]`
+
+  Ces projets doivent implémenter un module de générateurs personnalisé (voir la [page dédiée aux générateurs personnalisés](./generator#générateurs-personnalisés) pour plus de détails).
 
 ## Gestion des ancres YAML
 

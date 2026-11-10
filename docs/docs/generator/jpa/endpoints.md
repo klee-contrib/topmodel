@@ -4,10 +4,10 @@ Les générateurs d'endpoints créent des interfaces ou classes permettant de d�
 
 | Nom                     | Condition d'activation                                         | Objets ciblés | Fichiers générés                                                                                                                                  |
 | ----------------------- | -------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SpringApiServerGen`    | `apiGeneration: server`                                        | Endpoints     | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                |
-| `SpringApiClientGen`    | `apiGeneration: client` && `clientApiGeneration: restClient`   | Endpoints     | Interface contenant les annotations `@XXXExchange` pour la génération d'un client API via `HttpServiceProxyFactory`                               |
-| `SpringRestTemplateGen` | `apiGeneration: client` && `clientApiGeneration: restTemplate` | Endpoints     | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un `RestTemplate` Spring                                |
-| `FeignClientApiGen`     | `apiGeneration: client` && `clientApiGeneration: feignClient`  | Endpoints     | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente                                                     |
+| `SpringApiServerGen`    | `apiGeneration: Server`                                        | Endpoints     | Interface définissant les méthodes annotées permettant de définir une API serveur. L'implémentation est à la charge du développeur                |
+| `SpringApiClientGen`    | `apiGeneration: Client` && `clientApiGeneration: RestClient`   | Endpoints     | Interface contenant les annotations `@XXXExchange` pour la génération d'un client API via `HttpServiceProxyFactory`                               |
+| `SpringRestTemplateGen` | `apiGeneration: Client` && `clientApiGeneration: RestTemplate` | Endpoints     | Classe abstraite définissant les méthodes permettant d'appeler une API externe à l'aide d'un `RestTemplate` Spring                                |
+| `FeignClientApiGen`     | `apiGeneration: Client` && `clientApiGeneration: FeignClient`  | Endpoints     | Interface contenant les annotations nécessaires à la construction par Feign d'une API cliente                                                     |
 
 ## Détermination du nom de fichier
 
@@ -174,23 +174,33 @@ Le générateur crée des interfaces similaires au mode `Server`, à la différe
 
 Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
 
+_Valeur par défaut_ : `javagen:{app:path}/api/{module:path}`
+
+_Templating_ : `{module}`
+
+_Variables par tag_ : **oui** (plusieurs clients/serveurs pourraient être générés si un fichier a plusieurs tags)
+
 Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
-
-_Templating_: `{app}`, `{module}`
-
-_Valeur par défaut_: `"javagen:{app:path}/api/{module:path}"`
-
-_Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier a plusieurs tags)
 
 ### `apiGeneration`
 
-Mode de génération de l'API (`"Client"` ou `"Server"`).
+Mode de génération de l'API (`Client` ou `Server`).
 
-_Variables par tag_: **oui** (la valeur de la variable doit être `"Client"` ou `"Server"`. Le client et le serveur pourraient être générés si un fichier a plusieurs tags)
+_Valeurs possibles_ : `Client`, `Server`
+
+_Variables par tag_ : **oui** (la valeur de la variable doit être `"Client"` ou `"Server"`. Le client et le serveur pourraient être générés si un fichier a plusieurs tags)
 
 ### `clientApiGeneration`
 
-Mode de génération de l'API Client. Les valeurs possibles sont :
+Mode de génération de l'API Client.
+
+_Valeurs possibles_ : `RestTemplate`, `RestClient`, `FeignClient`
+
+_Valeur par défaut_ : `RestClient`
+
+_Variables par tag_ : **non**
+
+Détail des modes :
 
 - `RestClient` : Génération d'un client en mode RestClient (interface Exchange) - valeur par défaut
 - `RestTemplate` : Génération d'un client en mode RestTemplate (classe abstraite à initialiser)
@@ -198,17 +208,17 @@ Mode de génération de l'API Client. Les valeurs possibles sont :
 
 Cette propriété n'est utilisée que lorsque `apiGeneration` est défini à `"Client"` ou contient une variable qui peut être résolue à `"Client"`.
 
-_Valeur par défaut_: `RestClient`
-
-_Variables par tag_: **non**
-
 ### `apisName`
 
-Nom des classes d'API générées. Permet de personnaliser le nom des interfaces/classes d'API.
+Nom des classes d'API générées.
 
-_Templating_: `{fileName}` (remplacé par le nom du fichier en PascalCase)
+_Valeur par défaut_ : dépend du mode de génération de l'API
 
-_Valeur par défaut_: Dépend du type d'API générée (par exemple, `{fileName}Api` pour les clients, `{fileName}Controller` pour les serveurs)
+_Templating_ : `{module}`, `{fileName}` (`{fileName}` est remplacé par le nom du fichier en PascalCase)
+
+_Variables par tag_ : **oui**
+
+Permet de personnaliser le nom des interfaces/classes d'API.
 
 **Exemple :**
 
@@ -222,7 +232,13 @@ jpa:
 
 ### `openApiAnnotations`
 
-Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces. Nécessite à minima la dépendance :
+Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces.
+
+_Valeur par défaut_ : `false`
+
+_Variables par tag_ : **non**
+
+Nécessite à minima la dépendance :
 
 ```xml
 <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations-jakarta -->
@@ -231,9 +247,3 @@ Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux inte
     <artifactId>swagger-annotations-jakarta</artifactId>
 </dependency>
 ```
-
-_Templating_: `{module}`
-
-_Valeur par défaut_: `false`
-
-_Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier a plusieurs tags)

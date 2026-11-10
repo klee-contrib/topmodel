@@ -16,7 +16,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? ModelRootPath { get; set; }
 
     /// <summary>
-    /// Nom du fichier généré contenant les enums d'un module. Par défaut : `enums`.
+    /// Nom du fichier généré contenant les enums d'un module.
     /// </summary>
     public virtual string EnumsFileName { get; set; } = "enums";
 
@@ -36,27 +36,27 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? ApiClientFilePath { get; set; }
 
     /// <summary>
-    /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération.
+    /// Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'.
     /// </summary>
     public virtual string? FetchPath { get; set; }
 
     /// <summary>
-    /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
+    /// Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.
     /// </summary>
     public virtual string DomainPath { get; set; } = "./domains";
 
     /// <summary>
-    /// Framework cible pour la génération.
+    /// Framework cible pour la génération des clients d'API JavaScript.
     /// </summary>
     public virtual TargetFramework ApiMode { get; set; }
 
     /// <summary>
-    /// Typage des entités générées
+    /// Mode de génération des entités TypeScript.
     /// </summary>
     public virtual EntityMode EntityMode { get; set; }
 
     /// <summary>
-    /// Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées.
+    /// Génère <c>isRequired</c>, <c>label</c> (et <c>comment</c>) sur les compositions dans les entités typées.
     /// </summary>
     public virtual bool ExtendedCompositions { get; set; }
 
@@ -71,7 +71,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? EntityTypesPath { get; set; }
 
     /// <summary>
-    /// Mode de génération (JS, JSON ou JSON Schema).
+    /// Mode de génération (JS ou JSON).
     /// </summary>
     public virtual ResourceMode ResourceMode { get; set; }
 
@@ -81,7 +81,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual bool GenerateComments { get; set; }
 
     /// <summary>
-    /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`.
+    /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec <c>resourceMode: js</c>.
     /// </summary>
     public virtual bool GenerateMainResourceFiles { get; set; }
 

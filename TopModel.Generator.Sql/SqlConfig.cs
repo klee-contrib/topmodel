@@ -87,12 +87,12 @@ public class SqlConfig : GeneratorConfigBase
     ];
 
     /// <summary>
-    /// Config pour la génération en mode procédural.
+    /// Config pour la génération de SQL procédural.
     /// </summary>
     public virtual ProceduralSqlConfig? Procedural { get; set; }
 
     /// <summary>
-    /// Config pour la génération en mode SSDT.
+    /// Config pour la génération SSDT.
     /// </summary>
     public virtual SsdtConfig? Ssdt { get; set; }
 
@@ -109,17 +109,17 @@ public class SqlConfig : GeneratorConfigBase
     public override bool HasEnumSupport => true;
 
     /// <summary>
-    /// Retourne ou définit le nom du tablespace pour les tables (Postgres ou Oracle).
+    /// Nom du tablespace pour les tables (Postgres ou Oracle).
     /// </summary>
     public virtual string? TableTablespace { get; set; }
 
     /// <summary>
-    /// Retourne ou définit le nom du tablespace pour les index (Postgres ou Oracle).
+    /// Nom du tablespace pour les index (Postgres ou Oracle).
     /// </summary>
     public virtual string? IndexTablespace { get; set; }
 
     /// <summary>
-    /// SGBD cible ("sqlserver" ou "postgres" ou "oracle").
+    /// SGBD cible de la génération.
     /// </summary>
     public virtual TargetDBMS TargetDBMS { get; set; } = TargetDBMS.Postgre;
 

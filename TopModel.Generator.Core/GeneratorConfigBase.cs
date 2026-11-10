@@ -23,22 +23,22 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual bool IgnoreDefaultValues { get; set; }
 
     /// <summary>
-    /// Si les libellés des listes de références doivent être traduits.
+    /// Si les libellés des listes de références doivent être traduits dans cette configuration.
     /// </summary>
     public virtual bool? TranslateReferences { get; set; }
 
     /// <summary>
-    /// Si les libellés des propriétés doivent être traduits.
+    /// Si les libellés des propriétés doivent être traduits dans cette configuration.
     /// </summary>
     public virtual bool? TranslateProperties { get; set; }
 
     /// <summary>
-    /// Générateurs désactivés.
+    /// Générateurs à désactiver pour cette configuration.
     /// </summary>
     public virtual IList<string>? Disable { get; set; }
 
     /// <summary>
-    /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
+    /// Utilise des noms de tables et de colonnes en minuscules.
     /// </summary>
     [YamlMember(Alias = "useLowerCaseSqlNames")]
     public virtual string? UseLowerCaseSqlNamesParam { get; set; }
@@ -55,7 +55,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         UniqueValueGenerationMode.EnumOrConst;
 
     /// <summary>
-    /// Mode de génération de l'API ("Client" ou "Server").
+    /// Mode de génération de l'API (<c>Client</c> ou <c>Server</c>).
     /// </summary>
     public virtual string? ApiGeneration { get; set; }
 
@@ -697,7 +697,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     }
 
     /// <summary>
-    /// Vérifie que la propriété est une association avec `useClass: true` et que la classe cible est disponible dans la configuration.
+    /// Vérifie que la propriété est une association avec <c>useClass: true</c> et que la classe cible est disponible dans la configuration.
     /// </summary>
     /// <param name="property">Propriété à vérifier.</param>
     /// <returns>true/false.</returns>

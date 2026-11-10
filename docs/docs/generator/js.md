@@ -6,13 +6,13 @@
 > - Sinon, ils sont traités comme des **imports de modules** (ex : `@/domains` ou `luxon`)
 > - Les domaines importés doivent inclure l'objet dans le chemin (ex : `luxon/DateTime` pour `import {DateTime} from "luxon"`)
 
-## Configuration
+## Présentation
 
 ### Modes de génération de l'API client
 
-Il est possible de générer l'API cliente selon 5 modes (`apiMode`) : `fetch` (par défaut), `angular`, `angular_promise` ou `legacy`.
+Il est possible de générer l'API cliente selon 4 modes (`apiMode`) : `fetch` (par défaut), `angular`, `angular_promise` ou `legacy`.
 
-### Fetch
+#### Fetch
 
 Par défaut, TopModel génère des appels d'API en utilisant le fetch natif du navigateur. Pour générer l'authentification et la gestion des erreurs, il est fortement conseillé d'utiliser une librairie comme [`ky`](https://github.com/sindresorhus/ky) qui surcharge le fetch natif avec des hooks pour y inclure des traitements à effectuer avant l'envoi des requêtes (pour l'authentification) ou à la réception d'une réponse en erreur.
 
@@ -38,46 +38,6 @@ fetchPath: "@api-services"
 
 Les APIs générées correspondant au format de Focus pré-12.7.
 
-### Chemins de configuration
-
-#### modelRootPath
-
-Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si `{module}` n'est pas présent dans le chemin, alors il sera ajouté à la fin.
-
-Par défaut, les fichiers de modèle sont générés dans `{module}/` avec le nom de la classe en kebab-case (ex: `profil-dto.ts`).
-
-#### resourceRootPath
-
-Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si `{lang}` n'est pas présent dans le chemin, alors il sera ajouté à la fin.
-
-Les fichiers de ressources sont générés par module et par langue (ex: `{module}/{lang}/securite.ts`).
-
-#### apiClientRootPath
-
-Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
-
-#### apiClientFilePath
-
-Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API (`apiClientRootPath`).
-
-Par défaut, les fichiers d'API client sont placés dans le dossier `{module}`. Ils sont nommés d'après le fichier qui les contient, sauf dans le cas du mode `angular` ou `angular_promise`, où le nom du fichier sera de la forme `{fileName}.service.ts`.
-
-Pour modifier ce comportement, ajuster le paramètre `apiClientFilePath`.
-
-L'extension `.ts` est ajoutée automatiquement.
-
-**Variables disponibles dans les chemins :**
-
-- **`{module}`** : Module de la classe/endpoint (ex : `securite`)
-- **`{lang}`** : Langue pour les fichiers de ressources (ex : `fr`, `en`)
-- **`{fileName}`** : Nom du fichier pour les endpoints (défini dans la configuration des endpoints)
-
-Exemple :
-
-```yaml
-apiClientFilePath: "api/{module}/{fileName}"
-```
-
 ### Modes de génération des entités
 
 Le paramètre `entityMode` permet de choisir le type de génération pour les entités. Quatre modes sont disponibles :
@@ -89,7 +49,7 @@ Le paramètre `entityMode` permet de choisir le type de génération pour les en
 | `focus`   | Utilise les APIs du module `@focus4/entities` pour générer les entités                        |
 | `typed`   | Utilise les types du module `@focus4/entities` sans les APIs (mode legacy - préférer `focus`) |
 
-**Configuration des domaines :** À l'exception du mode `none`, la génération utilise la propriété `domainPath` (par défaut : `../domains`) pour importer les définitions de domaine.
+**Configuration des domaines :** À l'exception du mode `none`, la génération utilise la propriété `domainPath` (par défaut : `./domains`) pour importer les définitions de domaine.
 
 _Remarque : Si vous avez besoin que vos (alias de) clés primaires soient générés comme optionnel pour compatibilité avec l'existant, vous pouvez utiliser le paramètre `optionalPrimaryKeys: true`._
 
@@ -362,56 +322,121 @@ Exemple :
 }
 ```
 
-### Options de génération des ressources
+## Configuration
 
-#### generateMainResourceFiles
+### `modelRootPath`
 
-Génère un fichier `index.ts` qui importe et réexporte tous les fichiers de ressources par langue. **Compatible uniquement avec `resourceMode: js`.**
+Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si '{module}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.
 
-Exemple de fichier `index.ts` généré :
+_Templating_ : `{module}`
 
-```typescript
-import { securite } from "./securite";
-import { common } from "./common";
+_Variables par tag_ : **oui**
 
-export { securite, common };
-```
+Par défaut, les fichiers de modèle sont générés sous `{module}/` avec le nom de classe en kebab-case (par exemple `profil-dto.ts`).
 
-#### translateProperties
+### `enumsFileName`
 
-Gère la traduction des libellés des propriétés :
+Nom du fichier généré contenant les enums d'un module.
 
-- **`true` (par défaut)** : Les libellés sont générés dans les fichiers de ressources, et la clé de traduction correspondante est utilisée dans la définition d'entité.
-- **`false`** : Les libellés sont utilisés directement.
+_Valeur par défaut_ : `enums`
 
-#### translateReferences
+### `resourceRootPath`
 
-Gère la traduction des listes de références :
+Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si '{lang}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.
 
-- **`true` (par défaut)** : Les libellés des références sont générés dans les fichiers de ressources, et la clé de traduction correspondante est utilisée dans les valeurs (si générées).
-- **`false`** : Les libellés sont utilisés directement.
+_Templating_ : `{module}`, `{lang}`
 
-### Génération de commentaires
+_Variables par tag_ : **oui**
 
-#### generateComments
+Les fichiers de ressources sont générés par module et par langue.
 
-Si cette option est activée, un fichier de commentaires sera généré pour chaque module, contenant les commentaires des propriétés. Le fichier sera nommé `{module}.comments.ts` (ou `.json` selon le `resourceMode`) et placé dans le même répertoire que les fichiers de ressources.
+### `apiClientRootPath`
 
-Exemple de fichier de commentaires généré :
+Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
 
-```typescript
-export const securiteComments = {
-  profil: {
-    id: "Identifiant unique du profil",
-    typeProfilCode: "Code du type de profil",
-    droits: "Liste des droits associés au profil",
-  },
-};
-```
+_Variables par tag_ : **oui**
 
-### Configuration complète
+### `apiClientFilePath`
 
-Exemple de configuration complète :
+Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
+
+_Valeur par défaut_ : `{module}/{fileName}` (en mode Angular : `{module}/{fileName}.service`)
+
+_Templating_ : `{module}`, `{fileName}`
+
+Par défaut, les fichiers d'API client sont placés sous `{module}` et nommés d'après le fichier d'endpoints. En mode Angular, le nom prend la forme `{fileName}.service.ts`. L'extension `.ts` est ajoutée automatiquement.
+
+### `fetchPath`
+
+Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'.
+
+_Variables par tag_ : **oui**
+
+Ce paramètre permet de remplacer le `fetch` natif ou celui utilisé en mode legacy. Une valeur commençant par `.` est un chemin relatif au répertoire de génération ; les autres valeurs sont des imports de module.
+
+### `domainPath`
+
+Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.
+
+_Valeur par défaut_ : `./domains`
+
+_Variables par tag_ : **oui**
+
+Ce chemin sert à importer les définitions de domaine. Le mode d'entité `none` ne l'utilise pas.
+
+### `apiMode`
+
+Framework cible pour la génération des clients d'API JavaScript.
+
+_Valeurs possibles_ : `fetch`, `angular`, `angular_promise`, `legacy`
+
+_Valeur par défaut_ : `fetch`
+
+Les modes Angular génèrent respectivement des Observables ou des Promises ; le mode legacy génère des fonctions TypeScript.
+
+### `entityMode`
+
+Mode de génération des entités TypeScript.
+
+_Valeurs possibles_ : `untyped`, `typed`, `none`, `focus`
+
+_Valeur par défaut_ : `untyped`
+
+Le mode `none` ne génère que les interfaces TypeScript.
+
+### `extendedCompositions`
+
+Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entités typées.
+
+### `optionalPrimaryKeys`
+
+Génère les (alias de) clés primaires simples comme optionnelles dans les définitions d'entités. Il s'agit d'un paramètre de compatibilité avec l'existant, qui ne devrait plus être utilisé dans les nouveaux projets.
+
+### `entityTypesPath`
+
+Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération.
+
+### `resourceMode`
+
+Mode de génération (JS ou JSON).
+
+_Valeurs possibles_ : `js`, `json`
+
+_Valeur par défaut_ : `js`
+
+Le mode `js` génère des fichiers TypeScript ; le mode `json` génère des fichiers JSON.
+
+### `generateComments`
+
+Ajoute les commentaires dans les entités JS générées.
+
+Lorsqu'il est activé, un fichier `{module}.comments.ts` (ou `.json` selon `resourceMode`) est généré à côté des ressources.
+
+### `generateMainResourceFiles`
+
+Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`.
+
+### Exemple
 
 ```yaml
 javascript:

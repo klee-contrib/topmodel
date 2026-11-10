@@ -17,6 +17,28 @@ _Remarque : `allowPropertyLabelFallback` est bien ignoré par le générateur, s
 
 ## Configuration
 
+### `langs`
+
+Langues cibles pour lesquelles les traductions manquantes doivent être générées.
+
+La langue par défaut, définie par `defaultLang` dans la configuration globale, est exclue automatiquement.
+
+### `rootPath`
+
+Chemin des dossiers de traductions sortants (manquants).
+
+_Valeur par défaut_ : `{lang}`
+
+_Templating_ : `{lang}`
+
+_Variables par tag_ : **oui**
+
+Chemin relatif à `outputDirectory`. Les fichiers sont générés sous ce répertoire avec le nom du module en kebab-case et le code de langue.
+
+Les variables définies par tag peuvent être utilisées dans ce chemin, y compris une variable nommée `{tag}` si elle est définie.
+
+### Exemple
+
 ```yaml
 translation:
   - tags: # Tags pour lesquels on souhaite générer les traductions manquantes
@@ -27,30 +49,6 @@ translation:
       - en_US
       - de_DE
 ```
-
-### `outputDirectory`
-
-Racine du répertoire de génération, comme pour tous les autres générateurs.
-
-### `rootPath`
-
-Chemin relatif (à `outputDirectory`) dans lequel les fichiers sont déposés. Il supporte les variables `{lang}` et `{tag}`. Valeur par défaut : `{lang}`.
-
-_Variables par tag_ : **oui**  
-_Variables par langue_ : **oui**
-
-### `langs`
-
-Liste des langues de l'application. La langue par défaut (définie par `defaultLang` dans la configuration du modèle) est exclue automatiquement, inutile de la lister.
-
-### `translateProperties` / `translateReferences`
-
-Ces options héritées permettent de filtrer la génération :
-
-- `translateProperties` : si `true`, les `label` de propriétés sont pris en compte ;
-- `translateReferences` : si `true`, les valeurs des listes de référence sont prises en compte.
-
-Si ces deux options sont à `false` (ou non définies), aucun fichier n'est généré.
 
 ## Clés de traduction
 

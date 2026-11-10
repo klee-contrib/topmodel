@@ -82,4 +82,4 @@ query.where(cb.equal(root.get(Commande_.DATE_COMMANDE), date));
 
 Option pour générer le métamodèle JPA.
 
-_Valeur par défaut_: `false`
+_Valeur par défaut_ : `false`

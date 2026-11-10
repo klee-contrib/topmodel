@@ -431,46 +431,50 @@ public enum Fields implements IFieldEnum<Departement> {
 
 Localisation des classes persistées du modèle, relative au répertoire de génération.
 
+_Valeur par défaut_ : `javagen:{app:path}/entities/{module:path}`
+
+_Templating_ : `{module}`
+
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+
 Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
-
-_Templating_: `{app}`, `{module}`
-
-_Valeur par défaut_: `"javagen:{app:path}/entities/{module:path}"`
-
-_Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 ### `dtosPath`
 
 Localisation des classes non persistées du modèle, relative au répertoire de génération.
 
-_Templating_: `{app}`, `{module}`
+_Valeur par défaut_ : `javagen:{app:path}/dtos/{module:path}`
 
-_Valeur par défaut_: `"javagen:{app:path}/dtos/{module:path}"`
+_Templating_ : `{module}`
 
-_Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
 ### `enumsPath`
 
-Localisation des classes d'enums, relative au répertoire de génération. Utilisée aussi bien en mode `enum: class` qu'en mode `enum: true`.
+Localisation des enums du modèle, relative au répertoire de génération.
 
-_Templating_: `{app}`, `{module}`
+_Valeur par défaut_ : `javagen:{app:path}/enums/{module:path}`
 
-_Valeur par défaut_: `"javagen:{app:path}/enums/{module:path}"`
+_Templating_ : `{module}`
 
-_Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+
+Utilisée aussi bien en mode `enum: class` qu'en mode `enum: true`.
 
 ### `compositionConverterCanonicalName`
 
-Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données. Les compositions sont des propriétés de type classe non persistée qui sont sérialisées en JSON dans une colonne de la base de données.
+Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données.
 
-_Templating_:
+_Valeur par défaut_ : `{package}.{class}Converter`
+
+_Templating_ : `{package}`, `{class}`
+
+_Variables par tag_ : **non**
+
+Les compositions sont des propriétés de type classe non persistée qui sont sérialisées en JSON dans une colonne de la base de données.
 
 - `{package}` : remplacé par le package de la classe composée
 - `{class}` : remplacé par le nom de la classe composée
-
-_Valeur par défaut_: `"{package}.{class}Converter"`
-
-_Variables par tag_: **non**
 
 **Exemple :**
 
@@ -485,7 +489,11 @@ jpa:
 
 ### `fieldsEnum`
 
-Option pour générer une enum des champs de certaines classes. Il s'agit d'une liste dont les 2 valeurs possibles sont :
+Option pour générer une enum des champs des classes persistées ou non persistées.
+
+_Valeurs possibles_ : `non-persisted`, `persisted`
+
+Effet de chaque valeur :
 
 - `persisted` : ajoute l'enum des champs sur les classes persistées
 - `non-persisted` : ajoute l'enum des champs sur les classes non persistées
@@ -494,13 +502,13 @@ Option pour générer une enum des champs de certaines classes. Il s'agit d'une 
 
 Précise l'interface des fields enum générés.
 
-_Templating_: `<>` (remplace par `<NomDeLaClasse>`)
+_Templating_ : `<>` (remplace par `<NomDeLaClasse>`)
 
 ### `associationAdders`
 
-Option pour générer des méthodes d'ajout pour les associations `@OneToMany`. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproque.
+Option pour générer des méthodes d'ajout pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproque.
 
-_Valeur par défaut_: `false`
+_Valeur par défaut_ : `false`
 
 **Exemple :**
 
@@ -508,9 +516,9 @@ Pour une association `@OneToMany` entre `Utilisateur` et `Commande`, si `associa
 
 ### `associationRemovers`
 
-Option pour générer des méthodes de suppression pour les associations `@OneToMany`. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
+Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
 
-_Valeur par défaut_: `false`
+_Valeur par défaut_ : `false`
 
 **Exemple :**
 
@@ -518,7 +526,13 @@ Pour une association `@OneToMany` entre `Utilisateur` et `Commande`, si `associa
 
 ### `cascadeTypes`
 
-Types de cascade à ajouter sur les associations JPA générées, par type d'association.
+Types de cascade à ajouter aux associations générées.
+
+_Valeurs possibles_ : `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, `lock`
+
+_Valeur par défaut_ : `{"oneToOne":["all"],"oneToMany":["all"]}`
+
+Les valeurs s'appliquent à chaque type d'association.
 
 Les clés configurables sont :
 
@@ -526,9 +540,7 @@ Les clés configurables sont :
 - `oneToMany` : cascade(s) à ajouter sur les associations `@OneToMany`
 - `manyToOne` : cascade(s) à ajouter sur les associations `@ManyToOne`
 
-Les valeurs possibles pour chaque clé sont : `all`, `persist`, `merge`, `remove`, `refresh`, `detach`, `lock`.
-
-_Valeur par défaut_ :
+Exemple équivalent de configuration par défaut :
 
 ```yaml
 cascadeTypes:
@@ -579,11 +591,13 @@ private AvisClient avisClient;
 
 ### `useRecords`
 
-Option pour générer les classes non persistées `readonly` de type `regular` sous forme de `record` Java plutôt que de classe classique (voir la section "Classes non persistées" ci-dessus).
+Indique s'il faut générer les classes non persistées de type `regular` qui ont `readonly: true` en tant que records Java.
 
-_Valeur par défaut_: `false`
+_Valeur par défaut_ : `false`
 
-_Variables par tag_: **oui** (une classe utilisée avec plusieurs tags pourrait être générée en `record` pour certains tags et en classe classique pour d'autres)
+_Variables par tag_ : **oui** (une classe utilisée avec plusieurs tags pourrait être générée en `record` pour certains tags et en classe classique pour d'autres)
+
+Voir la section "Classes non persistées" ci-dessus.
 
 **Exemple :**
 
