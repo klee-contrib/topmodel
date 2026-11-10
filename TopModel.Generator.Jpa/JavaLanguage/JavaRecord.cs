@@ -10,4 +10,3 @@ public class JavaRecord : JavaClass
         ClassType = "record";
     }
 }
-

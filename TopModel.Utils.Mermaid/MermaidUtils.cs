@@ -14,7 +14,7 @@ public static class MermaidUtils
             MermaidScope.Module => modelStore
                 .Files.Where(f => f.Namespace.Module == file?.Namespace.Module)
                 ?.SelectMany(f => f.Classes)
-            ?? [],
+                ?? [],
             MermaidScope.Model => modelStore.Files.SelectMany(f => f.Classes),
             _ => [],
         };

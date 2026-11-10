@@ -169,7 +169,8 @@ public static class OpenApiUtils
             var s in model.Components?.RequestBodies?.ToDictionary(
                 r => r.Key,
                 r => r.Value.Content?.FirstOrDefault().Value.Schema
-            ) ?? []
+            )
+                ?? []
         )
         {
             if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
@@ -194,7 +195,8 @@ public static class OpenApiUtils
         foreach (
             var s in model
                 .Components?.Responses?.Where(r => r.Value.Content?.Any() ?? false)
-                ?.ToDictionary(r => r.Key, r => r.Value.Content?.FirstOrDefault().Value.Schema) ?? []
+                ?.ToDictionary(r => r.Key, r => r.Value.Content?.FirstOrDefault().Value.Schema)
+                ?? []
         )
         {
             if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))

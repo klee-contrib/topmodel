@@ -249,7 +249,11 @@ public class DbContextGenerator(
             w.WriteSummary(1, "Accès à l'entité " + Config.GetTypeName(classe));
             w.WriteLine(
                 1,
-                "public DbSet<" + GetClassName(classe, tag, contextNs) + "> " + classe.PluralNamePascal + " { get; set; }"
+                "public DbSet<"
+                    + GetClassName(classe, tag, contextNs)
+                    + "> "
+                    + classe.PluralNamePascal
+                    + " { get; set; }"
             );
         }
 
@@ -393,7 +397,9 @@ public class DbContextGenerator(
                 }
                 else if (g.Key.Unique)
                 {
-                    w.Write($".HasForeignKey<{GetClassName(g.Key.Class, tag, contextNs)}>(\"{g.Single().PropertyNamePascal}\")");
+                    w.Write(
+                        $".HasForeignKey<{GetClassName(g.Key.Class, tag, contextNs)}>(\"{g.Single().PropertyNamePascal}\")"
+                    );
                 }
                 else if (g.Key.AssociationRole != null)
                 {

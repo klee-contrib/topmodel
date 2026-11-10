@@ -332,7 +332,7 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetDbContextFilePath(string tag, string? module = null)
+    public virtual string GetDbContextFilePath(string tag, string module)
     {
         return Path.Combine(
             OutputDirectory,
@@ -348,12 +348,12 @@ public class CsharpConfig : GeneratorConfigBase
     /// <param name="tag">tag</param>
     /// <param name="module">Module.</param>
     /// <returns>Nom.</returns>
-    public virtual string GetDbContextName(string tag, string? module = null)
+    public virtual string GetDbContextName(string tag, string module)
     {
         return ResolveVariables(DbContextName, tag: tag, module: module).Replace(".", string.Empty);
     }
 
-    public virtual string GetDbContextNamespace(string tag, string? module = null)
+    public virtual string GetDbContextNamespace(string tag, string module)
     {
         return ResolveVariables(DbContextPath!, tag: tag, module: module).ToNamespace();
     }

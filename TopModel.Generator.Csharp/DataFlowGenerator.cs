@@ -345,14 +345,12 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         using var w = this.OpenCSharpWriter(fileName);
         w.EnableHeader = false;
 
-        w.AddUsings(
-            [
-                "Kinetix.Etl",
-                .. dataFlow.Sources.Select(source =>
-                    Config.GetNamespace(source.Class, Config.GetBestClassTag(source.Class, tag))
-                ),
-            ]
-        );
+        w.AddUsings([
+            "Kinetix.Etl",
+            .. dataFlow.Sources.Select(source =>
+                Config.GetNamespace(source.Class, Config.GetBestClassTag(source.Class, tag))
+            ),
+        ]);
 
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
         w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", inheritedClass: null, isRecord: false);

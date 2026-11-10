@@ -275,9 +275,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Tags.Contains(tag)
             ? tag
-            : classe.Tags.Intersect(Tags).FirstOrDefault() ?? classe
-                    .Tags.Intersect(ReferencedTagConfigs.Keys)
-                    .FirstOrDefault()
+            : classe.Tags.Intersect(Tags).FirstOrDefault()
+                ?? classe.Tags.Intersect(ReferencedTagConfigs.Keys).FirstOrDefault()
                 ?? tag;
     }
 

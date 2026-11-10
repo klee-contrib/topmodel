@@ -8,4 +8,3 @@ public class DbColumnComment
 
     public string? Comment { get; set; }
 }
-
