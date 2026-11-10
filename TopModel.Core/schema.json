@@ -11,9 +11,7 @@
         {
           "type": "object",
           "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple).",
-          "required": [
-            "name"
-          ],
+          "required": ["name"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -74,11 +72,7 @@
         {
           "type": "object",
           "description": "Propriété standard.",
-          "required": [
-            "name",
-            "domain",
-            "comment"
-          ],
+          "required": ["name", "domain", "comment"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -118,7 +112,7 @@
             "paramLocation": {
               "type": "string",
               "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
-              "enum": [ "route", "query", "form-data", "json-body" ]
+              "enum": ["route", "query", "form-data", "json-body"]
             },
             "annotations": {
               "type": "array",
@@ -138,12 +132,7 @@
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
@@ -156,10 +145,7 @@
         {
           "type": "object",
           "description": "Propriété d'association (clé étrangère).",
-          "required": [
-            "association",
-            "comment"
-          ],
+          "required": ["association", "comment"],
           "additionalProperties": false,
           "properties": {
             "association": {
@@ -204,7 +190,7 @@
             "paramLocation": {
               "type": "string",
               "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
-              "enum": [ "route", "query", "form-data", "json-body" ]
+              "enum": ["route", "query", "form-data", "json-body"]
             },
             "withReverse": {
               "oneOf": [
@@ -281,12 +267,7 @@
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
@@ -299,9 +280,7 @@
         {
           "type": "object",
           "description": "Alias vers un champ existant.",
-          "required": [
-            "alias"
-          ],
+          "required": ["alias"],
           "additionalProperties": false,
           "properties": {
             "alias": {
@@ -309,53 +288,34 @@
               "description": "Définition de propriété(s) à recopier d'une autre classe. Cette propriété DOIT être en PREMIER.",
               "oneOf": [
                 {
-                  "required": [
-                    "class"
-                  ]
+                  "required": ["class"]
                 },
                 {
-                  "required": [
-                    "endpoint"
-                  ]
+                  "required": ["endpoint"]
                 },
                 {
-                  "required": [
-                    "decorator"
-                  ]
+                  "required": ["decorator"]
                 }
               ],
               "allOf": [
                 {
                   "not": {
-                    "required": [
-                      "class",
-                      "endpoint",
-                      "decorator"
-                    ]
+                    "required": ["class", "endpoint", "decorator"]
                   }
                 },
                 {
                   "not": {
-                    "required": [
-                      "property",
-                      "include"
-                    ]
+                    "required": ["property", "include"]
                   }
                 },
                 {
                   "not": {
-                    "required": [
-                      "property",
-                      "exclude"
-                    ]
+                    "required": ["property", "exclude"]
                   }
                 },
                 {
                   "not": {
-                    "required": [
-                      "include",
-                      "exclude"
-                    ]
+                    "required": ["include", "exclude"]
                   }
                 }
               ],
@@ -508,7 +468,7 @@
             "paramLocation": {
               "type": "string",
               "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre). Cette valeur n'est pas héritée de la propriété originale.",
-              "enum": [ "route", "query", "form-data", "json-body" ]
+              "enum": ["route", "query", "form-data", "json-body"]
             },
             "annotations": {
               "type": "array",
@@ -528,12 +488,7 @@
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
@@ -546,11 +501,7 @@
         {
           "type": "object",
           "description": "Propriété de composition avec une autre classe.",
-          "required": [
-            "composition",
-            "name",
-            "comment"
-          ],
+          "required": ["composition", "name", "comment"],
           "additionalProperties": false,
           "properties": {
             "composition": {
@@ -587,7 +538,7 @@
             "paramLocation": {
               "type": "string",
               "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
-              "enum": [ "route", "query", "form-data", "json-body" ]
+              "enum": ["route", "query", "form-data", "json-body"]
             },
             "annotations": {
               "type": "array",
@@ -607,12 +558,7 @@
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
@@ -633,9 +579,7 @@
         {
           "type": "object",
           "description": "Template de valeur à utiliser, avec des imports supplémentaires si besoin.",
-          "required": [
-            "value"
-          ],
+          "required": ["value"],
           "additionalProperties": false,
           "properties": {
             "value": {
@@ -657,10 +601,7 @@
       "type": "object",
       "description": "Paramètre à utiliser dans un template.",
       "additionalProperties": false,
-      "required": [
-        "name",
-        "comment"
-      ],
+      "required": ["name", "comment"],
       "properties": {
         "name": {
           "type": "string",
@@ -685,10 +626,7 @@
     {
       "type": "object",
       "description": "Définition d'un fichier.",
-      "required": [
-        "module",
-        "tags"
-      ],
+      "required": ["module", "tags"],
       "additionalProperties": false,
       "properties": {
         "module": {
@@ -737,18 +675,13 @@
     {
       "type": "object",
       "description": "Définition d'une annotation",
-      "required": [
-        "annotation"
-      ],
+      "required": ["annotation"],
       "additionalProperties": false,
       "properties": {
         "annotation": {
           "type": "object",
           "description": "Annotation.",
-          "required": [
-            "name",
-            "description"
-          ],
+          "required": ["name", "description"],
           "properties": {
             "name": {
               "type": "string",
@@ -793,9 +726,7 @@
             "items": {
               "type": "object",
               "description": "Annotation à ajouter",
-              "required": [
-                "text"
-              ],
+              "required": ["text"],
               "additionalProperties": false,
               "properties": {
                 "text": {
@@ -833,15 +764,13 @@
     {
       "type": "object",
       "description": "Définition d'un domaine.",
-      "required": [
-        "domain"
-      ],
+      "required": ["domain"],
       "additionalProperties": false,
       "properties": {
         "domain": {
           "type": "object",
           "description": "Domaine.",
-          "required": [ "name" ],
+          "required": ["name"],
           "properties": {
             "name": {
               "type": "string",
@@ -890,7 +819,7 @@
             "paramLocation": {
               "type": "string",
               "description": "Localisation par défaut d'un paramètre d'endpoint utilisant ce domaine.",
-              "enum": [ "route", "query", "form-data", "json-body" ]
+              "enum": ["route", "query", "form-data", "json-body"]
             },
             "defaultValue": {
               "type": "string",
@@ -983,17 +912,12 @@
     {
       "type": "object",
       "description": "Définition d'un convertisseur de domaine",
-      "required": [
-        "converter"
-      ],
+      "required": ["converter"],
       "additionalProperties": false,
       "properties": {
         "converter": {
           "type": "object",
-          "required": [
-            "from",
-            "to"
-          ],
+          "required": ["from", "to"],
           "properties": {
             "from": {
               "type": "array",
@@ -1034,18 +958,13 @@
     {
       "type": "object",
       "description": "Définition d'un décorateur.",
-      "required": [
-        "decorator"
-      ],
+      "required": ["decorator"],
       "additionalProperties": false,
       "properties": {
         "decorator": {
           "type": "object",
           "description": "Décorateur.",
-          "required": [
-            "name",
-            "description"
-          ],
+          "required": ["name", "description"],
           "properties": {
             "name": {
               "type": "string",
@@ -1058,10 +977,7 @@
             "target": {
               "type": "string",
               "description": "Si renseigné, limite l'usage de ce décorateur aux classes ou aux endpoints.",
-              "enum": [
-                "class",
-                "endpoint"
-              ]
+              "enum": ["class", "endpoint"]
             },
             "preservePropertyCasing": {
               "type": "boolean",
@@ -1075,10 +991,7 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [
-                  "properties",
-                  "decorators"
-                ]
+                "enum": ["properties", "decorators"]
               }
             },
             "decorators": {
@@ -1155,19 +1068,13 @@
     {
       "type": "object",
       "description": "Définition d'une classe.",
-      "required": [
-        "class"
-      ],
+      "required": ["class"],
       "additionalProperties": false,
       "properties": {
         "class": {
           "type": "object",
           "description": "Définition d'une classe.",
-          "required": [
-            "name",
-            "comment",
-            "properties"
-          ],
+          "required": ["name", "comment", "properties"],
           "additionalProperties": false,
           "properties": {
             "tags": {
@@ -1200,11 +1107,7 @@
             "inheritanceStrategy": {
               "type": "string",
               "description": "Pour une classe persistée, la stratégie d'héritage à utiliser si cette classe est dérivée. Par défaut : `joined-tables`.",
-              "enum": [
-                "joined-tables",
-                "single-table",
-                "distinct-tables"
-              ]
+              "enum": ["joined-tables", "single-table", "distinct-tables"]
             },
             "label": {
               "type": "string",
@@ -1254,21 +1157,13 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [
-                  "properties",
-                  "decorators",
-                  "implements"
-                ]
+                "enum": ["properties", "decorators", "implements"]
               }
             },
             "type": {
               "type": "string",
               "description": "Permet de définir la classe comme étant une interface ou une classe abstraite.",
-              "enum": [
-                "regular",
-                "abstract",
-                "interface"
-              ]
+              "enum": ["regular", "abstract", "interface"]
             },
             "readonly": {
               "type": "boolean",
@@ -1285,9 +1180,7 @@
                 },
                 {
                   "type": "string",
-                  "enum": [
-                    "class"
-                  ]
+                  "enum": ["class"]
                 }
               ],
               "description": "Force la catégorisation de cette classe en tant qu'enum et détermine comment elle doit être considérée dans le modèle.\n\nUne classe doit avoir au moins une `value`, au moins une propriété, et ne peut pas avoir de clé primaire multiple pour être une enum.\n\nCette propriété peut valoir `class` pour représenter l'enum comme une classe (avec des enums pour la clé primaire et les clés d'unicité), ou `true` pour la représenter intégralement comme une enum.\n\nSi la classe peut être une enum et que le domaine de sa clé primaire n'est pas auto-généré, alors elle sera par défaut une enum de type `class`."
@@ -1362,9 +1255,7 @@
                   {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                      "properties"
-                    ],
+                    "required": ["properties"],
                     "properties": {
                       "properties": {
                         "type": "array",
@@ -1392,13 +1283,7 @@
               "additionalProperties": {
                 "type": "object",
                 "additionalProperties": {
-                  "type": [
-                    "string",
-                    "boolean",
-                    "integer",
-                    "number",
-                    "null"
-                  ]
+                  "type": ["string", "boolean", "integer", "number", "null"]
                 }
               }
             },
@@ -1406,12 +1291,7 @@
               "type": "object",
               "description": "Propriétés de classe personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             },
             "mappers": {
@@ -1426,9 +1306,7 @@
                   "items": {
                     "type": "object",
                     "description": "Mapper vers la classe courante",
-                    "required": [
-                      "params"
-                    ],
+                    "required": ["params"],
                     "additionalProperties": false,
                     "properties": {
                       "comment": {
@@ -1443,9 +1321,7 @@
                             {
                               "type": "object",
                               "description": "Paramètre pour le mapper.",
-                              "required": [
-                                "class"
-                              ],
+                              "required": ["class"],
                               "additionalProperties": false,
                               "properties": {
                                 "class": {
@@ -1483,9 +1359,7 @@
                             {
                               "type": "object",
                               "description": "Paramètre pour le mapper",
-                              "required": [
-                                "property"
-                              ],
+                              "required": ["property"],
                               "additionalProperties": false,
                               "properties": {
                                 "property": {
@@ -1510,9 +1384,7 @@
                   "items": {
                     "type": "object",
                     "description": "Définition du mapper.",
-                    "required": [
-                      "class"
-                    ],
+                    "required": ["class"],
                     "additionalProperties": false,
                     "properties": {
                       "class": {
@@ -1553,20 +1425,13 @@
     {
       "type": "object",
       "description": "Définition d'un endpoint",
-      "required": [
-        "endpoint"
-      ],
+      "required": ["endpoint"],
       "additionalProperties": false,
       "properties": {
         "endpoint": {
           "type": "object",
           "description": "Définition d'un endpoint",
-          "required": [
-            "name",
-            "method",
-            "route",
-            "description"
-          ],
+          "required": ["name", "method", "route", "description"],
           "additionalProperties": false,
           "properties": {
             "tags": {
@@ -1583,13 +1448,7 @@
             "method": {
               "type": "string",
               "description": "Méthode du endpoint.",
-              "enum": [
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH"
-              ]
+              "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]
             },
             "route": {
               "type": "string",
@@ -1611,10 +1470,7 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": [
-                  "params",
-                  "decorators"
-                ]
+                "enum": ["params", "decorators"]
               }
             },
             "returns": {
@@ -1659,12 +1515,7 @@
               "type": "object",
               "description": "Propriétés d'endpoint personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
-                "type": [
-                  "string",
-                  "boolean",
-                  "integer",
-                  "number"
-                ]
+                "type": ["string", "boolean", "integer", "number"]
               }
             }
           }
@@ -1674,21 +1525,14 @@
     {
       "type": "object",
       "description": "Description d'un flux de données",
-      "required": [
-        "dataFlow"
-      ],
+      "required": ["dataFlow"],
       "additionalProperties": false,
       "properties": {
         "dataFlow": {
           "type": "object",
           "description": "Description d'un flux de données",
           "additionalProperties": false,
-          "required": [
-            "name",
-            "target",
-            "class",
-            "type"
-          ],
+          "required": ["name", "target", "class", "type"],
           "properties": {
             "name": {
               "type": "string",
@@ -1746,10 +1590,7 @@
               "items": {
                 "type": "object",
                 "description": "Description d'une source de données.",
-                "required": [
-                  "class",
-                  "mode"
-                ],
+                "required": ["class", "mode"],
                 "additionalProperties": false,
                 "properties": {
                   "source": {
@@ -1763,10 +1604,7 @@
                   "mode": {
                     "type": "string",
                     "description": "Mode de génération de la source.",
-                    "enum": [
-                      "partial",
-                      "queryAll"
-                    ]
+                    "enum": ["partial", "queryAll"]
                   },
                   "joinProperties": {
                     "type": "array",

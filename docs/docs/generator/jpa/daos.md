@@ -81,15 +81,17 @@ Il revient alors au projet de créer une interface concrète qui hérite de cell
 
 Localisation des DAOs, relative au répertoire de génération.
 
+_Templating_ : `{module}`
+
+_Variables par tag_ : **oui** (plusieurs DAOs pourraient être générés si un fichier a plusieurs tags)
+
 Le chemin des fichiers cibles est calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées est calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
-
-_Templating_: `{app}`, `{module}`
-
-_Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier a plusieurs tags)
 
 ### `daosAbstract`
 
-Génère les DAOs sous forme d'interfaces `Abstract` à hériter dans le projet :
+Génère les DAOs sous forme d'interfaces `Abstract` annotées avec `@NoRepositoryBean`, à hériter dans le projet.
+
+_Valeur par défaut_ : `false`
 
 - le nom devient `Abstract{classe.NamePascal}DAO` ;
 - le fichier Java est réécrit à chaque génération (pas de préservation) ;
@@ -99,15 +101,19 @@ Génère les DAOs sous forme d'interfaces `Abstract` à hériter dans le projet 
 
 ### `daosName`
 
-Nom du DAO à générer. Placer la valeur `{class}` dans le nom pour remplacer par le nom de la classe. Par exemple, `daosName: "{class}Repository"` générera `UtilisateurRepository` pour la classe `Utilisateur`.
+Template du nom des DAOs.
 
-_Templating_: `{class}`
+_Valeur par défaut_ : `{class}DAO` si `daosAbstract` est désactivé, sinon `Abstract{class}DAO`
 
-_Valeur par défaut_: `"{class}DAO"` si `daosAbstract` est à `false`, sinon `"Abstract{class}DAO"`
+_Templating_ : `{class}`
+
+Placer la valeur `{class}` dans le nom pour remplacer par le nom de la classe. Par exemple, `daosName: "{class}Repository"` générera `UtilisateurRepository` pour la classe `Utilisateur`.
 
 ### `daosInterface`
 
-Permet de surcharger l'interface par défaut des DAOs. La valeur attendue est un nom de classe pleinement qualifié :
+Précise l'interface des DAOs générés.
+
+La valeur attendue est un nom de classe pleinement qualifié :
 
 ```yaml
 jpa:

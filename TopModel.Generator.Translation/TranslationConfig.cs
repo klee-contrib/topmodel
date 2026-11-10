@@ -5,12 +5,12 @@ namespace TopModel.Generator.Translation;
 public class TranslationConfig : GeneratorConfigBase
 {
     /// <summary>
-    /// liste des langues de l'application
+    /// Langues cibles pour lesquelles les traductions manquantes doivent être générées.
     /// </summary>
     public virtual IList<string> Langs { get; set; } = [];
 
     /// <summary>
-    /// liste des langues de l'application
+    /// Chemin des dossiers de traductions sortants (manquants).
     /// </summary>
     public virtual string RootPath { get; set; } = "{lang}";
 

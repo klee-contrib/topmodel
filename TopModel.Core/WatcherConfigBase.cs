@@ -19,24 +19,22 @@ public class WatcherConfigBase
     private HashSet<Endpoint>? _endpoints = null;
 
     /// <summary>
-    /// Nom de la configuration.
+    /// Nom de cette configuration.
     /// </summary>
     public virtual string? Name { get; set; }
 
     /// <summary>
-    /// Tags du module.
+    /// Tags pris en compte par cette configuration.
     /// </summary>
     public virtual required IList<string> Tags { get; set; }
 
     /// <summary>
-    /// Tags pour lesquels il ne faut pas générer les fichiers (surchage en CLI).
+    /// Tags à exclure de la configuration (surcharge en CLI).
     /// </summary>
     public virtual IList<string> ExcludedTags { get; set; } = [];
 
     /// <summary>
     /// Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.
-    ///
-    /// Les valeurs sont les noms des configurations cibles pour chaque tag.
     /// </summary>
     public virtual IDictionary<string, string> ReferencedTags { get; set; } = new Dictionary<string, string>();
 
@@ -49,7 +47,7 @@ public class WatcherConfigBase
         new Dictionary<string, WatcherConfigBase>();
 
     /// <summary>
-    /// Langages du module, utilisé en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
+    /// Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
     [YamlConverter(typeof(StringListTypeConverter))]
     public virtual IList<string> Language { get; set; } = [];
@@ -60,12 +58,12 @@ public class WatcherConfigBase
     public virtual string? DefaultLanguage { get; }
 
     /// <summary>
-    /// Variables globales du module.
+    /// Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.
     /// </summary>
     public virtual IDictionary<string, string> Variables { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
-    /// Variables par tag du module.
+    /// Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.
     /// </summary>
     public virtual IDictionary<string, IDictionary<string, string>> TagVariables { get; set; } =
         new Dictionary<string, IDictionary<string, string>>();

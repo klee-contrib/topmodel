@@ -1,18 +1,15 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "outputDirectory",
-    "tags"
-  ],
+  "required": ["outputDirectory", "tags"],
   "properties": {
     "name": {
       "type": "string",
-      "description": "Nom de cette configuration."
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
     },
     "tags": {
       "type": "array",
-      "description": "Précise les tags de fichier que le générateur doit lire",
+      "description": "Tags pris en compte par cette configuration.",
       "items": {
         "type": "string",
         "description": "Catégorie de fichier que le générateur doit lire."
@@ -28,43 +25,31 @@
     },
     "variables": {
       "type": "object",
-      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
       "patternProperties": {
         ".+": {
-          "type": "string"
+          "type": ["string", "number", "boolean"]
         }
       }
     },
     "tagVariables": {
       "type": "object",
-      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
       "patternProperties": {
         ".*": {
           "type": "object",
           "patternProperties": {
             ".*": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "boolean"
-                }
-              ]
+              "type": ["string", "number", "boolean"]
             }
           }
         }
       }
     },
-    "disable": {
-      "type": "array",
-      "description": "Désactive les générateurs demandés",
-      "items": {
-        "type": "string",
-        "enum": [
-          "JTranslationOutGen"
-        ]
-      }
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
     },
     "outputDirectory": {
       "type": "string",
@@ -72,38 +57,24 @@
     },
     "translateReferences": {
       "type": "boolean",
-      "description": "Si les libellés des listes de références doivent être traduits.",
-      "default": "true"
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
     },
     "translateProperties": {
       "type": "boolean",
-      "description": "Si les libellés des propriétés doivent être traduits.",
-      "default": "true"
-    },
-    "ignoreDefaultValues": {
-      "type": "boolean",
-      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
-    },
-    "rootModule": {
-      "type": "string",
-      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).",
-      "default": "{module:head}"
-    },
-    "rootPath": {
-      "type": "string",
-      "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",
-      "default": "{lang}"
-    },
-    "defaultLang": {
-      "type": "string",
-      "description": "Langue par défaut (celle dans laquelle sont écris les labels dans les fichiers .tmd"
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
     },
     "langs": {
       "type": "array",
+      "description": "Langues cibles pour lesquelles les traductions manquantes doivent être générées.",
       "items": {
         "type": "string",
-        "description": "Code du angage"
+        "description": "Code de langue."
       }
+    },
+    "rootPath": {
+      "type": "string",
+      "description": "Chemin des dossiers de traductions sortants (manquants).\n\n- Valeur par défaut : `{lang}`.\n- Templating : `{lang}`.\n- Variables par tag : **oui**.",
+      "default": "{lang}"
     }
   }
 }

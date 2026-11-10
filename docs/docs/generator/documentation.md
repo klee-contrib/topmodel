@@ -12,7 +12,7 @@ Il est composé de trois générateurs indépendants :
 | `DocEndpointGen` | Endpoints          | Un ou plusieurs fichiers Markdown listant **les endpoints** du modèle, avec leur module, leur verbe HTTP, leur route, leur description et éventuellement les rôles déduits des annotations configurées via `authorizationAnnotations`. La granularité dépend des variables présentes dans `endpointsFilePath`. |
 | `DocMermaidGen`  | Classes persistées | Un ou plusieurs fichiers Markdown contenant un **diagramme de classes Mermaid**. La granularité dépend des variables présentes dans `mermaidFilePath`.                                                                                                                                                         |
 
-Chaque générateur est activé par défaut et peut être désactivé individuellement via la propriété [`disable`](#disable), en utilisant son **nom court** (`DocClassGen`, `DocEndpointGen`, `DocMermaidGen`).
+Chaque générateur est activé par défaut et peut être désactivé individuellement via la propriété [`disable`](../configuration.md#propriétés-communes), en utilisant son **nom court** (`DocClassGen`, `DocEndpointGen`, `DocMermaidGen`).
 
 Les fichiers produits sont du Markdown standard, le code Mermaid étant généré dans un bloc ` ```mermaid ` compatible Docusaurus, GitHub ou GitLab.
 
@@ -28,9 +28,9 @@ Les trois générateurs partagent la même logique de découpage : la granularit
 
 Le titre (niveau 1) des fichiers générés reflète automatiquement le mode choisi :
 
-- mode `All` : titre de base (ex. « Dictionnaire de données », « Liste des endpoints », « Diagramme global »)
-- mode `Module` : titre de base suivi de « du module _X_ »
-- mode `File` : titre de base suivi de « du fichier _Y_ »
+- mode `All` : titre de base (ex. "Dictionnaire de données", "Liste des endpoints", "Diagramme global")
+- mode `Module` : titre de base suivi de "du module _X_"
+- mode `File` : titre de base suivi de "du fichier _Y_"
 
 ## Dictionnaire de données
 
@@ -70,83 +70,45 @@ Le découpage en plusieurs fichiers (par module — mode par défaut — ou par 
 
 ## Configuration
 
-### Fichier de configuration
+### `endpointsFilePath`
 
-- `outputDirectory`
+Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.
 
-  Racine du répertoire de génération (comme pour tous les autres générateurs). **Obligatoire**.
+_Valeur par défaut_ : `endpoints.md`
 
-- `tags`
+_Templating_ : `{module}`, `{fileName}`
 
-  Tags de fichier que le générateur doit lire. **Obligatoire**.
+_Variables par tag_ : **oui**
 
-- `endpointsFilePath`
+### `classesFilePath`
 
-  Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes (voir [Découpage des fichiers générés](#découpage-des-fichiers-générés)).
+Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.
 
-  _Templating_ : `{module}`, `{fileName}`
+_Valeur par défaut_ : `classes.md`
 
-  _Valeur par défaut_ : `endpoints.md`
+_Templating_ : `{module}`, `{fileName}`
 
-  _Variables par tag_ : **oui**
+_Variables par tag_ : **oui**
 
-- `classesFilePath`
+### `mermaidFilePath`
 
-  Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes (voir [Découpage des fichiers générés](#découpage-des-fichiers-générés)).
+Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un diagramme par fichier de modèle si `{fileName}` est présent, un diagramme par module si `{module}` est présent, un unique diagramme global sinon.
 
-  _Templating_ : `{module}`, `{fileName}`
+_Valeur par défaut_ : `{module}.md`
 
-  _Valeur par défaut_ : `classes.md`
+_Templating_ : `{module}`, `{fileName}`
 
-  _Variables par tag_ : **oui**
+_Variables par tag_ : **oui**
 
-- `mermaidFilePath`
+### `schemas`
 
-  Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes (voir [Découpage des fichiers générés](#découpage-des-fichiers-générés)).
+Correspondance entre les schémas de base de données et les tags des classes qui y sont persistées.
 
-  _Templating_ : `{module}`, `{fileName}`
+Permet de renseigner la colonne `Schéma` du dictionnaire des classes selon le tag du fichier courant. Exemple : `public: [back, batch]` et `archive: [archive]`.
 
-  _Valeur par défaut_ : `{module}.md`
+### `authorizationAnnotations`
 
-  _Variables par tag_ : **oui**
-
-- `authorizationAnnotations`
-
-  Liste des **noms d'annotations** (par exemple `RoleRequired`, `HasRole`…) dont les paramètres doivent être agrégés pour alimenter la colonne `Autorisation` du tableau des endpoints.
-
-  Si la liste est vide ou non renseignée, la colonne `Autorisation` **n'est pas générée** dans le tableau.
-
-  Pour chaque endpoint, toutes les annotations dont le nom figure dans cette liste sont collectées, et leurs paramètres sont concaténés (séparés par `,`) dans la cellule `Autorisation`.
-
-  Exemple :
-
-  ```yaml
-  authorizationAnnotations:
-    - RoleRequired
-    - HasRole
-  ```
-
-- `schemas`
-
-  Correspondance entre les **schémas/pods de base de données** et les tags qui y sont persistés. Permet de renseigner la colonne `Schéma` du dictionnaire des classes en fonction du tag du fichier courant.
-
-  Par exemple, la configuration suivante indique que les classes dont les fichiers sont taggués `back` ou `batch` sont persistées dans le schéma `public`, tandis que les classes taggées `archive` sont persistées dans le schéma `archive` :
-
-  ```yaml
-  schemas:
-    public:
-      - back
-      - batch
-    archive:
-      - archive
-  ```
-
-- `disable`
-
-  Permet de désactiver spécifiquement certains générateurs du module. Les valeurs attendues sont les **noms courts** des générateurs :
-  - `DocClassGen` — désactive `DocumentationClassDocGenerator` (dictionnaire de données)
-  - `DocEndpointGen` — désactive `DocumentationEndpointDocGenerator` (liste des endpoints)
-  - `DocMermaidGen` — désactive `DocumentationMermaidGenerator` (diagrammes Mermaid)
+Liste des noms d'annotations (ex. `RoleRequired`, `HasRole`) dont les paramètres doivent être agrégés pour alimenter la colonne `Autorisation` dans la liste des endpoints. Si la liste est vide ou non renseignée, la colonne `Autorisation` n'est pas générée.
 
 ### Exemple
 

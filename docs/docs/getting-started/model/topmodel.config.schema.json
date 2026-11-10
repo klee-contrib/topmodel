@@ -3,9 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "description": "Fichier de config du générateur",
-  "required": [
-    "app"
-  ],
+  "required": ["app"],
   "properties": {
     "app": {
       "type": "string",
@@ -109,10 +107,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "path",
-          "comment"
-        ],
+        "required": ["path", "comment"],
         "properties": {
           "path": {
             "type": "string",
@@ -131,10 +126,7 @@
         "type": "object",
         "description": "Config pour la génération de Jpa.",
         "additionalProperties": false,
-        "required": [
-          "tags",
-          "outputDirectory"
-        ],
+        "required": ["tags", "outputDirectory"],
         "properties": {
           "name": {
             "type": "string",
@@ -259,12 +251,7 @@
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
-            "enum": [
-              "none",
-              "const-only",
-              "enum-only",
-              "enum-or-const"
-            ]
+            "enum": ["none", "const-only", "enum-only", "enum-or-const"]
           },
           "rootModule": {
             "type": "string",
@@ -316,10 +303,7 @@
               {
                 "type": "string",
                 "description": "Mode de génération de l'API ('Client' ou 'Server')",
-                "enum": [
-                  "Client",
-                  "Server"
-                ]
+                "enum": ["Client", "Server"]
               },
               {
                 "type": "string",
@@ -334,11 +318,7 @@
                 "type": "string",
                 "description": "Mode de génération de l'API Client",
                 "default": "RestClient",
-                "enum": [
-                  "RestTemplate",
-                  "RestClient",
-                  "FeignClient"
-                ]
+                "enum": ["RestTemplate", "RestClient", "FeignClient"]
               },
               {
                 "type": "string",
@@ -361,10 +341,7 @@
             "type": "string",
             "description": "Encodage des fichiers de resource.",
             "default": "Latin1",
-            "enum": [
-              "Latin1",
-              "UTF8"
-            ]
+            "enum": ["Latin1", "UTF8"]
           },
           "useJdbc": {
             "type": "boolean",
@@ -397,12 +374,8 @@
             "type": "object",
             "description": "Types de cascade à ajouter aux associations générées.",
             "default": {
-              "oneToOne": [
-                "all"
-              ],
-              "oneToMany": [
-                "all"
-              ]
+              "oneToOne": ["all"],
+              "oneToMany": ["all"]
             },
             "properties": {
               "oneToOne": {
@@ -460,10 +433,7 @@
             "type": "string",
             "description": "Writer à utiliser pour les flux de données.",
             "default": "jpa",
-            "enum": [
-              "bulk",
-              "jpa"
-            ]
+            "enum": ["bulk", "jpa"]
           },
           "dataFlowsBulkSize": {
             "type": "number",
@@ -501,10 +471,7 @@
             "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
             "items": {
               "type": "string",
-              "enum": [
-                "non-persisted",
-                "persisted"
-              ]
+              "enum": ["non-persisted", "persisted"]
             }
           },
           "fieldsEnumInterface": {
@@ -520,10 +487,7 @@
         "type": "object",
         "description": "Config pour la génération de C#.",
         "additionalProperties": false,
-        "required": [
-          "outputDirectory",
-          "tags"
-        ],
+        "required": ["outputDirectory", "tags"],
         "properties": {
           "name": {
             "type": "string",
@@ -650,12 +614,7 @@
           "uniqueValueGeneration": {
             "type": "string",
             "description": "Mode de génération des valeurs de propriétés avec clé d'unicité : `none`, `const-only`, `enum-only`, `enum-or-const`. Par défaut : `enum-or-const`.",
-            "enum": [
-              "none",
-              "const-only",
-              "enum-only",
-              "enum-or-const"
-            ]
+            "enum": ["none", "const-only", "enum-only", "enum-or-const"]
           },
           "persistentModelPath": {
             "type": "string",
@@ -682,10 +641,7 @@
               {
                 "type": "string",
                 "description": "Mode de génération de l'API ('Client' ou 'Server')",
-                "enum": [
-                  "Client",
-                  "Server"
-                ]
+                "enum": ["Client", "Server"]
               },
               {
                 "type": "string",
@@ -741,11 +697,7 @@
           "kinetix": {
             "type": "string",
             "description": "Ce qu'il faut générer pour Kinetix : `references` pour les annotations et accesseurs de listes de réference, `legacy` pour générer en plus des annotations de domaines, et `none` pour ne rien générer. Par défaut: `references`.",
-            "enum": [
-              "none",
-              "references",
-              "legacy"
-            ]
+            "enum": ["none", "references", "legacy"]
           },
           "domainNamespace": {
             "type": "string",
@@ -802,10 +754,7 @@
           "mapperLocationPriority": {
             "type": "string",
             "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : 'persisted'",
-            "enum": [
-              "persisted",
-              "non-persisted"
-            ]
+            "enum": ["persisted", "non-persisted"]
           },
           "useEFComments": {
             "type": "boolean",
@@ -838,11 +787,7 @@
           "resourcesInResx": {
             "type": "string",
             "description": "Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.",
-            "enum": [
-              "all",
-              "properties",
-              "references"
-            ]
+            "enum": ["all", "properties", "references"]
           },
           "enumCols": {
             "type": "boolean",
@@ -857,10 +802,7 @@
         "type": "object",
         "description": "Config pour la génération de SQL.",
         "additionalProperties": false,
-        "required": [
-          "outputDirectory",
-          "tags"
-        ],
+        "required": ["outputDirectory", "tags"],
         "properties": {
           "name": {
             "type": "string",
@@ -971,11 +913,7 @@
           "targetDBMS": {
             "type": "string",
             "description": "SGBD cible ('postgre' ou 'sqlserver' ou 'oracle').",
-            "enum": [
-              "sqlserver",
-              "postgre",
-              "oracle"
-            ]
+            "enum": ["sqlserver", "postgre", "oracle"]
           },
           "procedural": {
             "type": "object",
@@ -1015,19 +953,19 @@
             "properties": {
               "tableScriptFolder": {
                 "type": "string",
-                "description": "Dossier du projet pour le script de déclaration de table."
+                "description": "Dossier du projet pour les scripts de déclaration de table."
               },
               "tableTypeScriptFolder": {
                 "type": "string",
-                "description": " Dossier du projet pour le script de déclaration de type table."
+                "description": " Dossier du projet pour les scripts de déclaration de type table."
               },
               "initListScriptFolder": {
                 "type": "string",
-                "description": "Dossier du projet pour le script d'initialisation des listes de références."
+                "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
               },
               "initListMainScriptName": {
                 "type": "string",
-                "description": "Fichier du projet référençant le script d'initialisation des listes de références."
+                "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
               },
               "disableIdentity": {
                 "type": "boolean",
@@ -1048,10 +986,7 @@
         "type": "object",
         "description": "Config pour la génération de Javascript.",
         "additionalProperties": false,
-        "required": [
-          "outputDirectory",
-          "tags"
-        ],
+        "required": ["outputDirectory", "tags"],
         "properties": {
           "name": {
             "type": "string",
@@ -1176,23 +1111,13 @@
             "type": "string",
             "description": "Framework cible pour la génération.",
             "default": "focus",
-            "enum": [
-              "fetch",
-              "angular",
-              "angular_promise",
-              "legacy"
-            ]
+            "enum": ["fetch", "angular", "angular_promise", "legacy"]
           },
           "entityMode": {
             "type": "string",
             "description": "Framework cible pour la génération.",
             "default": "typed",
-            "enum": [
-              "untyped",
-              "typed",
-              "none",
-              "focus"
-            ]
+            "enum": ["untyped", "typed", "none", "focus"]
           },
           "extendedCompositions": {
             "type": "boolean",
@@ -1209,10 +1134,7 @@
           "resourceMode": {
             "type": "string",
             "description": "Mode de génération (JS, JSON ou JSON Schema).",
-            "enum": [
-              "js",
-              "json"
-            ]
+            "enum": ["js", "json"]
           },
           "translateReferences": {
             "type": "boolean",
