@@ -85,7 +85,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
         else
         {
-            var contextNs = Config.GetDbContextNamespace(tag);
+            var contextNs = Config.GetDbContextNamespace(tag, ns.Module);
             if (!implementationNamespace.Contains(contextNs))
             {
                 usings.Add(contextNs);
@@ -127,7 +127,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
         else if (Config.DbContextPath != null)
         {
-            var dbContextName = Config.GetDbContextName(tag);
+            var dbContextName = Config.GetDbContextName(tag, ns.Module);
             var parameters = $"{dbContextName} dbContext";
 
             w.WriteClassDeclaration(

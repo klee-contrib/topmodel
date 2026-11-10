@@ -155,6 +155,8 @@ _(en preview, documentation à venir)_
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
+  _Templating_: `{module}` (module du fichier d'endpoints)
+
   _Valeur par défaut_: `"{app}.Web"`
 
   _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
@@ -185,11 +187,15 @@ _(en preview, documentation à venir)_
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
 
+  _Templating_: `{module}` (un contexte est généré par chemin distinct, avec les classes des modules correspondants)
+
   _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
 - `dbContextName`
 
   Nom du DbContext.
+
+  _Templating_: `{module}` (les points sont supprimés du nom résolu)
 
   _Valeur par défaut_: `"{app}DbContext"`
 

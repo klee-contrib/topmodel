@@ -41,11 +41,14 @@ public class DbContextGenerator(
             && classe.Enum != EnumMode.Enum
         )
         {
-            yield return ("main", Config.GetDbContextFilePath(tag));
+            yield return ("main", Config.GetDbContextFilePath(tag, classe.Namespace.Module));
 
             if (Config.UseEFComments)
             {
-                yield return ("comments", Config.GetDbContextFilePath(tag).Replace(".cs", ".comments.cs"));
+                yield return (
+                    "comments",
+                    Config.GetDbContextFilePath(tag, classe.Namespace.Module).Replace(".cs", ".comments.cs")
+                );
             }
         }
 
@@ -59,7 +62,9 @@ public class DbContextGenerator(
         {
             yield return (
                 "enums",
-                Config.GetDbContextFilePath(tag).Replace($"{Config.GetDbContextName(tag)}.cs", $"{BuilderOptions}.cs")
+                Config
+                    .GetDbContextFilePath(tag, classe.Namespace.Module)
+                    .Replace($"{Config.GetDbContextName(tag, classe.Namespace.Module)}.cs", $"{BuilderOptions}.cs")
             );
         }
     }
@@ -86,7 +91,7 @@ public class DbContextGenerator(
 
         foreach (var classe in classes)
         {
-            cw.WriteLine(2, $"var {classe.NameCamel} = modelBuilder.Entity<{GetClassName(classe, tag)}>();");
+            cw.WriteLine(2, $"var {classe.NameCamel} = modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>();");
 
             if (
                 classe.Extends?.InheritanceStrategy != InheritanceStrategy.SingleTable
@@ -148,7 +153,7 @@ public class DbContextGenerator(
         {
             w.WriteLine(
                 2,
-                $"builder.MapEnum<{GetClassName(classe, tag)}>(\"{Config.GetSqlName(classe, tag)}\", nameTranslator: _nameTranslator);"
+                $"builder.MapEnum<{GetClassName(classe, tag, contextNs)}>(\"{Config.GetSqlName(classe, tag)}\", nameTranslator: _nameTranslator);"
             );
         }
         w.WriteLine(1, "}");
@@ -158,9 +163,10 @@ public class DbContextGenerator(
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var dbContextName = Config.GetDbContextName(tag);
+        var module = classes.First().Namespace.Module;
+        var dbContextName = Config.GetDbContextName(tag, module);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = Config.GetDbContextNamespace(tag);
+        var contextNs = Config.GetDbContextNamespace(tag, module);
 
         foreach (
             var ns in classes
@@ -243,7 +249,7 @@ public class DbContextGenerator(
             w.WriteSummary(1, "Accès à l'entité " + Config.GetTypeName(classe));
             w.WriteLine(
                 1,
-                "public DbSet<" + GetClassName(classe, tag) + "> " + classe.PluralNamePascal + " { get; set; }"
+                "public DbSet<" + GetClassName(classe, tag, contextNs) + "> " + classe.PluralNamePascal + " { get; set; }"
             );
         }
 
@@ -268,14 +274,14 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
                     );
                 }
                 else if (fp.Domain?.Length != null && fp.EnumProperty?.Class.Enum != EnumMode.Enum)
                 {
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(\"{fp.PropertyNamePascal}\").HasMaxLength({fp.Domain.Length});"
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(\"{fp.PropertyNamePascal}\").HasMaxLength({fp.Domain.Length});"
                     );
                 }
             }
@@ -285,7 +291,7 @@ public class DbContextGenerator(
                 hasPropConfig = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{GetClassName(fp.Class, tag)}>().Property(x => x.{fp.NamePascal}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});"
+                    $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(x => x.{fp.NamePascal}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});"
                 );
             }
         }
@@ -305,7 +311,7 @@ public class DbContextGenerator(
             hasJson = true;
             w.WriteLine(
                 2,
-                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag)}>().Complex{(cp.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{cp.NamePascal}, p =>"
+                $@"modelBuilder.Entity<{GetClassName(cp.Class, tag, contextNs)}>().Complex{(cp.Domain?.Collection == true ? "Collection" : "Property")}(p => p.{cp.NamePascal}, p =>"
             );
             w.WriteLine(2, "{");
             w.WriteLine(3, $"p.ToJson(\"{Config.GetSqlName(cp, tag)}\");");
@@ -365,7 +371,7 @@ public class DbContextGenerator(
                 }
                 else
                 {
-                    w.Write($"<{GetClassName(g.Key.Association!, tag)}>()");
+                    w.Write($"<{GetClassName(g.Key.Association!, tag, contextNs)}>()");
                 }
 
                 w.Write($".With{(!g.Key.Unique ? "Many" : "One")}");
@@ -382,12 +388,12 @@ public class DbContextGenerator(
                 if (!g.Key.UseClassForAssociation)
                 {
                     w.Write(
-                        $".HasForeignKey{(!g.Key.Unique ? string.Empty : $"<{GetClassName(g.Key.Class, tag)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")})"
+                        $".HasForeignKey{(!g.Key.Unique ? string.Empty : $"<{GetClassName(g.Key.Class, tag, contextNs)}>")}(p => {(g.Count() == 1 ? $"p.{g.Single().NamePascal}" : $"new {{ {string.Join(", ", g.Select(p => $"p.{p.NamePascal}"))} }}")})"
                     );
                 }
                 else if (g.Key.Unique)
                 {
-                    w.Write($".HasForeignKey<{GetClassName(g.Key.Class, tag)}>(\"{g.Single().PropertyNamePascal}\")");
+                    w.Write($".HasForeignKey<{GetClassName(g.Key.Class, tag, contextNs)}>(\"{g.Single().PropertyNamePascal}\")");
                 }
                 else if (g.Key.AssociationRole != null)
                 {
@@ -415,7 +421,7 @@ public class DbContextGenerator(
             var expr = classe.PrimaryKey.Any(p => Config.UseClassForAssociation(p))
                 ? string.Join(", ", classe.PrimaryKey.Select(p => $"\"{p.PropertyNamePascal}\""))
                 : $"p => new {{ {string.Join(", ", classe.PrimaryKey.Select(p => $"p.{p.NamePascal}"))} }}";
-            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasKey({expr});");
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>().HasKey({expr});");
         }
 
         if (hasPk)
@@ -453,7 +459,7 @@ public class DbContextGenerator(
 
                 foreach (var classeWithSequence in classesWithSequence)
                 {
-                    w.Write(2, $"modelBuilder.Entity<{GetClassName(classeWithSequence, tag)}>().Property(");
+                    w.Write(2, $"modelBuilder.Entity<{GetClassName(classeWithSequence, tag, contextNs)}>().Property(");
 
                     if (Config.UseClassForAssociation(property))
                     {
@@ -469,7 +475,7 @@ public class DbContextGenerator(
             }
             else if (property.GeneratedValue!.Start != 1 || property.GeneratedValue.Increment != 1)
             {
-                w.Write(2, $"modelBuilder.Entity<{GetClassName(property.Class, tag)}>().Property(");
+                w.Write(2, $"modelBuilder.Entity<{GetClassName(property.Class, tag, contextNs)}>().Property(");
 
                 if (Config.UseClassForAssociation(property))
                 {
@@ -500,7 +506,7 @@ public class DbContextGenerator(
             }
 
             hasTphOrTpc = true;
-            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>()");
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>()");
             if (Config.GetProperties(classe).Contains(classe.DiscriminatorProperty))
             {
                 if (Config.UseClassForAssociation(classe.DiscriminatorProperty))
@@ -532,7 +538,7 @@ public class DbContextGenerator(
                 var rawValue = subClasse.DiscriminatorValue ?? subClasse.SqlName;
                 w.Write(
                     3,
-                    $".HasValue<{GetClassName(subClasse, tag)}>({(classe.DiscriminatorProperty == null
+                    $".HasValue<{GetClassName(subClasse, tag, contextNs)}>({(classe.DiscriminatorProperty == null
                         ? $"\"{rawValue}\""
                         : GetValue(classe.DiscriminatorProperty, rawValue, tag, contextNs))})"
                 );
@@ -543,7 +549,7 @@ public class DbContextGenerator(
         foreach (var classe in classes.Where(c => c.InheritanceStrategy == InheritanceStrategy.DistinctTables))
         {
             hasTphOrTpc = true;
-            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().UseTpcMappingStrategy();");
+            w.WriteLine(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>().UseTpcMappingStrategy();");
         }
 
         if (hasTphOrTpc)
@@ -591,7 +597,7 @@ public class DbContextGenerator(
                     : $"p => new {{ {string.Join(", ", idx.Properties.Select(p => $"p.{p.NamePascal}"))} }}";
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{GetClassName(idx.Properties[0].Class, tag)}>().HasIndex({expr}){(idx.Unique ? ".IsUnique()" : string.Empty)};"
+                    $"modelBuilder.Entity<{GetClassName(idx.Properties[0].Class, tag, contextNs)}>().HasIndex({expr}){(idx.Unique ? ".IsUnique()" : string.Empty)};"
                 );
             }
 
@@ -617,7 +623,7 @@ public class DbContextGenerator(
                 hasSp = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.Entity<{GetClassName(sp.Class, tag)}>().Property(\"{sp.PropertyNamePascal}\").HasColumnName(\"{Config.GetSqlName(sp, tag)}\");"
+                    $"modelBuilder.Entity<{GetClassName(sp.Class, tag, contextNs)}>().Property(\"{sp.PropertyNamePascal}\").HasColumnName(\"{Config.GetSqlName(sp, tag)}\");"
                 );
             }
 
@@ -635,7 +641,7 @@ public class DbContextGenerator(
                     hasResourceIndex = true;
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(translationClass, tag)}>().HasIndex(p => p.{translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal});"
+                        $"modelBuilder.Entity<{GetClassName(translationClass, tag, contextNs)}>().HasIndex(p => p.{translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal});"
                     );
                 }
 
@@ -644,7 +650,7 @@ public class DbContextGenerator(
                     hasResourceIndex = true;
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(fkProperty.Class, tag)}>().HasIndex(p => p.{fkProperty.NamePascal});"
+                        $"modelBuilder.Entity<{GetClassName(fkProperty.Class, tag, contextNs)}>().HasIndex(p => p.{fkProperty.NamePascal});"
                     );
                 }
             }
@@ -661,10 +667,10 @@ public class DbContextGenerator(
 
                 var hasClassAssociations = Config.GetProperties(classe).Any(p => Config.UseClassForAssociation(p));
 
-                w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag)}>().HasData(");
+                w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>().HasData(");
                 if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)
                 {
-                    w.Write($"{GetClassName(classe, tag)}.Values");
+                    w.Write($"{GetClassName(classe, tag, contextNs)}.Values");
                 }
                 else
                 {
@@ -672,7 +678,7 @@ public class DbContextGenerator(
                     {
                         w.WriteLine();
                         w.Write(
-                            $"            new {(hasClassAssociations ? string.Empty : $"{GetClassName(classe, tag)} ")}{{"
+                            $"            new {(hasClassAssociations ? string.Empty : $"{GetClassName(classe, tag, contextNs)} ")}{{"
                         );
 
                         foreach (var refProp in refValue.Value.ToList())
@@ -750,12 +756,12 @@ public class DbContextGenerator(
         w.WriteLine("}");
     }
 
-    private string GetClassName(Class classe, string tag)
+    private string GetClassName(Class classe, string tag, string contextNs)
     {
         var classNs = Config.GetNamespace(classe, tag);
         if (classNs.Split(".").Contains(Config.GetTypeName(classe)))
         {
-            return $"{Config.GetNamespace(classe, tag, Config.GetDbContextNamespace(tag))}.{Config.GetTypeName(classe)}";
+            return $"{Config.GetNamespace(classe, tag, contextNs)}.{Config.GetTypeName(classe)}";
         }
         else
         {
