@@ -26,7 +26,13 @@ public class DocumentationMermaidGenerator(
         yield return ("main", Config.GetMermaidFilePath(tag, classe));
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
         var classList = classes.OrderBy(c => c.ModelFile.Name + c.Namespace.Module + c.Name).ToList();
         if (classList.Count == 0)
@@ -41,7 +47,7 @@ public class DocumentationMermaidGenerator(
             _ => $"Diagramme du module {classList[0].Namespace.Module}",
         };
 
-        using var md = new MarkdownWriter(OpenFileWriter(fileName));
+        await using var md = new MarkdownWriter(OpenFileWriter(fileName));
         md.WriteTitle(1, title);
         md.WriteLine();
         md.WriteLine("```mermaid");

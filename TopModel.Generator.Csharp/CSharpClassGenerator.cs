@@ -641,9 +641,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         return Config.GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         if (classe.Enum != EnumMode.Enum)
         {

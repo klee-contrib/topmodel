@@ -6,7 +6,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// FileWriter avec des méthodes spécialisées pour écrire du CJava
 /// </summary>
-public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
+public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposable
 {
     private readonly List<string> _imports = [];
     private readonly HashSet<string> _inlinedImports = [];
@@ -22,14 +22,14 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         _imports.AddRange(imports);
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    public async ValueTask DisposeAsync()
     {
         writer.IndentValue = "\t";
         writer.WriteLine($"package {packageName};");
         WriteImports();
         _toWrite.ForEach(l => writer.WriteLine(l.Indent, l.Line));
-        writer.Dispose();
+        await writer.DisposeAsync();
     }
 
     /// <summary>

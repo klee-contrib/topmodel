@@ -64,7 +64,7 @@ public class TopModelLock : TopModelLockFile
         Version = version;
     }
 
-    public void UpdateFiles(IEnumerable<string> generatedFiles)
+    public async Task UpdateFiles(IEnumerable<string> generatedFiles)
     {
         if (!_config.NoWarn.Contains(ErrorType.TMD1006))
         {
@@ -118,14 +118,14 @@ public class TopModelLock : TopModelLockFile
             }
         }
 
-        Write();
+        await Write();
     }
 
-    public void Write()
+    public async Task Write()
     {
         if (Modules.Count > 0 || GeneratedFiles.Count > 0)
         {
-            using var fw = new GeneratedFileWriter(
+            await using var fw = new GeneratedFileWriter(
                 _config,
                 Path.Combine(_config.ConfigRoot, _config.LockFileName),
                 _logger,

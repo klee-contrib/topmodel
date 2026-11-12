@@ -19,14 +19,16 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
 
     public bool Disabled => Config.Disable?.Contains(Name) ?? false;
 
-    public CancellationToken? CancellationToken { get; set; }
-
     /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
-    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
+    public async Task OnFilesChanged(
+        IEnumerable<ModelFile> files,
+        LoggingScope? storeConfig = null,
+        CancellationToken ct = default
+    )
     {
         using var scope = logger.BeginScope(((IModelWatcher)this).FullName);
         using var scope2 = logger.BeginScope(storeConfig!);
-        HandleFiles(files.Where(f => Config.Files.ContainsKey(f.Name)));
+        await HandleFiles(files.Where(f => Config.Files.ContainsKey(f.Name)), ct);
     }
 
     public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
@@ -47,5 +49,5 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
         );
     }
 
-    protected abstract void HandleFiles(IEnumerable<ModelFile> files);
+    protected abstract Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default);
 }

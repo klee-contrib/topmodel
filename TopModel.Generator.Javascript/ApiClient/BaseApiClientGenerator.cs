@@ -56,9 +56,15 @@ public abstract class BaseApiClientGenerator(ILogger<BaseApiClientGenerator> log
         return varName;
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
-        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
 
         var frameworkImports = GetFrameworkImports(filePath, tag, endpoints).GroupAndSort();
         var endpointImports = Config.GetEndpointImports(filePath, endpoints, tag).GroupAndSort();

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Features>runtime-async=on</Features>
   </PropertyGroup>
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>

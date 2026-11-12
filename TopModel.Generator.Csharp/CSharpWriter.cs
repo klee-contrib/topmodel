@@ -7,7 +7,7 @@ namespace TopModel.Generator.Csharp;
 /// <summary>
 /// FileWriter avec des méthodes spécialisées pour écrire du C#.
 /// </summary>
-public class CSharpWriter(IFileWriter writer) : IDisposable
+public class CSharpWriter(IFileWriter writer) : IAsyncDisposable
 {
     private readonly List<WriterLine> _lines = [];
     private readonly HashSet<string> _usings = [];
@@ -48,8 +48,8 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         }
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    public async ValueTask DisposeAsync()
     {
         var finalUsings = _namespace != null ? _usings.Where(u => !_namespace.StartsWith(u)) : _usings;
 
@@ -77,7 +77,7 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
             writer.WriteLine(line.Indent, line.Line);
         }
 
-        writer.Dispose();
+        await writer.DisposeAsync();
     }
 
     /// <summary>

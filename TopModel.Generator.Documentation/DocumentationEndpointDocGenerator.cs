@@ -21,7 +21,13 @@ public class DocumentationEndpointDocGenerator(
         return Config.GetEndpointsFilePath(tag, file);
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         if (endpoints.Count == 0)
         {
@@ -36,7 +42,7 @@ public class DocumentationEndpointDocGenerator(
             _ => $"Liste des endpoints du module {file.Namespace.Module}",
         };
 
-        using var md = new MarkdownWriter(OpenFileWriter(filePath));
+        await using var md = new MarkdownWriter(OpenFileWriter(filePath));
         md.WriteTitle(1, title);
         md.WriteLine();
 

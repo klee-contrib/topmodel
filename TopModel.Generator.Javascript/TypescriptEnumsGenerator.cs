@@ -21,17 +21,23 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
-        GenerateEnumsFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
+        await GenerateEnumsFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
     }
 
     /// <summary>
     /// Create the template output
     /// </summary>
-    private void GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
+    private async Task GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
     {
-        using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
         var imports = enums
             .SelectMany(Config.GetClassDependencies)

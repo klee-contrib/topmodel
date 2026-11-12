@@ -155,14 +155,15 @@ public class ResxGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(
+    protected override async Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     )
     {
-        using var w = OpenFileWriter(filePath);
+        await using var w = OpenFileWriter(filePath);
         w.EnableHeader = false;
         w.IndentValue = "  ";
         w.WriteLine(ResxStartFile);

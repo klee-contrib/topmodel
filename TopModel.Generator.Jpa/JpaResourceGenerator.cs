@@ -46,11 +46,12 @@ public class JpaResourceGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(
+    protected override async Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     )
     {
         var encoding = Encoding.Latin1;
@@ -63,7 +64,7 @@ public class JpaResourceGenerator(
             };
         }
 
-        using var fw = OpenFileWriter(filePath, encoding);
+        await using var fw = OpenFileWriter(filePath, encoding);
         fw.EnableHeader = false;
         var containers = properties.GroupBy(prop => prop.Parent);
 
