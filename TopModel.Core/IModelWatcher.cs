@@ -15,7 +15,5 @@ public interface IModelWatcher
 
     bool Disabled { get; }
 
-    CancellationToken? CancellationToken { get; set; }
-
-    void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null);
+    Task OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null, CancellationToken ct = default);
 }

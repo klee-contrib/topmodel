@@ -4,7 +4,7 @@ namespace TopModel.Core;
 
 public class TranslationStore(ModelConfig config)
 {
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public IDictionary<string, Dictionary<string, string>> Translations { get; } =
         new Dictionary<string, Dictionary<string, string>>();

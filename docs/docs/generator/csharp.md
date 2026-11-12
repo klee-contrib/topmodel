@@ -111,281 +111,277 @@ _(en preview, documentation à venir)_
 
 ## Configuration
 
-- `persistentModelPath`
+### `persistentModelPath`
 
-  Localisation du modèle persisté, relative au répertoire de génération.
+Localisation du modèle persisté, relative au répertoire de génération.
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+_Valeur par défaut_ : `{app}.{module}.Models`
 
-  _Templating_: `{module}`
+_Templating_ : `{module}`
 
-  _Valeur par défaut_: `"{app}.{module}.Models"`
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
-  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-- `referencesModelPath`
+### `referencesModelPath`
 
-  Localisation des classes de références, relative au répertoire de génération.
+Localisation des classes de références, relative au répertoire de génération. Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
 
-  Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
+_Templating_ : `{module}`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
-  _Templating_: `{module}`
+_Valeur par défaut_ : `persistentModelPath` ou `nonPersistentModelPath`, selon que la classe est persistée ou non
 
-  _Valeur par défaut_: Valeur de `persistentModelPath`
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+### `nonPersistentModelPath`
 
-- `nonPersistentModelPath`
+Localisation du modèle non persisté, relative au répertoire de génération.
 
-  Localisation du modèle non persisté, relative au répertoire de génération.
+_Valeur par défaut_ : `{app}.{module}.Models/Dto`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+_Templating_ : `{module}`
 
-  _Templating_: `{module}`
+_Variables par tag_ : **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
-  _Valeur par défaut_: `"{app}.{module}.Models/Dto"`
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
+### `apiRootPath`
 
-- `apiRootPath`
+Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
 
-  Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
+_Valeur par défaut_ : `{app}.Web`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+_Templating_ : `{module}` (module du fichier d'endpoints)
 
-  _Templating_: `{module}` (module du fichier d'endpoints)
+_Variables par tag_ : **oui** (plusieurs clients/serveurs pourraient être générés si un fichier a plusieurs tags)
 
-  _Valeur par défaut_: `"{app}.Web"`
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+### `apiFilePath`
 
-- `apiFilePath`
+Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
 
-  Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API.
+_Valeur par défaut_ : `{module:path}`
 
-  _Templating_: `{module}`
+_Templating_ : `{module}`
 
-  _Valeur par défaut_: `"{module}"`
+_Variables par tag_ : **oui** (plusieurs clients/serveurs pourraient être générés si un fichier a plusieurs tags)
 
-  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+### `noAsyncControllers`
 
-- `apiGeneration`
+Génère des contrôleurs d'API synchrones.
 
-  Mode de génération de l'API (`"client"` ou `"server"`).
+### `dbContextPath`
 
-  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
+Localisation du DbContext, relative au répertoire de génération.
 
-- `noAsyncControllers`
+_Templating_ : `{module}` (un contexte est généré par chemin distinct, avec les classes des modules correspondants)
 
-  Génère des contrôleurs d'API synchrones (pour des applications "legacy" qui ne gèrent pas des services asynchrones)
+_Variables par tag_ : **oui** (plusieurs contextes pourraient être générés si un fichier a plusieurs tags)
 
-- `dbContextPath`
+C'est ce paramètre qui décide si le DbContext est généré ou non.
 
-  Localisation du DbContext, relative au répertoire de génération.
+### `dbContextName`
 
-  C'est ce paramètre qui décide si le DbContext est généré ou non.
+Nom du DbContext.
 
-  _Templating_: `{module}` (un contexte est généré par chemin distinct, avec les classes des modules correspondants)
+_Valeur par défaut_ : `{app}DbContext`
 
-  _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
+_Templating_ : `{module}` (les points sont supprimés du nom résolu)
 
-- `dbContextName`
+_Variables par tag_ : **oui** (plusieurs contextes pourraient être générés si un fichier a plusieurs tags)
 
-  Nom du DbContext.
+### `noBaseDbContext`
 
-  _Templating_: `{module}` (les points sont supprimés du nom résolu)
+Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
 
-  _Valeur par défaut_: `"{app}DbContext"`
+### `dataFlowsPath`
 
-  _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
+Localisation des flux de données générés.
 
-- `noBaseDbContext`
+_Templating_ : `{module}`
 
-  Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
+_Variables par tag_ : **oui** (plusieurs flux de données pourraient être générés si un fichier a plusieurs tags)
 
-- `referenceAccessorsInterfacePath`
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  Chemin vers lequel générer les interfaces d'accesseurs de référence.
+### `referenceAccessorsInterfacePath`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+Chemin vers lequel générer les interfaces d'accesseurs de référence.
 
-  Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
+_Templating_ : `{module}`
 
-  _Templating_: `{module}`
+_Variables par tag_ : **oui** (plusieurs accesseurs pourraient être générés si un fichier a plusieurs tags)
 
-  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-- `referenceAccessorsImplementationPath`
+Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
 
-  Chemin vers lequel générer les implémentations d'accesseurs de référence.
+### `referenceAccessorsImplementationPath`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+Chemin vers lequel générer les implémentations d'accesseurs de référence.
 
-  Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
+_Valeur par défaut_ : `{dbContextPath}/Reference`
 
-  _Templating_: `{module}`
+_Templating_ : `{module}`
 
-  _Valeur par défaut_: `"{DbContextPath}/Reference"`
+_Variables par tag_ : **oui** (plusieurs accesseurs pourraient être générés si un fichier a plusieurs tags)
 
-  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-- `dataFlowsPath`
+Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
 
-  Localisation des flux de données générés. Cette variable doit être renseignée pour que les flux soient générés.
+### `referenceAccessorsName`
 
-  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). (La variable `{module}` aura toujours la transformation `flat` ajoutée).
 
-  _Templating_: `{module}`
+_Valeur par défaut_ : `{module}ReferenceAccessors`
 
-  _Variables par tag_: **oui** (plusieurs flux de données pourraient être générés si un fichier à plusieurs tags)
+_Templating_ : `{module}` (la transformation `:flat` sera ajoutée à la fin)
 
-- `referenceAccessorsName`
+_Variables par tag_ : **oui** (plusieurs accesseurs pourraient être générés si un fichier a plusieurs tags)
 
-  Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés).
+Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
 
-  Les accesseurs de référence ne seront générés que si `kinetix` est renseigné.
+### `mappersName`
 
-  _Templating_: `{module}` (la transformation `:flat` sera ajoutée à la fin)
+Nom des mappers. (La variable `{module}` aura toujours la transformation `flat` ajoutée).
 
-  _Valeur par défaut_: `"{module}ReferenceAccessors"`
+_Valeur par défaut_ : `{module}Mappers`
 
-  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+_Templating_ : `{module}` (la transformation `:flat` sera ajoutée à la fin)
 
-- `mappersName`
+### `useEFMigrations`
 
-  Nom des mappers.
+Utilise les migrations EF pour créer/mettre à jour la base de données.
 
-  _Templating_: `{module}` (la transformation `:flat` sera ajoutée à la fin)
+_Valeur par défaut_ : `true`
 
-  _Valeur par défaut_: `"{module}Mappers"`
+### `dbSchema`
 
-- `useEFMigrations`
+Nom du schéma de base de données à cibler. Si non renseigné, EF utilise le schéma par défaut du fournisseur (`dbo` pour SQL Server, `public` pour PostgreSQL).
 
-  Utilise les migrations EF pour créer/mettre à jour la base de données.
+_Templating_ : `{module}`
 
-  _Valeur par défaut_: `true`
+_Variables par tag_ : **oui** (à faire correspondre avec les valeurs de différents `modelPath`)
 
-- `usePostgresEnums`
+### `kinetix`
 
-  Utilise des enums Postgres pour les classes `enum: true` en base de données.
+Ce qu'il faut générer pour Kinetix : `references` pour les annotations et accesseurs de listes de référence, `legacy` pour générer en plus des annotations de domaines, et `none` pour ne rien générer.
 
-  Ce paramètre génère une méthode d'extension `MapEnums()` à côté du DbContext, qu'il faudra appeler dans la configuration de `UseNpgsql()` de l'application pour que les enums soient prises en compte par Entity Framework (et Npgsql).
+_Valeurs possibles_ : `none`, `references`, `legacy`
 
-- `dbSchema`
+_Valeur par défaut_ : `references`
 
-  Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/'public').
+### `domainNamespace`
 
-  _Templating_: `{module}`
+Namespace de l'enum de domaine pour Kinetix (mode legacy).
 
-  _Variables par tag_: **oui** (à faire correspondre avec les valeurs de différents `modelPath`)
+_Valeur par défaut_ : `{app}.Common`
 
-- `kinetix`
+### `valueTypes`
 
-  Peut valoir :
-  - `none` : Aucune fonctionnalité pour Kinetix générée.
-  - `references` : Génère les annotations et les accesseurs de listes de référence
-  - `legacy` : Génère en plus les annotations de domaine (Kinetix < 10.1)
+Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.
 
-  _Valeur par défaut_: `references`
+### `nullableEnable`
 
-- `domainNamespace`
+Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables).
 
-  Namespace de l'enum de domaine pour Kinetix (mode legacy).
+### `requiredNonNullable`
 
-  _Valeur par défaut_: `{app}.Common`
+Génère des types non-nullables pour les propriétés obligatoires.
 
-- `valueTypes`
+_Variables par tag_ : **oui**
 
-  Types C# que le générateur doit considérer comme étant des types valeur (en plus des plus courants comme 'int', 'bool' ou 'DateTime'), qu'il faudra envelopper dans un `Nullable` (avec un `?`) pour les rendre nullables.
+Idéalement, cette propriété est activée pour vos objets persistés et vos DTOs de lecture. Vous ne pouvez pas l'utiliser pour des DTOs d'écriture, car l'usage de types non-nullables (en particulier pour les types valeur) empêchera leur validation (il ne sera pas possible de distinguer un entier valant `0` d'un entier non renseigné, par exemple).
 
-- `nullableEnable`
+### `noColumnOnAlias`
 
-  Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables).
+Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées.
 
-- `requiredNonNullable`
+_Valeur par défaut_ : `true`
 
-  Génère des types non-nullables pour les propriétés obligatoires.
+EF Core n'en a pas besoin mais ça peut être utile pour d'autres ORMs afin de pouvoir mapper directement les colonnes depuis une requête SQL manuelle.
 
-  Idéalement, cette propriété est activée pour vos objets persistés et vos DTOs de lecture. Vous ne pouvez pas l'utiliser pour des DTOs d'écriture, car l'usage de types non-nullables (en particulier pour les types valeur) empêchera leur validation (il ne sera pas possible de distinguer un entier valant `0` d'un entier non renseigné, par exemple).
+### `noPersistence`
 
-  _Variables par tag_: **oui**
+Considère toutes les classes comme étant non persistées (= pas d'attribut SQL).
 
-- `noColumnOnAlias`
+_Variables par tag_ : **oui**
 
-  Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées.
+Si `kinetix` est renseigné, les implémentations d'accesseurs de listes de références ne seront pas générées.
 
-  EF Core n'en a pas besoin mais ça peut être utile pour d'autres ORMs afin de pouvoir mapper directement les colonnes depuis une requête SQL manuelle.
+### `mapperTagsOverrides`
 
-  _Valeur par défaut_: `true`
+Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
 
-- `noPersistence`
+_Valeur par défaut_ : `[]`
 
-  Considère toutes les classes comme étant non persistantes (pas d'attributs SQL, génération vers le chemin non persistant...).
+### `mapperLocationPriority`
 
-  Si `kinetix: true`, les implémentations d'accesseurs de listes de références ne seront pas générées.
+Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`).
 
-  _Variables par tag_: **oui**
+_Valeurs possibles_ : `persisted`, `non-persisted`
 
-- `mapperTagsOverrides`
+_Valeur par défaut_ : `persisted`
 
-  Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+### `useEFComments`
 
-- `mapperLocationPriority`
+Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `useEFMigrations`).
 
-  Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`).
+### `usePostgresEnums`
 
-  _Valeur par défaut_: `persisted`
+Utilise des enums Postgres pour les classes `enum: true` en base de données.
 
-- `enumsForStaticReferences`
+Ce paramètre génère une méthode d'extension `MapEnums()` à côté du DbContext, qu'il faudra appeler dans la configuration de `UseNpgsql()` de l'application pour que les enums soient prises en compte par Entity Framework (et Npgsql).
 
-  Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée).
+### `dotnetVersion`
 
-  _Valeur par défaut_: `true`
+Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.
 
-- `useRecords`
+_Valeur par défaut_ : `10`
 
-  Utilise des records (mutables) au lieu de classes pour la génération de classes.
+Si >= 8 :
 
-  _Valeur par défaut_: `true`
+- Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, DbContext, accesseurs de références).
+- Utilise les initialiseurs de collection quand c'est possible.
 
-- `dotnetVersion`
+### `useRecords`
 
-  Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.
+Utilise des records (mutables) au lieu de classes pour la génération de classes.
 
-  Si >= 8 :
-  - Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, DbContext, accesseurs de références).
-  - Utilise les initialiseurs de collection quand c'est possible.
+_Valeur par défaut_ : `true`
 
-  _Valeur par défaut_: `10`
+### `useCancellationTokens`
 
-- `useCancellationTokens`
+Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).
 
-  Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).
+_Valeur par défaut_ : `false`
 
-  _Valeur par défaut_: `false`
+### `useAsyncReferenceAccessors`
 
-- `useAsyncReferenceAccessors`
+Génère des accesseurs de référence asynchrones (pour Kinetix 10+).
 
-  Génère des accesseurs de référence asynchrones (pour Kinetix 10+).
+_Valeur par défaut_ : `false`
 
-  _Valeur par défaut_: `false`
+### `resourcesResxPath`
 
-- `useEFComments`
+Chemin vers les fichiers de ressources (`*.resx`) à générer pour les traductions de libellés de propriétés et de listes de références.
 
-  Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).
+_Templating_ : `{module}`, `{lang}`
 
-- `resourcesResxPath`
+_Variables par tag_ : **oui**
 
-  Chemin vers les fichiers de ressources (\*.resx) à générer pour les traductions de libellés de propriétés et de listes de références.
+### `resourcesInResx`
 
-  _Templating_: `{module}`, `{lang}`
+Précise les ressources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.
 
-  _Variables par tag_: **oui**
+_Valeurs possibles_ : `all`, `properties`, `references`
 
-- `resourcesInResx`
+_Valeur par défaut_ : `all`
 
-  Précise les resources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.
+### `enumCols`
 
-  Valeurs possibles : `all` (par défaut), `properties` ou `references`.
+Génère les enums de nom de colonnes dans les classes persistées. Activé automatiquement si `dbContextPath` est `null` et si `kinetix` est renseigné.

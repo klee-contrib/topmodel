@@ -76,13 +76,16 @@ Ces options permettent, par exemple, de générer uniquement les traductions des
 
 Localisation des ressources, relative au répertoire de génération.
 
-_Variables par tag_: **oui**
+_Templating_ : `{module}`, `{lang}`
+
+_Variables par tag_ : **oui**
 
 ### `resourcesEncoding`
 
-Encodage des fichiers de ressources. Les valeurs possibles sont :
+Encodage des fichiers de ressources.
 
-- `Latin1` : valeur par défaut
-- `UTF8`
+_Valeurs possibles_ : `Latin1`, `UTF8`
 
-_Variables par tag_: **non**
+_Valeur par défaut_ : `Latin1`
+
+_Variables par tag_ : **non**

@@ -24,7 +24,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
 
     public override string Name => "CSharpDataFlowGen";
 
-    protected virtual void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
+    protected virtual async Task HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
     {
         int GetSourceNumber(DataFlowSource source)
         {
@@ -40,7 +40,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             return $"_{source.Source.ToCamelCase()}Connection{GetSourceNumber(source)}";
         }
 
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         var usings = new List<string>()
         {
@@ -326,7 +326,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         w.WriteLine("}");
     }
 
-    protected virtual void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
+    protected virtual async Task HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
     {
         if (
             !dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial)
@@ -342,7 +342,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             return;
         }
 
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
         w.EnableHeader = false;
 
         w.AddUsings([
@@ -393,7 +393,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         w.WriteLine("}");
     }
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
         foreach (var file in files)
         {
@@ -406,8 +406,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                         .DistinctBy(t => t.fileName)
                 )
                 {
-                    HandleDataFlow(fileName, dataFlow, tag);
-                    HandleDataFlowPartial(
+                    await HandleDataFlow(fileName, dataFlow, tag);
+                    await HandleDataFlowPartial(
                         fileName
                             .Replace($"{Path.DirectorySeparatorChar}generated", string.Empty)
                             .Replace(".cs", ".partial.cs"),
@@ -429,14 +429,14 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
                 .GroupBy(g => g.fileName)
         )
         {
-            HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
+            await HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
         }
     }
 
-    protected virtual void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
+    protected virtual async Task HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
     {
         var firstFlow = flows.First();
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         w.AddUsings(["Kinetix.Etl", "Microsoft.Extensions.DependencyInjection"]);
 

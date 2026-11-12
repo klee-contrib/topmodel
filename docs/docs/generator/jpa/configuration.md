@@ -30,28 +30,29 @@ De nombreuses propriétés supportent également des **variables par tag**, ce q
 
 ## Options transverses
 
-### `rootModule`
+### `dbSchema`
 
-Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions, noms de clients Feign, etc.). Cette propriété est utilisée notamment pour :
+Nom du schéma sur lequel les entités sont sauvegardées.
 
-- Déterminer le nom des fichiers de ressources générés (fichiers `.properties` de traduction)
-- Définir l'attribut `name` de l'annotation `@FeignClient` lors de la génération de clients Feign
+_Valeur par défaut_ : `public`
 
-_Templating_: `{module}`
-
-_Valeur par défaut_: `{module:head}`
+_Variables par tag_ : **oui**
 
 ### `generatedHint`
 
-Option pour générer l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")` sur l'ensemble des classes et interfaces générées. Cette annotation permet de retrouver rapidement la documentation de TopModel pour les développeurs qui tomberaient sur du code généré sans contexte.
+Option pour générer l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")`.
 
-_Valeur par défaut_: `true`
+_Valeur par défaut_ : `true`
+
+Cette annotation est ajoutée sur l'ensemble des classes et interfaces générées et permet de retrouver rapidement la documentation de TopModel pour les développeurs qui tomberaient sur du code généré sans contexte.
 
 ### `useJdbc`
 
-Génération en mode JDBC au lieu de JPA. Dans ce mode, les entités sont générées sans annotations JPA, mais avec des annotations JDBC simples. Les DAOs héritent de `CrudRepository` au lieu de `JpaRepository`.
+Génération des entités en mode JDBC au lieu de JPA.
 
-_Valeur par défaut_: `false`
+_Valeur par défaut_ : `false`
+
+Dans ce mode, les entités sont générées sans annotations JPA, mais avec des annotations JDBC simples. Les DAOs héritent de `CrudRepository` au lieu de `JpaRepository`.
 
 **Note :** En mode JDBC, les enums ne sont pas supportés de la même manière qu'en mode JPA. Les classes avec des valeurs ne peuvent pas utiliser le mode enum.
 

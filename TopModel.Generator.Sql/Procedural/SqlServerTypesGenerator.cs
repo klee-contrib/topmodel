@@ -21,9 +21,15 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
-        using var writer = this.OpenSqlWriter(fileName);
+        await using var writer = this.OpenSqlWriter(fileName);
 
         var appName = classes.First().Namespace.App;
 
@@ -59,7 +65,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         foreach (var property in Config.GetProperties(classe))
         {
-            var type = Config.GetColumnType(property);
+            var type = Config.GetColumnType(property, tag);
 
             if (!property.PrimaryKey && property.Name != ScriptUtils.InsertKeyName)
             {

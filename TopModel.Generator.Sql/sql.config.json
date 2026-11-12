@@ -2,34 +2,15 @@
   "type": "object",
   "description": "Config pour la génération de SQL.",
   "additionalProperties": false,
-  "required": [ "outputDirectory", "tags" ],
+  "required": ["outputDirectory", "tags"],
   "properties": {
     "name": {
       "type": "string",
-      "description": "Nom de cette configuration."
-    },
-    "language": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
-          "default": "sql"
-        },
-        {
-          "type": "array",
-          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
-          "default": "sql",
-          "items": {
-            "type": "string",
-            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
-            "default": "sql"
-          }
-        }
-      ]
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
     },
     "tags": {
       "type": "array",
-      "description": "Précise les tags de fichier que le générateur doit lire",
+      "description": "Tags pris en compte par cette configuration.",
       "items": {
         "type": "string",
         "description": "Catégorie de fichier que le générateur doit lire."
@@ -43,91 +24,129 @@
         "description": "Le nom de la config dans laquelle aller chercher le tag."
       }
     },
+    "language": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `sql`.\n- Variables par tag : **oui**.",
+          "default": "sql"
+        },
+        {
+          "type": "array",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `sql`.\n- Variables par tag : **oui**.",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "variables": {
       "type": "object",
-      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
       "patternProperties": {
         ".+": {
-          "type": "string"
+          "type": ["string", "number", "boolean"]
         }
       }
     },
-    "disable": {
-      "type": "array",
-      "description": "Désactive les générateurs demandés",
-      "items": {
-        "type": "string",
-        "enum": [ "SqlTablesGen", "SqlIndexesKeysGen", "SqlValuesGen", "SqlResourcesGen", "SqlTypesGen", "SqlCommentsGen", "SsdtTableGen", "SsdtTableTypeGen", "SsdtValuesGen", "SsdtMainValuesGen" ]
+    "tagVariables": {
+      "type": "object",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": ["string", "number", "boolean"]
+            }
+          }
+        }
       }
+    },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
     },
     "outputDirectory": {
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.\n\n- Valeur par défaut : `true`.",
+      "default": true
+    },
     "translateReferences": {
       "type": "boolean",
-      "description": "Si les libellés des listes de références doivent être traduits.",
-      "default": "true"
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
     },
     "translateProperties": {
       "type": "boolean",
-      "description": "Si les libellés des propriétés doivent être traduits.",
-      "default": "true"
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "disable": {
+      "type": "array",
+      "description": "Générateurs à désactiver pour cette configuration.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "SqlTablesGen",
+          "SqlIndexesKeysGen",
+          "SqlValuesGen",
+          "SqlResourcesGen",
+          "SqlTypesGen",
+          "SqlCommentsGen",
+          "SsdtTableGen",
+          "SsdtTableTypeGen",
+          "SsdtValuesGen",
+          "SsdtMainValuesGen"
+        ]
+      }
     },
     "useLowerCaseSqlNames": {
       "oneOf": [
         {
           "type": "boolean",
-          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "default": true
         },
         {
           "type": "string",
-          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
           "pattern": "^\\{[^\\}]+\\}$"
         }
       ]
     },
-    "tableTablespace": {
-      "type": "string",
-      "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
-    },
-    "indexTablespace": {
-      "type": "string",
-      "description": "Nom du tablespace pour les index (Postgres ou Oracle)."
-    },
-    "ignoreDefaultValues": {
-      "type": "boolean",
-      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
-    },
-    "targetDBMS": {
-      "type": "string",
-      "description": "SGBD cible ('postgre' ou 'sqlserver' ou 'oracle').",
-      "enum": [ "sqlserver", "postgre", "oracle" ]
-    },
     "procedural": {
       "type": "object",
-      "description": "Config pour la génération de SQL 'procédurale'.",
+      "description": "Config pour la génération de SQL procédural.",
       "additionalProperties": false,
       "properties": {
         "tablesFileName": {
           "type": "string",
-          "description": "Nom du fichier contenant le script de création de tables. Par défaut : '01_tables.sql'."
+          "description": "Nom du fichier contenant le script de création de tables.\n\n- Valeur par défaut : `01_tables.sql`.",
+          "default": "01_tables.sql"
         },
         "indexesAndKeysFileName": {
           "type": "string",
-          "description": "Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : '02_indexes_and_keys.sql'."
+          "description": "Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques.\n\n- Valeur par défaut : `02_indexes_and_keys.sql`.",
+          "default": "02_indexes_and_keys.sql"
         },
         "valuesFileName": {
           "type": "string",
-          "description": "Nom du fichier contenant le script d'insertion des valeurs initiales. Par défaut : '03_values.sql'."
+          "description": "Nom du fichier contenant le script d'insertion des valeurs initiales.\n\n- Valeur par défaut : `03_values.sql`.",
+          "default": "03_values.sql"
         },
         "resourcesFileName": {
           "type": "string",
-          "description": "Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : '04_resources.sql'."
+          "description": "Nom du fichier contenant le script d'insertion des ressources (libellés traduits).\n\n- Valeur par défaut : `04_resources.sql`.",
+          "default": "04_resources.sql"
         },
         "typesFileName": {
           "type": "string",
-          "description": "Nom du fichier contenant le script de création de types (pour SQL Server). Par défaut : '05_types.sql'."
+          "description": "Nom du fichier contenant le script de création de types (pour SQL Server).\n\n- Valeur par défaut : `05_types.sql`.",
+          "default": "05_types.sql"
         },
         "commentsFileName": {
           "type": "string",
@@ -137,34 +156,50 @@
     },
     "ssdt": {
       "type": "object",
-      "description": "Config pour la génération SSDT",
+      "description": "Config pour la génération SSDT.",
       "additionalProperties": false,
       "properties": {
         "tableScriptFolder": {
           "type": "string",
-          "description": "Dossier du projet pour le script de déclaration de table."
+          "description": "Dossier du projet pour les scripts de déclaration de table."
         },
         "tableTypeScriptFolder": {
           "type": "string",
-          "description": " Dossier du projet pour le script de déclaration de type table."
+          "description": "Dossier du projet pour les scripts de déclaration de type table."
         },
         "initListScriptFolder": {
           "type": "string",
-          "description": "Dossier du projet pour le script d'initialisation des listes de références."
+          "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
         },
         "initListMainScriptName": {
           "type": "string",
-          "description": "Fichier du projet référençant le script d'initialisation des listes de références."
+          "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
         },
         "disableIdentity": {
           "type": "boolean",
-          "description": "Désactive les colonnes d'identité."
+          "description": "Désactive les colonnes d'identité.\n\n- Valeur par défaut : `false`.",
+          "default": false
         },
         "generateComments": {
           "type": "boolean",
-          "description": "Génère les commentaires SQL sur les tables et les colonnes."
+          "description": "Génère les commentaires SQL sur les tables et les colonnes.\n\n- Valeur par défaut : `false`.",
+          "default": false
         }
       }
+    },
+    "tableTablespace": {
+      "type": "string",
+      "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
+    },
+    "indexTablespace": {
+      "type": "string",
+      "description": "Nom du tablespace pour les index (Postgres ou Oracle)."
+    },
+    "targetDBMS": {
+      "type": "string",
+      "description": "SGBD cible de la génération.\n\n- Valeur par défaut : `postgre`.",
+      "enum": ["sqlserver", "postgre", "oracle"],
+      "default": "postgre"
     }
   }
 }

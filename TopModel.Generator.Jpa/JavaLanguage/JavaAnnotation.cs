@@ -1,5 +1,4 @@
-﻿using OneOf;
-using TopModel.Utils;
+﻿using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -28,12 +27,18 @@ public class JavaAnnotation
 
     public IEnumerable<string> Imports =>
         _imports
-            .Concat(Attributes.Values.Where(v => v.IsT1).SelectMany(a => a.AsT1.Imports))
-            .Concat(Attributes.Values.Where(v => v.IsT2).SelectMany(l => l.AsT2.SelectMany(a => a.Imports)))
+            .Concat(
+                Attributes.Values.Where(v => v is JavaAnnotation).SelectMany(a => ((JavaAnnotation)a.Value).Imports)
+            )
+            .Concat(
+                Attributes
+                    .Values.Where(v => v is IList<JavaAnnotation>)
+                    .SelectMany(l => ((IList<JavaAnnotation>)l.Value).SelectMany(a => a.Imports))
+            )
             .Distinct();
 
-    public IDictionary<string, OneOf<string, JavaAnnotation, IList<JavaAnnotation>>> Attributes { get; } =
-        new Dictionary<string, OneOf<string, JavaAnnotation, IList<JavaAnnotation>>>();
+    public IDictionary<string, JavaAnnotationAttribute> Attributes { get; } =
+        new Dictionary<string, JavaAnnotationAttribute>();
 
     public JavaAnnotation AddAttribute(string name, string value, params string[] import)
     {

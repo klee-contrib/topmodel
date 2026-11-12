@@ -53,7 +53,7 @@ public class TopModelCommand<TDescription, TConfig, TFileChecker, TWorker> : IDi
     )
     {
         _noLog = noLog;
-        _command = new RootCommand(description) { FileOption, WatchOption, CheckOption, ParallelOption };
+        _command = [with(description), FileOption, WatchOption, CheckOption, ParallelOption];
         _command.Options.AddRange(options);
         Args = _command.Parse(args.ToList());
 

@@ -5,7 +5,7 @@ namespace TopModel.ModelGenerator;
 /// <summary>
 /// FileWriter avec des méthodes spécialisées pour écrire du TopModel.
 /// </summary>
-public class TmdWriter : IDisposable
+public class TmdWriter : IAsyncDisposable
 {
     private readonly TmdFile _file;
     private readonly string _modelRoot;
@@ -27,11 +27,11 @@ public class TmdWriter : IDisposable
         }
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    public async ValueTask DisposeAsync()
     {
         Write();
-        _writer.Dispose();
+        await _writer.DisposeAsync();
     }
 
     public void Write()

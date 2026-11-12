@@ -32,7 +32,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         {
             var propName = property.NameCamel;
             var parameter = new JavaMethodParameter(
-                Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
+                Config.GetType(property, tag, forceAssociationPropertyType: Config.UseJdbc),
                 propName
             )
             {
@@ -79,7 +79,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 
             foreach (var param in mapper.PropertyParams)
             {
-                var parameter = new JavaMethodParameter(Config.GetType(param.Property), param.Property.NameCamel)
+                var parameter = new JavaMethodParameter(Config.GetType(param.Property, tag), param.Property.NameCamel)
                 {
                     Comment = param.Property.Comment,
                 };

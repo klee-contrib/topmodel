@@ -6,6 +6,8 @@ public interface IPropertyContainer : IAnnotationContainer
 {
     ModelFile ModelFile { get; }
 
+    IEnumerable<string> Tags { get; }
+
     LocatedString Name { get; }
 
     string NamePascal { get; }

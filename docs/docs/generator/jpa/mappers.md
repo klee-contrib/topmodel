@@ -300,13 +300,13 @@ Si un paramètre d'entrée obligatoire n'est pas renseigné, l'exception `Illega
 
 ### `mapperTagsOverrides`
 
-Si un mapper contient au moins une classe dont le tag est listé ici, alors ce mapper sera généré avec les tags de cette classe, au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper.
+Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+
+_Valeur par défaut_ : `[]`
+
+_Variables par tag_ : **non**
 
 Ceci permet de forcer la localisation de la génération des mappers pour certains tags particuliers, indépendamment du caractère persisté des classes impliquées.
-
-_Valeur par défaut_: `[]`
-
-_Variables par tag_: **non**
 
 **Exemple :**
 

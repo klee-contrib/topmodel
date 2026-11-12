@@ -3,7 +3,7 @@
 /// <summary>
 /// Writer pour les fichiers dans les générateurs.
 /// </summary>
-public interface IFileWriter : IDisposable
+public interface IFileWriter : IAsyncDisposable
 {
     /// <summary>
     /// Active la lecture et l'écriture d'un entête avec un hash du fichier.

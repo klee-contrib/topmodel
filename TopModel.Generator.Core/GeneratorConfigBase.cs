@@ -23,22 +23,22 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public virtual bool IgnoreDefaultValues { get; set; }
 
     /// <summary>
-    /// Si les libellés des listes de références doivent être traduits.
+    /// Si les libellés des listes de références doivent être traduits dans cette configuration.
     /// </summary>
     public virtual bool? TranslateReferences { get; set; }
 
     /// <summary>
-    /// Si les libellés des propriétés doivent être traduits.
+    /// Si les libellés des propriétés doivent être traduits dans cette configuration.
     /// </summary>
     public virtual bool? TranslateProperties { get; set; }
 
     /// <summary>
-    /// Générateurs désactivés.
+    /// Générateurs à désactiver pour cette configuration.
     /// </summary>
     public virtual IList<string>? Disable { get; set; }
 
     /// <summary>
-    /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
+    /// Utilise des noms de tables et de colonnes en minuscules.
     /// </summary>
     [YamlMember(Alias = "useLowerCaseSqlNames")]
     public virtual string? UseLowerCaseSqlNamesParam { get; set; }
@@ -55,7 +55,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         UniqueValueGenerationMode.EnumOrConst;
 
     /// <summary>
-    /// Mode de génération de l'API ("Client" ou "Server").
+    /// Mode de génération de l'API (<c>Client</c> ou <c>Server</c>).
     /// </summary>
     public virtual string? ApiGeneration { get; set; }
 
@@ -64,7 +64,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// </summary>
     public virtual int SqlIdentifierLengthLimit => 128;
 
-    public override string[] PropertiesWithTagVariableSupport => [nameof(UseLowerCaseSqlNamesParam)];
+    public override string[] PropertiesWithTagVariableSupport =>
+        [.. base.PropertiesWithTagVariableSupport, nameof(UseLowerCaseSqlNamesParam)];
 
     /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
@@ -78,16 +79,17 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// </summary>
     /// <param name="property">Propriété.</param>
     /// <param name="value">Valeur.</param>
+    /// <param name="tag">Tag.</param>
     /// <returns>La valeur de la propriété.</returns>
-    public string FormatValue(IProperty property, string value)
+    public string FormatValue(IProperty property, string value, string tag)
     {
-        var template = GetImplementation(property.Domain)?.GetValueTemplate(value);
+        var template = GetImplementation(property.Domain, tag)?.GetValueTemplate(value);
         if (template != null)
         {
-            return template.Value.Replace("{value}", value).ParseTemplate(property, this);
+            return template.Value.Replace("{value}", value).ParseTemplate(property, this, tag);
         }
 
-        if (ShouldQuoteValue(property))
+        if (ShouldQuoteValue(property, tag))
         {
             return QuoteValue(value);
         }
@@ -151,7 +153,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         foreach (
             var (implementation, annotation, parameters) in annotations.SelectMany(a =>
-                GetImplementation(a.Annotation)
+                GetImplementation(a.Annotation, tag)
                     .Select(i => (Implementation: i, a.Annotation, a.Parameters))
                     .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))
             )
@@ -213,7 +215,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         {
             foreach (
                 var (implementation, annotation, parameters) in property.Domain.Annotations.SelectMany(a =>
-                    GetImplementation(a.Annotation)
+                    GetImplementation(a.Annotation, tag)
                         .Select(i => (Implementation: i, a.Annotation, a.Parameters))
                         .Where(a => FilterAnnotations(a.Implementation, a.Annotation, property, tag))
                 )
@@ -302,31 +304,31 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             .Distinct();
     }
 
-    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
+    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, string tag)
     {
-        var converter = fromDomain.GetConverter(toDomain);
+        var converter = fromDomain?.GetConverter(toDomain);
         if (converter != null && fromDomain != null && toDomain != null)
         {
-            var text = GetImplementation(converter)?.Text;
+            var text = GetImplementation(converter, tag)?.Text;
             if (text != null)
             {
-                value = GetImplementation(converter)!
+                value = GetImplementation(converter, tag)!
                     .Text.Replace("{value}", value)
-                    .ParseTemplate(fromDomain, toDomain, this);
+                    .ParseTemplate(fromDomain, toDomain, this, tag);
             }
         }
 
         return value;
     }
 
-    public virtual IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain)
+    public virtual IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain, string tag)
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
         {
             var converter = fromDomain.GetConverter(toDomain);
             if (converter != null)
             {
-                var imports = GetImplementation(converter)?.Imports;
+                var imports = GetImplementation(converter, tag)?.Imports;
                 if (imports != null)
                 {
                     foreach (var import in imports)
@@ -371,7 +373,8 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         foreach (var (domain, generic) in property.DomainChain)
         {
             foreach (
-                var import in GetImplementation(domain)!.Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
+                var import in GetImplementation(domain, tag)!
+                    .Imports.Select(u => u.Value.ParseTemplate(property, this, tag))
             )
             {
                 yield return import;
@@ -503,10 +506,16 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère le type d'une propriété.
     /// </summary>
     /// <param name="property">Domaine.</param>
+    /// <param name="tag">Tag.</param>
     /// <param name="forceAssociationPropertyType">Pour une association, retourne toujours le type de la propriété cible.</param>
     /// <param name="skipChain">Récupère le type à l'index demandé dans la hiérarchie de domaine.</param>
     /// <returns>Le type.</returns>
-    public virtual string GetType(IProperty property, bool forceAssociationPropertyType = false, int skipChain = 0)
+    public virtual string GetType(
+        IProperty property,
+        string tag,
+        bool forceAssociationPropertyType = false,
+        int skipChain = 0
+    )
     {
         string GetType(IEnumerable<(Domain Domain, bool Generic)> domainChain)
         {
@@ -533,27 +542,27 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                     && (!UseValueNameForValues || elp == property.EnumProperty)
                 )
                 {
-                    return (GetImplementation(elp.Domain)?.GenericType ?? "{T}")
+                    return (GetImplementation(elp.Domain, tag)?.GenericType ?? "{T}")
                         .Replace("{T}", GetEnumType(elp, elp.Class == property.Class))
-                        .ParseTemplate(property, this);
+                        .ParseTemplate(property, this, tag);
                 }
             }
 
-            var impl = GetImplementation(domain);
+            var impl = GetImplementation(domain, tag);
 
             if (generic && queue.Count > 0 && impl?.GenericType != null)
             {
-                return impl.GenericType.Replace("{T}", GetType(queue)).ParseTemplate(property, this);
+                return impl.GenericType.Replace("{T}", GetType(queue)).ParseTemplate(property, this, tag);
             }
 
-            return (GetImplementation(domain)?.Type ?? string.Empty).ParseTemplate(property, this);
+            return (GetImplementation(domain, tag)?.Type ?? string.Empty).ParseTemplate(property, this, tag);
         }
 
         return property switch
         {
-            { Composition: Class c, Domain: Domain domain } => (GetImplementation(domain)?.GenericType ?? "{T}")
+            { Composition: Class c, Domain: Domain domain } => (GetImplementation(domain, tag)?.GenericType ?? "{T}")
                 .Replace("{T}", GetTypeName(c))
-                .ParseTemplate(property, this),
+                .ParseTemplate(property, this, tag),
             { Composition: Class c } => GetTypeName(c),
             _ => GetType(property.DomainChain.Skip(skipChain)),
         };
@@ -589,9 +598,10 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Récupère la valeur d'une propriété.
     /// </summary>
     /// <param name="property">La propriété.</param>
+    /// <param name="tag">Le tag.</param>
     /// <param name="value">Valeur à utiliser, si non renseigné utilise la valeur par défaut de la propriété.</param>
     /// <returns>La valeur.</returns>
-    public virtual string GetValue(IProperty property, string? value = null)
+    public virtual string GetValue(IProperty property, string tag, string? value = null)
     {
         if (!IgnoreDefaultValues && property is not { Composition: not null })
         {
@@ -649,20 +659,20 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             }
         }
 
-        return FormatValue(property, value);
+        return FormatValue(property, value, tag);
     }
 
-    public virtual IEnumerable<string> GetValueImports(IProperty property, string? value = null)
+    public virtual IEnumerable<string> GetValueImports(IProperty property, string tag, string? value = null)
     {
         if (!IgnoreDefaultValues && property is not { Composition: not null })
         {
             value ??= property.DefaultValue;
         }
 
-        var template = value != null ? GetImplementation(property.Domain)?.GetValueTemplate(value) : null;
+        var template = value != null ? GetImplementation(property.Domain, tag)?.GetValueTemplate(value) : null;
         if (template != null)
         {
-            return template.Imports.Select(i => i.Value.ParseTemplate(property, this));
+            return template.Imports.Select(i => i.Value.ParseTemplate(property, this, tag));
         }
         else
         {
@@ -679,14 +689,15 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     /// Détermine si une valeur de cette propriété doit être mise entre guillemets.
     /// </summary>
     /// <param name="property">Propriété.</param>
+    /// <param name="tag">Le tag.</param>
     /// <returns>Oui/non.</returns>
-    public virtual bool ShouldQuoteValue(IProperty property)
+    public virtual bool ShouldQuoteValue(IProperty property, string tag)
     {
-        return property.Domain == null || GetImplementation(property.Domain)?.Type?.ToLower() == "string";
+        return property.Domain == null || GetImplementation(property.Domain, tag)?.Type?.ToLower() == "string";
     }
 
     /// <summary>
-    /// Vérifie que la propriété est une association avec `useClass: true` et que la classe cible est disponible dans la configuration.
+    /// Vérifie que la propriété est une association avec <c>useClass: true</c> et que la classe cible est disponible dans la configuration.
     /// </summary>
     /// <param name="property">Propriété à vérifier.</param>
     /// <returns>true/false.</returns>
@@ -782,7 +793,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             var (implementation, annotation, annotationParameters) in decorator
                 .Annotations.Where(a => !excludedAnnotations.Contains(a.Annotation))
                 .SelectMany(a =>
-                    GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))
+                    GetImplementation(a.Annotation, tag).Select(i => (Implementation: i, a.Annotation, a.Parameters))
                 )
                 .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))
         )
@@ -836,7 +847,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         string tag
     )
     {
-        var implementation = GetImplementation(decorator);
+        var implementation = GetImplementation(decorator, tag);
         if (implementation != null)
         {
             var value = getter(implementation);
@@ -874,7 +885,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         string tag
     )
     {
-        var implementation = GetImplementation(decorator);
+        var implementation = GetImplementation(decorator, tag);
         if (implementation != null)
         {
             foreach (var value in getter(implementation))

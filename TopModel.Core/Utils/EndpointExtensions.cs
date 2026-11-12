@@ -12,12 +12,6 @@ public static class EndpointExtensions
         );
     }
 
-    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
-    public static IProperty? GetJsonBodyParam(this Endpoint endpoint)
-    {
-        return GetJsonBodyParam(endpoint, config: null);
-    }
-
     public static IProperty? GetJsonBodyParam(this Endpoint endpoint, WatcherConfigBase? config)
     {
         return (config?.GetParams(endpoint) ?? endpoint.Params).SingleOrDefault(p =>
@@ -47,12 +41,6 @@ public static class EndpointExtensions
         return $"{trigram}{property.NameCamel.ToFirstUpper()}";
     }
 
-    [Obsolete("Utiliser la surcharge avec la config en paramètre.")]
-    public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
-    {
-        return GetQueryParams(endpoint, config: null);
-    }
-
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint, WatcherConfigBase? config)
     {
         return (config?.GetParams(endpoint) ?? endpoint.Params).Where(param =>
@@ -68,35 +56,5 @@ public static class EndpointExtensions
     public static bool HasInRoute(this Endpoint endpoint, IProperty param)
     {
         return endpoint.Route.Contains($"{{{param.GetParamName()}}}");
-    }
-
-    [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
-    public static bool IsJsonBodyParam(this IProperty property)
-    {
-        return IsJsonBodyParam(property, config: null);
-    }
-
-    [Obsolete("Utiliser ParamLocation == ParamLocation.JsonBody")]
-    public static bool IsJsonBodyParam(this IProperty property, WatcherConfigBase? config)
-    {
-        return property.ParamLocation == ParamLocation.JsonBody;
-    }
-
-    [Obsolete("Utiliser ParamLocation == ParamLocation.Query")]
-    public static bool IsQueryParam(this IProperty property)
-    {
-        return IsQueryParam(property, config: null);
-    }
-
-    [Obsolete("Utiliser ParamLocation == ParamLocation.Query")]
-    public static bool IsQueryParam(this IProperty property, WatcherConfigBase? config)
-    {
-        return property.ParamLocation == ParamLocation.Query;
-    }
-
-    [Obsolete("Utiliser ParamLocation == ParamLocation.Route")]
-    public static bool IsRouteParam(this IProperty property)
-    {
-        return property.ParamLocation == ParamLocation.Route;
     }
 }

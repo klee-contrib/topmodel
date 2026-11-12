@@ -23,7 +23,7 @@ public class LoggerProvider : ILoggerProvider
 
     public class ConsoleLogger(string categoryName, Action registerChange) : ILogger
     {
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private string? _generatorName;
         private string? _storeColor;
         private int? _storeNumber;

@@ -112,7 +112,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats du restaurant.</returns>
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<IList<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -123,7 +123,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/plats?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<IPlatItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<IPlatItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si la table est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des tables du restaurant.</returns>
-    public async Task<ICollection<ITableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
+    public async Task<IList<ITableItem>> GetRestaurantTables(int resId, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -165,7 +165,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/{resId}/tables?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ITableItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ITableItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -173,13 +173,13 @@ public partial class RestaurantClient(HttpClient client)
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des restaurants.</returns>
-    public async Task<ICollection<IRestaurantItem>> GetRestaurants(CancellationToken ct = default)
+    public async Task<IList<IRestaurantItem>> GetRestaurants(CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<IRestaurantItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<IRestaurantItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si la table est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des tables.</returns>
-    public async Task<ICollection<ITableItem>> GetTables(int restaurantId, bool disponible = true, CancellationToken ct = default)
+    public async Task<IList<ITableItem>> GetTables(int restaurantId, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -215,7 +215,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/tables?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ITableItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ITableItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="noteMin">Note minimum requise.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des restaurants correspondant aux critères.</returns>
-    public async Task<ICollection<RestaurantAvecStatistiques>> SearchRestaurants(string nom, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
+    public async Task<IList<RestaurantAvecStatistiques>> SearchRestaurants(string nom, string? adresse = null, int? noteMin = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -238,7 +238,7 @@ public partial class RestaurantClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/search?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<RestaurantAvecStatistiques>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<RestaurantAvecStatistiques>>(_jsOptions, ct))!;
     }
 
     /// <summary>

@@ -169,32 +169,27 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.FromMappers)
             {
-                foreach (var param in mapper.Params.GetDuplicates(p => p.GetName()))
+                foreach (var param in mapper.Params.GetDuplicates(p => p.Name))
                 {
                     yield return new ModelError(
                         localizer,
                         ErrorType.TMD0001,
-                        [param.GetName()],
+                        [param.Name],
                         classe,
                         param.GetLocation()
                     );
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p =>
-                    p.Match(
-                        p =>
-                            p.MappingReferences.Where(e => e.Value.ReferenceName != "false")
-                                .Select(e => (e.Key.ReferenceName, Reference: e.Key)),
-                        p =>
-                        {
-                            if (p.TargetPropertyReference != null)
-                            {
-                                return [(p.TargetPropertyReference.ReferenceName, p.TargetPropertyReference)];
-                            }
-
-                            return [(p.Property.Name, p.Property.GetLocation() ?? new Reference())];
-                        }
-                    )
+                    p switch
+                    {
+                        ClassMappings pc => pc
+                            .MappingReferences.Where(e => e.Value.ReferenceName != "false")
+                            .Select(e => (e.Key.ReferenceName, Reference: e.Key)),
+                        PropertyMapping pm => pm.TargetPropertyReference != null
+                            ? [(pm.TargetPropertyReference.ReferenceName, pm.TargetPropertyReference)]
+                            : [(pm.Property.Name, pm.Property.GetLocation() ?? new Reference())],
+                    }
                 );
 
                 var hasDoublon = false;
@@ -311,20 +306,17 @@ internal class MapperResolver(
 
                         foreach (
                             var param in mapper.Params.Where(
-                                (p, i) =>
-#pragma warning disable S2971
-                                    p.GetRequired() && mapper.Params.Where((q, j) => !q.GetRequired() && j < i).Any()
-#pragma warning restore S2971
+                                (p, i) => p.Required && mapper.Params.Where((q, j) => !q.Required && j < i).Any()
                             )
                         )
                         {
                             var previousRequired = mapper
-                                .Params.Where((q, j) => !q.GetRequired() && j < mapper.Params.IndexOf(param))
-                                .Select(p => p.GetName());
+                                .Params.Where((q, j) => !q.Required && j < mapper.Params.IndexOf(param))
+                                .Select(p => p.Name);
                             yield return new ModelError(
                                 ErrorType.TMD8012,
                                 classe,
-                                $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.",
+                                $"Le paramètre '{param.Name}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.",
                                 param.GetLocation()
                             );
                         }
@@ -453,8 +445,8 @@ internal class MapperResolver(
 
         // Mapping primitif => primitif
         if (
-            sourceProperty.MappingType.IsT0
-            && targetProperty.MappingType.IsT0
+            sourceProperty.MappingType is PropertyMappingType
+            && targetProperty.MappingType is PropertyMappingType
             && CheckDomains(sourceProperty.Domain, targetProperty.Domain)
         )
         {
@@ -463,8 +455,8 @@ internal class MapperResolver(
 
         // Mapping classe => classe
         if (
-            sourceProperty.MappingType.TryPickT1(out var st1, out _)
-            && targetProperty.MappingType.TryPickT1(out var tt1, out _)
+            sourceProperty.MappingType is ClassMappingType st1
+            && targetProperty.MappingType is ClassMappingType tt1
             && (st1.Class == tt1.Class || st1.Class.GetMapperTo(tt1.Class) != null)
             && (CheckDomains(st1.Domain, tt1.Domain) || st1.Domain?.Generic != true && tt1.Domain?.Generic != true)
         )
@@ -474,8 +466,8 @@ internal class MapperResolver(
 
         // Mapping collection classe => collection classe
         if (
-            sourceProperty.MappingType.TryPickT2(out var st2, out _)
-            && targetProperty.MappingType.TryPickT2(out var tt2, out _)
+            sourceProperty.MappingType is ClassCollectionMappingType st2
+            && targetProperty.MappingType is ClassCollectionMappingType tt2
             && (st2.Class == tt2.Class || st2.Class.GetMapperTo(tt2.Class) != null)
             && (CheckDomains(st2.Domain, tt2.Domain) || st2.Domain?.Generic != true && tt2.Domain?.Generic != true)
         )
@@ -485,11 +477,11 @@ internal class MapperResolver(
 
         // Mapping classe => propriété
         if (
-            targetProperty.MappingType.TryPickT0(out var tt0cp, out _)
+            targetProperty.MappingType is PropertyMappingType tt0cp
             && (
-                sourceProperty.MappingType.TryPickT1(out var st1cp, out _)
+                sourceProperty.MappingType is ClassMappingType st1cp
                     && CheckDomains(st1cp.Property?.Domain, tt0cp.Domain)
-                || sourceProperty.MappingType.TryPickT2(out var st2cp, out _)
+                || sourceProperty.MappingType is ClassCollectionMappingType st2cp
                     && tt0cp.ItemDomain != null
                     && CheckDomains(st2cp.Property?.Domain, tt0cp.ItemDomain)
             )
@@ -500,8 +492,8 @@ internal class MapperResolver(
 
         // Mapping propriété => classe enum readonly
         if (
-            sourceProperty.MappingType.IsT0
-            && targetProperty.MappingType.TryPickT1(out var tt1pc, out _)
+            sourceProperty.MappingType is PropertyMappingType
+            && targetProperty.MappingType is ClassMappingType tt1pc
             && tt1pc.Class.Enum == EnumMode.Class
             && tt1pc.Class.Readonly
             && tt1pc.Class.EnumKey != null
@@ -514,9 +506,9 @@ internal class MapperResolver(
 
         // Mapping collection propriété => collection classe enum readonly
         if (
-            sourceProperty.MappingType.TryPickT0(out var st1pc, out _)
+            sourceProperty.MappingType is PropertyMappingType st1pc
             && st1pc.ItemDomain != null
-            && targetProperty.MappingType.TryPickT2(out var tt2pc, out _)
+            && targetProperty.MappingType is ClassCollectionMappingType tt2pc
             && tt2pc.Class.Enum == EnumMode.Class
             && tt2pc.Class.Readonly
             && tt2pc.Class.EnumKey != null

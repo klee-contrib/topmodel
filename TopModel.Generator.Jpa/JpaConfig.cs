@@ -10,17 +10,17 @@ namespace TopModel.Generator.Jpa;
 public class JpaConfig : GeneratorConfigBase
 {
     /// <summary>
-    /// Si on doit générer le meta model
+    /// Option pour générer le métamodèle JPA.
     /// </summary>
     public virtual bool MetaModel { get; set; } = false;
 
     /// <summary>
-    /// Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app:path}/entities/{module:path}'.
+    /// Localisation des classes persistées du modèle, relative au répertoire de génération.
     /// </summary>
     public virtual string EntitiesPath { get; set; } = "javagen:{app:path}/entities/{module:path}";
 
     /// <summary>
-    /// Localisation des enums, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/enums/{module:path}'.
+    /// Localisation des enums du modèle, relative au répertoire de génération.
     /// </summary>
     public virtual string EnumsPath { get; set; } = "javagen:{app:path}/enums/{module:path}";
 
@@ -30,22 +30,22 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? DaosPath { get; set; }
 
     /// <summary>
-    /// Localisation des classses non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app:path}/dtos/{module:path}'.
+    /// Localisation des classes non persistées du modèle, relative au répertoire de génération.
     /// </summary>
     public virtual string DtosPath { get; set; } = "javagen:{app:path}/dtos/{module:path}";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen/{app:path}/api/{module:path}'.
+    /// Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
     /// </summary>
     public virtual string ApiPath { get; set; } = "javagen:{app:path}/api/{module:path}";
 
     /// <summary>
-    /// Si les annotation swagger-annotation-jakarta doivent être ajoutées aux interface
+    /// Si les annotations <c>swagger-annotation-jakarta</c> doivent être ajoutées aux interfaces.
     /// </summary>
     public virtual bool OpenApiAnnotations { get; set; } = false;
 
     /// <summary>
-    /// Mode de génération de l'API Client (RestClient, RestTemplate ou FeignClient).
+    /// Mode de génération de l'API Client.
     /// </summary>
     public virtual string? ClientApiGeneration { get; set; } = ClientApiMode.RestClient;
 
@@ -55,17 +55,17 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? ResourcesPath { get; set; }
 
     /// <summary>
-    /// Localisation des ressources, relative au répertoire de génération.
+    /// Encodage des fichiers de ressources.
     /// </summary>
     public virtual ResourcesEncoding? ResourcesEncoding { get; set; } = Jpa.ResourcesEncoding.Latin1;
 
     /// <summary>
-    /// Nom du schéma sur lequel les entités sont sauvegardées
+    /// Nom du schéma sur lequel les entités sont sauvegardées.
     /// </summary>
     public virtual string DbSchema { get; set; } = "public";
 
     /// <summary>
-    /// Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd
+    /// Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données.
     /// </summary>
     public virtual string CompositionConverterCanonicalName { get; set; } = "{package}.{class}Converter";
 
@@ -86,17 +86,17 @@ public class JpaConfig : GeneratorConfigBase
         };
 
     /// <summary>
-    /// Option pour générer des adders pour les associations multiples
+    /// Option pour générer des méthodes d'ajout pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproque.
     /// </summary>
     public virtual bool AssociationAdders { get; set; } = false;
 
     /// <summary>
-    /// Option pour générer des removers pour les associations multiples
+    /// Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.
     /// </summary>
     public virtual bool AssociationRemovers { get; set; } = false;
 
     /// <summary>
-    /// Option pour générer l'annotation @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+    /// Option pour générer l'annotation <c>@Generated("TopModel : https://github.com/klee-contrib/topmodel")</c>.
     /// </summary>
     public virtual bool GeneratedHint { get; set; } = true;
 
@@ -111,7 +111,7 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string? FieldsEnumInterface { get; set; }
 
     /// <summary>
-    /// Location des flux de données générés.
+    /// Localisation des flux de données générés.
     /// </summary>
     public virtual string? DataFlowsPath { get; set; }
 
@@ -121,22 +121,22 @@ public class JpaConfig : GeneratorConfigBase
     public virtual DataFlowsWriter DataFlowsWriter { get; set; } = DataFlowsWriter.Jpa;
 
     /// <summary>
-    /// Génération en mode JDBC.
+    /// Génération des entités en mode JDBC au lieu de JPA.
     /// </summary>
     public virtual bool UseJdbc { get; set; } = false;
 
     /// <summary>
-    /// Génération d'interface Abstract avec @NoRepositoryBean permettant de mettre à jour le code généré.
+    /// Génère les DAOs sous forme d'interfaces <c>Abstract</c> annotées avec <c>@NoRepositoryBean</c>, à hériter dans le projet.
     /// </summary>
     public virtual bool DaosAbstract { get; set; } = false;
 
     /// <summary>
-    /// Nom des Daos générés.
+    /// Template du nom des DAOs.
     /// </summary>
     public virtual string? DaosName { get; set; }
 
     /// <summary>
-    /// Types de cascade à ajouter sur les associations, par type d'association. Par défaut, aucune cascade n'est ajoutée.
+    /// Types de cascade à ajouter aux associations générées.
     /// </summary>
     public virtual IDictionary<AssociationType, IEnumerable<CascadeType>> CascadeTypes { get; set; } =
         new Dictionary<AssociationType, IEnumerable<CascadeType>>()
@@ -146,33 +146,34 @@ public class JpaConfig : GeneratorConfigBase
         };
 
     /// <summary>
-    /// Nom des classes d'apis générées. La valeur par défaut dépend du type d'api générée.
+    /// Nom des classes d'API générées.
     /// </summary>
     public virtual string? ApisName { get; set; }
 
     /// <summary>
-    /// Précise l'interface des Daos générés.
+    /// Précise l'interface des DAOs générés.
     /// </summary>
     public virtual string? DaosInterface { get; set; }
 
     /// <summary>
-    /// Indique s'il faut générer les classes non persitées qui ont "ReadOnly" en tant que record java
+    /// Indique s'il faut générer les classes non persistées de type <c>regular</c> qui ont <c>readonly: true</c> en tant que records Java.
     /// </summary>
     public virtual string? UseRecords { get; set; }
 
     /// <summary>
-    /// Taille des chunks à extraire et insérer
+    /// Taille des chunks à extraire et insérer.
     /// </summary>
     public virtual long DataFlowsBulkSize { get; set; } = 100000;
 
     /// <summary>
-    /// Listeners à ajouter aux dataflows
+    /// Listeners à ajouter à tous les dataflows.
     /// </summary>
     public virtual IList<string> DataFlowsListeners { get; set; } = [];
 
     public override string? DefaultLanguage => "java";
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(ResourcesPath)];
 
     /// <summary>
     /// Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
@@ -197,6 +198,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [
+            .. base.PropertiesWithModuleVariableSupport,
             nameof(EntitiesPath),
             nameof(DaosPath),
             nameof(DtosPath),
@@ -241,9 +243,9 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetCollector(Domain domain)
+    public virtual string GetCollector(Domain domain, string tag)
     {
-        var impl = GetImplementation(domain)!;
+        var impl = GetImplementation(domain, tag)!;
         return $"collect(Collectors.{impl.Collector ?? $"to{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type)}()"})";
     }
 
@@ -274,9 +276,9 @@ public class JpaConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetDefaultValue(IProperty property)
+    public virtual string GetDefaultValue(IProperty property, string tag)
     {
-        var defaultValue = GetValue(property);
+        var defaultValue = GetValue(property, tag);
         return defaultValue != "null" ? defaultValue : string.Empty;
     }
 
@@ -308,7 +310,7 @@ public class JpaConfig : GeneratorConfigBase
     public virtual string GetGetterName(IProperty property, string tag)
     {
         var propertyName = property.NameCamel;
-        var propertyType = GetType(property);
+        var propertyType = GetType(property, tag);
         if (IsRecord(property.Class, tag))
         {
             return propertyName;
@@ -439,10 +441,10 @@ public class JpaConfig : GeneratorConfigBase
 
     public virtual IEnumerable<string> GetValueImportsJpa(IProperty property, string tag, string? value = null)
     {
-        value ??= GetValue(property);
+        var formattedValue = GetValue(property, tag, value);
 
         if (
-            value != NullValue
+            formattedValue != NullValue
             && property is { UniqueValuedProperty: IProperty uvp }
             && UniqueValueGeneration.CanConst
             && (property.EnumProperty == null || UniqueValueGeneration == UniqueValueGenerationMode.ConstOnly)
@@ -452,14 +454,14 @@ public class JpaConfig : GeneratorConfigBase
         }
         else
         {
-            return GetValueImports(property, tag);
+            return GetValueImports(property, tag, value);
         }
     }
 
-    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation)
+    public virtual bool HasAnnotation(IAnnotationContainer classe, string annotation, string tag)
     {
         return classe
-            .Annotations.SelectMany(a => GetImplementation(a.Annotation))
+            .Annotations.SelectMany(a => GetImplementation(a.Annotation, tag))
             .Any(a => a.Text.Trim('@') == annotation.Trim('@'));
     }
 

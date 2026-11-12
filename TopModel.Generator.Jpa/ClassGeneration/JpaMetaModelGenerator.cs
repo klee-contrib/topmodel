@@ -32,10 +32,10 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
         return $"{Config.GetClassFileName(classe, tag).Split(".java")[0]}_.java";
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         var javaClass = new JavaClass($"{classe.NamePascal}_");
         javaClass.Add(
             new JavaAnnotation(
@@ -56,7 +56,7 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
 
         foreach (var property in Config.GetAvailableProperties(classe))
         {
-            var javaType = Config.GetType(property);
+            var javaType = Config.GetType(property, tag);
             var genericType = javaType.Split("<")[0];
             var attributeType = genericType switch
             {
@@ -67,7 +67,7 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
                 _ => "SingularAttribute",
             };
 
-            var propertyType = Config.GetType(property);
+            var propertyType = Config.GetType(property, tag);
 
             if (javaType != genericType)
             {

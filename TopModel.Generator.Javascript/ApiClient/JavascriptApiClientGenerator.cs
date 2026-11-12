@@ -36,10 +36,10 @@ public class JavascriptApiClientGenerator(
         }
     }
 
-    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint)
+    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint, string tag)
     {
         var options = GetSafeVariableName(endpoint, "options");
-        WriteEndpointSignature(fw, endpoint, (options, "Options pour 'fetch'.", "RequestInit", "{}"));
+        WriteEndpointSignature(fw, endpoint, tag, (options, "Options pour 'fetch'.", "RequestInit", "{}"));
 
         var query = GetSafeVariableName(endpoint, "query");
         var body = GetSafeVariableName(endpoint, "body");
@@ -53,9 +53,9 @@ public class JavascriptApiClientGenerator(
             {
                 var name = qParam.GetParamName();
                 fw.WriteLine(1, $"if ({name} !== undefined) {{");
-                var isArray = Config.GetType(qParam).EndsWith("[]");
+                var isArray = Config.GetType(qParam, tag).EndsWith("[]");
                 var isString =
-                    Config.GetImplementation(qParam.Domain)?.Type?.Value.TrimEnd(']').TrimEnd('[') == "string";
+                    Config.GetImplementation(qParam.Domain, tag)?.Type?.Value.TrimEnd(']').TrimEnd('[') == "string";
 
                 void Append(int indent, string value)
                 {
@@ -81,7 +81,7 @@ public class JavascriptApiClientGenerator(
         WriteFormDataBody(fw, endpoint, body);
 
         var returns = GetReturns(endpoint);
-        var returnType = GetReturnType(returns);
+        var returnType = GetReturnType(returns, tag);
         var hasReturns = HasReturns(returnType);
 
         fw.WriteLine(
@@ -123,7 +123,7 @@ public class JavascriptApiClientGenerator(
             }
             else
             {
-                var domainType = Config.GetImplementation(returns.Domain)?.Type;
+                var domainType = Config.GetImplementation(returns.Domain, tag)?.Type;
 
                 if (domainType == "string")
                 {

@@ -61,7 +61,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
         if (returns != null)
         {
-            returnType = Config.GetType(returns);
+            returnType = Config.GetType(returns, tag);
         }
 
         var method = new JavaMethod(returnType, endpoint.NameCamel) { Comment = endpoint.Description };
@@ -156,11 +156,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return endpoints.SelectMany(p => p.Properties).SelectMany(c => c.GetTypeImports(Config, tag));
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
         var annotations = GetClassAnnotations(endpoints[0].ModelFile, tag);
@@ -171,7 +177,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     private JavaMethodParameter GetBodyParam(string tag, IProperty bodyParam)
     {
-        var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
+        var parameter = new JavaMethodParameter(Config.GetType(bodyParam, tag), bodyParam.GetParamName());
         if (bodyParam.Endpoint!.IsMultipart)
         {
             if (bodyParam.Composition != null)
@@ -223,7 +229,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     private JavaMethodParameter GetQueryParam(string tag, IProperty queryParam)
     {
-        var param = new JavaMethodParameter(Config.GetType(queryParam), queryParam.GetParamName());
+        var param = new JavaMethodParameter(Config.GetType(queryParam, tag), queryParam.GetParamName());
         var queryParamAnnotation = new JavaAnnotation(
             "RequestParam",
             imports: "org.springframework.web.bind.annotation.RequestParam",
@@ -257,7 +263,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
     private JavaMethodParameter GetRouteParam(string tag, IProperty routeParam)
     {
-        var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
+        var param = new JavaMethodParameter(Config.GetType(routeParam, tag), routeParam.GetParamName());
         var pathParamAnnotation = new JavaAnnotation(
             "PathVariable",
             @$"""{routeParam.GetParamName()}""",

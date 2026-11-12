@@ -79,7 +79,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             .Select(prop =>
             {
                 string name = prop.NameCamel.ToConstantCase();
-                var javaType = Config.GetType(prop);
+                var javaType = Config.GetType(prop, tag);
                 javaType = javaType.Split("<")[0];
                 return new JavaEnumValue(name)
                 {

@@ -31,11 +31,17 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName, tag)}.java");
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();
@@ -75,7 +81,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
         if (returns != null)
         {
-            returnType = Config.GetType(returns);
+            returnType = Config.GetType(returns, tag);
         }
         var method = new JavaMethod(
             "org.springframework.http.ResponseEntity",
@@ -127,7 +133,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                 "PathVariable",
                 imports: "org.springframework.web.bind.annotation.PathVariable"
             ).AddAttribute(@$"""{param.GetParamName()}""");
-            var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+            var parameter = new JavaMethodParameter(Config.GetType(param, tag), param.GetParamName())
             {
                 Comment = param.Comment,
             }
@@ -145,7 +151,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
             )
                 .AddAttribute(@$"""{param.GetParamName()}""")
                 .AddAttribute("required", param.Required.ToString().ToFirstLower());
-            var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+            var parameter = new JavaMethodParameter(Config.GetType(param, tag), param.GetParamName())
             {
                 Comment = param.Comment,
             }
@@ -189,7 +195,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                         .AddAttribute(@$"""{param.Name}""")
                         .AddAttribute("required", param.Required.ToString().ToFirstLower());
 
-                    var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName())
+                    var parameter = new JavaMethodParameter(Config.GetType(param, tag), param.GetParamName())
                     {
                         Comment = param.Comment,
                     }
@@ -210,7 +216,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                     "RequestBody",
                     imports: "org.springframework.web.bind.annotation.RequestBody"
                 );
-                var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName())
+                var parameter = new JavaMethodParameter(Config.GetType(bodyParam, tag), bodyParam.GetParamName())
                 {
                     Comment = bodyParam.Comment,
                 }

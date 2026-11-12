@@ -26,9 +26,9 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
         );
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        using var writer = this.OpenSqlWriter(fileName);
+        await using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
         WriteHeader(writer, Config.GetSqlName(classe, tag, noQuote: true));

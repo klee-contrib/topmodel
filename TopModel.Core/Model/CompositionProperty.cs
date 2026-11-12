@@ -68,9 +68,6 @@ internal class CompositionProperty(Reference location) : IProperty
 
     public string? Label { get; set; }
 
-    [Obsolete("Utiliser ParamLocation == ParamLocation.FormData")]
-    public bool IsMultipart => ParamLocation == Model.ParamLocation.FormData;
-
     public bool PrimaryKey => false;
 
     public bool Required

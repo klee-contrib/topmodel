@@ -7,7 +7,6 @@
     <PackageReference Include="AsyncKeyedLock" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="NeoSmart.AsyncLock" />
-    <PackageReference Include="OneOf" />
     <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
   <ItemGroup>

@@ -127,7 +127,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 
         if (!cancellationToken.IsCancellationRequested)
         {
-            tmdLock.UpdateFiles(generatedFiles);
+            await tmdLock.UpdateFiles(generatedFiles);
             _logger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
         }
     }

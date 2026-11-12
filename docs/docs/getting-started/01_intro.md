@@ -8,7 +8,7 @@ Avant de commencer, vous devez installer les éléments suivants :
 
 1. **[VSCode](https://code.visualstudio.com/)** : L'éditeur de code recommandé
 2. **L'[extension TopModel](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel)** : Pour l'autocomplétion, la validation et la navigation
-3. **Le [SDK .NET](https://dotnet.microsoft.com/download)** : Version 8.0 ou supérieure
+3. **Le [SDK .NET](https://dotnet.microsoft.com/download)** : Version 11.0 ou supérieure
 4. **TopModel.Generator** : Le générateur de code
 5. **TopModel.LanguageServer** : Le language server, utilisé par l'extension VSCode
 

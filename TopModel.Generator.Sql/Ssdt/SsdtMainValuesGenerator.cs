@@ -24,9 +24,15 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
-        using var writer = this.OpenSqlWriter(fileName);
+        await using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
         WriteHeader(writer);

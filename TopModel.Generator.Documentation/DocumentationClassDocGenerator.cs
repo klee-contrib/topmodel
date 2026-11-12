@@ -23,7 +23,13 @@ public class DocumentationClassDocGenerator(
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
         var classList = classes.OrderBy(c => c.ModelFile.Name + c.Namespace.Module + c.Name).ToList();
         if (classList.Count == 0)
@@ -38,7 +44,7 @@ public class DocumentationClassDocGenerator(
             _ => $"Dictionnaire de données du module {classList[0].Namespace.Module}",
         };
 
-        using var md = new MarkdownWriter(OpenFileWriter(fileName));
+        await using var md = new MarkdownWriter(OpenFileWriter(fileName));
         md.WriteTitle(1, title);
         md.WriteLine();
 
@@ -67,7 +73,7 @@ public class DocumentationClassDocGenerator(
                     property.Name,
                     Config.GetSqlName(property, tag),
                     property.Label,
-                    Config.GetType(property),
+                    Config.GetType(property, tag),
                     $"{property.Domain?.Length}",
                     property.Comment,
                     string.Join("<br>", constraints),

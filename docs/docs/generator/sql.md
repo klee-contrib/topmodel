@@ -26,52 +26,91 @@ Le générateur SQL en mode `ssdt` peut générer les fichiers suivants :
 
 ## Configuration
 
-_Remarque : A l'inverse de tous les autres générateurs, le générateur SQL est configuré avec `ignoreDefaultValues: true` par défaut_
+### `procedural`
 
-### Fichier de configuration
+Config pour la génération de SQL procédural.
 
-- `targetDBMS` : Système de gestion de base de données cible (`"postgre"` ou `"sqlserver"` ou `"oracle"`).
-- `procedural`
+#### `tablesFileName`
 
-  Options de génération sql
-  - `tablesFileName` : Nom du fichier contenant le script de création de tables. Par défaut : `01_tables.sql`.
-  - `indexesAndKeysFileName` : Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques. Par défaut : `02_indexes_and_keys.sql`.
-  - `valuesFileName` : Nom du fichier contenant le script d'insertion des valeurs initiales. Par défaut : `03_values.sql`.
-  - `resourcesFileName` : Nom du fichier contenant le script d'insertion des ressources (libellés traduits). Par défaut : `04_resources.sql`.
-  - `typesFileName` : Nom du fichier contenant le script de création de types (pour SQL Server). Par défaut : `05_types.sql`.
-  - `commentsFileName` : Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes. Pas de valeur par défaut.
+Nom du fichier contenant le script de création de tables.
 
-- `ssdt`
+_Valeur par défaut_ : `01_tables.sql`
 
-  Options de génération ssdt
-  - `tableScriptFolder` : Dossier du projet pour les scripts de déclaration de table.
-  - `tableTypeScriptFolder` : Dossier du projet pour les scripts de déclaration de type table
-  - `initListScriptFolder` : Dossier du projet pour les scripts d'initialisation des listes de références.
-  - `initListMainScriptName` : Fichier du projet référençant les scripts d'initialisation des listes de références
-  - `disableIdentity` : Désactive les colonnes d'identité.
-  - `generateComments` : Génère les commentaires pour les tables et les colonnes dans les fichiers de table.
+#### `indexesAndKeysFileName`
 
-- `resourcesTableName`
+Nom du fichier contenant le script de création des indexes et des clés étrangères et uniques.
 
-  Nom de la table contenant les traductions
+_Valeur par défaut_ : `02_indexes_and_keys.sql`
 
-- `tableTablespace`
+#### `valuesFileName`
 
-  Nom du tablespace pour les tables (Postgres ou Oracle).
+Nom du fichier contenant le script d'insertion des valeurs initiales.
 
-- `indexTablespace`
+_Valeur par défaut_ : `03_values.sql`
 
-  Nom du tablespace pour les index (Postgres ou Oracle).
+#### `resourcesFileName`
 
-### Impacts de `useLowerCaseSqlNames`
+Nom du fichier contenant le script d'insertion des ressources (libellés traduits).
 
-`useLowerCaseSqlNames` force la casse des identifiants SQL générés en miniscule ou en majuscule, peu importe la sensibilité à la casse du SBGD cible. Les identifiants seront donc quotés au besoin :
+_Valeur par défaut_ : `04_resources.sql`
 
-- Dans Postgres, un identifiant non quoté est automatiquement converti en minusucule, donc avec `useLowerCaseSqlNames: true`, les identifiants ne seront pas quotés (car non nécessaire). En revanche, avec `false`, tous les identifiants seront quotés pour préserver le choix de les avoir en majuscule.
-- Dans Oracle, c'est pareil mais à l'envers (Oracle convertit automatiquement en majuscule).
-- Dans SQL Server, on ne quote jamais car la casse de l'identifiant est conservée, et le SGBD est de toute façon insensible à la casse.
+#### `typesFileName`
 
-_Remarque : les identifiants qui entrerait en conflit avec un mot clé réservé comme "table" ou "user" sont eux toujours quotés, peu importe la casse._
+Nom du fichier contenant le script de création de types (pour SQL Server).
+
+_Valeur par défaut_ : `05_types.sql`
+
+#### `commentsFileName`
+
+Nom du fichier contenant le script de création de commentaires sur les tables et les colonnes.
+
+### `ssdt`
+
+Config pour la génération SSDT.
+
+#### `tableScriptFolder`
+
+Dossier du projet pour les scripts de déclaration de table.
+
+#### `tableTypeScriptFolder`
+
+Dossier du projet pour les scripts de déclaration de type table.
+
+#### `initListScriptFolder`
+
+Dossier du projet pour les scripts d'initialisation des listes de références.
+
+#### `initListMainScriptName`
+
+Fichier du projet référençant les scripts d'initialisation des listes de références.
+
+#### `disableIdentity`
+
+Désactive les colonnes d'identité.
+
+_Valeur par défaut_ : `false`
+
+#### `generateComments`
+
+Génère les commentaires SQL sur les tables et les colonnes.
+
+_Valeur par défaut_ : `false`
+
+### `tableTablespace`
+
+Nom du tablespace pour les tables (Postgres ou Oracle).
+
+### `indexTablespace`
+
+Nom du tablespace pour les index (Postgres ou Oracle).
+
+### `targetDBMS`
+
+SGBD cible de la génération.
+
+_Valeurs possibles_ : `sqlserver`, `postgre`, `oracle`
+
+_Valeur par défaut_ : `postgre`
 
 ### Exemple
 
@@ -82,14 +121,17 @@ sql:
     outputDirectory: ./src
     targetDBMS: postgre
     procedural:
-      crebasFile: 01_tables.sql
-      indexFKFile: 02_fk_indexes.sql
-      uniqueKeysFile: 03_unique_keys.sql
-      initListFile: 04_references.sql
-      commentFile: 05_comments.sql
-      resourceFile: 06_resources.sql
-      identity:
-        increment: 50
-        start: 1000
-        mode: sequence
+      tablesFileName: 01_tables.sql
+      indexesAndKeysFileName: 02_indexes_and_keys.sql
+      valuesFileName: 03_values.sql
+      resourcesFileName: 04_resources.sql
+      typesFileName: 05_types.sql
+      commentsFileName: 06_comments.sql
+    ssdt:
+      tableScriptFolder: Tables
+      tableTypeScriptFolder: TableTypes
+      initListScriptFolder: Values
+      initListMainScriptName: Values.sql
+      disableIdentity: false
+      generateComments: true
 ```

@@ -230,15 +230,14 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
     private async Task BuildCustomModulesAsync(CancellationToken cancellationToken)
     {
-        foreach (var customModule in _customModules)
+        await Parallel.ForEachAsync(_customModules, cancellationToken, async (customModule, ct) =>
         {
-            await customModule.BuildAsync(cancellationToken);
+            await customModule.BuildAsync(ct);
             if (customModule.HasError)
             {
                 HasError = true;
-                return;
             }
-        }
+        });
     }
 
     private void CheckDependenciesToUpdate()
@@ -455,7 +454,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             await WriteSchema(cancellationToken);
         }
 
-        RemoveUnusedCustomModules();
+        await RemoveUnusedCustomModules();
     }
 
     private void LoadCustomModulesAssemblies()
@@ -513,7 +512,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             await LoadModule(dep, cancellationToken);
         }
 
-        _topModelLock.Write();
+        await _topModelLock.Write();
         if (_resolvedConfigKeys.Any())
         {
             _logger.LogInformation(
@@ -615,7 +614,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
     }
 
-    private void RemoveUnusedCustomModules()
+    private async Task RemoveUnusedCustomModules()
     {
         var unused = _topModelLock.Custom.Keys.Except(Config.CustomGenerators).ToList();
         if (unused.Count > 0)
@@ -630,7 +629,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                 }
             }
 
-            _topModelLock.Write();
+            await _topModelLock.Write();
         }
     }
 

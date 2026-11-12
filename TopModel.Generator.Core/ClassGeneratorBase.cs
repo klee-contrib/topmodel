@@ -21,27 +21,26 @@ public abstract class ClassGeneratorBase<T>(ILogger<ClassGeneratorBase<T>> logge
 
     protected abstract string GetFileName(Class classe, string tag);
 
-    protected abstract void HandleClass(string fileName, Class classe, string tag);
+    protected abstract Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default);
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
-        Parallel.ForEach(files, file =>
-            Parallel.ForEach(file.Classes.Where(c => FilterClass(c) && Config.FilterClass(c)), classe =>
-                Parallel.ForEach(
-                    Config
-                        .Tags.Intersect(classe.Tags)
-                        .Select(tag => (tag, fileName: GetFileName(classe, tag)))
-                        .DistinctBy(t => t.fileName),
-                    l =>
-                    {
-                        if (CancellationToken?.IsCancellationRequested ?? false)
+        await Parallel.ForEachAsync(files, ct, async (file, ct) =>
+            await Parallel.ForEachAsync(
+                file.Classes.Where(c => FilterClass(c) && Config.FilterClass(c)),
+                ct,
+                async (classe, ct) =>
+                    await Parallel.ForEachAsync(
+                        Config
+                            .Tags.Intersect(classe.Tags)
+                            .Select(tag => (tag, fileName: GetFileName(classe, tag)))
+                            .DistinctBy(t => t.fileName),
+                        ct,
+                        async (l, ct) =>
                         {
-                            return;
+                            await HandleClass(l.fileName, classe, l.tag, ct);
                         }
-
-                        HandleClass(l.fileName, classe, l.tag);
-                    }
-                )
+                    )
             )
         );
     }

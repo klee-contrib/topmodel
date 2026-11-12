@@ -401,15 +401,18 @@ public class ModelStore(
 
                 modelReporter?.RegisterChange();
 
-                Parallel.ForEach(_modelWatchers, modelWatcher =>
+                await Parallel.ForEachAsync(_modelWatchers, ct, async (modelWatcher, ct) =>
                 {
                     if (ct.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    modelWatcher.CancellationToken = ct;
-                    modelWatcher.OnFilesChanged(levels.SelectMany(level => level.SelectMany(fg => fg)), _storeConfig);
+                    await modelWatcher.OnFilesChanged(
+                        levels.SelectMany(level => level.SelectMany(fg => fg)),
+                        _storeConfig,
+                        ct
+                    );
                 });
 
                 ct.ThrowIfCancellationRequested();
@@ -419,7 +422,7 @@ public class ModelStore(
                     .SelectMany(m => m.GeneratedFiles!);
                 if (generatedFiles.Any() && !DisableLockfile && _topModelLock != null)
                 {
-                    _topModelLock.UpdateFiles(generatedFiles);
+                    await _topModelLock.UpdateFiles(generatedFiles);
                 }
 
                 logger.LogInformation($"Mise à jour terminée avec succès.");

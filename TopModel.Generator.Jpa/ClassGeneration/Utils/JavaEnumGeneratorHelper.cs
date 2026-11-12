@@ -14,11 +14,11 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// </summary>
     /// <param name="classe">Classe de l'énumération.</param>
     /// <param name="refValue">Valeur de référence pour laquelle construire l'appel.</param>
-    /// <param name="allArgsConstructor">Constructeur tout argument à appeler.</param>
+    /// <param name="tag">Le tag de génération.</param>
     /// <returns>Expression Java de la forme <c>new ClassName(val1, val2, ...)</c>.</returns>
     public string GetAllArgsConstructorCall(Class classe, ClassValue refValue, string tag)
     {
-        var args = Config.GetProperties(classe).Select(prop => GetPropertyValue(classe, prop, refValue)).ToArray();
+        var args = Config.GetProperties(classe).Select(prop => GetPropertyValue(classe, prop, refValue, tag)).ToArray();
         return $"new {classe.NamePascal}{GetAllArgsConstructor(classe, tag).CallWith(args)}";
     }
 
@@ -43,7 +43,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         }
     }
 
-    public JavaMethod GetGetValueStaticMethod(Class classe)
+    public JavaMethod GetGetValueStaticMethod(Class classe, string tag)
     {
         var key = classe.EnumKey!;
         var method = new JavaMethod(Config.GetTypeName(classe), "getValue")
@@ -54,7 +54,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             ReturnComment = $"La valeur de l'énumération correspondant à la clé '{key}'.",
         };
         method.AddParameter(
-            new JavaMethodParameter(Config.GetType(key), key.NameCamel)
+            new JavaMethodParameter(Config.GetType(key, tag), key.NameCamel)
             {
                 Comment = $"La clé de l'énumération pour laquelle obtenir la valeur.",
             }
@@ -62,7 +62,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         method.AddBodyLine(@$"return switch ({key.NameCamel}) {{");
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
-            var code = Config.GetValue(key, refValue.Value[key]);
+            var code = Config.GetValue(key, tag, refValue.Value[key]);
             if (key.EnumProperty != null && Config.UniqueValueGeneration != Core.UniqueValueGenerationMode.ConstOnly)
             {
                 code = code.Replace($"{Config.GetEnumType(key)}.", string.Empty);
@@ -88,11 +88,11 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// Calcule la valeur Java à utiliser pour une propriété d'une valeur de référence
     /// (utilisée aussi bien dans le corps du constructeur enum que pour l'appel du constructeur tout argument).
     /// </summary>
-    public string GetPropertyValue(Class classe, IProperty prop, ClassValue refValue)
+    public string GetPropertyValue(Class classe, IProperty prop, ClassValue refValue, string tag)
     {
         if (prop == classe.EnumKey)
         {
-            return Config.GetValue(prop, refValue.Value[prop]);
+            return Config.GetValue(prop, tag, refValue.Value[prop]);
         }
 
         var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
@@ -102,7 +102,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             return $"\"{refValue.ResourceKey}\"";
         }
 
-        return Config.GetValue(prop, value);
+        return Config.GetValue(prop, tag, value);
     }
 
     public JavaField GetStaticValuesList(Class classe)

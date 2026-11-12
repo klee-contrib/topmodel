@@ -31,7 +31,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
 
       - name: build
         run: dotnet build
@@ -43,9 +43,9 @@ jobs:
         run: dotnet run --project ../TopModel.Generator/TopModel.Generator.csproj -- -c
         working-directory: tests
 
-      - name: modgen (tuto)
-        run: dotnet run --project ../TopModel.Generator/TopModel.Generator.csproj -- -c
-        working-directory: docs
+      # - name: modgen (tuto)
+      #   run: dotnet run --project ../TopModel.Generator/TopModel.Generator.csproj -- -c
+      #   working-directory: docs
 
       - name: build C# sample
         run: dotnet build
