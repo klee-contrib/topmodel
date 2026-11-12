@@ -56,5 +56,5 @@ public partial record MenuWrite
     /// Catégories de plat disponibles dans le menu.
     /// </summary>
     [Required]
-    public ICollection<CategoriePlat.Codes>? CategoriesPlat { get; set; }
+    public ICollection<CategoriePlatValues.Codes>? CategoriesPlat { get; set; }
 }

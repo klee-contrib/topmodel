@@ -93,7 +93,7 @@ public class RestaurantController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats du restaurant</returns>
     [HttpGet("api/restaurants/{resId:int}/plats")]
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, [Required] CategoriePlat.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, [Required] CategoriePlatValues.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

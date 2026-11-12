@@ -4,7 +4,6 @@
 
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Npgsql.NameTranslation;
-using TopModel.Sample.Clients.Db.Models.Restaurant;
 using TopModel.Sample.Restaurant.Models;
 
 namespace TopModel.Sample.Clients.Db;

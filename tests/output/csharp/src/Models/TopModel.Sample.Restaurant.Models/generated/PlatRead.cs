@@ -47,8 +47,8 @@ public partial record PlatRead
     /// Catégorie du plat.
     /// </summary>
     [Required]
-    [ReferencedType(typeof(CategoriePlat))]
-    public CategoriePlat.Codes? CategoriePlatCode { get; set; }
+    [ReferencedType(typeof(CategoriePlatValues))]
+    public CategoriePlatValues.Codes? CategoriePlatCode { get; set; }
 
     /// <summary>
     /// Restaurant proposant ce plat.

@@ -320,7 +320,17 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
         {
-            w.WriteLine(2, $"return {classe.NamePascal}.Values;");
+            if (Config.HasSeparateEnumValues(classe))
+            {
+                w.AddUsing(Config.GetEnumValuesNamespace(classe));
+            }
+
+            w.WriteLine(
+                2,
+                Config.HasSeparateEnumValues(classe)
+                    ? $"return {Config.GetEnumValuesTypeName(classe)}.Values.Select({Config.GetTypeName(classe)}.FromValue).ToList();"
+                    : $"return {classe.NamePascal}.Values;"
+            );
             return;
         }
         else if (!classe.IsPersistent)

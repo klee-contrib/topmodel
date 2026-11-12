@@ -219,6 +219,7 @@
               "type": "string",
               "enum": [
                 "CSharpClassGen",
+                "CSharpEnumValuesGen",
                 "CSharpMapperGen",
                 "CSharpDbContextGen",
                 "CSharpRefAccessGen",
@@ -279,6 +280,10 @@
           "nonPersistentModelPath": {
             "type": "string",
             "description": "Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto."
+          },
+          "referencesValuesPath": {
+            "type": "string",
+            "description": "Localisation des types métier des enums, séparés des entités de persistance et suffixés par Values. Supporte {module}."
           },
           "apiRootPath": {
             "type": "string",

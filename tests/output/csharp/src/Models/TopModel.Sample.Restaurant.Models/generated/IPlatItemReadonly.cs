@@ -22,7 +22,7 @@ public partial interface IPlatItemReadonly
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    CategoriePlat.Codes? CategoriePlatCode { get; }
+    CategoriePlatValues.Codes? CategoriePlatCode { get; }
 
     /// <summary>
     /// Prix du plat.

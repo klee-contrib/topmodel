@@ -17,6 +17,7 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         TrimSlashes(config, c => c.NonPersistentModelPath);
         TrimSlashes(config, c => c.PersistentModelPath);
         TrimSlashes(config, c => c.ReferencesModelPath);
+        TrimSlashes(config, c => c.ReferencesValuesPath);
         TrimSlashes(config, c => c.ResourcesResxPath);
 
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
@@ -27,6 +28,11 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         }
 
         services.AddGenerator<CSharpClassGenerator, CsharpConfig>(config, number);
+        if (config.ReferencesValuesPath != null)
+        {
+            services.AddGenerator<CSharpEnumValuesGenerator, CsharpConfig>(config, number);
+        }
+
         services.AddGenerator<MapperGenerator, CsharpConfig>(config, number);
 
         if (config.DbContextPath != null)

@@ -12,5 +12,5 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record PlatDessert : Plat
 {
     /// <inheritdoc />
-    public override CategoriePlat CategoriePlat { get; init; } = CategoriePlat.Dessert;
+    public override CategoriePlat CategoriePlat { get; init; } = CategoriePlat.FromValue(CategoriePlatValues.Dessert);
 }

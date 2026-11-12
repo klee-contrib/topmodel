@@ -68,7 +68,7 @@ public partial record MenuRead
     /// Catégories de plat dans le menu.
     /// </summary>
     [Required]
-    public ICollection<CategoriePlat> CategoriesPlat { get; set; } = [];
+    public ICollection<CategoriePlatValues> CategoriesPlat { get; set; } = [];
 
     /// <summary>
     /// Liste des plats du menu.

@@ -33,7 +33,7 @@ public class MenuController : Controller
     [Authorize]
     [Authorize(Roles = "MANAGER")]
     [HttpPost("api/restaurants/menus")]
-    public async Task<MenuRead> CreateMenu([FromForm] MenuWrite menu, [FromForm][Required] Region.Codes? regCodeOrigine, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu([FromForm] MenuWrite menu, [FromForm][Required] RegionValues.Codes? regCodeOrigine, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -56,7 +56,7 @@ public class MenuController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des catégories de plats</returns>
     [HttpGet("api/restaurants/categorie-plats")]
-    public async Task<ICollection<CategoriePlat>> GetCategoriePlats(CancellationToken ct = default)
+    public async Task<ICollection<CategoriePlatValues>> GetCategoriePlats(CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -82,7 +82,7 @@ public class MenuController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Liste des plats</returns>
     [HttpGet("api/restaurants/plats")]
-    public async Task<ICollection<IPlatItem>> GetPlats([Required] int? restaurantId, [Required] CategoriePlat.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats([Required] int? restaurantId, [Required] CategoriePlatValues.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -124,7 +124,7 @@ public class MenuController : Controller
     /// <param name="ct">CancellationToken (HttpContext.RequestAborted).</param>
     /// <returns>Plats correspondant aux critères de recherche</returns>
     [HttpGet("api/restaurants/plats/search")]
-    public async Task<ICollection<IPlatItem>> SearchPlats([Required] string? nom, [Required] int? restaurantId, [Required] CategoriePlat.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> SearchPlats([Required] string? nom, [Required] int? restaurantId, [Required] CategoriePlatValues.Codes? categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

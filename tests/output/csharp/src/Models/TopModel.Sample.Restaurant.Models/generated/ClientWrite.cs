@@ -29,9 +29,9 @@ public partial record ClientWrite
     /// <summary>
     /// Département de résidence de la personne.
     /// </summary>
-    [ReferencedType(typeof(Departement))]
+    [ReferencedType(typeof(DepartementValues))]
     [StringLength(10)]
-    public string? DepartementCode { get; set; } = Departement.ParisCode;
+    public string? DepartementCode { get; set; } = DepartementValues.ParisCode;
 
     /// <summary>
     /// Adresse email du client.

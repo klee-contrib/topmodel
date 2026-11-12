@@ -52,9 +52,9 @@ public partial record Personne : IPersonneBase
     /// Département de résidence de la personne.
     /// </summary>
     [Column("dep_code")]
-    [ReferencedType(typeof(Departement))]
+    [ReferencedType(typeof(DepartementValues))]
     [StringLength(10)]
-    public string? DepartementCode { get; set; } = Departement.ParisCode;
+    public string? DepartementCode { get; set; } = DepartementValues.ParisCode;
 
     /// <summary>
     /// Date de création de l'enregistrement.

@@ -16,31 +16,35 @@ namespace TopModel.Sample.Clients.Db.Models.Restaurant;
 public partial record CategoriePlatRegion
 {
     /// <summary>
-    /// IdfDessert.
-    /// </summary>
-    public static CategoriePlatRegion IdfDessert { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlat = CategoriePlat.Dessert };
-
-    /// <summary>
-    /// IdfEntree.
-    /// </summary>
-    public static CategoriePlatRegion IdfEntree { get; } = new() { RegionCode = Region.Codes.IDF, CategoriePlat = CategoriePlat.Entree };
-
-    /// <summary>
-    /// Liste des valeurs.
-    /// </summary>
-    public static IList<CategoriePlatRegion> Values { get; } = [IdfEntree, IdfDessert];
-
-    /// <summary>
     /// Région.
     /// </summary>
     [Column("reg_code")]
     [Required]
-    [ReferencedType(typeof(Region))]
-    public Region.Codes? RegionCode { get; init; }
+    [ReferencedType(typeof(RegionValues))]
+    public RegionValues.Codes? RegionCode { get; init; }
 
     /// <summary>
     /// Catégorie de plat.
     /// </summary>
     [Required]
     public CategoriePlat? CategoriePlat { get; init; }
+
+    /// <summary>
+    /// Convertit une valeur métier en entité de persistance.
+    /// </summary>
+    /// <param name="value">Valeur métier.</param>
+    /// <returns>Entité de persistance.</returns>
+    public static CategoriePlatRegion FromValue(CategoriePlatRegionValues value)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        return new CategoriePlatRegion
+        {
+            RegionCode = value.RegionCode,
+            CategoriePlat = value.CategoriePlat is null ? null : CategoriePlat.FromValue(value.CategoriePlat),
+        };
+    }
 }
