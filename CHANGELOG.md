@@ -11,6 +11,13 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 4.8.10
+
+- [#608](https://github.com/klee-contrib/topmodel/issues/608) / [`28d64d2`](https://github.com/klee-contrib/topmodel/commit/28d64d2bc810364e0ea78257fda419001b1a53d9) - [LS] Amélioration de la gestion du renommage de fichiers :
+  - Les `uses` sont mis à jour automatiquement lors du renommage ou du déplacement d'un fichier ou d'un dossier de modèle dans VSCode.
+  - Correction de la prise en compte d'un fichier renommé avec uniquement un changement de casse.
+  - Montée de version de `OmniSharp.Extensions.LanguageServer` (0.19.11).
+
 ## 4.8.9
 
 - [`ba75565`](https://github.com/klee-contrib/topmodel/commit/ba755650cd3872de72279e0bdd0fbbc8d8d3d506) - [Core] `modgen` finit en erreur lorsqu'une exception survient pendant la génération

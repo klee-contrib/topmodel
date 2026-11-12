@@ -1,5 +1,10 @@
 # VSCode
 
+## 4.7.1
+
+- [`28d64d2`](https://github.com/klee-contrib/topmodel/commit/28d64d2bc810364e0ea78257fda419001b1a53d9) - Montée de version de `vscode-languageclient` (11.0.0, support LSP 3.18) et de TypeScript (7.0.2).
+- Nécessite `modls` 4.8.10 pour la mise à jour automatique des `uses` lors du renommage de fichiers ([#608](https://github.com/klee-contrib/topmodel/issues/608)).
+
 ## 4.7.0
 
 - Le Language Server est désormais distribué comme un tool .NET global (`modls`, package NuGet `TopModel.LanguageServer`) publié séparément de l'extension, au lieu d'être embarqué. Il est installé/mis à jour automatiquement comme `modgen` et `tmdgen`.
