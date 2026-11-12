@@ -51,8 +51,8 @@ public class GeneratedFileWriter : IFileWriter
     /// <inheritdoc />
     public string StartCommentToken { get; set; } = "////";
 
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    public async ValueTask DisposeAsync()
     {
         if (Marshal.GetExceptionPointers() != IntPtr.Zero)
         {
@@ -69,11 +69,11 @@ public class GeneratedFileWriter : IFileWriter
             {
                 for (var i = 0; i < LinesInHeader; i++)
                 {
-                    reader.ReadLine();
+                    await reader.ReadLineAsync();
                 }
             }
 
-            currentContent = reader.ReadToEnd();
+            currentContent = await reader.ReadToEndAsync();
 
             var ignoredFile = _config.IgnoredFiles.FirstOrDefault(i =>
                 Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace('\\', '/')
@@ -105,17 +105,17 @@ public class GeneratedFileWriter : IFileWriter
             Directory.CreateDirectory(dir);
         }
 
-        using (var sw = new StreamWriter(FileName, append: false, _encoding))
+        await using (var sw = new StreamWriter(FileName, append: false, _encoding))
         {
             if (EnableHeader && !newContent.StartsWith($"{StartCommentToken}{Environment.NewLine}"))
             {
-                sw.WriteLine(StartCommentToken);
-                sw.WriteLine($"{StartCommentToken} {HeaderMessage}");
-                sw.WriteLine(StartCommentToken);
-                sw.WriteLine();
+                await sw.WriteLineAsync(StartCommentToken);
+                await sw.WriteLineAsync($"{StartCommentToken} {HeaderMessage}");
+                await sw.WriteLineAsync(StartCommentToken);
+                await sw.WriteLineAsync();
             }
 
-            sw.Write(newContent);
+            await sw.WriteAsync(newContent);
         }
 
         _logger.LogInformation($"{(fileExists ? "Modifié:  " : "Créé:     ")}{FileName.ToRelative()}");

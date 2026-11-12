@@ -42,14 +42,15 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
     }
 
-    protected override void HandleFile(
+    protected override async Task HandleFile(
         string fileName,
         string tag,
         IList<(Class Classe, FromMapper Mapper)> fromMappers,
-        IList<(Class Classe, ClassMappings Mapper)> toMappers
+        IList<(Class Classe, ClassMappings Mapper)> toMappers,
+        CancellationToken ct = default
     )
     {
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();

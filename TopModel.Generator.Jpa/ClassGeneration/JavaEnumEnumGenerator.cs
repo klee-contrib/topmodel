@@ -101,13 +101,13 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         }
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
 
         var javaClass = InitClass(classe, tag);
 
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(javaClass);
     }
 

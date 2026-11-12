@@ -100,7 +100,7 @@ public class OpenApiTmdGenerator : TmdGenerator
             Path = Path.Combine(_config.OutputDirectory, _config.ModelFileName),
         };
 
-        using var tmdFileWriter = new TmdWriter(
+        await using var tmdFileWriter = new TmdWriter(
             _writerProvider.OpenFileWriter(modelFileName, _logger),
             tmdFile,
             Path.GetFullPath(ModelRoot)
@@ -204,7 +204,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                 Path = Path.Combine(_config.OutputDirectory, module.Key),
             };
 
-            using var tmdEndpointFileWriter = new TmdWriter(
+            await using var tmdEndpointFileWriter = new TmdWriter(
                 _writerProvider.OpenFileWriter(endpointFileName, _logger),
                 tmdFileEnpoint,
                 ModelRoot

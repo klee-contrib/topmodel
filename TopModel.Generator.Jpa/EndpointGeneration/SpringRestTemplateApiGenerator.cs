@@ -95,11 +95,17 @@ public class SpringRestTemplateApiGenerator(
         return methodParams;
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();

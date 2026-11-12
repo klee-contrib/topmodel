@@ -156,11 +156,17 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return endpoints.SelectMany(p => p.Properties).SelectMany(c => c.GetTypeImports(Config, tag));
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
 
         var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
         var annotations = GetClassAnnotations(endpoints[0].ModelFile, tag);

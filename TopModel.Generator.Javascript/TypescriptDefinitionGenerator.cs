@@ -27,9 +27,9 @@ public class TypescriptDefinitionGenerator(
         return Config.GetClassFileName(classe, tag);
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
         var commonImports = new List<(string Import, string Path)>();
 

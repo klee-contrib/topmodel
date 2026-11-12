@@ -56,14 +56,15 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
 
     protected abstract string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag);
 
-    protected abstract void HandleFile(
+    protected abstract Task HandleFile(
         string fileName,
         string tag,
         IList<(Class Classe, FromMapper Mapper)> fromMappers,
-        IList<(Class Classe, ClassMappings Mapper)> toMappers
+        IList<(Class Classe, ClassMappings Mapper)> toMappers,
+        CancellationToken ct = default
     );
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
         var fromMappers = FromMappers
             .SelectMany(mapper =>
@@ -108,20 +109,16 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
                     )
             );
 
-        Parallel.ForEach(fromMappers.Keys.Concat(toMappers.Keys).Distinct(), fileName =>
+        await Parallel.ForEachAsync(fromMappers.Keys.Concat(toMappers.Keys).Distinct(), ct, async (fileName, ct) =>
         {
-            if (CancellationToken?.IsCancellationRequested ?? false)
-            {
-                return;
-            }
-
             var (fileFromMappers, fromTags) = fromMappers.TryGetValue(fileName, out var value)
                 ? value
                 : (Array.Empty<(Class, FromMapper)>(), Array.Empty<string>());
             var (fileToMappers, toTags) = toMappers.TryGetValue(fileName, out var value2)
                 ? value2
                 : (Mappers: Array.Empty<(Class, ClassMappings)>(), Tags: Array.Empty<string>());
-            HandleFile(fileName, fromTags.Concat(toTags).First(), fileFromMappers, fileToMappers);
+
+            await HandleFile(fileName, fromTags.Concat(toTags).First(), fileFromMappers, fileToMappers, ct);
         });
     }
 

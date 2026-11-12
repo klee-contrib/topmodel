@@ -158,13 +158,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         };
     }
 
-    protected virtual void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
+    protected virtual async Task HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
     {
-        WriteClassFlow(fileName, dataFlow, tag);
-        WritePartialInterface(dataFlow, tag);
+        await WriteClassFlow(fileName, dataFlow, tag);
+        await WritePartialInterface(dataFlow, tag);
     }
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
         foreach (var file in files)
         {
@@ -177,14 +177,17 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                         .DistinctBy(t => t.fileName)
                 )
                 {
-                    HandleDataFlow(fileName, dataFlow, tag);
+                    await HandleDataFlow(fileName, dataFlow, tag);
                 }
             }
         }
 
         foreach (var module in files.Where(f => f.DataFlows.Count > 0).Select(f => f.Namespace.Module))
         {
-            WriteModuleConfig(module, files.Where(f => f.Namespace.Module == module).SelectMany(f => f.DataFlows));
+            await WriteModuleConfig(
+                module,
+                files.Where(f => f.Namespace.Module == module).SelectMany(f => f.DataFlows)
+            );
         }
     }
 
@@ -425,13 +428,13 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.Write(javaMethod);
     }
 
-    protected virtual void WriteClassFlow(string fileName, DataFlow dataFlow, string tag)
+    protected virtual async Task WriteClassFlow(string fileName, DataFlow dataFlow, string tag)
     {
         var packageName = Config
             .ResolveVariables(Config.DataFlowsPath!, tag, module: dataFlow.ModelFile.Namespace.Module)
             .ToPackageName();
 
-        using var fw = this.OpenJavaWriter(fileName, packageName);
+        await using var fw = this.OpenJavaWriter(fileName, packageName);
         fw.AddImport("org.springframework.context.annotation.Configuration");
         fw.WriteLine();
         fw.WriteLine("@Configuration");
@@ -464,12 +467,12 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine("}");
     }
 
-    protected virtual void WriteModuleConfig(string module, IEnumerable<DataFlow> flows)
+    protected virtual async Task WriteModuleConfig(string module, IEnumerable<DataFlow> flows)
     {
         var configFilePath = Config.GetDataFlowConfigFilePath(module);
         var packageName = Config.ResolveVariables(Config.DataFlowsPath!, module: module).ToPackageName();
         flows = flows.OrderBy(f => f.Name);
-        using var fw = this.OpenJavaWriter(configFilePath, packageName);
+        await using var fw = this.OpenJavaWriter(configFilePath, packageName);
         fw.AddImports([
             "org.springframework.context.annotation.Configuration",
             "org.springframework.context.annotation.Bean",
@@ -523,7 +526,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine("}");
     }
 
-    protected virtual void WritePartialInterface(DataFlow dataFlow, string tag)
+    protected virtual async Task WritePartialInterface(DataFlow dataFlow, string tag)
     {
         if (dataFlow.Hooks.Count > 0 || dataFlow.Sources.Any(source => source.Mode == DataFlowSourceMode.Partial))
         {
@@ -531,7 +534,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 .ResolveVariables(Config.DataFlowsPath!, tag, module: dataFlow.ModelFile.Namespace.Module)
                 .ToPackageName();
             var fileName = Config.GetDataFlowPartialFilePath(dataFlow, tag);
-            using var fw = this.OpenJavaWriter($"{fileName}", packageName, codePage: null);
+            await using var fw = this.OpenJavaWriter($"{fileName}", packageName, codePage: null);
             fw.WriteLine();
             fw.WriteLine(@$"public interface {dataFlow.Name.ToPascalCase()}PartialFlow {{");
             foreach (var source in dataFlow.Sources.Where(s => s.Mode == DataFlowSourceMode.Partial))

@@ -31,7 +31,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         );
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         // Ne génère le DAO qu'une seule fois
         if (!Config.DaosAbstract && File.Exists(fileName))
@@ -44,7 +44,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             .ToPackageName();
         var javaClass = InitClass(classe, tag);
 
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(javaClass);
     }
 

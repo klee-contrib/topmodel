@@ -691,15 +691,16 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         return Config.GetConvertedValue(value, source.Domain, target.Domain, tag);
     }
 
-    protected override void HandleFile(
+    protected override async Task HandleFile(
         string fileName,
         string tag,
         IList<(Class Classe, FromMapper Mapper)> fromMappers,
-        IList<(Class Classe, ClassMappings Mapper)> toMappers
+        IList<(Class Classe, ClassMappings Mapper)> toMappers,
+        CancellationToken ct = default
     )
     {
         var mapperClass = GetMapperClass(tag, fromMappers, toMappers);
-        using var fw = this.OpenJavaWriter(fileName, mapperClass.Package ?? "", codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, mapperClass.Package ?? "", codePage: null);
         fw.Write(mapperClass);
     }
 

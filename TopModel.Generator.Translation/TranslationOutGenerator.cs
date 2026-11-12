@@ -48,14 +48,15 @@ public class TranslationOutGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(
+    protected override async Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     )
     {
-        using var fw = OpenFileWriter(filePath);
+        await using var fw = OpenFileWriter(filePath);
         fw.EnableHeader = false;
 
         var containers = properties.GroupBy(prop => prop.Parent);

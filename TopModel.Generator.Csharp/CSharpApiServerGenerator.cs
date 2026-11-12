@@ -125,13 +125,19 @@ public class CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, 
         return string.Join('/', split);
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
         var className = $"{fileName.ToPascalCase()}Controller";
         var ns = Config.GetNamespace(endpoints[0], tag);
 
         var text = File.Exists(filePath)
-            ? File.ReadAllText(filePath)
+            ? await File.ReadAllTextAsync(filePath, ct)
             : $@"using Microsoft.AspNetCore.Mvc;
 
 namespace {ns};
@@ -141,8 +147,11 @@ public class {className} : Controller
 
 }}";
 
-        var syntaxTree = CSharpSyntaxTree.ParseText(text, cancellationToken: default);
-        var existingController = syntaxTree.GetRoot(default).DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+        var syntaxTree = CSharpSyntaxTree.ParseText(text, cancellationToken: ct);
+        var existingController = (await syntaxTree.GetRootAsync(ct))
+            .DescendantNodes()
+            .OfType<ClassDeclarationSyntax>()
+            .First();
 
         var controller = existingController;
 
@@ -160,7 +169,7 @@ public class {className} : Controller
                 return varName;
             }
 
-            var ct = GetSafeVariableName("ct");
+            var ctVar = GetSafeVariableName("ct");
 
             var wd = new StringBuilder();
 
@@ -178,7 +187,7 @@ public class {className} : Controller
             if (Config.UseCancellationTokens && !Config.NoAsyncControllers)
             {
                 wd.AppendLine(
-                    $@"{indent}/// <param name=""{ct}"">CancellationToken (HttpContext.RequestAborted).</param>"
+                    $@"{indent}/// <param name=""{ctVar}"">CancellationToken (HttpContext.RequestAborted).</param>"
                 );
             }
 
@@ -203,7 +212,7 @@ public class {className} : Controller
                 $@"{indent}[Http{endpoint.Method.ToPascalCase(strict: true)}(""{GetRoute(endpoint, tag)}"")]"
             );
             wd.AppendLine(
-                $"{indent}public {Config.GetReturnTypeName(returns, tag)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens && !Config.NoAsyncControllers ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ct} = default" : string.Empty)})"
+                $"{indent}public {Config.GetReturnTypeName(returns, tag)} {endpoint.NamePascal}({string.Join(", ", Config.GetParams(endpoint).Select(p => GetParam(p, tag)))}{(Config.UseCancellationTokens && !Config.NoAsyncControllers ? $"{(Config.GetParams(endpoint).Any() ? ", " : string.Empty)}CancellationToken {ctVar} = default" : string.Empty)})"
             );
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
@@ -259,8 +268,8 @@ public class {className} : Controller
             controller = controller.WithOpenBraceToken(controller.OpenBraceToken.WithoutTrivia());
         }
 
-        using var fw = OpenFileWriter(filePath);
+        await using var fw = OpenFileWriter(filePath);
         fw.HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !";
-        fw.Write(syntaxTree.GetRoot(default).ReplaceNode(existingController, controller).ToString());
+        fw.Write((await syntaxTree.GetRootAsync(ct)).ReplaceNode(existingController, controller).ToString());
     }
 }

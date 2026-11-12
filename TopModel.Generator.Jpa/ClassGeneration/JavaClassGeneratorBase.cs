@@ -175,13 +175,13 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         }
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         var packageName = Config.GetPackageName(classe, tag);
 
         var javaClass = InitClass(classe, tag);
 
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(javaClass);
     }
 

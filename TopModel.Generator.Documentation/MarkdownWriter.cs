@@ -5,7 +5,7 @@ using TopModel.Utils;
 /// <summary>
 /// Utilitaire pour écrire des documents Markdown en s'appuyant sur un <see cref="IFileWriter"/>.
 /// </summary>
-public sealed class MarkdownWriter : IDisposable
+public sealed class MarkdownWriter : IAsyncDisposable
 {
     private readonly IFileWriter _fileWriter;
     private bool HasLevel1Header = false;
@@ -20,10 +20,10 @@ public sealed class MarkdownWriter : IDisposable
         _fileWriter.EnableHeader = false;
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
+    public ValueTask DisposeAsync()
     {
-        _fileWriter.Dispose();
+        return _fileWriter.DisposeAsync();
     }
 
     /// <summary>

@@ -20,11 +20,17 @@ public abstract class ClassGroupGeneratorBase<T>(
 
     protected abstract IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag);
 
-    protected abstract void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes);
+    protected abstract Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    );
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
-        Parallel.ForEach(
+        await Parallel.ForEachAsync(
             Config
                 .Classes.SelectMany(classe =>
                     Config
@@ -34,18 +40,15 @@ public abstract class ClassGroupGeneratorBase<T>(
                         )
                 )
                 .GroupBy(f => f.key),
-            file =>
+            ct,
+            async (file, ct) =>
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
-                HandleFile(
+                await HandleFile(
                     file.Key.FileType,
                     file.Key.FileName,
                     file.First().tag,
-                    file.Select(f => f.classe).Distinct()
+                    file.Select(f => f.classe).Distinct(),
+                    ct
                 );
             }
         );

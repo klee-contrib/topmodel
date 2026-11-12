@@ -422,14 +422,14 @@ internal class MapperResolver(
         }
     }
 
-    private static bool IsSameAliasedProperty(IProperty a, IProperty b)
-    {
-        return (a is AliasProperty || b is AliasProperty) && GetRootProperty(a) == GetRootProperty(b);
-    }
-
     private static IProperty GetRootProperty(IProperty property)
     {
         return property is AliasProperty alp ? alp.Property : property;
+    }
+
+    private static bool IsSameAliasedProperty(IProperty a, IProperty b)
+    {
+        return (a is AliasProperty || b is AliasProperty) && GetRootProperty(a) == GetRootProperty(b);
     }
 
     private bool CheckDomains(Domain? sourceDomain, Domain? targetDomain)
