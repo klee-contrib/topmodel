@@ -3,11 +3,16 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace TopModel.LanguageServer.Handlers;
 
-public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache fileCache) : TextDocumentSyncHandlerBase
+public class TextDocumentSyncHandler(
+    LSWorkerStore workerStore,
+    ModelFileCache fileCache,
+    ILanguageServerFacade facade
+) : TextDocumentSyncHandlerBase
 {
     /// <inheritdoc cref="ITextDocumentIdentifier.GetTextDocumentAttributes" />
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
@@ -23,7 +28,8 @@ public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache f
 
     public override async Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
     {
-        var filePath = request.TextDocument.Uri.GetFileSystemPath();
+        // Casse réelle sur le disque : le chemin sert à calculer le nom du fichier de modèle (cf. "uses").
+        var filePath = facade.GetFilePath(request.TextDocument.Uri);
         var content = request.ContentChanges.Single().Text;
         fileCache.UpdateFile(filePath, content);
         await workerStore.OnModelFileChange(filePath, content, cancellationToken);

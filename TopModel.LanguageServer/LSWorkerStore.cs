@@ -37,7 +37,9 @@ public class LSWorkerStore(ILanguageServerFacade facade, IModelReporter modelRep
     {
         foreach (var worker in _workers)
         {
-            var file = worker.ModelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == filePath);
+            var file = worker.ModelStore.Files.SingleOrDefault(f =>
+                OmnisharpExtensions.PathComparer.Equals(facade.GetFilePath(f), filePath)
+            );
             if (file != null)
             {
                 return (file, worker.ModelStore, worker.Config.App);
@@ -49,11 +51,12 @@ public class LSWorkerStore(ILanguageServerFacade facade, IModelReporter modelRep
 
     public IEnumerable<(ModelFile File, ModelStore Store)> GetFiles(TextDocumentIdentifier textDocument)
     {
+        var filePath = textDocument.Uri.GetFileSystemPath();
         return _workers
             .Select(w =>
                 (
                     File: w.ModelStore.Files.SingleOrDefault(f =>
-                        facade.GetFilePath(f) == textDocument.Uri.GetFileSystemPath()
+                        OmnisharpExtensions.PathComparer.Equals(facade.GetFilePath(f), filePath)
                     )!,
                     Store: w.ModelStore
                 )
@@ -78,10 +81,14 @@ public class LSWorkerStore(ILanguageServerFacade facade, IModelReporter modelRep
             modelFileLoader.RemoveFromCache(worker.ModelStore.ModelFileLoadConfig, filePath);
         }
 
-        await Parallel.ForEachAsync(affectedWorkers, ct, async (worker, ct) =>
-        {
-            await worker.ModelStore.OnModelFileChange(filePath, content, ct);
-        });
+        await Parallel.ForEachAsync(
+            affectedWorkers,
+            ct,
+            async (worker, ct) =>
+            {
+                await worker.ModelStore.OnModelFileChange(filePath, content, ct);
+            }
+        );
 
         modelReporter.Report();
     }

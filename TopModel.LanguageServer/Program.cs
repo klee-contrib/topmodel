@@ -61,6 +61,7 @@ using var server = await LanguageServer.From(options =>
         .WithHandler<CodeLensHandler>()
         .WithHandler<RenameHandler>()
         .WithHandler<DocumentLinkHandler>()
+        .WithHandler<WillRenameFilesHandler>()
         .AddHandler<MermaidHandler>("mermaid")
         .AddHandler<SchemaHandler>("schema")
         .OnInitialize(

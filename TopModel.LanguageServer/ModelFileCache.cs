@@ -4,7 +4,7 @@ namespace TopModel.LanguageServer;
 
 public class ModelFileCache
 {
-    private readonly ConcurrentDictionary<string, string[]> _fileCache = new();
+    private readonly ConcurrentDictionary<string, string[]> _fileCache = new(OmnisharpExtensions.PathComparer);
 
     public string[] GetFile(string filePath)
     {

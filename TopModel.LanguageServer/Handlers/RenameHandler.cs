@@ -22,17 +22,11 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
 
         var (objetName, references) = rename.Value;
 
-        return new WorkspaceEdit
-        {
-            Changes = references
+        return facade.ToWorkspaceEdit(
+            references
                 .Where(r => r.Reference.ReferenceName == objetName)
-                .Select(r => new { Uri = facade.GetFilePath(r.File), r.Reference })
-                .Distinct()
-                .Select(c => new Location { Uri = c.Uri, Range = c.Reference.ToRange()! })
-                .Select(c => new { c.Uri, TextEdit = new TextEdit { NewText = request.NewName, Range = c.Range } })
-                .GroupBy(t => t.Uri, t => t)
-                .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit)),
-        };
+                .Select(r => (r.File, r.Reference, request.NewName))
+        );
     }
 
     /// <inheritdoc cref="MediatR.IRequestHandler{TRequest, TResponse}.Handle" />

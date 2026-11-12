@@ -1,4 +1,5 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol;
+using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
@@ -9,6 +10,15 @@ namespace TopModel.LanguageServer;
 
 public static class OmnisharpExtensions
 {
+    /// <summary>
+    /// Comparaison de chemins de fichiers, insensible à la casse hors Linux.
+    /// </summary>
+    public static readonly StringComparer PathComparer = OperatingSystem.IsLinux()
+        ? StringComparer.Ordinal
+        : StringComparer.OrdinalIgnoreCase;
+
+    private static readonly EnumerationOptions CaseInsensitive = new() { MatchCasing = MatchCasing.CaseInsensitive };
+
     public static string GetFilePath(this ILanguageServerFacade facade, ModelFile file)
     {
         return facade.GetFilePath(file.Path);
@@ -17,6 +27,38 @@ public static class OmnisharpExtensions
     public static string GetFilePath(this ILanguageServerFacade facade, string path)
     {
         return facade.Workspace.ClientSettings.RootPath + path[1..].Replace('/', Path.DirectorySeparatorChar);
+    }
+
+    public static string GetFilePath(this ILanguageServerFacade facade, DocumentUri uri)
+    {
+        var path = uri.GetFileSystemPath();
+        var rootPath = facade.Workspace.ClientSettings.RootPath;
+
+        if (
+            OperatingSystem.IsLinux()
+            || string.IsNullOrEmpty(rootPath)
+            || !path.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return path;
+        }
+
+        var segments = path[rootPath.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        var current = rootPath;
+        for (var i = 0; i < segments.Length; i++)
+        {
+            var match = Directory.Exists(current)
+                ? Directory.EnumerateFileSystemEntries(current, segments[i], CaseInsensitive).FirstOrDefault()
+                : null;
+            if (match == null)
+            {
+                return Path.Combine([current, .. segments[i..]]);
+            }
+
+            current = match;
+        }
+
+        return current;
     }
 
     public static IEnumerable<T> GetInAll<T>(
@@ -202,5 +244,25 @@ public static class OmnisharpExtensions
                 (int)loc.End.Line - 1,
                 (int)loc.End.Column - 1
             );
+    }
+
+    /// <summary>
+    /// Construit le WorkspaceEdit remplaçant chaque référence donnée par le texte associé.
+    /// </summary>
+    public static WorkspaceEdit ToWorkspaceEdit(
+        this ILanguageServerFacade facade,
+        IEnumerable<(ModelFile File, Reference Reference, string NewText)> edits
+    )
+    {
+        return new()
+        {
+            Changes = edits
+                .Select(e =>
+                    (Uri: facade.GetFilePath(e.File), Edit: new TextEdit { Range = e.Reference.ToRange()!, NewText = e.NewText })
+                )
+                .Distinct()
+                .GroupBy(e => e.Uri, e => e.Edit)
+                .ToDictionary(g => DocumentUri.From(g.Key), g => g.AsEnumerable()),
+        };
     }
 }
