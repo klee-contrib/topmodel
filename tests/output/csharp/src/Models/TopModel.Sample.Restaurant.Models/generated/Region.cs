@@ -18,22 +18,11 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record Region
 {
     /// <summary>
-    /// Valeurs possibles de la liste de référence Region.
-    /// </summary>
-    public enum Codes
-    {
-        /// <summary>
-        /// Île de France.
-        /// </summary>
-        IDF
-    }
-
-    /// <summary>
     /// Code de la région.
     /// </summary>
     [Column("reg_code")]
     [Key]
-    public Codes? Code { get; set; }
+    public RegionValues.Codes? Code { get; set; }
 
     /// <summary>
     /// Libellé de la région.
@@ -49,4 +38,24 @@ public partial record Region
     [Column("reg_nom_responsable")]
     [StringLength(100)]
     public string? NomResponsable { get; set; }
+
+    /// <summary>
+    /// Convertit une valeur métier en entité de persistance.
+    /// </summary>
+    /// <param name="value">Valeur métier.</param>
+    /// <returns>Entité de persistance.</returns>
+    public static Region FromValue(RegionValues value)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        return new Region
+        {
+            Code = value.Code,
+            Libelle = value.Libelle,
+            NomResponsable = value.NomResponsable,
+        };
+    }
 }

@@ -32,5 +32,5 @@ public partial interface IPlatItem
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    CategoriePlat.Codes? CategoriePlatCode { get; set; }
+    CategoriePlatValues.Codes? CategoriePlatCode { get; set; }
 }

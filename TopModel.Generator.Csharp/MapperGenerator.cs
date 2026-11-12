@@ -80,7 +80,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 case { EnumProperty: IProperty ep }
                     when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
-                    usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
+                    usings.Add(Config.GetEnumTypeNamespace(property, Config.GetBestClassTag(ep.Class, tag)));
                     break;
                 case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
                     usings.Add(Config.GetNamespace(cpc, Config.GetBestClassTag(cpc, tag)));
@@ -222,16 +222,46 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             }
             else if (source.MappingType.IsT0 && target.MappingType.TryPickT1(out var tt1rec, out _))
             {
+                var type = Config.HasSeparateEnumValues(tt1rec.Class)
+                    ? Config.GetEnumValuesTypeName(tt1rec.Class)
+                    : Config.GetTypeName(tt1rec.Class);
+                if (Config.HasSeparateEnumValues(tt1rec.Class))
+                {
+                    w.AddUsing(Config.GetEnumValuesNamespace(tt1rec.Class));
+                }
+
                 var mapped =
-                    $"{Config.GetTypeName(tt1rec.Class)}.GetValue({HandleConversion(value, source, tt1rec.Class.EnumKey!, rrnSource, rrnTarget: true, paramRequired)})";
+                    $"{type}.GetValue({HandleConversion(value, source, tt1rec.Class.EnumKey!, rrnSource, rrnTarget: true, paramRequired)})";
+                if (target.Class.IsPersistent && Config.HasSeparateEnumValues(tt1rec.Class))
+                {
+                    var entityType = Config.GetTypeName(tt1rec.Class);
+                    w.AddUsing(Config.GetNamespace(tt1rec.Class, Config.GetBestClassTag(tt1rec.Class, tag)));
+                    mapped = $"{entityType}.FromValue({mapped})";
+                }
 
                 value =
                     !rrnSource || !source.Required && !target.Required ? $"{value} != null ? {mapped} : null" : mapped;
             }
             else if (source.MappingType.IsT0 && target.MappingType.TryPickT2(out var tt2rec, out _))
             {
+                var type = Config.HasSeparateEnumValues(tt2rec.Class)
+                    ? Config.GetEnumValuesTypeName(tt2rec.Class)
+                    : Config.GetTypeName(tt2rec.Class);
+                if (Config.HasSeparateEnumValues(tt2rec.Class))
+                {
+                    w.AddUsing(Config.GetEnumValuesNamespace(tt2rec.Class));
+                }
+
+                var selector = $"{type}.GetValue";
+                if (target.Class.IsPersistent && Config.HasSeparateEnumValues(tt2rec.Class))
+                {
+                    var entityType = Config.GetTypeName(tt2rec.Class);
+                    w.AddUsing(Config.GetNamespace(tt2rec.Class, Config.GetBestClassTag(tt2rec.Class, tag)));
+                    selector = $"key => {entityType}.FromValue({type}.GetValue(key))";
+                }
+
                 value +=
-                    $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({Config.GetTypeName(tt2rec.Class)}.GetValue).{Config.GetCollector(tt2rec.Domain)}";
+                    $"{(!rrnSource || !source.Required ? "?" : string.Empty)}.Select({selector}).{Config.GetCollector(tt2rec.Domain)}";
 
                 var defaultTargetValue = Config.GetDefaultValue(target, tag);
                 if (defaultTargetValue != "null" && target.Required)

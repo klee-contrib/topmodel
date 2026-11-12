@@ -53,7 +53,7 @@ public partial record Plat
     /// <summary>
     /// Catégorie du plat.
     /// </summary>
-    public virtual CategoriePlat CategoriePlat { get; init; } = CategoriePlat.Autre;
+    public virtual CategoriePlat CategoriePlat { get; init; } = CategoriePlat.FromValue(CategoriePlatValues.Autre);
 
     /// <summary>
     /// Restaurant proposant ce plat.

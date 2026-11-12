@@ -249,12 +249,12 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
             .HasValue<Fournisseur>("FOURNISSEUR")
             .HasValue<Models.Restaurant.Restaurant>("RESTAURANT");
         modelBuilder.Entity<Plat>()
-            .HasDiscriminator<CategoriePlat.Codes?>("CategoriePlatCode")
-            .HasValue<Plat>(CategoriePlat.Autre.Code)
-            .HasValue<PlatBoisson>(CategoriePlat.Boisson.Code)
-            .HasValue<PlatDessert>(CategoriePlat.Dessert.Code)
-            .HasValue<PlatEntree>(CategoriePlat.Entree.Code)
-            .HasValue<PlatPrincipal>(CategoriePlat.Principal.Code);
+            .HasDiscriminator<CategoriePlatValues.Codes?>("CategoriePlatCode")
+            .HasValue<Plat>(CategoriePlatValues.Autre.Code)
+            .HasValue<PlatBoisson>(CategoriePlatValues.Boisson.Code)
+            .HasValue<PlatDessert>(CategoriePlatValues.Dessert.Code)
+            .HasValue<PlatEntree>(CategoriePlatValues.Entree.Code)
+            .HasValue<PlatPrincipal>(CategoriePlatValues.Principal.Code);
         modelBuilder.Entity<Vaisselle>().UseTpcMappingStrategy();
 
         modelBuilder.Entity<AvisClient>().HasIndex("ClientId", "RestaurantId", "DateAvis").IsUnique();
@@ -299,14 +299,14 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<Assiette>().HasData(
             new Assiette { Id = 1, Description = "Grande assiette", Taille = 29 });
-        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Values);
+        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlatValues.Values.Select(CategoriePlat.FromValue));
         modelBuilder.Entity<CategoriePlatRegion>().HasData(
-            new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Entree.Code },
-            new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Dessert.Code });
+            new { RegionCode = RegionValues.Codes.IDF, CategoriePlatCode = CategoriePlatValues.Entree.Code },
+            new { RegionCode = RegionValues.Codes.IDF, CategoriePlatCode = CategoriePlatValues.Dessert.Code });
         modelBuilder.Entity<Couvert>().HasData(
             new Couvert { Id = 2, Description = "Fourchette" },
             new Couvert { Id = 3, Description = "Couteau" });
-        modelBuilder.Entity<Departement>().HasData(Departement.Values);
+        modelBuilder.Entity<Departement>().HasData(DepartementValues.Values.Select(Departement.FromValue));
         modelBuilder.Entity<Employe>().HasData(
             new { Id = Personne.MichelId, Nom = "Christophe", Prenom = "Michel", Matricule = Employe.MichelMatricule, DateCreation = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), DateEmbauche = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), RestaurantId = 1 });
         modelBuilder.Entity<Fournisseur>().HasData(
@@ -314,7 +314,7 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
         modelBuilder.Entity<Personne>().HasData(
             new Personne { Id = Personne.JeanId, Nom = "Michel", Prenom = "Jean", DateCreation = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal) });
         modelBuilder.Entity<Region>().HasData(
-            new Region { Code = Region.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
+            new Region { Code = RegionValues.Codes.IDF, Libelle = "restaurant.region.values.Idf" });
         modelBuilder.Entity<Models.Restaurant.Restaurant>().HasData(
             new { Id = 1, Nom = "Burger King", DateCreation = DateTime.Parse("1954-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal) });
 

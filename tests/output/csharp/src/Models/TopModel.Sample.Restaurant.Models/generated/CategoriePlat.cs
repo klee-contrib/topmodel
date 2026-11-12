@@ -18,97 +18,11 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record CategoriePlat
 {
     /// <summary>
-    /// Autre.
-    /// </summary>
-    public const int AutreOrdre = 5;
-
-    /// <summary>
-    /// Boisson.
-    /// </summary>
-    public const int BoissonOrdre = 1;
-
-    /// <summary>
-    /// Dessert.
-    /// </summary>
-    public const int DessertOrdre = 4;
-
-    /// <summary>
-    /// Entrée.
-    /// </summary>
-    public const int EntreeOrdre = 2;
-
-    /// <summary>
-    /// Plat principal.
-    /// </summary>
-    public const int PrincipalOrdre = 3;
-
-    /// <summary>
-    /// Valeurs possibles de la liste de référence CategoriePlat.
-    /// </summary>
-    public enum Codes
-    {
-        /// <summary>
-        /// Autre.
-        /// </summary>
-        AUTRE,
-
-        /// <summary>
-        /// Boisson.
-        /// </summary>
-        BOISSON,
-
-        /// <summary>
-        /// Dessert.
-        /// </summary>
-        DESSERT,
-
-        /// <summary>
-        /// Entrée.
-        /// </summary>
-        ENTREE,
-
-        /// <summary>
-        /// Plat principal.
-        /// </summary>
-        PRINCIPAL
-    }
-
-    /// <summary>
-    /// Autre.
-    /// </summary>
-    public static CategoriePlat Autre { get; } = new() { Code = Codes.AUTRE, Libelle = "restaurant.categoriePlat.values.Autre", Ordre = AutreOrdre };
-
-    /// <summary>
-    /// Boisson.
-    /// </summary>
-    public static CategoriePlat Boisson { get; } = new() { Code = Codes.BOISSON, Libelle = "restaurant.categoriePlat.values.Boisson", Ordre = BoissonOrdre, PrixMoyen = 2 };
-
-    /// <summary>
-    /// Dessert.
-    /// </summary>
-    public static CategoriePlat Dessert { get; } = new() { Code = Codes.DESSERT, Libelle = "restaurant.categoriePlat.values.Dessert", Ordre = DessertOrdre };
-
-    /// <summary>
-    /// Entrée.
-    /// </summary>
-    public static CategoriePlat Entree { get; } = new() { Code = Codes.ENTREE, Libelle = "restaurant.categoriePlat.values.Entree", Ordre = EntreeOrdre };
-
-    /// <summary>
-    /// Plat principal.
-    /// </summary>
-    public static CategoriePlat Principal { get; } = new() { Code = Codes.PRINCIPAL, Libelle = "restaurant.categoriePlat.values.Principal", Ordre = PrincipalOrdre, PrixMoyen = 10 };
-
-    /// <summary>
-    /// Liste des valeurs.
-    /// </summary>
-    public static IList<CategoriePlat> Values { get; } = [Boisson, Entree, Principal, Dessert, Autre];
-
-    /// <summary>
     /// Code de la catégorie.
     /// </summary>
     [Column("cat_code")]
     [Key]
-    public Codes? Code { get; init; }
+    public CategoriePlatValues.Codes? Code { get; init; }
 
     /// <summary>
     /// Libellé de la catégorie.
@@ -132,20 +46,23 @@ public partial record CategoriePlat
     public decimal? PrixMoyen { get; init; }
 
     /// <summary>
-    /// Récupère l'instance correspondante à la clé primaire demandée.
+    /// Convertit une valeur métier en entité de persistance.
     /// </summary>
-    /// <param name="code">Code de la catégorie.</param>
-    /// <returns>L'instance correspondante.</returns>
-    public static CategoriePlat GetValue(Codes code)
+    /// <param name="value">Valeur métier.</param>
+    /// <returns>Entité de persistance.</returns>
+    public static CategoriePlat FromValue(CategoriePlatValues value)
     {
-        return code switch
+        if (value is null)
         {
-            Codes.AUTRE => Autre,
-            Codes.ENTREE => Entree,
-            Codes.PRINCIPAL => Principal,
-            Codes.DESSERT => Dessert,
-            Codes.BOISSON => Boisson,
-            _ => throw new InvalidOperationException()
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        return new CategoriePlat
+        {
+            Code = value.Code,
+            Libelle = value.Libelle,
+            Ordre = value.Ordre,
+            PrixMoyen = value.PrixMoyen,
         };
     }
 }

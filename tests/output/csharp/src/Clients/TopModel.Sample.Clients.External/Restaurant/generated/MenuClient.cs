@@ -40,7 +40,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="regCodeOrigine">Code de la région.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Menu créé avec ses plats.</returns>
-    public async Task<MenuRead> CreateMenu(MenuWrite menu, Region.Codes regCodeOrigine, CancellationToken ct = default)
+    public async Task<MenuRead> CreateMenu(MenuWrite menu, RegionValues.Codes regCodeOrigine, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var formData = new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -79,13 +79,13 @@ public partial class MenuClient(HttpClient client)
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des catégories de plats.</returns>
-    public async Task<ICollection<CategoriePlat>> GetCategoriePlats(CancellationToken ct = default)
+    public async Task<ICollection<CategoriePlatValues>> GetCategoriePlats(CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/categorie-plats"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<CategoriePlat>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<ICollection<CategoriePlatValues>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats.</returns>
-    public async Task<ICollection<IPlatItem>> GetPlats(int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetPlats(int restaurantId, CategoriePlatValues.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -167,7 +167,7 @@ public partial class MenuClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Plats correspondant aux critères de recherche.</returns>
-    public async Task<ICollection<IPlatItem>> SearchPlats(string nom, int restaurantId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> SearchPlats(string nom, int restaurantId, CategoriePlatValues.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>

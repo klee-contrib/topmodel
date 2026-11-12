@@ -112,7 +112,7 @@ public partial class RestaurantClient(HttpClient client)
     /// <param name="disponible">Indique si le plat est disponible.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des plats du restaurant.</returns>
-    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlat.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
+    public async Task<ICollection<IPlatItem>> GetRestaurantPlats(int resId, CategoriePlatValues.Codes categoriePlatCode, bool disponible = true, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>

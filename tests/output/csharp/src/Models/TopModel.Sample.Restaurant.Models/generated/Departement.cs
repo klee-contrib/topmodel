@@ -18,51 +18,6 @@ namespace TopModel.Sample.Restaurant.Models;
 public partial record Departement
 {
     /// <summary>
-    /// Hauts de Seine.
-    /// </summary>
-    public const string HautsDeSeineCode = "92";
-
-    /// <summary>
-    /// Paris.
-    /// </summary>
-    public const string ParisCode = "75";
-
-    /// <summary>
-    /// Seine et Marne.
-    /// </summary>
-    public const string SeineEtMarneCode = "94";
-
-    /// <summary>
-    /// Seine Saint Denis.
-    /// </summary>
-    public const string SeineSaintDenisCode = "93";
-
-    /// <summary>
-    /// Hauts de Seine.
-    /// </summary>
-    public static Departement HautsDeSeine { get; } = new() { Code = HautsDeSeineCode, Libelle = "restaurant.departement.values.HautsDeSeine", RegionCode = Region.Codes.IDF };
-
-    /// <summary>
-    /// Paris.
-    /// </summary>
-    public static Departement Paris { get; } = new() { Code = ParisCode, Libelle = "restaurant.departement.values.Paris", RegionCode = Region.Codes.IDF };
-
-    /// <summary>
-    /// Seine et Marne.
-    /// </summary>
-    public static Departement SeineEtMarne { get; } = new() { Code = SeineEtMarneCode, Libelle = "restaurant.departement.values.SeineEtMarne", RegionCode = Region.Codes.IDF };
-
-    /// <summary>
-    /// Seine Saint Denis.
-    /// </summary>
-    public static Departement SeineSaintDenis { get; } = new() { Code = SeineSaintDenisCode, Libelle = "restaurant.departement.values.SeineSaintDenis", RegionCode = Region.Codes.IDF };
-
-    /// <summary>
-    /// Liste des valeurs.
-    /// </summary>
-    public static IList<Departement> Values { get; } = [HautsDeSeine, Paris, SeineEtMarne, SeineSaintDenis];
-
-    /// <summary>
     /// Code du département.
     /// </summary>
     [Column("dep_code")]
@@ -83,23 +38,26 @@ public partial record Departement
     /// </summary>
     [Column("reg_code")]
     [Required]
-    [ReferencedType(typeof(Region))]
-    public Region.Codes? RegionCode { get; init; }
+    [ReferencedType(typeof(RegionValues))]
+    public RegionValues.Codes? RegionCode { get; init; }
 
     /// <summary>
-    /// Récupère l'instance correspondante à la clé primaire demandée.
+    /// Convertit une valeur métier en entité de persistance.
     /// </summary>
-    /// <param name="code">Code du département.</param>
-    /// <returns>L'instance correspondante.</returns>
-    public static Departement GetValue(string code)
+    /// <param name="value">Valeur métier.</param>
+    /// <returns>Entité de persistance.</returns>
+    public static Departement FromValue(DepartementValues value)
     {
-        return code switch
+        if (value is null)
         {
-            ParisCode => Paris,
-            HautsDeSeineCode => HautsDeSeine,
-            SeineSaintDenisCode => SeineSaintDenis,
-            SeineEtMarneCode => SeineEtMarne,
-            _ => throw new InvalidOperationException()
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        return new Departement
+        {
+            Code = value.Code,
+            Libelle = value.Libelle,
+            RegionCode = value.RegionCode,
         };
     }
 }

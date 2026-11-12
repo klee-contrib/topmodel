@@ -256,8 +256,31 @@ public class {className} : Controller
             controller = controller.WithOpenBraceToken(controller.OpenBraceToken.WithoutTrivia());
         }
 
+        var root = (CompilationUnitSyntax)syntaxTree.GetRoot(default).ReplaceNode(existingController, controller);
+        if (Config.ReferencesValuesPath != null)
+        {
+            foreach (
+                var enumNamespace in endpoints
+                    .SelectMany(e => e.Properties)
+                    .SelectMany(p => new[] { p.EnumProperty?.Class, p.Composition, p.UniqueValuedProperty?.Class })
+                    .OfType<Class>()
+                    .Where(c => c.Enum != null)
+                    .Select(Config.GetEnumValuesNamespace)
+                    .Distinct()
+            )
+            {
+                var directive = ParseCompilationUnit(
+                    $"using {enumNamespace};{Environment.NewLine}"
+                ).Usings.Single();
+                if (!root.Usings.Any(u => u.IsEquivalentTo(directive)))
+                {
+                    root = root.AddUsings(directive);
+                }
+            }
+        }
+
         using var fw = OpenFileWriter(filePath);
         fw.HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !";
-        fw.Write(syntaxTree.GetRoot(default).ReplaceNode(existingController, controller).ToString());
+        fw.Write(root.ToString());
     }
 }

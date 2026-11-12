@@ -4,7 +4,7 @@
 
 version: 4.8.9
 custom:
-  ../../TopModel.Generator.Csharp: d4482c0de2699ab5236f9684c872fe2d
+  ../../TopModel.Generator.Csharp: 83e8fc46d6f0c08a26c9354f347490a4
   ../../TopModel.Generator.Javascript: e8ec2215cdfa6be3318abed8c6feaa04
   ../../TopModel.Generator.Jpa: 5fb2e9035534d7733f7923eee238fb47
   ../../TopModel.Generator.Sql: 3149429578cab4e4d66aac96f165ff79
@@ -97,7 +97,6 @@ generatedFiles:
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Reservation.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Restaurant.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Table.cs
-  - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/TypeTerrasse.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Vaisselle.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Models/Restaurant/generated/Verre.cs
   - ../output/csharp/src/Clients/TopModel.Sample.Clients.Db/Reference/generated/DbRestaurantReferenceAccessors.cs
@@ -115,6 +114,8 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/AvisClientWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlat.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlatRegionValues.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CategoriePlatValues.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientAvecCommandes.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ClientRead.cs
@@ -123,6 +124,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CommandeRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/CommandeWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/Departement.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/DepartementValues.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeItem.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/EmployeWrite.cs
@@ -145,6 +147,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PromotionRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/PromotionWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/Region.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/RegionValues.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ReservationRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/ReservationWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/RestaurantAvecStatistiques.cs
@@ -155,6 +158,7 @@ generatedFiles:
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/TableRead.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/TableWrite.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/TypeFacture.cs
+  - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/generated/TypeTerrasse.cs
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/Restaurant.de.resx
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/Restaurant.en.resx
   - ../output/csharp/src/Models/TopModel.Sample.Restaurant.Models/Restaurant.fr.resx

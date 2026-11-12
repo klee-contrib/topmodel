@@ -45,6 +45,12 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string? ReferencesModelPath { get; set; }
 
     /// <summary>
+    /// Localisation des types métier des enums, séparés de leurs entités de persistance.
+    /// Si non renseigné, les valeurs restent dans les classes du modèle.
+    /// </summary>
+    public virtual string? ReferencesValuesPath { get; set; }
+
+    /// <summary>
     /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
     /// </summary>
     public virtual string NonPersistentModelPath { get; set; } = "{app}.{module}.Models/Dto";
@@ -225,6 +231,7 @@ public class CsharpConfig : GeneratorConfigBase
         [
             nameof(PersistentModelPath),
             nameof(ReferencesModelPath),
+            nameof(ReferencesValuesPath),
             nameof(NonPersistentModelPath),
             nameof(ApiRootPath),
             nameof(ApiFilePath),
@@ -382,7 +389,10 @@ public class CsharpConfig : GeneratorConfigBase
         {
             var genericType = type.Split('<')[0];
 
-            if (type == GetTypeName(property.Composition))
+            if (
+                property.Composition is Class composition
+                && (type == GetTypeName(composition) || type == GetEnumValuesTypeName(composition))
+            )
             {
                 if (!RequiredNonNullable(tag))
                 {
@@ -398,9 +408,52 @@ public class CsharpConfig : GeneratorConfigBase
         return defaultValue;
     }
 
+    public virtual string GetEnumDeclarationName(IProperty property)
+    {
+        return base.GetEnumType(property, internalReference: true);
+    }
+
+    public override string GetEnumType(IProperty prop, bool internalReference = false)
+    {
+        if (ReferencesValuesPath != null && prop.UniqueValuedProperty?.Class is { Enum: not null } classe)
+        {
+            return classe.Enum == EnumMode.Enum
+                ? GetEnumValuesTypeName(classe)
+                : $"{GetEnumValuesTypeName(classe)}.{GetEnumDeclarationName(prop)}";
+        }
+
+        return base.GetEnumType(prop, internalReference);
+    }
+
     public virtual string GetEnumTypeNamespace(IProperty fp, string tag)
     {
-        return fp is { EnumProperty: IProperty ep } ? GetNamespace(ep.Class, tag) : string.Empty;
+        return fp is { EnumProperty: IProperty ep }
+            ? ReferencesValuesPath != null && ep.Class.Enum != null
+                ? GetEnumValuesNamespace(ep.Class)
+                : GetNamespace(ep.Class, tag)
+            : string.Empty;
+    }
+
+    public virtual string GetEnumValuesFileName(Class classe)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ReferencesValuesPath!, module: classe.Namespace.Module).ToFilePath(),
+            "generated",
+            $"{GetEnumValuesTypeName(classe)}.cs"
+        );
+    }
+
+    public virtual string GetEnumValuesNamespace(Class classe)
+    {
+        return ResolveVariables(ReferencesValuesPath!, module: classe.Namespace.Module)
+            .ToNamespace()
+            .Replace(".Dto", string.Empty);
+    }
+
+    public virtual string GetEnumValuesTypeName(Class classe)
+    {
+        return HasSeparateEnumValues(classe) ? $"{GetTypeName(classe)}Values" : GetTypeName(classe);
     }
 
     public virtual string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
@@ -523,6 +576,17 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(modelPath, tag: tag, module: ns.Module).ToNamespace().Replace(".Dto", string.Empty);
     }
 
+    public override string GetReadonlyEnumClassInstanceName(
+        Class classe,
+        string refName,
+        bool internalReference = false
+    )
+    {
+        return HasSeparateEnumValues(classe) && !internalReference
+            ? $"{GetEnumValuesTypeName(classe)}.{base.GetReadonlyEnumClassInstanceName(classe, refName, internalReference: true)}"
+            : base.GetReadonlyEnumClassInstanceName(classe, refName, internalReference);
+    }
+
     public virtual string GetReferenceAccessorName(Namespace ns, string tag)
     {
         return ResolveVariables(AddModuleFlat(ReferenceAccessorsName), tag: tag, module: ns.Module);
@@ -587,6 +651,18 @@ public class CsharpConfig : GeneratorConfigBase
     {
         var type = base.GetType(prop, forceAssociationPropertyType, skipChain);
 
+        var targetClass =
+            prop.Composition
+            ?? (!forceAssociationPropertyType && UseClassForAssociation(prop) ? prop.Association : null);
+        if (prop.Class?.IsPersistent != true && targetClass != null && HasSeparateEnumValues(targetClass))
+        {
+            type = Regex.Replace(
+                type,
+                $@"(?<![\w.:]){Regex.Escape(GetTypeName(targetClass))}(?![\w.])",
+                GetEnumValuesTypeName(targetClass)
+            );
+        }
+
         if (
             !nonNullable
             && (
@@ -611,6 +687,33 @@ public class CsharpConfig : GeneratorConfigBase
         }
 
         return $"{(classe.Type == ClassType.Interface ? "I" : string.Empty)}{classe.NamePascal}";
+    }
+
+    public override string GetUniqueValuedName(IProperty property, string refName, bool internalReference = false)
+    {
+        return HasSeparateEnumValues(property.Class) && !internalReference
+            ? $"{GetEnumValuesTypeName(property.Class)}.{base.GetUniqueValuedName(property, refName, internalReference: true)}"
+            : base.GetUniqueValuedName(property, refName, internalReference);
+    }
+
+    public override IEnumerable<string> GetValueImports(IProperty property, string? value = null)
+    {
+        var imports = base.GetValueImports(property, value);
+        if (
+            ReferencesValuesPath != null
+            && property.UniqueValuedProperty?.Class is { Enum: not null } classe
+            && (HasSeparateEnumValues(classe) || classe != property.Class)
+        )
+        {
+            return imports.Append(GetEnumValuesNamespace(classe));
+        }
+
+        return imports;
+    }
+
+    public virtual bool HasSeparateEnumValues(Class classe)
+    {
+        return ReferencesValuesPath != null && classe.Enum == EnumMode.Class && classe.IsPersistent;
     }
 
     public override bool IsPersistent(Class classe, string tag)
@@ -726,7 +829,9 @@ public class CsharpConfig : GeneratorConfigBase
 
     protected virtual string GetModelPathRaw(Class classe, string tag)
     {
-        return classe.Reference && ReferencesModelPath != null ? ReferencesModelPath
+        return ReferencesValuesPath != null && (classe.Enum == EnumMode.Enum || classe.Enum != null && !classe.IsPersistent)
+            ? ReferencesValuesPath
+            : classe.Reference && ReferencesModelPath != null ? ReferencesModelPath
             : classe.IsPersistent && !NoPersistence(tag) ? PersistentModelPath
             : NonPersistentModelPath;
     }

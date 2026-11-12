@@ -205,6 +205,11 @@ public class DbContextGenerator(
     {
         using var w = this.OpenCSharpWriter(fileName);
 
+        foreach (var classe in classes.Where(Config.HasSeparateEnumValues))
+        {
+            w.AddUsing(Config.GetEnumValuesNamespace(classe));
+        }
+
         foreach (var value in classes.SelectMany(c => c.Values.SelectMany(v => v.Value)))
         {
             foreach (var import in Config.GetValueImports(value.Key, value.Value))
@@ -676,7 +681,11 @@ public class DbContextGenerator(
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>().HasData(");
                 if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)
                 {
-                    w.Write($"{GetClassName(classe, tag, contextNs)}.Values");
+                    w.Write(
+                        Config.HasSeparateEnumValues(classe)
+                            ? $"{Config.GetEnumValuesTypeName(classe)}.Values.Select({GetClassName(classe, tag, contextNs)}.FromValue)"
+                            : $"{GetClassName(classe, tag, contextNs)}.Values"
+                    );
                 }
                 else
                 {

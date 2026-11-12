@@ -35,7 +35,7 @@ public partial record ClientAvecCommandes
     /// <summary>
     /// Département de résidence de la personne.
     /// </summary>
-    [ReferencedType(typeof(Departement))]
+    [ReferencedType(typeof(DepartementValues))]
     [StringLength(10)]
     public string? DepartementCode { get; set; }
 

@@ -45,7 +45,7 @@ public partial record TypeFacture
     /// <summary>
     /// Code du type de facture.
     /// </summary>
-    public Codes? Code { get; init; }
+    public TypeFacture.Codes? Code { get; init; }
 
     /// <summary>
     /// Libellé du type de facture.
@@ -58,7 +58,7 @@ public partial record TypeFacture
     /// </summary>
     /// <param name="code">Code du type de facture.</param>
     /// <returns>L'instance correspondante.</returns>
-    public static TypeFacture GetValue(Codes code)
+    public static TypeFacture GetValue(TypeFacture.Codes code)
     {
         return code switch
         {

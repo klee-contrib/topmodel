@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-namespace TopModel.Sample.Clients.Db.Models.Restaurant;
+namespace TopModel.Sample.Restaurant.Models;
 
 /// <summary>
 /// Type de terrasse.

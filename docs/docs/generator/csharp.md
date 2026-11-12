@@ -149,6 +149,33 @@ _(en preview, documentation à venir)_
 
   _Variables par tag_: **oui** (plusieurs définitions de classes pourraient être générées si un fichier a plusieurs tags)
 
+- `referencesValuesPath`
+
+  Localisation des types métier des enums, relative au répertoire de génération. Sans ce paramètre, la génération reste inchangée.
+
+  Pour les `enum: class` persistées, deux types sont générés :
+
+  - Le type métier, suffixé par `Values` (`RegionValues`, dans le fichier `RegionValues.cs`), contient les propriétés sans annotations, les enums imbriquées (`Codes`), les constantes, les instances statiques, `Values` et `GetValue` (selon les options du modèle).
+  - L'entité conserve son nom (`Region`), les annotations `[Table]`, `[Column]`, etc., et ses propriétés utilisent les enums du type métier (`RegionValues.Codes`). La méthode explicite `FromValue` permet de créer une entité à partir d'une valeur métier lorsque nécessaire (valeurs par défaut, mappers, accesseurs de références et initialisation EF), sans opérateur de conversion implicite.
+
+  Les types métier sont référencés par des `using` classiques, sans alias ni qualification `global::` dans le code.
+
+  Les `enum: true` et les `enum: class` non persistées sont directement générées dans ce chemin, sans duplication. Les associations et compositions des types métier doivent cibler d'autres `enum: class` pour ne pas dépendre du projet de persistance. Les propriétés inverses, décorateurs et annotations ne sont pas repris dans les types métier séparés.
+
+  Exemple pour deux projets distincts :
+
+  ```yaml
+  persistentModelPath: "{app}.Persistence/{module:path}"
+  referencesModelPath: "{app}.Persistence/{module:path}"
+  referencesValuesPath: "{app}.Domain/{module:path}"
+  ```
+
+  Le projet de persistance doit référencer le projet métier, jamais l'inverse. Les fichiers projet et leurs références ne sont pas créés par le générateur.
+
+  _Templating_: `{module}` (avec ses transformations habituelles)
+
+  _Variables par tag_: **non** (les valeurs sont communes aux tags de la configuration)
+
 - `apiRootPath`
 
   Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
