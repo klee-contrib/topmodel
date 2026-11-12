@@ -17,7 +17,8 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 while (parser.Current is not MappingEnd)
                 {
-                    var prop = parser.Consume<Scalar>().Value;
+                    var propScalar = parser.Consume<Scalar>();
+                    var prop = propScalar.Value;
                     _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
@@ -91,7 +92,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             rp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
+                            throw new ModelException(
+                                modelFile,
+                                $"Propriété ${prop} inconnue pour une propriété",
+                                new Reference(propScalar)
+                            );
                     }
                 }
 
@@ -263,7 +268,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             ap.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
+                            throw new ModelException(
+                                modelFile,
+                                $"Propriété ${prop.Value} inconnue pour une propriété",
+                                new Reference(prop)
+                            );
                     }
                 }
 
@@ -286,7 +295,8 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 while (parser.Current is not MappingEnd)
                 {
-                    var prop = parser.Consume<Scalar>().Value;
+                    var propScalar = parser.Consume<Scalar>();
+                    var prop = propScalar.Value;
                     _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
@@ -356,7 +366,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             cp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
+                            throw new ModelException(
+                                modelFile,
+                                $"Propriété ${prop} inconnue pour une propriété",
+                                new Reference(propScalar)
+                            );
                     }
                 }
 
@@ -371,7 +385,8 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 while (parser.Current is not MappingEnd)
                 {
-                    var prop = parser.Consume<Scalar>().Value;
+                    var propScalar = parser.Consume<Scalar>();
+                    var prop = propScalar.Value;
                     var next = parser.Consume<ParsingEvent>();
 
                     switch (prop)
@@ -408,7 +423,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             parser.Consume<SequenceEnd>();
                             break;
                         default:
-                            throw new ModelException($"Propriété '{prop}' inconnue pour un alias");
+                            throw new ModelException(
+                                modelFile,
+                                $"Propriété '{prop}' inconnue pour un alias",
+                                new Reference(propScalar)
+                            );
                     }
                 }
 
@@ -418,7 +437,8 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 while (parser.Current is not MappingEnd)
                 {
-                    var prop = parser.Consume<Scalar>().Value;
+                    var propScalar = parser.Consume<Scalar>();
+                    var prop = propScalar.Value;
                     _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
@@ -523,7 +543,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             alp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
+                            throw new ModelException(
+                                modelFile,
+                                $"Propriété ${prop} inconnue pour une propriété",
+                                new Reference(propScalar)
+                            );
                     }
                 }
 
@@ -541,7 +565,8 @@ public class PropertyLoader(FileChecker fileChecker)
                     new Reference(sc)
                 );
             default:
-                throw new ModelException($"Type de propriété inconnu.");
+                throw new ModelException(modelFile, "Type de propriété inconnu.");
         }
     }
 }
+

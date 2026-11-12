@@ -95,6 +95,14 @@ public class ModelFileLoader(
         catch (Exception e) when (e is not OperationCanceledException)
         {
             logger.LogError(e, e.Message);
+
+            if (e is ModelException { ModelError: { } modelError })
+            {
+                modelReporter?.RegisterErrors(
+                    new Dictionary<ModelFile, IEnumerable<ModelError>> { [modelError.File] = [modelError] }
+                );
+            }
+
             RemoveFromCache(config, fullPath);
             return (fullPath, null, ModelFileStatus.Errored);
         }
@@ -568,8 +576,9 @@ public class ModelFileLoader(
 
                         if (_parallelWatch)
                         {
-                            await Parallel.ForEachAsync(_fileWatchers[modelRoot].Configs, async (c, ct) =>
-                                await HandleChange(c)
+                            await Parallel.ForEachAsync(
+                                _fileWatchers[modelRoot].Configs,
+                                async (c, ct) => await HandleChange(c)
                             );
                         }
                         else
