@@ -126,13 +126,13 @@ public static class OpenApiUtils
         }
 
         return (schema.Properties ?? new Dictionary<string, IOpenApiSchema>())
-                .Concat(
-                    (schema.AllOf ?? [])
-                        .Where(a => a.Type == JsonSchemaType.Object)
-                        .SelectMany(a => a.Properties ?? new Dictionary<string, IOpenApiSchema>())
-                )
-                .DistinctBy(a => a.Key)
-                .ToDictionary(a => a.Key, a => a.Value)
+            .Concat(
+                (schema.AllOf ?? [])
+                    .Where(a => a.Type == JsonSchemaType.Object)
+                    .SelectMany(a => a.Properties ?? new Dictionary<string, IOpenApiSchema>())
+            )
+            .DistinctBy(a => a.Key)
+            .ToDictionary(a => a.Key, a => a.Value)
             ?? [];
     }
 

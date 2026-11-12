@@ -18,57 +18,57 @@ public static class TmdGenUtils
         }
 
         return domains
-                .Select(d =>
+            .Select(d =>
+            {
+                var score = 0;
+                if (d.Name != null && name != null)
                 {
-                    var score = 0;
-                    if (d.Name != null && name != null)
+                    if (d.Name.StartsWith('/'))
                     {
-                        if (d.Name.StartsWith('/'))
+                        if (Regex.IsMatch(name, d.Name.Trim('/')))
                         {
-                            if (Regex.IsMatch(name, d.Name.Trim('/')))
-                            {
-                                score += 10000;
-                            }
-                        }
-                        else
-                        {
-                            if (name.Equals(d.Name, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                score += 100000;
-                            }
+                            score += 10000;
                         }
                     }
-                    else if (d.Type != null && type != null)
+                    else
                     {
-                        if (d.Type.StartsWith('/'))
+                        if (name.Equals(d.Name, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (Regex.IsMatch(type, d.Type.Trim('/')))
-                            {
-                                score += 100;
-                            }
-                        }
-                        else if (type.Equals(d.Type, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            score += 1000;
+                            score += 100000;
                         }
                     }
+                }
+                else if (d.Type != null && type != null)
+                {
+                    if (d.Type.StartsWith('/'))
+                    {
+                        if (Regex.IsMatch(type, d.Type.Trim('/')))
+                        {
+                            score += 100;
+                        }
+                    }
+                    else if (type.Equals(d.Type, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        score += 1000;
+                    }
+                }
 
-                    if (d.Scale == scale && scale != null)
-                    {
-                        score += 10;
-                    }
+                if (d.Scale == scale && scale != null)
+                {
+                    score += 10;
+                }
 
-                    if (d.Precision == precision && scale != null)
-                    {
-                        score += 1;
-                    }
+                if (d.Precision == precision && scale != null)
+                {
+                    score += 1;
+                }
 
-                    return (score, d.Domain);
-                })
-                .Where(t => t.score >= 10)
-                .OrderByDescending(t => t.score)
-                .FirstOrDefault()
-                .Domain
+                return (score, d.Domain);
+            })
+            .Where(t => t.score >= 10)
+            .OrderByDescending(t => t.score)
+            .FirstOrDefault()
+            .Domain
             ?? name
             ?? type
             ?? string.Empty;

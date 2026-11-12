@@ -94,14 +94,11 @@ public class TopModelLock : TopModelLockFile
             )
             .Select(f => Path.Combine(_config.ConfigRoot, f));
 
-        Parallel.ForEach(
-            filesToPrune.Where(File.Exists),
-            fileToPrune =>
-            {
-                File.Delete(fileToPrune);
-                _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
-            }
-        );
+        Parallel.ForEach(filesToPrune.Where(File.Exists), fileToPrune =>
+        {
+            File.Delete(fileToPrune);
+            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
+        });
 
         GeneratedFiles = generatedFilesList;
 

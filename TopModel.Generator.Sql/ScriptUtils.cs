@@ -98,14 +98,12 @@ public static class ScriptUtils
     /// <returns>Classes triées pour l'insertion.</returns>
     public static IEnumerable<Class> SortInserts(this IEnumerable<Class> classes, SqlConfig config)
     {
-        return CoreUtils.Sort(
-            classes.OrderBy(c => c.SqlName),
-            c =>
-                config
-                    .GetProperties(c)
-                    .SelectMany(a => new[] { a.Association!, a.Association?.Extends! })
-                    .Where(a => a != null && a != c && classes.Contains(a))
-                    .Concat(c.Extends != null && c.Extends.Values.Count > 0 ? [c.Extends] : [])
+        return CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c =>
+            config
+                .GetProperties(c)
+                .SelectMany(a => new[] { a.Association!, a.Association?.Extends! })
+                .Where(a => a != null && a != c && classes.Contains(a))
+                .Concat(c.Extends != null && c.Extends.Values.Count > 0 ? [c.Extends] : [])
         );
     }
 

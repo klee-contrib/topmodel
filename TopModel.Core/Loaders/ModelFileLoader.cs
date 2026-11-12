@@ -568,9 +568,8 @@ public class ModelFileLoader(
 
                         if (_parallelWatch)
                         {
-                            await Parallel.ForEachAsync(
-                                _fileWatchers[modelRoot].Configs,
-                                async (c, ct) => await HandleChange(c)
+                            await Parallel.ForEachAsync(_fileWatchers[modelRoot].Configs, async (c, ct) =>
+                                await HandleChange(c)
                             );
                         }
                         else

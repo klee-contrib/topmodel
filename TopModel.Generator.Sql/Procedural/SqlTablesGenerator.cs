@@ -31,9 +31,8 @@ public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterP
         writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des tables.");
 
         foreach (
-            var classe in CoreUtils.Sort(
-                classes.OrderBy(c => c.SqlName),
-                c => Config.GetProperties(c).Select(p => p.Association!).Where(p => p?.Enum == EnumMode.Enum)
+            var classe in CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c =>
+                Config.GetProperties(c).Select(p => p.Association!).Where(p => p?.Enum == EnumMode.Enum)
             )
         )
         {

@@ -68,8 +68,8 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
                         Code = error.ErrorType.ToString(),
                         Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
                         Message = error.Message,
-                        Range =
-                            loc.ToRange()! ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                        Range = loc.ToRange()!
+                            ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
                         Source = "TopModel",
                     }
                 );

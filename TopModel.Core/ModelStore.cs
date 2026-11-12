@@ -327,9 +327,8 @@ public class ModelStore(
                         .ToDictionary(f => f.Name, f => f);
                 }
 
-                var levels = CoreUtils.SortWithCyclesByLevel(
-                    affectedFiles.Values,
-                    f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
+                var levels = CoreUtils.SortWithCyclesByLevel(affectedFiles.Values, f =>
+                    GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name))
                 );
 
                 foreach (var level in levels)
@@ -339,21 +338,18 @@ public class ModelStore(
                         return;
                     }
 
-                    Parallel.ForEach(
-                        level,
-                        fileGroup =>
+                    Parallel.ForEach(level, fileGroup =>
+                    {
+                        if (ct.IsCancellationRequested)
                         {
-                            if (ct.IsCancellationRequested)
-                            {
-                                return;
-                            }
-
-                            foreach (var error in ResolveReferences(fileGroup))
-                            {
-                                referenceErrors.Add(error);
-                            }
+                            return;
                         }
-                    );
+
+                        foreach (var error in ResolveReferences(fileGroup))
+                        {
+                            referenceErrors.Add(error);
+                        }
+                    });
                 }
 
                 ct.ThrowIfCancellationRequested();
@@ -405,22 +401,16 @@ public class ModelStore(
 
                 modelReporter?.RegisterChange();
 
-                Parallel.ForEach(
-                    _modelWatchers,
-                    modelWatcher =>
+                Parallel.ForEach(_modelWatchers, modelWatcher =>
+                {
+                    if (ct.IsCancellationRequested)
                     {
-                        if (ct.IsCancellationRequested)
-                        {
-                            return;
-                        }
-
-                        modelWatcher.CancellationToken = ct;
-                        modelWatcher.OnFilesChanged(
-                            levels.SelectMany(level => level.SelectMany(fg => fg)),
-                            _storeConfig
-                        );
+                        return;
                     }
-                );
+
+                    modelWatcher.CancellationToken = ct;
+                    modelWatcher.OnFilesChanged(levels.SelectMany(level => level.SelectMany(fg => fg)), _storeConfig);
+                });
 
                 ct.ThrowIfCancellationRequested();
 

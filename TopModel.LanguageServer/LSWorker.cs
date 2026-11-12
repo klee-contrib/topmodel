@@ -28,12 +28,10 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
             IList<WatcherConfigBase> sortedConfigs;
             try
             {
-                sortedConfigs = CoreUtils.Sort(
-                    unsortedConfigs,
-                    genConfig =>
-                        genConfig
-                            .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
-                            .OfType<WatcherConfigBase>()
+                sortedConfigs = CoreUtils.Sort(unsortedConfigs, genConfig =>
+                    genConfig
+                        .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
+                        .OfType<WatcherConfigBase>()
                 );
             }
             catch (ModelException)

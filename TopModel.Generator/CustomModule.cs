@@ -37,17 +37,16 @@ public class CustomModule(
             Path.Combine(new FileInfo(Path.GetFullPath(fullName)).DirectoryName!, customGenerator)
         );
 
-        var customHash =
-            ModuleUtils.GetHash(
-                Directory
-                    .EnumerateFiles(
-                        Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!),
-                        "*.cs",
-                        SearchOption.AllDirectories
-                    )
-                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
-                customDir
-            ) ?? string.Empty;
+        var customHash = ModuleUtils.GetHash(
+            Directory
+                .EnumerateFiles(
+                    Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!),
+                    "*.cs",
+                    SearchOption.AllDirectories
+                )
+                .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
+            customDir
+        ) ?? string.Empty;
 
         var customHashLocalFile = GetHashFilePath(modgenRoot, customGenerator);
         var customHashLocal = File.Exists(customHashLocalFile)

@@ -242,8 +242,8 @@ public class WatcherConfigBase
     public virtual IEnumerable<IProperty> GetParams(Endpoint? endpoint)
     {
         return endpoint?.Params.Where(c =>
-                c.ParamLocation == ParamLocation.Route || c.Tags == null || c.Tags.Intersect(Tags).Any()
-            )
+            c.ParamLocation == ParamLocation.Route || c.Tags == null || c.Tags.Intersect(Tags).Any()
+        )
             ?? [];
     }
 

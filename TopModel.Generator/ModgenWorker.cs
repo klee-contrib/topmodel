@@ -541,13 +541,11 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
                 try
                 {
-                    var sortedConfigs = CoreUtils.Sort(
-                        unsortedConfigs,
-                        genConfig =>
-                            genConfig
-                                .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
-                                ?.OfType<GeneratorConfigBase>()
-                            ?? []
+                    var sortedConfigs = CoreUtils.Sort(unsortedConfigs, genConfig =>
+                        genConfig
+                            .ReferencedTags.Values.Select(name => unsortedConfigs.Find(c => c.Name == name))
+                            ?.OfType<GeneratorConfigBase>()
+                        ?? []
                     );
                     for (var j = 0; j < sortedConfigs.Count; j++)
                     {

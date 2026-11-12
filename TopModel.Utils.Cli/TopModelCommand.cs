@@ -238,14 +238,10 @@ public class TopModelCommand<TDescription, TConfig, TFileChecker, TWorker> : IDi
         {
             if (parallelMode)
             {
-                await Parallel.ForEachAsync(
-                    _configObservers,
-                    _cts.Token,
-                    async (configObserver, cancellationToken) =>
-                    {
-                        await configObserver.Start(cancellationToken);
-                    }
-                );
+                await Parallel.ForEachAsync(_configObservers, _cts.Token, async (configObserver, cancellationToken) =>
+                {
+                    await configObserver.Start(cancellationToken);
+                });
             }
             else
             {

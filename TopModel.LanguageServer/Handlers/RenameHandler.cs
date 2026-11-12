@@ -45,11 +45,10 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
         }
 
         var (objetName, references) = rename.Value;
-        var range =
-            references
-                .Where(r => r.Reference.ReferenceName == objetName)
-                .Select(r => r.Reference.ToRange()!)
-                .FirstOrDefault(r => Contains(r, request.Position))
+        var range = references
+            .Where(r => r.Reference.ReferenceName == objetName)
+            .Select(r => r.Reference.ToRange()!)
+            .FirstOrDefault(r => Contains(r, request.Position))
             ?? references.First(r => r.Reference.ReferenceName == objetName).Reference.ToRange()!;
 
         return new RangeOrPlaceholderRange(new PlaceholderRange { Range = range, Placeholder = objetName });

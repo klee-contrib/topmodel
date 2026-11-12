@@ -145,21 +145,18 @@ public abstract class TranslationGeneratorBase<T>(
             }
         );
 
-        Parallel.ForEach(
-            modules.GroupBy(m => m.MainFilePath),
-            g =>
+        Parallel.ForEach(modules.GroupBy(m => m.MainFilePath), g =>
+        {
+            if (CancellationToken?.IsCancellationRequested ?? false)
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
-                HandleMainResourceFile(
-                    g.Key,
-                    g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)
-                );
+                return;
             }
-        );
+
+            HandleMainResourceFile(
+                g.Key,
+                g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)
+            );
+        });
     }
 
     protected virtual void HandleMainResourceFile(

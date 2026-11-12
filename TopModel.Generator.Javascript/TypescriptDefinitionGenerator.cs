@@ -33,8 +33,8 @@ public class TypescriptDefinitionGenerator(
 
         var commonImports = new List<(string Import, string Path)>();
 
-        var entityTypesPath =
-            Config.EntityTypesPath ?? (Config.EntityMode == EntityMode.FOCUS ? "@focus4/entities" : "@focus4/stores");
+        var entityTypesPath = Config.EntityTypesPath
+            ?? (Config.EntityMode == EntityMode.FOCUS ? "@focus4/entities" : "@focus4/stores");
 
         if (Config.EntityMode == EntityMode.TYPED || Config.EntityMode == EntityMode.FOCUS)
         {

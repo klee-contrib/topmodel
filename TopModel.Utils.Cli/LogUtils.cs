@@ -20,8 +20,8 @@ public static class LogUtils
     {
         public string GetMessage(params object[] args)
         {
-            var format =
-                ResourceManagerCache<T>.Instance.GetString(Enum.GetName(messageType)!) ?? Enum.GetName(messageType)!;
+            var format = ResourceManagerCache<T>.Instance.GetString(Enum.GetName(messageType)!)
+                ?? Enum.GetName(messageType)!;
             return args.Length > 0 ? string.Format(format, args) : format;
         }
     }

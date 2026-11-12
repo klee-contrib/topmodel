@@ -25,28 +25,24 @@ public abstract class ClassGeneratorBase<T>(ILogger<ClassGeneratorBase<T>> logge
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        Parallel.ForEach(
-            files,
-            file =>
+        Parallel.ForEach(files, file =>
+            Parallel.ForEach(file.Classes.Where(c => FilterClass(c) && Config.FilterClass(c)), classe =>
                 Parallel.ForEach(
-                    file.Classes.Where(c => FilterClass(c) && Config.FilterClass(c)),
-                    classe =>
-                        Parallel.ForEach(
-                            Config
-                                .Tags.Intersect(classe.Tags)
-                                .Select(tag => (tag, fileName: GetFileName(classe, tag)))
-                                .DistinctBy(t => t.fileName),
-                            l =>
-                            {
-                                if (CancellationToken?.IsCancellationRequested ?? false)
-                                {
-                                    return;
-                                }
+                    Config
+                        .Tags.Intersect(classe.Tags)
+                        .Select(tag => (tag, fileName: GetFileName(classe, tag)))
+                        .DistinctBy(t => t.fileName),
+                    l =>
+                    {
+                        if (CancellationToken?.IsCancellationRequested ?? false)
+                        {
+                            return;
+                        }
 
-                                HandleClass(l.fileName, classe, l.tag);
-                            }
-                        )
+                        HandleClass(l.fileName, classe, l.tag);
+                    }
                 )
+            )
         );
     }
 }

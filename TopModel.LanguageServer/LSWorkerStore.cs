@@ -78,14 +78,10 @@ public class LSWorkerStore(ILanguageServerFacade facade, IModelReporter modelRep
             modelFileLoader.RemoveFromCache(worker.ModelStore.ModelFileLoadConfig, filePath);
         }
 
-        await Parallel.ForEachAsync(
-            affectedWorkers,
-            ct,
-            async (worker, ct) =>
-            {
-                await worker.ModelStore.OnModelFileChange(filePath, content, ct);
-            }
-        );
+        await Parallel.ForEachAsync(affectedWorkers, ct, async (worker, ct) =>
+        {
+            await worker.ModelStore.OnModelFileChange(filePath, content, ct);
+        });
 
         modelReporter.Report();
     }

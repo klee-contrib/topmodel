@@ -103,8 +103,7 @@ public abstract class AbstractFileChecker<TConfig>
 
         while (parser.Current is YamlDotNet.Core.Events.DocumentStart)
         {
-            var yaml =
-                Deserializer.Deserialize(parser)
+            var yaml = Deserializer.Deserialize(parser)
                 ?? throw new LegitException($"Impossible de lire le fichier {fileName.ToRelative()}.");
             var json = JsonSerializer.SerializeToElement(yaml);
 

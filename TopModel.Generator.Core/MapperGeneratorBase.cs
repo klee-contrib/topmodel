@@ -112,24 +112,21 @@ public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> log
                     )
             );
 
-        Parallel.ForEach(
-            fromMappers.Keys.Concat(toMappers.Keys).Distinct(),
-            fileName =>
+        Parallel.ForEach(fromMappers.Keys.Concat(toMappers.Keys).Distinct(), fileName =>
+        {
+            if (CancellationToken?.IsCancellationRequested ?? false)
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
-                var (fileFromMappers, fromTags) = fromMappers.TryGetValue(fileName, out var value)
-                    ? value
-                    : (Array.Empty<(Class, FromMapper)>(), Array.Empty<string>());
-                var (fileToMappers, toTags) = toMappers.TryGetValue(fileName, out var value2)
-                    ? value2
-                    : (Mappers: Array.Empty<(Class, ClassMappings)>(), Tags: Array.Empty<string>());
-                HandleFile(fileName, fromTags.Concat(toTags).First(), fileFromMappers, fileToMappers);
+                return;
             }
-        );
+
+            var (fileFromMappers, fromTags) = fromMappers.TryGetValue(fileName, out var value)
+                ? value
+                : (Array.Empty<(Class, FromMapper)>(), Array.Empty<string>());
+            var (fileToMappers, toTags) = toMappers.TryGetValue(fileName, out var value2)
+                ? value2
+                : (Mappers: Array.Empty<(Class, ClassMappings)>(), Tags: Array.Empty<string>());
+            HandleFile(fileName, fromTags.Concat(toTags).First(), fileFromMappers, fileToMappers);
+        });
     }
 
     protected virtual bool IsPersistent(Class classe)

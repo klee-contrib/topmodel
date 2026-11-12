@@ -200,33 +200,31 @@ internal class PropertyResolver(
     public IEnumerable<ModelError> ResolveProperties()
     {
         var containers = modelFiles.SelectMany(mf => mf.PropertyContainers);
-        var sortedContainers = CoreUtils.Sort(
-            containers,
-            container =>
-                container
-                    .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.ReferenceName)!)
-                    .Concat(
-                        (container as Class)?.ImplementReferences.Select(c =>
-                            containers.FirstOrDefault(d => d.Name == c.ReferenceName)!
+        var sortedContainers = CoreUtils.Sort(containers, container =>
+            container
+                .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+                .Concat(
+                    (container as Class)?.ImplementReferences.Select(c =>
+                        containers.FirstOrDefault(d => d.Name == c.ReferenceName)!
+                    )
+                        ?? []
+                )
+                .Concat(
+                    container
+                        .OwnProperties.Concat(container is Class cl ? cl.FromMapperOwnProperties : [])
+                        .OfType<AliasProperty>()
+                        .Select(a =>
+                            containers.FirstOrDefault(c =>
+                                c != container
+                                && (
+                                    c.Name == a.Reference?.ClassReference?.ReferenceName
+                                    || c.Name == a.Reference?.EndpointReference?.ReferenceName
+                                    || c.Name == a.Reference?.DecoratorReference?.ReferenceName
+                                )
+                            )!
                         )
-                            ?? []
-                    )
-                    .Concat(
-                        container
-                            .OwnProperties.Concat(container is Class cl ? cl.FromMapperOwnProperties : [])
-                            .OfType<AliasProperty>()
-                            .Select(a =>
-                                containers.FirstOrDefault(c =>
-                                    c != container
-                                    && (
-                                        c.Name == a.Reference?.ClassReference?.ReferenceName
-                                        || c.Name == a.Reference?.EndpointReference?.ReferenceName
-                                        || c.Name == a.Reference?.DecoratorReference?.ReferenceName
-                                    )
-                                )!
-                            )
-                    )
-                    .Where(c => c != null)
+                )
+                .Where(c => c != null)
         );
 
         foreach (var container in sortedContainers)

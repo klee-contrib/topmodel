@@ -21,9 +21,8 @@ internal class DecoratorResolver(
     {
         var decorators = modelFiles.SelectMany(mf => mf.Decorators);
         var sortedDecorators = CoreUtils
-            .Sort(
-                decorators,
-                g => g.DecoratorReferences.Select(c => decorators.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+            .Sort(decorators, g =>
+                g.DecoratorReferences.Select(c => decorators.FirstOrDefault(d => d.Name == c.ReferenceName)!)
             )
             .Where(c => c != null);
 
