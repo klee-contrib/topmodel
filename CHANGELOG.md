@@ -17,6 +17,8 @@ Changelogs des modules :
   - Les `uses` sont mis à jour automatiquement lors du renommage ou du déplacement d'un fichier ou d'un dossier de modèle dans VSCode.
   - Correction de la prise en compte d'un fichier renommé avec uniquement un changement de casse.
   - Montée de version de `OmniSharp.Extensions.LanguageServer` (0.19.11).
+- [`99cb9e9`](https://github.com/klee-contrib/topmodel/commit/99cb9e95dd3eceec1ff6e29d5cd534c3f69b0c54) - [Core] Les erreurs de parsing d'un fichier de modèle (YAML invalide, propriété inconnue...) sont désormais remontées dans les diagnostics, au lieu d'être uniquement loggées.
+- [`e335fe0`](https://github.com/klee-contrib/topmodel/commit/e335fe012a6a83435c6864313552dbaf88f5888c) - [Core] Mappers : la détection automatique des mappings via les alias fonctionne désormais aussi lorsque les alias sont portés par l'autre classe du mapper (classe en paramètre d'un `from`, classe cible d'un `to`).
 
 ## 4.8.9
 
