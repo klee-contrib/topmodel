@@ -74,6 +74,27 @@ public static class Mappers
     }
 
     /// <summary>
+    /// Crée une nouvelle instance de 'Commande'.
+    /// </summary>
+    /// <param name="commandeRead">Instance de 'CommandeRead'.</param>
+    /// <returns>Une nouvelle instance de 'Commande'.</returns>
+    public static Commande CreateCommande(CommandeRead commandeRead)
+    {
+        ArgumentNullException.ThrowIfNull(commandeRead);
+
+        return new Commande
+        {
+            Id = commandeRead.CommandeId,
+            DateCommande = commandeRead.CommandeDateCommande,
+            DateLivraison = commandeRead.CommandeDateLivraison,
+            MontantTotal = commandeRead.CommandeMontantTotal,
+            TableId = commandeRead.CommandeTableId,
+            StatutCommande = commandeRead.CommandeStatutCommande,
+            DateCreation = commandeRead.CommandeDateCreation
+        };
+    }
+
+    /// <summary>
     /// Crée une nouvelle instance de 'CommandeRead'.
     /// </summary>
     /// <param name="commande">Instance de 'Commande'.</param>
@@ -84,14 +105,14 @@ public static class Mappers
 
         return new CommandeRead
         {
-            Id = commande.Id,
-            DateCommande = commande.DateCommande,
-            DateLivraison = commande.DateLivraison,
-            MontantTotal = commande.MontantTotal,
-            TableId = commande.TableId,
-            StatutCommande = commande.StatutCommande,
-            AvisClientId = commande.AvisClient?.Id,
-            DateCreation = commande.DateCreation,
+            CommandeId = commande.Id,
+            CommandeDateCommande = commande.DateCommande,
+            CommandeDateLivraison = commande.DateLivraison,
+            CommandeMontantTotal = commande.MontantTotal,
+            CommandeTableId = commande.TableId,
+            CommandeStatutCommande = commande.StatutCommande,
+            CommandeAvisClientId = commande.AvisClient?.Id,
+            CommandeDateCreation = commande.DateCreation,
             Client = commande.Client != null ? CreateClientRead(commande.Client) : new(),
             Lignes = commande.Lignes.Select(CreateLigneCommandeRead).ToList(),
             Reservation = commande.Reservation != null ? CreateReservationRead(commande.Reservation) : null

@@ -10,73 +10,73 @@ import {LigneCommandeReadEntity, LigneCommandeRead} from "./ligne-commande-read"
 import {ReservationReadEntity, ReservationRead} from "./reservation-read";
 
 export interface CommandeRead {
-    id: number;
-    dateCommande: string;
-    dateLivraison?: string;
-    montantTotal: number;
-    tableId?: number;
-    statutCommande: StatutCommande;
-    avisClientId?: number;
-    dateCreation: string;
+    commandeId: number;
+    commandeDateCommande: string;
+    commandeDateLivraison?: string;
+    commandeMontantTotal: number;
+    commandeTableId?: number;
+    commandeStatutCommande: StatutCommande;
+    commandeAvisClientId?: number;
+    commandeDateCreation: string;
     client: ClientRead;
     reservation?: ReservationRead;
     lignes: LigneCommandeRead[];
 }
 
 export const CommandeReadEntity = {
-    id: {
+    commandeId: {
         type: "field",
-        name: "id",
+        name: "commandeId",
         domain: DO_ID_2,
         isRequired: true,
-        label: "Id"
+        label: "CommandeId"
     },
-    dateCommande: {
+    commandeDateCommande: {
         type: "field",
-        name: "dateCommande",
+        name: "commandeDateCommande",
         domain: DO_DATE_HEURE,
         isRequired: true,
-        label: "DateCommande"
+        label: "CommandeDateCommande"
     },
-    dateLivraison: {
+    commandeDateLivraison: {
         type: "field",
-        name: "dateLivraison",
+        name: "commandeDateLivraison",
         domain: DO_DATE_HEURE,
         isRequired: false,
-        label: "DateLivraison"
+        label: "CommandeDateLivraison"
     },
-    montantTotal: {
+    commandeMontantTotal: {
         type: "field",
-        name: "montantTotal",
+        name: "commandeMontantTotal",
         domain: DO_PRIX,
         isRequired: true,
         label: "Montant total"
     },
-    tableId: {
+    commandeTableId: {
         type: "field",
-        name: "tableId",
+        name: "commandeTableId",
         domain: DO_ID,
         isRequired: false,
-        label: "TableId"
+        label: "CommandeTableId"
     },
-    statutCommande: {
+    commandeStatutCommande: {
         type: "field",
-        name: "statutCommande",
+        name: "commandeStatutCommande",
         domain: DO_CODE,
         defaultValue: "EN_ATT",
         isRequired: true,
-        label: "StatutCommande"
+        label: "CommandeStatutCommande"
     },
-    avisClientId: {
+    commandeAvisClientId: {
         type: "field",
-        name: "avisClientId",
+        name: "commandeAvisClientId",
         domain: DO_ID,
         isRequired: false,
-        label: "AvisClientId"
+        label: "CommandeAvisClientId"
     },
-    dateCreation: {
+    commandeDateCreation: {
         type: "field",
-        name: "dateCreation",
+        name: "commandeDateCreation",
         domain: DO_DATE_HEURE,
         isRequired: true,
         label: "Date de création"

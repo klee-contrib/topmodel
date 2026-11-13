@@ -171,6 +171,42 @@ public class RestaurantMappers {
 	}
 
 	/**
+	 * Crée une nouvelle instance de la classe 'Commande' en mappant les champs sources.
+	 * @param commandeRead Instance de 'CommandeRead' source.
+	 *
+	 * @return Une nouvelle instance de 'Commande' sur laquelle les champs sources ont été mappés.
+	 */
+	public static Commande createCommande(CommandeRead commandeRead) {
+		return mapCommande(commandeRead, new Commande());
+	}
+
+	/**
+	 * Mappe les champs sources sur l'instance de la classe 'Commande' passée en paramètre.
+	 * @param commandeRead Instance de 'CommandeRead' source.
+	 * @param target Instance de 'Commande' cible.
+	 *
+	 * @return L'instance de 'Commande' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 */
+	public static Commande mapCommande(CommandeRead commandeRead, Commande target) {
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		if (commandeRead == null) {
+			throw new IllegalArgumentException("commandeRead cannot be null");
+		}
+
+		target.setId(commandeRead.getCommandeId());
+		target.setDateCommande(commandeRead.getCommandeDateCommande());
+		target.setDateLivraison(commandeRead.getCommandeDateLivraison());
+		target.setMontantTotal(commandeRead.getCommandeMontantTotal());
+		target.setTableId(commandeRead.getCommandeTableId());
+		target.setStatutCommande(commandeRead.getCommandeStatutCommande());
+		target.setDateCreation(commandeRead.getCommandeDateCreation());
+		return target;
+	}
+
+	/**
 	 * Crée une nouvelle instance de la classe 'CommandeRead' en mappant les champs sources.
 	 * @param commande Instance de 'Commande' source.
 	 *
@@ -196,19 +232,19 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("commande cannot be null");
 		}
 
-		target.setId(commande.getId());
-		target.setDateCommande(commande.getDateCommande());
-		target.setDateLivraison(commande.getDateLivraison());
-		target.setMontantTotal(commande.getMontantTotal());
-		target.setTableId(commande.getTableId());
-		target.setStatutCommande(commande.getStatutCommande());
+		target.setCommandeId(commande.getId());
+		target.setCommandeDateCommande(commande.getDateCommande());
+		target.setCommandeDateLivraison(commande.getDateLivraison());
+		target.setCommandeMontantTotal(commande.getMontantTotal());
+		target.setCommandeTableId(commande.getTableId());
+		target.setCommandeStatutCommande(commande.getStatutCommande());
 		if (commande.getAvisClient() != null) {
-			target.setAvisClientId(commande.getAvisClient().getId());
+			target.setCommandeAvisClientId(commande.getAvisClient().getId());
 		} else {
-			target.setAvisClientId(null);
+			target.setCommandeAvisClientId(null);
 		}
 
-		target.setDateCreation(commande.getDateCreation());
+		target.setCommandeDateCreation(commande.getDateCreation());
 		if (commande.getClient() != null) {
 			target.setClient(target.getClient() != null ? RestaurantMappers.mapClientRead(commande.getClient(), target.getClient()) : RestaurantMappers.createClientRead(commande.getClient()));
 		} else {

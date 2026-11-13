@@ -223,26 +223,24 @@ internal class MapperResolver(
 
                     foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
+                        var sourceProperties = param.Class.ExtendedProperties;
                         foreach (
-                            var currentProperty in classe
-                                .ExtendedProperties.OfType<AliasProperty>()
-                                .Where(property =>
-                                    (!property.Readonly || classe.Type != ClassType.Interface)
-                                    && !explicitMappings.Exists(m => m.Key == property)
-                                    && !param.MappingReferences.Any(m =>
-                                        m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
-                                    )
+                            var currentProperty in classe.ExtendedProperties.Where(property =>
+                                (!property.Readonly || classe.Type != ClassType.Interface)
+                                && !explicitMappings.Exists(m => m.Key == property)
+                                && !param.MappingReferences.Any(m =>
+                                    m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
                                 )
+                            )
                         )
                         {
-                            var matchingProperties = param.Class.ExtendedProperties.Where(p =>
-                                currentProperty.Property == p
-                                || p is AliasProperty alp && currentProperty == alp.Property
-                                || p is AliasProperty alp2 && currentProperty.Property == alp2.Property
-                            );
-                            if (matchingProperties.Count() == 1)
+                            var matchingProperties = sourceProperties
+                                .Where(p => IsSameAliasedProperty(currentProperty, p))
+                                .Take(2)
+                                .ToList();
+                            if (matchingProperties.Count == 1)
                             {
-                                var mappedProperty = matchingProperties.Single();
+                                var mappedProperty = matchingProperties[0];
                                 if (CheckPossibleMapping(mappedProperty, currentProperty))
                                 {
                                     param.Mappings.TryAdd(currentProperty, mappedProperty);
@@ -340,23 +338,19 @@ internal class MapperResolver(
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
             {
                 var explicitMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
+                var targetProperties = mapper.Class.ExtendedProperties;
 
                 foreach (
-                    var currentProperty in classe
-                        .ExtendedProperties.OfType<AliasProperty>()
-                        .Where(property =>
-                            !explicitMappings.ContainsKey(property)
-                            && !mapper.MappingReferences.Any(m =>
-                                m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
-                            )
+                    var currentProperty in classe.ExtendedProperties.Where(property =>
+                        !explicitMappings.ContainsKey(property)
+                        && !mapper.MappingReferences.Any(m =>
+                            m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
                         )
+                    )
                 )
                 {
-                    var matchingProperties = mapper.Class.ExtendedProperties.Where(p =>
-                        currentProperty.Property == p
-                        || p is AliasProperty alp && currentProperty == alp.Property
-                        || p is AliasProperty alp2 && currentProperty.Property == alp2.Property
-                    );
+                    var matchingProperties = targetProperties
+                        .Where(p => IsSameAliasedProperty(currentProperty, p));
                     if (matchingProperties.Count() == 1)
                     {
                         var mappedProperty = matchingProperties.Single();
@@ -435,6 +429,16 @@ internal class MapperResolver(
                 }
             }
         }
+    }
+
+    private static bool IsSameAliasedProperty(IProperty a, IProperty b)
+    {
+        return (a is AliasProperty || b is AliasProperty) && GetRootProperty(a) == GetRootProperty(b);
+    }
+
+    private static IProperty GetRootProperty(IProperty property)
+    {
+        return property is AliasProperty alp ? alp.Property : property;
     }
 
     private bool CheckDomains(Domain? sourceDomain, Domain? targetDomain)

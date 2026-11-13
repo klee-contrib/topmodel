@@ -16,47 +16,47 @@ public partial record CommandeRead
     /// Identifiant de la commande.
     /// </summary>
     [Required]
-    public int? Id { get; set; }
+    public int? CommandeId { get; set; }
 
     /// <summary>
     /// Date et heure de la commande.
     /// </summary>
     [Required]
-    public DateTime? DateCommande { get; set; }
+    public DateTime? CommandeDateCommande { get; set; }
 
     /// <summary>
     /// Date et heure de livraison.
     /// </summary>
-    public DateTime? DateLivraison { get; set; }
+    public DateTime? CommandeDateLivraison { get; set; }
 
     /// <summary>
     /// Montant total de la commande.
     /// </summary>
     [Required]
-    public decimal? MontantTotal { get; set; }
+    public decimal? CommandeMontantTotal { get; set; }
 
     /// <summary>
     /// Table associée à la commande.
     /// </summary>
-    public int? TableId { get; set; }
+    public int? CommandeTableId { get; set; }
 
     /// <summary>
     /// Statut de la commande.
     /// </summary>
     [Required]
     [ReferencedType(typeof(StatutCommande))]
-    public StatutCommande? StatutCommande { get; set; } = Models.StatutCommande.EN_ATT;
+    public StatutCommande? CommandeStatutCommande { get; set; } = StatutCommande.EN_ATT;
 
     /// <summary>
     /// Avis laissé par le client sur la commande.
     /// </summary>
-    public int? AvisClientId { get; set; }
+    public int? CommandeAvisClientId { get; set; }
 
     /// <summary>
     /// Date de création de l'enregistrement.
     /// </summary>
     [Required]
-    public DateTime? DateCreation { get; set; }
+    public DateTime? CommandeDateCreation { get; set; }
 
     /// <summary>
     /// Client ayant passé la commande.

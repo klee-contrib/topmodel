@@ -36,7 +36,7 @@ class:
           - Client
           - Lignes
           - Reservation
-
+      prefix: true
     - alias:
         class: Commande
         property: Client

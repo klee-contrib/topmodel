@@ -9,6 +9,7 @@ uses:
   - Restaurant/References
   - meta/decorators
   - meta/annotations
+  - Restaurant/Dtos/Commande
 ---
 class:
   name: Commande
@@ -59,6 +60,10 @@ class:
 
   unique:
     - [AvisClient]
+  mappers:
+    from:
+      - params:
+          - class: CommandeRead
 ---
 class:
   name: LigneCommande

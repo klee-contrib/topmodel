@@ -34,46 +34,46 @@ public class CommandeRead implements Serializable {
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@NotNull
-	private Integer id;
+	private Integer commandeId;
 
 	/**
 	 * Date et heure de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
-	private LocalDateTime dateCommande;
+	private LocalDateTime commandeDateCommande;
 
 	/**
 	 * Date et heure de livraison.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
-	private LocalDateTime dateLivraison;
+	private LocalDateTime commandeDateLivraison;
 
 	/**
 	 * Montant total de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@NotNull
-	private BigDecimal montantTotal;
+	private BigDecimal commandeMontantTotal;
 
 	/**
 	 * Table associée à la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
-	private Integer tableId;
+	private Integer commandeTableId;
 
 	/**
 	 * Statut de la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
-	private StatutCommande statutCommande = StatutCommande.EN_ATT;
+	private StatutCommande commandeStatutCommande = StatutCommande.EN_ATT;
 
 	/**
 	 * Avis laissé par le client sur la commande.
 	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
-	private Integer avisClientId;
+	private Integer commandeAvisClientId;
 
 	/**
 	 * Date de création de l'enregistrement.
@@ -81,7 +81,7 @@ public class CommandeRead implements Serializable {
 	 */
 	@NotNull
 	@PastOrPresent
-	private LocalDateTime dateCreation;
+	private LocalDateTime commandeDateCreation;
 
 	/**
 	 * Client ayant passé la commande.
@@ -106,75 +106,75 @@ public class CommandeRead implements Serializable {
 	private List<LigneCommandeRead> lignes;
 
 	/**
-	 * Getter for id.
+	 * Getter for commandeId.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return value of {@link #commandeId commandeId}.
 	 */
-	public Integer getId() {
-		return this.id;
+	public Integer getCommandeId() {
+		return this.commandeId;
 	}
 
 	/**
-	 * Getter for dateCommande.
+	 * Getter for commandeDateCommande.
 	 *
-	 * @return value of {@link #dateCommande dateCommande}.
+	 * @return value of {@link #commandeDateCommande commandeDateCommande}.
 	 */
-	public LocalDateTime getDateCommande() {
-		return this.dateCommande;
+	public LocalDateTime getCommandeDateCommande() {
+		return this.commandeDateCommande;
 	}
 
 	/**
-	 * Getter for dateLivraison.
+	 * Getter for commandeDateLivraison.
 	 *
-	 * @return value of {@link #dateLivraison dateLivraison}.
+	 * @return value of {@link #commandeDateLivraison commandeDateLivraison}.
 	 */
-	public LocalDateTime getDateLivraison() {
-		return this.dateLivraison;
+	public LocalDateTime getCommandeDateLivraison() {
+		return this.commandeDateLivraison;
 	}
 
 	/**
-	 * Getter for montantTotal.
+	 * Getter for commandeMontantTotal.
 	 *
-	 * @return value of {@link #montantTotal montantTotal}.
+	 * @return value of {@link #commandeMontantTotal commandeMontantTotal}.
 	 */
-	public BigDecimal getMontantTotal() {
-		return this.montantTotal;
+	public BigDecimal getCommandeMontantTotal() {
+		return this.commandeMontantTotal;
 	}
 
 	/**
-	 * Getter for tableId.
+	 * Getter for commandeTableId.
 	 *
-	 * @return value of {@link #tableId tableId}.
+	 * @return value of {@link #commandeTableId commandeTableId}.
 	 */
-	public Integer getTableId() {
-		return this.tableId;
+	public Integer getCommandeTableId() {
+		return this.commandeTableId;
 	}
 
 	/**
-	 * Getter for statutCommande.
+	 * Getter for commandeStatutCommande.
 	 *
-	 * @return value of {@link #statutCommande statutCommande}.
+	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
-	public StatutCommande getStatutCommande() {
-		return this.statutCommande;
+	public StatutCommande getCommandeStatutCommande() {
+		return this.commandeStatutCommande;
 	}
 
 	/**
-	 * Getter for avisClientId.
+	 * Getter for commandeAvisClientId.
 	 *
-	 * @return value of {@link #avisClientId avisClientId}.
+	 * @return value of {@link #commandeAvisClientId commandeAvisClientId}.
 	 */
-	public Integer getAvisClientId() {
-		return this.avisClientId;
+	public Integer getCommandeAvisClientId() {
+		return this.commandeAvisClientId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Getter for commandeDateCreation.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return value of {@link #commandeDateCreation commandeDateCreation}.
 	 */
-	public LocalDateTime getDateCreation() {
-		return this.dateCreation;
+	public LocalDateTime getCommandeDateCreation() {
+		return this.commandeDateCreation;
 	}
 
 	/**
@@ -205,67 +205,67 @@ public class CommandeRead implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Set the value of {@link #commandeId commandeId}.
+	 * @param commandeId value to set.
 	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setCommandeId(Integer commandeId) {
+		this.commandeId = commandeId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCommande dateCommande}.
-	 * @param dateCommande value to set.
+	 * Set the value of {@link #commandeDateCommande commandeDateCommande}.
+	 * @param commandeDateCommande value to set.
 	 */
-	public void setDateCommande(LocalDateTime dateCommande) {
-		this.dateCommande = dateCommande;
+	public void setCommandeDateCommande(LocalDateTime commandeDateCommande) {
+		this.commandeDateCommande = commandeDateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #dateLivraison dateLivraison}.
-	 * @param dateLivraison value to set.
+	 * Set the value of {@link #commandeDateLivraison commandeDateLivraison}.
+	 * @param commandeDateLivraison value to set.
 	 */
-	public void setDateLivraison(LocalDateTime dateLivraison) {
-		this.dateLivraison = dateLivraison;
+	public void setCommandeDateLivraison(LocalDateTime commandeDateLivraison) {
+		this.commandeDateLivraison = commandeDateLivraison;
 	}
 
 	/**
-	 * Set the value of {@link #montantTotal montantTotal}.
-	 * @param montantTotal value to set.
+	 * Set the value of {@link #commandeMontantTotal commandeMontantTotal}.
+	 * @param commandeMontantTotal value to set.
 	 */
-	public void setMontantTotal(BigDecimal montantTotal) {
-		this.montantTotal = montantTotal;
+	public void setCommandeMontantTotal(BigDecimal commandeMontantTotal) {
+		this.commandeMontantTotal = commandeMontantTotal;
 	}
 
 	/**
-	 * Set the value of {@link #tableId tableId}.
-	 * @param tableId value to set.
+	 * Set the value of {@link #commandeTableId commandeTableId}.
+	 * @param commandeTableId value to set.
 	 */
-	public void setTableId(Integer tableId) {
-		this.tableId = tableId;
+	public void setCommandeTableId(Integer commandeTableId) {
+		this.commandeTableId = commandeTableId;
 	}
 
 	/**
-	 * Set the value of {@link #statutCommande statutCommande}.
-	 * @param statutCommande value to set.
+	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande value to set.
 	 */
-	public void setStatutCommande(StatutCommande statutCommande) {
-		this.statutCommande = statutCommande;
+	public void setCommandeStatutCommande(StatutCommande commandeStatutCommande) {
+		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**
-	 * Set the value of {@link #avisClientId avisClientId}.
-	 * @param avisClientId value to set.
+	 * Set the value of {@link #commandeAvisClientId commandeAvisClientId}.
+	 * @param commandeAvisClientId value to set.
 	 */
-	public void setAvisClientId(Integer avisClientId) {
-		this.avisClientId = avisClientId;
+	public void setCommandeAvisClientId(Integer commandeAvisClientId) {
+		this.commandeAvisClientId = commandeAvisClientId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Set the value of {@link #commandeDateCreation commandeDateCreation}.
+	 * @param commandeDateCreation value to set.
 	 */
-	public void setDateCreation(LocalDateTime dateCreation) {
-		this.dateCreation = dateCreation;
+	public void setCommandeDateCreation(LocalDateTime commandeDateCreation) {
+		this.commandeDateCreation = commandeDateCreation;
 	}
 
 	/**
