@@ -7,7 +7,7 @@ namespace TopModel.Utils.Cli;
 #pragma warning disable MA0048
 public interface IConfigObserver : IDisposable
 {
-    Task Start(CancellationToken cancellationToken);
+    Task Start(CancellationToken ct);
 }
 
 public class ConfigObserver<TConfig, TFileChecker, TWorker>(
@@ -49,17 +49,17 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
     }
 
     /// <inheritdoc cref="IConfigObserver.Start" />
-    public async Task Start(CancellationToken cancellationToken)
+    public async Task Start(CancellationToken ct)
     {
         if (watchMode)
         {
-            StartWatchConfig(cancellationToken);
+            StartWatchConfig(ct);
         }
 
-        await Run(cancellationToken);
+        await Run(ct);
     }
 
-    private async Task Restart(CancellationToken cancellationToken)
+    private async Task Restart(CancellationToken ct)
     {
         if (ctsWorker != null)
         {
@@ -68,7 +68,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
 
         if (Worker != null)
         {
-            await Worker.WaitForFinished(cancellationToken);
+            await Worker.WaitForFinished(ct);
             onDispose?.Invoke(Worker);
             Worker.Dispose();
         }
@@ -79,14 +79,14 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
             AnsiConsole.LogConfig(configInfo.FullName, configIndex, changed: true);
         }
 
-        await Run(cancellationToken);
+        await Run(ct);
         onRestart?.Invoke();
     }
 
-    private async Task Run(CancellationToken cancellationToken)
+    private async Task Run(CancellationToken ct)
     {
         ctsWorker?.Dispose();
-        ctsWorker = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        ctsWorker = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
         try
         {
@@ -122,14 +122,14 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
         }
         catch (OperationCanceledException)
         {
-            if (cancellationToken.IsCancellationRequested)
+            if (ct.IsCancellationRequested)
             {
                 throw;
             }
         }
     }
 
-    private void StartWatchConfig(CancellationToken cancellationToken)
+    private void StartWatchConfig(CancellationToken ct)
     {
         var fsWatcher = new FileSystemWatcher(configInfo.DirectoryName!, configInfo.Name);
         fsWatcher.Changed += (sender, args) =>
@@ -149,7 +149,7 @@ public class ConfigObserver<TConfig, TFileChecker, TWorker>(
                                 return;
                             }
 
-                            await Restart(cancellationToken);
+                            await Restart(ct);
                         }
                     )
             );

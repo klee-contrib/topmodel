@@ -99,14 +99,14 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
         }
     }
 
-    public override async Task Run(CancellationToken cancellationToken)
+    public override async Task Run(CancellationToken ct)
     {
         _logger = ServiceProvider.GetRequiredService<ILogger<TmdGenerator>>();
         using var scope = _logger.BeginScope(StoreConfig);
 
         if (SchemaMode)
         {
-            await WriteSchema(cancellationToken);
+            await WriteSchema(ct);
         }
 
         var generators = ServiceProvider.GetRequiredService<IEnumerable<TmdGenerator>>();
@@ -122,38 +122,38 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
 
         foreach (var generator in generators)
         {
-            generatedFiles.AddRange(await generator.Generate(StoreConfig, cancellationToken));
+            generatedFiles.AddRange(await generator.Generate(StoreConfig, ct));
         }
 
-        if (!cancellationToken.IsCancellationRequested)
+        if (!ct.IsCancellationRequested)
         {
             await tmdLock.UpdateFiles(generatedFiles);
             _logger.LogInformation(ModelGeneratorMessage.UpdateCompleted);
         }
     }
 
-    public override Task WaitForFinished(CancellationToken cancellationToken)
+    public override Task WaitForFinished(CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
-    private async Task WriteSchema(CancellationToken cancellationToken)
+    private async Task WriteSchema(CancellationToken ct)
     {
         _logger.LogInformation(CliMessage.GeneratingConfigSchema);
 
         var schema = await File.ReadAllTextAsync(
             Assembly.GetExecutingAssembly().GetFilePath("schema.tmdgen.config.json"),
-            cancellationToken
+            ct
         );
-        await File.WriteAllTextAsync(ConfigFullName + ".schema.json", schema, cancellationToken);
+        await File.WriteAllTextAsync(ConfigFullName + ".schema.json", schema, ct);
 
-        var configFile = await File.ReadAllTextAsync(ConfigFullName, cancellationToken);
+        var configFile = await File.ReadAllTextAsync(ConfigFullName, ct);
         if (!configFile.StartsWith("# yaml-language-server"))
         {
             var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
             configFile =
                 $"# yaml-language-server: $schema={relativePath}.schema.json{Environment.NewLine}" + configFile;
-            await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
+            await File.WriteAllTextAsync(ConfigFullName, configFile, ct);
         }
 
         _logger.LogInformation(CliMessage.ConfigSchemaGenerated);

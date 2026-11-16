@@ -19,7 +19,7 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
         Services.AddLogging().AddModelStore(Config);
     }
 
-    public override async Task Run(CancellationToken cancellationToken)
+    public override async Task Run(CancellationToken ct)
     {
         foreach (var (configName, genConfigMaps) in Config.Generators)
         {
@@ -70,11 +70,11 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
         }
 
         ModelStore.KeepFileErrorsInReferenceResolution = true;
-        await ModelStore.LoadFromConfig(WatchMode, ParallelMode, ct: cancellationToken);
+        await ModelStore.LoadFromConfig(WatchMode, ParallelMode, ct: ct);
     }
 
-    public override async Task WaitForFinished(CancellationToken cancellationToken)
+    public override async Task WaitForFinished(CancellationToken ct)
     {
-        await ModelStore.WaitForUpdates(cancellationToken);
+        await ModelStore.WaitForUpdates(ct);
     }
 }

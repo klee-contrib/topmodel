@@ -66,30 +66,30 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             .AddModelStore(Config);
     }
 
-    public override async Task Run(CancellationToken cancellationToken)
+    public override async Task Run(CancellationToken ct)
     {
-        await InitModules(cancellationToken);
+        await InitModules(ct);
 
-        if (HasError || cancellationToken.IsCancellationRequested)
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
-        PrepareConfiguration(cancellationToken);
+        PrepareConfiguration(ct);
 
-        if (HasError || cancellationToken.IsCancellationRequested)
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
-        await RunGeneration(cancellationToken);
+        await RunGeneration(ct);
     }
 
-    public override async Task WaitForFinished(CancellationToken cancellationToken)
+    public override async Task WaitForFinished(CancellationToken ct)
     {
         if (modelStore != null)
         {
-            await modelStore.WaitForUpdates(cancellationToken);
+            await modelStore.WaitForUpdates(ct);
         }
     }
 
@@ -97,10 +97,10 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         string moduleFolder,
         IEnumerable<PackageDependency> dependencies,
         string framework,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        if (cancellationToken.IsCancellationRequested)
+        if (ct.IsCancellationRequested)
         {
             return [];
         }
@@ -112,9 +112,9 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             using var packageReaderDep = await NugetUtils.DownloadPackageAsync(
                 otherDep.Id,
                 otherDep.VersionRange.MinVersion!.ToString(),
-                cancellationToken
+                ct
             );
-            var file = (await packageReaderDep.GetFilesAsync(cancellationToken)).SingleOrDefault(f =>
+            var file = (await packageReaderDep.GetFilesAsync(ct)).SingleOrDefault(f =>
                 f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll")
             );
             if (file != null)
@@ -127,7 +127,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
                 installedDependencies.Add(otherDep);
 
-                var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(cancellationToken);
+                var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(ct);
                 if (nuspecReaderDep.GetDependencyGroups().Any())
                 {
                     newDeps.AddRange(
@@ -143,7 +143,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         if (newDeps.Count > 0)
         {
             installedDependencies.AddRange(
-                await DownloadMissingDependenciesCascade(moduleFolder, newDeps, framework, cancellationToken)
+                await DownloadMissingDependenciesCascade(moduleFolder, newDeps, framework, ct)
             );
         }
 
@@ -181,10 +181,10 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             }
         }
 
-        return md5.Hash != null ? BitConverter.ToString(md5.Hash).Replace("-", string.Empty).ToLower() : null;
+        return md5.Hash != null ? Convert.ToHexStringLower(md5.Hash) : null;
     }
 
-    private async Task AddRemoteModule(string configKey, CancellationToken cancellationToken)
+    private async Task AddRemoteModule(string configKey, CancellationToken ct)
     {
         if (_generators.ToList().Exists(g => ModuleUtils.GetIGenRegInterfaceAndName(g).Name == configKey))
         {
@@ -198,7 +198,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         {
             moduleVersion = await NugetUtils.GetLatestVersionAsync(
                 fullModuleName,
-                cancellationToken,
+                ct,
                 forceCheck: true,
                 VersionUtils.Prerelease
             );
@@ -211,7 +211,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             }
             _topModelLock.Modules.Add(configKey, moduleVersion);
         }
-        else if (!await NugetUtils.DoesPackageExistsAsync(fullModuleName, moduleVersion.Version, cancellationToken))
+        else if (!await NugetUtils.DoesPackageExistsAsync(fullModuleName, moduleVersion.Version, ct))
         {
             _logger.LogError(GeneratorMessage.PackageNotFound, fullModuleName, moduleVersion.Version);
             HasError = true;
@@ -220,24 +220,24 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         _deps.Add(new(configKey, moduleVersion));
     }
 
-    private async Task AddRemoteModules(CancellationToken cancellationToken)
+    private async Task AddRemoteModules(CancellationToken ct)
     {
         foreach (var configKey in Config.Generators.Keys)
         {
-            await AddRemoteModule(configKey, cancellationToken);
+            await AddRemoteModule(configKey, ct);
         }
     }
 
-    private async Task BuildCustomModulesAsync(CancellationToken cancellationToken)
+    private async Task BuildCustomModules(CancellationToken ct)
     {
-        await Parallel.ForEachAsync(_customModules, cancellationToken, async (customModule, ct) =>
+        foreach (var customModule in _customModules)
         {
             await customModule.BuildAsync(ct);
             if (customModule.HasError)
             {
                 HasError = true;
             }
-        });
+        }
     }
 
     private void CheckDependenciesToUpdate()
@@ -260,10 +260,10 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         string moduleFolder,
         string depVersion,
         ModgenDependency dep,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var minVersionText = await File.ReadAllTextAsync(Path.Combine(moduleFolder, "min-version"), cancellationToken);
+        var minVersionText = await File.ReadAllTextAsync(Path.Combine(moduleFolder, "min-version"), ct);
         if (NuGetVersion.TryParse(minVersionText, out var minNuGetVersion))
         {
             if (minNuGetVersion.Major != VersionUtils.MajorVersion)
@@ -289,11 +289,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
     }
 
-    private async Task DownloadDependencies(
-        ModgenDependency dep,
-        string moduleFolder,
-        CancellationToken cancellationToken
-    )
+    private async Task DownloadDependencies(ModgenDependency dep, string moduleFolder, CancellationToken ct)
     {
         var depVersion = dep.Version.Version;
         if (Directory.Exists(moduleFolder))
@@ -306,8 +302,8 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
         Directory.CreateDirectory(moduleFolder);
 
-        using var packageReader = await NugetUtils.DownloadPackageAsync(dep.FullName, depVersion, cancellationToken);
-        var nuspecReader = await packageReader.GetNuspecReaderAsync(cancellationToken);
+        using var packageReader = await NugetUtils.DownloadPackageAsync(dep.FullName, depVersion, ct);
+        var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
 
         var dependencyGroup = nuspecReader
             .GetDependencyGroups()
@@ -320,11 +316,11 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         await File.WriteAllTextAsync(
             Path.Combine(moduleFolder, "min-version"),
             coreDep.VersionRange.MinVersion!.ToString(),
-            cancellationToken
+            ct
         );
 
         foreach (
-            var file in (await packageReader.GetFilesAsync(cancellationToken)).Where(f =>
+            var file in (await packageReader.GetFilesAsync(ct)).Where(f =>
                 f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")
             )
         )
@@ -333,7 +329,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
 
         var missingDependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core").ToList();
-        await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, framework, cancellationToken);
+        await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, framework, ct);
 
         _logger.LogInformation(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion);
         dep.Version.Hash = GetFolderHash(moduleFolder);
@@ -384,10 +380,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
         {
             var generatorsPath = Path.GetFullPath(
-                Path.Combine(
-                    new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!,
-                    Path.Combine("..", "..", "..", "..")
-                )
+                Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "..", "..", "..", "..")
             );
             var modules = Directory
                 .GetFileSystemEntries(generatorsPath)
@@ -415,43 +408,43 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         _customModules = customModules;
     }
 
-    private async Task InitModules(CancellationToken cancellationToken)
+    private async Task InitModules(CancellationToken ct)
     {
         AnsiConsole.WriteLine();
 
         HandleUpdate();
-        if (HasError || cancellationToken.IsCancellationRequested)
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
-        await BuildCustomModulesAsync(cancellationToken);
-        if (HasError || cancellationToken.IsCancellationRequested)
+        await BuildCustomModules(ct);
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
         LoadCustomModulesAssemblies();
-        if (HasError || cancellationToken.IsCancellationRequested)
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
-        await AddRemoteModules(cancellationToken);
-        if (HasError || cancellationToken.IsCancellationRequested)
+        await AddRemoteModules(ct);
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
-        await LoadModules(cancellationToken);
-        if (HasError || cancellationToken.IsCancellationRequested)
+        await LoadModules(ct);
+        if (HasError || ct.IsCancellationRequested)
         {
             return;
         }
 
         if (SchemaMode || hasInstalled)
         {
-            await WriteSchema(cancellationToken);
+            await WriteSchema(ct);
         }
 
         await RemoveUnusedCustomModules();
@@ -469,7 +462,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
     }
 
-    private async Task LoadModule(ModgenDependency dep, CancellationToken cancellationToken)
+    private async Task LoadModule(ModgenDependency dep, CancellationToken ct)
     {
         var depVersion = dep.Version.Version;
         var moduleFolder = Path.Combine(_modgenRoot, $"{dep.ConfigKey}.{depVersion}");
@@ -478,10 +471,10 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
         if (depHash == null || depHash != dep.Version.Hash)
         {
-            await DownloadDependencies(dep, moduleFolder, cancellationToken);
+            await DownloadDependencies(dep, moduleFolder, ct);
             hasInstalled = true;
         }
-        await CheckMinVersionAsync(moduleFolder, depVersion, dep, cancellationToken);
+        await CheckMinVersionAsync(moduleFolder, depVersion, dep, ct);
         if (HasError)
         {
             return;
@@ -496,11 +489,11 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         );
         _resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
         dep.LatestVersion = (
-            await NugetUtils.GetLatestVersionAsync(dep.FullName, cancellationToken, prerelease: VersionUtils.Prerelease)
+            await NugetUtils.GetLatestVersionAsync(dep.FullName, ct, prerelease: VersionUtils.Prerelease)
         )?.Version;
     }
 
-    private async Task LoadModules(CancellationToken cancellationToken)
+    private async Task LoadModules(CancellationToken ct)
     {
         if (_deps.Count > 0)
         {
@@ -509,7 +502,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
         foreach (var dep in _deps)
         {
-            await LoadModule(dep, cancellationToken);
+            await LoadModule(dep, ct);
         }
 
         await _topModelLock.Write();
@@ -524,7 +517,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         CheckDependenciesToUpdate();
     }
 
-    private void PrepareConfiguration(CancellationToken cancellationToken)
+    private void PrepareConfiguration(CancellationToken ct)
     {
         foreach (var generator in _generators)
         {
@@ -548,7 +541,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                     );
                     for (var j = 0; j < sortedConfigs.Count; j++)
                     {
-                        if (cancellationToken.IsCancellationRequested)
+                        if (ct.IsCancellationRequested)
                         {
                             return;
                         }
@@ -633,7 +626,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
     }
 
-    private async Task RunGeneration(CancellationToken cancellationToken)
+    private async Task RunGeneration(CancellationToken ct)
     {
         modelStore = ServiceProvider.GetRequiredService<ModelStore>();
         modelStore.DisableLockfile = ExcludedTags.Any();
@@ -642,19 +635,14 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             HasError = he;
         };
 
-        await modelStore.LoadFromConfig(WatchMode, ParallelMode, _topModelLock, StoreConfig, cancellationToken);
+        await modelStore.LoadFromConfig(WatchMode, ParallelMode, _topModelLock, StoreConfig, ct);
     }
 
-    private async Task WriteSchema(CancellationToken cancellationToken)
+    private async Task WriteSchema(CancellationToken ct)
     {
         _logger.LogInformation(CliMessage.GeneratingConfigSchema);
         var schema = JsonNode
-            .Parse(
-                await File.ReadAllTextAsync(
-                    Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"),
-                    cancellationToken
-                )
-            )!
+            .Parse(await File.ReadAllTextAsync(Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"), ct))!
             .AsObject();
 
         schema.Remove("additionalProperties");
@@ -668,10 +656,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             configSchema.Add(
                 "items",
                 JsonNode.Parse(
-                    await File.ReadAllTextAsync(
-                        configType.Assembly.GetFilePath($"{configName}.config.json"),
-                        cancellationToken
-                    )
+                    await File.ReadAllTextAsync(configType.Assembly.GetFilePath($"{configName}.config.json"), ct)
                 )
             );
             schema["properties"]!.AsObject().Add(configName, configSchema);
@@ -682,15 +667,15 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             schema.Root.ToJsonString(
                 new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }
             ),
-            cancellationToken
+            ct
         );
-        var configFile = await File.ReadAllTextAsync(ConfigFullName, cancellationToken);
+        var configFile = await File.ReadAllTextAsync(ConfigFullName, ct);
         if (!configFile.StartsWith("# yaml-language-server"))
         {
             var relativePath = ConfigFullName.ToRelative(Config.ConfigRoot);
             configFile =
                 $"# yaml-language-server: $schema={relativePath}.schema.json{Environment.NewLine}" + configFile;
-            await File.WriteAllTextAsync(ConfigFullName, configFile, cancellationToken);
+            await File.WriteAllTextAsync(ConfigFullName, configFile, ct);
         }
 
         _logger.LogInformation(CliMessage.ConfigSchemaGenerated);

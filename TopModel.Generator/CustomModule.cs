@@ -17,6 +17,8 @@ public class CustomModule(
     bool noBuild = false
 )
 {
+    private static readonly Lock _lock = new();
+
     public bool HasError { get; private set; } = false;
 
     public static string GetHashFilePath(string modgenRoot, string customGenerator)
@@ -24,7 +26,7 @@ public class CustomModule(
         return Path.Combine(modgenRoot, customGenerator.Replace('/', '-').Replace('\\', '-'));
     }
 
-    public async Task BuildAsync(CancellationToken cancellationToken)
+    public async Task BuildAsync(CancellationToken ct)
     {
         if (noBuild)
         {
@@ -50,7 +52,7 @@ public class CustomModule(
 
         var customHashLocalFile = GetHashFilePath(modgenRoot, customGenerator);
         var customHashLocal = File.Exists(customHashLocalFile)
-            ? await File.ReadAllTextAsync(customHashLocalFile, cancellationToken)
+            ? await File.ReadAllTextAsync(customHashLocalFile, ct)
             : string.Empty;
 
         if (
@@ -62,7 +64,7 @@ public class CustomModule(
             var expectedDll = $"{customGenerator.Replace('\\', '/').Split('/')[^1].ToLower()}.dll";
             if (!AssembliesUtils.LoadedAssemblies.Contains(expectedDll, StringComparer.CurrentCultureIgnoreCase))
             {
-                await BuildCSharpProject(customDir, cancellationToken);
+                await BuildCSharpProject(customDir, ct);
                 if (HasError)
                 {
                     return;
@@ -73,7 +75,7 @@ public class CustomModule(
 
             topModelLock.Custom ??= new Dictionary<string, string>();
             topModelLock.Custom[customGenerator] = customHash;
-            await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[customGenerator], cancellationToken);
+            await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[customGenerator], ct);
         }
     }
 
@@ -154,36 +156,39 @@ public class CustomModule(
 
     public void LoadAssemblies(string fullName, IList<Type> generators)
     {
-        Check(topModelLock, logger);
-        if (HasError)
+        lock (_lock)
         {
+            Check(topModelLock, logger);
+            if (HasError)
+            {
+                return;
+            }
+
+            var files = new DirectoryInfo(
+                Path.Combine(Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!), "bin")
+            ).GetFiles($"*.dll", SearchOption.AllDirectories);
+            var assemblies = AssembliesUtils.LoadAssemblies(files);
+            if (HasError)
+            {
+                return;
+            }
+
+            var assemblyModule = assemblies.Where(a =>
+                a.ManifestModule.Name.Equals(
+                    $"{customGenerator
+                    .Replace('\\', '/')
+                    .Split('/')[^1].ToLower()}.dll",
+                    StringComparison.CurrentCultureIgnoreCase
+                )
+            );
+            var moduleExportedTypes = assemblyModule.SelectMany(a => a.GetExportedTypes());
+            var generatorTypes = moduleExportedTypes.Where(t => ModuleUtils.GetIGenRegInterface(t) != null);
+            generators.AddRange(generatorTypes);
             return;
         }
-
-        var files = new DirectoryInfo(
-            Path.Combine(Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!), "bin")
-        ).GetFiles($"*.dll", SearchOption.AllDirectories);
-        var assemblies = AssembliesUtils.LoadAssemblies(files);
-        if (HasError)
-        {
-            return;
-        }
-
-        var assemblyModule = assemblies.Where(a =>
-            a.ManifestModule.Name.Equals(
-                $"{customGenerator
-                .Replace('\\', '/')
-                .Split('/')[^1].ToLower()}.dll",
-                StringComparison.CurrentCultureIgnoreCase
-            )
-        );
-        var moduleExportedTypes = assemblyModule.SelectMany(a => a.GetExportedTypes());
-        var generatorTypes = moduleExportedTypes.Where(t => ModuleUtils.GetIGenRegInterface(t) != null);
-        generators.AddRange(generatorTypes);
-        return;
     }
 
-    private async Task BuildCSharpProject(string customDir, CancellationToken cancellationToken)
+    private async Task BuildCSharpProject(string customDir, CancellationToken ct)
     {
         logger.LogInformation(GeneratorMessage.BuildInProgress, customGenerator);
         var build = Process.Start(
@@ -202,9 +207,9 @@ public class CustomModule(
         string stdout;
         try
         {
-            await using var registration = cancellationToken.Register(() => build?.Kill());
-            var stdoutTask = build!.StandardOutput.ReadToEndAsync(cancellationToken);
-            await build.WaitForExitAsync(cancellationToken);
+            await using var registration = ct.Register(() => build?.Kill());
+            var stdoutTask = build!.StandardOutput.ReadToEndAsync(ct);
+            await build.WaitForExitAsync(ct);
             stdout = await stdoutTask;
         }
         catch (OperationCanceledException)
