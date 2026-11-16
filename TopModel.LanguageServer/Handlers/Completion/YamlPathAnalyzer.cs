@@ -267,7 +267,12 @@ public static class YamlPathAnalyzer
     /// <summary>
     /// Met à jour la pile de segments avec une ligne. Pour la ligne du curseur, retourne le chemin complet.
     /// </summary>
-    private static string? ProcessLine(List<(int Indent, string? Key, int Index)> stack, string rawLine, int cursor, bool isCurrent)
+    private static string? ProcessLine(
+        List<(int Indent, string? Key, int Index)> stack,
+        string rawLine,
+        int cursor,
+        bool isCurrent
+    )
     {
         var line = rawLine;
         var commentStart = FindCommentStart(rawLine);

@@ -192,13 +192,12 @@ public class CompletionProvider(
     public CompletionList CompleteDomainParameter(string path)
     {
         var domainPath = path[..^"parameters.".Length];
-        var domainName =
-            GetKeyPaths().FirstOrDefault(k => k.Path == domainPath + "name") is { Path: not null } nameKey
-                ? text[nameKey.Line][(nameKey.Colon + 1)..].Split('#')[0].Trim()
-                : Regex
-                    .Match(currentLine, @"name:\s*(?<name>[^\s,{}]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100))
-                    .Groups["name"]
-                    .Value;
+        var domainName = GetKeyPaths().FirstOrDefault(k => k.Path == domainPath + "name") is { Path: not null } nameKey
+            ? text[nameKey.Line][(nameKey.Colon + 1)..].Split('#')[0].Trim()
+            : Regex
+                .Match(currentLine, @"name:\s*(?<name>[^\s,{}]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100))
+                .Groups["name"]
+                .Value;
 
         var domain = files
             .Select(f => f.Store.Domains.TryGetValue(domainName, out var d) ? d : null)
@@ -436,11 +435,7 @@ public class CompletionProvider(
                 < Math.Max(rootLine[..position].LastIndexOf(','), rootLine[..position].LastIndexOf('{'));
             if (isKey)
             {
-                return (
-                    Key: rootLine.TrimStart().Split(':')[0],
-                    Line: line,
-                    End: rootLine.Split(':')[0].Length - 1
-                );
+                return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine.Split(':')[0].Length - 1);
             }
             else
             {
@@ -616,7 +611,9 @@ public class CompletionProvider(
                     Kind = CompletionItemKind.Property,
                     Label = f.Name,
                     LabelDetails = new() { Description = $"{f.Comment}" },
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit { NewText = f.Name, Range = CompleteRange }),
+                    TextEdit = new TextEditOrInsertReplaceEdit(
+                        new TextEdit { NewText = f.Name, Range = CompleteRange }
+                    ),
                 })
         );
     }
@@ -705,12 +702,7 @@ public class CompletionProvider(
             start = currentLine.IndexOf(SearchText);
         }
 
-        return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-            position.Line,
-            start,
-            position.Line,
-            end
-        );
+        return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(position.Line, start, position.Line, end);
     }
 
     /// <summary>

@@ -349,8 +349,7 @@ internal class MapperResolver(
                     )
                 )
                 {
-                    var matchingProperties = targetProperties
-                        .Where(p => IsSameAliasedProperty(currentProperty, p));
+                    var matchingProperties = targetProperties.Where(p => IsSameAliasedProperty(currentProperty, p));
                     if (matchingProperties.Count() == 1)
                     {
                         var mappedProperty = matchingProperties.Single();

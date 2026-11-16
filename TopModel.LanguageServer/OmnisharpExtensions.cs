@@ -43,7 +43,8 @@ public static class OmnisharpExtensions
             return path;
         }
 
-        var segments = path[rootPath.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        var segments = path[rootPath.Length..]
+            .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
         var current = rootPath;
         for (var i = 0; i < segments.Length; i++)
         {
@@ -258,7 +259,10 @@ public static class OmnisharpExtensions
         {
             Changes = edits
                 .Select(e =>
-                    (Uri: facade.GetFilePath(e.File), Edit: new TextEdit { Range = e.Reference.ToRange()!, NewText = e.NewText })
+                    (
+                        Uri: facade.GetFilePath(e.File),
+                        Edit: new TextEdit { Range = e.Reference.ToRange()!, NewText = e.NewText }
+                    )
                 )
                 .Distinct()
                 .GroupBy(e => e.Uri, e => e.Edit)

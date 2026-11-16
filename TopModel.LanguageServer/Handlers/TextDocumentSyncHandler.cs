@@ -8,11 +8,8 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace TopModel.LanguageServer.Handlers;
 
-public class TextDocumentSyncHandler(
-    LSWorkerStore workerStore,
-    ModelFileCache fileCache,
-    ILanguageServerFacade facade
-) : TextDocumentSyncHandlerBase
+public class TextDocumentSyncHandler(LSWorkerStore workerStore, ModelFileCache fileCache, ILanguageServerFacade facade)
+    : TextDocumentSyncHandlerBase
 {
     /// <inheritdoc cref="ITextDocumentIdentifier.GetTextDocumentAttributes" />
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
