@@ -1,4 +1,5 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using System.Text.RegularExpressions;
+using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core;
@@ -9,9 +10,8 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
 {
     /// <summary>
     /// Détermine le type de complétion à partir du chemin YAML du curseur (voir <see cref="YamlPathAnalyzer.GetPath" />).
-    /// <c>rootObject</c> est le premier segment, <c>currentKey</c> la dernière clé (sans indices) et <c>parentKey</c>
-    /// la clé précédente. Quand le curseur saisit une nouvelle clé (point final) ou un élément de liste,
-    /// <c>parentKey</c> vaut <c>currentKey</c>, comme dans l'ancienne analyse par indentation.
+    /// Les cas sont évalués dans l'ordre. Dans les motifs, <c>(^|\.)cle</c> désigne une clé (racine ou non) et
+    /// <c>(\[\d+\])*$</c> autorise un élément de liste. Un point final indique une nouvelle clé en cours de saisie.
     /// </summary>
     /// <param name="path">Chemin YAML, ou null.</param>
     /// <returns>Le type de complétion.</returns>
@@ -22,60 +22,42 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
             return CompletionKind.None;
         }
 
-        var isNewKey = path.EndsWith('.');
-        var keys = path.Split('.', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.IndexOf('[') is >= 0 and var bracket ? s[..bracket] : s)
-            .Where(s => s.Length > 0)
-            .ToList();
-        if (keys.Count == 0)
+        bool Is(string pattern) => Regex.IsMatch(path, pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+        return path switch
         {
-            return CompletionKind.None;
-        }
+            _ when Is(@"\.(annotations|propertyAnnotations)\[\d+\]\.[^.\[]+\.$") => CompletionKind.AnnotationParameter,
+            _ when Is(@"\.decorators\[\d+\]\.[^.\[]+\.$") => CompletionKind.DecoratorParameter,
+            _ when Is(@"\.domain\.parameters\.$") => CompletionKind.DomainParameter,
+            _ when Is(@"^class\.values\.[^.\[]+\.$") => CompletionKind.OwnProperty,
+            _ when Is(@"^class\.mappers\..*\.mappings\.$") => CompletionKind.OwnProperty,
+            _ when path.EndsWith('.') => CompletionKind.None,
+            _ when Is(@"^domain\.asDomains\.[^.\[]+$") => CompletionKind.Domain,
+            _ when Is(@"\.domain(\.name)?$") => CompletionKind.Domain,
+            _ when Is(@"^converter\.(to|from)(\[\d+\])*$") => CompletionKind.Domain,
 
-        // Une clé en cours de saisie ne référence aucun objet du modèle : seules des propriétés peuvent être proposées
-        // (clés de "values" ou de "mappings").
-        if (isNewKey)
-        {
-            return CompletionKind.Property;
-        }
+            _ when Is(@"\.(association|composition|class|extends)$") => CompletionKind.Class,
+            _ when Is(@"\.implements(\[\d+\])*$") => CompletionKind.Class,
 
-        var rootObject = keys[0];
-        var currentKey = keys[^1];
+            _ when Is(@"\.endpoint$") => CompletionKind.Endpoint,
+            _ when Is(@"(^|\.)tags(\[\d+\])*$") => CompletionKind.Tag,
+            _ when Is(@"^uses(\[\d+\])*$") => CompletionKind.File,
+            _ when Is(@"\.(decorator|decorators\[\d+\])$") => CompletionKind.Decorator,
+            _ when Is(@"\.(annotations|excludedAnnotations|propertyAnnotations)\[\d+\]$") => CompletionKind.Annotation,
+            _ when Is(@"\.dependsOn(\[\d+\])*$") => CompletionKind.DataFlow,
 
-        // Écart connu : l'ancien code distinguait liste inline ("include: [a, |]", parentKey = clé englobante) et liste en
-        // bloc ("- a", parentKey = currentKey) ; ici les deux donnent parentKey = currentKey.
-        var parentKey =
-            isNewKey || path.EndsWith(']') ? currentKey
-            : keys.Count > 1 ? keys[^2]
-            : string.Empty;
+            _ when Is(@"^class\.(defaultProperty|orderProperty|flagProperty|localeProperty|discriminatorProperty)$") =>
+                CompletionKind.OwnProperty,
+            _ when Is(@"^class\.unique\[\d+\]\[\d+\]$") => CompletionKind.OwnProperty,
+            _ when Is(@"^class\.indexes\[\d+\](\[\d+\]|\.properties\[\d+\])$") => CompletionKind.OwnProperty,
+            _ when Is(@"\.alias\.(property|include|exclude)(\[\d+\])*$") => CompletionKind.TargetProperty,
+            _ when Is(@"\.properties\[\d+\]\.property$") => CompletionKind.TargetProperty,
+            _ when Is(@"^class\.mappers\.from\[\d+\]\.params\[\d+\]\.target$") => CompletionKind.OwnProperty,
+            _ when Is(@"^class\.mappers\..*\.mappings\.[^.\[]+$") => CompletionKind.TargetProperty,
+            _ when Is(@"^dataFlow\.activeProperty$") => CompletionKind.TargetProperty,
+            _ when Is(@"^dataFlow\.sources\[\d+\]\.joinProperties(\[\d+\])*$") => CompletionKind.TargetProperty,
 
-        if (
-            parentKey == "asDomains" && !isNewKey
-            || currentKey == "domain"
-            || parentKey == "domain" && currentKey == "name" && !isNewKey
-            || rootObject == "converter" && currentKey is "to" or "from"
-        )
-        {
-            return CompletionKind.Domain;
-        }
-
-        if (
-            currentKey is "association" or "composition" or "class" or "extends" && parentKey != currentKey
-            || currentKey == "implements"
-        )
-        {
-            return CompletionKind.Class;
-        }
-
-        return currentKey switch
-        {
-            "endpoint" => CompletionKind.Endpoint,
-            "tags" => CompletionKind.Tag,
-            "uses" => CompletionKind.File,
-            _ when currentKey.Contains("decorator") => CompletionKind.Decorator,
-            _ when currentKey.Contains("annotation", StringComparison.OrdinalIgnoreCase) => CompletionKind.Annotation,
-            "dependsOn" => CompletionKind.DataFlow,
-            _ => CompletionKind.Property,
+            _ => CompletionKind.None,
         };
     }
 
@@ -114,14 +96,17 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
         return kind switch
         {
             CompletionKind.Domain => provider.CompleteDomain(),
+            CompletionKind.DomainParameter => provider.CompleteDomainParameter(path!),
             CompletionKind.Class => provider.CompleteClass(),
             CompletionKind.Endpoint => provider.CompleteEndpoint(),
             CompletionKind.Tag => provider.CompleteTag(),
             CompletionKind.File => provider.CompleteFile(),
             CompletionKind.Decorator => provider.CompleteDecorator(),
+            CompletionKind.DecoratorParameter => provider.CompleteDecoratorParameter(path!),
             CompletionKind.Annotation => provider.CompleteAnnotation(),
+            CompletionKind.AnnotationParameter => provider.CompleteAnnotationParameter(path!),
             CompletionKind.DataFlow => provider.CompleteDataFlow(),
-            CompletionKind.Property => provider.CompleteProperty(),
+            CompletionKind.OwnProperty or CompletionKind.TargetProperty => provider.CompleteProperty(),
             _ => new(),
         };
     }

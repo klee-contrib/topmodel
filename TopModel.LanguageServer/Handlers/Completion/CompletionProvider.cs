@@ -1,4 +1,5 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+﻿using System.Text.RegularExpressions;
+using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -79,6 +80,23 @@ public class CompletionProvider(
     }
 
     /// <summary>
+    /// Complétion des paramètres d'une instance d'annotation. Les paramètres déjà renseignés sont exclus.
+    /// </summary>
+    /// <param name="path">Chemin YAML du curseur (de la forme <c>...annotations[n].NomAnnotation.</c>).</param>
+    /// <returns>La liste de complétion.</returns>
+    public CompletionList CompleteAnnotationParameter(string path)
+    {
+        var annotationName = path.TrimEnd('.').Split('.')[^1];
+        var referencedAnnotations = files
+            .GetInAll(f => f.Store.GetReferencedAnnotations(f.File), f => (f.Key, f.Value.ModelFile.Path))
+            .ToDictionary(f => f.Key, f => f.Value);
+
+        return referencedAnnotations.TryGetValue(annotationName, out var annotation)
+            ? CompleteTemplateParameters(annotation.TemplateParameters, path)
+            : new();
+    }
+
+    /// <summary>
     /// Complétion des classes.
     /// </summary>
     /// <returns>La liste de complétion.</returns>
@@ -127,6 +145,23 @@ public class CompletionProvider(
     }
 
     /// <summary>
+    /// Complétion des paramètres d'une instance de décorateur. Les paramètres déjà renseignés sont exclus.
+    /// </summary>
+    /// <param name="path">Chemin YAML du curseur (de la forme <c>...decorators[n].NomDecorateur.</c>).</param>
+    /// <returns>La liste de complétion.</returns>
+    public CompletionList CompleteDecoratorParameter(string path)
+    {
+        var decoratorName = path.TrimEnd('.').Split('.')[^1];
+        var referencedDecorators = files
+            .GetInAll(f => f.Store.GetReferencedDecorators(f.File), f => (f.Key, f.Value.ModelFile.Path))
+            .ToDictionary(f => f.Key, f => f.Value);
+
+        return referencedDecorators.TryGetValue(decoratorName, out var decorator)
+            ? CompleteTemplateParameters(decorator.TemplateParameters, path)
+            : new();
+    }
+
+    /// <summary>
     /// Complétion des domaines.
     /// </summary>
     /// <returns>La liste de complétion.</returns>
@@ -146,6 +181,30 @@ public class CompletionProvider(
                     TextEdit = new(new TextEdit { NewText = domain.Key, Range = CompleteRange }),
                 })
         );
+    }
+
+    /// <summary>
+    /// Complétion des paramètres d'un domaine (<c>domain: { name: ..., parameters: { ... } }</c>). Les paramètres
+    /// déjà renseignés sont exclus.
+    /// </summary>
+    /// <param name="path">Chemin YAML du curseur (de la forme <c>...domain.parameters.</c>).</param>
+    /// <returns>La liste de complétion.</returns>
+    public CompletionList CompleteDomainParameter(string path)
+    {
+        var domainPath = path[..^"parameters.".Length];
+        var domainName =
+            GetKeyPaths().FirstOrDefault(k => k.Path == domainPath + "name") is { Path: not null } nameKey
+                ? text[nameKey.Line][(nameKey.Colon + 1)..].Split('#')[0].Trim()
+                : Regex
+                    .Match(currentLine, @"name:\s*(?<name>[^\s,{}]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100))
+                    .Groups["name"]
+                    .Value;
+
+        var domain = files
+            .Select(f => f.Store.Domains.TryGetValue(domainName, out var d) ? d : null)
+            .FirstOrDefault(d => d != null);
+
+        return domain != null ? CompleteTemplateParameters(domain.TemplateParameters, path) : new();
     }
 
     /// <summary>
@@ -605,6 +664,28 @@ public class CompletionProvider(
         );
     }
 
+    /// <summary>
+    /// Complétion des paramètres d'un template (annotation ou décorateur), hors paramètres déjà renseignés.
+    /// </summary>
+    private CompletionList CompleteTemplateParameters(IEnumerable<TemplateParameter> parameters, string path)
+    {
+        var existingParameters = GetExistingKeys(path);
+        return new(
+            parameters
+                .Where(p => !existingParameters.Contains(p.Name.Value) && p.Name.Value.ShouldMatch(SearchText))
+                .Select(p => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Property,
+                    Label = p.Name.Value,
+                    LabelDetails = new() { Description = p.Required ? $"{p.Comment} (requis)" : p.Comment },
+                    SortText = (p.Required ? "0" : "1") + p.Name.Value,
+                    TextEdit = new TextEditOrInsertReplaceEdit(
+                        new TextEdit { NewText = p.Name.Value, Range = CompleteRange }
+                    ),
+                })
+        );
+    }
+
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range GetCompleteRange()
     {
         int start,
@@ -630,6 +711,58 @@ public class CompletionProvider(
             position.Line,
             end
         );
+    }
+
+    /// <summary>
+    /// Clés déjà présentes (hors ligne courante) dans l'objet désigné par un chemin de nouvelle clé (point final),
+    /// déterminées en calculant le chemin YAML de chaque ligne du document courant.
+    /// </summary>
+    private HashSet<string> GetExistingKeys(string path)
+    {
+        var keys = new HashSet<string>();
+        foreach (var (_, linePath, _) in GetKeyPaths())
+        {
+            if (!linePath.StartsWith(path) || linePath.Length == path.Length)
+            {
+                continue;
+            }
+
+            var rest = linePath[path.Length..];
+            var key = rest.IndexOfAny(['.', '[']) is >= 0 and var sep ? rest[..sep] : rest;
+            if (key.Length > 0)
+            {
+                keys.Add(key);
+            }
+        }
+
+        return keys;
+    }
+
+    /// <summary>
+    /// Chemin YAML de la première clé de chaque ligne du document courant (hors ligne du curseur).
+    /// </summary>
+    private IEnumerable<(int Line, string Path, int Colon)> GetKeyPaths()
+    {
+        var docStart = position.Line;
+        while (docStart > 0 && !text[docStart - 1].StartsWith("---"))
+        {
+            docStart--;
+        }
+
+        for (var i = docStart; i < text.Length && !text[i].StartsWith("---"); i++)
+        {
+            // Curseur juste après le ':' de la clé, pour ne pas tomber dans un éventuel commentaire en fin de ligne.
+            var colon = text[i].IndexOf(':');
+            if (i == position.Line || colon < 0)
+            {
+                continue;
+            }
+
+            if (YamlPathAnalyzer.GetPath(text, i, colon + 1) is { } linePath)
+            {
+                yield return (i, linePath, colon);
+            }
+        }
     }
 
     private (string Object, int Line) GetRootObject()
