@@ -25,6 +25,7 @@
     <PackageVersion Include="NeoSmart.AsyncLock" Version="3.2.1" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="NuGet.Commands" Version="8.0.0" />
+    <PackageVersion Include="OmniSharp.Extensions.LanguageClient" Version="0.19.11" />
     <PackageVersion Include="OmniSharp.Extensions.LanguageServer" Version="0.19.11" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.400" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.36.0.15337" />

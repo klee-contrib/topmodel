@@ -48,8 +48,15 @@ jobs:
       - name: run tests - language server
         run: dotnet-coverage collect --settings coverage.settings.xml --output "./ls-tests-coverage-results.xml" --output-format cobertura -- "dotnet test TopModel.LanguageServer.Tests -c Release --no-build"
 
+      - name: build tests - language server integration
+        run: dotnet build TopModel.LanguageServer.IntegrationTests -c Release
+
+      # Le language server est lancé par les tests en processus enfant : dotnet-coverage le couvre aussi.
+      - name: run tests - language server integration
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./ls-integration-coverage-results.xml" --output-format cobertura -- "dotnet test TopModel.LanguageServer.IntegrationTests -c Release --no-build"
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./modgen-coverage-results.xml,./tmdgen-database-coverage-results.xml,./ls-tests-coverage-results.xml
+          files: ./modgen-coverage-results.xml,./tmdgen-database-coverage-results.xml,./ls-tests-coverage-results.xml,./ls-integration-coverage-results.xml

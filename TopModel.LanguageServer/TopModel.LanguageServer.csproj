@@ -20,7 +20,7 @@
   <Target Name="KillLanguageServerBeforeBuild" BeforeTargets="BeforeBuild">
     <Exec
       Condition="'$(OS)' == 'Windows_NT'"
-      Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Get-CimInstance Win32_Process -Filter 'Name = ''dotnet.exe''' -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*TopModel.LanguageServer*' } | ForEach-Object { taskkill /PID $_.ProcessId /F &gt; $null 2&gt;&amp;1 }; exit 0&quot;"
+      Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Get-CimInstance Win32_Process -Filter 'Name = ''dotnet.exe''' -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*TopModel.LanguageServer.dll*' } | ForEach-Object { taskkill /PID $_.ProcessId /F &gt; $null 2&gt;&amp;1 }; exit 0&quot;"
     />
     <Exec
       Condition="'$(OS)' != 'Windows_NT'"
