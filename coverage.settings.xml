@@ -4,6 +4,7 @@
       <Include>
         <ModulePath>.*TopModel\.Core\.dll</ModulePath>
         <ModulePath>.*TopModel\.Generator.*\.dll</ModulePath>
+        <ModulePath>.*TopModel\.LanguageServer\.dll</ModulePath>
         <ModulePath>.*TopModel\.ModelGenerator\.dll</ModulePath>
         <ModulePath>.*TopModel\.Utils.*\.dll</ModulePath>
       </Include>
