@@ -325,8 +325,9 @@ public static class ModelExtensions
                         Association: Class c,
                         AssociationProperty: IProperty ap,
                         UseClassForAssociation: true,
-                        AssociationMultiple: true
-                    } => new ClassCollectionMappingType(c, prop.Domain!.Domain, ap),
+                        AssociationMultiple: true,
+                        Domain: not null
+                    } => new ClassCollectionMappingType(c, prop.Domain.Domain, ap),
                     { Association: Class c, AssociationProperty: IProperty ap, UseClassForAssociation: true } =>
                         new ClassMappingType(c, prop.Domain?.Domain, ap),
                     _ => propMappingType,

@@ -26,9 +26,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
 
         return path switch
         {
-            _ when Is(@"\.(annotations|propertyAnnotations)\[\d+\]\.[^.\[]+\.$") => CompletionKind.AnnotationParameter,
-            _ when Is(@"\.decorators\[\d+\]\.[^.\[]+\.$") => CompletionKind.DecoratorParameter,
-            _ when Is(@"\.domain\.parameters\.$") => CompletionKind.DomainParameter,
+            _ when Is(@"\.(annotations|propertyAnnotations|decorators)\[\d+\]\.[^.\[]+\.$|\.domain\.parameters\.$") => CompletionKind.Parameter,
             _ when Is(@"^class\.values\.[^.\[]+\.$") => CompletionKind.OwnProperty,
             _ when Is(@"^class\.mappers\..*\.mappings\.$") => CompletionKind.OwnProperty,
             _ when path.EndsWith('.') => CompletionKind.None,
@@ -55,7 +53,7 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
             _ when Is(@"^class\.mappers\.from\[\d+\]\.params\[\d+\]\.target$") => CompletionKind.OwnProperty,
             _ when Is(@"^class\.mappers\..*\.mappings\.[^.\[]+$") => CompletionKind.TargetProperty,
             _ when Is(@"^dataFlow\.activeProperty$") => CompletionKind.TargetProperty,
-            _ when Is(@"^dataFlow\.sources\[\d+\]\.joinProperties(\[\d+\])*$") => CompletionKind.TargetProperty,
+            _ when Is(@"^dataFlow\.sources\[\d+\]\.joinProperties(\[\d+\])+$") => CompletionKind.TargetProperty,
 
             _ => CompletionKind.None,
         };
@@ -96,17 +94,16 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
         return kind switch
         {
             CompletionKind.Domain => provider.CompleteDomain(),
-            CompletionKind.DomainParameter => provider.CompleteDomainParameter(path!),
             CompletionKind.Class => provider.CompleteClass(),
             CompletionKind.Endpoint => provider.CompleteEndpoint(),
             CompletionKind.Tag => provider.CompleteTag(),
             CompletionKind.File => provider.CompleteFile(),
             CompletionKind.Decorator => provider.CompleteDecorator(),
-            CompletionKind.DecoratorParameter => provider.CompleteDecoratorParameter(path!),
             CompletionKind.Annotation => provider.CompleteAnnotation(),
-            CompletionKind.AnnotationParameter => provider.CompleteAnnotationParameter(path!),
+            CompletionKind.Parameter => provider.CompleteParameter(path!),
             CompletionKind.DataFlow => provider.CompleteDataFlow(),
-            CompletionKind.OwnProperty or CompletionKind.TargetProperty => provider.CompleteProperty(),
+            CompletionKind.OwnProperty => provider.CompleteOwnProperty(path!),
+            CompletionKind.TargetProperty => provider.CompleteTargetProperty(path!),
             _ => new(),
         };
     }

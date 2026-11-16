@@ -11,9 +11,6 @@ public enum CompletionKind
     /// <summary>Domaines.</summary>
     Domain,
 
-    /// <summary>Paramètres d'un domaine (clés de "parameters" sous "domain: { name, parameters }").</summary>
-    DomainParameter,
-
     /// <summary>Classes.</summary>
     Class,
 
@@ -29,14 +26,14 @@ public enum CompletionKind
     /// <summary>Décorateurs.</summary>
     Decorator,
 
-    /// <summary>Paramètres d'un décorateur (clés sous une instance de décorateur).</summary>
-    DecoratorParameter,
-
     /// <summary>Annotations.</summary>
     Annotation,
 
-    /// <summary>Paramètres d'une annotation (clés sous une instance d'annotation).</summary>
-    AnnotationParameter,
+    /// <summary>
+    /// Paramètres d'un conteneur de paramètres : clés sous une instance d'annotation ou de décorateur, ou clés de
+    /// "parameters" sous "domain: { name, parameters }".
+    /// </summary>
+    Parameter,
 
     /// <summary>Flux de données.</summary>
     DataFlow,

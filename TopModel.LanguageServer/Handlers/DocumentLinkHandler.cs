@@ -1,4 +1,5 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol;
+using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
@@ -18,13 +19,8 @@ public class DocumentLinkHandler(LSWorkerStore workerStore) : DocumentLinkHandle
     {
         await workerStore.WaitForUpdates(cancellationToken);
 
-        var lockFile = new FileInfo(
-            Path.GetFullPath(
-                request
-                    .TextDocument.Uri.Path.Replace('/', Path.DirectorySeparatorChar)
-                    .Trim(Path.DirectorySeparatorChar)
-            )
-        );
+        // GetFileSystemPath gère les URI de toutes les plateformes ("/c:/..." sous Windows, "/home/..." sous Linux).
+        var lockFile = new FileInfo(request.TextDocument.Uri.GetFileSystemPath());
         if (lockFile.Exists)
         {
             using var file = lockFile.OpenText();
@@ -34,9 +30,7 @@ public class DocumentLinkHandler(LSWorkerStore workerStore) : DocumentLinkHandle
             {
                 var end = text.Count;
                 List<DocumentLink> documentLinks = [];
-                var lockFileDir = Path.GetFullPath(
-                    Path.GetDirectoryName(request.TextDocument.Uri.Path)!.Trim(Path.DirectorySeparatorChar)
-                );
+                var lockFileDir = lockFile.DirectoryName!;
                 var lineStart = "  - ";
                 for (var i = indexOfGeneratedFiles + 1; i < end - 1; i++)
                 {
