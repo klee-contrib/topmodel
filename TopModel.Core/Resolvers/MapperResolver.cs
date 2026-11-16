@@ -229,13 +229,12 @@ internal class MapperResolver(
                             )
                         )
                         {
-                            var matchingProperties = sourceProperties
-                                .Where(p => IsSameAliasedProperty(currentProperty, p))
-                                .Take(2)
-                                .ToList();
-                            if (matchingProperties.Count == 1)
+                            var matchingProperties = sourceProperties.Where(p =>
+                                IsSameAliasedProperty(currentProperty, p)
+                            );
+                            if (matchingProperties.Count() == 1)
                             {
-                                var mappedProperty = matchingProperties[0];
+                                var mappedProperty = matchingProperties.First();
                                 if (CheckPossibleMapping(mappedProperty, currentProperty))
                                 {
                                     param.Mappings.TryAdd(currentProperty, mappedProperty);
