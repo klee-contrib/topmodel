@@ -34,15 +34,7 @@ public static class YamlPathAnalyzer
             return null;
         }
 
-        var docStart = 0;
-        for (var i = line - 1; i >= 0; i--)
-        {
-            if (text[i].StartsWith("---"))
-            {
-                docStart = i + 1;
-                break;
-            }
-        }
+        var docStart = GetDocumentStart(text, line);
 
         var stack = new List<(int Indent, string? Key, int Index)>();
 
@@ -65,6 +57,25 @@ public static class YamlPathAnalyzer
         }
 
         return ProcessLine(stack, text[line], Math.Min(character, text[line].Length), isCurrent: true);
+    }
+
+    /// <summary>
+    /// Ligne de début du document contenant la ligne donnée (ligne qui suit le "---" précédent, 0 s'il n'y en a pas).
+    /// </summary>
+    /// <param name="text">Lignes du fichier.</param>
+    /// <param name="line">Numéro de ligne (base 0).</param>
+    /// <returns>La ligne de début du document.</returns>
+    internal static int GetDocumentStart(string[] text, int line)
+    {
+        for (var i = Math.Min(line, text.Length) - 1; i >= 0; i--)
+        {
+            if (text[i].StartsWith("---"))
+            {
+                return i + 1;
+            }
+        }
+
+        return 0;
     }
 
     private static string BuildPath(List<(int Indent, string? Key, int Index)> stack)

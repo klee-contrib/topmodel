@@ -8,33 +8,13 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-/// <summary>
-/// Reporter du language server : transmet les erreurs du modèle au client par push (<c>textDocument/publishDiagnostics</c>),
-/// et les conserve en cache pour répondre aux requêtes pull par document (<c>textDocument/diagnostic</c>).
-/// </summary>
 public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 {
-    /// <summary>
-    /// Etat courant des diagnostics par fichier (chemin système), complet et mis à jour à chaque <see cref="Report" />.
-    /// </summary>
-    private readonly ConcurrentDictionary<string, FileDiagnostics> _diagnosticsCache = new(
-        OmnisharpExtensions.PathComparer
-    );
+    private readonly HashSet<string> _filesWithErrors = [];
 
     private readonly ConcurrentBag<KeyValuePair<ModelFile, IEnumerable<ModelError>>> _pendingErrors = [];
 
     private bool _hasChange;
-
-    private long _lastResultId;
-
-    /// <summary>
-    /// Diagnostics d'un fichier, ou <c>null</c> si aucun rapport n'a encore été fait pour ce fichier.
-    /// </summary>
-    /// <param name="filePath">Chemin système du fichier.</param>
-    public FileDiagnostics? GetDiagnostics(string filePath)
-    {
-        return _diagnosticsCache.TryGetValue(filePath, out var value) ? value : null;
-    }
 
     /// <inheritdoc cref="IModelReporter.RegisterChange" />
     public void RegisterChange()
@@ -60,70 +40,55 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
             _hasChange = false;
         }
 
-        var pendingErrors = _pendingErrors
-            .GroupBy(e => e.Key.Path)
-            .Select(g =>
-                (
-                    FilePath: facade.GetFilePath(g.Key),
-                    Diagnostics: g.SelectMany(e => e.Value)
-                        .DistinctBy(e => (e.Message, e.Location))
-                        .Select(ToDiagnostic)
-                        .ToArray()
-                )
-            )
+        var diagnosticsToSend = _pendingErrors
+            .GroupBy(e => (e.Key.Name, e.Key.Path))
+            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Location)))
+            .Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any())
             .ToList();
 
-        _pendingErrors.Clear();
-
-        var cacheChanged = false;
-
-        foreach (var (filePath, diagnostics) in pendingErrors)
+        foreach (var fileDiagnostics in diagnosticsToSend)
         {
-            var existing = GetDiagnostics(filePath);
-            if (existing is not null && existing.Diagnostics.SequenceEqual(diagnostics))
+            var diagnostics = new List<Diagnostic>();
+
+            if (fileDiagnostics.Value.Any())
             {
-                continue;
+                _filesWithErrors.Add(fileDiagnostics.Key.Name);
+            }
+            else
+            {
+                _filesWithErrors.Remove(fileDiagnostics.Key.Name);
             }
 
-            // Tous les fichiers analysés sont en cache (y compris sans erreur), pour que le pull ait toujours un resultId.
-            _diagnosticsCache[filePath] = new(diagnostics, (++_lastResultId).ToString());
-
-            // Push uniquement des diagnostics qui ont changé (un fichier inconnu sans erreur n'a rien à effacer).
-            if (existing is not null || diagnostics.Length > 0)
+            foreach (var error in fileDiagnostics.Value)
             {
-                facade.TextDocument.PublishDiagnostics(
-                    new() { Diagnostics = new Container<Diagnostic>(diagnostics), Uri = new Uri(filePath) }
+                var loc = error.Location;
+                diagnostics.Add(
+                    new()
+                    {
+                        Code = error.ErrorType.ToString(),
+                        Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
+                        Message = error.Message,
+                        Range = loc.ToRange()!
+                            ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                        Source = "TopModel",
+                    }
                 );
-                cacheChanged = true;
             }
-        }
 
-        // Le client fusionne les diagnostics poussés et tirés : sans refresh, le résultat pull d'un document ouvert
-        // resterait périmé quand la modification d'un autre fichier change ses erreurs.
-        if (
-            cacheChanged
-            && facade.ClientSettings?.Capabilities?.Workspace?.Diagnostics.Value?.RefreshSupport == true
-        )
-        {
-            facade.Workspace.SendDiagnosticRefresh(new());
+            facade.TextDocument.PublishDiagnostics(
+                new()
+                {
+                    Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
+                    Uri = new Uri(facade.GetFilePath(fileDiagnostics.Key.Path)),
+                }
+            );
+
+            _pendingErrors.Clear();
         }
 
         if (refresh)
         {
             facade.Workspace.SendSemanticTokensRefresh(new());
         }
-    }
-
-    private static Diagnostic ToDiagnostic(ModelError error)
-    {
-        return new()
-        {
-            Code = error.ErrorType.ToString(),
-            Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
-            Message = error.Message,
-            Range = error.Location.ToRange()!
-                ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
-            Source = "TopModel",
-        };
     }
 }

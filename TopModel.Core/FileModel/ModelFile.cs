@@ -214,7 +214,9 @@ public class ModelFile
                 )
             )
             .Concat(
-                Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object))
+                Properties
+                    .OfType<RegularProperty>()
+                    .Select(p => (p.DomainReference as Reference, p.Domain?.Domain! as object))
             )
             .Concat(
                 Properties
@@ -237,7 +239,11 @@ public class ModelFile
                 Properties
                     .OfType<CompositionProperty>()
                     .SelectMany(p =>
-                        new (Reference, object)[] { (p.Reference, p.Composition), (p.DomainReference!, p.Domain) }
+                        new (Reference, object)[]
+                        {
+                            (p.Reference, p.Composition),
+                            (p.DomainReference!, p.Domain?.Domain!),
+                        }
                     )
             )
             .Concat(
@@ -260,7 +266,7 @@ public class ModelFile
                             (p.Reference?.EndpointReference!, p.OriginalProperty?.Endpoint!),
                             (p.Reference?.DecoratorReference!, p.OriginalProperty?.Decorator!),
                             (p.PropertyReference!, p.OriginalProperty!),
-                            (p.DomainReference!, p.Domain),
+                            (p.DomainReference!, p.Domain?.Domain!),
                             (p.CompositionReference!, p.Composition!),
                         }
                     )

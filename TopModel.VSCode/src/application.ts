@@ -4,7 +4,6 @@ import { CodeLens, Location, Position, Range, Terminal, Uri, window, WorkspaceFo
 import { CloseAction, ErrorAction, LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
 import { t } from "./i18n";
-import { SharedDiagnosticCollectionProvider } from "./shared-diagnostics";
 import { Status, TopModelConfig } from "./types";
 import { getServerCommand, killProcessTree } from "./utils";
 import path = require("path");
@@ -130,9 +129,6 @@ export class Application {
                 {
                     workspaceFolder: this.workspaceFolder,
                     documentSelector: [{ pattern: folderPattern }],
-                    // Push et pull écrivent dans une même collection (sinon chaque erreur serait en double).
-                    // Une instance par client : l'état est remis à zéro à chaque redémarrage.
-                    diagnosticCollectionProvider: new SharedDiagnosticCollectionProvider(),
                     errorHandler: {
                         error: () => ({ action: ErrorAction.Continue }),
                         closed: () => ({ action: CloseAction.DoNotRestart, message: t("languageServerWillRestart") }),

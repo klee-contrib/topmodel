@@ -19,20 +19,7 @@ public class CompletionProvider(
     IReadOnlyList<(ModelFile File, ModelStore Store)> files
 )
 {
-    private static readonly HashSet<string> PropertyKeyWords = ["include", "exclude", "property", "activeProperty"];
-    private static readonly HashSet<string> PropertyListKeyWords = ["include", "exclude", "property", "joinProperties"];
-
-    private static readonly HashSet<string> SelfClassPropertyKeyWords =
-    [
-        "defaultProperty",
-        "flagProperty",
-        "orderProperty",
-        "localeProperty",
-        "discriminatorProperty",
-        "target",
-        "unique",
-        "indexes",
-    ];
+    private static readonly Regex MappingValueRegex = new(@"^(?<m>class\.mappers\..+\.)mappings\.(?<k>[^.\[]+)$");
 
     private static readonly char[] Separators =
     [
@@ -55,8 +42,11 @@ public class CompletionProvider(
     ];
 
     private readonly string currentLine = text.ElementAtOrDefault(position.Line) ?? string.Empty;
+    private YamlBlock? block;
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? completeRange;
     private string? searchText;
+
+    private YamlBlock Block => block ??= YamlBlock.Parse(text, position.Line, position.Character);
 
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range CompleteRange =>
         completeRange ??= GetCompleteRange();
@@ -77,23 +67,6 @@ public class CompletionProvider(
             a => $"{a.Description}",
             ordered: true
         );
-    }
-
-    /// <summary>
-    /// Complétion des paramètres d'une instance d'annotation. Les paramètres déjà renseignés sont exclus.
-    /// </summary>
-    /// <param name="path">Chemin YAML du curseur (de la forme <c>...annotations[n].NomAnnotation.</c>).</param>
-    /// <returns>La liste de complétion.</returns>
-    public CompletionList CompleteAnnotationParameter(string path)
-    {
-        var annotationName = path.TrimEnd('.').Split('.')[^1];
-        var referencedAnnotations = files
-            .GetInAll(f => f.Store.GetReferencedAnnotations(f.File), f => (f.Key, f.Value.ModelFile.Path))
-            .ToDictionary(f => f.Key, f => f.Value);
-
-        return referencedAnnotations.TryGetValue(annotationName, out var annotation)
-            ? CompleteTemplateParameters(annotation.TemplateParameters, path)
-            : new();
     }
 
     /// <summary>
@@ -145,23 +118,6 @@ public class CompletionProvider(
     }
 
     /// <summary>
-    /// Complétion des paramètres d'une instance de décorateur. Les paramètres déjà renseignés sont exclus.
-    /// </summary>
-    /// <param name="path">Chemin YAML du curseur (de la forme <c>...decorators[n].NomDecorateur.</c>).</param>
-    /// <returns>La liste de complétion.</returns>
-    public CompletionList CompleteDecoratorParameter(string path)
-    {
-        var decoratorName = path.TrimEnd('.').Split('.')[^1];
-        var referencedDecorators = files
-            .GetInAll(f => f.Store.GetReferencedDecorators(f.File), f => (f.Key, f.Value.ModelFile.Path))
-            .ToDictionary(f => f.Key, f => f.Value);
-
-        return referencedDecorators.TryGetValue(decoratorName, out var decorator)
-            ? CompleteTemplateParameters(decorator.TemplateParameters, path)
-            : new();
-    }
-
-    /// <summary>
     /// Complétion des domaines.
     /// </summary>
     /// <returns>La liste de complétion.</returns>
@@ -178,32 +134,9 @@ public class CompletionProvider(
                 {
                     Kind = CompletionItemKind.EnumMember,
                     Label = domain.Key,
-                    TextEdit = new(new TextEdit { NewText = domain.Key, Range = CompleteRange }),
+                    TextEdit = ReplaceWord(domain.Key),
                 })
         );
-    }
-
-    /// <summary>
-    /// Complétion des paramètres d'un domaine (<c>domain: { name: ..., parameters: { ... } }</c>). Les paramètres
-    /// déjà renseignés sont exclus.
-    /// </summary>
-    /// <param name="path">Chemin YAML du curseur (de la forme <c>...domain.parameters.</c>).</param>
-    /// <returns>La liste de complétion.</returns>
-    public CompletionList CompleteDomainParameter(string path)
-    {
-        var domainPath = path[..^"parameters.".Length];
-        var domainName = GetKeyPaths().FirstOrDefault(k => k.Path == domainPath + "name") is { Path: not null } nameKey
-            ? text[nameKey.Line][(nameKey.Colon + 1)..].Split('#')[0].Trim()
-            : Regex
-                .Match(currentLine, @"name:\s*(?<name>[^\s,{}]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100))
-                .Groups["name"]
-                .Value;
-
-        var domain = files
-            .Select(f => f.Store.Domains.TryGetValue(domainName, out var d) ? d : null)
-            .FirstOrDefault(d => d != null);
-
-        return domain != null ? CompleteTemplateParameters(domain.TemplateParameters, path) : new();
     }
 
     /// <summary>
@@ -241,161 +174,67 @@ public class CompletionProvider(
                 {
                     Kind = CompletionItemKind.File,
                     Label = name,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit { NewText = name, Range = CompleteRange }),
+                    TextEdit = ReplaceWord(name),
                 })
         );
     }
 
     /// <summary>
-    /// Complétion des propriétés (alias, associations, flux de données, mappings, valeurs...).
+    /// Complétion des propriétés de la classe courante (clés de <c>values</c> et de <c>mappings</c>,
+    /// <c>defaultProperty</c>, <c>unique</c>, <c>indexes</c>, cible d'un paramètre de mapper...).
     /// </summary>
+    /// <param name="path">Chemin YAML du curseur.</param>
     /// <returns>La liste de complétion.</returns>
-    public CompletionList CompleteProperty()
+    public CompletionList CompleteOwnProperty(string path)
     {
-        // Alias, propriété d'association ou propriété de flux de données
-        string? className = null;
-        string? endpointName = null;
-        string? decoratorName = null;
-        var isListElement = currentLine.TrimStart().StartsWith('-');
-        var isInlineList = currentLine.Contains(':') && currentLine.Split(':')[1].TrimStart().StartsWith('[');
-        var (start, end) = isListElement ? GetParentRange(text, position.Line) : GetObjectRange(text, position.Line);
-        var objectLines = text[start..end];
-        var cl = objectLines.FirstOrDefault(o => o.Contains("class: ") || o.Contains("association: "));
-        if (cl != null)
+        var classe = GetCurrentClass();
+        if (classe == null)
         {
-            className = cl.Split(": ")[1].Trim();
+            return new();
         }
 
-        var ep = objectLines.FirstOrDefault(o => o.Contains("endpoint: "));
-        if (ep != null)
+        // Clé d'une valeur de la classe (la valeur d'une propriété n'est pas complétée).
+        if (path.StartsWith("class.values."))
         {
-            endpointName = ep.Split(": ")[1].Trim();
+            return IsCursorOnKey() ? CompleteProperty(classe, includeExtends: true) : new();
         }
 
-        var dc = objectLines.FirstOrDefault(o => o.Contains("decorator: "));
-        if (dc != null)
+        // Nouvelle clé d'un mapping de mapper : propriétés héritées incluses.
+        return CompleteProperty(classe, includeExtends: path.EndsWith(".mappings."));
+    }
+
+    /// <summary>
+    /// Complétion des paramètres d'un conteneur de paramètres (instance d'annotation, de décorateur ou de domaine).
+    /// Les paramètres déjà renseignés sont exclus.
+    /// </summary>
+    /// <param name="path">
+    /// Chemin YAML du curseur (de la forme <c>...annotations[n].NomAnnotation.</c>,
+    /// <c>...decorators[n].NomDecorateur.</c> ou <c>...domain.parameters.</c>).
+    /// </param>
+    /// <returns>La liste de complétion.</returns>
+    public CompletionList CompleteParameter(string path)
+    {
+        var container = GetParameterContainer(path);
+        if (container == null)
         {
-            decoratorName = dc.Split(": ")[1].Trim();
+            return new();
         }
 
-        var currentKey = GetCurrentKey(text, position.Line, position.Character);
-        var isPropertyKey =
-            (isListElement || isInlineList) && PropertyListKeyWords.Contains(currentKey.Key)
-            || PropertyKeyWords.Contains(currentKey.Key);
-
-        if (!string.IsNullOrEmpty(className) && isPropertyKey)
-        {
-            var referencedClasses = files
-                .GetInAll(f => f.Store.GetReferencedClasses(f.File), f => (f.Key, f.Value.ModelFile.Path))
-                .ToDictionary(f => f.Key, f => f.Value);
-
-            if (referencedClasses.TryGetValue(className, out var referencedClass))
-            {
-                return CompleteProperty(referencedClass, includeExtends: false);
-            }
-        }
-
-        if (!string.IsNullOrEmpty(endpointName) && isPropertyKey)
-        {
-            var referencedEndpoints = files
-                .GetInAll(f => f.Store.GetReferencedEndpoints(f.File), f => (f.Key, f.Value.ModelFile.Path))
-                .ToDictionary(f => f.Key, f => f.Value);
-
-            if (referencedEndpoints.TryGetValue(endpointName, out var referencedEndpoint))
-            {
-                return CompleteProperty(referencedEndpoint, includeExtends: false);
-            }
-        }
-
-        if (!string.IsNullOrEmpty(decoratorName) && isPropertyKey)
-        {
-            var referencedDecorators = files
-                .GetInAll(f => f.Store.GetReferencedDecorators(f.File), f => (f.Key, f.Value.ModelFile.Path))
-                .ToDictionary(f => f.Key, f => f.Value);
-
-            if (referencedDecorators.TryGetValue(decoratorName, out var referencedDecorator))
-            {
-                return CompleteProperty(referencedDecorator, includeExtends: false);
-            }
-        }
-
-        var rootObject = GetRootObject();
-        if (rootObject.Object == "class")
-        {
-            var (Start, End) = GetObjectRange(text, rootObject.Line);
-            var classLines = text[Start..End];
-            var nameLine = classLines.OrderBy(GetIndentLevel).FirstOrDefault(l => l.Trim().StartsWith("name: "));
-            if (nameLine == null)
-            {
-                return new CompletionList();
-            }
-
-            className = nameLine.Split(':')[1].Trim();
-            var classe = files[0].File.Classes.SingleOrDefault(c => c.Name == className);
-            if (classe != null)
-            {
-                var includeExtends = false;
-                var isSelfClassPropertyKey =
-                    SelfClassPropertyKeyWords.Contains(currentKey.Key)
-                    || currentKey.Key == "properties"
-                        && GetParentKey(text, currentKey.Line, currentKey.End).Key == "indexes";
-
-                var isValues = false;
-                var isMappings = false;
-                if (!isSelfClassPropertyKey)
+        var existingParameters = Block.GetKeys(path);
+        return new(
+            container
+                .TemplateParameters.Where(p =>
+                    !existingParameters.Contains(p.Name.Value) && p.Name.Value.ShouldMatch(SearchText)
+                )
+                .Select(p => new CompletionItem
                 {
-                    var parentKey = currentKey;
-                    while (
-                        parentKey.Key != "class"
-                        && parentKey.Key != "mappings"
-                        && parentKey.Key != "values"
-                        && parentKey.Line > 0
-                    )
-                    {
-                        parentKey = GetParentKey(text, parentKey.Line, parentKey.End);
-                    }
-
-                    isValues = parentKey.Key == "values";
-                    isMappings = parentKey.Key == "mappings";
-                    includeExtends = isMappings || isValues;
-
-                    if (isMappings)
-                    {
-                        if (!IsCursorOnKey())
-                        {
-                            var (startP, endP) = GetObjectRange(text, parentKey.Line);
-                            var mappedClassLine = text[startP..endP].FirstOrDefault(l => l.Contains("class: "));
-                            if (mappedClassLine == null)
-                            {
-                                return new CompletionList();
-                            }
-
-                            className = mappedClassLine.TrimStart().Split(':')[1].Trim();
-                        }
-
-                        var referencedClasses = files
-                            .GetInAll(f => f.Store.GetReferencedClasses(f.File), f => (f.Key, f.Value.ModelFile.Path))
-                            .ToDictionary(f => f.Key, f => f.Value);
-
-                        if (referencedClasses.TryGetValue(className, out var aliasedClass))
-                        {
-                            classe = aliasedClass;
-                        }
-                    }
-                    else if (isValues && !IsCursorOnKey())
-                    {
-                        return new CompletionList();
-                    }
-                }
-
-                if (isValues || isMappings || isSelfClassPropertyKey)
-                {
-                    return CompleteProperty(classe, includeExtends);
-                }
-            }
-        }
-
-        return new CompletionList();
+                    Kind = CompletionItemKind.Property,
+                    Label = p.Name.Value,
+                    LabelDetails = new() { Description = p.Required ? $"{p.Comment} (requis)" : p.Comment },
+                    SortText = (p.Required ? "0" : "1") + p.Name.Value,
+                    TextEdit = ReplaceWord(p.Name.Value),
+                })
+        );
     }
 
     /// <summary>
@@ -414,176 +253,42 @@ public class CompletionProvider(
                 {
                     Kind = CompletionItemKind.Keyword,
                     Label = tag,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit { NewText = tag, Range = CompleteRange }),
+                    TextEdit = ReplaceWord(tag),
                 })
         );
     }
 
-    private static (string Key, int Line, int End) GetCurrentKey(string[] text, int line, int position)
+    /// <summary>
+    /// Complétion des propriétés d'une autre classe, d'un endpoint ou d'un décorateur (alias, association, flux de
+    /// données, valeur d'un mapping...).
+    /// </summary>
+    /// <param name="path">Chemin YAML du curseur.</param>
+    /// <returns>La liste de complétion.</returns>
+    public CompletionList CompleteTargetProperty(string path)
     {
-        var rootLine = text.ElementAtOrDefault(line) ?? string.Empty;
-        if (rootLine.Trim().StartsWith('-'))
+        // Valeur d'un mapping : propriétés de la classe mappée (à défaut, de la classe courante).
+        if (MappingValueRegex.Match(path) is { Success: true } mapping)
         {
-            rootLine = rootLine.Replace('-', ' ');
-        }
-
-        var isInLineObject = rootLine[..position].Contains(": {");
-        if (isInLineObject)
-        {
-            var isKey =
-                rootLine[..position].LastIndexOf(':')
-                < Math.Max(rootLine[..position].LastIndexOf(','), rootLine[..position].LastIndexOf('{'));
-            if (isKey)
+            var current = GetCurrentClass();
+            if (current == null)
             {
-                return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine.Split(':')[0].Length - 1);
-            }
-            else
-            {
-                return (
-                    Key: rootLine[rootLine[..position].LastIndexOf(':')..position].Split(':')[0],
-                    Line: line,
-                    End: rootLine[..position].LastIndexOf(':') - 1
-                );
-            }
-        }
-
-        if (rootLine[..position].Contains(": "))
-        {
-            return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine.Split(':')[0].Length - 1);
-        }
-
-        var requestLine = line;
-        var currentIndent = GetIndentLevel(text, line);
-        var rootIndent = currentIndent;
-
-        while (rootIndent >= currentIndent && requestLine > 0 && !rootLine.StartsWith("---"))
-        {
-            requestLine--;
-
-            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
-            while (
-                (
-                    string.IsNullOrWhiteSpace(rootLine)
-                    || rootLine.Contains('#') && string.IsNullOrWhiteSpace(rootLine[..rootLine.IndexOf('#')].Trim())
-                )
-                && requestLine > 0
-            )
-            {
-                requestLine--;
-                rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+                return new();
             }
 
-            rootIndent = GetIndentLevel(text, requestLine);
-            if (rootLine.Trim().StartsWith('-'))
+            var mappedName = Block.GetScalar(mapping.Groups["m"].Value, "class");
+            if (mappedName == null)
             {
-                rootLine = rootLine.Replace('-', ' ');
-            }
-        }
-
-        return (Key: rootLine.Split(":")[0].Trim(), Line: requestLine, End: rootLine.Split(":")[0].Length - 1);
-    }
-
-    private static int GetIndentLevel(string[] text, int lineNumber)
-    {
-        var line = text[lineNumber];
-        return GetIndentLevel(line);
-    }
-
-    private static int GetIndentLevel(string line)
-    {
-        if (line.StartsWith("---"))
-        {
-            return 0;
-        }
-
-        var isList = line.TrimStart().StartsWith('-');
-        if (isList)
-        {
-            line = line.Replace('-', ' ');
-        }
-
-        return line.Length - line.TrimStart().Length;
-    }
-
-    private static (int Start, int End) GetObjectRange(string[] text, int lineNumber)
-    {
-        var start = lineNumber;
-        var end = lineNumber;
-        var indentLevelLine = GetIndentLevel(text, lineNumber);
-        while (start > 0 && !text[start].StartsWith("---") && GetIndentLevel(text, start) >= indentLevelLine)
-        {
-            start--;
-            if (GetIndentLevel(text, start) == indentLevelLine && text[start].TrimStart().StartsWith('-'))
-            {
-                start--;
-                break;
-            }
-        }
-
-        while (
-            end < text.Length
-            && !text[end].StartsWith("---")
-            && GetIndentLevel(text, end) >= indentLevelLine
-            && !(GetIndentLevel(text, end) == indentLevelLine && text[end].TrimStart().StartsWith('-'))
-        )
-        {
-            end++;
-        }
-
-        return (Math.Min(start + 1, lineNumber), Math.Max(end, lineNumber));
-    }
-
-    private static (string Key, int Line, int End) GetParentKey(string[] text, int line, int position)
-    {
-        var rootLine = text.ElementAtOrDefault(line) ?? string.Empty;
-        var isInLineObject =
-            position < rootLine.Length && rootLine[..Math.Min(position, rootLine.Length - 1)].Contains(": {");
-        if (isInLineObject)
-        {
-            return (
-                Key: rootLine.TrimStart().Split(':')[0],
-                Line: line,
-                End: rootLine[..position].LastIndexOf(':') - 1
-            );
-        }
-
-        var requestLine = line;
-        var currentIndent = GetIndentLevel(text, line);
-        var rootIndent = currentIndent;
-
-        while (rootIndent >= currentIndent && requestLine > 0 && !rootLine.StartsWith("---"))
-        {
-            requestLine--;
-            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
-            while (
-                (
-                    string.IsNullOrWhiteSpace(rootLine)
-                    || rootLine.Contains('#') && string.IsNullOrWhiteSpace(rootLine[..rootLine.IndexOf('#')].Trim())
-                )
-                && requestLine > 0
-            )
-            {
-                requestLine--;
-                rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+                return new();
             }
 
-            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
-            rootIndent = GetIndentLevel(text, requestLine);
+            var target = FindReferenced(f => f.Store.GetReferencedClasses(f.File), c => c.ModelFile, mappedName);
+            return CompleteProperty(target ?? current, includeExtends: true);
         }
 
-        return (Key: rootLine.Split(":")[0].Trim(), Line: requestLine, End: rootLine.Split(":")[0].Length - 1);
-    }
-
-    private static (int Start, int End) GetParentRange(string[] text, int lineNumber)
-    {
-        var start = lineNumber;
-        var indentLevelLine = GetIndentLevel(text, lineNumber);
-        while (start > 0 && GetIndentLevel(text, start) >= indentLevelLine)
-        {
-            start--;
-        }
-
-        return GetObjectRange(text, start);
+        var objectPath = path[..(path.LastIndexOf('.') + 1)];
+        return ResolveTargetContainer(objectPath) is { } container
+            ? CompleteProperty(container, includeExtends: false)
+            : new();
     }
 
     private static int GetUseIndex(ModelFile file, string[] text)
@@ -611,9 +316,7 @@ public class CompletionProvider(
                     Kind = CompletionItemKind.Property,
                     Label = f.Name,
                     LabelDetails = new() { Description = $"{f.Comment}" },
-                    TextEdit = new TextEditOrInsertReplaceEdit(
-                        new TextEdit { NewText = f.Name, Range = CompleteRange }
-                    ),
+                    TextEdit = ReplaceWord(f.Name),
                 })
         );
     }
@@ -654,7 +357,7 @@ public class CompletionProvider(
                     LabelDetails = getDescription == null ? null : new() { Description = getDescription(x) },
                     InsertText = name,
                     SortText = isAvailable ? "0000" + name : name,
-                    TextEdit = new(new TextEdit { NewText = name, Range = CompleteRange }),
+                    TextEdit = ReplaceWord(name),
                     AdditionalTextEdits = isAvailable ? null : GetUsesEdit(getModelFile(x).Name),
                 };
             })
@@ -662,25 +365,21 @@ public class CompletionProvider(
     }
 
     /// <summary>
-    /// Complétion des paramètres d'un template (annotation ou décorateur), hors paramètres déjà renseignés.
+    /// Trouve un élément (classe, endpoint, décorateur) par son nom parmi ceux référencés par les fichiers du document.
     /// </summary>
-    private CompletionList CompleteTemplateParameters(IEnumerable<TemplateParameter> parameters, string path)
+    private T? FindReferenced<T>(
+        Func<(ModelFile File, ModelStore Store), IDictionary<string, T>> getReferenced,
+        Func<T, ModelFile> getModelFile,
+        string name
+    )
+        where T : class
     {
-        var existingParameters = GetExistingKeys(path);
-        return new(
-            parameters
-                .Where(p => !existingParameters.Contains(p.Name.Value) && p.Name.Value.ShouldMatch(SearchText))
-                .Select(p => new CompletionItem
-                {
-                    Kind = CompletionItemKind.Property,
-                    Label = p.Name.Value,
-                    LabelDetails = new() { Description = p.Required ? $"{p.Comment} (requis)" : p.Comment },
-                    SortText = (p.Required ? "0" : "1") + p.Name.Value,
-                    TextEdit = new TextEditOrInsertReplaceEdit(
-                        new TextEdit { NewText = p.Name.Value, Range = CompleteRange }
-                    ),
-                })
-        );
+        return files
+            .GetInAll(
+                f => getReferenced(f).TryGetValue(name, out var item) ? [item] : Enumerable.Empty<T>(),
+                item => (name, getModelFile(item).Path)
+            )
+            .FirstOrDefault();
     }
 
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range GetCompleteRange()
@@ -706,83 +405,38 @@ public class CompletionProvider(
     }
 
     /// <summary>
-    /// Clés déjà présentes (hors ligne courante) dans l'objet désigné par un chemin de nouvelle clé (point final),
-    /// déterminées en calculant le chemin YAML de chaque ligne du document courant.
+    /// Classe du document courant désignée par <c>class.name</c>.
     /// </summary>
-    private HashSet<string> GetExistingKeys(string path)
+    private Class? GetCurrentClass()
     {
-        var keys = new HashSet<string>();
-        foreach (var (_, linePath, _) in GetKeyPaths())
-        {
-            if (!linePath.StartsWith(path) || linePath.Length == path.Length)
-            {
-                continue;
-            }
-
-            var rest = linePath[path.Length..];
-            var key = rest.IndexOfAny(['.', '[']) is >= 0 and var sep ? rest[..sep] : rest;
-            if (key.Length > 0)
-            {
-                keys.Add(key);
-            }
-        }
-
-        return keys;
+        var name = Block.GetScalar("class.", "name");
+        return name == null ? null : files[0].File.Classes.SingleOrDefault(c => c.Name == name);
     }
 
     /// <summary>
-    /// Chemin YAML de la première clé de chaque ligne du document courant (hors ligne du curseur).
+    /// Résout le conteneur de paramètres (domaine, décorateur ou annotation) désigné par le chemin YAML du curseur.
     /// </summary>
-    private IEnumerable<(int Line, string Path, int Colon)> GetKeyPaths()
+    /// <param name="path">Chemin YAML du curseur.</param>
+    /// <returns>Le conteneur de paramètres, ou null s'il est introuvable.</returns>
+    private IParameterContainer? GetParameterContainer(string path)
     {
-        var docStart = position.Line;
-        while (docStart > 0 && !text[docStart - 1].StartsWith("---"))
+        if (path.EndsWith(".domain.parameters."))
         {
-            docStart--;
-        }
-
-        for (var i = docStart; i < text.Length && !text[i].StartsWith("---"); i++)
-        {
-            // Curseur juste après le ':' de la clé, pour ne pas tomber dans un éventuel commentaire en fin de ligne.
-            var colon = text[i].IndexOf(':');
-            if (i == position.Line || colon < 0)
+            var domainPath = path[..^"parameters.".Length];
+            var domainName = Block.GetScalar(domainPath, "name");
+            if (domainName == null)
             {
-                continue;
+                return null;
             }
 
-            if (YamlPathAnalyzer.GetPath(text, i, colon + 1) is { } linePath)
-            {
-                yield return (i, linePath, colon);
-            }
-        }
-    }
-
-    private (string Object, int Line) GetRootObject()
-    {
-        var requestLine = position.Line;
-        var rootLine = currentLine;
-        while (
-            !(
-                rootLine.StartsWith("class")
-                || rootLine.StartsWith("domain")
-                || rootLine.StartsWith("decorator")
-                || rootLine.StartsWith("converter")
-                || rootLine.StartsWith("endpoint")
-                || rootLine.StartsWith("dataFlow")
-                || rootLine.StartsWith("annotation")
-            )
-        )
-        {
-            requestLine--;
-            if (requestLine < 0 || rootLine.StartsWith("---"))
-            {
-                break;
-            }
-
-            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            return FindReferenced(f => f.Store.Domains, d => d.ModelFile, domainName);
         }
 
-        return (Object: rootLine.Split(":")[0], Line: requestLine);
+        var segments = path.TrimEnd('.').Split('.');
+        var name = segments[^1];
+        return segments.Length > 1 && segments[^2].StartsWith("decorators[")
+            ? FindReferenced(f => f.Store.GetReferencedDecorators(f.File), d => d.ModelFile, name)
+            : FindReferenced(f => f.Store.GetReferencedAnnotations(f.File), a => a.ModelFile, name);
     }
 
     private string GetSearchText()
@@ -825,5 +479,50 @@ public class CompletionProvider(
         var textBefore = currentLine[..position.Character];
         var colon = textBefore.LastIndexOf(':');
         return colon == -1 || colon < Math.Max(textBefore.LastIndexOf(','), textBefore.LastIndexOf('{'));
+    }
+
+    /// <summary>
+    /// Édition remplaçant le mot sous le curseur. Si ce mot suit directement le ':' séparant une clé et sa valeur,
+    /// un espace est ajouté au début du texte inséré.
+    /// </summary>
+    /// <param name="newText">Texte à insérer.</param>
+    private TextEditOrInsertReplaceEdit ReplaceWord(string newText)
+    {
+        var start = CompleteRange.Start.Character;
+        var followsColon = start > 0 && start <= currentLine.Length && currentLine[start - 1] == ':';
+        return new TextEditOrInsertReplaceEdit(
+            new TextEdit { NewText = followsColon ? $" {newText}" : newText, Range = CompleteRange }
+        );
+    }
+
+    /// <summary>
+    /// Résout le conteneur de propriétés (classe, endpoint ou décorateur) ciblé par l'objet contenant le curseur.
+    /// </summary>
+    /// <param name="objectPath">Chemin de l'objet, point final inclus.</param>
+    private IPropertyContainer? ResolveTargetContainer(string objectPath)
+    {
+        var className = Block.GetScalar(objectPath, "class") ?? Block.GetScalar(objectPath, "association");
+        if (
+            className != null
+            && FindReferenced(f => f.Store.GetReferencedClasses(f.File), c => c.ModelFile, className) is { } classe
+        )
+        {
+            return classe;
+        }
+
+        var endpointName = Block.GetScalar(objectPath, "endpoint");
+        if (
+            endpointName != null
+            && FindReferenced(f => f.Store.GetReferencedEndpoints(f.File), e => e.ModelFile, endpointName)
+                is { } endpoint
+        )
+        {
+            return endpoint;
+        }
+
+        var decoratorName = Block.GetScalar(objectPath, "decorator");
+        return decoratorName == null
+            ? null
+            : FindReferenced(f => f.Store.GetReferencedDecorators(f.File), d => d.ModelFile, decoratorName);
     }
 }
