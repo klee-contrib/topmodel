@@ -11,7 +11,7 @@ internal class ClassResolver(
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     TranslationStore translationStore
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des classes.
@@ -30,7 +30,7 @@ internal class ClassResolver(
                         && classe.InheritanceStrategy == InheritanceStrategy.JoinedTables
                     )
                     {
-                        yield return new ModelError(localizer, ErrorType.TMD3024, [classe.Name], classe);
+                        yield return Error(ErrorType.TMD3024, [classe.Name], classe);
                     }
 
                     if (
@@ -40,207 +40,206 @@ internal class ClassResolver(
                         && classe.InheritanceStrategy == InheritanceStrategy.DistinctTables
                     )
                     {
-                        yield return new ModelError(localizer, ErrorType.TMD3025, [classe.Name], classe);
+                        yield return Error(ErrorType.TMD3025, [classe.Name], classe);
                     }
 
                     if (classe.Extends != null && classe.Extends.ExtendedProperties.Count(p => p.PrimaryKey) != 1)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD3009,
                             [classe.Name, classe.Extends.Name],
                             classe,
-                            classe.ExtendsReference!
+                            classe.ExtendsReference
                         );
                     }
-                }
-                // Doublons de propriétés.
-                foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
-                {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0001,
-                        [property.Name],
-                        modelFile,
-                        property.SourceContainer != null
-                            ? classe
-                                .DecoratorReferences.Cast<Reference>()
-                                .Concat(classe.ImplementReferences)
-                                .FirstOrDefault(r => r.ReferenceName == property.SourceContainer.Name)
-                            : property.GetLocation()
-                    );
-                }
+                    // Doublons de propriétés.
+                    foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
+                    {
+                        yield return Error(
+                            ErrorType.TMD0001,
+                            [property.Name],
+                            modelFile,
+                            property.SourceContainer != null
+                                ? classe
+                                    .DecoratorReferences.Cast<Reference>()
+                                    .Concat(classe.ImplementReferences)
+                                    .FirstOrDefault(r => r.ReferenceName == property.SourceContainer.Name)
+                                : property.GetLocation()
+                        );
+                    }
 
-                // Doublons d'associations.
-                foreach (
-                    var property in classe
-                        .Properties.OfType<AssociationProperty>()
-                        .Where(p =>
-                            (p.Association == classe || p.Association == classe.Extends) && string.IsNullOrEmpty(p.Role)
-                        )
-                )
-                {
-                    yield return new ModelError(
-                        ErrorType.TMD3005,
-                        modelFile,
-                        $"Cette association sur la classe '{classe}' doit définir un rôle.",
-                        property.Decorator is not null
-                            ? classe.DecoratorReferences.FirstOrDefault(dr =>
-                                dr.ReferenceName == property.Decorator.Name
+                    // Doublons d'associations.
+                    foreach (
+                        var property in classe
+                            .Properties.OfType<AssociationProperty>()
+                            .Where(p =>
+                                (p.Association == classe || p.Association == classe.Extends)
+                                && string.IsNullOrEmpty(p.Role)
                             )
-                            : property.GetLocation()
-                    );
-                }
-
-                // Vérification de la cohérence des enums.
-                if (classe.Enum == EnumMode.Enum)
-                {
-                    foreach (
-                        var prop in classe.Properties.Where(c =>
-                            c.Composition != null && c.Composition?.Enum != EnumMode.Enum
-                            || c.Association != null && c.Association?.Enum != EnumMode.Enum
-                        )
                     )
                     {
                         yield return new ModelError(
-                            ErrorType.TMD3020,
-                            prop,
-                            $"Impossible de créer une composition ou une association vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe `enum: true` comme '{classe}'."
+                            ErrorType.TMD3005,
+                            modelFile,
+                            $"Cette association sur la classe '{classe}' doit définir un rôle.",
+                            property.Decorator is not null
+                                ? classe.DecoratorReferences.FirstOrDefault(dr =>
+                                    dr.ReferenceName == property.Decorator.Name
+                                )
+                                : property.GetLocation()
                         );
                     }
-                }
-                else if (classe.Enum == EnumMode.Class && classe.Readonly)
-                {
-                    foreach (
-                        var prop in classe.Properties.Where(c =>
-                            c.Composition != null && (c.Composition?.Enum == null || c.Composition?.Readonly != true)
-                            || c.Association != null
-                                && c.UseClassForAssociation
-                                && (c.Association?.Enum == null || c.Association?.Readonly != true)
-                        )
-                    )
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD3020,
-                            prop,
-                            $"Impossible de créer une composition ou une association classe vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe enum readonly comme '{classe}'."
-                        );
-                    }
-                }
 
-                // Vérification des valeurs.
-                foreach (
-                    var property in classe.Properties.Where(p =>
-                        p.DefaultValue != null
-                        && p.DefaultValue != ClassValue.Null
-                        && p.DefaultValue != ClassValue.Undefined
-                        && (
-                            p.AssociationMultiple
-                            || p.UseClassForAssociation
-                                && p.ReadonlyEnumClassAssociation == null
-                                && p.TrueEnumClassAssociation == null
-                        )
-                    )
-                )
-                {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD9013,
-                        [property.Name, classe.Name],
-                        classe,
-                        property.GetLocation()
-                    );
-                }
-
-                foreach (var value in classe.Values)
-                {
-                    foreach (var (property, v) in value.Value)
+                    // Vérification de la cohérence des enums.
+                    if (classe.Enum == EnumMode.Enum)
                     {
-                        if (
-                            v != ClassValue.Null
-                            && v != ClassValue.Undefined
-                            && (
-                                property.AssociationMultiple
-                                || classe.Enum != null
-                                    && property.UseClassForAssociation
-                                    && property.ReadonlyEnumClassAssociation == null
-                                    && property.TrueEnumClassAssociation == null
+                        foreach (
+                            var prop in classe.Properties.Where(c =>
+                                c.Composition != null && c.Composition?.Enum != EnumMode.Enum
+                                || c.Association != null && c.Association?.Enum != EnumMode.Enum
                             )
                         )
                         {
                             yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD9013,
-                                [property.Name, classe.Name],
-                                classe,
-                                classe
-                                    .ValueReferences[value.Reference]
-                                    .Keys.SingleOrDefault(r => r.ReferenceName == property.Name)
+                                ErrorType.TMD3020,
+                                prop,
+                                $"Impossible de créer une composition ou une association vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe `enum: true` comme '{classe}'."
                             );
                         }
                     }
-                }
-
-                // Doublons d'indexes
-                foreach (
-                    var index in classe.Indexes.Where(
-                        (idx1, i) =>
-                            classe
-                                .Indexes.Where(
-                                    (idx2, j) =>
-                                        idx2.Properties.OrderBy(p => p.Name)
-                                            .SequenceEqual(idx1.Properties.OrderBy(p => p.Name))
-                                        && j < i
-                                )
-                                .Any()
-                    )
-                )
-                {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD3021,
-                        [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
-                        modelFile,
-                        index.PropertyReferences.ElementAtOrDefault(0) ?? classe.GetLocation()
-                    );
-                }
-            }
-        }
-
-        // Vérification des contraintes d'unicités
-        foreach (
-            var classe in modelFiles
-                .SelectMany(mf => mf.Classes)
-                .Where(c => c.Values.Count > 0 && (c.IsPersistent || c.Indexes.Any(idx => idx.Unique)))
-        )
-        {
-            var uks = new List<IEnumerable<IProperty>>();
-            uks.AddRange(classe.Indexes.Where(idx => idx.Unique).Select(idx => idx.Properties));
-            if (classe.IsPersistent)
-            {
-                uks.Add(classe.PrimaryKey.Any() ? classe.PrimaryKey : (classe.Extends?.PrimaryKey ?? []));
-            }
-
-            foreach (var uk in uks)
-            {
-                if (!classe.Values.All(value => uk.All(p => value.Value.ContainsKey(p))))
-                {
-                    continue;
-                }
-
-                var ukValues = classe.Values.Select(value => string.Concat(uk.Select(p => value.Value[p]))).ToList();
-                for (int i = 0; i < classe.Values.Count; i++)
-                {
-                    var ukValue = string.Concat(uk.Select(p => classe.Values[i].Value[p]));
-                    if (ukValues.IndexOf(ukValue) < i)
+                    else if (classe.Enum == EnumMode.Class && classe.Readonly)
                     {
-                        var duplicateValue = classe.Values[i];
-                        yield return new ModelError(
-                            ErrorType.TMD3012,
-                            duplicateValue,
-                            $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]",
-                            duplicateValue.Reference
+                        foreach (
+                            var prop in classe.Properties.Where(c =>
+                                c.Composition != null
+                                    && (c.Composition?.Enum == null || c.Composition?.Readonly != true)
+                                || c.Association != null
+                                    && c.UseClassForAssociation
+                                    && (c.Association?.Enum == null || c.Association?.Readonly != true)
+                            )
+                        )
+                        {
+                            yield return new ModelError(
+                                ErrorType.TMD3020,
+                                prop,
+                                $"Impossible de créer une composition ou une association classe vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe enum readonly comme '{classe}'."
+                            );
+                        }
+                    }
+
+                    // Vérification des valeurs.
+                    foreach (
+                        var property in classe.Properties.Where(p =>
+                            p.DefaultValue != null
+                            && p.DefaultValue != ClassValue.Null
+                            && p.DefaultValue != ClassValue.Undefined
+                            && (
+                                p.AssociationMultiple
+                                || p.UseClassForAssociation
+                                    && p.ReadonlyEnumClassAssociation == null
+                                    && p.TrueEnumClassAssociation == null
+                            )
+                        )
+                    )
+                    {
+                        yield return Error(
+                            ErrorType.TMD9013,
+                            [property.Name, classe.Name],
+                            classe,
+                            property.GetLocation()
                         );
+                    }
+
+                    foreach (var value in classe.Values)
+                    {
+                        foreach (var (property, v) in value.Value)
+                        {
+                            if (
+                                v != ClassValue.Null
+                                && v != ClassValue.Undefined
+                                && (
+                                    property.AssociationMultiple
+                                    || classe.Enum != null
+                                        && property.UseClassForAssociation
+                                        && property.ReadonlyEnumClassAssociation == null
+                                        && property.TrueEnumClassAssociation == null
+                                )
+                            )
+                            {
+                                yield return Error(
+                                    ErrorType.TMD9013,
+                                    [property.Name, classe.Name],
+                                    classe,
+                                    classe
+                                        .ValueReferences[value.Reference]
+                                        .Keys.SingleOrDefault(r => r.ReferenceName == property.Name)
+                                );
+                            }
+                        }
+                    }
+
+                    // Doublons d'indexes
+                    foreach (
+                        var index in classe.Indexes.Where(
+                            (idx1, i) =>
+                                classe
+                                    .Indexes.Where(
+                                        (idx2, j) =>
+                                            idx2.Properties.OrderBy(p => p.Name)
+                                                .SequenceEqual(idx1.Properties.OrderBy(p => p.Name))
+                                            && j < i
+                                    )
+                                    .Any()
+                        )
+                    )
+                    {
+                        yield return Error(
+                            ErrorType.TMD3021,
+                            [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
+                            modelFile,
+                            index.PropertyReferences.ElementAtOrDefault(0) ?? classe.GetLocation()
+                        );
+                    }
+                }
+            }
+
+            // Vérification des contraintes d'unicités
+            foreach (
+                var classe in modelFiles
+                    .SelectMany(mf => mf.Classes)
+                    .Where(c => c.Values.Count > 0 && (c.IsPersistent || c.Indexes.Any(idx => idx.Unique)))
+            )
+            {
+                var uks = new List<IEnumerable<IProperty>>();
+                uks.AddRange(classe.Indexes.Where(idx => idx.Unique).Select(idx => idx.Properties));
+                if (classe.IsPersistent)
+                {
+                    uks.Add(classe.PrimaryKey.Any() ? classe.PrimaryKey : (classe.Extends?.PrimaryKey ?? []));
+                }
+
+                foreach (var uk in uks)
+                {
+                    if (!classe.Values.All(value => uk.All(p => value.Value.ContainsKey(p))))
+                    {
+                        continue;
+                    }
+
+                    var ukValues = classe
+                        .Values.Select(value => string.Concat(uk.Select(p => value.Value[p])))
+                        .ToList();
+                    for (int i = 0; i < classe.Values.Count; i++)
+                    {
+                        var ukValue = string.Concat(uk.Select(p => classe.Values[i].Value[p]));
+                        if (ukValues.IndexOf(ukValue) < i)
+                        {
+                            var duplicateValue = classe.Values[i];
+                            yield return new ModelError(
+                                ErrorType.TMD3012,
+                                duplicateValue,
+                                $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]",
+                                duplicateValue.Reference
+                            );
+                        }
                     }
                 }
             }
@@ -329,8 +328,7 @@ internal class ClassResolver(
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD0002,
                     [classe.ExtendsReference.ReferenceName],
                     classe,
@@ -344,8 +342,7 @@ internal class ClassResolver(
                 && extends.Type != classe.Type
             )
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD3006,
                     [classe.Name, classe.ExtendsReference.ReferenceName],
                     classe,
@@ -368,8 +365,7 @@ internal class ClassResolver(
             {
                 if (!referencedClasses.TryGetValue(implementReference.ReferenceName, out var implements))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0002,
                         [implementReference.ReferenceName],
                         classe,
@@ -380,8 +376,7 @@ internal class ClassResolver(
 
                 if (implements.Type != ClassType.Interface)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD3007,
                         [implementReference.ReferenceName],
                         classe,
@@ -392,8 +387,7 @@ internal class ClassResolver(
 
                 if (classe.Type == ClassType.Interface)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD3008,
                         [implementReference.ReferenceName],
                         classe,
@@ -412,8 +406,7 @@ internal class ClassResolver(
 
                 if (existing.Contains(implements))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD3022,
                         [implementReference.ReferenceName, classe.Name],
                         classe,
@@ -445,13 +438,7 @@ internal class ClassResolver(
 
                     if (property == null)
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0004,
-                            [propRef.ReferenceName, classe.Name],
-                            classe,
-                            propRef
-                        );
+                        yield return Error(ErrorType.TMD0004, [propRef.ReferenceName, classe.Name], classe, propRef);
                     }
                     else
                     {
@@ -487,8 +474,7 @@ internal class ClassResolver(
 
                 if (classe.DefaultProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [classe.DefaultPropertyReference.ReferenceName, classe.Name],
                         classe,
@@ -508,8 +494,7 @@ internal class ClassResolver(
 
                 if (classe.OrderProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [classe.OrderPropertyReference.ReferenceName, classe.Name],
                         classe,
@@ -529,8 +514,7 @@ internal class ClassResolver(
 
                 if (classe.FlagProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [classe.FlagPropertyReference.ReferenceName, classe.Name],
                         classe,
@@ -550,8 +534,7 @@ internal class ClassResolver(
 
                 if (classe.LocaleProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [classe.LocalePropertyReference.ReferenceName, classe.Name],
                         classe,
@@ -575,8 +558,7 @@ internal class ClassResolver(
 
                     if (classe.DiscriminatorProperty == null)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0004,
                             [classe.DiscriminatorPropertyReference.ReferenceName, classe.Name],
                             classe,
@@ -692,7 +674,7 @@ internal class ClassResolver(
         {
             if (classe.Type != ClassType.Regular)
             {
-                yield return new ModelError(localizer, ErrorType.TMD3026, [classe.Name], classe);
+                yield return Error(ErrorType.TMD3026, [classe.Name], classe);
                 continue;
             }
 
@@ -714,8 +696,7 @@ internal class ClassResolver(
 
                     if (property == null)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0004,
                             [value.Key.ReferenceName, classe.Name],
                             classe,

@@ -293,8 +293,8 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetConvertedValue(
         string value,
-        Domain? fromDomain,
-        Domain? toDomain,
+        DomainInstance? fromDomain,
+        DomainInstance? toDomain,
         string tag,
         bool nullableValueType
     )

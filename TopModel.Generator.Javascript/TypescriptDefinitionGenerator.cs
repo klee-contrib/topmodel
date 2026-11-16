@@ -60,7 +60,7 @@ public class TypescriptDefinitionGenerator(
                     )
                     .Where(d => d != null)
                     .Distinct()
-                    .Select(domain => (domain.Name.Value, domainImport))
+                    .Select(domain => (domain.Name, domainImport))
             );
         }
 
@@ -399,7 +399,7 @@ public class TypescriptDefinitionGenerator(
                 }
                 else if (!Config.IsListComposition(property, tag))
                 {
-                    fw.Write($"{property.Domain.Name}");
+                    fw.Write($"{property.Domain?.Name}");
                     if (hasConfigurator)
                     {
                         fw.Write(", ");

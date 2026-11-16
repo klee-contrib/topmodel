@@ -1,3 +1,4 @@
 ﻿namespace TopModel.Core.Model;
 
-public record DecoratorInstance(Decorator Decorator, IDictionary<string, string> Parameters);
+public record DecoratorInstance(Decorator Decorator, IDictionary<string, string> Parameters)
+    : ParametersInstance(Parameters);

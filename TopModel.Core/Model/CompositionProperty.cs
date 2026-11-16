@@ -14,9 +14,7 @@ internal class CompositionProperty(Reference location) : IProperty
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
-    public Domain Domain { get; set; } = null!;
-
-    public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
+    public DomainInstance Domain { get; set; } = null!;
 
     public IList<string>? Tags { get; set; }
 
@@ -146,7 +144,6 @@ internal class CompositionProperty(Reference location) : IProperty
             CustomProperties = CustomProperties,
             Decorator = container as Decorator,
             Domain = Domain,
-            DomainParameters = DomainParameters,
             Endpoint = container as Endpoint,
             Name = Name,
             Required = Required,

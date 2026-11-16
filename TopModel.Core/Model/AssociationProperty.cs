@@ -129,11 +129,10 @@ internal class AssociationProperty(Reference location) : IProperty
         set => _useClass = value;
     }
 
-    public Domain Domain =>
-        Multiple && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
-
-    public IDictionary<string, string> DomainParameters =>
-        Property?.DomainParameters ?? new Dictionary<string, string>();
+    public DomainInstance Domain =>
+        Multiple && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false)
+            ? new(ld, Property.Domain.Parameters)
+            : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }
 

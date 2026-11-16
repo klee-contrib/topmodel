@@ -11,7 +11,7 @@ public class AnnotationResolver(
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Annotation> referencedAnnotations
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résout les annotations.
@@ -59,26 +59,13 @@ public class AnnotationResolver(
                 }
                 else
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0011,
-                        [varName.ReferenceName],
-                        annotation,
-                        varName,
-                        isError: false
-                    );
+                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], annotation, varName);
                 }
             }
 
             foreach (var templateParam in annotation.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    annotation,
-                    templateParam.GetLocation()
-                );
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], annotation, templateParam.GetLocation());
             }
 
             if (annotation.TemplateParameters.Any() && annotation.Global)
@@ -222,43 +209,6 @@ public class AnnotationResolver(
         }
     }
 
-    private IEnumerable<ModelError> CheckAnnotationParameters(
-        object target,
-        AnnotationReference annotationRef,
-        Annotation annotation
-    )
-    {
-        foreach (
-            var extraParameter in annotationRef.ParameterReferences.Keys.Where(pr =>
-                !annotation.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0007,
-                [extraParameter.ReferenceName, annotation.Name],
-                target,
-                extraParameter
-            );
-        }
-
-        foreach (
-            var missingParameter in annotation.TemplateParameters.Where(tp =>
-                tp.Required && !annotationRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0008,
-                [missingParameter.Name, annotation.Name],
-                target,
-                annotationRef
-            );
-        }
-    }
-
     private IEnumerable<ModelError> ResolveAnnotationReferences(
         IAnnotationContainer container,
         IEnumerable<AnnotationReference> annotationReferences,
@@ -322,7 +272,7 @@ public class AnnotationResolver(
                         );
                     }
 
-                    foreach (var error in CheckAnnotationParameters(container, annotationRef, annotation))
+                    foreach (var error in CheckParameters(container, annotationRef, annotation))
                     {
                         yield return error;
                     }

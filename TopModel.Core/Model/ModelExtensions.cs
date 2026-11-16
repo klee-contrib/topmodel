@@ -143,7 +143,10 @@ public static class ModelExtensions
                     && (op == null || op.Domain != prop.Domain || prop is AliasProperty { As: not null })
                 )
                 {
-                    yield return (prop.Domain, prop is AliasProperty { As: not null } or { AssociationMultiple: true });
+                    yield return (
+                        prop.Domain.Domain,
+                        prop is AliasProperty { As: not null } or { AssociationMultiple: true }
+                    );
                 }
 
                 if (op != null)
@@ -155,7 +158,7 @@ public static class ModelExtensions
                 }
                 else if (prop is AssociationProperty { Multiple: true } ap && ap.Property.Domain != prop.Domain)
                 {
-                    yield return (ap.Property.Domain, false);
+                    yield return (ap.Property.Domain.Domain, false);
                 }
             }
         }
@@ -292,12 +295,17 @@ public static class ModelExtensions
         {
             get
             {
-                var propMappingType = new PropertyMappingType(
-                    prop.Domain,
-                    prop.Domain?.Collection == true && prop.DomainChain.Count() > 1 && prop.DomainChain.First().Generic
-                        ? prop.DomainChain.ElementAt(1).Domain
-                        : null
-                );
+                var propMappingType =
+                    prop.Domain != null
+                        ? new PropertyMappingType(
+                            prop.Domain.Domain,
+                            prop.Domain?.Collection == true
+                            && prop.DomainChain.Count() > 1
+                            && prop.DomainChain.First().Generic
+                                ? prop.DomainChain.ElementAt(1).Domain
+                                : null
+                        )
+                        : null;
 
                 var cpk =
                     prop.Composition != null && prop.Composition!.ExtendedProperties.Count(p => p.PrimaryKeyish) == 1
@@ -308,19 +316,19 @@ public static class ModelExtensions
                 {
                     { Composition: Class c, Domain.Collection: true } => new ClassCollectionMappingType(
                         c,
-                        prop.Domain,
+                        prop.Domain.Domain,
                         cpk
                     ),
-                    { Composition: Class c } => new ClassMappingType(c, prop.Domain, cpk),
+                    { Composition: Class c } => new ClassMappingType(c, prop.Domain?.Domain, cpk),
                     { EnumProperty.Class.Enum: EnumMode.Enum } => propMappingType,
                     {
                         Association: Class c,
                         AssociationProperty: IProperty ap,
                         UseClassForAssociation: true,
                         AssociationMultiple: true
-                    } => new ClassCollectionMappingType(c, prop.Domain!, ap),
+                    } => new ClassCollectionMappingType(c, prop.Domain!.Domain, ap),
                     { Association: Class c, AssociationProperty: IProperty ap, UseClassForAssociation: true } =>
-                        new ClassMappingType(c, prop.Domain, ap),
+                        new ClassMappingType(c, prop.Domain?.Domain, ap),
                     _ => propMappingType,
                 };
             }

@@ -8,7 +8,13 @@ public static class TemplateExtensions
 {
     public static string ParseTemplate(this string template, IProperty p, WatcherConfigBase config, string tag)
     {
-        return template.ParseTemplate(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag);
+        return template.ParseTemplate(
+            p,
+            p.Domain?.TemplateParameters ?? [],
+            p.Domain?.Parameters ?? new Dictionary<string, string>(),
+            config,
+            tag
+        );
     }
 
     public static string ParseTemplate(
@@ -222,7 +228,7 @@ public static class TemplateExtensions
 
         if (input.StartsWith("domain."))
         {
-            return input["domain.".Length..].ResolveVariable(p.Domain, config, tag);
+            return input["domain.".Length..].ResolveVariable(p.Domain.Domain, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))

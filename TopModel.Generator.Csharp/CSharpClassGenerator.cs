@@ -454,7 +454,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             {
                 w.AddUsing("Kinetix.Modeling.Annotations");
                 w.AddUsing(Config.DomainNamespace);
-                w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
+                w.WriteAttribute(
+                    1,
+                    "Domain",
+                    $@"Domains.{property.Domain.Name.Replace("DO_", string.Empty).ToPascalCase(strict: true)}"
+                );
             }
 
             if (type.TrimEnd('?') == "string" && property.Domain.Length != null)

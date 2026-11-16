@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Annotation(Reference location) : IVariableContainer
+public class Annotation(Reference location) : IParameterContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 

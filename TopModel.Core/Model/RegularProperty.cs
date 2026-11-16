@@ -33,9 +33,7 @@ internal class RegularProperty : IProperty
 
     public string? FinalTrigram => Trigram ?? Class?.Trigram;
 
-    public Domain Domain { get; set; } = null!;
-
-    public IDictionary<string, string> DomainParameters { get; set; } = new Dictionary<string, string>();
+    public DomainInstance Domain { get; set; } = null!;
 
     public string Comment { get; set; } = null!;
 
@@ -141,7 +139,6 @@ internal class RegularProperty : IProperty
             Decorator = container as Decorator,
             DefaultValue = _defaultValue,
             Domain = Domain,
-            DomainParameters = DomainParameters,
             Endpoint = container as Endpoint,
             Label = Label,
             Location = Location,

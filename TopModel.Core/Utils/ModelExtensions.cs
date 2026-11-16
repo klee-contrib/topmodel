@@ -168,9 +168,9 @@ public static class ModelExtensions
     {
         return modelStore
             .Properties.Where(p =>
-                p is RegularProperty rp && rp.Domain == domain
-                || p is AliasProperty alp && alp.DomainReference != null && alp.Domain == domain
-                || p is CompositionProperty cp && cp.Domain == domain
+                p is RegularProperty rp && rp.Domain?.Domain == domain
+                || p is AliasProperty alp && alp.DomainReference != null && alp.Domain?.Domain == domain
+                || p is CompositionProperty cp && cp.Domain?.Domain == domain
             )
             .Select(p =>
             {
@@ -230,6 +230,7 @@ public static class ModelExtensions
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
             IProperty { PropertyMapping: PropertyMapping param } => param.FromMapper.Class.ModelFile,
             Domain domain => domain.ModelFile,
+            DomainInstance { Domain: Domain domain } => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
             DecoratorInstance { Decorator: Decorator decorator } => decorator.ModelFile,

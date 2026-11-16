@@ -217,6 +217,17 @@ public class WatcherConfigBase
     }
 
     /// <summary>
+    /// Récupère l'implémentation du domaine pour la config.
+    /// </summary>
+    /// <param name="domain">Décorateur.</param>
+    /// <param name="tag">Nom du tag.</param>
+    /// <returns>Implémentation.</returns>
+    public virtual DomainImplementation? GetImplementation(DomainInstance? domain, string tag)
+    {
+        return GetImplementation(domain?.Implementations, tag);
+    }
+
+    /// <summary>
     /// Récupère l'implémentation du décorateur pour la config.
     /// </summary>
     /// <param name="decorator">Décorateur.</param>

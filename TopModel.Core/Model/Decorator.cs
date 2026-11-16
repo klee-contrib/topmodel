@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Decorator(Reference location) : IPropertyContainer, IVariableContainer
+public class Decorator(Reference location) : IParameterContainer, IPropertyContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 

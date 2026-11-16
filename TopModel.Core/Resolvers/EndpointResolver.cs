@@ -6,7 +6,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> modelFiles)
+internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> modelFiles) : BaseResolver(localizer)
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des endpoints.
@@ -20,8 +20,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
             {
                 foreach (var property in endpoint.Params.GetDuplicates(p => p.GetParamName()))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0001,
                         [property.Name],
                         modelFile,
@@ -39,13 +38,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                         && endpoint.Params.Any(p => p.ParamLocation == ParamLocation.FormData)
                 )
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD7007,
-                        [endpoint.Name.Value],
-                        modelFile,
-                        endpoint.GetLocation()
-                    );
+                    yield return Error(ErrorType.TMD7007, [endpoint.Name.Value], modelFile, endpoint.GetLocation());
                 }
 
                 foreach (var param in endpoint.Params.Where(p => p.OwnLocation != null))
@@ -54,13 +47,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                     {
                         if (param.ParamLocation == ParamLocation.Query || param.ParamLocation == ParamLocation.Route)
                         {
-                            yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD7008,
-                                [param.Name],
-                                modelFile,
-                                param.GetLocation()
-                            );
+                            yield return Error(ErrorType.TMD7008, [param.Name], modelFile, param.GetLocation());
                         }
 
                         if (
@@ -71,13 +58,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                             )
                         )
                         {
-                            yield return new ModelError(
-                                localizer,
-                                ErrorType.TMD7009,
-                                [param.Name],
-                                modelFile,
-                                param.GetLocation()
-                            );
+                            yield return Error(ErrorType.TMD7009, [param.Name], modelFile, param.GetLocation());
                         }
                     }
                     else if (
@@ -85,13 +66,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                         && param.ParamLocation == ParamLocation.Route
                     )
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD7010,
-                            [param.Name],
-                            modelFile,
-                            param.GetLocation()
-                        );
+                        yield return Error(ErrorType.TMD7010, [param.Name], modelFile, param.GetLocation());
                     }
                 }
 
@@ -108,8 +83,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
 
                         if (param == null)
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD7005,
                                 [
                                     endpoint.Name.Value,
@@ -142,13 +116,11 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                         )
                     )
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Warning(
                             ErrorType.TMD7004,
                             [queryParam.GetParamName()],
                             endpoint,
-                            queryParam.GetLocation(),
-                            isError: false
+                            queryParam.GetLocation()
                         );
                     }
                 }

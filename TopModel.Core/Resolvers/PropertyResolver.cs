@@ -13,7 +13,7 @@ internal class PropertyResolver(
     IDictionary<string, Class> referencedClasses,
     IDictionary<string, Endpoint> referencedEndpoints,
     IDictionary<string, Decorator> referencedDecorators
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résolutions des références sur les propriétés propres de chaque container, à l'exception de celles qui sont sur d'autres propriétés.
@@ -31,8 +31,7 @@ internal class PropertyResolver(
                         || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain)
                     )
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0003,
                             [rp.DomainReference?.ReferenceName ?? string.Empty],
                             rp,
@@ -41,28 +40,24 @@ internal class PropertyResolver(
                         break;
                     }
 
-                    foreach (var error in CheckDomainParameters(rp, rp.DomainReference, domain))
+                    foreach (var error in CheckParameters(rp, rp.DomainReference, domain))
                     {
                         yield return error;
                     }
 
-                    rp.Domain = domain;
-                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(
-                        pr => pr.Key.ReferenceName,
-                        pr => pr.Value.Value
+                    rp.Domain = new(
+                        domain,
+                        rp.DomainReference.ParameterReferences.ToDictionary(
+                            pr => pr.Key.ReferenceName,
+                            pr => pr.Value.Value
+                        )
                     );
                     break;
 
                 case AssociationProperty ap:
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0002,
-                            [ap.Reference.ReferenceName],
-                            ap,
-                            ap.Reference
-                        );
+                        yield return Error(ErrorType.TMD0002, [ap.Reference.ReferenceName], ap, ap.Reference);
                         break;
                     }
 
@@ -72,7 +67,7 @@ internal class PropertyResolver(
                     {
                         if (!modelFiles.SelectMany(mf => mf.Classes).Contains(association))
                         {
-                            yield return new ModelError(localizer, ErrorType.TMD9008, [], ap, ap.Reference);
+                            yield return Error(ErrorType.TMD9008, [], ap, ap.Reference);
                             break;
                         }
                         ap.ReverseProperty = new ReverseAssociationProperty
@@ -87,25 +82,13 @@ internal class PropertyResolver(
                 case CompositionProperty cp:
                     if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD0002,
-                            [cp.Reference.ReferenceName],
-                            cp,
-                            cp.Reference
-                        );
+                        yield return Error(ErrorType.TMD0002, [cp.Reference.ReferenceName], cp, cp.Reference);
                         break;
                     }
 
                     if (composition.Enum == EnumMode.Enum)
                     {
-                        yield return new ModelError(
-                            localizer,
-                            ErrorType.TMD9010,
-                            [cp.Reference.ReferenceName],
-                            cp,
-                            cp.Reference
-                        );
+                        yield return Error(ErrorType.TMD9010, [cp.Reference.ReferenceName], cp, cp.Reference);
                         break;
                     }
 
@@ -115,8 +98,7 @@ internal class PropertyResolver(
                     {
                         if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD0003,
                                 [cp.DomainReference.ReferenceName],
                                 cp,
@@ -125,15 +107,17 @@ internal class PropertyResolver(
                             break;
                         }
 
-                        foreach (var error in CheckDomainParameters(cp, cp.DomainReference, cpDomain))
+                        foreach (var error in CheckParameters(cp, cp.DomainReference, cpDomain))
                         {
                             yield return error;
                         }
 
-                        cp.Domain = cpDomain;
-                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(
-                            pr => pr.Key.ReferenceName,
-                            pr => pr.Value.Value
+                        cp.Domain = new(
+                            cpDomain,
+                            cp.DomainReference.ParameterReferences.ToDictionary(
+                                pr => pr.Key.ReferenceName,
+                                pr => pr.Value.Value
+                            )
                         );
                     }
 
@@ -144,8 +128,7 @@ internal class PropertyResolver(
                     {
                         if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD0003,
                                 [alp.DomainReference.ReferenceName],
                                 alp,
@@ -154,15 +137,17 @@ internal class PropertyResolver(
                             break;
                         }
 
-                        foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
+                        foreach (var error in CheckParameters(alp, alp.DomainReference, aliasDomain))
                         {
                             yield return error;
                         }
 
-                        alp.Domain = aliasDomain;
-                        alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(
-                            pr => pr.Key.ReferenceName,
-                            pr => pr.Value.Value
+                        alp.Domain = new(
+                            aliasDomain,
+                            alp.DomainReference.ParameterReferences.ToDictionary(
+                                pr => pr.Key.ReferenceName,
+                                pr => pr.Value.Value
+                            )
                         );
                     }
 
@@ -175,8 +160,7 @@ internal class PropertyResolver(
                             )
                         )
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD0002,
                                 [alp.CompositionReference.ReferenceName],
                                 alp,
@@ -262,7 +246,7 @@ internal class PropertyResolver(
                         && !classe.PropertySourceOrder.Contains(PropertySource.Implements)
                     )
                     {
-                        yield return new ModelError(localizer, ErrorType.TMD3023, [classe.Name, "implements"], classe);
+                        yield return Error(ErrorType.TMD3023, [classe.Name, "implements"], classe);
                     }
 
                     if (
@@ -270,7 +254,7 @@ internal class PropertyResolver(
                         && !classe.PropertySourceOrder.Contains(PropertySource.Decorators)
                     )
                     {
-                        yield return new ModelError(localizer, ErrorType.TMD3023, [classe.Name, "decorators"], classe);
+                        yield return Error(ErrorType.TMD3023, [classe.Name, "decorators"], classe);
                     }
                 }
 
@@ -351,13 +335,7 @@ internal class PropertyResolver(
         {
             if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9002,
-                    [ap.Reference.ReferenceName],
-                    ap,
-                    ap.Reference
-                );
+                yield return Error(ErrorType.TMD9002, [ap.Reference.ReferenceName], ap, ap.Reference);
                 continue;
             }
 
@@ -367,13 +345,7 @@ internal class PropertyResolver(
                 && ap.PropertyReference == null
             )
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD9002,
-                    [ap.Reference.ReferenceName],
-                    ap,
-                    ap.Reference
-                );
+                yield return Error(ErrorType.TMD9002, [ap.Reference.ReferenceName], ap, ap.Reference);
                 continue;
             }
 
@@ -384,18 +356,17 @@ internal class PropertyResolver(
                 ) && ap.Multiple
             )
             {
-                yield return new ModelError(localizer, ErrorType.TMD9006, [], ap, ap.Reference);
+                yield return Error(ErrorType.TMD9006, [], ap, ap.Reference);
 
                 if (ap.WithReverse != null)
                 {
-                    yield return new ModelError(localizer, ErrorType.TMD9007, [], ap, ap.Reference);
+                    yield return Error(ErrorType.TMD9007, [], ap, ap.Reference);
                 }
             }
 
             if (ap.Multiple && ap.Property?.Domain != null && !ap.Property.Domain.AsDomains.ContainsKey(ap.As))
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD9003,
                     [ap.Property.Domain.Name ?? string.Empty, ap.As],
                     ap,
@@ -410,8 +381,7 @@ internal class PropertyResolver(
                 && !(ap.Class?.PrimaryKey.FirstOrDefault()?.Domain?.AsDomains.ContainsKey(ap.As) ?? false)
             )
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD9004,
                     [ap.Class?.PrimaryKey.FirstOrDefault()?.Domain?.Name ?? string.Empty, ap.As],
                     ap,
@@ -426,8 +396,7 @@ internal class PropertyResolver(
                 );
                 if (referencedProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [ap.PropertyReference.ReferenceName, ap.Association.Name],
                         ap,
@@ -445,13 +414,12 @@ internal class PropertyResolver(
         {
             if (alp.Composition != null && alp.Property is not CompositionProperty and not AssociationProperty)
             {
-                yield return new ModelError(localizer, ErrorType.TMD9009, [], alp, alp.CompositionReference);
+                yield return Error(ErrorType.TMD9009, [], alp, alp.CompositionReference);
             }
 
             if (alp.AssociationMultiple && alp.Class?.IsPersistent == true)
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD9012,
                     [alp.OriginalProperty?.Name ?? string.Empty, alp.OriginalProperty?.Class.Name ?? string.Empty],
                     alp,
@@ -470,45 +438,11 @@ internal class PropertyResolver(
             )
         )
         {
-            yield return new ModelError(
-                localizer,
+            yield return Error(
                 ErrorType.TMD9011,
                 [cp.DomainChain.LastOrDefault().Domain?.Name ?? string.Empty, cp.Name],
                 cp,
                 cp.DomainReference
-            );
-        }
-    }
-
-    private IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
-    {
-        foreach (
-            var extraParameter in domainRef.ParameterReferences.Keys.Where(pr =>
-                !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0007,
-                [extraParameter.ReferenceName, domain.Name],
-                property,
-                extraParameter
-            );
-        }
-
-        foreach (
-            var missingParameter in domain.TemplateParameters.Where(tp =>
-                tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0008,
-                [missingParameter.Name, domain.Name],
-                property,
-                domainRef
             );
         }
     }
@@ -527,8 +461,7 @@ internal class PropertyResolver(
             {
                 if (!referencedClasses.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0002,
                         [alp.Reference.ClassReference.ReferenceName],
                         alp,
@@ -548,8 +481,7 @@ internal class PropertyResolver(
                     )
                 )
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0006,
                         [alp.Reference.EndpointReference.ReferenceName],
                         alp,
@@ -569,8 +501,7 @@ internal class PropertyResolver(
                     )
                 )
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0005,
                         [alp.Reference.DecoratorReference.ReferenceName],
                         alp,
@@ -595,8 +526,7 @@ internal class PropertyResolver(
                 );
                 if (aliasedProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [propReference.ReferenceName, propertyContainer.Name],
                         alp,
@@ -608,13 +538,13 @@ internal class PropertyResolver(
 
             foreach (var include in alp.Reference.IncludeReferences.GetDuplicates(p => p.ReferenceName))
             {
-                yield return new ModelError(localizer, ErrorType.TMD9001, [include.ReferenceName], alp, include);
+                yield return Error(ErrorType.TMD9001, [include.ReferenceName], alp, include);
                 shouldBreak = true;
             }
 
             foreach (var exclude in alp.Reference.ExcludeReferences.GetDuplicates(p => p.ReferenceName))
             {
-                yield return new ModelError(localizer, ErrorType.TMD9001, [exclude.ReferenceName], alp, exclude);
+                yield return Error(ErrorType.TMD9001, [exclude.ReferenceName], alp, exclude);
                 shouldBreak = true;
             }
 
@@ -642,11 +572,10 @@ internal class PropertyResolver(
 
                 if (prop.As != null && prop.Domain == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD9005,
                         [
-                            (prop.DomainOverride ?? prop.OriginalProperty?.Domain)?.Name ?? string.Empty,
+                            (prop.DomainOverride ?? prop.OriginalProperty?.Domain)?.Domain.Name ?? string.Empty,
                             prop.As,
                             prop.OriginalProperty?.Name ?? string.Empty,
                             prop.OriginalProperty?.Class.Name ?? string.Empty,

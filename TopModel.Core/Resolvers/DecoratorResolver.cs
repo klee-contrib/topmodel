@@ -11,7 +11,7 @@ internal class DecoratorResolver(
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Decorator> referencedDecorators
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résout les décorateurs sur les classes, les endpoints et les autres décorateurs.
@@ -50,26 +50,13 @@ internal class DecoratorResolver(
                 }
                 else
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0011,
-                        [varName.ReferenceName],
-                        decorator,
-                        varName,
-                        isError: false
-                    );
+                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], decorator, varName);
                 }
             }
 
             foreach (var templateParam in decorator.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    decorator,
-                    templateParam.GetLocation()
-                );
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], decorator, templateParam.GetLocation());
             }
         }
 
@@ -87,13 +74,7 @@ internal class DecoratorResolver(
                 if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var targetDecorator))
                 {
                     isError = true;
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0005,
-                        [decoratorRef.ReferenceName],
-                        container,
-                        decoratorRef
-                    );
+                    yield return Error(ErrorType.TMD0005, [decoratorRef.ReferenceName], container, decoratorRef);
                 }
                 else
                 {
@@ -147,7 +128,7 @@ internal class DecoratorResolver(
                             );
                         }
 
-                        foreach (var error in CheckDecoratorParameters(container, decoratorRef, targetDecorator))
+                        foreach (var error in CheckParameters(container, decoratorRef, targetDecorator))
                         {
                             yield return error;
                         }
@@ -172,43 +153,6 @@ internal class DecoratorResolver(
             {
                 continue;
             }
-        }
-    }
-
-    private IEnumerable<ModelError> CheckDecoratorParameters(
-        IPropertyContainer container,
-        DecoratorReference decoratorRef,
-        Decorator decorator
-    )
-    {
-        foreach (
-            var extraParameter in decoratorRef.ParameterReferences.Keys.Where(pr =>
-                !decorator.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0007,
-                [extraParameter.ReferenceName, decorator.Name],
-                container,
-                extraParameter
-            );
-        }
-
-        foreach (
-            var missingParameter in decorator.TemplateParameters.Where(tp =>
-                tp.Required && !decoratorRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)
-            )
-        )
-        {
-            yield return new ModelError(
-                localizer,
-                ErrorType.TMD0008,
-                [missingParameter.Name, decorator.Name],
-                container,
-                decoratorRef
-            );
         }
     }
 }

@@ -11,8 +11,7 @@ internal class AliasProperty : IProperty
     private Class? _composition;
     private IDictionary<string, string> _customProperties = new Dictionary<string, string>();
     private string? _defaultValue;
-    private Domain? _domain;
-    private IDictionary<string, string>? _domainParameters;
+    private DomainInstance? _domain;
     private string? _label;
     private string? _name;
     private ParamLocation? _paramLocation;
@@ -144,21 +143,21 @@ internal class AliasProperty : IProperty
 
     public bool DiscardAssociations { get; set; }
 
-    public Domain Domain
+    public DomainInstance Domain
     {
         get
         {
             var domain = _domain ?? _property?.Domain;
             return As != null
                 ? domain != null && domain.AsDomains.TryGetValue(As, out var asDomain)
-                    ? asDomain
+                    ? new(asDomain, domain.Parameters)
                     : null!
                 : domain!;
         }
         set => _domain = value;
     }
 
-    public Domain? DomainOverride => _domain;
+    public DomainInstance? DomainOverride => _domain;
 
     public Class? Composition
     {
@@ -167,12 +166,6 @@ internal class AliasProperty : IProperty
     }
 
     public ClassReference? CompositionReference { get; set; }
-
-    public IDictionary<string, string> DomainParameters
-    {
-        get => _domainParameters ?? _property?.DomainParameters ?? new Dictionary<string, string>();
-        set => _domainParameters = value;
-    }
 
     public DomainReference? DomainReference { get; set; }
 
@@ -425,7 +418,6 @@ internal class AliasProperty : IProperty
             Decorator = container as Decorator,
             DefaultValue = _defaultValue,
             DiscardAssociations = DiscardAssociations,
-            DomainParameters = _domainParameters!,
             Endpoint = container as Endpoint,
             ExcludedAnnotations = ExcludedAnnotations,
             Label = _label,
@@ -498,7 +490,6 @@ internal class AliasProperty : IProperty
             Decorator = Decorator,
             DefaultValue = _defaultValue,
             DiscardAssociations = DiscardAssociations,
-            DomainParameters = _domainParameters!,
             DomainReference = DomainReference,
             Endpoint = Endpoint,
             ExcludedAnnotations = ExcludedAnnotations,

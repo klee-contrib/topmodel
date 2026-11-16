@@ -1,11 +1,10 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Utils;
-using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Domain(Reference location) : IAnnotationContainer, IVariableContainer
+public class Domain(Reference location) : IAnnotationContainer, IParameterContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -22,6 +21,8 @@ public class Domain(Reference location) : IAnnotationContainer, IVariableContain
     public GeneratedValueDefinition? GeneratedValue { get; internal set; }
 
     public ParamLocation? ParamLocation { get; internal set; }
+
+    public string? MediaType { get; internal set; }
 
     public bool Collection { get; internal set; }
 
@@ -48,10 +49,6 @@ public class Domain(Reference location) : IAnnotationContainer, IVariableContain
         new Dictionary<string, DomainImplementation>();
 
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
-
-    public string? MediaType { get; internal set; }
-
-    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(strict: true);
 
     public IEnumerable<ParameterReference> VariableReferences =>
         Implementations
@@ -89,16 +86,6 @@ public class Domain(Reference location) : IAnnotationContainer, IVariableContain
     public required ModelFile ModelFile { get; init; }
 
     internal Reference Location { get; } = location;
-
-    public Converter? GetConverter(Domain? toDomain)
-    {
-        if (toDomain != null && this != toDomain)
-        {
-            return ConvertersFrom.FirstOrDefault(c => c.From.Contains(this) && c.To.Contains(toDomain));
-        }
-
-        return null;
-    }
 
     public override string ToString()
     {

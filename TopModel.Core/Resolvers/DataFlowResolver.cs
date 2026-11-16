@@ -10,7 +10,7 @@ internal class DataFlowResolver(
     IList<ModelFile> modelFiles,
     IDictionary<string, DataFlow> referencedDataFlows,
     IDictionary<string, Class> referencedClasses
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résout les flux de données.
@@ -22,8 +22,7 @@ internal class DataFlowResolver(
         {
             if (!referencedClasses.TryGetValue(dataFlow.ClassReference.ReferenceName, out var classe))
             {
-                yield return new ModelError(
-                    localizer,
+                yield return Error(
                     ErrorType.TMD0002,
                     [dataFlow.ClassReference.ReferenceName],
                     dataFlow,
@@ -41,8 +40,7 @@ internal class DataFlowResolver(
                 );
                 if (dataFlow.ActiveProperty == null)
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0004,
                         [dataFlow.ActivePropertyReference.ReferenceName, classe.Name],
                         dataFlow,
@@ -73,8 +71,7 @@ internal class DataFlowResolver(
             {
                 if (!referencedClasses.TryGetValue(source.ClassReference.ReferenceName, out var sourceClass))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0002,
                         [source.ClassReference.ReferenceName],
                         dataFlow,
@@ -93,8 +90,7 @@ internal class DataFlowResolver(
                     );
                     if (joinProperty == null)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0004,
                             [joinPropertyReference.ReferenceName, classe.Name],
                             dataFlow,

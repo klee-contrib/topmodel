@@ -366,7 +366,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <returns><see langword="true" /> si la propriété est une composition de liste.</returns>
     public virtual bool IsListComposition(IProperty property, string tag)
     {
-        return property is { Composition: Class c, Domain: Domain d }
+        return property is { Composition: Class c, Domain.Domain: Domain d }
             && c.Enum == null
             && (GetImplementation(d, tag)?.GenericType?.EndsWith("[]") ?? false);
     }

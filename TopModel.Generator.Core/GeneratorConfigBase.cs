@@ -304,7 +304,12 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             .Distinct();
     }
 
-    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, string tag)
+    public virtual string GetConvertedValue(
+        string value,
+        DomainInstance? fromDomain,
+        DomainInstance? toDomain,
+        string tag
+    )
     {
         var converter = fromDomain?.GetConverter(toDomain);
         if (converter != null && fromDomain != null && toDomain != null)
@@ -314,14 +319,18 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             {
                 value = GetImplementation(converter, tag)!
                     .Text.Replace("{value}", value)
-                    .ParseTemplate(fromDomain, toDomain, this, tag);
+                    .ParseTemplate(fromDomain.Domain, toDomain.Domain, this, tag);
             }
         }
 
         return value;
     }
 
-    public virtual IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain, string tag)
+    public virtual IEnumerable<string> GetConverterImports(
+        DomainInstance? fromDomain,
+        DomainInstance? toDomain,
+        string tag
+    )
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
         {
@@ -560,7 +569,9 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         return property switch
         {
-            { Composition: Class c, Domain: Domain domain } => (GetImplementation(domain, tag)?.GenericType ?? "{T}")
+            { Composition: Class c, Domain.Domain: Domain domain } => (
+                GetImplementation(domain, tag)?.GenericType ?? "{T}"
+            )
                 .Replace("{T}", GetTypeName(c))
                 .ParseTemplate(property, this, tag),
             { Composition: Class c } => GetTypeName(c),

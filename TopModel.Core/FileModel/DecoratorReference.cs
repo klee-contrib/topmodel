@@ -2,11 +2,8 @@
 
 namespace TopModel.Core.FileModel;
 
-public class DecoratorReference : Reference
+public class DecoratorReference : ReferenceWithParameters
 {
     internal DecoratorReference(Scalar scalar)
         : base(scalar) { }
-
-    public IDictionary<ParameterReference, StringWithVariables> ParameterReferences { get; internal set; } =
-        new Dictionary<ParameterReference, StringWithVariables>();
 }

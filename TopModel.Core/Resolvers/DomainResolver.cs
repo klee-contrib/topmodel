@@ -11,7 +11,7 @@ internal class DomainResolver(
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Domain> domains
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résout les convertisseurs.
@@ -31,14 +31,7 @@ internal class DomainResolver(
                 }
                 else
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0011,
-                        [varName.ReferenceName],
-                        converter,
-                        varName,
-                        isError: false
-                    );
+                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], converter, varName);
                 }
             }
 
@@ -49,7 +42,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(localizer, ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
+                    yield return Error(ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
                     break;
                 }
 
@@ -60,7 +53,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(localizer, ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
+                    yield return Error(ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
                     break;
                 }
 
@@ -82,13 +75,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0003,
-                        [domainReference.ReferenceName],
-                        domain,
-                        domainReference
-                    );
+                    yield return Error(ErrorType.TMD0003, [domainReference.ReferenceName], domain, domainReference);
                     continue;
                 }
 
@@ -97,18 +84,12 @@ internal class DomainResolver(
 
             foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    domain,
-                    templateParam.GetLocation()
-                );
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.GetLocation());
             }
 
             if (domain.Collection && !domain.Generic)
             {
-                yield return new ModelError(localizer, ErrorType.TMD6004, [], domain, domain.GetLocation());
+                yield return Error(ErrorType.TMD6004, [], domain, domain.GetLocation());
             }
 
             domain.Variables.Clear();
@@ -121,14 +102,7 @@ internal class DomainResolver(
                 }
                 else
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0011,
-                        [varName.ReferenceName],
-                        domain,
-                        varName,
-                        isError: false
-                    );
+                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], domain, varName);
                 }
             }
         }

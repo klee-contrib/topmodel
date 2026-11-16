@@ -11,7 +11,7 @@ internal class MapperResolver(
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     IEnumerable<Converter> converters
-)
+) : BaseResolver(localizer)
 {
     /// <summary>
     /// Résout les mappers.
@@ -25,8 +25,7 @@ internal class MapperResolver(
             {
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
                 {
-                    yield return new ModelError(
-                        localizer,
+                    yield return Error(
                         ErrorType.TMD0002,
                         [mappings.ClassReference.ReferenceName],
                         classe,
@@ -57,8 +56,7 @@ internal class MapperResolver(
                     );
                     if (currentProperty == null)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0004,
                             [mapping.Key.ReferenceName, classe.Name],
                             classe,
@@ -77,8 +75,7 @@ internal class MapperResolver(
 
                     if (mappedProperty == null)
                     {
-                        yield return new ModelError(
-                            localizer,
+                        yield return Error(
                             ErrorType.TMD0004,
                             [mapping.Value.ReferenceName, mappings.Class.Name],
                             classe,
@@ -116,8 +113,7 @@ internal class MapperResolver(
                         );
                         if (currentProperty == null)
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD0004,
                                 [mapping.TargetPropertyReference.ReferenceName, classe.Name],
                                 classe,
@@ -136,8 +132,7 @@ internal class MapperResolver(
                         );
                         if (mappedProperty == null)
                         {
-                            yield return new ModelError(
-                                localizer,
+                            yield return Error(
                                 ErrorType.TMD0004,
                                 [mapping.Property.Name, classe.Name],
                                 classe,
@@ -171,13 +166,7 @@ internal class MapperResolver(
             {
                 foreach (var param in mapper.Params.GetDuplicates(p => p.Name))
                 {
-                    yield return new ModelError(
-                        localizer,
-                        ErrorType.TMD0001,
-                        [param.Name],
-                        classe,
-                        param.GetLocation()
-                    );
+                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.GetLocation());
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p =>
@@ -323,7 +312,7 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.ToMappers.GetDuplicates(p => p.Name))
             {
-                yield return new ModelError(localizer, ErrorType.TMD0001, [mapper.Name], classe, mapper.GetLocation());
+                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.GetLocation());
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
@@ -449,7 +438,7 @@ internal class MapperResolver(
         if (
             sourceProperty.MappingType is PropertyMappingType
             && targetProperty.MappingType is PropertyMappingType
-            && CheckDomains(sourceProperty.Domain, targetProperty.Domain)
+            && CheckDomains(sourceProperty.Domain?.Domain, targetProperty.Domain?.Domain)
         )
         {
             return true;
@@ -482,10 +471,10 @@ internal class MapperResolver(
             targetProperty.MappingType is PropertyMappingType tt0cp
             && (
                 sourceProperty.MappingType is ClassMappingType st1cp
-                    && CheckDomains(st1cp.Property?.Domain, tt0cp.Domain)
+                    && CheckDomains(st1cp.Property?.Domain?.Domain, tt0cp.Domain)
                 || sourceProperty.MappingType is ClassCollectionMappingType st2cp
                     && tt0cp.ItemDomain != null
-                    && CheckDomains(st2cp.Property?.Domain, tt0cp.ItemDomain)
+                    && CheckDomains(st2cp.Property?.Domain?.Domain, tt0cp.ItemDomain)
             )
         )
         {
@@ -500,7 +489,7 @@ internal class MapperResolver(
             && tt1pc.Class.Readonly
             && tt1pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt1pc.Class.EnumKey
-            && CheckDomains(sourceProperty.Domain, tt1pc.Class.EnumKey.Domain)
+            && CheckDomains(sourceProperty.Domain?.Domain, tt1pc.Class.EnumKey.Domain?.Domain)
         )
         {
             return true;
@@ -515,7 +504,7 @@ internal class MapperResolver(
             && tt2pc.Class.Readonly
             && tt2pc.Class.EnumKey != null
             && sourceProperty.UniqueValuedProperty == tt2pc.Class.EnumKey
-            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey.Domain)
+            && CheckDomains(st1pc.ItemDomain, tt2pc.Class.EnumKey.Domain?.Domain)
         )
         {
             return true;

@@ -23,9 +23,7 @@ public interface IProperty : IAnnotationContainer
 
     bool Required { get; }
 
-    Domain Domain { get; }
-
-    IDictionary<string, string> DomainParameters { get; }
+    DomainInstance Domain { get; }
 
     DomainReference? DomainReference { get; }
 

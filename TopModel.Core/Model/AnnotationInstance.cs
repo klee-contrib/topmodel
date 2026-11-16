@@ -1,3 +1,4 @@
 ﻿namespace TopModel.Core.Model;
 
-public record AnnotationInstance(Annotation Annotation, IDictionary<string, string> Parameters);
+public record AnnotationInstance(Annotation Annotation, IDictionary<string, string> Parameters)
+    : ParametersInstance(Parameters);
