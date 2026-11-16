@@ -28,11 +28,17 @@ public abstract class EndpointsGeneratorBase<T>(
 
     protected abstract string GetFilePath(ModelFile file, string tag);
 
-    protected abstract void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints);
+    protected abstract Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    );
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
-        Parallel.ForEach(
+        await Parallel.ForEachAsync(
             Config
                 .Files.Values.SelectMany(file =>
                     Config
@@ -40,13 +46,9 @@ public abstract class EndpointsGeneratorBase<T>(
                         .Select(tag => (tag, file, filePath: GetFilePath(file, tag)))
                 )
                 .GroupBy(file => file.filePath),
-            file =>
+            ct,
+            async (file, ct) =>
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
                 var endpoints = file.SelectMany(f => f.file.Endpoints.Where(Config.FilterEndpoint))
                     .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
                     .Distinct()
@@ -55,7 +57,13 @@ public abstract class EndpointsGeneratorBase<T>(
 
                 if (endpoints.Any())
                 {
-                    HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
+                    await HandleFile(
+                        file.Key,
+                        file.First().file.Options.Endpoints.FileName,
+                        file.First().tag,
+                        endpoints,
+                        ct
+                    );
                 }
             }
         );

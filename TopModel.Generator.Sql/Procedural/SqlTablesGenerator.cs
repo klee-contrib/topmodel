@@ -22,9 +22,15 @@ public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterP
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
-        using var writer = this.OpenSqlWriter(fileName);
+        await using var writer = this.OpenSqlWriter(fileName);
 
         var appName = classes.First().Namespace.App;
 
@@ -56,7 +62,7 @@ public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterP
         /* En Oracle, en 2024, il n'y a pas de type booléen. On utilise un numeric(1) et on rajoute une check constraint pour forcer les valeurs 0 et 1. */
         bool IsNumericBoolean(IProperty property)
         {
-            var sqlType = Config.GetType(property);
+            var sqlType = Config.GetType(property, tag);
             return sqlType == "number(1)" && SqlConfig.IsBoolean(property);
         }
 

@@ -41,7 +41,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         )
         {
             w.AddUsings(Config.GetDomainImports(property, tag));
-            w.AddUsings(Config.GetValueImports(property));
+            w.AddUsings(Config.GetValueImports(property, tag));
 
             switch (property)
             {
@@ -139,7 +139,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         if (item.Type != ClassType.Interface)
         {
-            GenerateConstProperties(w, item);
+            GenerateConstProperties(w, item, tag);
 
             if (Config.EnumCols && Config.IsPersistent(item, tag))
             {
@@ -151,11 +151,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             GenerateFlags(w, item);
         }
 
-        GenerateReadonlyEnumClassInstances(w, item);
+        GenerateReadonlyEnumClassInstances(w, item, tag);
 
         GenerateProperties(w, item, tag);
 
-        GenerateReadonlyEnumKeyMapper(w, item);
+        GenerateReadonlyEnumKeyMapper(w, item, tag);
 
         w.WriteLine("}");
     }
@@ -165,7 +165,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="item">La classe générée.</param>
-    protected virtual void GenerateConstProperties(CSharpWriter w, Class item)
+    /// <param name="tag">Tag.</param>
+    protected virtual void GenerateConstProperties(CSharpWriter w, Class item, string tag)
     {
         if (!Config.UniqueValueGeneration.CanConst)
         {
@@ -213,7 +214,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteSummary(1, @const.Label);
             w.WriteLine(
                 1,
-                $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name} = {Config.FormatValue(@const.Prop, @const.Code)};"
+                $"public const {Config.GetType(@const.Prop, tag).TrimEnd('?')} {@const.Name} = {Config.FormatValue(@const.Prop, @const.Code, tag)};"
             );
         }
 
@@ -355,7 +356,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteLine(1, "/// <inheritdoc />");
             w.WriteLine(
                 1,
-                $"public override {Config.GetType(dp, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, item.DiscriminatorValue ?? item.SqlName)};"
+                $"public override {Config.GetType(dp, tag, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, tag, item.DiscriminatorValue ?? item.SqlName)};"
             );
         }
 
@@ -394,6 +395,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var type = Config.GetType(
             property,
+            tag,
             nonNullable: isDiscriminator
                 || property.AssociationMultiple && Config.UseClassForAssociation(property)
                 || property.Required && (Config.RequiredNonNullable(tag) || property.Composition != null)
@@ -501,7 +503,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
 
             var defaultValue = isDiscriminator
-                ? Config.GetValue(property, property.Class.DiscriminatorValue)
+                ? Config.GetValue(property, tag, property.Class.DiscriminatorValue)
                 : Config.GetDefaultValue(property, tag);
 
             w.Write(1, "public");
@@ -532,7 +534,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         }
     }
 
-    protected virtual void GenerateReadonlyEnumClassInstances(CSharpWriter w, Class item)
+    protected virtual void GenerateReadonlyEnumClassInstances(CSharpWriter w, Class item, string tag)
     {
         if (item.Enum != EnumMode.Class || !item.Readonly)
         {
@@ -555,7 +557,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             foreach (var refProp in refValue.Value.ToList())
             {
                 var value = Regex.Replace(
-                    Config.GetValue(refProp.Key, refProp.Value),
+                    Config.GetValue(refProp.Key, tag, refProp.Value),
                     $"^{Config.GetTypeName(item)}\\.",
                     string.Empty
                 );
@@ -591,7 +593,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         w.WriteLine();
     }
 
-    protected virtual void GenerateReadonlyEnumKeyMapper(CSharpWriter w, Class item)
+    protected virtual void GenerateReadonlyEnumKeyMapper(CSharpWriter w, Class item, string tag)
     {
         if (item.Enum != EnumMode.Class || !item.Readonly || item.EnumKey == null)
         {
@@ -607,7 +609,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         w.WriteReturns(1, "L'instance correspondante.");
         w.WriteLine(
             1,
-            $"public static {Config.GetTypeName(item)} GetValue({Config.GetType(key, nonNullable: true)} {key.NameCamel})"
+            $"public static {Config.GetTypeName(item)} GetValue({Config.GetType(key, tag, nonNullable: true)} {key.NameCamel})"
         );
         w.WriteLine(1, "{");
         w.WriteLine(2, $"return {key.NameCamel} switch");
@@ -616,7 +618,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         {
             w.WriteLine(
                 3,
-                $"{Config.GetValue(key, refValue.Value[key]).Replace($"{Config.GetTypeName(item)}.", string.Empty)} => {refValue.Name.ToPascalCase(strictIfUppercase: true)},"
+                $"{Config.GetValue(key, tag, refValue.Value[key]).Replace($"{Config.GetTypeName(item)}.", string.Empty)} => {refValue.Name.ToPascalCase(strictIfUppercase: true)},"
             );
         }
         w.WriteLine(3, "_ => throw new InvalidOperationException()");
@@ -639,9 +641,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         return Config.GetAllValues(item).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         if (classe.Enum != EnumMode.Enum)
         {

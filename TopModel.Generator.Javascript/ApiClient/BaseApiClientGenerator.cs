@@ -36,9 +36,9 @@ public abstract class BaseApiClientGenerator(ILogger<BaseApiClientGenerator> log
         IList<Endpoint> endpoints
     );
 
-    protected string GetReturnType(IProperty? returns)
+    protected string GetReturnType(IProperty? returns, string tag)
     {
-        return returns != null ? Config.GetType(returns) : "void";
+        return returns != null ? Config.GetType(returns, tag) : "void";
     }
 
     protected IProperty? GetReturns(Endpoint endpoint)
@@ -56,9 +56,15 @@ public abstract class BaseApiClientGenerator(ILogger<BaseApiClientGenerator> log
         return varName;
     }
 
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    protected override async Task HandleFile(
+        string filePath,
+        string fileName,
+        string tag,
+        IList<Endpoint> endpoints,
+        CancellationToken ct = default
+    )
     {
-        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
 
         var frameworkImports = GetFrameworkImports(filePath, tag, endpoints).GroupAndSort();
         var endpointImports = Config.GetEndpointImports(filePath, endpoints, tag).GroupAndSort();
@@ -84,7 +90,7 @@ public abstract class BaseApiClientGenerator(ILogger<BaseApiClientGenerator> log
 
         foreach (var endpoint in endpoints)
         {
-            WriteEndpoint(fw, endpoint);
+            WriteEndpoint(fw, endpoint, tag);
         }
 
         WriteClassDeclarationEnd(fw);
@@ -114,11 +120,12 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
 
     protected virtual void WriteClassDeclarationStart(IFileWriter fw, string fileName) { }
 
-    protected abstract void WriteEndpoint(IFileWriter fw, Endpoint endpoint);
+    protected abstract void WriteEndpoint(IFileWriter fw, Endpoint endpoint, string tag);
 
     protected void WriteEndpointSignature(
         IFileWriter fw,
         Endpoint endpoint,
+        string tag,
         params IList<(string Name, string? Description, string Type, string? DefaultValue)> extraParams
     )
     {
@@ -136,7 +143,7 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
         }
 
         var returns = GetReturns(endpoint);
-        var returnType = GetReturnType(returns);
+        var returnType = GetReturnType(returns, tag);
         var hasReturns = HasReturns(returnType);
 
         if (hasReturns)
@@ -150,9 +157,9 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
         var @params = Config.GetParams(endpoint).ToList();
         foreach (var param in @params)
         {
-            var defaultValue = Config.GetValue(param);
+            var defaultValue = Config.GetValue(param, tag);
             fw.Write(
-                $"{param.GetParamName()}{(!param.Required && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}{(@params[^1] != param || extraParams.Count > 0 ? ", " : string.Empty)}"
+                $"{param.GetParamName()}{(!param.Required && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, tag)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}{(@params[^1] != param || extraParams.Count > 0 ? ", " : string.Empty)}"
             );
         }
 

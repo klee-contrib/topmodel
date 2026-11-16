@@ -18,7 +18,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
     /// <param name="classList">Liste de classes à générer.</param>
-    protected virtual void GenerateReferenceAccessorsImplementation(string fileName, string tag, IList<Class> classList)
+    protected virtual async Task GenerateReferenceAccessorsImplementation(
+        string fileName,
+        string tag,
+        IList<Class> classList
+    )
     {
         var ns = classList[0].Namespace;
 
@@ -28,7 +32,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         var interfaceName = $"I{implementationName}";
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
 
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         var usings = new HashSet<string>();
 
@@ -59,7 +63,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             {
                 foreach (var value in classe.Values.SelectMany(v => v.Value))
                 {
-                    foreach (var @using in Config.GetValueImports(value.Key, value.Value))
+                    foreach (var @using in Config.GetValueImports(value.Key, tag, value.Value))
                     {
                         usings.Add(@using);
                     }
@@ -190,7 +194,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     + serviceName
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)}){Environment.NewLine}{{"
             );
-            WriteReferenceAccessorBody(w, classe);
+            WriteReferenceAccessorBody(w, classe, tag);
             w.WriteLine(1, "}");
 
             if (classList.IndexOf(classe) != classList.Count - 1)
@@ -209,7 +213,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
     /// <param name="classList">Liste de classes à générer.</param>
-    protected virtual void GenerateReferenceAccessorsInterface(
+    protected virtual async Task GenerateReferenceAccessorsInterface(
         string fileType,
         string fileName,
         string tag,
@@ -222,7 +226,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         var interfaceName =
             $"I{(fileType.StartsWith("db") ? "Db" : string.Empty)}{Config.GetReferenceAccessorName(ns, tag)}";
 
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         var usings = new HashSet<string>();
 
@@ -292,7 +296,13 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
         var classList = classes
             .OrderBy(
@@ -303,11 +313,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         if (fileType == "db-implementation")
         {
-            GenerateReferenceAccessorsImplementation(fileName, tag, classList);
+            await GenerateReferenceAccessorsImplementation(fileName, tag, classList);
         }
         else
         {
-            GenerateReferenceAccessorsInterface(fileType, fileName, tag, classList);
+            await GenerateReferenceAccessorsInterface(fileType, fileName, tag, classList);
         }
     }
 
@@ -316,7 +326,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
-    protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe)
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteReferenceAccessorBody(CSharpWriter w, Class classe, string tag)
     {
         if (classe.Enum == EnumMode.Class && classe.Readonly && !Config.PersistedReferencesResources)
         {
@@ -329,7 +340,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                 2,
                 $@"return new List<{Config.GetTypeName(classe)}>
 {{
-    {string.Join($",{Environment.NewLine}    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, prop.Value)}"))} }}"))}
+    {string.Join($",{Environment.NewLine}    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {Config.GetValue(prop.Key, tag, prop.Value)}"))} }}"))}
 }};"
             );
             return;

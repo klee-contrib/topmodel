@@ -16,7 +16,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? ModelRootPath { get; set; }
 
     /// <summary>
-    /// Nom du fichier généré contenant les enums d'un module. Par défaut : `enums`.
+    /// Nom du fichier généré contenant les enums d'un module.
     /// </summary>
     public virtual string EnumsFileName { get; set; } = "enums";
 
@@ -36,27 +36,27 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? ApiClientFilePath { get; set; }
 
     /// <summary>
-    /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération.
+    /// Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'.
     /// </summary>
     public virtual string? FetchPath { get; set; }
 
     /// <summary>
-    /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
+    /// Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.
     /// </summary>
     public virtual string DomainPath { get; set; } = "./domains";
 
     /// <summary>
-    /// Framework cible pour la génération.
+    /// Framework cible pour la génération des clients d'API JavaScript.
     /// </summary>
     public virtual TargetFramework ApiMode { get; set; }
 
     /// <summary>
-    /// Typage des entités générées
+    /// Mode de génération des entités TypeScript.
     /// </summary>
     public virtual EntityMode EntityMode { get; set; }
 
     /// <summary>
-    /// Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées.
+    /// Génère <c>isRequired</c>, <c>label</c> (et <c>comment</c>) sur les compositions dans les entités typées.
     /// </summary>
     public virtual bool ExtendedCompositions { get; set; }
 
@@ -71,7 +71,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual string? EntityTypesPath { get; set; }
 
     /// <summary>
-    /// Mode de génération (JS, JSON ou JSON Schema).
+    /// Mode de génération (JS ou JSON).
     /// </summary>
     public virtual ResourceMode ResourceMode { get; set; }
 
@@ -81,19 +81,26 @@ public class JavascriptConfig : GeneratorConfigBase
     public virtual bool GenerateComments { get; set; }
 
     /// <summary>
-    /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`.
+    /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec <c>resourceMode: js</c>.
     /// </summary>
     public virtual bool GenerateMainResourceFiles { get; set; }
 
     public override string? DefaultLanguage => "ts";
 
     public override string[] PropertiesWithModuleVariableSupport =>
-        [nameof(ModelRootPath), nameof(ApiClientFilePath), nameof(ResourceRootPath)];
+        [
+            .. base.PropertiesWithModuleVariableSupport,
+            nameof(ModelRootPath),
+            nameof(ApiClientFilePath),
+            nameof(ResourceRootPath),
+        ];
 
-    public override string[] PropertiesWithFileNameVariableSupport => [nameof(ApiClientFilePath)];
+    public override string[] PropertiesWithFileNameVariableSupport =>
+        [.. base.PropertiesWithFileNameVariableSupport, nameof(ApiClientFilePath)];
 
     public override string[] PropertiesWithTagVariableSupport =>
         [
+            .. base.PropertiesWithTagVariableSupport,
             nameof(ModelRootPath),
             nameof(ResourceRootPath),
             nameof(ApiClientRootPath),
@@ -101,7 +108,8 @@ public class JavascriptConfig : GeneratorConfigBase
             nameof(DomainPath),
         ];
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourceRootPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(ResourceRootPath)];
 
     protected override bool UseValueNameForValues => false;
 
@@ -191,7 +199,7 @@ public class JavascriptConfig : GeneratorConfigBase
                 endpoints
                     .SelectMany(GetParams)
                     .Where(p => p.ParamLocation == ParamLocation.Query)
-                    .SelectMany(dep => GetValueImportPaths(fileName, dep))
+                    .SelectMany(dep => GetValueImportPaths(fileName, dep, tag))
             )
             .Where(import => import.Path != null)
             .GroupAndSort();
@@ -334,15 +342,17 @@ public class JavascriptConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="fileName">Nom du fichier source.</param>
     /// <param name="prop">Propriété.</param>
+    /// <param name="tag">Tag.</param>
     /// <param name="value">Valeur.</param>
     /// <returns>Imports des valeurs.</returns>
     public virtual IEnumerable<(string Import, string Path)> GetValueImportPaths(
         string fileName,
         IProperty prop,
+        string tag,
         string? value = null
     )
     {
-        return GetValueImports(prop, value)
+        return GetValueImports(prop, tag, value)
             .Select(import =>
                 (Import: import.Split("/")[^1], Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName))
             );
@@ -352,12 +362,13 @@ public class JavascriptConfig : GeneratorConfigBase
     /// Indique si une propriété est une composition typée comme une liste.
     /// </summary>
     /// <param name="property">Propriété.</param>
+    /// <param name="tag">Tag.</param>
     /// <returns><see langword="true" /> si la propriété est une composition de liste.</returns>
-    public virtual bool IsListComposition(IProperty property)
+    public virtual bool IsListComposition(IProperty property, string tag)
     {
         return property is { Composition: Class c, Domain: Domain d }
             && c.Enum == null
-            && (GetImplementation(d)?.GenericType?.EndsWith("[]") ?? false);
+            && (GetImplementation(d, tag)?.GenericType?.EndsWith("[]") ?? false);
     }
 
     protected override string ResolveTagVariables(string value, string tag)

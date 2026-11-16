@@ -4,69 +4,122 @@
   "additionalProperties": false,
   "required": ["outputDirectory", "tags"],
   "properties": {
-    "language": {
+    "name": {
       "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Pas de valeur par défaut."
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
     },
     "tags": {
       "type": "array",
-      "description": "Précise les tags de fichier que le générateur doit lire",
+      "description": "Tags pris en compte par cette configuration.",
       "items": {
         "type": "string",
         "description": "Catégorie de fichier que le générateur doit lire."
       }
     },
+    "referencedTags": {
+      "type": "object",
+      "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Le nom de la config dans laquelle aller chercher le tag."
+      }
+    },
+    "language": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `sql`.\n- Variables par tag : **oui**.",
+          "default": "sql"
+        },
+        {
+          "type": "array",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `sql`.\n- Variables par tag : **oui**.",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "variables": {
       "type": "object",
-      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
       "patternProperties": {
         ".+": {
-          "type": "string"
+          "type": ["string", "number", "boolean"]
         }
       }
     },
     "tagVariables": {
       "type": "object",
-      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
       "patternProperties": {
         ".*": {
           "type": "object",
           "patternProperties": {
             ".*": {
-              "type": "string"
+              "type": ["string", "number", "boolean"]
             }
           }
         }
-      }
-    },
-    "disable": {
-      "type": "array",
-      "description": "Désactive les générateurs demandés",
-      "items": {
-        "type": "string",
-        "enum": [ "DocClassGen", "DocEndpointGen", "DocMermaidGen" ]
       }
     },
     "outputDirectory": {
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "translateProperties": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "disable": {
+      "type": "array",
+      "description": "Générateurs à désactiver pour cette configuration.",
+      "items": {
+        "type": "string",
+        "enum": ["DocClassGen", "DocEndpointGen", "DocMermaidGen"]
+      }
+    },
     "useLowerCaseSqlNames": {
       "oneOf": [
         {
           "type": "boolean",
-          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'."
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "default": true
         },
         {
           "type": "string",
-          "description": "Utilise des identifiants SQL en lowercase. Par défaut : 'true'.",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
           "pattern": "^\\{[^\\}]+\\}$"
         }
       ]
     },
+    "endpointsFilePath": {
+      "type": "string",
+      "description": "Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.\n\n- Valeur par défaut : `endpoints.md`.\n- Templating : `{module}`, `{fileName}`.\n- Variables par tag : **oui**.",
+      "default": "endpoints.md"
+    },
+    "classesFilePath": {
+      "type": "string",
+      "description": "Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.\n\n- Valeur par défaut : `classes.md`.\n- Templating : `{module}`, `{fileName}`.\n- Variables par tag : **oui**.",
+      "default": "classes.md"
+    },
+    "mermaidFilePath": {
+      "type": "string",
+      "description": "Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un diagramme par fichier de modèle si `{fileName}` est présent, un diagramme par module si `{module}` est présent, un unique diagramme global sinon.\n\n- Valeur par défaut : `{module}.md`.\n- Templating : `{module}`, `{fileName}`.\n- Variables par tag : **oui**.",
+      "default": "{module}.md"
+    },
     "schemas": {
       "type": "object",
-      "description": "Correspondance entre les tags et les pods dans lesquels ils sont utilisés. Permet de désigner dans quelle base de données chaque table est présente",
+      "description": "Correspondance entre les schémas de base de données et les tags des classes qui y sont persistées.",
       "additionalProperties": {
         "type": "array",
         "description": "Liste des tags dont les classes persistées sont dans le schéma",
@@ -75,21 +128,6 @@
           "description": "Tag dont les classes persistées sont dans le schéma"
         }
       }
-    },
-    "endpointsFilePath": {
-      "type": "string",
-      "description": "Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.",
-      "default": "endpoints.md"
-    },
-    "classesFilePath": {
-      "type": "string",
-      "description": "Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si `{fileName}` est présent, un fichier par module si `{module}` est présent, un unique fichier global sinon.",
-      "default": "classes.md"
-    },
-    "mermaidFilePath": {
-      "type": "string",
-      "description": "Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un diagramme par fichier de modèle si `{fileName}` est présent, un diagramme par module si `{module}` est présent, un unique diagramme global sinon.",
-      "default": "{module}.md"
     },
     "authorizationAnnotations": {
       "type": "array",

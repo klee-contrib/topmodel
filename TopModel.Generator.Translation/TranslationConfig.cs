@@ -5,16 +5,18 @@ namespace TopModel.Generator.Translation;
 public class TranslationConfig : GeneratorConfigBase
 {
     /// <summary>
-    /// liste des langues de l'application
+    /// Langues cibles pour lesquelles les traductions manquantes doivent être générées.
     /// </summary>
     public virtual IList<string> Langs { get; set; } = [];
 
     /// <summary>
-    /// liste des langues de l'application
+    /// Chemin des dossiers de traductions sortants (manquants).
     /// </summary>
     public virtual string RootPath { get; set; } = "{lang}";
 
-    public override string[] PropertiesWithTagVariableSupport => [nameof(RootPath)];
+    public override string[] PropertiesWithTagVariableSupport =>
+        [.. base.PropertiesWithTagVariableSupport, nameof(RootPath)];
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(RootPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(RootPath)];
 }

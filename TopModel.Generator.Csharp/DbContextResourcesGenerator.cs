@@ -38,14 +38,15 @@ public class DbContextResourcesGenerator(
         return null;
     }
 
-    protected override void HandleResourceFile(
+    protected override async Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     )
     {
-        using var cw = this.OpenCSharpWriter(filePath);
+        await using var cw = this.OpenCSharpWriter(filePath);
 
         var module = properties.First().Parent.Namespace.Module;
         var dbContextName = Config.GetDbContextName(tag, module);

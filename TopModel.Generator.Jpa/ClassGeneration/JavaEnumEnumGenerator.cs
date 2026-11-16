@@ -89,11 +89,11 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
 
     protected virtual IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
     {
-        if (!(Config.HasAnnotation(classe, "Getter") || Config.HasAnnotation(classe, "Data")))
+        if (!(Config.HasAnnotation(classe, "Getter", tag) || Config.HasAnnotation(classe, "Data", tag)))
         {
             foreach (var property in Config.GetAvailableProperties(classe).Where(p => p.EnumProperty != p))
             {
-                if (!Config.HasAnnotation(property, "Getter") || Config.HasAnnotation(classe, "Data"))
+                if (!Config.HasAnnotation(property, "Getter", tag) || Config.HasAnnotation(classe, "Data", tag))
                 {
                     yield return GetGetter(tag, property);
                 }
@@ -101,13 +101,13 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         }
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
 
         var javaClass = InitClass(classe, tag);
 
-        using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
         fw.Write(javaClass);
     }
 
@@ -121,7 +121,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         }
 
         var implements = Config.GetClassImplements(classe, tag).ToList();
-        javaEnum.Values.AddRange(GetEnumValues(classe));
+        javaEnum.Values.AddRange(GetEnumValues(classe, tag));
         javaEnum.Implements.AddRange(implements);
         javaEnum.AddImports(
             classe.Implements.Select(implement => implement.GetImport(Config, Config.GetBestClassTag(implement, tag)))
@@ -138,14 +138,14 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         return Config.GetProperties(classe).Where(e => e.EnumProperty == e);
     }
 
-    private IEnumerable<JavaEnumValue> GetEnumValues(Class classe)
+    private IEnumerable<JavaEnumValue> GetEnumValues(Class classe, string tag)
     {
         foreach (var refValue in classe.Values)
         {
             var args = Config
                 .GetProperties(classe)
                 .Where(p => p.EnumProperty != p)
-                .Select(prop => JavaEnumGeneratorHelper.GetPropertyValue(classe, prop, refValue))
+                .Select(prop => JavaEnumGeneratorHelper.GetPropertyValue(classe, prop, refValue, tag))
                 .ToArray();
             var value = new JavaEnumValue(refValue.Value[classe.EnumKey!]);
             if (
@@ -163,7 +163,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
     private JavaField GetField(IProperty property, string tag)
     {
         var field = new JavaField(
-            Config.GetType(property, forceAssociationPropertyType: Config.UseJdbc),
+            Config.GetType(property, tag, forceAssociationPropertyType: Config.UseJdbc),
             property.NameCamel
         )
             .AddCommentLine(property.Comment)

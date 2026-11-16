@@ -61,9 +61,14 @@ public class JavascriptResourceGenerator(
         }
     }
 
-    protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
+    protected override async Task HandleCommentResourceFile(
+        string filePath,
+        string lang,
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
+    )
     {
-        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
         var module = Config.GetRootModule(properties.First().Parent.Namespace);
@@ -99,12 +104,13 @@ public class JavascriptResourceGenerator(
         }
     }
 
-    protected override void HandleMainResourceFile(
+    protected override async Task HandleMainResourceFile(
         string mainFilePath,
-        IEnumerable<(string ModuleFilePath, string ModuleName)> modules
+        IEnumerable<(string ModuleFilePath, string ModuleName)> modules,
+        CancellationToken ct = default
     )
     {
-        using var fw = OpenFileWriter(mainFilePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(mainFilePath, encoderShouldEmitUTF8Identifier: false);
 
         foreach (var (moduleFilePath, moduleName) in modules)
         {
@@ -131,14 +137,15 @@ public class JavascriptResourceGenerator(
         }
     }
 
-    protected override void HandleResourceFile(
+    protected override async Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     )
     {
-        using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
         fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
 
         var module = Config.GetRootModule(properties.First().Parent.Namespace);

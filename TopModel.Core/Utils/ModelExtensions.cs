@@ -1,5 +1,4 @@
-﻿using OneOf;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 
 namespace TopModel.Core.Utils;
@@ -279,7 +278,11 @@ public static class ModelExtensions
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
             PropertyMapping p => p.Property.GetLocation(),
-            OneOf<ClassMappings, PropertyMapping> p => p.Match(c => c.GetLocation(), p => p.GetLocation()),
+            MapperParam p => p switch
+            {
+                ClassMappings c => c.GetLocation(),
+                PropertyMapping pp => pp.GetLocation(),
+            },
             Converter c => c.Location,
             TemplateParameter t => t.Name.Location,
             Variable { TemplateParameter: TemplateParameter t } => t.Name.Location,

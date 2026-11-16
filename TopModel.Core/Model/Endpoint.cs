@@ -1,5 +1,4 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -53,9 +52,6 @@ public class Endpoint(Reference location) : IPropertyContainer
     public IList<AnnotationInstance> ExcludedAnnotations { get; } = [];
 
     public IList<AnnotationInstance> PropertyAnnotations { get; } = [];
-
-    [Obsolete("Utiliser `Config.GetClassDependencies(endpoint)`.")]
-    public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 

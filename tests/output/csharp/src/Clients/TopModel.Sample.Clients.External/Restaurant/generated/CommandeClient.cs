@@ -125,7 +125,7 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="tableId">Table associée à la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des commandes.</returns>
-    public async Task<ICollection<ICommandeItem>> GetCommandes(int clientId, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
+    public async Task<IList<ICommandeItem>> GetCommandes(int clientId, StatutCommande statutCommande = StatutCommande.EN_ATT, int? tableId = null, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -137,7 +137,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ICommandeItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ICommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public partial class CommandeClient(HttpClient client)
     /// <param name="dateCommande">Date et heure de la commande.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Commandes pour la date spécifiée.</returns>
-    public async Task<ICollection<ICommandeItem>> GetCommandesByDate(DateTime dateCommande, CancellationToken ct = default)
+    public async Task<IList<ICommandeItem>> GetCommandesByDate(DateTime dateCommande, CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         var query = await new FormUrlEncodedContent(new Dictionary<string, string?>
@@ -156,7 +156,7 @@ public partial class CommandeClient(HttpClient client)
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/commandes/by-date?{query}"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<ICommandeItem>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<ICommandeItem>>(_jsOptions, ct))!;
     }
 
     /// <summary>
@@ -164,13 +164,13 @@ public partial class CommandeClient(HttpClient client)
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>Liste des statuts de commande.</returns>
-    public async Task<ICollection<StatutCommande>> GetStatutCommandes(CancellationToken ct = default)
+    public async Task<IList<StatutCommande>> GetStatutCommandes(CancellationToken ct = default)
     {
         await EnsureAuthentication(ct);
         using var res = await client.SendAsync(new(HttpMethod.Get, $"api/restaurants/statuts-commande"), HttpCompletionOption.ResponseHeadersRead, ct);
         await EnsureSuccess(res, ct);
 
-        return (await res.Content.ReadFromJsonAsync<ICollection<StatutCommande>>(_jsOptions, ct))!;
+        return (await res.Content.ReadFromJsonAsync<IList<StatutCommande>>(_jsOptions, ct))!;
     }
 
     /// <summary>

@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using YamlDotNet.Serialization;
 
@@ -34,28 +33,27 @@ public class CsharpConfig : GeneratorConfigBase
     ];
 
     /// <summary>
-    /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
+    /// Localisation du modèle persisté, relative au répertoire de génération.
     /// </summary>
     public virtual string PersistentModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
-    /// Localisation des classes de références, relative au répertoire de génération.
-    /// Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
+    /// Localisation des classes de références, relative au répertoire de génération. Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
     /// </summary>
     public virtual string? ReferencesModelPath { get; set; }
 
     /// <summary>
-    /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
+    /// Localisation du modèle non persisté, relative au répertoire de génération.
     /// </summary>
     public virtual string NonPersistentModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : "{app}.Web".
+    /// Localisation de l'API générée (client ou serveur), relative au répertoire de génération.
     /// </summary>
     public virtual string ApiRootPath { get; set; } = "{app}.Web";
 
     /// <summary>
-    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module:path}".
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
     /// </summary>
     public virtual string ApiFilePath { get; set; } = "{module:path}";
 
@@ -70,17 +68,17 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string? DbContextPath { get; set; }
 
     /// <summary>
-    /// Nom du DbContext. Par défaut : {app}DbContext.
+    /// Nom du DbContext.
     /// </summary>
     public virtual string DbContextName { get; set; } = "{app}DbContext";
 
     /// <summary>
-    /// Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
+    /// Ne renseigne pas la classe de base <c>DbContext</c> sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial.
     /// </summary>
     public virtual bool NoBaseDbContext { get; set; }
 
     /// <summary>
-    /// Location des flux de données générés.
+    /// Localisation des flux de données générés.
     /// </summary>
     public virtual string? DataFlowsPath { get; set; }
 
@@ -90,52 +88,49 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string? ReferenceAccessorsInterfacePath { get; set; }
 
     /// <summary>
-    /// Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference.
+    /// Chemin vers lequel générer les implémentations d'accesseurs de référence.
     /// </summary>
     public virtual string ReferenceAccessorsImplementationPath { get; set; } = null!;
 
     /// <summary>
-    /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). Par défaut : {module}ReferenceAccessors.
-    /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
+    /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). (La variable <c>{module}</c> aura toujours la transformation <c>flat</c> ajoutée).
     /// </summary>
     public virtual string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
 
     /// <summary>
-    /// Nom des mappers. Par défaut : {module}Mappers.
-    /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
+    /// Nom des mappers. (La variable <c>{module}</c> aura toujours la transformation <c>flat</c> ajoutée).
     /// </summary>
     public virtual string MappersName { get; set; } = "{module}Mappers";
 
     /// <summary>
-    /// Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'.
+    /// Utilise les migrations EF pour créer/mettre à jour la base de données.
     /// </summary>
     public virtual bool UseEFMigrations { get; set; } = true;
 
     /// <summary>
-    /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
+    /// Nom du schéma de base de données à cibler. Si non renseigné, EF utilise le schéma par défaut du fournisseur (<c>dbo</c> pour SQL Server, <c>public</c> pour PostgreSQL).
     /// </summary>
     public virtual string? DbSchema { get; set; }
 
     /// <summary>
-    /// Ce qu'il faut générer pour Kinetix : `References` pour les annotations et accesseurs de listes de réference, `Legacy` pour générer en plus des annotations de domaines, et `None` pour ne rien générer. Par défaut: `References`.
+    /// Ce qu'il faut générer pour Kinetix : <c>references</c> pour les annotations et accesseurs de listes de référence, <c>legacy</c> pour générer en plus des annotations de domaines, et <c>none</c> pour ne rien générer.
     /// </summary>
     public virtual KinetixMode Kinetix { get; set; } = KinetixMode.References;
 
     /// <summary>
-    /// Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'.
+    /// Namespace de l'enum de domaine pour Kinetix (mode legacy).
     /// </summary>
     public virtual string DomainNamespace { get; set; } = "{app}.Common";
 
     /// <summary>
-    /// Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'),
-    /// qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.
+    /// Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un <c>Nullable</c> (avec un <c>?</c>) pour les rendre nullables.
     /// </summary>
     public virtual string[] ValueTypes { get; set; } = [];
 
     public virtual string[] AllValueTypes => _builtInNonNullableTypes.Concat(ValueTypes).Distinct().ToArray();
 
     /// <summary>
-    /// Prend en compte l'activation du paramètre `nullable: enable` dans le code généré.
+    /// Prend en compte l'activation du paramètre <c>nullable: enable</c> dans le code généré (pour ajouter des <c>?</c> derrière les types références nullables).
     /// </summary>
     public virtual bool NullableEnable { get; set; }
 
@@ -146,12 +141,12 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string? RequiredNonNullableParam { get; set; }
 
     /// <summary>
-    /// Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. Par défaut : 'true'.
+    /// Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées.
     /// </summary>
     public virtual bool NoColumnOnAlias { get; set; } = true;
 
     /// <summary>
-    /// Considère tous les classes comme étant non-Persistentes (= pas d'attribut SQL).
+    /// Considère toutes les classes comme étant non persistées (= pas d'attribut SQL).
     /// </summary>
     [YamlMember(Alias = "noPersistence")]
     public virtual string? NoPersistenceParam { get; set; }
@@ -162,22 +157,22 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string[] MapperTagsOverrides { get; set; } = [];
 
     /// <summary>
-    /// Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : "persistent".
+    /// Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (<c>persisted</c> ou <c>non-persisted</c>).
     /// </summary>
     public virtual AnnotationConstraint MapperLocationPriority { get; set; } = AnnotationConstraint.Persisted;
 
     /// <summary>
-    /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`). Par défaut : 'true'.
+    /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite <c>useEFMigrations</c>).
     /// </summary>
     public virtual bool UseEFComments { get; set; }
 
     /// <summary>
-    /// Utilise des enums Postgres pour les classes `enum: true` en base de données.
+    /// Utilise des enums Postgres pour les classes <c>enum: true</c> en base de données.
     /// </summary>
     public virtual bool UsePostgresEnums { get; set; }
 
     /// <summary>
-    /// Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération. Par défaut : 10.
+    /// Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.
     /// </summary>
     public virtual int DotnetVersion { get; set; } = 10;
 
@@ -197,17 +192,17 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual bool UseAsyncReferenceAccessors { get; set; }
 
     /// <summary>
-    /// Chemin vers les fichiers de resources (*.resx) à générer pour les traductions de libellés de propriétés et de listes de références.
+    /// Chemin vers les fichiers de ressources (<c>*.resx</c>) à générer pour les traductions de libellés de propriétés et de listes de références.
     /// </summary>
     public string? ResourcesResxPath { get; set; }
 
     /// <summary>
-    /// Précise les resources à générer dans les fichiers resx (si `ResourcesResxPath` est renseigné), au lieu de les générer en base de données.
+    /// Précise les ressources à générer dans les fichiers resx (si <c>resourcesResxPath</c> est renseigné), au lieu de les générer en base de données.
     /// </summary>
     public ResxResource ResourcesInResx { get; set; } = ResxResource.All;
 
     /// <summary>
-    /// Génère les enums de nom de colonnes dans les classes persistées. Automatiquement activé si `DbContextPath` est null et si `Kinetix` est renseigné.
+    /// Génère les enums de nom de colonnes dans les classes persistées. Activé automatiquement si <c>dbContextPath</c> est <c>null</c> et si <c>kinetix</c> est renseigné.
     /// </summary>
     public virtual bool EnumCols { get; set; }
 
@@ -223,6 +218,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithModuleVariableSupport =>
         [
+            .. base.PropertiesWithModuleVariableSupport,
             nameof(PersistentModelPath),
             nameof(ReferencesModelPath),
             nameof(NonPersistentModelPath),
@@ -260,7 +256,8 @@ public class CsharpConfig : GeneratorConfigBase
             nameof(ResourcesResxPath),
         ];
 
-    public override string[] PropertiesWithLangVariableSupport => [nameof(ResourcesResxPath)];
+    public override string[] PropertiesWithLangVariableSupport =>
+        [.. base.PropertiesWithLangVariableSupport, nameof(ResourcesResxPath)];
 
     protected virtual IDictionary<string, string> CollectionTypes { get; } =
         new Dictionary<string, string>()
@@ -287,21 +284,27 @@ public class CsharpConfig : GeneratorConfigBase
         return Path.Combine(OutputDirectory, GetModelPath(classe, tag), "generated", GetTypeName(classe) + ".cs");
     }
 
-    public virtual string GetCollector(Domain domain)
+    public virtual string GetCollector(Domain domain, string tag)
     {
-        var impl = GetImplementation(domain)!;
+        var impl = GetImplementation(domain, tag)!;
         return impl.Collector
             ?? $"To{(impl.GenericType?.Value[0..impl.GenericType.Value.IndexOf('<')] ?? impl.Type).TrimStart("I")}()";
     }
 
-    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
+    public virtual string GetConvertedValue(
+        string value,
+        Domain? fromDomain,
+        Domain? toDomain,
+        string tag,
+        bool nullableValueType
+    )
     {
         if (nullableValueType && fromDomain != null && toDomain != null)
         {
             var converter = fromDomain.GetConverter(toDomain);
             if (converter != null)
             {
-                var text = GetImplementation(converter)?.Text;
+                var text = GetImplementation(converter, tag)?.Text;
                 if (text != null && text.Contains("{value}."))
                 {
                     value += "?";
@@ -309,7 +312,7 @@ public class CsharpConfig : GeneratorConfigBase
             }
         }
 
-        return GetConvertedValue(value, fromDomain, toDomain);
+        return GetConvertedValue(value, fromDomain, toDomain, tag);
     }
 
     public virtual string GetDataFlowFilePath(DataFlow df, string tag)
@@ -360,8 +363,8 @@ public class CsharpConfig : GeneratorConfigBase
 
     public virtual string GetDefaultValue(IProperty property, string tag)
     {
-        var defaultValue = GetValue(property);
-        var type = GetType(property, nonNullable: true);
+        var defaultValue = GetValue(property, tag);
+        var type = GetType(property, tag, nonNullable: true);
 
         if (
             property.EnumProperty != null
@@ -567,25 +570,26 @@ public class CsharpConfig : GeneratorConfigBase
         );
     }
 
-    public virtual string GetReturnTypeName(IProperty? prop)
+    public virtual string GetReturnTypeName(IProperty? prop, string tag)
     {
         if (prop == null)
         {
             return NoAsyncControllers ? "void" : "async Task";
         }
 
-        var typeName = GetType(prop, nonNullable: prop.Required);
+        var typeName = GetType(prop, tag, nonNullable: prop.Required);
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers ? typeName : $"async Task<{typeName}>";
     }
 
     public virtual string GetType(
         IProperty prop,
+        string tag,
         bool forceAssociationPropertyType = false,
         int skipChain = 0,
         bool nonNullable = false
     )
     {
-        var type = base.GetType(prop, forceAssociationPropertyType, skipChain);
+        var type = base.GetType(prop, tag, forceAssociationPropertyType, skipChain);
 
         if (
             !nonNullable
@@ -618,13 +622,14 @@ public class CsharpConfig : GeneratorConfigBase
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
     }
 
-    public virtual bool IsValueType(IProperty prop)
+    public virtual bool IsValueType(IProperty prop, string tag)
     {
         return prop switch
         {
-            { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain)?.GenericType) => true,
+            { EnumProperty: not null } when string.IsNullOrEmpty(GetImplementation(prop.Domain, tag)?.GenericType) =>
+                true,
             { Composition: not null } => false,
-            _ => AllValueTypes.Contains(GetType(prop, nonNullable: true)),
+            _ => AllValueTypes.Contains(GetType(prop, tag, nonNullable: true)),
         };
     }
 

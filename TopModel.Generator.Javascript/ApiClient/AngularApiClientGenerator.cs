@@ -87,11 +87,11 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         fw.WriteLine(1, "private readonly http = inject(HttpClient);");
     }
 
-    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint)
+    protected override void WriteEndpoint(IFileWriter fw, Endpoint endpoint, string tag)
     {
         var options = GetSafeVariableName(endpoint, "options");
 
-        WriteEndpointSignature(fw, endpoint, (options, null, OptionsType, "{}"));
+        WriteEndpointSignature(fw, endpoint, tag, (options, null, OptionsType, "{}"));
 
         WriteFormDataBody(fw, endpoint, "body");
 
@@ -122,7 +122,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
         }
 
         var observe = "body";
-        var returnType = GetReturnType(GetReturns(endpoint));
+        var returnType = GetReturnType(GetReturns(endpoint), tag);
         var genericType = returnType.Split('<')[0];
         if (genericType == "HttpEvent")
         {

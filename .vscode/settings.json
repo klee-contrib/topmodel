@@ -1,5 +1,5 @@
 {
   "dotnet.defaultSolution": "TopModel.sln",
   "editor.formatOnSave": true,
-  "topmodel.languageServerPath": "./TopModel.LanguageServer/bin/Debug/net8.0/TopModel.LanguageServer.dll"
+  "topmodel.languageServerPath": "./TopModel.LanguageServer/bin/Debug/net11.0/TopModel.LanguageServer.dll"
 }

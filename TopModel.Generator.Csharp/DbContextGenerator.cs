@@ -69,7 +69,7 @@ public class DbContextGenerator(
         }
     }
 
-    protected virtual void HandleCommentsFile(
+    protected virtual async Task HandleCommentsFile(
         string fileName,
         string tag,
         string dbContextName,
@@ -78,7 +78,7 @@ public class DbContextGenerator(
         IList<Class> classes
     )
     {
-        using var cw = this.OpenCSharpWriter(fileName);
+        await using var cw = this.OpenCSharpWriter(fileName);
 
         cw.AddUsings(usings);
 
@@ -129,9 +129,9 @@ public class DbContextGenerator(
         cw.WriteLine("}");
     }
 
-    protected virtual void HandleEnumsFile(string fileName, string tag, string contextNs, IList<Class> classList)
+    protected virtual async Task HandleEnumsFile(string fileName, string tag, string contextNs, IList<Class> classList)
     {
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         w.AddUsings(classList.Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag))).Distinct());
         w.AddUsing("Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure");
@@ -161,7 +161,13 @@ public class DbContextGenerator(
         w.WriteLine("}");
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
         var module = classes.First().Namespace.Module;
         var dbContextName = Config.GetDbContextName(tag, module);
@@ -182,19 +188,19 @@ public class DbContextGenerator(
 
         if (fileType == "main")
         {
-            HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
+            await HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
         }
         else if (fileType == "comments")
         {
-            HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
+            await HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
         }
         else
         {
-            HandleEnumsFile(fileName, tag, contextNs, classList);
+            await HandleEnumsFile(fileName, tag, contextNs, classList);
         }
     }
 
-    protected virtual void HandleMainFile(
+    protected virtual async Task HandleMainFile(
         string fileName,
         string tag,
         string dbContextName,
@@ -203,11 +209,11 @@ public class DbContextGenerator(
         IList<Class> classes
     )
     {
-        using var w = this.OpenCSharpWriter(fileName);
+        await using var w = this.OpenCSharpWriter(fileName);
 
         foreach (var value in classes.SelectMany(c => c.Values.SelectMany(v => v.Value)))
         {
-            foreach (var import in Config.GetValueImports(value.Key, value.Value))
+            foreach (var import in Config.GetValueImports(value.Key, tag, value.Value))
             {
                 usings.Add(import);
             }
@@ -278,7 +284,7 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         2,
-                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
+                        $"modelBuilder.Entity<{GetClassName(fp.Class, tag, contextNs)}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain, tag)?.Type ?? string.Empty}>(){(fp.Domain?.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};"
                     );
                 }
                 else if (fp.Domain?.Length != null && fp.EnumProperty?.Class.Enum != EnumMode.Enum)
@@ -519,7 +525,7 @@ public class DbContextGenerator(
                 {
                     w.WriteLine(
                         3,
-                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, forceAssociationPropertyType: true, nonNullable: Config.RequiredNonNullable(tag))}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
+                        $".HasDiscriminator<{Config.GetType(classe.DiscriminatorProperty, tag, forceAssociationPropertyType: true, nonNullable: Config.RequiredNonNullable(tag))}>(\"{classe.DiscriminatorProperty.PropertyNamePascal}\")"
                     );
                 }
                 else
@@ -778,7 +784,7 @@ public class DbContextGenerator(
     private string? GetValue(IProperty property, string rawValue, string tag, string contextNs)
     {
         var targetClass = property.Association ?? property.Class;
-        var value = Config.GetValue(property, rawValue);
+        var value = Config.GetValue(property, tag, rawValue);
         if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
         {
             value = $"{Config.GetNamespace(targetClass, tag, contextNs)}.{value}";

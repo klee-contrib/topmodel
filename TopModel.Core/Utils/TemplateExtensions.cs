@@ -6,7 +6,7 @@ namespace TopModel.Core.Utils;
 
 public static class TemplateExtensions
 {
-    public static string ParseTemplate(this string template, IProperty p, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, IProperty p, WatcherConfigBase config, string tag)
     {
         return template.ParseTemplate(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag);
     }
@@ -17,7 +17,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -43,7 +43,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -68,7 +68,7 @@ public static class TemplateExtensions
         Domain domainFrom,
         Domain domainTo,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -157,12 +157,7 @@ public static class TemplateExtensions
         return string.Empty;
     }
 
-    private static string ResolveVariable(
-        this string input,
-        Domain domain,
-        WatcherConfigBase config,
-        string? tag = null
-    )
+    private static string ResolveVariable(this string input, Domain domain, WatcherConfigBase config, string tag)
     {
         return (
             input.Split(':')[0] switch
@@ -171,7 +166,7 @@ public static class TemplateExtensions
                 "length" => domain.Length?.ToString() ?? string.Empty,
                 "scale" => domain.Scale?.ToString() ?? string.Empty,
                 "name" => domain.Name ?? string.Empty,
-                "type" => config.GetImplementation(domain)?.Type ?? string.Empty,
+                "type" => config.GetImplementation(domain, tag)?.Type ?? string.Empty,
                 var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), tag: tag),
             }
         ).Transform(input);
@@ -183,7 +178,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         return container switch
@@ -200,7 +195,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (input == null || input.Length == 0)
@@ -278,7 +273,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (input == null || input.Length == 0)
@@ -359,7 +354,7 @@ public static class TemplateExtensions
         IList<TemplateParameter> templateParameters,
         IDictionary<string, string> parameterValues,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (input == null || input.Length == 0)
@@ -426,7 +421,7 @@ public static class TemplateExtensions
         Domain domainFrom,
         Domain domainTo,
         WatcherConfigBase config,
-        string? tag = null
+        string tag
     )
     {
         if (input.StartsWith("from."))

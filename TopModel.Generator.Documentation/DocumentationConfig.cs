@@ -13,44 +13,46 @@ public class DocumentationConfig : GeneratorConfigBase
     public override string? DefaultLanguage => "sql";
 
     /// <summary>
-    /// Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération.
-    /// La finesse de génération est déduite de la présence de variables dans le chemin :
-    /// un fichier par fichier de modèle si <c>{fileName}</c> est présent, un fichier par module si <c>{module}</c> est présent, un unique fichier global sinon.
-    /// Par défaut : <c>endpoints.md</c>.
+    /// Chemin de génération du fichier listant les endpoints, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si <c>{fileName}</c> est présent, un fichier par module si <c>{module}</c> est présent, un unique fichier global sinon.
     /// </summary>
     public virtual string EndpointsFilePath { get; set; } = "endpoints.md";
 
     /// <summary>
-    /// Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération.
-    /// La finesse de génération est déduite de la présence de variables dans le chemin :
-    /// un fichier par fichier de modèle si <c>{fileName}</c> est présent, un fichier par module si <c>{module}</c> est présent, un unique fichier global sinon.
-    /// Par défaut : <c>classes.md</c>.
+    /// Chemin de génération du fichier de dictionnaire des classes, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un fichier par fichier de modèle si <c>{fileName}</c> est présent, un fichier par module si <c>{module}</c> est présent, un unique fichier global sinon.
     /// </summary>
     public virtual string ClassesFilePath { get; set; } = "classes.md";
 
     /// <summary>
-    /// Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération.
-    /// La finesse de génération est déduite de la présence de variables dans le chemin :
-    /// un diagramme par fichier de modèle si <c>{fileName}</c> est présent, un diagramme par module si <c>{module}</c> est présent, un unique diagramme global sinon.
-    /// Par défaut : <c>{module}.md</c>.
+    /// Chemin de génération des fichiers de diagrammes Mermaid, relatif au répertoire de génération. La finesse de génération est déduite des variables présentes : un diagramme par fichier de modèle si <c>{fileName}</c> est présent, un diagramme par module si <c>{module}</c> est présent, un unique diagramme global sinon.
     /// </summary>
     public virtual string MermaidFilePath { get; set; } = "{module}.md";
 
+    /// <summary>
+    /// Correspondance entre les schémas de base de données et les tags des classes qui y sont persistées.
+    /// </summary>
     public virtual IDictionary<string, string[]> Schemas { get; set; } =
         new Dictionary<string, string[]>(StringComparer.Ordinal);
 
     /// <summary>
-    /// Liste des noms d'annotations (ex. <c>RoleRequired</c>, <c>HasRole</c>) dont les paramètres doivent être agrégés
-    /// pour alimenter la colonne « Autorisation » dans la liste des endpoints.
-    /// Si la liste est vide ou non renseignée, la colonne « Autorisation » n'est pas générée.
+    /// Liste des noms d'annotations (ex. <c>RoleRequired</c>, <c>HasRole</c>) dont les paramètres doivent être agrégés pour alimenter la colonne <c>Autorisation</c> dans la liste des endpoints. Si la liste est vide ou non renseignée, la colonne <c>Autorisation</c> n'est pas générée.
     /// </summary>
     public virtual IList<string> AuthorizationAnnotations { get; set; } = [];
 
     public override string[] PropertiesWithModuleVariableSupport =>
-        [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
+        [
+            .. base.PropertiesWithModuleVariableSupport,
+            nameof(EndpointsFilePath),
+            nameof(ClassesFilePath),
+            nameof(MermaidFilePath),
+        ];
 
     public override string[] PropertiesWithFileNameVariableSupport =>
-        [nameof(EndpointsFilePath), nameof(ClassesFilePath), nameof(MermaidFilePath)];
+        [
+            .. base.PropertiesWithFileNameVariableSupport,
+            nameof(EndpointsFilePath),
+            nameof(ClassesFilePath),
+            nameof(MermaidFilePath),
+        ];
 
     public override string[] PropertiesWithTagVariableSupport =>
         [

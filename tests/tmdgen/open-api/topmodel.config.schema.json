@@ -2,7 +2,7 @@
   "$id": "topmodel.config.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "description": "Fichier de config du générateur",
+  "description": "Fichier de configuration globale de TopModel.",
   "required": [
     "app"
   ],
@@ -13,41 +13,46 @@
     },
     "noWarn": {
       "type": "array",
-      "description": "Liste des warnings à ignorer.",
+      "description": "Liste des warnings à ignorer.\n\n- Valeur par défaut : `[]`.",
+      "default": [],
       "items": {
         "type": "string",
-        "description": "Code du warning (TMDXXXX) à ignorer "
+        "description": "Code du warning (TMDXXXX) à ignorer."
       }
     },
     "modelRoot": {
       "type": "string",
-      "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
+      "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé.\n\n- Valeur par défaut : dossier contenant le fichier de configuration."
     },
     "modelFilePaths": {
       "type": "array",
-      "description": "Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `modelRoot`) seront chargés par TopModel.",
+      "description": "Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au `modelRoot`) seront chargés par TopModel.\n\n- Valeur par défaut : `[\"**/*.tmd\"]`.",
+      "default": [
+        "**/*.tmd"
+      ],
       "items": {
         "type": "string"
       }
     },
     "lockFileName": {
       "type": "string",
-      "description": "Nom du fichier de lock",
+      "description": "Nom du fichier de lock.\n\n- Valeur par défaut : `topmodel.lock`.",
       "default": "topmodel.lock"
     },
     "pluralizeTableNames": {
       "type": "boolean",
-      "description": "Utilise le nom au pluriel des classes pour générer leur noms de table SQL."
+      "description": "Utilise le nom au pluriel des classes pour générer leurs noms de table SQL.\n\n- Valeur par défaut : `false`.",
+      "default": false
     },
     "defaultAssociationUseClass": {
       "type": "boolean",
-      "description": "Détermine la valeur par défaut de `useClass` sur les propriétés d'association du modèle.",
-      "default": "false"
+      "description": "Détermine la valeur par défaut de `useClass` sur les propriétés d'association du modèle.\n\n- Valeur par défaut : `false`.",
+      "default": false
     },
     "useLegacyRoleNames": {
       "type": "boolean",
-      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés",
-      "default": "false"
+      "description": "Transforme les noms de rôles d'associations en majuscules au lieu du constant case pour déterminer le nom SQL des propriétés.\n\n- Valeur par défaut : `false`.",
+      "default": false
     },
     "i18n": {
       "type": "object",
@@ -56,56 +61,59 @@
       "properties": {
         "rootPath": {
           "type": "string",
-          "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}",
+          "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template `{lang}`.\n\n- Valeur par défaut : `{lang}`.\n- Templating : `{lang}`.",
           "default": "{lang}"
         },
         "defaultLang": {
           "oneOf": [
             {
-              "type": "string",
-              "description": "Langue par défaut de l'application. Laisser vide si votre application n'a qu'une seule langue (non nommée)."
+              "type": "string"
             },
             {
-              "type": "null",
-              "description": "Désactive la langue par défaut et n'utilise pas les libellés définis dans le modèle dans une langue par défaut."
+              "type": "null"
             }
-          ]
+          ],
+          "default": "",
+          "description": "Langue par défaut de l'application. Laisser vide si votre application n'a qu'une seule langue (non nommée). Une valeur nulle désactive la langue par défaut et l'utilisation des libellés définis dans le modèle dans une langue par défaut.\n\n- Valeur par défaut : `\"\"`."
         },
         "langs": {
           "type": "array",
-          "description": "Liste des langues de l'application (autre que la langue par défaut).",
+          "description": "Liste des langues de l'application (autres que la langue par défaut), indiquées par leur code.\n\n- Valeur par défaut : `[]`.",
+          "default": [],
           "items": {
             "type": "string",
-            "description": "Code du langage"
+            "description": "Code de la langue."
           }
         },
         "translateReferences": {
           "type": "boolean",
-          "description": "Si les libellés des listes de références doivent être traduits.",
+          "description": "Si les libellés des listes de références doivent être traduits.\n\n- Valeur par défaut : `true`.",
           "default": true
         },
         "translateProperties": {
           "type": "boolean",
-          "description": "Si les libellés des propriétés doivent être traduits.",
+          "description": "Si les libellés des propriétés doivent être traduits.\n\n- Valeur par défaut : `true`.",
           "default": true
         },
         "allowPropertyLabelFallback": {
           "type": "boolean",
-          "description": "Si le libellé d'une propriété n'est pas renseigné, autorise l'usage de son nom comme libellé.",
+          "description": "Si le libellé d'une propriété n'est pas renseigné, autorise l'usage de son nom comme libellé.\n\n- Valeur par défaut : `true`.",
           "default": true
         }
       }
     },
     "generators": {
       "type": "array",
-      "description": "Chemins vers des projets C# contenant des générateurs personnalisés",
+      "description": "Chemins vers des projets C# contenant des générateurs personnalisés.\n\n- Valeur par défaut : `[]`.",
+      "default": [],
       "items": {
         "type": "string"
       }
     },
     "ignoredFiles": {
       "type": "array",
-      "description": "Liste des fichiers à ignorer après première génération (relatif au fichier de config).",
+      "description": "Liste des fichiers à ignorer après première génération (relatif au fichier de config).\n\n- Valeur par défaut : `[]`.",
+      "default": [],
       "items": {
         "type": "object",
         "additionalProperties": false,

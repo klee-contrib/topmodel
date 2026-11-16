@@ -39,17 +39,21 @@ public abstract class TranslationGeneratorBase<T>(
 
     protected abstract string? GetResourceFilePath(IProperty property, string tag, string lang);
 
-    protected virtual void HandleCommentResourceFile(
+    protected virtual Task HandleCommentResourceFile(
         string filePath,
         string lang,
-        IEnumerable<IProperty> properties
-    ) { }
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
+    )
+    {
+        return Task.CompletedTask;
+    }
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override async Task HandleFiles(IEnumerable<ModelFile> files, CancellationToken ct = default)
     {
         var modules = new List<(string MainFilePath, string ModuleFilePath, string ModuleName)>();
 
-        Parallel.ForEach(
+        await Parallel.ForEachAsync(
             Config
                 .Classes.SelectMany(classe =>
                     Config
@@ -73,16 +77,12 @@ public abstract class TranslationGeneratorBase<T>(
                         )
                 )
                 .GroupBy(f => f.key),
-            resources =>
+            ct,
+            async (resources, ct) =>
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
                 var properties = resources.Select(r => (r.value.p.ResourceProperty)).Distinct();
                 var tag = resources.First().value.tag;
-                HandleResourceFile(resources.Key.ModuleFilePath, tag, resources.Key.Lang, properties);
+                await HandleResourceFile(resources.Key.ModuleFilePath, tag, resources.Key.Lang, properties, ct);
 
                 if (resources.Key.MainFilePath != null)
                 {
@@ -97,7 +97,7 @@ public abstract class TranslationGeneratorBase<T>(
             }
         );
 
-        Parallel.ForEach(
+        await Parallel.ForEachAsync(
             Config
                 .Classes.SelectMany(classe =>
                     Config
@@ -122,15 +122,11 @@ public abstract class TranslationGeneratorBase<T>(
                         )
                 )
                 .GroupBy(f => f.key),
-            resources =>
+            ct,
+            async (resources, ct) =>
             {
-                if (CancellationToken?.IsCancellationRequested ?? false)
-                {
-                    return;
-                }
-
                 var properties = resources.Select(r => r.p.CommentResourceProperty).Distinct();
-                HandleCommentResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
+                await HandleCommentResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties, ct);
 
                 if (resources.Key.MainFilePath != null)
                 {
@@ -145,30 +141,31 @@ public abstract class TranslationGeneratorBase<T>(
             }
         );
 
-        Parallel.ForEach(modules.GroupBy(m => m.MainFilePath), g =>
+        await Parallel.ForEachAsync(modules.GroupBy(m => m.MainFilePath), ct, async (g, ct) =>
         {
-            if (CancellationToken?.IsCancellationRequested ?? false)
-            {
-                return;
-            }
-
-            HandleMainResourceFile(
+            await HandleMainResourceFile(
                 g.Key,
-                g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)
+                g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath),
+                ct
             );
         });
     }
 
-    protected virtual void HandleMainResourceFile(
+    protected virtual Task HandleMainResourceFile(
         string mainFilePath,
-        IEnumerable<(string ModuleFilePath, string ModuleName)> modules
-    ) { }
+        IEnumerable<(string ModuleFilePath, string ModuleName)> modules,
+        CancellationToken ct = default
+    )
+    {
+        return Task.CompletedTask;
+    }
 
-    protected abstract void HandleResourceFile(
+    protected abstract Task HandleResourceFile(
         string filePath,
         string tag,
         string lang,
-        IEnumerable<IProperty> properties
+        IEnumerable<IProperty> properties,
+        CancellationToken ct = default
     );
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IProperty property, string tag)

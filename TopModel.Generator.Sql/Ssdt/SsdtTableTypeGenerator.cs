@@ -27,9 +27,9 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         );
     }
 
-    protected override void HandleClass(string fileName, Class classe, string tag)
+    protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        using var writer = this.OpenSqlWriter(fileName);
+        await using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
         WriteHeader(writer, Config.GetSqlTableTypeName(classe, tag));
@@ -52,7 +52,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="tag">Tag.</param>
     protected virtual void WriteColumn(StringBuilder sb, IProperty property, string tag)
     {
-        var persistentType = Config.GetType(property);
+        var persistentType = Config.GetType(property, tag);
         sb.Append(Config.GetSqlName(property, tag)).Append(' ').Append(persistentType).Append(" null");
     }
 
@@ -120,7 +120,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
         foreach (var property in Config.GetProperties(classe))
         {
             if (
-                (!property.PrimaryKey || Config.ShouldQuoteValue(property))
+                (!property.PrimaryKey || Config.ShouldQuoteValue(property, tag))
                 && property.Name != ScriptUtils.InsertKeyName
             )
             {

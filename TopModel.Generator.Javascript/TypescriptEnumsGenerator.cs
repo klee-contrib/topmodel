@@ -21,17 +21,23 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         }
     }
 
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    protected override async Task HandleFile(
+        string fileType,
+        string fileName,
+        string tag,
+        IEnumerable<Class> classes,
+        CancellationToken ct = default
+    )
     {
-        GenerateEnumsFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
+        await GenerateEnumsFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
     }
 
     /// <summary>
     /// Create the template output
     /// </summary>
-    private void GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
+    private async Task GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
     {
-        using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
 
         var imports = enums
             .SelectMany(Config.GetClassDependencies)
@@ -39,7 +45,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 (
                     Import: dep.Source switch
                     {
-                        IProperty p => Config.GetType(p, forceAssociationPropertyType: true),
+                        IProperty p => Config.GetType(p, tag, forceAssociationPropertyType: true),
                         Class c => c.NamePascal,
                         _ => null!,
                     },
@@ -65,7 +71,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                             .GetProperties(r)
                             .SelectMany(dep =>
                                 r.Values.Where(v => v.Value.ContainsKey(dep))
-                                    .SelectMany(v => Config.GetValueImportPaths(fileName, dep, v.Value[dep]))
+                                    .SelectMany(v => Config.GetValueImportPaths(fileName, dep, tag, v.Value[dep]))
                             )
                     )
             )
@@ -110,7 +116,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 }
                 fw.Write(" = ");
 
-                var type = Config.GetImplementation(enumProp.Domain)?.Type;
+                var type = Config.GetImplementation(enumProp.Domain, tag)?.Type;
                 var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
                 fw.Write(
                     string.Join(
@@ -166,7 +172,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                 fw.Write(property.NameCamel);
                 fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                 fw.Write(": ");
-                fw.Write(Config.GetType(property, forceAssociationPropertyType: true));
+                fw.Write(Config.GetType(property, tag, forceAssociationPropertyType: true));
                 fw.WriteLine(";");
             }
 
@@ -174,7 +180,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
 
             if (enumClass.Enum != EnumMode.Class || enumClass.Readonly)
             {
-                WriteEnumValues(fw, enumClass);
+                WriteEnumValues(fw, enumClass, tag);
             }
 
             if (enumClass.Reference)
@@ -184,7 +190,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
         }
     }
 
-    private void WriteEnumValues(IFileWriter fw, Class reference)
+    private void WriteEnumValues(IFileWriter fw, Class reference, string tag)
     {
         fw.Write("export const ");
         fw.Write(reference.NameCamel);
@@ -204,7 +210,7 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
                     refValue
                         .Value.Where(p => p.Value != "null")
                         .Select(property =>
-                            $"{property.Key.NameCamel}: {(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? $"\"{refValue.ResourceKey}\"" : Config.GetValue(property.Key, property.Value))}"
+                            $"{property.Key.NameCamel}: {(Config.TranslateReferences == true && property.Key == property.Key.Class.DefaultProperty ? $"\"{refValue.ResourceKey}\"" : Config.GetValue(property.Key, tag, property.Value))}"
                         )
                 )
             );

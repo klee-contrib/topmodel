@@ -150,34 +150,44 @@ Si vous utilisez le mode `dataFlowsWriter: bulk`, la librairie `spring-batch-bul
 
 ### `dataFlowsPath`
 
-Localisation des flux de données générés. Cette variable doit être renseignée pour que les flux soient générés.
+Localisation des flux de données générés.
+
+_Templating_ : `{module}`
+
+_Variables par tag_ : **oui** (plusieurs flux de données pourraient être générés si un fichier a plusieurs tags)
+
+Cette variable doit être renseignée pour que les flux soient générés.
 
 Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-_Templating_: `{app}`, `{module}`
-
-_Variables par tag_: **oui** (plusieurs flux de données pourraient être générés si un fichier a plusieurs tags)
-
 ### `dataFlowsWriter`
 
-Writer à utiliser pour les flux de données. Les valeurs possibles sont :
+Writer à utiliser pour les flux de données.
+
+_Valeurs possibles_ : `bulk`, `jpa`
+
+_Valeur par défaut_ : `jpa`
+
+Détail des modes :
 
 - `jpa` : Utilise le `JpaItemWriter` de spring-batch (par défaut). Adapté pour des volumes de données modérés et offre une meilleure compatibilité avec les fonctionnalités JPA (cascades, listeners, etc.)
 - `bulk` : Utilise le `PgBulkWriter` de la librairie `spring-batch-bulk` pour des performances optimales. Recommandé pour traiter de très gros volumes de données grâce à l'utilisation du bulk insert PostgreSQL (avec la commande `COPY`)
 
-_Valeur par défaut_: `jpa`
-
 ### `dataFlowsBulkSize`
 
-Taille des chunks à extraire et insérer lors de l'utilisation du mode `bulk` pour les flux de données. Cette valeur détermine le nombre d'enregistrements traités par batch lors des opérations d'insertion en masse.
+Taille des chunks à extraire et insérer.
 
-_Valeur par défaut_: `100000`
+_Valeur par défaut_ : `100000`
+
+Cette valeur est utilisée en mode `bulk` et détermine le nombre d'enregistrements traités par batch lors des opérations d'insertion en masse.
 
 ### `dataFlowsListeners`
 
-Liste des listeners à ajouter aux dataflows. Ces listeners seront appelés aux différents hooks du flow (beforeFlow, afterFlow, etc.).
+Listeners à ajouter à tous les dataflows.
 
-_Valeur par défaut_: `[]`
+_Valeur par défaut_ : `[]`
+
+Ces listeners seront appelés aux différents hooks du flow (beforeFlow, afterFlow, etc.).
 
 **Exemple :**
 

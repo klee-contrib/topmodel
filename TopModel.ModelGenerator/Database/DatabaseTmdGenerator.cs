@@ -81,7 +81,7 @@ public abstract class DatabaseTmdGenerator(
         RenameFiles();
 
         // Ecriture des fichiers
-        foreach (var file in WriteFiles())
+        await foreach (var file in WriteFiles(ct))
         {
             yield return file;
         }
@@ -685,14 +685,18 @@ public abstract class DatabaseTmdGenerator(
         }
     }
 
-    private IEnumerable<string> WriteFiles()
+    private async IAsyncEnumerable<string> WriteFiles([EnumeratorCancellation] CancellationToken ct = default)
     {
         foreach (var file in Files)
         {
+            ct.ThrowIfCancellationRequested();
             var fileName = Path.Combine(ModelRoot, $"{file.Path}.tmd");
+            await using var tmdFileWriter = new TmdWriter(
+                writerProvider.OpenFileWriter(fileName, logger),
+                file,
+                ModelRoot
+            );
             yield return fileName;
-
-            using var tmdFileWriter = new TmdWriter(writerProvider.OpenFileWriter(fileName, logger), file, ModelRoot);
         }
     }
 }

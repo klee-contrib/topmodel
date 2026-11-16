@@ -7,7 +7,8 @@ namespace TopModel.Generator.Csharp;
 /// </summary>
 public static class CSharpUtils
 {
-    private static readonly HashSet<string> _reservedKeywords = new([
+    private static readonly HashSet<string> _reservedKeywords =
+    [
         "abstract",
         "as",
         "base",
@@ -86,7 +87,7 @@ public static class CSharpUtils
         "void",
         "volatile",
         "while",
-    ]);
+    ];
 
     public static CSharpWriter OpenCSharpWriter(this GeneratorBase<CsharpConfig> generator, string fileName)
     {

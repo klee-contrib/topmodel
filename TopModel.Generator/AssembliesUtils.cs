@@ -1,22 +1,24 @@
 using System.Collections.Immutable;
 using System.Reflection;
+using NeoSmart.AsyncLock;
 
 namespace TopModel.Generator;
 
 public static class AssembliesUtils
 {
-    private static readonly object _lock = new();
+    private static readonly AsyncLock _lock = new();
 
     private static readonly Dictionary<string, Assembly> loadedAssemblies = AppDomain
         .CurrentDomain.GetAssemblies()
         .ToDictionary(a => a.ManifestModule.Name);
+
     public static ISet<string> LoadedAssemblies => loadedAssemblies.Keys.ToImmutableHashSet();
 
     public static IEnumerable<Assembly> LoadAssemblies(IEnumerable<FileInfo> fileInfos)
     {
         var assembliesToLoad = fileInfos.Where(f => !f.Name.EndsWith(".resources.dll")).DistinctBy(a => a.Name);
 
-        lock (_lock)
+        using (_lock.Lock())
         {
             foreach (var assembly in assembliesToLoad)
             {
