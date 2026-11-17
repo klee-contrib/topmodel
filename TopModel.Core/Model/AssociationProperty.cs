@@ -16,7 +16,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public string? FinalTrigram => Trigram ?? Property.FinalTrigram ?? Class?.Trigram;
 
-    public virtual string? ClassName { get; set; }
+    public virtual LocatedString? ClassName { get; set; }
 
     public virtual Class Association { get; set; } = null!;
 

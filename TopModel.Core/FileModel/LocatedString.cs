@@ -28,6 +28,26 @@ public class LocatedString(Scalar value) : IComparable
         return ls1?.Value != ls2?.Value;
     }
 
+    public static bool operator <(LocatedString left, LocatedString right)
+    {
+        return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
+    }
+
+    public static bool operator <=(LocatedString left, LocatedString right)
+    {
+        return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >(LocatedString left, LocatedString right)
+    {
+        return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
+    }
+
+    public static bool operator >=(LocatedString left, LocatedString right)
+    {
+        return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
+    }
+
     /// <inheritdoc cref="IComparable.CompareTo" />
     public int CompareTo(object? obj)
     {
@@ -103,6 +123,11 @@ public class LocatedString(Scalar value) : IComparable
         return Value.ToConstantCase();
     }
 
+    public string ToFirstUpper()
+    {
+        return Value.ToFirstUpper();
+    }
+
     public string ToKebabCase()
     {
         return Value.ToKebabCase();
@@ -113,9 +138,9 @@ public class LocatedString(Scalar value) : IComparable
         return Value.ToLower();
     }
 
-    public string ToPascalCase()
+    public string ToPascalCase(bool strictIfUppercase = false)
     {
-        return Value.ToPascalCase();
+        return Value.ToPascalCase(strictIfUppercase);
     }
 
     public override string ToString()

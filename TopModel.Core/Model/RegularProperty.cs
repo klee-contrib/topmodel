@@ -9,7 +9,9 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
     private string? _defaultValue;
     private ParamLocation? _paramLocation;
 
-    public string Name { get; set; } = null!;
+    public string Name => OwnName;
+
+    public LocatedString OwnName { get; set; } = null!;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -109,7 +111,7 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
-            Name = Name,
+            OwnName = OwnName,
             PrimaryKey = PrimaryKey,
             Readonly = Readonly,
             Required = Required,
@@ -140,7 +142,7 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
             Domain = Domain,
             Endpoint = container as Endpoint,
             Label = Label,
-            Name = Name,
+            OwnName = OwnName,
             PrimaryKey = PrimaryKey,
             Required = Required,
             Readonly = Readonly,

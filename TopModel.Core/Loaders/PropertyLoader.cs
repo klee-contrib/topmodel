@@ -24,7 +24,7 @@ public class PropertyLoader(FileChecker fileChecker)
                     switch (prop)
                     {
                         case "name":
-                            rp.Name = value!.Value;
+                            rp.OwnName = new LocatedString(value!);
                             break;
                         case "label":
                             rp.Label = value!.Value;
@@ -169,7 +169,7 @@ public class PropertyLoader(FileChecker fileChecker)
                                         switch (prop.Value)
                                         {
                                             case "className":
-                                                ap.WithReverse.ClassName = rValue!.Value;
+                                                ap.WithReverse.ClassName = new LocatedString(rValue!);
                                                 break;
                                             case "label":
                                                 ap.WithReverse.Label = rValue!.Value;
@@ -226,7 +226,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             ap.Trigram = new LocatedString(value!);
                             break;
                         case "className":
-                            ap.ClassName = value!.Value;
+                            ap.ClassName = new LocatedString(value!);
                             break;
                         case "annotations":
                             parser.ConsumeSequence(() =>
@@ -304,7 +304,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             cp.Reference = new ClassReference(value!);
                             break;
                         case "name":
-                            cp.Name = value!.Value;
+                            cp.OwnName = new LocatedString(value!);
                             break;
                         case "label":
                             cp.Label = value!.Value;
@@ -443,16 +443,24 @@ public class PropertyLoader(FileChecker fileChecker)
                     switch (prop)
                     {
                         case "prefix":
-                            alp.Prefix =
-                                value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName
-                                : value.Value == "false" ? null
-                                : value.Value;
+                            if (value!.Value == "true" || value.Value == "false")
+                            {
+                                alp.Prefix = true;
+                            }
+                            else
+                            {
+                                alp.Prefix = new LocatedString(value);
+                            }
                             break;
                         case "suffix":
-                            alp.Suffix =
-                                value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName
-                                : value.Value == "false" ? null
-                                : value.Value;
+                            if (value!.Value == "true" || value.Value == "false")
+                            {
+                                alp.Suffix = true;
+                            }
+                            else
+                            {
+                                alp.Suffix = new LocatedString(value);
+                            }
                             break;
                         case "label":
                             alp.Label = value!.Value;
@@ -494,7 +502,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             alp.UseClass = value!.Value == "true";
                             break;
                         case "name":
-                            alp.Name = value!.Value;
+                            alp.OwnName = new LocatedString(value!);
                             break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value!);

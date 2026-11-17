@@ -13,7 +13,6 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
     private string? _defaultValue;
     private DomainInstance? _domain;
     private string? _label;
-    private string? _name;
     private ParamLocation? _paramLocation;
     private bool? _primaryKey;
     private IProperty _property = null!;
@@ -61,20 +60,26 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
         }
     }
 
+    public LocatedString? OwnName { get; set; }
+
     public string Name
     {
         get
         {
             var name = new StringBuilder();
 
-            if (Prefix != null)
+            if (Prefix is LocatedString prefix)
             {
-                name.Append(Prefix);
+                name.Append(prefix);
+            }
+            else if (Prefix is true)
+            {
+                name.Append(OriginalProperty?.Parent.Name);
             }
 
-            if (_name != null)
+            if (OwnName != null)
             {
-                name.Append(_name);
+                name.Append(OwnName.Value);
             }
             else if (_property is AssociationProperty && Composition == null)
             {
@@ -85,14 +90,17 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
                 name.Append(_property?.Name);
             }
 
-            if (Suffix != null)
+            if (Suffix is LocatedString suffix)
             {
-                name.Append(Suffix);
+                name.Append(suffix);
+            }
+            else if (Suffix is true)
+            {
+                name.Append(OriginalProperty?.Parent.Name);
             }
 
             return name.ToString();
         }
-        set => _name = value;
     }
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(PersistentProperty ?? this);
@@ -240,9 +248,9 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     public PropertyReference? PropertyReference { get; set; }
 
-    public string? Prefix { get; set; }
+    public Affix? Prefix { get; set; }
 
-    public string? Suffix { get; set; }
+    public Affix? Suffix { get; set; }
 
     public ParamLocation? ParamLocation
     {
@@ -289,14 +297,18 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
         {
             var name = new StringBuilder();
 
-            if (Prefix != null)
+            if (Prefix is LocatedString prefix)
             {
-                name.Append(Prefix.ToFirstUpper());
+                name.Append(prefix.ToFirstUpper());
+            }
+            else if (Prefix is true)
+            {
+                name.Append(OriginalProperty?.Parent.NamePascal);
             }
 
-            if (_name != null)
+            if (OwnName != null)
             {
-                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+                name.Append(OwnName.ToPascalCase(strictIfUppercase: true));
             }
             else if (_property is AssociationProperty && Composition == null)
             {
@@ -307,9 +319,13 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
                 name.Append(_property?.TrueNamePascal);
             }
 
-            if (Suffix != null)
+            if (Suffix is LocatedString suffix)
             {
-                name.Append(Suffix);
+                name.Append(suffix);
+            }
+            else if (Suffix is true)
+            {
+                name.Append(OriginalProperty?.Parent.NamePascal);
             }
 
             return name.ToString();
@@ -322,14 +338,18 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
         {
             var name = new StringBuilder();
 
-            if (Prefix != null)
+            if (Prefix is LocatedString prefix)
             {
-                name.Append(Prefix.ToFirstUpper());
+                name.Append(prefix.ToFirstUpper());
+            }
+            else if (Prefix is true)
+            {
+                name.Append(OriginalProperty?.Parent.NamePascal);
             }
 
-            if (_name != null)
+            if (OwnName != null)
             {
-                name.Append(_name.ToPascalCase(strictIfUppercase: true));
+                name.Append(OwnName.ToPascalCase(strictIfUppercase: true));
             }
             else if (_property is AssociationProperty && Composition == null)
             {
@@ -340,9 +360,13 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
                 name.Append(_property?.TrueNamePascal);
             }
 
-            if (Suffix != null)
+            if (Suffix is LocatedString suffix)
             {
-                name.Append(Suffix);
+                name.Append(suffix);
+            }
+            else if (Suffix is true)
+            {
+                name.Append(OriginalProperty?.Parent.NamePascal);
             }
 
             return name.ToString();
@@ -366,7 +390,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = _label,
-            Name = _name!,
+            OwnName = OwnName,
             Prefix = Prefix,
             PreservePrimaryKey = PreservePrimaryKey,
             PreserveTrigram = PreserveTrigram,
@@ -420,7 +444,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
             Endpoint = container as Endpoint,
             ExcludedAnnotations = ExcludedAnnotations,
             Label = _label,
-            Name = _name!,
+            OwnName = OwnName,
             OriginalAliasProperty = OriginalAliasProperty,
             OwnAnnotations = OwnAnnotations,
             Prefix = Prefix,
@@ -495,7 +519,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
             ExcludedAnnotations = ExcludedAnnotations,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = _label,
-            Name = _name!,
+            OwnName = OwnName,
             OriginalAliasProperty = this,
             OwnAnnotations = OwnAnnotations,
             Prefix = Prefix,

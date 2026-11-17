@@ -6,7 +6,7 @@ internal class ReverseAssociationDefinition(DeclarationReference declarationRefe
 {
     public required AssociationProperty Property { get; set; }
 
-    public string? ClassName { get; set; }
+    public LocatedString? ClassName { get; set; }
 
     public string? Label { get; set; }
 

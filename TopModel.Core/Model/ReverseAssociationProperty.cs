@@ -17,7 +17,7 @@ internal class ReverseAssociationProperty(DeclarationReference declarationRefere
 
     public override bool Required => !ReverseProperty.Unique && ReverseProperty.Required;
 
-    public override string? ClassName => ReverseProperty.WithReverse?.ClassName;
+    public override LocatedString? ClassName => ReverseProperty.WithReverse?.ClassName;
 
     public override string? Role => ReverseProperty.Role;
 

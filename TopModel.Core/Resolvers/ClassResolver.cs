@@ -3,6 +3,7 @@ using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
+using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Resolvers;
 
@@ -570,7 +571,7 @@ internal class ClassResolver(
                 {
                     classe.DiscriminatorProperty = new RegularProperty(new DeclarationReference())
                     {
-                        Name = "Discriminator",
+                        OwnName = new LocatedString(new Scalar("Discriminator")),
                         Class = classe,
                         Required = true,
                         Comment = "Discriminateur pour les instances de la hiérarchie de classe",

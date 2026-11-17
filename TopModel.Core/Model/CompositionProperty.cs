@@ -10,7 +10,9 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
 
     public Class Composition { get; set; } = null!;
 
-    public string Name { get; set; } = null!;
+    public string Name => OwnName.Value;
+
+    public LocatedString OwnName { get; set; } = null!;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -115,7 +117,7 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
-            Name = Name,
+            OwnName = OwnName,
             Readonly = Readonly,
             Reference = Reference,
             Required = Required,
@@ -145,7 +147,7 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
             Decorator = container as Decorator,
             Domain = Domain,
             Endpoint = container as Endpoint,
-            Name = Name,
+            OwnName = OwnName,
             Required = Required,
             Readonly = Readonly,
             Tags = Tags,

@@ -151,7 +151,7 @@ public static class ModelExtensions
                     .. includeTransitive
                     && (
                         p is AssociationProperty { ClassName: null }
-                        || p is AliasProperty a && (a.Prefix == classe.Name || a.Suffix == classe.Name)
+                        || p is AliasProperty a && (a.Prefix is true || a.Suffix is true)
                     )
                         ? modelStore.GetPropertyReferences(p, includeTransitive)
                         : [],
