@@ -1,5 +1,14 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 4.2.1
+
+Corrections sur la correspondance des domaines (`domains`) :
+
+- `scale` et `precision` ne servent plus qu'à départager des entrées qui correspondent déjà sur leur `name` ou leur `type`. Auparavant, une entrée pouvait être retenue uniquement parce que son `scale` correspondait à celui de la colonne (`database`)
+- Le bonus de `precision` dépendait par erreur de la présence d'un `scale` sur la colonne (`database`)
+- Un domaine résolu par `name` et portant le même nom que la propriété n'est plus ignoré au profit de la correspondance sur le `type`
+- Seuls le premier et le dernier `/` d'une expression régulière sont retirés (auparavant, tous les `/` de début et de fin l'étaient)
+
 ## 4.2.0
 
 **breaking changes**

@@ -17,6 +17,7 @@
   <Project Path="TopModel.LanguageServer.IntegrationTests/TopModel.LanguageServer.IntegrationTests.csproj" />
   <Project Path="TopModel.LanguageServer.Tests/TopModel.LanguageServer.Tests.csproj" />
   <Project Path="TopModel.ModelGenerator/TopModel.ModelGenerator.csproj" />
+  <Project Path="TopModel.ModelGenerator.Tests/TopModel.ModelGenerator.Tests.csproj" />
   <Project Path="TopModel.Utils/TopModel.Utils.csproj" />
   <Project Path="TopModel.Utils.Cli/TopModel.Utils.Cli.csproj" />
   <Project Path="TopModel.Utils.Mermaid/TopModel.Utils.Mermaid.csproj" />

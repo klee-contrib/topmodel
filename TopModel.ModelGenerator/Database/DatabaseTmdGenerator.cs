@@ -196,21 +196,18 @@ public abstract class DatabaseTmdGenerator(
         ConstraintKey? foreignConstraint
     )
     {
-        var domain = TmdGenUtils.GetDomainString(
-            config.Domains,
-            name: column.ColumnName,
-            scale: column.Scale,
-            precision: column.Precision
-        );
-        if (domain == column.ColumnName)
-        {
-            domain = TmdGenUtils.GetDomainString(
+        var domain = TmdGenUtils.FindDomain(
+                config.Domains,
+                name: column.ColumnName,
+                scale: column.Scale,
+                precision: column.Precision
+            )
+            ?? TmdGenUtils.GetDomainString(
                 config.Domains,
                 type: column.DataType,
                 scale: column.Scale,
                 precision: column.Precision
             );
-        }
 
         var columnName = column.ColumnName;
 

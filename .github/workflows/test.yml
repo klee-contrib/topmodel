@@ -42,6 +42,12 @@ jobs:
       - name: run tests - modgen
         run: dotnet-coverage collect --settings coverage.settings.xml --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -s -u all -c Release"
 
+      - name: build tests - tmdgen
+        run: dotnet build TopModel.ModelGenerator.Tests -c Release
+
+      - name: run tests - tmdgen unit
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tmdgen-tests-coverage-results.xml" --output-format cobertura -- "dotnet test TopModel.ModelGenerator.Tests -c Release --no-build"
+
       - name: build tests - language server
         run: dotnet build TopModel.LanguageServer.Tests -c Release
 
@@ -59,4 +65,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./modgen-coverage-results.xml,./tmdgen-database-coverage-results.xml,./ls-tests-coverage-results.xml,./ls-integration-coverage-results.xml
+          files: ./modgen-coverage-results.xml,./tmdgen-database-coverage-results.xml,./tmdgen-tests-coverage-results.xml,./ls-tests-coverage-results.xml,./ls-integration-coverage-results.xml

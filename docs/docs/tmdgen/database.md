@@ -27,9 +27,10 @@ La configuration du générateur `database` permet de définir :
   - `password`: (facultatif) mot de passe de connexion à la base de données
 - `domains` : Correspondance entre les types de la base de données et les domaines du modèle cible. Quelques spécificités
   - Définition d'un `name` ou d'un `type`, pour matcher soit sur le nom de la propriété soit sur son type
-  - Les regexp sont acceptées
-  - Possibilité de définir `scale` et `precision`, pour faire correspondre les types avec plus de finesse
-  - Le meilleur domaine à correspondre au type/nom de la colonne est utilisé pour la propriété
+  - Les regexp sont acceptées, voir [Format des expressions régulières](../tmdgen#format-des-expressions-régulières)
+  - Le `type` est comparé au nom brut du type renvoyé par la base, **sans longueur** : `varchar` et non `varchar(255)`. Attention, PostgreSQL renvoie `character varying`, `timestamp without time zone`, etc.
+  - Possibilité de définir `scale` et `precision`, pour départager plusieurs entrées qui correspondent au même `name` ou `type` : une entrée dont le `scale` (ou la `precision`) est égal à celui de la colonne est préférée. Seuls, ils ne suffisent pas à faire correspondre une entrée
+  - Le meilleur domaine à correspondre au nom puis au type de la colonne est utilisé pour la propriété, voir [Choix du domaine](../tmdgen#choix-du-domaine)
 - `tags` : liste des tags à ajouter aux fichier de modèle
 - `exclude` : liste des noms des tables à exclure de la génération (au format `snake_case`)
 - `extractValues`: liste des noms des classes dont on souhaite extraire les valeurs à placer dans des enums TopModel (au format `PascalCase`)
