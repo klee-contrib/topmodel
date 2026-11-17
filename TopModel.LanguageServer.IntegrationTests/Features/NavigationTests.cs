@@ -77,4 +77,3 @@ public class NavigationTests : LspTestBase
         Assert.IsGreaterThan(1, references.Count());
     }
 }
-

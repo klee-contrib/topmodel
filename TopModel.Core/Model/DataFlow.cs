@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-public class DataFlow(Reference location)
+public class DataFlow(DeclarationReference declarationReference)
 {
     public required ModelFile ModelFile { get; init; }
 
@@ -24,11 +24,11 @@ public class DataFlow(Reference location)
 
     public IProperty? ActiveProperty { get; internal set; }
 
-    public Reference? ActivePropertyReference { get; internal set; }
+    public PropertyReference? ActivePropertyReference { get; internal set; }
 
     public IList<DataFlowSource> Sources { get; } = [];
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     public override string ToString()
     {

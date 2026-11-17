@@ -18,8 +18,8 @@ public class ClassMappings
 
     public IDictionary<IProperty, IProperty> Mappings { get; } = new Dictionary<IProperty, IProperty>();
 
-    public IDictionary<Reference, Reference> MappingReferences { get; internal set; } =
-        new Dictionary<Reference, Reference>();
+    public IDictionary<PropertyReference, PropertyReference> MappingReferences { get; internal set; } =
+        new Dictionary<PropertyReference, PropertyReference>();
 
     public IEnumerable<IProperty> MissingRequiredProperties =>
         Class

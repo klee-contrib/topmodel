@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class AssociationProperty(Reference location) : IProperty
+internal class AssociationProperty(DeclarationReference declarationReference) : IProperty
 {
     private string? _defaultValue;
     private ParamLocation? _paramLocation;
@@ -138,13 +138,13 @@ internal class AssociationProperty(Reference location) : IProperty
 
     public IProperty? SourceProperty { get; private set; }
 
-    public Reference? PropertyReference { get; set; }
+    public PropertyReference? PropertyReference { get; set; }
 
     public DomainReference? DomainReference => null;
 
     public ClassReference Reference { get; set; } = null!;
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal string RawSqlName
     {
@@ -172,7 +172,7 @@ internal class AssociationProperty(Reference location) : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var ap = new AssociationProperty(Location)
+        var ap = new AssociationProperty(DeclarationReference)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -207,7 +207,7 @@ internal class AssociationProperty(Reference location) : IProperty
 
         if (WithReverse != null)
         {
-            ap.WithReverse = new ReverseAssociationDefinition(WithReverse.Location)
+            ap.WithReverse = new ReverseAssociationDefinition(WithReverse.DeclarationReference)
             {
                 AnnotationReferences = WithReverse.AnnotationReferences,
                 ClassName = WithReverse.ClassName,
@@ -224,7 +224,7 @@ internal class AssociationProperty(Reference location) : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var ap = new AssociationProperty(Location)
+        var ap = new AssociationProperty(DeclarationReference)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,

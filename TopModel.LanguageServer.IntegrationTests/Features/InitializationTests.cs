@@ -27,4 +27,3 @@ public class InitializationTests : LspTestBase
         Assert.IsNotNull(caps.SemanticTokensProvider, "semanticTokens");
     }
 }
-

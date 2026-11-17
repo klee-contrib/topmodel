@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class AnnotationLoader(FileChecker fileChecker) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
     {
-        var annotation = new Annotation(location) { ModelFile = modelFile, Namespace = modelFile.Namespace };
+        var annotation = new Annotation(reference) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Annotations.Add(annotation);
 
         parser.ConsumeMapping(prop =>

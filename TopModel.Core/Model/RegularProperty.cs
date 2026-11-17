@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class RegularProperty : IProperty
+internal class RegularProperty(DeclarationReference declarationReference) : IProperty
 {
     private string? _defaultValue;
     private ParamLocation? _paramLocation;
@@ -89,7 +89,7 @@ internal class RegularProperty : IProperty
         set => _paramLocation = value;
     }
 
-    internal Reference Location { get; set; } = null!;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
@@ -100,7 +100,7 @@ internal class RegularProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var rp = new RegularProperty
+        var rp = new RegularProperty(DeclarationReference)
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -109,7 +109,6 @@ internal class RegularProperty : IProperty
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = Label,
-            Location = Location,
             Name = Name,
             PrimaryKey = PrimaryKey,
             Readonly = Readonly,
@@ -129,7 +128,7 @@ internal class RegularProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var rp = new RegularProperty
+        var rp = new RegularProperty(DeclarationReference)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,
@@ -141,7 +140,6 @@ internal class RegularProperty : IProperty
             Domain = Domain,
             Endpoint = container as Endpoint,
             Label = Label,
-            Location = Location,
             Name = Name,
             PrimaryKey = PrimaryKey,
             Required = Required,

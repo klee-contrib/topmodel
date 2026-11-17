@@ -26,13 +26,15 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
         return new CodeLensContainer(
             files
                 .SelectMany(f =>
-                    f.File.Classes.Select(c => (Location: c.GetLocation()!, References: f.Store.GetClassReferences(c)))
+                    f.File.Classes.Select(c =>
+                        (Declaration: c.DeclarationReference!, References: f.Store.GetClassReferences(c))
+                    )
                 )
                 .Concat(
                     files.SelectMany(f =>
                         f.File.Annotations.Select(c =>
                             (
-                                Location: c.GetLocation()!,
+                                Declaration: c.DeclarationReference!,
                                 References: f.Store.GetAnnotationReferences(c)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -43,7 +45,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Domains.Select(d =>
                             (
-                                Location: d.GetLocation()!,
+                                Declaration: d.DeclarationReference!,
                                 References: f.Store.GetDomainReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -54,7 +56,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Decorators.Select(d =>
                             (
-                                Location: d.GetLocation()!,
+                                Declaration: d.DeclarationReference!,
                                 References: f.Store.GetDecoratorReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -65,7 +67,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.DataFlows.Select(d =>
                             (
-                                Location: d.GetLocation()!,
+                                Declaration: d.DeclarationReference!,
                                 References: f.Store.GetDataFlowReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -76,16 +78,16 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Endpoints.Select(e =>
                             (
-                                Location: e.GetLocation()!,
+                                Declaration: e.DeclarationReference!,
                                 References: f.Store.GetEndpointReferences(e)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
                         )
                     )
                 )
-                .SelectMany(r => r.References.Select(item => (r.Location, item.Reference, item.File)))
+                .SelectMany(r => r.References.Select(item => (r.Declaration, item.Reference, item.File)))
                 .Distinct()
-                .GroupBy(r => r.Location)
+                .GroupBy(r => r.Declaration)
                 .Select(group =>
                 {
                     var range = group.Key.ToRange()!;

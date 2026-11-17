@@ -73,468 +73,468 @@ public class CompletionKindTests
     [TestMethod]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - name: a
-              domain: |
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - name: a
+                  domain: |
+            """,
         nameof(CompletionKind.Domain)
     )]
     [DataRow(
         """
-        ---
-        module: Test
-        uses:
-          - |
-        """,
+            ---
+            module: Test
+            uses:
+              - |
+            """,
         nameof(CompletionKind.File)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          extends: |
-        """,
+            ---
+            class:
+              name: Test
+              extends: |
+            """,
         nameof(CompletionKind.Class)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          defaultProperty: |
-        """,
+            ---
+            class:
+              name: Test
+              defaultProperty: |
+            """,
         nameof(CompletionKind.OwnProperty)
     )]
     [DataRow(
         """
-        ---
-        endpoint:
-          name: Test
-          returns:
-            composition: |
-        """,
+            ---
+            endpoint:
+              name: Test
+              returns:
+                composition: |
+            """,
         nameof(CompletionKind.Class)
     )]
     [DataRow(
         """
-        ---
-        endpoint:
-          name: Test
-          returns:
-            |
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          values:
-            A: { Code: A, |}
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          values:
-            A:
-              |
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          values:
-            |
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          mappers:
-            from:
-              - params:
-                  - class: B
-                    mappings:
-                      |
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          returns: |
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          returns:|
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-
-          params:|
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          params:
-            - |
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          unique:
-            - [A, |]
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          indexes:
-            - [|]
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          indexes:
-            - properties: [A, |]
-        """,
-        nameof(CompletionKind.OwnProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          indexes:
-            - unique: |
-        """,
-        nameof(CompletionKind.None)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          properties:
-            - alias:
-                class: B
-                include: [A, |]
-        """,
-        nameof(CompletionKind.TargetProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          properties:
-            - alias:
-                class: B
-                exclude:
-                  - |
-        """,
-        nameof(CompletionKind.TargetProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          params:
-            - alias:
-                class: B
-                property: |
-        """,
-        nameof(CompletionKind.TargetProperty)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          annotations:
-            - Authenticated
-            - RoleRequired:
-                ro|
-        """,
-        nameof(CompletionKind.Parameter)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          annotations:
-            - RoleRequired:
-                role: ADMIN
+            ---
+            endpoint:
+              name: Test
+              returns:
                 |
-        """,
-        nameof(CompletionKind.Parameter)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          annotations:
-            - RoleRequired: { |}
-        """,
-        nameof(CompletionKind.Parameter)
-    )]
-    [DataRow(
-        """
-        ---
-        class:
-          name: Test
-          properties:
-            - name: a
-              annotations:
-                - Annot:
-                    |
-        """,
-        nameof(CompletionKind.Parameter)
-    )]
-    [DataRow(
-        """
-        ---
-        endpoint:
-          name: Test
-          annotations:
-            - RoleRequired:
-                role: |
-        """,
+            """,
         nameof(CompletionKind.None)
     )]
     [DataRow(
         """
-        ---
-        endpoint:
-          name: Test
-          annotations:
-            - Role|
-        """,
+            ---
+            class:
+              name: Test
+              values:
+                A: { Code: A, |}
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              values:
+                A:
+                  |
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              values:
+                |
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              mappers:
+                from:
+                  - params:
+                      - class: B
+                        mappings:
+                          |
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              returns: |
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              returns:|
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+
+              params:|
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              params:
+                - |
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              unique:
+                - [A, |]
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              indexes:
+                - [|]
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              indexes:
+                - properties: [A, |]
+            """,
+        nameof(CompletionKind.OwnProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              indexes:
+                - unique: |
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              properties:
+                - alias:
+                    class: B
+                    include: [A, |]
+            """,
+        nameof(CompletionKind.TargetProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              properties:
+                - alias:
+                    class: B
+                    exclude:
+                      - |
+            """,
+        nameof(CompletionKind.TargetProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              params:
+                - alias:
+                    class: B
+                    property: |
+            """,
+        nameof(CompletionKind.TargetProperty)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              annotations:
+                - Authenticated
+                - RoleRequired:
+                    ro|
+            """,
+        nameof(CompletionKind.Parameter)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              annotations:
+                - RoleRequired:
+                    role: ADMIN
+                    |
+            """,
+        nameof(CompletionKind.Parameter)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              annotations:
+                - RoleRequired: { |}
+            """,
+        nameof(CompletionKind.Parameter)
+    )]
+    [DataRow(
+        """
+            ---
+            class:
+              name: Test
+              properties:
+                - name: a
+                  annotations:
+                    - Annot:
+                        |
+            """,
+        nameof(CompletionKind.Parameter)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              annotations:
+                - RoleRequired:
+                    role: |
+            """,
+        nameof(CompletionKind.None)
+    )]
+    [DataRow(
+        """
+            ---
+            endpoint:
+              name: Test
+              annotations:
+                - Role|
+            """,
         nameof(CompletionKind.Annotation)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          decorators:
-            - DateCreation
-            - Deco:
-                pa|
-        """,
+            ---
+            class:
+              name: Test
+              decorators:
+                - DateCreation
+                - Deco:
+                    pa|
+            """,
         nameof(CompletionKind.Parameter)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          decorators:
-            - Deco: { |}
-        """,
+            ---
+            class:
+              name: Test
+              decorators:
+                - Deco: { |}
+            """,
         nameof(CompletionKind.Parameter)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          decorators:
-            - Deco:
-                param: |
-        """,
+            ---
+            class:
+              name: Test
+              decorators:
+                - Deco:
+                    param: |
+            """,
         nameof(CompletionKind.None)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          decorators:
-            - De|
-        """,
+            ---
+            class:
+              name: Test
+              decorators:
+                - De|
+            """,
         nameof(CompletionKind.Decorator)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - name: a
-              domain:
-                name: DO_A
-                parameters:
-                  |
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - name: a
+                  domain:
+                    name: DO_A
+                    parameters:
+                      |
+            """,
         nameof(CompletionKind.Parameter)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - name: a
-              domain: { name: DO_A, parameters: { |} }
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - name: a
+                  domain: { name: DO_A, parameters: { |} }
+            """,
         nameof(CompletionKind.Parameter)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - name: a
-              domain:
-                name: |
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - name: a
+                  domain:
+                    name: |
+            """,
         nameof(CompletionKind.Domain)
     )]
     [DataRow(
         """
-        ---
-        domain:
-          name: |
-        """,
+            ---
+            domain:
+              name: |
+            """,
         nameof(CompletionKind.None)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - association: B
-              property: |
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - association: B
+                  property: |
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          properties:
-            - alias: { class: B, include: [A, |] }
-        """,
+            ---
+            class:
+              name: Test
+              properties:
+                - alias: { class: B, include: [A, |] }
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          mappers:
-            to:
-              - class: B
-                mappings:
-                  X: |
-        """,
+            ---
+            class:
+              name: Test
+              mappers:
+                to:
+                  - class: B
+                    mappings:
+                      X: |
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          mappers:
-            to:
-              - class: B
-                mappings: { X: |}
-        """,
+            ---
+            class:
+              name: Test
+              mappers:
+                to:
+                  - class: B
+                    mappings: { X: |}
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          mappers:
-            to:
-              - class: B
-                mappings: { X: Y, |}
-        """,
+            ---
+            class:
+              name: Test
+              mappers:
+                to:
+                  - class: B
+                    mappings: { X: Y, |}
+            """,
         nameof(CompletionKind.OwnProperty)
     )]
     [DataRow(
         """
-        ---
-        dataFlow:
-          name: Test
-          sources:
-            - class: B
-              joinProperties: [A, |]
-        """,
+            ---
+            dataFlow:
+              name: Test
+              sources:
+                - class: B
+                  joinProperties: [A, |]
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        dataFlow:
-          name: Test
-          sources:
-            - class: B
-              joinProperties:
-                - |
-        """,
+            ---
+            dataFlow:
+              name: Test
+              sources:
+                - class: B
+                  joinProperties:
+                    - |
+            """,
         nameof(CompletionKind.TargetProperty)
     )]
     [DataRow(
         """
-        ---
-        class:
-          name: Test
-          propertyAnnotations:
-            - Annot:
-                |
-        """,
+            ---
+            class:
+              name: Test
+              propertyAnnotations:
+                - Annot:
+                    |
+            """,
         nameof(CompletionKind.Parameter)
     )]
     public void FromText(string text, string expected)

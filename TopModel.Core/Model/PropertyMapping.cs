@@ -8,7 +8,7 @@ public class PropertyMapping : IPropertyContainer
 
     public IProperty TargetProperty { get; internal set; } = null!;
 
-    public Reference TargetPropertyReference { get; internal set; } = null!;
+    public PropertyReference TargetPropertyReference { get; internal set; } = null!;
 
     public required FromMapper FromMapper { get; init; }
 

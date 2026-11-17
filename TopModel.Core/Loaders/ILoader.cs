@@ -5,5 +5,5 @@ namespace TopModel.Core.Loaders;
 
 internal interface ILoader
 {
-    void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location);
+    void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference);
 }

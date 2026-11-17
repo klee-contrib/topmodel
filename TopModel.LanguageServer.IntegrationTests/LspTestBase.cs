@@ -70,4 +70,3 @@ public abstract class LspTestBase
     /// <returns>Le document ouvert (à libérer en fin de test).</returns>
     protected Task<OpenDocument> OpenAsync(string relativePath) => OpenDocument.OpenAsync(relativePath, Ct);
 }
-

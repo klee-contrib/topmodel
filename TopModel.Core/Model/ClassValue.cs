@@ -11,7 +11,7 @@ public class ClassValue
 
     public required Class Class { get; init; }
 
-    public required Reference Reference { get; init; }
+    public required DeclarationReference Reference { get; init; }
 
     public IDictionary<IProperty, string> Value { get; } = new Dictionary<IProperty, string>();
 

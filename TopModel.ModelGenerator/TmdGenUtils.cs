@@ -88,4 +88,3 @@ public static class TmdGenUtils
         return value.Equals(pattern, StringComparison.InvariantCultureIgnoreCase) ? exactScore : 0;
     }
 }
-

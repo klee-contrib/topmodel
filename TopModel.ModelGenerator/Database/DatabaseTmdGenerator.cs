@@ -197,11 +197,11 @@ public abstract class DatabaseTmdGenerator(
     )
     {
         var domain = TmdGenUtils.FindDomain(
-                config.Domains,
-                name: column.ColumnName,
-                scale: column.Scale,
-                precision: column.Precision
-            )
+            config.Domains,
+            name: column.ColumnName,
+            scale: column.Scale,
+            precision: column.Precision
+        )
             ?? TmdGenUtils.GetDomainString(
                 config.Domains,
                 type: column.DataType,

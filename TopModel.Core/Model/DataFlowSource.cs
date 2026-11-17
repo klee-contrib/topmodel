@@ -14,7 +14,7 @@ public class DataFlowSource
 
     public IList<IProperty> JoinProperties { get; } = [];
 
-    public IList<Reference> JoinPropertyReferences { get; internal set; } = [];
+    public IList<PropertyReference> JoinPropertyReferences { get; internal set; } = [];
 
     public bool InnerJoin { get; internal set; }
 

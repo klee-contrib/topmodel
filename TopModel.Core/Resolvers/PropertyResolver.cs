@@ -70,7 +70,7 @@ internal class PropertyResolver(
                             yield return Error(ErrorType.TMD9008, [], ap, ap.Reference);
                             break;
                         }
-                        ap.ReverseProperty = new ReverseAssociationProperty
+                        ap.ReverseProperty = new ReverseAssociationProperty(ap.WithReverse.DeclarationReference)
                         {
                             Class = association,
                             ReverseProperty = ap,

@@ -380,7 +380,7 @@ domain:
         }
 
         var objet = objets.First()!;
-        var targetFile = objet.GetFile();
+        var targetFile = objet.ModelFile;
         var fileText = modelFileCache.GetFile(facade.GetFilePath(targetFile));
 
         var (className, useIndex) = GetImport(objet.GetName()!, fileText, targetFile);
@@ -394,7 +394,7 @@ domain:
     protected CodeAction GetCodeActionOrganizeImports(
         CodeActionParams request,
         ModelFile firstFile,
-        IList<Reference> uselessImports
+        IList<FileReference> uselessImports
     )
     {
         var uses = firstFile.Uses.Except(uselessImports);

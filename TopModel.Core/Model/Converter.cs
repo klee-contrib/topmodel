@@ -4,7 +4,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Converter(Reference location) : IVariableContainer
+public class Converter(DeclarationReference declarationReference) : IVariableContainer
 {
     /// <summary>
     /// Domains sources du convertisseur
@@ -41,5 +41,5 @@ public class Converter(Reference location) : IVariableContainer
 
     public required ModelFile ModelFile { get; init; }
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 }

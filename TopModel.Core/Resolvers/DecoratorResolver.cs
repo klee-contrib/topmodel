@@ -56,7 +56,12 @@ internal class DecoratorResolver(
 
             foreach (var templateParam in decorator.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], decorator, templateParam.GetLocation());
+                yield return Error(
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    decorator,
+                    templateParam.DeclarationReference
+                );
             }
         }
 

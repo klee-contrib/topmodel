@@ -26,7 +26,8 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
 
         return path switch
         {
-            _ when Is(@"\.(annotations|propertyAnnotations|decorators)\[\d+\]\.[^.\[]+\.$|\.domain\.parameters\.$") => CompletionKind.Parameter,
+            _ when Is(@"\.(annotations|propertyAnnotations|decorators)\[\d+\]\.[^.\[]+\.$|\.domain\.parameters\.$") =>
+                CompletionKind.Parameter,
             _ when Is(@"^class\.values\.[^.\[]+\.$") => CompletionKind.OwnProperty,
             _ when Is(@"^class\.mappers\..*\.mappings\.$") => CompletionKind.OwnProperty,
             _ when path.EndsWith('.') => CompletionKind.None,

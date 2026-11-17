@@ -4,7 +4,10 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Domain(Reference location) : IAnnotationContainer, IParameterContainer, IVariableContainer
+public class Domain(DeclarationReference declarationReference)
+    : IAnnotationContainer,
+        IParameterContainer,
+        IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -85,7 +88,7 @@ public class Domain(Reference location) : IAnnotationContainer, IParameterContai
 
     public required ModelFile ModelFile { get; init; }
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     public override string ToString()
     {

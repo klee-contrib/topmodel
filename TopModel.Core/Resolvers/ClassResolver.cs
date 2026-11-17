@@ -64,7 +64,7 @@ internal class ClassResolver(
                                     .DecoratorReferences.Cast<Reference>()
                                     .Concat(classe.ImplementReferences)
                                     .FirstOrDefault(r => r.ReferenceName == property.SourceContainer.Name)
-                                : property.GetLocation()
+                                : property.DeclarationReference
                         );
                     }
 
@@ -86,7 +86,7 @@ internal class ClassResolver(
                                 ? classe.DecoratorReferences.FirstOrDefault(dr =>
                                     dr.ReferenceName == property.Decorator.Name
                                 )
-                                : property.GetLocation()
+                                : property.DeclarationReference
                         );
                     }
 
@@ -146,7 +146,7 @@ internal class ClassResolver(
                             ErrorType.TMD9013,
                             [property.Name, classe.Name],
                             classe,
-                            property.GetLocation()
+                            property.DeclarationReference
                         );
                     }
 
@@ -197,7 +197,7 @@ internal class ClassResolver(
                             ErrorType.TMD3021,
                             [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
                             modelFile,
-                            index.PropertyReferences.ElementAtOrDefault(0) ?? classe.GetLocation()
+                            index.PropertyReferences.ElementAtOrDefault(0) as Reference ?? classe.DeclarationReference
                         );
                     }
                 }
@@ -271,7 +271,7 @@ internal class ClassResolver(
                         ErrorType.TMD3003,
                         classe,
                         $"La classe '{classe}' doit avoir au moins une `value` pour être définie comme `enum`.",
-                        classe.EnumOverride.Location
+                        classe.EnumOverride.DeclarationReference
                     );
                 }
                 else
@@ -568,7 +568,7 @@ internal class ClassResolver(
                 }
                 else
                 {
-                    classe.DiscriminatorProperty = new RegularProperty
+                    classe.DiscriminatorProperty = new RegularProperty(new DeclarationReference())
                     {
                         Name = "Discriminator",
                         Class = classe,

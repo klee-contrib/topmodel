@@ -16,7 +16,8 @@ public class TmdGenUtilsTests
     {
         var domains = Domains(
             new DomainMapping { Name = "/Id$/", Domain = "DO_ID" },
-            new DomainMapping { Name = "userId", Domain = "DO_USER_ID" });
+            new DomainMapping { Name = "userId", Domain = "DO_USER_ID" }
+        );
 
         Assert.AreEqual("DO_USER_ID", TmdGenUtils.FindDomain(domains, name: "userId"));
     }
@@ -34,7 +35,8 @@ public class TmdGenUtilsTests
     {
         var domains = Domains(
             new DomainMapping { Type = "/char/", Domain = "DO_TEXTE" },
-            new DomainMapping { Type = "varchar", Domain = "DO_LIBELLE" });
+            new DomainMapping { Type = "varchar", Domain = "DO_LIBELLE" }
+        );
 
         Assert.AreEqual("DO_LIBELLE", TmdGenUtils.FindDomain(domains, type: "varchar"));
         Assert.AreEqual("DO_TEXTE", TmdGenUtils.FindDomain(domains, type: "character varying"));
@@ -45,7 +47,8 @@ public class TmdGenUtilsTests
     {
         var domains = Domains(
             new DomainMapping { Type = "int", Domain = "DO_FIRST" },
-            new DomainMapping { Type = "int", Domain = "DO_SECOND" });
+            new DomainMapping { Type = "int", Domain = "DO_SECOND" }
+        );
 
         Assert.AreEqual("DO_FIRST", TmdGenUtils.FindDomain(domains, type: "int"));
     }
@@ -64,7 +67,13 @@ public class TmdGenUtilsTests
     {
         var domains = Domains(
             new DomainMapping { Type = "numeric", Domain = "DO_NUM" },
-            new DomainMapping { Type = "numeric", Precision = "2", Domain = "DO_NUM_2" });
+            new DomainMapping
+            {
+                Type = "numeric",
+                Precision = "2",
+                Domain = "DO_NUM_2",
+            }
+        );
 
         Assert.AreEqual("DO_NUM_2", TmdGenUtils.FindDomain(domains, type: "numeric", precision: "2"));
         Assert.AreEqual("DO_NUM", TmdGenUtils.FindDomain(domains, type: "numeric", scale: "10"));
@@ -100,8 +109,14 @@ public class TmdGenUtilsTests
     public void ScaleAloneDoesNotMatch()
     {
         var domains = Domains(
-            new DomainMapping { Type = "numeric", Scale = "10", Domain = "DO_NUM" },
-            new DomainMapping { Type = "varchar", Domain = "DO_LIBELLE" });
+            new DomainMapping
+            {
+                Type = "numeric",
+                Scale = "10",
+                Domain = "DO_NUM",
+            },
+            new DomainMapping { Type = "varchar", Domain = "DO_LIBELLE" }
+        );
 
         Assert.IsNull(TmdGenUtils.FindDomain(domains, name: "libelle", scale: "10"));
         Assert.AreEqual("DO_LIBELLE", TmdGenUtils.FindDomain(domains, type: "varchar", scale: "10"));
@@ -112,8 +127,20 @@ public class TmdGenUtilsTests
     {
         var domains = Domains(
             new DomainMapping { Type = "numeric", Domain = "DO_NUM" },
-            new DomainMapping { Type = "numeric", Scale = "10", Domain = "DO_NUM_10" },
-            new DomainMapping { Type = "numeric", Scale = "10", Precision = "2", Domain = "DO_NUM_10_2" });
+            new DomainMapping
+            {
+                Type = "numeric",
+                Scale = "10",
+                Domain = "DO_NUM_10",
+            },
+            new DomainMapping
+            {
+                Type = "numeric",
+                Scale = "10",
+                Precision = "2",
+                Domain = "DO_NUM_10_2",
+            }
+        );
 
         Assert.AreEqual("DO_NUM", TmdGenUtils.FindDomain(domains, type: "numeric", scale: "5"));
         Assert.AreEqual("DO_NUM_10", TmdGenUtils.FindDomain(domains, type: "numeric", scale: "10"));

@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-internal class ReverseAssociationDefinition(Reference location) : IAnnotationContainer
+internal class ReverseAssociationDefinition(DeclarationReference declarationReference) : IAnnotationContainer
 {
     public required AssociationProperty Property { get; set; }
 
@@ -20,7 +20,7 @@ internal class ReverseAssociationDefinition(Reference location) : IAnnotationCon
 
     public IList<AnnotationReference> ExcludedAnnotationReferences { get; internal set; } = [];
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     public override string ToString()
     {

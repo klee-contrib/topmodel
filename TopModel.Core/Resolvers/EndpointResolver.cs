@@ -28,7 +28,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                             ? endpoint.DecoratorReferences.FirstOrDefault(dr =>
                                 dr.ReferenceName == property.Decorator.Name
                             )
-                            : property.GetLocation()
+                            : property.DeclarationReference
                     );
                 }
 
@@ -38,7 +38,12 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                         && endpoint.Params.Any(p => p.ParamLocation == ParamLocation.FormData)
                 )
                 {
-                    yield return Error(ErrorType.TMD7007, [endpoint.Name.Value], modelFile, endpoint.GetLocation());
+                    yield return Error(
+                        ErrorType.TMD7007,
+                        [endpoint.Name.Value],
+                        modelFile,
+                        endpoint.DeclarationReference
+                    );
                 }
 
                 foreach (var param in endpoint.Params.Where(p => p.OwnLocation != null))
@@ -47,7 +52,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                     {
                         if (param.ParamLocation == ParamLocation.Query || param.ParamLocation == ParamLocation.Route)
                         {
-                            yield return Error(ErrorType.TMD7008, [param.Name], modelFile, param.GetLocation());
+                            yield return Error(ErrorType.TMD7008, [param.Name], modelFile, param.DeclarationReference);
                         }
 
                         if (
@@ -58,7 +63,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                             )
                         )
                         {
-                            yield return Error(ErrorType.TMD7009, [param.Name], modelFile, param.GetLocation());
+                            yield return Error(ErrorType.TMD7009, [param.Name], modelFile, param.DeclarationReference);
                         }
                     }
                     else if (
@@ -66,7 +71,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                         && param.ParamLocation == ParamLocation.Route
                     )
                     {
-                        yield return Error(ErrorType.TMD7010, [param.Name], modelFile, param.GetLocation());
+                        yield return Error(ErrorType.TMD7010, [param.Name], modelFile, param.DeclarationReference);
                     }
                 }
 
@@ -120,7 +125,7 @@ internal class EndpointResolver(IStringLocalizer localizer, IList<ModelFile> mod
                             ErrorType.TMD7004,
                             [queryParam.GetParamName()],
                             endpoint,
-                            queryParam.GetLocation()
+                            queryParam.DeclarationReference
                         );
                     }
                 }

@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class AliasProperty : IProperty
+internal class AliasProperty(DeclarationReference declarationReference) : IProperty
 {
     private string? _comment;
     private Class? _composition;
@@ -238,7 +238,7 @@ internal class AliasProperty : IProperty
 
     public AliasReference? Reference { get; set; }
 
-    public Reference? PropertyReference { get; set; }
+    public PropertyReference? PropertyReference { get; set; }
 
     public string? Prefix { get; set; }
 
@@ -279,7 +279,7 @@ internal class AliasProperty : IProperty
         set => _paramLocation = value;
     }
 
-    internal required Reference Location { get; set; }
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
@@ -354,7 +354,7 @@ internal class AliasProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var alp = new AliasProperty
+        var alp = new AliasProperty(DeclarationReference)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -366,7 +366,6 @@ internal class AliasProperty : IProperty
             DomainReference = DomainReference,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = _label,
-            Location = Location,
             Name = _name!,
             Prefix = Prefix,
             PreservePrimaryKey = PreservePrimaryKey,
@@ -408,7 +407,7 @@ internal class AliasProperty : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var alp = new AliasProperty
+        var alp = new AliasProperty(DeclarationReference)
         {
             SourceProperty = SourceProperty ?? this,
             As = As,
@@ -421,7 +420,6 @@ internal class AliasProperty : IProperty
             Endpoint = container as Endpoint,
             ExcludedAnnotations = ExcludedAnnotations,
             Label = _label,
-            Location = Location,
             Name = _name!,
             OriginalAliasProperty = OriginalAliasProperty,
             OwnAnnotations = OwnAnnotations,
@@ -477,9 +475,11 @@ internal class AliasProperty : IProperty
         return Name;
     }
 
-    internal AliasProperty Clone(IProperty prop, Reference? includeReference)
+    internal AliasProperty Clone(IProperty prop, PropertyReference? includeReference)
     {
-        var alp = new AliasProperty
+        var alp = new AliasProperty(
+            includeReference != null ? new DeclarationReference(includeReference) : DeclarationReference
+        )
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -495,7 +495,6 @@ internal class AliasProperty : IProperty
             ExcludedAnnotations = ExcludedAnnotations,
             ExcludedAnnotationReferences = ExcludedAnnotationReferences,
             Label = _label,
-            Location = Location,
             Name = _name!,
             OriginalAliasProperty = this,
             OwnAnnotations = OwnAnnotations,

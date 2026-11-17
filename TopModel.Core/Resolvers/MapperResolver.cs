@@ -136,7 +136,7 @@ internal class MapperResolver(
                                 ErrorType.TMD0004,
                                 [mapping.Property.Name, classe.Name],
                                 classe,
-                                mapping.Property.GetLocation()
+                                mapping.Property.DeclarationReference
                             );
                         }
                         else
@@ -152,7 +152,7 @@ internal class MapperResolver(
                                 classe,
                                 mapping.Property,
                                 mapping.TargetProperty,
-                                mapping.Property.GetLocation()
+                                mapping.Property.DeclarationReference
                             )
                         )
                         {
@@ -166,7 +166,7 @@ internal class MapperResolver(
             {
                 foreach (var param in mapper.Params.GetDuplicates(p => p.Name))
                 {
-                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.GetLocation());
+                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.DeclarationReference);
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p =>
@@ -174,10 +174,10 @@ internal class MapperResolver(
                     {
                         ClassMappings pc => pc
                             .MappingReferences.Where(e => e.Value.ReferenceName != "false")
-                            .Select(e => (e.Key.ReferenceName, Reference: e.Key)),
+                            .Select(e => (e.Key.ReferenceName, Reference: e.Key as Reference)),
                         PropertyMapping pm => pm.TargetPropertyReference != null
                             ? [(pm.TargetPropertyReference.ReferenceName, pm.TargetPropertyReference)]
-                            : [(pm.Property.Name, pm.Property.GetLocation() ?? new Reference())],
+                            : [(pm.Property.Name, pm.Property.DeclarationReference!)],
                     }
                 );
 
@@ -286,7 +286,7 @@ internal class MapperResolver(
                                 ErrorType.TMD8003,
                                 classe,
                                 $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.",
-                                mapper.GetLocation()
+                                mapper.DeclarationReference
                             );
                         }
 
@@ -303,7 +303,7 @@ internal class MapperResolver(
                                 ErrorType.TMD8012,
                                 classe,
                                 $"Le paramètre '{param.Name}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.",
-                                param.GetLocation()
+                                param.DeclarationReference
                             );
                         }
                     }
@@ -312,7 +312,7 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.ToMappers.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.GetLocation());
+                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.DeclarationReference);
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
@@ -373,7 +373,7 @@ internal class MapperResolver(
                         ErrorType.TMD8003,
                         classe,
                         $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.",
-                        mapper.GetLocation()
+                        mapper.DeclarationReference
                     );
                 }
             }
@@ -390,7 +390,7 @@ internal class MapperResolver(
                         ErrorType.TMD8009,
                         classe,
                         "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.GetLocation()
+                        mapper.DeclarationReference
                     );
                 }
             }
@@ -403,7 +403,7 @@ internal class MapperResolver(
                         ErrorType.TMD8009,
                         classe,
                         "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.GetLocation()
+                        mapper.DeclarationReference
                     );
                 }
             }

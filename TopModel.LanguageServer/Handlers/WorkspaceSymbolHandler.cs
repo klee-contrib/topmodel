@@ -30,25 +30,25 @@ public class WorkspaceSymbolHandler(LSWorkerStore workerStore, ILanguageServerFa
             .Concat(
                 workerStore
                     .ModelStores.SelectMany(ms => ms.Domains.Values)
-                    .Select(d => (Kind: SymbolKind.Struct, d.Name, Uri: facade.GetFilePath(d.GetFile())))
+                    .Select(d => (Kind: SymbolKind.Struct, d.Name, Uri: facade.GetFilePath(d.ModelFile)))
                     .Distinct()
             )
             .Concat(
                 workerStore
                     .ModelStores.SelectMany(ms => ms.Annotations)
-                    .Select(a => (Kind: SymbolKind.Interface, a.Name, Uri: facade.GetFilePath(a.GetFile())))
+                    .Select(a => (Kind: SymbolKind.Interface, a.Name, Uri: facade.GetFilePath(a.ModelFile)))
                     .Distinct()
             )
             .Concat(
                 workerStore
                     .ModelStores.SelectMany(ms => ms.Decorators)
-                    .Select(d => (Kind: SymbolKind.Interface, d.Name, Uri: facade.GetFilePath(d.GetFile())))
+                    .Select(d => (Kind: SymbolKind.Interface, d.Name, Uri: facade.GetFilePath(d.ModelFile)))
                     .Distinct()
             )
             .Concat(
                 workerStore
                     .ModelStores.SelectMany(ms => ms.DataFlows)
-                    .Select(d => (Kind: SymbolKind.Operator, d.Name, Uri: facade.GetFilePath(d.GetFile())))
+                    .Select(d => (Kind: SymbolKind.Operator, d.Name, Uri: facade.GetFilePath(d.ModelFile)))
                     .Distinct()
             )
             .Select(c =>
@@ -57,7 +57,7 @@ public class WorkspaceSymbolHandler(LSWorkerStore workerStore, ILanguageServerFa
                 {
                     Kind = c.Kind,
                     Name = c.Name,
-                    Location = new Location { Range = c.Name.GetLocation().ToRange()!, Uri = c.Uri },
+                    Location = new Location { Range = c.Name.DeclarationReference.ToRange()!, Uri = c.Uri },
                 };
             })
             .Where(s => s.Name.ShouldMatch(request.Query))

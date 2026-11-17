@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class CompositionProperty(Reference location) : IProperty
+internal class CompositionProperty(DeclarationReference declarationReference) : IProperty
 {
     private ParamLocation? _paramLocation;
 
@@ -96,7 +96,7 @@ internal class CompositionProperty(Reference location) : IProperty
 
     public ClassReference Reference { get; set; } = null!;
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
 
@@ -107,7 +107,7 @@ internal class CompositionProperty(Reference location) : IProperty
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var cp = new CompositionProperty(Location)
+        var cp = new CompositionProperty(DeclarationReference)
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -134,7 +134,7 @@ internal class CompositionProperty(Reference location) : IProperty
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var cp = new CompositionProperty(Location)
+        var cp = new CompositionProperty(DeclarationReference)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,

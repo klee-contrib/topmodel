@@ -178,7 +178,7 @@ public class ModelFileLoader(
         newFile.Annotations.AddRange(
             file.Annotations.Select(a =>
             {
-                var na = new Annotation(a.Location)
+                var na = new Annotation(a.DeclarationReference)
                 {
                     Description = a.Description,
                     Global = a.Global,
@@ -207,7 +207,7 @@ public class ModelFileLoader(
         newFile.Classes.AddRange(
             file.Classes.Select(c =>
             {
-                var nc = new Class(c.Location)
+                var nc = new Class(c.DeclarationReference)
                 {
                     AnnotationReferences = c.AnnotationReferences,
                     Comment = c.Comment,
@@ -319,7 +319,7 @@ public class ModelFileLoader(
         );
 
         newFile.Converters.AddRange(
-            file.Converters.Select(c => new Converter(c.Location)
+            file.Converters.Select(c => new Converter(c.DeclarationReference)
             {
                 DomainsFromReferences = c.DomainsFromReferences,
                 DomainsToReferences = c.DomainsToReferences,
@@ -331,7 +331,7 @@ public class ModelFileLoader(
         newFile.DataFlows.AddRange(
             file.DataFlows.Select(df =>
             {
-                var ndf = new DataFlow(df.Location)
+                var ndf = new DataFlow(df.DeclarationReference)
                 {
                     ActivePropertyReference = df.ActivePropertyReference,
                     ClassReference = df.ClassReference,
@@ -362,7 +362,7 @@ public class ModelFileLoader(
         newFile.Decorators.AddRange(
             file.Decorators.Select(d =>
             {
-                var nd = new Decorator(d.Location)
+                var nd = new Decorator(d.DeclarationReference)
                 {
                     AnnotationReferences = d.AnnotationReferences,
                     DecoratorReferences = d.DecoratorReferences,
@@ -402,7 +402,7 @@ public class ModelFileLoader(
         newFile.Domains.AddRange(
             file.Domains.Select(d =>
             {
-                var nd = new Domain(d.Location)
+                var nd = new Domain(d.DeclarationReference)
                 {
                     AnnotationReferences = d.AnnotationReferences,
                     AsDomainReferences = d.AsDomainReferences,
@@ -438,7 +438,7 @@ public class ModelFileLoader(
         newFile.Endpoints.AddRange(
             file.Endpoints.Select(e =>
             {
-                var ne = new Endpoint(e.Location)
+                var ne = new Endpoint(e.DeclarationReference)
                 {
                     AnnotationReferences = e.AnnotationReferences,
                     CustomProperties = e.CustomProperties,
@@ -629,7 +629,7 @@ public class ModelFileLoader(
                     parser.ConsumeSequence(() => file.Tags.Add(parser.Consume<Scalar>().Value));
                     break;
                 case "uses":
-                    parser.ConsumeSequence(() => file.Uses.Add(new Reference(parser.Consume<Scalar>())));
+                    parser.ConsumeSequence(() => file.Uses.Add(new FileReference(parser.Consume<Scalar>())));
                     break;
                 case "options":
                     parser.Consume<MappingStart>();
@@ -662,7 +662,7 @@ public class ModelFileLoader(
         {
             parser.Consume<MappingStart>();
             var scalar = parser.Consume<Scalar>();
-            var location = new Reference(scalar);
+            var reference = new DeclarationReference(scalar);
             ILoader loader = scalar.Value switch
             {
                 "annotation" => annotationLoader,
@@ -672,14 +672,10 @@ public class ModelFileLoader(
                 "decorator" => decoratorLoader,
                 "domain" => domainLoader,
                 "endpoint" => endpointLoader,
-                _ => throw new ModelException(
-                    file,
-                    $"Type de document inconnu ('{scalar.Value}').",
-                    new Reference(scalar)
-                ),
+                _ => throw new ModelException(file, $"Type de document inconnu ('{scalar.Value}').", reference),
             };
 
-            loader.Load(parser, file, config, location);
+            loader.Load(parser, file, config, reference);
             parser.Consume<MappingEnd>();
             parser.Consume<DocumentEnd>();
         }

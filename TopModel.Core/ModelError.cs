@@ -43,7 +43,7 @@ public class ModelError
 
     public ErrorType ErrorType { get; }
 
-    public ModelFile File => _objet.GetFile();
+    public ModelFile File => _objet.ModelFile;
 
     public Class? Class =>
         _objet switch
@@ -61,7 +61,7 @@ public class ModelError
             _ => null,
         };
 
-    public Reference? Location => _reference ?? _objet.GetLocation();
+    public Reference? Reference => _reference ?? _objet.DeclarationReference;
 
     public IProperty? Property => _objet as IProperty;
 
@@ -70,7 +70,7 @@ public class ModelError
     public bool IsIgnored(ModelConfig config)
     {
         var isIgnoredComment =
-            File.Comments.TryGetValue((int)(Location?.Start.Line ?? 1), out var comment)
+            File.Comments.TryGetValue((int)(Reference?.Start.Line ?? 1), out var comment)
             && (
                 comment.Split(" ").FirstOrDefault()?.Equals("ignore", StringComparison.InvariantCultureIgnoreCase)
                 ?? false
@@ -87,7 +87,7 @@ public class ModelError
         var sb = new StringBuilder();
 
         sb.Append(File.Path);
-        sb.Append(Location?.Position ?? string.Empty);
+        sb.Append(Reference?.Position ?? string.Empty);
 
         sb.Append(" - {");
         sb.Append(ErrorType);

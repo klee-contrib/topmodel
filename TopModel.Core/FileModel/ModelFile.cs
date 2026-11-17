@@ -14,7 +14,7 @@ public class ModelFile
     public IEnumerable<string> AllTags =>
         Tags.Concat(Classes.SelectMany(c => c.OwnTags)).Concat(Endpoints.SelectMany(e => e.OwnTags)).Distinct();
 
-    public IList<Reference> Uses { get; init; } = [];
+    public IList<FileReference> Uses { get; init; } = [];
 
     public required string Name { get; init; }
 
@@ -277,13 +277,13 @@ public class ModelFile
                     .SelectMany(p =>
                         p?.Reference?.ExcludeReferences?.Select(er =>
                             (
-                                er,
+                                er as Reference,
                                 p?.OriginalProperty?.Class?.Properties?.FirstOrDefault(p =>
                                     p?.Name == er?.ReferenceName
                                 )! as object
                             )
                         )
-                        ?? new List<(Reference, object)>()
+                        ?? []
                     )
             )
             .Concat(
@@ -298,7 +298,7 @@ public class ModelFile
             )
             .Concat(
                 Classes.SelectMany(c =>
-                    new[]
+                    new Reference[]
                     {
                         c.DefaultPropertyReference!,
                         c.OrderPropertyReference!,
@@ -312,7 +312,10 @@ public class ModelFile
                 Classes.SelectMany(c =>
                     c.Indexes.SelectMany(uk => uk.PropertyReferences)
                         .Select(propRef =>
-                            (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)!)
+                            (
+                                propRef as Reference,
+                                (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)!
+                            )
                         )
                 )
             )
@@ -321,7 +324,7 @@ public class ModelFile
                     c.ValueReferences.SelectMany(rv => rv.Value)
                         .Select(prop =>
                             (
-                                prop.Key,
+                                prop.Key as Reference,
                                 (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)!
                             )
                         )
@@ -335,7 +338,7 @@ public class ModelFile
             .Concat(
                 Classes
                     .SelectMany(c => c.FromMappers.SelectMany(m => m.PropertyParams))
-                    .Select(p => (p.TargetPropertyReference, (object)p.TargetProperty))
+                    .Select(p => (p.TargetPropertyReference as Reference, (object)p.TargetProperty))
             )
             .Concat(
                 Classes.SelectMany(c =>
@@ -346,12 +349,12 @@ public class ModelFile
                                 new[]
                                 {
                                     (
-                                        mr.Key,
+                                        mr.Key as Reference,
                                         (object)
                                             c.ExtendedProperties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)!
                                     ),
                                     (
-                                        mr.Value,
+                                        mr.Value as Reference,
                                         mr.Value.ReferenceName == "false"
                                             ? new Keyword { ModelFile = c.ModelFile }
                                             : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)!
@@ -376,7 +379,7 @@ public class ModelFile
                 )
             )
             .Concat(DataFlows.Select(d => (d.ClassReference as Reference, d.Class as object)))
-            .Concat(DataFlows.Select(d => (d.ActivePropertyReference!, d.ActiveProperty! as object)))
+            .Concat(DataFlows.Select(d => (d.ActivePropertyReference! as Reference, d.ActiveProperty! as object)))
             .Concat(
                 DataFlows.SelectMany(d =>
                     d.DependsOnReference.Select(r =>
@@ -392,7 +395,10 @@ public class ModelFile
                     .SelectMany(d => d.Sources)
                     .SelectMany(s =>
                         s.JoinPropertyReferences.Select(j =>
-                            (j, s.JoinProperties.FirstOrDefault(jc => jc?.Name == j.ReferenceName)! as object)
+                            (
+                                j as Reference,
+                                s.JoinProperties.FirstOrDefault(jc => jc?.Name == j.ReferenceName)! as object
+                            )
                         )
                     )
             )

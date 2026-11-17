@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class DataFlowLoader : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
     {
-        var dataFlow = new DataFlow(location) { ModelFile = modelFile };
+        var dataFlow = new DataFlow(reference) { ModelFile = modelFile };
         modelFile.DataFlows.Add(dataFlow);
         parser.ConsumeMapping(prop =>
         {
@@ -38,7 +38,7 @@ public class DataFlowLoader : ILoader
                     });
                     break;
                 case "activeProperty":
-                    dataFlow.ActivePropertyReference = new Reference(value!);
+                    dataFlow.ActivePropertyReference = new PropertyReference(value!);
                     break;
                 case "hooks":
                     parser.ConsumeSequence(() =>
@@ -92,7 +92,9 @@ public class DataFlowLoader : ILoader
                                 case "joinProperties":
                                     parser.ConsumeSequence(() =>
                                     {
-                                        source.JoinPropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                        source.JoinPropertyReferences.Add(
+                                            new PropertyReference(parser.Consume<Scalar>())
+                                        );
                                     });
                                     break;
                                 case "innerJoin":

@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Reference location)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
     {
-        var classe = new Class(location) { ModelFile = modelFile, Namespace = modelFile.Namespace };
+        var classe = new Class(reference) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Classes.Add(classe);
 
         parser.ConsumeMapping(prop =>
@@ -57,19 +57,19 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                     classe.InheritanceStrategy = fileChecker.Deserialize<InheritanceStrategy>(value!.Value);
                     break;
                 case "orderProperty":
-                    classe.OrderPropertyReference = new Reference(value!);
+                    classe.OrderPropertyReference = new PropertyReference(value!);
                     break;
                 case "defaultProperty":
-                    classe.DefaultPropertyReference = new Reference(value!);
+                    classe.DefaultPropertyReference = new PropertyReference(value!);
                     break;
                 case "flagProperty":
-                    classe.FlagPropertyReference = new Reference(value!);
+                    classe.FlagPropertyReference = new PropertyReference(value!);
                     break;
                 case "localeProperty":
-                    classe.LocalePropertyReference = new Reference(value!);
+                    classe.LocalePropertyReference = new PropertyReference(value!);
                     break;
                 case "discriminatorProperty":
-                    classe.DiscriminatorPropertyReference = new Reference(value!);
+                    classe.DiscriminatorPropertyReference = new PropertyReference(value!);
                     break;
                 case "discriminatorValue":
                     classe.DiscriminatorValue = value!.Value;
@@ -180,7 +180,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                         classe.Indexes.Add(index);
                         parser.ConsumeSequence(() =>
                         {
-                            index.PropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
+                            index.PropertyReferences.Add(new PropertyReference(parser.Consume<Scalar>()));
                         });
                     });
                     break;
@@ -192,14 +192,14 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                             var index = new IndexDefinition { Unique = false, Class = classe };
                             parser.ConsumeSequence(() =>
                             {
-                                index.PropertyReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                index.PropertyReferences.Add(new PropertyReference(parser.Consume<Scalar>()));
                             });
                             classe.Indexes.Add(index);
                         }
                         else
                         {
                             bool indexUnique = false;
-                            var propertyRefs = new List<Reference>();
+                            var propertyRefs = new List<PropertyReference>();
 
                             parser.ConsumeMapping(prop =>
                             {
@@ -211,7 +211,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                     case "properties":
                                         parser.ConsumeSequence(() =>
                                         {
-                                            propertyRefs.Add(new Reference(parser.Consume<Scalar>()));
+                                            propertyRefs.Add(new PropertyReference(parser.Consume<Scalar>()));
                                         });
                                         break;
                                     default:
@@ -233,14 +233,14 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "values":
                     parser.ConsumeMapping(prop =>
                     {
-                        var name = new Reference(prop);
-                        var values = new Dictionary<Reference, string>();
+                        var name = new DeclarationReference(prop);
+                        var values = new Dictionary<PropertyReference, string>();
 
                         classe.ValueReferences.Add(name, values);
 
                         parser.ConsumeMapping(prop =>
                         {
-                            values.Add(new Reference(prop), parser.Consume<Scalar>().Value);
+                            values.Add(new PropertyReference(prop), parser.Consume<Scalar>().Value);
                         });
                     });
                     break;
@@ -305,8 +305,10 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                                     parser.ConsumeMapping(prop =>
                                                                     {
                                                                         param.MappingReferences.Add(
-                                                                            new Reference(prop),
-                                                                            new Reference(parser.Consume<Scalar>())
+                                                                            new PropertyReference(prop),
+                                                                            new PropertyReference(
+                                                                                parser.Consume<Scalar>()
+                                                                            )
                                                                         );
                                                                     });
                                                                     break;
@@ -338,9 +340,8 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                                     param.Property.PropertyMapping = param;
                                                                     break;
                                                                 case "target":
-                                                                    param.TargetPropertyReference = new Reference(
-                                                                        parser.Consume<Scalar>()
-                                                                    );
+                                                                    param.TargetPropertyReference =
+                                                                        new PropertyReference(parser.Consume<Scalar>());
                                                                     break;
                                                             }
                                                         }
@@ -386,8 +387,8 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                 parser.ConsumeMapping(prop =>
                                                 {
                                                     mapper.MappingReferences.Add(
-                                                        new Reference(prop),
-                                                        new Reference(parser.Consume<Scalar>())
+                                                        new PropertyReference(prop),
+                                                        new PropertyReference(parser.Consume<Scalar>())
                                                     );
                                                 });
                                                 break;

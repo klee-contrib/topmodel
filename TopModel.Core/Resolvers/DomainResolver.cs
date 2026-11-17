@@ -84,12 +84,12 @@ internal class DomainResolver(
 
             foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.GetLocation());
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.DeclarationReference);
             }
 
             if (domain.Collection && !domain.Generic)
             {
-                yield return Error(ErrorType.TMD6004, [], domain, domain.GetLocation());
+                yield return Error(ErrorType.TMD6004, [], domain, domain.DeclarationReference);
             }
 
             domain.Variables.Clear();

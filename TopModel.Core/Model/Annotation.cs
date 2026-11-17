@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Annotation(Reference location) : IParameterContainer, IVariableContainer
+public class Annotation(DeclarationReference declarationReference) : IParameterContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -47,7 +47,7 @@ public class Annotation(Reference location) : IParameterContainer, IVariableCont
             )
             .Where(pr => pr.ReferenceName.IsValidTransform());
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     public override string ToString()
     {

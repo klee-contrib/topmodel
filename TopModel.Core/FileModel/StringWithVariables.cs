@@ -23,9 +23,13 @@ public class StringWithVariables : LocatedString
             .SelectMany(match =>
             {
                 var start = new Mark(
-                    Location.Start.Index,
-                    Location.Start.Line,
-                    Location.Start.Column + isQuoted + match.Index + Value[0..match.Index].Count(c => c == quote) + 1
+                    DeclarationReference.Start.Index,
+                    DeclarationReference.Start.Line,
+                    DeclarationReference.Start.Column
+                        + isQuoted
+                        + match.Index
+                        + Value[0..match.Index].Count(c => c == quote)
+                        + 1
                 );
                 Mark end;
 

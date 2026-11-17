@@ -5,6 +5,80 @@ namespace TopModel.Core.Utils;
 
 public static class ModelExtensions
 {
+    extension(object? objet)
+    {
+        public DeclarationReference? DeclarationReference =>
+            objet switch
+            {
+                Class c => c.DeclarationReference,
+                Endpoint e => e.DeclarationReference,
+                RegularProperty p => p.DeclarationReference,
+                AssociationProperty p => p.DeclarationReference,
+                CompositionProperty p => p.DeclarationReference,
+                AliasProperty p => p.DeclarationReference,
+                Domain d => d.DeclarationReference,
+                LocatedString l => l.DeclarationReference,
+                Decorator d => d.DeclarationReference,
+                DecoratorInstance { Decorator: Decorator d } => d.DeclarationReference,
+                Annotation a => a.DeclarationReference,
+                AnnotationInstance { Annotation: Annotation a } => a.DeclarationReference,
+                DataFlow d => d.DeclarationReference,
+                FromMapper m => m.Reference.DeclarationReference,
+                ClassMappings c => c.Name.DeclarationReference,
+                PropertyMapping p => p.Property.DeclarationReference,
+                MapperParam p => p switch
+                {
+                    ClassMappings c => c.DeclarationReference,
+                    PropertyMapping pp => pp.DeclarationReference,
+                },
+                Converter c => c.DeclarationReference,
+                TemplateParameter t => t.Name.DeclarationReference,
+                Variable { TemplateParameter: TemplateParameter t } => t.Name.DeclarationReference,
+                ReverseAssociationDefinition rad => rad.Property.DeclarationReference,
+                _ => null,
+            };
+
+        public ModelFile ModelFile =>
+            objet switch
+            {
+                ModelFile file => file,
+                Class classe => classe.ModelFile,
+                Endpoint endpoint => endpoint.ModelFile,
+                IProperty { SourceContainer: IPropertyContainer container } => container.ModelFile,
+                IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
+                IProperty { Class: Class classe } => classe.ModelFile,
+                IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+                IProperty { PropertyMapping: PropertyMapping param } => param.FromMapper.Class.ModelFile,
+                Domain domain => domain.ModelFile,
+                DomainInstance { Domain: Domain domain } => domain.ModelFile,
+                Converter converter => converter.ModelFile,
+                Decorator decorator => decorator.ModelFile,
+                DecoratorInstance { Decorator: Decorator decorator } => decorator.ModelFile,
+                Annotation annotation => annotation.ModelFile,
+                AnnotationInstance { Annotation: Annotation annotation } => annotation.ModelFile,
+                DataFlow dataFlow => dataFlow.ModelFile,
+                Keyword keyword => keyword.ModelFile,
+                ClassValue classValue => classValue.Class.ModelFile,
+                TemplateParameter templateParameter => templateParameter.Domain?.ModelFile
+                    ?? templateParameter.Decorator?.ModelFile
+                    ?? templateParameter.Annotation!.ModelFile,
+                Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter
+                    .Domain
+                    ?.ModelFile
+                    ?? templateParameter.Decorator?.ModelFile
+                    ?? templateParameter.Annotation!.ModelFile,
+                Variable => new ModelFile { Name = string.Empty, Path = string.Empty },
+                ReverseAssociationDefinition { Property.Decorator: Decorator decorator } => decorator.ModelFile,
+                ReverseAssociationDefinition { Property.Class: Class classe } => classe.ModelFile,
+                ReverseAssociationDefinition { Property.Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+                ReverseAssociationDefinition { Property.PropertyMapping: PropertyMapping param } => param
+                    .FromMapper
+                    .Class
+                    .ModelFile,
+                _ => throw new InvalidOperationException("Type d'objet non supporté."),
+            };
+    }
+
     public static IEnumerable<(AnnotationReference Reference, ModelFile File)> GetAnnotationReferences(
         this ModelStore modelStore,
         Annotation annotation
@@ -15,7 +89,7 @@ public static class ModelExtensions
             .Select(c =>
                 (
                     Reference: c.AnnotationReferences.FirstOrDefault(dr => dr.ReferenceName == annotation.Name)!,
-                    File: c.GetFile()
+                    File: c.ModelFile
                 )
             )
             .Concat(
@@ -28,7 +102,7 @@ public static class ModelExtensions
                             Reference: c.ExcludedAnnotationReferences.FirstOrDefault(dr =>
                                 dr.ReferenceName == annotation.Name
                             )!,
-                            File: c.GetFile()
+                            File: c.ModelFile
                         )
                     )
             )
@@ -40,7 +114,7 @@ public static class ModelExtensions
                             Reference: c.PropertyAnnotationReferences.FirstOrDefault(dr =>
                                 dr.ReferenceName == annotation.Name
                             )!,
-                            File: c.GetFile()
+                            File: c.ModelFile
                         )
                     )
             )
@@ -72,7 +146,7 @@ public static class ModelExtensions
                             AliasProperty alp => alp.Reference?.ClassReference!,
                             _ => null!, // Impossible
                         },
-                        File: p.GetFile()
+                        File: p.ModelFile
                     ),
                     .. includeTransitive
                     && (
@@ -89,13 +163,13 @@ public static class ModelExtensions
                     .Where(alp => alp.CompositionReference != null && alp.Composition == classe)
                     .Select(p =>
                     {
-                        return (Reference: p.CompositionReference! as Reference, File: p.GetFile());
+                        return (Reference: p.CompositionReference! as Reference, File: p.ModelFile);
                     })
             )
             .Concat(
                 modelStore
                     .Classes.Where(c => c.Extends == classe)
-                    .Select(c => (Reference: c.ExtendsReference! as Reference, File: c.GetFile()))
+                    .Select(c => (Reference: c.ExtendsReference! as Reference, File: c.ModelFile))
             )
             .Concat(
                 modelStore
@@ -103,19 +177,19 @@ public static class ModelExtensions
                     .Select(c =>
                         (
                             Reference: c.ImplementReferences.First(dr => dr.ReferenceName == classe.Name) as Reference,
-                            File: c.GetFile()
+                            File: c.ModelFile
                         )
                     )
             )
             .Concat(
                 modelStore
                     .DataFlows.Where(d => d.Class == classe)
-                    .Select(d => (Reference: d.ClassReference as Reference, File: d.GetFile()))
+                    .Select(d => (Reference: d.ClassReference as Reference, File: d.ModelFile))
             )
             .Concat(
                 modelStore.DataFlows.SelectMany(d =>
                     d.Sources.Where(s => s.Class == classe)
-                        .Select(s => (Reference: s.ClassReference as Reference, File: d.GetFile()))
+                        .Select(s => (Reference: s.ClassReference as Reference, File: d.ModelFile))
                 )
             )
             .Concat(
@@ -123,7 +197,7 @@ public static class ModelExtensions
                     c.FromMappers.SelectMany(c => c.ClassParams)
                         .Concat(c.ToMappers)
                         .Where(m => m.Class == classe)
-                        .Select(m => (Reference: m.ClassReference as Reference, File: c.GetFile()))
+                        .Select(m => (Reference: m.ClassReference as Reference, File: c.ModelFile))
                 )
             )
             .Where(r => r.Reference is not null)
@@ -137,7 +211,7 @@ public static class ModelExtensions
     {
         return modelStore.DataFlows.SelectMany(d =>
             d.DependsOn.Where(dd => dd == dataFlow)
-                .Select(dd => (d.DependsOnReference.First(dr => dr.ReferenceName == dd.Name), d.GetFile()))
+                .Select(dd => (d.DependsOnReference.First(dr => dr.ReferenceName == dd.Name), d.ModelFile))
         );
     }
 
@@ -149,13 +223,13 @@ public static class ModelExtensions
         return modelStore
             .PropertyContainers.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(c =>
-                (Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name), File: c.GetFile())
+                (Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name), File: c.ModelFile)
             )
             .Concat(
                 modelStore
                     .Properties.OfType<AliasProperty>()
                     .Where(alp => alp.OriginalProperty?.Decorator == decorator)
-                    .Select(alp => (Reference: alp.Reference?.DecoratorReference!, File: alp.GetFile()))
+                    .Select(alp => (Reference: alp.Reference?.DecoratorReference!, File: alp.ModelFile))
             )
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
@@ -182,7 +256,7 @@ public static class ModelExtensions
                         CompositionProperty cp => cp.DomainReference!,
                         _ => null!, // Impossible
                     },
-                    File: p.GetFile()
+                    File: p.ModelFile
                 );
             })
             .Concat(
@@ -196,7 +270,7 @@ public static class ModelExtensions
             .Concat(
                 modelStore
                     .Domains.Values.SelectMany(d =>
-                        d.AsDomainReferences.Values.Select(adr => (Reference: adr, File: d.GetFile()))
+                        d.AsDomainReferences.Values.Select(adr => (Reference: adr, File: d.ModelFile))
                     )
                     .Where(r => r.Reference.ReferenceName == domain.Name)
             )
@@ -212,84 +286,9 @@ public static class ModelExtensions
         return modelStore
             .Properties.OfType<AliasProperty>()
             .Where(alp => alp.OriginalProperty?.Endpoint == endpoint)
-            .Select(alp => (Reference: alp.Reference?.EndpointReference!, File: alp.GetFile()))
+            .Select(alp => (Reference: alp.Reference?.EndpointReference!, File: alp.ModelFile))
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
-    }
-
-    public static ModelFile GetFile(this object? objet)
-    {
-        return objet switch
-        {
-            ModelFile file => file,
-            Class classe => classe.ModelFile,
-            Endpoint endpoint => endpoint.ModelFile,
-            IProperty { SourceContainer: IPropertyContainer container } => container.ModelFile,
-            IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
-            IProperty { Class: Class classe } => classe.ModelFile,
-            IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
-            IProperty { PropertyMapping: PropertyMapping param } => param.FromMapper.Class.ModelFile,
-            Domain domain => domain.ModelFile,
-            DomainInstance { Domain: Domain domain } => domain.ModelFile,
-            Converter converter => converter.ModelFile,
-            Decorator decorator => decorator.ModelFile,
-            DecoratorInstance { Decorator: Decorator decorator } => decorator.ModelFile,
-            Annotation annotation => annotation.ModelFile,
-            AnnotationInstance { Annotation: Annotation annotation } => annotation.ModelFile,
-            DataFlow dataFlow => dataFlow.ModelFile,
-            Keyword keyword => keyword.ModelFile,
-            ClassValue classValue => classValue.Class.ModelFile,
-            TemplateParameter templateParameter => templateParameter.Domain?.ModelFile
-                ?? templateParameter.Decorator?.ModelFile
-                ?? templateParameter.Annotation!.ModelFile,
-            Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter.Domain?.ModelFile
-                ?? templateParameter.Decorator?.ModelFile
-                ?? templateParameter.Annotation!.ModelFile,
-            Variable => new ModelFile { Name = string.Empty, Path = string.Empty },
-            ReverseAssociationDefinition { Property.Decorator: Decorator decorator } => decorator.ModelFile,
-            ReverseAssociationDefinition { Property.Class: Class classe } => classe.ModelFile,
-            ReverseAssociationDefinition { Property.Endpoint: Endpoint endpoint } => endpoint.ModelFile,
-            ReverseAssociationDefinition { Property.PropertyMapping: PropertyMapping param } => param
-                .FromMapper
-                .Class
-                .ModelFile,
-            _ => throw new InvalidOperationException("Type d'objet non supporté."),
-        };
-    }
-
-    public static Reference? GetLocation(this object? objet)
-    {
-        return objet switch
-        {
-            Class c => c.Location,
-            Endpoint e => e.Location,
-            RegularProperty p => p.Location,
-            ReverseAssociationProperty p => p.ReverseProperty.WithReverse?.Location ?? p.Location,
-            AssociationProperty p => p.Location,
-            CompositionProperty p => p.Location,
-            AliasProperty { PropertyReference: Reference pr } => pr,
-            AliasProperty p => p.Location,
-            Domain d => d.Location,
-            LocatedString l => l.Location,
-            Decorator d => d.Location,
-            DecoratorInstance { Decorator: Decorator d } => d.Location,
-            Annotation a => a.Location,
-            AnnotationInstance { Annotation: Annotation a } => a.Location,
-            DataFlow d => d.Location,
-            FromMapper m => m.Reference.Location,
-            ClassMappings c => c.Name.Location,
-            PropertyMapping p => p.Property.GetLocation(),
-            MapperParam p => p switch
-            {
-                ClassMappings c => c.GetLocation(),
-                PropertyMapping pp => pp.GetLocation(),
-            },
-            Converter c => c.Location,
-            TemplateParameter t => t.Name.Location,
-            Variable { TemplateParameter: TemplateParameter t } => t.Name.Location,
-            ReverseAssociationDefinition rad => rad.Property.Location,
-            _ => null,
-        };
     }
 
     public static IEnumerable<(ParameterReference Reference, ModelFile File)> GetParameterReferences(
@@ -305,7 +304,7 @@ public static class ModelExtensions
                             Reference: vc.VariableReferences.FirstOrDefault(vr =>
                                 vr.ReferenceName == v.TemplateParameter!.Name
                             )!,
-                            File: v.GetFile()
+                            File: v.ModelFile
                         )
                     )
             )
@@ -320,7 +319,7 @@ public static class ModelExtensions
                                             ac.ReferenceName == a.Annotation.Name
                                         )
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: ac.GetFile()
+                                    File: ac.ModelFile
                                 )
                             )
                     )
@@ -335,7 +334,7 @@ public static class ModelExtensions
                                     Reference: pc
                                         .DecoratorReferences.FirstOrDefault(ac => ac.ReferenceName == d.Decorator.Name)
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: pc.GetFile()
+                                    File: pc.ModelFile
                                 )
                             )
                     )
@@ -352,7 +351,7 @@ public static class ModelExtensions
                                             ac.ReferenceName == d.Annotation.Name
                                         )
                                         ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
-                                    File: pc.GetFile()
+                                    File: pc.ModelFile
                                 )
                             )
                     )
@@ -367,7 +366,7 @@ public static class ModelExtensions
                                 Reference: ac.DomainReference?.ParameterReferences.Keys.FirstOrDefault(pr =>
                                     pr.ReferenceName == tp.Name
                                 )!,
-                                File: ac.GetFile()
+                                File: ac.ModelFile
                             )
                         )
                 )
@@ -394,7 +393,7 @@ public static class ModelExtensions
     {
         if (collectBackward && property is AliasProperty ap)
         {
-            yield return (ap.OriginalProperty!.GetLocation()!, ap.OriginalProperty.GetFile());
+            yield return (ap.OriginalProperty!.DeclarationReference!, ap.OriginalProperty.ModelFile);
 
             foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
             {
@@ -423,7 +422,7 @@ public static class ModelExtensions
             {
                 if (mapping.TargetPropertyReference != null && mapping.TargetProperty == property)
                 {
-                    yield return (mapping.TargetPropertyReference, mapping.TargetProperty.GetFile());
+                    yield return (mapping.TargetPropertyReference, mapping.TargetProperty.ModelFile);
                 }
             }
 
@@ -452,7 +451,7 @@ public static class ModelExtensions
                 var reference = alp.PropertyReference ?? alp.Reference?.ContainerReference;
                 if (reference != null)
                 {
-                    yield return (reference, alp.GetFile());
+                    yield return (reference, alp.ModelFile);
                 }
 
                 if (collectForward)
@@ -470,7 +469,7 @@ public static class ModelExtensions
                 );
                 if (excludeReference != null)
                 {
-                    yield return (excludeReference, alp.GetFile());
+                    yield return (excludeReference, alp.ModelFile);
                 }
             }
         }
@@ -483,34 +482,34 @@ public static class ModelExtensions
                 {
                     if (prop.ReferenceName == property.Name)
                     {
-                        yield return (prop, property.Class.GetFile());
+                        yield return (prop, property.Class.ModelFile);
                     }
                 }
             }
 
             if (property.Class.DefaultPropertyReference?.ReferenceName == property.Name)
             {
-                yield return (property.Class.DefaultPropertyReference, property.Class.GetFile());
+                yield return (property.Class.DefaultPropertyReference, property.Class.ModelFile);
             }
 
             if (property.Class.OrderPropertyReference?.ReferenceName == property.Name)
             {
-                yield return (property.Class.OrderPropertyReference, property.Class.GetFile());
+                yield return (property.Class.OrderPropertyReference, property.Class.ModelFile);
             }
 
             if (property.Class.FlagPropertyReference?.ReferenceName == property.Name)
             {
-                yield return (property.Class.FlagPropertyReference, property.Class.GetFile());
+                yield return (property.Class.FlagPropertyReference, property.Class.ModelFile);
             }
 
             if (property.Class.LocalePropertyReference?.ReferenceName == property.Name)
             {
-                yield return (property.Class.LocalePropertyReference, property.Class.GetFile());
+                yield return (property.Class.LocalePropertyReference, property.Class.ModelFile);
             }
 
             if (property.Class.DiscriminatorPropertyReference?.ReferenceName == property.Name)
             {
-                yield return (property.Class.DiscriminatorPropertyReference, property.Class.GetFile());
+                yield return (property.Class.DiscriminatorPropertyReference, property.Class.ModelFile);
             }
         }
 
@@ -525,7 +524,7 @@ public static class ModelExtensions
                     );
                     if (reference != null)
                     {
-                        yield return (reference, classe.GetFile());
+                        yield return (reference, classe.ModelFile);
                     }
                 }
 
@@ -536,7 +535,7 @@ public static class ModelExtensions
                     );
                     if (reference != null)
                     {
-                        yield return (reference, classe.GetFile());
+                        yield return (reference, classe.ModelFile);
                     }
                 }
             }
@@ -546,7 +545,7 @@ public static class ModelExtensions
         {
             if (dataFlow.ActiveProperty == property)
             {
-                yield return (dataFlow.ActivePropertyReference!, dataFlow.GetFile());
+                yield return (dataFlow.ActivePropertyReference!, dataFlow.ModelFile);
             }
 
             foreach (var source in dataFlow.Sources)
@@ -556,7 +555,7 @@ public static class ModelExtensions
                     var reference = source.JoinPropertyReferences.FirstOrDefault(f => f.ReferenceName == property.Name);
                     if (reference != null)
                     {
-                        yield return (reference, dataFlow.GetFile());
+                        yield return (reference, dataFlow.ModelFile);
                     }
                 }
             }

@@ -10,7 +10,7 @@ public class LocatedString(Scalar value) : IComparable
 
     public int Length => Value.Length;
 
-    internal Reference Location { get; } = new Reference(value);
+    internal DeclarationReference DeclarationReference { get; } = new DeclarationReference(value);
 
     [return: NotNullIfNotNull(nameof(ls))]
     public static implicit operator string?(LocatedString? ls)

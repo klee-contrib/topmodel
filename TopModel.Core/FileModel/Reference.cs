@@ -3,15 +3,15 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.FileModel;
 
-public class Reference
+public abstract class Reference
 {
-    internal Reference()
+    private protected Reference()
     {
         ReferenceName = string.Empty;
         Scalar = new Scalar(string.Empty);
     }
 
-    internal Reference(Scalar scalar)
+    private protected Reference(Scalar scalar)
     {
         Start = scalar.Start;
         End = scalar.End;

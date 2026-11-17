@@ -417,4 +417,3 @@ public sealed class YamlCursorContext
         }
     }
 }
-

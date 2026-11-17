@@ -137,8 +137,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
         var symbols = file
             .Classes.Select(c =>
                 CreateSymbol(
-                    c.Name.GetLocation(),
-                    c.GetLocation(),
+                    c.Name.DeclarationReference,
+                    c.DeclarationReference,
                     c.Name,
                     SymbolKind.Class,
                     c.Comment,
@@ -148,8 +148,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             .Concat(
                 file.Endpoints.Select(e =>
                     CreateSymbol(
-                        e.Name.GetLocation(),
-                        e.GetLocation(),
+                        e.Name.DeclarationReference,
+                        e.DeclarationReference,
                         e.Name,
                         SymbolKind.Method,
                         e.Description,
@@ -159,19 +159,31 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             )
             .Concat(
                 file.Domains.Select(d =>
-                    CreateSymbol(d.Name.GetLocation(), d.GetLocation(), d.Name, SymbolKind.Struct, d.Label ?? d.Name)
+                    CreateSymbol(
+                        d.Name.DeclarationReference,
+                        d.DeclarationReference,
+                        d.Name,
+                        SymbolKind.Struct,
+                        d.Label ?? d.Name
+                    )
                 )
             )
             .Concat(
                 file.Annotations.Select(a =>
-                    CreateSymbol(a.Name.GetLocation(), a.GetLocation(), a.Name, SymbolKind.Interface, a.Description)
+                    CreateSymbol(
+                        a.Name.DeclarationReference,
+                        a.DeclarationReference,
+                        a.Name,
+                        SymbolKind.Interface,
+                        a.Description
+                    )
                 )
             )
             .Concat(
                 file.Decorators.Select(d =>
                     CreateSymbol(
-                        d.Name.GetLocation(),
-                        d.GetLocation(),
+                        d.Name.DeclarationReference,
+                        d.DeclarationReference,
                         d.Name,
                         SymbolKind.Interface,
                         d.Description,
@@ -181,15 +193,21 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             )
             .Concat(
                 file.DataFlows.Select(d =>
-                    CreateSymbol(d.Name.GetLocation(), d.GetLocation(), d.Name, SymbolKind.Operator, detail: null)
+                    CreateSymbol(
+                        d.Name.DeclarationReference,
+                        d.DeclarationReference,
+                        d.Name,
+                        SymbolKind.Operator,
+                        detail: null
+                    )
                 )
             )
             .Concat(
                 file.Converters.Select(
                     (c, i) =>
                         CreateSymbol(
-                            c.GetLocation(),
-                            c.GetLocation(),
+                            c.DeclarationReference,
+                            c.DeclarationReference,
                             $"Converter#{i}",
                             SymbolKind.Function,
                             detail: null
@@ -213,7 +231,7 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
     /// Le language server interroge volontairement des modèles en erreur
     /// (<c>KeepFileErrorsInReferenceResolution</c>), or plusieurs accesseurs de <see cref="IProperty" />
     /// supposent l'alias résolu : <c>AliasProperty.Comment</c> déréférence la propriété cible sans la
-    /// protéger, et <c>GetFile()</c> lève si le conteneur n'est pas encore rattaché. Un symbole
+    /// protéger, et <c>ModelFile</c> lève si le conteneur n'est pas encore rattaché. Un symbole
     /// manquant vaut mieux qu'une requête <c>textDocument/documentSymbol</c> en échec, qui vide tout
     /// l'outline. À supprimer si ces accesseurs deviennent null-safe dans TopModel.Core.
     /// </remarks>
@@ -221,14 +239,14 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
     {
         try
         {
-            if (property.GetFile() != file)
+            if (property.ModelFile != file)
             {
                 return null;
             }
 
             return CreateSymbol(
-                property.GetLocation(),
-                property.GetLocation(),
+                property.DeclarationReference,
+                property.DeclarationReference,
                 property.Name,
                 SymbolKind.Field,
                 property.Comment

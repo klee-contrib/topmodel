@@ -148,9 +148,9 @@ public class ModelStore(
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public IEnumerable<Reference> GetUselessImports(ModelFile modelFile)
+    public IEnumerable<FileReference> GetUselessImports(ModelFile modelFile)
     {
-        var referencedFiles = modelFile.References.Values.Select(r => r.GetFile().Name).ToHashSet();
+        var referencedFiles = modelFile.References.Values.Select(r => r.ModelFile.Name).ToHashSet();
         return modelFile.Uses.Where(use =>
             use.ReferenceName == modelFile.Name
             || !referencedFiles.Contains(use.ReferenceName)
@@ -559,7 +559,7 @@ public class ModelStore(
                 ErrorType.TMD3004,
                 classe.ModelFile,
                 $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}",
-                classe.Trigram.GetLocation(),
+                classe.Trigram?.DeclarationReference,
                 isError: false
             );
         }
@@ -589,7 +589,7 @@ public class ModelStore(
                     ErrorType.TMD0001,
                     [endpoint.Name],
                     endpoint,
-                    endpoint.Name.GetLocation()
+                    endpoint.Name.DeclarationReference
                 );
             }
 
@@ -609,7 +609,7 @@ public class ModelStore(
                             ErrorType.TMD7001,
                             file,
                             $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.",
-                            file.Options.Endpoints.Prefix?.GetLocation()
+                            file.Options.Endpoints.Prefix?.DeclarationReference
                         );
                     }
                     else
@@ -632,7 +632,7 @@ public class ModelStore(
                     ErrorType.TMD7002,
                     file,
                     $"Le fichier définit un préfixe d'endpoint alors qu'il ne contient pas de déclaration d'endpoint.",
-                    file.Options.Endpoints.Prefix?.GetLocation(),
+                    file.Options.Endpoints.Prefix?.DeclarationReference,
                     isError: false
                 );
             }
@@ -767,7 +767,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
                     )
                     .First()
             );
@@ -778,7 +778,7 @@ public class ModelStore(
                 ErrorType.TMD3001,
                 classe,
                 $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.",
-                classe.Name.Location
+                classe.Name.DeclarationReference
             );
         }
 
@@ -796,7 +796,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
                     )
                     .First()
             );
@@ -827,7 +827,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Location.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
                     )
                     .First()
             );
@@ -838,7 +838,7 @@ public class ModelStore(
                 ErrorType.TMD4001,
                 dataFlow,
                 $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.",
-                dataFlow.Name.Location
+                dataFlow.Name.DeclarationReference
             );
         }
 

@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Class(Reference location) : IPropertyContainer
+public class Class(DeclarationReference declarationReference) : IPropertyContainer
 {
     private string? _pluralName;
 
@@ -108,15 +108,15 @@ public class Class(Reference location) : IPropertyContainer
 
     public ClassReference? ExtendsReference { get; internal set; }
 
-    public Reference? OrderPropertyReference { get; internal set; }
+    public PropertyReference? OrderPropertyReference { get; internal set; }
 
-    public Reference? DefaultPropertyReference { get; internal set; }
+    public PropertyReference? DefaultPropertyReference { get; internal set; }
 
-    public Reference? FlagPropertyReference { get; internal set; }
+    public PropertyReference? FlagPropertyReference { get; internal set; }
 
-    public Reference? LocalePropertyReference { get; internal set; }
+    public PropertyReference? LocalePropertyReference { get; internal set; }
 
-    public Reference? DiscriminatorPropertyReference { get; internal set; }
+    public PropertyReference? DiscriminatorPropertyReference { get; internal set; }
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
@@ -128,8 +128,11 @@ public class Class(Reference location) : IPropertyContainer
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<Reference, IDictionary<Reference, string>> ValueReferences { get; internal set; } =
-        new Dictionary<Reference, IDictionary<Reference, string>>();
+    public IDictionary<DeclarationReference, IDictionary<PropertyReference, string>> ValueReferences
+    {
+        get;
+        internal set;
+    } = new Dictionary<DeclarationReference, IDictionary<PropertyReference, string>>();
 
     public IList<PropertySource> PropertySourceOrder { get; internal set; } =
     [PropertySource.Properties, PropertySource.Implements, PropertySource.Decorators];
@@ -141,7 +144,7 @@ public class Class(Reference location) : IPropertyContainer
     internal IEnumerable<IProperty> FromMapperOwnProperties =>
         FromMappers.SelectMany(fm => fm.OwnPropertyParams.Select(pp => pp.Property));
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal IList<string> OwnTags { get; set; } = [];
 

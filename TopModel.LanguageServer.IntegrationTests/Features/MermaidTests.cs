@@ -10,7 +10,9 @@ public class MermaidTests : LspTestBase
     {
         var path = ModelPath(CommandeFile);
 
-        var mermaid = await Client.SendRequest("mermaid", new MermaidRequest(path, scope: null)).Returning<MermaidResponse>(Ct);
+        var mermaid = await Client
+            .SendRequest("mermaid", new MermaidRequest(path, scope: null))
+            .Returning<MermaidResponse>(Ct);
 
         Assert.IsNotNull(mermaid);
         Assert.IsFalse(string.IsNullOrWhiteSpace(mermaid.Diagram));

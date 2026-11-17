@@ -65,7 +65,12 @@ public class AnnotationResolver(
 
             foreach (var templateParam in annotation.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], annotation, templateParam.GetLocation());
+                yield return Error(
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    annotation,
+                    templateParam.DeclarationReference
+                );
             }
 
             if (annotation.TemplateParameters.Any() && annotation.Global)

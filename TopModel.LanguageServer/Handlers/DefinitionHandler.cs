@@ -25,7 +25,7 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
         var references = files
             .Select(f => f.File.GetObjetAtPosition(request.Position))
-            .Select(r => (r.Reference, r.Objet, SelectionRange: r.Objet?.GetLocation()?.ToRange()!))
+            .Select(r => (r.Reference, r.Objet, SelectionRange: r.Objet?.DeclarationReference?.ToRange()!))
             .Where(r => r.Reference != null && r.Objet != null && r.SelectionRange != null)
             .DistinctBy(r => r.Reference)
             .Select(r => new LocationLink
@@ -48,7 +48,7 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
                     },
                 },
                 TargetSelectionRange = r.SelectionRange,
-                TargetUri = facade.GetFilePath(r.Objet.GetFile()),
+                TargetUri = facade.GetFilePath(r.Objet.ModelFile),
             });
 
         if (references.Any())

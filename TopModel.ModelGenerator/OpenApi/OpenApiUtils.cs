@@ -55,8 +55,7 @@ public static class OpenApiUtils
 
     public static string GetDomain(this OpenApiConfig config, string name, IOpenApiSchema schema)
     {
-        return TmdGenUtils.FindDomain(config.Domains, name: name)
-            ?? GetDomainSchema(config, schema);
+        return TmdGenUtils.FindDomain(config.Domains, name: name) ?? GetDomainSchema(config, schema);
     }
 
     public static string GetOperationId(

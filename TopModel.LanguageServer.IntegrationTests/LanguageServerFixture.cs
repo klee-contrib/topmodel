@@ -134,4 +134,3 @@ public static class LanguageServerFixture
         return dir?.FullName ?? throw new InvalidOperationException("Racine du dépôt (TopModel.slnx) introuvable.");
     }
 }
-

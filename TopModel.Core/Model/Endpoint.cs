@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Endpoint(Reference location) : IPropertyContainer
+public class Endpoint(DeclarationReference declarationReference) : IPropertyContainer
 {
     public required Namespace Namespace { get; init; }
 
@@ -68,7 +68,7 @@ public class Endpoint(Reference location) : IPropertyContainer
 
     internal IList<IProperty> OwnParams { get; set; } = [];
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal IList<string> OwnTags { get; set; } = [];
 

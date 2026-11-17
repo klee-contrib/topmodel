@@ -42,7 +42,7 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 
         var diagnosticsToSend = _pendingErrors
             .GroupBy(e => (e.Key.Name, e.Key.Path))
-            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Location)))
+            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Reference)))
             .Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any())
             .ToList();
 
@@ -61,7 +61,7 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 
             foreach (var error in fileDiagnostics.Value)
             {
-                var loc = error.Location;
+                var loc = error.Reference;
                 diagnostics.Add(
                     new()
                     {

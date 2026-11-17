@@ -5,7 +5,10 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Decorator(Reference location) : IParameterContainer, IPropertyContainer, IVariableContainer
+public class Decorator(DeclarationReference declarationReference)
+    : IParameterContainer,
+        IPropertyContainer,
+        IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -86,7 +89,7 @@ public class Decorator(Reference location) : IParameterContainer, IPropertyConta
 
     internal IList<IProperty> OwnProperties { get; } = [];
 
-    internal Reference Location { get; } = location;
+    internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     public override string ToString()
     {
