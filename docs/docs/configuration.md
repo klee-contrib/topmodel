@@ -336,11 +336,9 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   Liste des fichiers à ignorer après première génération (relatif au fichier de config).
 
-
   Chaque entrée doit renseigner un chemin (`path`) et un motif (`comment`). À utiliser avec parcimonie, pour contourner un manquement du générateur en attendant un correctif ou une meilleure solution. Un fichier ignoré déclenche un warning lors de la génération.
 
   _Valeur par défaut_ : `[]`
-
   - **`path`** (**obligatoire**)
 
     Chemin du fichier à ignorer, relatif au fichier de config.
@@ -397,18 +395,11 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   Voir les propriétés d'[association](./model/properties#association).
 
-- **`useLegacyRoleNames`**
-
-  Transforme les noms de rôles d'associations en majuscules au lieu du constant case pour déterminer le nom SQL des propriétés.
-
-  _Valeur par défaut_ : `false`
-
 - **`i18n`**
 
   Configuration de la localisation de l'application.
 
   Voir [page dédiée](./model/i18n.md) pour plus d'informations.
-
   - **`defaultLang`**
 
     Langue par défaut de l'application. Laisser vide si votre application n'a qu'une seule langue (non nommée). Une valeur nulle désactive la langue par défaut et l'utilisation des libellés définis dans le modèle dans une langue par défaut.

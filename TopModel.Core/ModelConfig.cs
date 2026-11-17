@@ -24,11 +24,6 @@ public class ModelConfig : ConfigBase
     public bool DefaultAssociationUseClass { get; internal set; }
 
     /// <summary>
-    /// Transforme les noms de rôles d'associations en majuscules au lieu du constant case pour déterminer le nom SQL des propriétés.
-    /// </summary>
-    public bool UseLegacyRoleNames { get; internal set; }
-
-    /// <summary>
     /// Configuration de la localisation de l'application.
     /// </summary>
     public I18nConfig I18n { get; internal set; } = new();

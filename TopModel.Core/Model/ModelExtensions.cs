@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
@@ -35,7 +35,7 @@ public static class ModelExtensions
         /// <summary>
         /// Si la propriété est une association, rôle de l'association.
         /// </summary>
-        public string? AssociationRole =>
+        public LocatedString? AssociationRole =>
             prop switch
             {
                 { Composition: not null } => null,
@@ -336,12 +336,10 @@ public static class ModelExtensions
         }
 
         /// <summary>
-        /// Calcule le nom d'une propriété d'association.
+        /// Calcule les segments du nom d'une propriété d'association.
         /// </summary>
-        /// <param name="pascalCase">Si on veut le nom en PascalCase.</param>
-        /// <param name="forcePropertyName">Si le nom doit inclure le nom de la propriété cible, indépendemment de la valeur de `UseClass`.</param>
-        /// <returns></returns>
-        internal string GetAssociationName(bool pascalCase = false, bool forcePropertyName = false)
+        /// <returns>Les segments (vide si ce n'est pas une association).</returns>
+        internal IList<NameSegment> GetAssociationNameSegments(bool forcePropertyName = false)
         {
             var association = prop switch
             {
@@ -353,10 +351,10 @@ public static class ModelExtensions
 
             if (association == null)
             {
-                return string.Empty;
+                return [];
             }
 
-            var name = new StringBuilder();
+            var nameSegments = new List<NameSegment>();
 
             var className = prop switch
             {
@@ -367,15 +365,15 @@ public static class ModelExtensions
 
             if (className != null)
             {
-                name.Append(pascalCase ? className.ToPascalCase(strictIfUppercase: true) : className);
+                nameSegments.Add(new NameSegment.Text(className));
             }
             else if (prop.AssociationMultiple)
             {
-                name.Append(pascalCase ? association.PluralNamePascal : association.PluralName);
+                nameSegments.Add(new NameSegment.ClassName(association, Plural: true));
             }
             else if (association.Extends == null || !association.PrimaryKey.Any())
             {
-                name.Append(pascalCase ? association.NamePascal : association.Name);
+                nameSegments.Add(new NameSegment.ClassName(association));
             }
 
             if (
@@ -386,22 +384,30 @@ public static class ModelExtensions
             {
                 if (prop.AssociationProperty?.Association != null)
                 {
-                    name.Append(prop.AssociationProperty?.GetAssociationName(pascalCase, forcePropertyName: true));
+                    nameSegments.AddRange(
+                        prop.AssociationProperty!.GetAssociationNameSegments(forcePropertyName: true)
+                    );
                 }
                 else
                 {
-                    name.Append(pascalCase ? prop.AssociationProperty?.TrueNamePascal : prop.AssociationProperty?.Name);
+                    nameSegments.Add(new NameSegment.PropertyName(prop.AssociationProperty));
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(prop.AssociationRole))
             {
-                var role = prop.AssociationRole?.Replace(" ", string.Empty);
-                name.Append(pascalCase ? role?.ToPascalCase(strictIfUppercase: true) : role);
+                nameSegments.Add(new NameSegment.Text(prop.AssociationRole!));
             }
 
-            return name.ToString();
+            return nameSegments;
         }
+    }
+
+    extension(IList<NameSegment> nameSegments)
+    {
+        public string Name => string.Concat(nameSegments.Select(ns => ns.Render(pascalCase: false)));
+
+        public string NamePascal => string.Concat(nameSegments.Select(ns => ns.Render(pascalCase: true)));
     }
 
     extension(Class classe)

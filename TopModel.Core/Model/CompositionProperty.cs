@@ -1,6 +1,5 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
-using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
@@ -17,6 +16,10 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
     public DomainInstance Domain { get; set; } = null!;
+
+    public IList<NameSegment> NameSegments => [new NameSegment.Text(OwnName)];
+
+    public IList<NameSegment> PropertyNameSegments => NameSegments;
 
     public IList<string>? Tags { get; set; }
 
@@ -100,10 +103,6 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
 
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
-    string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
-
-    string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
-
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
     /// <inheritdoc cref="IProperty.CloneDefinition" />
@@ -164,6 +163,6 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
 
     public override string ToString()
     {
-        return Name;
+        return ((IProperty)this).Name;
     }
 }

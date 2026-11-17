@@ -19,13 +19,13 @@ internal class ReverseAssociationProperty(DeclarationReference declarationRefere
 
     public override LocatedString? ClassName => ReverseProperty.WithReverse?.ClassName;
 
-    public override string? Role => ReverseProperty.Role;
+    public override LocatedString? Role => ReverseProperty.Role;
 
     public override string? Label => ReverseProperty.WithReverse?.Label;
 
     public override string Comment =>
         ReverseProperty.WithReverse?.Comment
-        ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
+        ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{((IProperty)ReverseProperty).Name}";
 
     public override ReverseAssociationDefinition WithReverse =>
         new(ReverseProperty.DeclarationReference) { Property = this };
@@ -42,8 +42,6 @@ internal class ReverseAssociationProperty(DeclarationReference declarationRefere
         ReverseProperty.WithReverse?.ExcludedAnnotationReferences ?? [];
 
     public override bool UseClass => ReverseProperty.UseClass;
-
-    internal override bool UseLegacyRoleName => ReverseProperty.UseLegacyRoleName;
 
     internal override bool DefaultAssociationUseClass => ReverseProperty.DefaultAssociationUseClass;
 }

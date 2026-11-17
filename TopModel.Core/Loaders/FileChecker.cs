@@ -62,9 +62,6 @@ public class FileChecker()
                 case (YamlScalarNode { Value: "pluralizeTableNames" }, YamlScalarNode { Value: var value }):
                     config.PluralizeTableNames = value == "true";
                     break;
-                case (YamlScalarNode { Value: "useLegacyRoleNames" }, YamlScalarNode { Value: var value }):
-                    config.UseLegacyRoleNames = value == "true";
-                    break;
                 case (YamlScalarNode { Value: "defaultAssociationUseClass" }, YamlScalarNode { Value: var value }):
                     config.DefaultAssociationUseClass = value == "true";
                     break;

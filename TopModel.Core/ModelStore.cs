@@ -69,13 +69,7 @@ public class ModelStore(
         Files.SelectMany(mf => mf.VariableContainers).Distinct();
 
     public ModelFileLoadConfig ModelFileLoadConfig =>
-        new(
-            config.App,
-            config.ModelRoot,
-            config.DefaultAssociationUseClass,
-            config.PluralizeTableNames,
-            config.UseLegacyRoleNames
-        );
+        new(config.App, config.ModelRoot, config.DefaultAssociationUseClass, config.PluralizeTableNames);
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()

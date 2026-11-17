@@ -1,6 +1,5 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
-using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
@@ -12,6 +11,10 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
     public string Name => OwnName;
 
     public LocatedString OwnName { get; set; } = null!;
+
+    public IList<NameSegment> NameSegments => [new NameSegment.Text(OwnName)];
+
+    public IList<NameSegment> PropertyNameSegments => NameSegments;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
 
@@ -93,10 +96,6 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
 
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
-    string IProperty.TrueNamePascal => Name.ToPascalCase(strictIfUppercase: true);
-
-    string IProperty.TruePropertyNamePascal => Name.ToPascalCase(strictIfUppercase: true);
-
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
     /// <inheritdoc cref="IProperty.CloneDefinition" />
@@ -160,6 +159,6 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
 
     public override string ToString()
     {
-        return Name;
+        return ((IProperty)this).Name;
     }
 }
