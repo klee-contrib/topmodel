@@ -4,11 +4,11 @@ using static TopModel.LanguageServer.Tests.CursorText;
 namespace TopModel.LanguageServer.Tests;
 
 /// <summary>
-/// Cas limites de <see cref="YamlPathAnalyzer.GetPath" /> sur des positions où une complétion est attendue :
+/// Cas limites de <see cref="YamlCursorContext.Path" /> sur des positions où une complétion est attendue :
 /// position exacte du curseur, remontée dans l'arborescence, flux inline, guillemets et commentaires.
 /// </summary>
 [TestClass]
-public class YamlPathAnalyzerEdgeCaseTests
+public class YamlCursorContextEdgeCaseTests
 {
     [TestMethod]
     public void Comment_AfterValue_CursorBeforeComment()
@@ -26,10 +26,48 @@ public class YamlPathAnalyzerEdgeCaseTests
     }
 
     [TestMethod]
+    public void Comment_CursorInComment_IsNull()
+    {
+        AssertPath(
+            expected: null,
+            """
+            ---
+            class:
+              extends: Personne # comm|entaire
+            """
+        );
+    }
+
+    [TestMethod]
+    public void Cursor_BeforeListDash_StaysInSequenceItem()
+    {
+        AssertPath(
+            "class.properties[1].",
+            """
+            ---
+            class:
+              properties:
+                - name: a
+            |    - name: b
+            """
+        );
+        AssertPath(
+            "class.properties[1].",
+            """
+            ---
+            class:
+              properties:
+                - name: a
+                |- name: b
+            """
+        );
+    }
+
+    [TestMethod]
     public void Cursor_BeyondLineLength_IsClampedToEndOfLine()
     {
         var text = new[] { "---", "class:", "  extends: Pers" };
-        Assert.AreEqual("class.extends", YamlPathAnalyzer.GetPath(text, 2, 200));
+        Assert.AreEqual("class.extends", YamlCursorContext.Parse(text, 2, 200).Path);
     }
 
     [TestMethod]
@@ -41,6 +79,21 @@ public class YamlPathAnalyzerEdgeCaseTests
             ---
             class:
               extends:|
+            """
+        );
+    }
+
+    [TestMethod]
+    public void EmptyLine_UnderParameterContainer_IsNewKey()
+    {
+        AssertPath(
+            "class.propertyAnnotations[0].Annot.",
+            """
+            ---
+            class:
+              propertyAnnotations:
+                - Annot:
+                    |
             """
         );
     }
@@ -60,6 +113,19 @@ public class YamlPathAnalyzerEdgeCaseTests
     }
 
     [TestMethod]
+    public void Flow_EscapedQuoteInString_DoesNotCloseIt()
+    {
+        AssertPath(
+            "class.uses[1]",
+            """
+            ---
+            class:
+              uses: ["a \" [b", Fo|
+            """
+        );
+    }
+
+    [TestMethod]
     public void Flow_FirstItemOfInlineList()
     {
         AssertPath(
@@ -71,6 +137,40 @@ public class YamlPathAnalyzerEdgeCaseTests
                 - alias:
                     class: Personne
                     include: [No|]
+            """
+        );
+    }
+
+    [TestMethod]
+    public void Flow_MultilineInlineList()
+    {
+        AssertPath(
+            "class.properties[0].alias.include[2]",
+            """
+            ---
+            class:
+              properties:
+                - alias:
+                    class: Personne
+                    include: [Nom,
+                      Prenom, |]
+            """
+        );
+    }
+
+    [TestMethod]
+    public void Flow_MultilineInlineList_Unclosed()
+    {
+        AssertPath(
+            "class.properties[0].alias.include[1]",
+            """
+            ---
+            class:
+              properties:
+                - alias:
+                    class: Personne
+                    include: [Nom,
+                      Pre|
             """
         );
     }
@@ -99,6 +199,41 @@ public class YamlPathAnalyzerEdgeCaseTests
             class:
               values:
                 A: { Libelle: "a, b: c", Co| }
+            """
+        );
+    }
+
+    [TestMethod]
+    public void List_BrokenItemAfterCursor_KeepsIndices()
+    {
+        AssertPath(
+            "class.properties[1].domain",
+            """
+            ---
+            class:
+              properties:
+                - name: a
+                - name: b
+                  domain: |
+                - name: x: y
+                - name: c
+            """
+        );
+    }
+
+    [TestMethod]
+    public void List_BrokenItemBeforeCursor_KeepsIndices()
+    {
+        AssertPath(
+            "class.properties[2].domain",
+            """
+            ---
+            class:
+              properties:
+                - name: a
+                - name: x: y
+                - name: c
+                  domain: |
             """
         );
     }

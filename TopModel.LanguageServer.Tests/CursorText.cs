@@ -22,8 +22,7 @@ public record CursorText(string[] Lines, int Line, int Character)
     /// <param name="text">Texte avec curseur.</param>
     public static void AssertPath(string? expected, string text)
     {
-        var cursor = Parse(text);
-        Assert.AreEqual(expected, YamlPathAnalyzer.GetPath(cursor.Lines, cursor.Line, cursor.Character));
+        Assert.AreEqual(expected, ParseContext(text).Path);
     }
 
     /// <summary>
@@ -43,5 +42,16 @@ public record CursorText(string[] Lines, int Line, int Character)
         var character = lines[line].IndexOf(Marker);
         lines[line] = lines[line].Remove(character, 1);
         return new(lines, line, character);
+    }
+
+    /// <summary>
+    /// Calcule le contexte YAML de la position du curseur d'un texte.
+    /// </summary>
+    /// <param name="text">Texte avec curseur.</param>
+    /// <returns>Le contexte du curseur.</returns>
+    public static YamlCursorContext ParseContext(string text)
+    {
+        var cursor = Parse(text);
+        return YamlCursorContext.Parse(cursor.Lines, cursor.Line, cursor.Character);
     }
 }

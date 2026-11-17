@@ -9,7 +9,7 @@ namespace TopModel.LanguageServer.Handlers;
 public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCache) : CompletionHandlerBase
 {
     /// <summary>
-    /// Détermine le type de complétion à partir du chemin YAML du curseur (voir <see cref="YamlPathAnalyzer.GetPath" />).
+    /// Détermine le type de complétion à partir du chemin YAML du curseur (voir <see cref="YamlCursorContext.Path" />).
     /// Les cas sont évalués dans l'ordre. Dans les motifs, <c>(^|\.)cle</c> désigne une clé (racine ou non) et
     /// <c>(\[\d+\])*$</c> autorise un élément de liste. Un point final indique une nouvelle clé en cours de saisie.
     /// </summary>
@@ -84,13 +84,14 @@ public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCac
         }
 
         // Étape 1 : position du curseur dans le YAML.
-        var path = YamlPathAnalyzer.GetPath(text, request.Position.Line, request.Position.Character);
+        var context = YamlCursorContext.Parse(text, request.Position.Line, request.Position.Character);
+        var path = context.Path;
 
         // Étape 2 : type de complétion.
         var kind = GetCompletionKind(path);
 
         // Étape 3 : complétion.
-        var provider = new CompletionProvider(text, request.Position, files);
+        var provider = new CompletionProvider(text, request.Position, context, files);
         return kind switch
         {
             CompletionKind.Domain => provider.CompleteDomain(),

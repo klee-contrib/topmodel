@@ -12,10 +12,12 @@ namespace TopModel.LanguageServer.Handlers;
 /// </summary>
 /// <param name="text">Lignes du fichier.</param>
 /// <param name="position">Position du curseur.</param>
+/// <param name="context">Contexte YAML du curseur.</param>
 /// <param name="files">Fichiers (et leur store) du document, le premier étant le fichier courant.</param>
 public class CompletionProvider(
     string[] text,
     Position position,
+    YamlCursorContext context,
     IReadOnlyList<(ModelFile File, ModelStore Store)> files
 )
 {
@@ -42,11 +44,8 @@ public class CompletionProvider(
     ];
 
     private readonly string currentLine = text.ElementAtOrDefault(position.Line) ?? string.Empty;
-    private YamlBlock? block;
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? completeRange;
     private string? searchText;
-
-    private YamlBlock Block => block ??= YamlBlock.Parse(text, position.Line, position.Character);
 
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range CompleteRange =>
         completeRange ??= GetCompleteRange();
@@ -220,7 +219,7 @@ public class CompletionProvider(
             return new();
         }
 
-        var existingParameters = Block.GetKeys(path);
+        var existingParameters = context.GetKeys(path);
         return new(
             container
                 .TemplateParameters.Where(p =>
@@ -275,7 +274,7 @@ public class CompletionProvider(
                 return new();
             }
 
-            var mappedName = Block.GetScalar(mapping.Groups["m"].Value, "class");
+            var mappedName = context.GetScalar(mapping.Groups["m"].Value, "class");
             if (mappedName == null)
             {
                 return new();
@@ -409,7 +408,7 @@ public class CompletionProvider(
     /// </summary>
     private Class? GetCurrentClass()
     {
-        var name = Block.GetScalar("class.", "name");
+        var name = context.GetScalar("class.", "name");
         return name == null ? null : files[0].File.Classes.SingleOrDefault(c => c.Name == name);
     }
 
@@ -423,7 +422,7 @@ public class CompletionProvider(
         if (path.EndsWith(".domain.parameters."))
         {
             var domainPath = path[..^"parameters.".Length];
-            var domainName = Block.GetScalar(domainPath, "name");
+            var domainName = context.GetScalar(domainPath, "name");
             if (domainName == null)
             {
                 return null;
@@ -501,7 +500,7 @@ public class CompletionProvider(
     /// <param name="objectPath">Chemin de l'objet, point final inclus.</param>
     private IPropertyContainer? ResolveTargetContainer(string objectPath)
     {
-        var className = Block.GetScalar(objectPath, "class") ?? Block.GetScalar(objectPath, "association");
+        var className = context.GetScalar(objectPath, "class") ?? context.GetScalar(objectPath, "association");
         if (
             className != null
             && FindReferenced(f => f.Store.GetReferencedClasses(f.File), c => c.ModelFile, className) is { } classe
@@ -510,7 +509,7 @@ public class CompletionProvider(
             return classe;
         }
 
-        var endpointName = Block.GetScalar(objectPath, "endpoint");
+        var endpointName = context.GetScalar(objectPath, "endpoint");
         if (
             endpointName != null
             && FindReferenced(f => f.Store.GetReferencedEndpoints(f.File), e => e.ModelFile, endpointName)
@@ -520,7 +519,7 @@ public class CompletionProvider(
             return endpoint;
         }
 
-        var decoratorName = Block.GetScalar(objectPath, "decorator");
+        var decoratorName = context.GetScalar(objectPath, "decorator");
         return decoratorName == null
             ? null
             : FindReferenced(f => f.Store.GetReferencedDecorators(f.File), d => d.ModelFile, decoratorName);
