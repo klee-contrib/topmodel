@@ -212,6 +212,17 @@ public sealed class YamlCursorContext
     }
 
     /// <summary>
+    /// Indique si le texte se termine dans une variable de template ouverte (<c>List&lt;{T</c>, <c>({value:</c>) :
+    /// un "{" non refermé collé au caractère qui le précède. Un "{" en début de valeur ou après un séparateur ouvre au
+    /// contraire un flux YAML.
+    /// </summary>
+    private static bool EndsInTemplateVariable(string text)
+    {
+        var open = text.LastIndexOf('{');
+        return open > 0 && text.IndexOf('}', open) < 0 && text[open - 1] is not (' ' or '[' or '{' or ',' or ':');
+    }
+
+    /// <summary>
     /// "]" et "}" à ajouter pour fermer les "[" et "{" ouverts dans le texte (guillemets et commentaires ignorés).
     /// </summary>
     /// <param name="text">Texte à analyser.</param>
@@ -229,10 +240,13 @@ public sealed class YamlCursorContext
             {
                 if (escaped)
                 {
-                    // Caractère échappé dans une chaîne entre guillemets doubles : ignoré.
+                    // Caractère échappé ("\x" entre guillemets doubles, "''" entre apostrophes) : ignoré.
                     escaped = false;
                 }
-                else if (c == '\\' && quote == '"')
+                else if (
+                    c == '\\' && quote == '"'
+                    || c == '\'' && quote == '\'' && i + 1 < text.Length && text[i + 1] == '\''
+                )
                 {
                     escaped = true;
                 }
@@ -282,7 +296,9 @@ public sealed class YamlCursorContext
         var position = Math.Max(Math.Min(character, line.Length), contentStart);
         var prefix = line[..position];
         var suffix = line[position..];
-        var sentinel = prefix.EndsWith(':') || prefix.Trim() == "-" ? $" {Sentinel}" : Sentinel;
+        // Espace après le ':' d'une clé ou après un tiret, mais pas après le ':' d'une transformation ("{value:").
+        var sentinel =
+            prefix.EndsWith(':') && !EndsInTemplateVariable(prefix) || prefix.Trim() == "-" ? $" {Sentinel}" : Sentinel;
 
         // Clé en cours de saisie (pas de ':' de clé, ni de tiret, ni de flux).
         // (un élément de liste après un tiret reste ambigu : scalaire ou début d'objet, on garde le scalaire).
