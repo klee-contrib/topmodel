@@ -539,8 +539,7 @@ public class CompletionKindTests
     )]
     public void FromText(string text, string expected)
     {
-        var cursor = CursorText.Parse(text);
-        var path = YamlPathAnalyzer.GetPath(cursor.Lines, cursor.Line, cursor.Character);
+        var path = CursorText.ParseContext(text).Path;
         Assert.AreEqual(expected, CompletionHandler.GetCompletionKind(path).ToString(), $"Chemin : {path}");
     }
 

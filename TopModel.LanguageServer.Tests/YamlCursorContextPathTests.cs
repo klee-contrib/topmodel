@@ -4,7 +4,7 @@ using static TopModel.LanguageServer.Tests.CursorText;
 namespace TopModel.LanguageServer.Tests;
 
 [TestClass]
-public class YamlPathAnalyzerTests
+public class YamlCursorContextPathTests
 {
     [TestMethod]
     public void BlankLinesAndComments_AreIgnored()
