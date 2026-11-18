@@ -1,3 +1,4 @@
+using System.Globalization;
 using MediatR;
 using OmniSharp.Extensions.JsonRpc;
 using TopModel.Core.Loaders;
@@ -20,7 +21,11 @@ public class SchemaHandler : IRequestHandler<SchemaRequest, SchemaResponse?>, IJ
     public async Task<SchemaResponse?> Handle(SchemaRequest request, CancellationToken cancellationToken)
     {
         // Le schéma est porté par l'assembly de TopModel.Core, qui le copie dans le répertoire de sortie.
-        var filePath = typeof(FileChecker).Assembly.GetFilePath("schema.json");
+        var language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var localizedFilePath = typeof(FileChecker).Assembly.GetFilePath($"schema.{language}.json");
+        var filePath = File.Exists(localizedFilePath)
+            ? localizedFilePath
+            : typeof(FileChecker).Assembly.GetFilePath("schema.json");
         if (!File.Exists(filePath))
         {
             return null;

@@ -6,21 +6,21 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple)."
+          "description": "Domain to use for the composition type (when it is not a simple composition)."
         },
         {
           "type": "object",
-          "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple).",
+          "description": "Domain to use for the composition type (when it is not a simple composition).",
           "required": ["name"],
           "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
-              "description": "Nom du domaine."
+              "description": "Domain name."
             },
             "parameters": {
               "type": "object",
-              "description": "Paramètres du domaine.",
+              "description": "Domain parameters.",
               "additionalProperties": {
                 "type": "string"
               }
@@ -33,14 +33,14 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Nom de l'annotation"
+          "description": "Annotation name"
         },
         {
           "type": "object",
-          "description": "Nom de l'annotation",
+          "description": "Annotation name",
           "additionalProperties": {
             "type": "object",
-            "description": "Paramètres de l'annotation",
+            "description": "Annotation parameters",
             "additionalProperties": {
               "type": "string"
             }
@@ -52,14 +52,14 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Nom du décorateur"
+          "description": "Decorator name"
         },
         {
           "type": "object",
-          "description": "Nom du décorateur",
+          "description": "Decorator name",
           "additionalProperties": {
             "type": "object",
-            "description": "Paramètres du décorateur",
+            "description": "Decorator parameters",
             "additionalProperties": {
               "type": "string"
             }
@@ -71,160 +71,162 @@
       "oneOf": [
         {
           "type": "object",
-          "description": "Propriété standard.",
+          "description": "Standard property.",
           "required": ["name", "domain", "comment"],
           "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
-              "description": "Nom de la propriété C#/TS. Sera converti en SQL en TRIGRAM_{{SNAKE_CASE}}. Cette propriété DOIT être en PREMIER."
+              "description": "C#/TS property name. It will be converted to SQL as TRIGRAM_{{SNAKE_CASE}}. This property MUST come first."
             },
             "label": {
               "type": "string",
-              "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+              "description": "Property label. It will be used as the field label in Focus."
             },
             "primaryKey": {
               "type": "boolean",
-              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée."
+              "description": "Specifies whether the property is part of the primary key of the table associated with the class. A class with at least one primary key will be persisted."
             },
             "required": {
               "type": "boolean",
-              "description": "Précise si la propriété est obligatoire. Cette information pourra être utilisée pour exclure les valeurs nulles de son type, ou bien pour de la validation. Une primary key est forcément required."
+              "description": "Specifies whether the property is required. This information can be used to exclude null values from its type or for validation. A primary key is always required."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Précise si la propriété doit être en lecture seule, qui ne pourra être définie qu'à l'initialisation de sa classe. Pour une classe de type interface, aucun setter ne sera géré. `readonly: true` sur la classe parente forcera `readonly: true` sur chaque propriété."
+              "description": "Specifies whether the property is read-only and can only be set during class initialization. For an interface class, no setter will be generated. Setting `readonly: true` on the parent class forces `readonly: true` on every property."
             },
             "domain": {
               "$ref": "#/definitions/domain"
             },
-            "trigram": {
-              "type": "string",
-              "description": "Surcharge locale du trigram"
+            "defaultValue": {
+              "description": "Default property value in classes and endpoints."
             },
             "comment": {
               "type": "string",
-              "description": "Description de la propriété."
+              "description": "Property description."
             },
-            "defaultValue": {
-              "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
+            "trigram": {
+              "type": "string",
+              "description": "Local trigram override."
             },
             "paramLocation": {
               "type": "string",
-              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "description": "Location of this parameter in an endpoint (when it is a parameter).",
               "enum": ["route", "query", "form-data", "json-body"]
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété.",
+              "description": "Property annotations.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "excludedAnnotations": {
               "type": "array",
-              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "description": "Global or domain annotations to remove from this property.",
               "items": {
                 "type": "string"
               }
             },
             "customProperties": {
               "type": "object",
-              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "description": "Custom property settings for use in a custom generator.",
               "additionalProperties": {
                 "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
               "type": "array",
-              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
-              "items": { "type": "string" }
+              "description": "When set, the property is generated only by generator configurations containing the listed tags. If the list is empty, the property is never generated.",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
         {
           "type": "object",
-          "description": "Propriété d'association (clé étrangère).",
+          "description": "Association property (foreign key).",
           "required": ["association", "comment"],
           "additionalProperties": false,
           "properties": {
             "association": {
               "type": "string",
-              "description": "Nom de la classe référencée par cette propriété. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier. Cette propriété DOIT être en PREMIER."
-            },
-            "label": {
-              "type": "string",
-              "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+              "description": "Name of the class referenced by this property. It must be referenced in this file, either declared here or listed in the file's 'uses' section. This property MUST come first."
             },
             "role": {
               "type": "string",
-              "description": "Suffixe de l'association, utile pour distinguer deux associations vers une même classe par exemple."
+              "description": "Association suffix, useful for distinguishing multiple associations to the same class."
             },
             "multiple": {
               "type": "boolean",
-              "description": "Précise si l'association doit être multiple (pour faire une oneToMany)."
+              "description": "Specifies whether the association is multiple (to create a one-to-many relationship)."
             },
             "as": {
               "type": "string",
-              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association multiple. Par défaut : 'list'."
+              "description": "`as` domain to use for the domain transformation of a multiple association. Default: 'list'."
             },
             "useClass": {
               "type": "boolean",
-              "description": "Représente l'association avec sa classe cible au lieu de sa propriété cible dans une classe persistée. Sa valeur par défaut est égale à la valeur de `defaultAssociationUseClass` dans la configuration TopModel globale."
+              "description": "Represents the association with its target class instead of its target property in a persisted class. Its default value is `defaultAssociationUseClass` from the global TopModel configuration."
+            },
+            "label": {
+              "type": "string",
+              "description": "Property label. It will be used as the field label in Focus."
             },
             "required": {
               "type": "boolean",
-              "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+              "description": "Specifies whether the property is required. It will be non-null in SQL and required for validation in Focus. A primary key is always required."
             },
             "primaryKey": {
               "type": "boolean",
-              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée."
+              "description": "Specifies whether the property is part of the primary key of the table associated with the class. A class with at least one primary key will be persisted."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est une interface (`type: interface`)."
+              "description": "A 'readonly' property cannot be set by a mapper, and no setter will be generated if the class containing the property is an interface (`type: interface`)."
             },
             "defaultValue": {
-              "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
+              "description": "Default property value in classes and endpoints."
             },
             "paramLocation": {
               "type": "string",
-              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "description": "Location of this parameter in an endpoint (when it is a parameter).",
               "enum": ["route", "query", "form-data", "json-body"]
             },
             "withReverse": {
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple, peu importe la valeur de `withReverse`."
+                  "description": "Adds a property corresponding to the reverse relationship on the association target class. The reverse property is always generated for a multiple association, regardless of the `withReverse` value."
                 },
                 {
                   "type": "object",
-                  "description": "Ajoute une propriété correspondant à la réciproque de la relation sur la classe cible de l'association. La réciproque est obligatoirement générée pour une association multiple.",
+                  "description": "Adds a property corresponding to the reverse relationship on the association target class. The reverse property is always generated for a multiple association.",
                   "additionalProperties": false,
                   "properties": {
                     "className": {
                       "type": "string",
-                      "description": "Surcharge du nom de cette classe dans le nom de la propriété d'association réciproque sur la classe cible."
-                    },
-                    "comment": {
-                      "type": "string",
-                      "description": "Commentaire de la propriété d'association réciproque sur la classe cible."
+                      "description": "Override of this class name in the reverse association property name on the target class."
                     },
                     "label": {
                       "type": "string",
-                      "description": "Libellé de la propriété d'association réciproque sur la classe cible."
+                      "description": "Label for the reverse association property on the target class."
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "Comment for the reverse association property on the target class."
                     },
                     "annotations": {
                       "type": "array",
-                      "description": "Annotations de la propriété d'association réciproque sur la classe cible.",
+                      "description": "Annotations for the reverse association property on the target class.",
                       "items": {
                         "$ref": "#/definitions/annotation"
                       }
                     },
                     "excludedAnnotations": {
                       "type": "array",
-                      "description": "Annotations globales ou du domaine à retirer de la propriété d'association réciproque.",
+                      "description": "Global or domain annotations to remove from the reverse association property.",
                       "items": {
                         "type": "string"
                       }
@@ -235,57 +237,59 @@
             },
             "comment": {
               "type": "string",
-              "description": "Description de la propriété."
-            },
-            "trigram": {
-              "type": "string",
-              "description": "Surcharge locale du trigram"
-            },
-            "className": {
-              "type": "string",
-              "description": "Surcharge du nom de la classe cible dans le nom de la propriété d'association."
+              "description": "Property description."
             },
             "property": {
               "type": "string",
-              "description": "Propriété de la classe cible à utiliser pour la clé étrangère (au lieu de la clé primaire)."
+              "description": "Target class property to use for the foreign key (instead of the primary key)."
+            },
+            "trigram": {
+              "type": "string",
+              "description": "Local trigram override."
+            },
+            "className": {
+              "type": "string",
+              "description": "Override of the target class name in the association property name."
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété.",
+              "description": "Property annotations.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "excludedAnnotations": {
               "type": "array",
-              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "description": "Global or domain annotations to remove from this property.",
               "items": {
                 "type": "string"
               }
             },
             "customProperties": {
               "type": "object",
-              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "description": "Custom property settings for use in a custom generator.",
               "additionalProperties": {
                 "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
               "type": "array",
-              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
-              "items": { "type": "string" }
+              "description": "When set, the property is generated only by generator configurations containing the listed tags. If the list is empty, the property is never generated.",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
         {
           "type": "object",
-          "description": "Alias vers un champ existant.",
+          "description": "Alias for an existing field.",
           "required": ["alias"],
           "additionalProperties": false,
           "properties": {
             "alias": {
               "type": "object",
-              "description": "Définition de propriété(s) à recopier d'une autre classe. Cette propriété DOIT être en PREMIER.",
+              "description": "Definition of properties to copy from another class. This property MUST come first.",
               "oneOf": [
                 {
                   "required": ["class"]
@@ -323,44 +327,44 @@
               "properties": {
                 "class": {
                   "type": "string",
-                  "description": "Nom de la classe depuis laquelle on veut recopier des propriétés. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+                  "description": "Name of the class from which properties should be copied. It must be referenced in this file, either declared here or listed in the file's 'uses' section."
                 },
                 "endpoint": {
                   "type": "string",
-                  "description": "Nom de l'endpoint depuis lequel on veut recopier des propriétés. Doit être référencé dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+                  "description": "Name of the endpoint from which properties should be copied. It must be referenced in this file, either declared here or listed in the file's 'uses' section."
                 },
                 "decorator": {
                   "type": "string",
-                  "description": "Nom du décorateur depuis lequel on veut recopier des propriétés. Doit être référencé dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
-                },
-                "property": {
-                  "oneOf": [
-                    {
-                      "type": "string",
-                      "description": "Propriété de la classe cible à recopier."
-                    },
-                    {
-                      "type": "array",
-                      "description": "Liste des propriétés à recopier.",
-                      "items": {
-                        "type": "string",
-                        "description": "Propriété de la classe cible à recopier."
-                      }
-                    }
-                  ]
+                  "description": "Name of the decorator from which properties should be copied. It must be referenced in this file, either declared here or listed in the file's 'uses' section."
                 },
                 "include": {
                   "oneOf": [
                     {
                       "type": "string",
-                      "description": "Propriété de la classe cible à recopier."
+                      "description": "Target class property to copy."
                     },
                     {
                       "type": "array",
-                      "description": "Liste des propriétés à recopier.",
+                      "description": "List of properties to copy.",
                       "items": {
                         "type": "string",
-                        "description": "Propriété de la classe cible à recopier."
+                        "description": "Target class property to copy."
+                      }
+                    }
+                  ]
+                },
+                "property": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Target class property to copy."
+                    },
+                    {
+                      "type": "array",
+                      "description": "List of properties to copy.",
+                      "items": {
+                        "type": "string",
+                        "description": "Target class property to copy."
                       }
                     }
                   ]
@@ -369,14 +373,14 @@
                   "oneOf": [
                     {
                       "type": "string",
-                      "description": "Recopie toutes les propriétés de la classe cible, sauf celle ci."
+                      "description": "Copies all target class properties except this one."
                     },
                     {
                       "type": "array",
-                      "description": "Recopie toutes les propriétés de la classe cible, sauf celles-ci.",
+                      "description": "Copies all target class properties except these ones.",
                       "items": {
                         "type": "string",
-                        "description": "Propriété de la classe cible à ignorer."
+                        "description": "Target class property to ignore."
                       }
                     }
                   ]
@@ -387,184 +391,188 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "description": "Préfixe à ajouter au nom de la propriété aliasée."
+                  "description": "Prefix to add to the aliased property name."
                 },
                 {
                   "type": "boolean",
-                  "description": "Ajoute le nom de la classe comme préfixe au nom de la propriété aliasée."
+                  "description": "Adds the class name as a prefix to the aliased property name."
                 }
               ]
-            },
-            "name": {
-              "type": "string",
-              "description": "Surcharge locale du nom de la propriété aliasée."
-            },
-            "trigram": {
-              "type": "string",
-              "description": "Surcharge locale du trigram"
             },
             "suffix": {
               "oneOf": [
                 {
                   "type": "string",
-                  "description": "Suffixe à ajouter au nom de la propriété aliasée."
+                  "description": "Suffix to add to the aliased property name."
                 },
                 {
                   "type": "boolean",
-                  "description": "Ajoute le nom de la classe comme suffixe au nom de la propriété aliasée."
+                  "description": "Adds the class name as a suffix to the aliased property name."
                 }
               ]
+            },
+            "label": {
+              "type": "string",
+              "description": "Overrides the aliased property label."
             },
             "domain": {
               "$ref": "#/definitions/domain"
             },
             "composition": {
               "type": "string",
-              "description": "Surcharge la classe cible de la propriété de composition aliasée. Ne peut pas être utilisé pour une propriété standard (ni une association, ni une composition)."
-            },
-            "label": {
-              "type": "string",
-              "description": "Surcharge le libellé de la propriété aliasée."
+              "description": "Overrides the target class of the aliased composition property. It cannot be used for a standard property, association, or composition."
             },
             "required": {
               "type": "boolean",
-              "description": "Surcharge le caractère obligatoire de la propriété aliasée."
+              "description": "Overrides whether the aliased property is required."
             },
             "primaryKey": {
               "type": "boolean",
-              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée. **Un alias ne récupère pas `primaryKey: true` de la propriété qu'il recopie.**"
-            },
-            "preservePrimaryKey": {
-              "type": "boolean",
-              "description": "Conserve la valeur de `primaryKey` de de la propriété aliasée."
-            },
-            "preserveTrigram": {
-              "type": "boolean",
-              "description": "Conserve le trigramme de de la propriété aliasée."
-            },
-            "discardAssociations": {
-              "type": "boolean",
-              "description": "Ignore l'association de la propriété aliasée (elle sera recopiée comme une propriété standard)."
-            },
-            "readonly": {
-              "type": "boolean",
-              "description": "Surcharge le caractère readonly de la propriété aliasée."
-            },
-            "comment": {
-              "type": "string",
-              "description": "Surcharge le commentaire de la propriété aliasée."
-            },
-            "as": {
-              "type": "string",
-              "description": "Utilise le domaine correspondant dans `asDomains` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
-            },
-            "useClass": {
-              "type": "boolean",
-              "description": "Surcharge la valeur de `useClass` pour un alias d'association (cela n'a toujours d'effet que si la classe qui contient l'alias est persistée)."
-            },
-            "defaultValue": {
-              "description": "Surcharge la valeur par défaut de la propriété."
+              "description": "Specifies whether the property is part of the primary key of the table associated with the class. A class with at least one primary key will be persisted. **An alias does not inherit `primaryKey: true` from the copied property.**"
             },
             "paramLocation": {
               "type": "string",
-              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre). Cette valeur n'est pas héritée de la propriété originale.",
+              "description": "Location of this parameter in an endpoint (when it is a parameter). This value is not inherited from the original property.",
               "enum": ["route", "query", "form-data", "json-body"]
+            },
+            "preservePrimaryKey": {
+              "type": "boolean",
+              "description": "Preserves the `primaryKey` value from the aliased property."
+            },
+            "preserveTrigram": {
+              "type": "boolean",
+              "description": "Preserves the trigram from the aliased property."
+            },
+            "discardAssociations": {
+              "type": "boolean",
+              "description": "Ignores the association of the aliased property (it will be copied as a standard property)."
+            },
+            "readonly": {
+              "type": "boolean",
+              "description": "Overrides the read-only status of the aliased property."
+            },
+            "comment": {
+              "type": "string",
+              "description": "Overrides the aliased property comment."
+            },
+            "as": {
+              "type": "string",
+              "description": "Uses the matching domain in `asDomains` from the original or overridden property domain as the alias property's domain."
+            },
+            "useClass": {
+              "type": "boolean",
+              "description": "Overrides `useClass` for an association alias (it only has an effect when the class containing the alias is persisted)."
+            },
+            "name": {
+              "type": "string",
+              "description": "Local override of the aliased property name."
+            },
+            "trigram": {
+              "type": "string",
+              "description": "Local trigram override."
+            },
+            "defaultValue": {
+              "description": "Overrides the property's default value."
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété. S'ajoute aux annotations de la propriété originale.",
+              "description": "Property annotations. Added to the original property's annotations.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "excludedAnnotations": {
               "type": "array",
-              "description": "Annotations globales, du domaine ou de la propriété originale à retirer de cette propriété.",
+              "description": "Global, domain, or original-property annotations to remove from this property.",
               "items": {
                 "type": "string"
               }
             },
             "customProperties": {
               "type": "object",
-              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
+              "description": "Custom property settings for use in a custom generator. They are added to the original property's settings, replacing existing values on conflict.",
               "additionalProperties": {
                 "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
               "type": "array",
-              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
-              "items": { "type": "string" }
+              "description": "When set, the property is generated only by generator configurations containing the listed tags. If the list is empty, the property is never generated.",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
         {
           "type": "object",
-          "description": "Propriété de composition avec une autre classe.",
+          "description": "Composition property with another class.",
           "required": ["composition", "name", "comment"],
           "additionalProperties": false,
           "properties": {
             "composition": {
               "type": "string",
-              "description": "Nom de la classe à composer. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier. Cette propriété DOIT être en PREMIER."
+              "description": "Name of the class to compose. It must be referenced in this file, either declared here or listed in the file's 'uses' section. This property MUST come first."
             },
             "name": {
               "type": "string",
-              "description": "Nom de la propriété."
+              "description": "Property name."
             },
             "label": {
               "type": "string",
-              "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+              "description": "Property label. It will be used as the field label in Focus."
             },
             "domain": {
               "$ref": "#/definitions/domain"
             },
             "comment": {
               "type": "string",
-              "description": "Description de la propriété."
+              "description": "Property description."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est une interface (`type: interface`)."
+              "description": "A 'readonly' property cannot be set by a mapper, and no setter will be generated if the class containing the property is an interface (`type: interface`)."
             },
             "required": {
               "type": "boolean",
-              "description": "Précise si la propriété est obligatoire (`true` par défaut sur les compositions). Une composition obligatoire sera initialisée avec une instance vide."
+              "description": "Specifies whether the property is required (`true` by default for compositions). A required composition is initialized with an empty instance."
             },
             "trigram": {
               "type": "string",
-              "description": "Surcharge locale du trigram"
+              "description": "Local trigram override."
             },
             "paramLocation": {
               "type": "string",
-              "description": "Localisation de ce paramètre dans un endpoint (s'il s'agit d'un paramètre).",
+              "description": "Location of this parameter in an endpoint (when it is a parameter).",
               "enum": ["route", "query", "form-data", "json-body"]
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété.",
+              "description": "Property annotations.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "excludedAnnotations": {
               "type": "array",
-              "description": "Annotations globales ou du domaine à retirer de cette propriété.",
+              "description": "Global or domain annotations to remove from this property.",
               "items": {
                 "type": "string"
               }
             },
             "customProperties": {
               "type": "object",
-              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "description": "Custom property settings for use in a custom generator.",
               "additionalProperties": {
                 "type": ["string", "boolean", "integer", "number"]
               }
             },
             "tags": {
               "type": "array",
-              "description": "Si renseignée, la propriété ne sera générée que par les configurations de générateurs qui contiennent les tags listés ici. Si la liste est vide, alors la propriété ne sera jamais générée.",
-              "items": { "type": "string" }
+              "description": "When set, the property is generated only by generator configurations containing the listed tags. If the list is empty, the property is never generated.",
+              "items": {
+                "type": "string"
+              }
             }
           }
         }
@@ -574,21 +582,21 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Template de valeur à utiliser. Peut utiliser la variable '{value}' pour référencer la valeur renseignée dans le modèle."
+          "description": "Value template to use. It can use the '{value}' variable to reference the value provided in the model."
         },
         {
           "type": "object",
-          "description": "Template de valeur à utiliser, avec des imports supplémentaires si besoin.",
+          "description": "Value template to use, with additional imports when needed.",
           "required": ["value"],
           "additionalProperties": false,
           "properties": {
             "value": {
               "type": "string",
-              "description": "Template de valeur à utiliser. Peut utiliser la variable '{value}' pour référencer la valeur renseignée dans le modèle."
+              "description": "Value template to use. It can use the '{value}' variable to reference the value provided in the model."
             },
             "imports": {
               "type": "array",
-              "description": "Imports à ajouter pour utiliser ce template.",
+              "description": "Imports to add to use this template.",
               "items": {
                 "type": "string"
               }
@@ -599,25 +607,25 @@
     },
     "parameter": {
       "type": "object",
-      "description": "Paramètre à utiliser dans un template.",
+      "description": "Parameter to use in a template.",
       "additionalProperties": false,
       "required": ["name", "comment"],
       "properties": {
         "name": {
           "type": "string",
-          "description": "Nom du paramètre."
+          "description": "Parameter name."
         },
         "comment": {
           "type": "string",
-          "description": "Description du paramètre."
+          "description": "Parameter description."
         },
         "required": {
           "type": "boolean",
-          "description": "Si le paramètre est obligatoire."
+          "description": "Whether the parameter is required."
         },
         "defaultValue": {
           "type": "string",
-          "description": "Valeur par défaut du paramètre. Si non renseigné, la valeur sera une chaîne de caractères vide."
+          "description": "Default parameter value. If omitted, the value is an empty string."
         }
       }
     }
@@ -625,46 +633,46 @@
   "oneOf": [
     {
       "type": "object",
-      "description": "Définition d'un fichier.",
+      "description": "File definition.",
       "required": ["module", "tags"],
       "additionalProperties": false,
       "properties": {
         "module": {
           "type": "string",
-          "description": "Nom du module contenant ce fichier."
+          "description": "Name of the module containing this file."
         },
         "tags": {
           "type": "array",
-          "description": "Tags de fichier, pour déterminer quels générateurs doivent lire tel fichier.",
+          "description": "File tags used to determine which generators should read the file.",
           "items": {
             "type": "string"
           }
         },
         "uses": {
           "type": "array",
-          "description": "Dépendances du fichier courant. Il est nécessaire de spécifier l'intégralité des fichiers existants utilisés dans de fichier, et d'en lister toutes les classes référencées.",
+          "description": "Dependencies of the current file. You must specify all existing files used in this file and list every referenced class.",
           "items": {
             "type": "string"
           }
         },
         "options": {
           "type": "object",
-          "description": "Définition des options relatives au fichier.",
+          "description": "Options for the file.",
           "additionalProperties": false,
           "properties": {
             "endpoints": {
               "type": "object",
-              "description": "Définition des options relatives aux endpoints déclarés dans le fichier.",
+              "description": "Options for endpoints declared in the file.",
               "additionalProperties": false,
               "properties": {
-                "prefix": {
-                  "type": "string",
-                  "description": "Préfix des endpoints."
-                },
                 "fileName": {
                   "type": "string",
-                  "description": "Nom du fichier regroupant les endpoints",
+                  "description": "Name of the file containing the endpoints",
                   "default": "Nom du fichier courant"
+                },
+                "prefix": {
+                  "type": "string",
+                  "description": "Endpoint prefix."
                 }
               }
             }
@@ -674,7 +682,7 @@
     },
     {
       "type": "object",
-      "description": "Définition d'une annotation",
+      "description": "Annotation definition",
       "required": ["annotation"],
       "additionalProperties": false,
       "properties": {
@@ -685,15 +693,15 @@
           "properties": {
             "name": {
               "type": "string",
-              "description": "Nom de l'annotation."
+              "description": "Annotation name."
             },
             "description": {
               "type": "string",
-              "description": "Description de l'annotation."
+              "description": "Annotation description."
             },
             "target": {
               "type": "array",
-              "description": "Si renseigné, limite les objets cibles possibles pour cette annotation à ceux listés ici.",
+              "description": "When provided, limits the possible target objects for this annotation to those listed here.",
               "items": {
                 "type": "string",
                 "enum": [
@@ -710,11 +718,11 @@
             },
             "global": {
               "type": "boolean",
-              "description": "Si renseigné, cette annotation sera automatiquement ajoutée à tous les objets ciblés par cette annotation dans le modèle. Le fichier contenant cette annotation sera également automatiquement ajouté en tant que dépendance de tous les fichiers du modèle."
+              "description": "When provided, this annotation is automatically added to every target object in the model. The file containing the annotation is also automatically added as a dependency of every model file."
             },
             "parameters": {
               "type": "array",
-              "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
+              "description": "Parameter definitions available to implementation templates.",
               "items": {
                 "$ref": "#/definitions/parameter"
               }
@@ -722,20 +730,20 @@
           },
           "additionalProperties": {
             "type": "array",
-            "description": "Implémentation de l'annotation dans un langage",
+            "description": "Annotation implementation in a language",
             "items": {
               "type": "object",
-              "description": "Annotation à ajouter",
+              "description": "Annotation to add",
               "required": ["text"],
               "additionalProperties": false,
               "properties": {
                 "text": {
                   "type": "string",
-                  "description": "Annotation à ajouter. Peut contenir des variables"
+                  "description": "Annotation to add. May contain variables."
                 },
                 "when": {
                   "type": "array",
-                  "description": "Si renseigné, pose des contraintes sur l'objet cible de l'annotation qu'il devra respecter pour qu'elle soit posée dans le code généré.",
+                  "description": "When provided, imposes constraints on the annotation target that it must satisfy before the annotation is generated.",
                   "items": {
                     "type": "string",
                     "enum": [
@@ -749,10 +757,10 @@
                 },
                 "imports": {
                   "type": "array",
-                  "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                  "description": "List of imports required for this annotation to work",
                   "items": {
                     "type": "string",
-                    "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                    "description": "Import required for this annotation to work. May contain variables."
                   }
                 }
               }
@@ -763,415 +771,54 @@
     },
     {
       "type": "object",
-      "description": "Définition d'un domaine.",
-      "required": ["domain"],
-      "additionalProperties": false,
-      "properties": {
-        "domain": {
-          "type": "object",
-          "description": "Domaine.",
-          "required": ["name"],
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Nom (ou code) du domaine."
-            },
-            "label": {
-              "type": "string",
-              "description": "Libellé du domaine."
-            },
-            "length": {
-              "type": "number",
-              "description": "Longueur du champ dans le domaine. Pour un type décimal, il s'agit de la précision."
-            },
-            "scale": {
-              "type": "number",
-              "description": "Pour un type décimal, nombre de chiffres après la virgule."
-            },
-            "autoGeneratedValue": {
-              "description": "Précise si la valeur d'une propriété du domaine est auto-générée.",
-              "oneOf": [
-                {
-                  "type": "boolean",
-                  "description": "Si true pour une clé primaire, une identité sera utilisée avec `start: 1` et `increment: 1`."
-                },
-                {
-                  "type": "object",
-                  "description": "Permet de configurer la séquence ou la colonne identité utilisée pour une clé primaire.",
-                  "additionalProperties": false,
-                  "properties": {
-                    "sequenceName": {
-                      "type": "string",
-                      "description": "Si renseigné, une séquence de ce nom-là sera utilisée pour les clés primaires. Accepte les templates. Sinon, ce sera une colonne identité."
-                    },
-                    "start": {
-                      "type": "integer",
-                      "description": "La valeur du début de la séquence / colonne identité. Par défaut : 1."
-                    },
-                    "increment": {
-                      "type": "integer",
-                      "description": "L'increment de la séquence / colonne identité. Par défaut : 1."
-                    }
-                  }
-                }
-              ]
-            },
-            "paramLocation": {
-              "type": "string",
-              "description": "Localisation par défaut d'un paramètre d'endpoint utilisant ce domaine.",
-              "enum": ["route", "query", "form-data", "json-body"]
-            },
-            "defaultValue": {
-              "type": "string",
-              "description": "Valeur par défaut des propriétés de ce domaine. Pourra être surchargée (ou retirée) localement sur la propriété."
-            },
-            "collection": {
-              "type": "boolean",
-              "description": "Définit ce domaine comme étant un domaine de collection, pour pouvoir définir des mappings entre éléments de collection."
-            },
-            "asDomains": {
-              "type": "object",
-              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association multiple (avec `as`).",
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "mediaType": {
-              "type": "string",
-              "description": "Type de médias (utilisé si retourné par un endpoint)."
-            },
-            "annotations": {
-              "type": "array",
-              "description": "Annotations du domaine.",
-              "items": {
-                "$ref": "#/definitions/annotation"
-              }
-            },
-            "excludedAnnotations": {
-              "type": "array",
-              "description": "Annotations globales à retirer de ce domaine.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "parameters": {
-              "type": "array",
-              "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
-              "items": {
-                "$ref": "#/definitions/parameter"
-              }
-            }
-          },
-          "additionalProperties": {
-            "type": "object",
-            "description": "Implémentation du domaine dans un langage",
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "type": "string",
-                "description": "Type du domaine. Peut contenir des variables"
-              },
-              "genericType": {
-                "type": "string",
-                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association multiple), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
-              },
-              "imports": {
-                "type": "array",
-                "description": "Imports nécessaires au bon fonctionnement du type. Peuvent contenir des variables",
-                "items": {
-                  "type": "string",
-                  "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
-                }
-              },
-              "collector": {
-                "type": "string",
-                "description": "Pour un domaine de collection, le collecteur utilisé pour matérialiser la collection cible. Par défaut : 'to{genericType}' (sans la partie générique)."
-              },
-              "values": {
-                "type": "object",
-                "description": "Templates à utiliser pour la génération lorsqu'une valeur (par défaut) est renseignée pour une propriété de ce domaine",
-                "additionalProperties": false,
-                "properties": {
-                  "template": {
-                    "$ref": "#/definitions/valueTemplate"
-                  },
-                  "overrides": {
-                    "type": "object",
-                    "description": "Surcharges pour des valeurs spécifiques.",
-                    "additionalProperties": {
-                      "$ref": "#/definitions/valueTemplate"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "description": "Définition d'un convertisseur de domaine",
-      "required": ["converter"],
-      "additionalProperties": false,
-      "properties": {
-        "converter": {
-          "type": "object",
-          "required": ["from", "to"],
-          "properties": {
-            "from": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "description": "Domains sources du convertisseur"
-              }
-            },
-            "to": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "description": "Domains cibles du convertisseur"
-              }
-            }
-          },
-          "additionalProperties": {
-            "type": "object",
-            "description": "Implémentation du convertisseur dans le cas où la conversion n'est pas implicite",
-            "additionalProperties": false,
-            "properties": {
-              "text": {
-                "type": "string",
-                "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
-              },
-              "imports": {
-                "type": "array",
-                "description": "Imports à ajouter pour utiliser ce convertisseur.",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "description": "Définition d'un décorateur.",
-      "required": ["decorator"],
-      "additionalProperties": false,
-      "properties": {
-        "decorator": {
-          "type": "object",
-          "description": "Décorateur.",
-          "required": ["name", "description"],
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Nom du décorateur."
-            },
-            "description": {
-              "type": "string",
-              "description": "Description du décorateur."
-            },
-            "target": {
-              "type": "string",
-              "description": "Si renseigné, limite l'usage de ce décorateur aux classes ou aux endpoints.",
-              "enum": ["class", "endpoint"]
-            },
-            "preservePropertyCasing": {
-              "type": "boolean",
-              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
-            },
-            "propertySourceOrder": {
-              "type": "array",
-              "description": "Ordre des propriétés du décorateur, par source. Par défaut, les propriétés des autres décorateurs sont en dernier.",
-              "minItems": 2,
-              "maxItems": 2,
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": ["properties", "decorators"]
-              }
-            },
-            "decorators": {
-              "type": "array",
-              "description": "Décorateurs du décorateur.",
-              "items": {
-                "$ref": "#/definitions/decorator"
-              }
-            },
-            "annotations": {
-              "type": "array",
-              "description": "Annotations du décorateur.",
-              "items": {
-                "$ref": "#/definitions/annotation"
-              }
-            },
-            "excludedAnnotations": {
-              "type": "array",
-              "description": "Annotations globales ou d'un décorateur à retirer de ce décorateur.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "propertyAnnotations": {
-              "type": "array",
-              "description": "Annotations à poser sur toutes les propriétés du décorateur.",
-              "items": {
-                "$ref": "#/definitions/annotation"
-              }
-            },
-            "properties": {
-              "type": "array",
-              "description": "Liste des propriétés du décorateur.",
-              "items": {
-                "$ref": "#/definitions/property"
-              }
-            },
-            "parameters": {
-              "type": "array",
-              "description": "Définitions de paramètre, utilisables dans les templates pour les implémentations.",
-              "items": {
-                "$ref": "#/definitions/parameter"
-              }
-            }
-          },
-          "additionalProperties": {
-            "type": "object",
-            "description": "Implémentation du décorateur.",
-            "additionalProperties": false,
-            "properties": {
-              "extends": {
-                "type": "string",
-                "description": "Classe (hors TopModel) dont une classe implémentant ce décorateur doit dériver."
-              },
-              "implements": {
-                "type": "array",
-                "description": "Interfaces (hors TopModel) qu'une classe implémentant ce décorateur doit implémenter.",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "imports": {
-                "type": "array",
-                "description": "Imports à ajouter pour utiliser ce décorateur.",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "description": "Définition d'une classe.",
+      "description": "Class definition.",
       "required": ["class"],
       "additionalProperties": false,
       "properties": {
         "class": {
           "type": "object",
-          "description": "Définition d'une classe.",
+          "description": "Class definition.",
           "required": ["name", "comment", "properties"],
           "additionalProperties": false,
           "properties": {
             "tags": {
               "type": "array",
-              "description": "Tags supplémentaires à ajouter sur cette classe pour la génération.",
+              "description": "Additional tags to add to this class for generation.",
               "items": {
                 "type": "string"
               }
             },
             "trigram": {
               "type": "string",
-              "description": "Le trigramme qui préfixera toutes les propriétés de la classe en SQL"
+              "description": "The trigram that will prefix every property of the class in SQL"
             },
             "name": {
               "type": "string",
-              "description": "Nom de la classe. Sera converti en SQL en SNAKE_CASE."
+              "description": "Class name. It will be converted to SQL in SNAKE_CASE."
             },
             "pluralName": {
               "type": "string",
-              "description": "Nom de la classe au pluriel. Sera généré à partir du nom avec un 's' si non renseigné."
+              "description": "Plural class name. If omitted, it is generated from the name by adding 's'."
             },
             "sqlName": {
               "type": "string",
-              "description": "Nom SQL de la classe. Sera généré à partir du nom standard si non renseigné."
+              "description": "SQL class name. If omitted, it is generated from the standard name."
             },
             "extends": {
               "type": "string",
-              "description": "Nom de la classe parente de cette classe. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
-            },
-            "inheritanceStrategy": {
-              "type": "string",
-              "description": "Pour une classe persistée, la stratégie d'héritage à utiliser si cette classe est dérivée. Par défaut : `joined-tables`.",
-              "enum": ["joined-tables", "single-table", "distinct-tables"]
+              "description": "Name of the parent class. It must be referenced in this file, either declared here or listed in the file's 'uses' section."
             },
             "label": {
               "type": "string",
-              "description": "Un libellé qui décrit la classe. N'est utilisé nulle part."
+              "description": "A label that describes the class. It is not used anywhere."
             },
             "reference": {
               "type": "boolean",
-              "description": "Précise si la classe est une liste de référence (pour mise en cache dans 'ReferenceManager' ou 'referenceStore'."
-            },
-            "defaultProperty": {
-              "type": "string",
-              "description": "Propriété de la classe qui sera utilisée comme libellé si la classe est une liste de référence ou un container de traductions. Renseigné par défaut par la propriété 'Label' ou 'Libelle', si elle existe sur la classe."
-            },
-            "orderProperty": {
-              "type": "string",
-              "description": "Propriété de la classe qui sera utilisée pour trier la liste de référence à la place de la propriété par défaut. Renseigné par défaut par la propriété 'Order' ou 'Ordre', si elle existe sur la classe."
-            },
-            "flagProperty": {
-              "type": "string",
-              "description": "Propriété de la classe qui sera utilisée comme flag binaire, en plus du code dans une liste de référence statique. Renseigné par défaut par la propriété 'Flag', si elle existe sur la classe."
-            },
-            "localeProperty": {
-              "type": "string",
-              "description": "Pour une classe de traduction, propriété de la classe qui sera identifiée comme la locale. Doit faire partie de la clé primaire de la classe. Renseigné par défaut par la propriété 'Locale', si elle existe sur la classe."
-            },
-            "discriminatorProperty": {
-              "type": "string",
-              "description": "Pour une classe avec stratégie d'héritage 'single-table', la propriété de la classe a utiliser comme discriminateur. Si non renseigné, une colonne technique `{trigram}_discriminator` sera ajoutée en base de données, avec le nom SQL de chaque classe de la hiérarchie comme valeurs."
-            },
-            "discriminatorValue": {
-              "type": "string",
-              "description": "Pour une classe dans une stratégie d'héritage 'single-table', la valeur du discriminateur pour cette classe. Si non renseigné, le nom SQL de la table sera utilisé."
-            },
-            "translation": {
-              "type": "boolean",
-              "description": "Définit cette classe comme étant une classe qui devra contenir les traductions du modèle (libellés de propriétés et de listes de référence)."
-            },
-            "preservePropertyCasing": {
-              "type": "boolean",
-              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
-            },
-            "propertySourceOrder": {
-              "type": "array",
-              "description": "Ordre des propriétés de la classe, par source. Par défaut, les propriétés des interfaces puis des décorateurs sont en dernier.",
-              "minItems": 2,
-              "maxItems": 3,
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": ["properties", "decorators", "implements"]
-              }
-            },
-            "type": {
-              "type": "string",
-              "description": "Permet de définir la classe comme étant une interface ou une classe abstraite.",
-              "enum": ["regular", "abstract", "interface"]
+              "description": "Specifies whether the class is a reference list (for caching in 'ReferenceManager' or 'referenceStore')."
             },
             "readonly": {
               "type": "boolean",
-              "description": "Permet de marquer la classe et toutes ses propriétés comme étant en lecture seule."
-            },
-            "comment": {
-              "type": "string",
-              "description": "Description de la classe."
+              "description": "Marks the class and all its properties as read-only."
             },
             "enum": {
               "oneOf": [
@@ -1183,73 +830,130 @@
                   "enum": ["class"]
                 }
               ],
-              "description": "Force la catégorisation de cette classe en tant qu'enum et détermine comment elle doit être considérée dans le modèle.\n\nUne classe doit avoir au moins une `value`, au moins une propriété, et ne peut pas avoir de clé primaire multiple pour être une enum.\n\nCette propriété peut valoir `class` pour représenter l'enum comme une classe (avec des enums pour la clé primaire et les clés d'unicité), ou `true` pour la représenter intégralement comme une enum.\n\nSi la classe peut être une enum et que le domaine de sa clé primaire n'est pas auto-généré, alors elle sera par défaut une enum de type `class`."
+              "description": "Forces this class to be categorized as an enum and determines how it is handled in the model.\n\nA class must have at least one `value`, at least one property, and cannot have a composite primary key to be an enum.\n\nThis property can be `class` to represent the enum as a class (with enums for the primary key and unique keys), or `true` to represent it fully as an enum.\n\nIf the class can be an enum and the domain of its primary key is not auto-generated, it defaults to a `class` enum."
+            },
+            "type": {
+              "type": "string",
+              "description": "Defines the class as an interface or abstract class.",
+              "enum": ["regular", "abstract", "interface"]
+            },
+            "inheritanceStrategy": {
+              "type": "string",
+              "description": "For a persisted class, the inheritance strategy to use when this class is derived. Default: `joined-tables`.",
+              "enum": ["joined-tables", "single-table", "distinct-tables"]
+            },
+            "orderProperty": {
+              "type": "string",
+              "description": "Class property used to sort the reference list instead of the default property. Defaults to the 'Order' or 'Ordre' property when present on the class."
+            },
+            "defaultProperty": {
+              "type": "string",
+              "description": "Class property used as the label when the class is a reference list or translation container. Defaults to the 'Label' or 'Libelle' property when present on the class."
+            },
+            "flagProperty": {
+              "type": "string",
+              "description": "Class property used as a binary flag in addition to the code in a static reference list. Defaults to the 'Flag' property when present on the class."
+            },
+            "localeProperty": {
+              "type": "string",
+              "description": "For a translation class, the property identified as the locale. It must be part of the class primary key. Defaults to the 'Locale' property when present on the class."
+            },
+            "discriminatorProperty": {
+              "type": "string",
+              "description": "For a class using the 'single-table' inheritance strategy, the property to use as the discriminator. If omitted, a technical `{trigram}_discriminator` column is added to the database, using each hierarchy class SQL name as a value."
+            },
+            "discriminatorValue": {
+              "type": "string",
+              "description": "For a class using the 'single-table' inheritance strategy, the discriminator value for this class. If omitted, the table SQL name is used."
+            },
+            "translation": {
+              "type": "boolean",
+              "description": "Defines this class as a container for model translations (property labels and reference-list labels)."
+            },
+            "comment": {
+              "type": "string",
+              "description": "Class description."
+            },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Preserves property names as written during generation instead of converting them to the target language format."
+            },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Property ordering by source. By default, properties inherited from interfaces and decorators come last.",
+              "minItems": 2,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["properties", "decorators", "implements"]
+              }
             },
             "implements": {
               "type": "array",
-              "description": "Classes de type interface à implémenter par cette classe.",
+              "description": "Interfaces to implement for this class.",
               "items": {
                 "type": "string"
               }
             },
             "decorators": {
               "type": "array",
-              "description": "Décorateurs de la classe.",
+              "description": "Class decorators.",
               "items": {
                 "$ref": "#/definitions/decorator"
               }
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la classe.",
+              "description": "Class annotations.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "excludedAnnotations": {
               "type": "array",
-              "description": "Annotations globales ou d'un décorateur à retirer de cette classe.",
+              "description": "Global or decorator annotations to remove from this class.",
               "items": {
                 "type": "string"
               }
             },
             "propertyAnnotations": {
               "type": "array",
-              "description": "Annotations à poser sur toutes les propriétés de la classe.",
+              "description": "Annotations to apply to every class property.",
               "items": {
                 "$ref": "#/definitions/annotation"
               }
             },
             "properties": {
               "type": "array",
-              "description": "Liste des propriétés de la classe.",
+              "description": "List of class properties.",
               "items": {
                 "$ref": "#/definitions/property"
               }
             },
             "unique": {
               "type": "array",
-              "description": "Forme raccourcie de `indexes` pour définir des indexes uniques sur un ensemble de propriétés.",
+              "description": "Short form of `indexes` for defining unique indexes over a set of properties.",
               "items": {
                 "type": "array",
-                "description": "Liste des propriétés constituant l'index unique.",
+                "description": "List of properties making up the unique index.",
                 "items": {
-                  "description": "Nom de la propriété.",
+                  "description": "Property name.",
                   "type": "string"
                 }
               }
             },
             "indexes": {
               "type": "array",
-              "description": "Liste des indexes de la classe. Un index peut être utilisé pour définir une constrainte d'unicité.",
+              "description": "List of class indexes. An index can also define a uniqueness constraint.",
               "items": {
                 "oneOf": [
                   {
                     "type": "array",
-                    "description": "Forme raccourcie : liste des propriétés pour un index non-unique.",
+                    "description": "Short form: list of properties for a non-unique index.",
                     "items": {
                       "type": "string",
-                      "description": "Nom de la propriété."
+                      "description": "Property name."
                     }
                   },
                   {
@@ -1259,15 +963,15 @@
                     "properties": {
                       "properties": {
                         "type": "array",
-                        "description": "Liste des propriétés de la classe incluses dans l'index.",
+                        "description": "List of class properties included in the index.",
                         "items": {
                           "type": "string",
-                          "description": "Nom de la propriété."
+                          "description": "Property name."
                         }
                       },
                       "unique": {
                         "type": "boolean",
-                        "description": "Si true, rend cet index unique et crée une contrainte d'unicité dessus."
+                        "description": "If true, makes this index unique and creates a uniqueness constraint for it."
                       }
                     }
                   }
@@ -1276,7 +980,7 @@
             },
             "values": {
               "type": "object",
-              "description": "Liste des valeurs de la table à insérer à la création de la base de données. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés.",
+              "description": "List of table values to insert when creating the database. It must be an object whose keys are row names (used to identify the key in C#) and whose values are JSON objects containing the property values.",
               "propertyNames": {
                 "pattern": "^[\\p{L}_]"
               },
@@ -1289,60 +993,60 @@
             },
             "customProperties": {
               "type": "object",
-              "description": "Propriétés de classe personnalisées, pour utilisation dans un générateur personnalisé.",
+              "description": "Custom class settings for use in a custom generator.",
               "additionalProperties": {
                 "type": ["string", "boolean", "integer", "number"]
               }
             },
             "mappers": {
               "type": "object",
-              "description": "Définitions de mappers vers et depuis cette classe.",
+              "description": "Mapper definitions to and from this class.",
               "additionalProperties": false,
               "properties": {
                 "from": {
                   "type": "array",
-                  "description": "Mappers vers cette classe.",
+                  "description": "Mappers vers cette class.",
                   "additionalProperties": false,
                   "items": {
                     "type": "object",
-                    "description": "Mapper vers la classe courante",
+                    "description": "Mapper vers la class courante",
                     "required": ["params"],
                     "additionalProperties": false,
                     "properties": {
                       "comment": {
                         "type": "string",
-                        "description": "Commentaire facultatif du mapper."
+                        "description": "Optional mapper comment."
                       },
                       "params": {
                         "type": "array",
-                        "description": "Liste des paramètres du mapper.",
+                        "description": "List of mapper parameters.",
                         "items": {
                           "oneOf": [
                             {
                               "type": "object",
-                              "description": "Paramètre pour le mapper.",
+                              "description": "Parameter for le mapper.",
                               "required": ["class"],
                               "additionalProperties": false,
                               "properties": {
                                 "class": {
                                   "type": "string",
-                                  "description": "Classe depuis laquelle recopier des propriétés."
+                                  "description": "Class from which properties should be copied."
                                 },
                                 "required": {
                                   "type": "boolean",
-                                  "description": "Paramètre obligatoire. 'true' par défaut."
+                                  "description": "Required parameter. Defaults to 'true'."
                                 },
                                 "comment": {
                                   "type": "string",
-                                  "description": "Commentaire facultatif du mapper."
+                                  "description": "Optional mapper comment."
                                 },
                                 "name": {
                                   "type": "string",
-                                  "description": "Nom du paramètre. Utilise le nom de la classe par défaut."
+                                  "description": "Parameter name. Defaults to the class name."
                                 },
                                 "mappings": {
                                   "type": "object",
-                                  "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
+                                  "description": "Field mappings between the current class and the parameter class. Properties must share the same domain to establish a mapping.\n\nMappings between aliases and then between properties with the same name and domain are added automatically unless overridden (explicit mapping to another property or `false` to disable it).",
                                   "additionalProperties": {
                                     "oneOf": [
                                       {
@@ -1358,7 +1062,7 @@
                             },
                             {
                               "type": "object",
-                              "description": "Paramètre pour le mapper",
+                              "description": "Parameter for le mapper",
                               "required": ["property"],
                               "additionalProperties": false,
                               "properties": {
@@ -1367,7 +1071,7 @@
                                 },
                                 "target": {
                                   "type": "string",
-                                  "description": "Propriété cible de la classe courante pour cette propriété. Cette propriété doit avoir le même domaine que la propriété source."
+                                  "description": "Target property of the current class for this source property. The target property must have the same domain as the source property."
                                 }
                               }
                             }
@@ -1379,29 +1083,29 @@
                 },
                 "to": {
                   "type": "array",
-                  "description": "Mappers depuis cette classe.",
+                  "description": "Mappers depuis cette class.",
                   "additionalProperties": false,
                   "items": {
                     "type": "object",
-                    "description": "Définition du mapper.",
+                    "description": "Mapper definition.",
                     "required": ["class"],
                     "additionalProperties": false,
                     "properties": {
                       "class": {
                         "type": "string",
-                        "description": "Classe vers laquelle recopier des propriétés."
+                        "description": "Class to which properties should be copied."
                       },
                       "name": {
                         "type": "string",
-                        "description": "Nom du mapper. Utilise le nom de la classe par défaut préfixé par 'To'."
+                        "description": "Mapper name. Defaults to the class name prefixed with 'To'."
                       },
                       "comment": {
                         "type": "string",
-                        "description": "Commentaire facultatif du mapper."
+                        "description": "Optional mapper comment."
                       },
                       "mappings": {
                         "type": "object",
-                        "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
+                        "description": "Field mappings between the current class and the parameter class. Properties must share the same domain to establish a mapping.\n\nMappings between aliases and then between properties with the same name and domain are added automatically unless overridden (explicit mapping to another property or `false` to disable it).",
                         "additionalProperties": {
                           "oneOf": [
                             {
@@ -1424,98 +1128,44 @@
     },
     {
       "type": "object",
-      "description": "Définition d'un endpoint",
-      "required": ["endpoint"],
+      "description": "Domain converter definition",
+      "required": ["converter"],
       "additionalProperties": false,
       "properties": {
-        "endpoint": {
+        "converter": {
           "type": "object",
-          "description": "Définition d'un endpoint",
-          "required": ["name", "method", "route", "description"],
-          "additionalProperties": false,
+          "required": ["from", "to"],
           "properties": {
-            "tags": {
+            "from": {
               "type": "array",
-              "description": "Tags supplémentaires à ajouter sur cette classe pour la génération.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "name": {
-              "type": "string",
-              "description": "Nom du endpoint. Sera utilisé comme nom de la méthode/fonction associée"
-            },
-            "method": {
-              "type": "string",
-              "description": "Méthode du endpoint.",
-              "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]
-            },
-            "route": {
-              "type": "string",
-              "description": "Route du endpoint. Une propriété d'id dans la route doit être préfixée par son trigramme."
-            },
-            "description": {
-              "type": "string",
-              "description": "Description du endpoint."
-            },
-            "preservePropertyCasing": {
-              "type": "boolean",
-              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
-            },
-            "propertySourceOrder": {
-              "type": "array",
-              "description": "Ordre des paramètres de l'endpoint, par source. Par défaut, les propriétés de décorateurs sont en dernier.",
-              "minItems": 2,
-              "maxItems": 2,
-              "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": ["params", "decorators"]
+                "description": "Source domains for the converter."
               }
             },
-            "returns": {
-              "$ref": "#/definitions/property"
-            },
-            "params": {
+            "to": {
               "type": "array",
-              "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",
               "items": {
-                "$ref": "#/definitions/property"
+                "type": "string",
+                "description": "Target domains for the converter."
               }
-            },
-            "decorators": {
-              "type": "array",
-              "description": "Décorateurs de l'endpoint.",
-              "items": {
-                "$ref": "#/definitions/decorator"
-              }
-            },
-            "annotations": {
-              "type": "array",
-              "description": "Annotations de l'endpoint.",
-              "items": {
-                "$ref": "#/definitions/annotation"
-              }
-            },
-            "excludedAnnotations": {
-              "type": "array",
-              "description": "Annotations globales ou d'un décorateur à retirer de cet endpoint.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "propertyAnnotations": {
-              "type": "array",
-              "description": "Annotations à poser sur toutes les propriétés de l'endpoint'.",
-              "items": {
-                "$ref": "#/definitions/annotation"
-              }
-            },
-            "customProperties": {
-              "type": "object",
-              "description": "Propriétés d'endpoint personnalisées, pour utilisation dans un générateur personnalisé.",
-              "additionalProperties": {
-                "type": ["string", "boolean", "integer", "number"]
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Converter implementation when conversion is not implicit",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Converter implementation. Accepts templates. Use {value} for the input parameter value, and {to.type} or {from.type} for the source or target domain properties"
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports to add to use this converter.",
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -1524,31 +1174,31 @@
     },
     {
       "type": "object",
-      "description": "Description d'un flux de données",
+      "description": "Data flow description",
       "required": ["dataFlow"],
       "additionalProperties": false,
       "properties": {
         "dataFlow": {
           "type": "object",
-          "description": "Description d'un flux de données",
+          "description": "Data flow description",
           "additionalProperties": false,
           "required": ["name", "target", "class", "type"],
           "properties": {
             "name": {
               "type": "string",
-              "description": "Nom du flux de données."
+              "description": "Data flow name."
             },
             "target": {
               "type": "string",
-              "description": "Nom de la connection cible du flux de données."
+              "description": "Name of the target connection for the data flow."
             },
             "class": {
               "type": "string",
-              "description": "Type de classe cible du flux de données"
+              "description": "Target class type for the data flow."
             },
             "type": {
               "type": "string",
-              "description": "Type de flux de données.",
+              "description": "Data flow type.",
               "enum": [
                 "insert",
                 "replace",
@@ -1559,18 +1209,18 @@
             },
             "dependsOn": {
               "type": "array",
-              "description": "Flux de données à exécuter avant celui-ci.",
+              "description": "Data flows to execute before this one.",
               "items": {
                 "type": "string",
-                "description": "Flux de données à exécuter avant celui-ci."
+                "description": "Data flows to execute before this one."
               }
             },
             "hooks": {
               "type": "array",
-              "description": "Hooks à ajouter au flow",
+              "description": "Hooks to add to the flow",
               "items": {
                 "type": "string",
-                "description": "Nom du hook",
+                "description": "Hook name",
                 "enum": [
                   "beforeFlow",
                   "afterSource",
@@ -1582,39 +1232,397 @@
             },
             "activeProperty": {
               "type": "string",
-              "description": "Pour un flux de type 'mergeDisable', nom de la propriété à utiliser pour déterminer le caractère actif de la ligne."
+              "description": "For a 'mergeDisable' flow, name of the property used to determine whether a row is active."
             },
             "sources": {
               "type": "array",
-              "description": "Sources de données pour le flux.",
+              "description": "Data sources for the flow.",
               "items": {
                 "type": "object",
-                "description": "Description d'une source de données.",
+                "description": "Data-source description.",
                 "required": ["class", "mode"],
                 "additionalProperties": false,
                 "properties": {
                   "source": {
                     "type": "string",
-                    "description": "Nom de la connection source."
+                    "description": "Name of the source connection."
                   },
                   "class": {
                     "type": "string",
-                    "description": "Type de classe source.\n\nS'il est différent du type de classe cible et n'est pas la classe cible d'une jointure, alors il doit exister un mapper 'from' de cette classe sur la classe cible.\n\nS'il est utilisé dans une jointure et que ce n'est pas la première classe concernée (qui sera la cible), alors il doit exister un mapper 'to' sur cette classe vers la classe cible de la jointure (première source du flux de données qui définit des 'joinProperties')."
+                    "description": "Source class type.\n\nIf it differs from the target class type and is not the target class of a join, a 'from' mapper must exist from this class to the target class.\n\nWhen used in a join, and it is not the first class (which is the target), a 'to' mapper must exist from this class to the join target class (the first data flow source that defines 'joinProperties')."
                   },
                   "mode": {
                     "type": "string",
-                    "description": "Mode de génération de la source.",
+                    "description": "Source generation mode.",
                     "enum": ["partial", "queryAll"]
                   },
                   "joinProperties": {
                     "type": "array",
-                    "description": "A utiliser si une jointure doit être réalisée entre plusieurs sources. Doit lister les propriétés de la classe sur lesquelles il faut joindre, dans le même ordre sur chaque source.\n\nUne seule jointure peut être définie par source. Les sources sans 'joinProperties' seront concatanées entre-elles et avec le résultat de la jointure."
+                    "description": "Use this when a join must be performed across multiple sources. It lists the class properties to join on, in the same order for every source.\n\nOnly one join can be defined per source. Sources without 'joinProperties' are concatenated with one another and with the join result."
                   },
                   "innerJoin": {
                     "type": "boolean",
-                    "description": "Indique dans une jointure s'il faut filtrer ou non les lignes sans correspondance."
+                    "description": "In a join, indicates whether rows without a match should be filtered out."
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Decorator definition.",
+      "required": ["decorator"],
+      "additionalProperties": false,
+      "properties": {
+        "decorator": {
+          "type": "object",
+          "description": "Decorator.",
+          "required": ["name", "description"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Decorator name."
+            },
+            "description": {
+              "type": "string",
+              "description": "Decorator description."
+            },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Preserves property names as written during generation instead of converting them to the target language format."
+            },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Decorator property ordering by source. By default, properties from other decorators come last.",
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["properties", "decorators"]
+              }
+            },
+            "target": {
+              "type": "string",
+              "description": "When provided, limits this decorator to classes or endpoints.",
+              "enum": ["class", "endpoint"]
+            },
+            "decorators": {
+              "type": "array",
+              "description": "Decorator decorators.",
+              "items": {
+                "$ref": "#/definitions/decorator"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Decorator annotations.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Global or decorator annotations to remove from this decorator.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "propertyAnnotations": {
+              "type": "array",
+              "description": "Annotations to apply to every decorator property.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "properties": {
+              "type": "array",
+              "description": "List of decorator properties.",
+              "items": {
+                "$ref": "#/definitions/property"
+              }
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Parameter definitions available to implementation templates.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Decorator implementation.",
+            "additionalProperties": false,
+            "properties": {
+              "extends": {
+                "type": "string",
+                "description": "Non-TopModel class that a class implementing this decorator must extend."
+              },
+              "implements": {
+                "type": "array",
+                "description": "Non-TopModel interfaces that a class implementing this decorator must implement.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports to add to use this decorator.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Domain definition.",
+      "required": ["domain"],
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "type": "object",
+          "description": "Domain.",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Domain name (or code)."
+            },
+            "label": {
+              "type": "string",
+              "description": "Domain label."
+            },
+            "length": {
+              "type": "number",
+              "description": "Field length in the domain. For a decimal type, this is the precision."
+            },
+            "scale": {
+              "type": "number",
+              "description": "For a decimal type, number of digits after the decimal point."
+            },
+            "autoGeneratedValue": {
+              "description": "Specifies whether a property's value in this domain is auto-generated.",
+              "oneOf": [
+                {
+                  "type": "boolean",
+                  "description": "If true for a primary key, an identity will be used with `start: 1` and `increment: 1`."
+                },
+                {
+                  "type": "object",
+                  "description": "Configures the sequence or identity column used for a primary key.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "sequenceName": {
+                      "type": "string",
+                      "description": "When provided, a sequence with this name is used for primary keys. Accepts templates. Otherwise, an identity column is used."
+                    },
+                    "start": {
+                      "type": "integer",
+                      "description": "Starting value of the sequence or identity column. Default: 1."
+                    },
+                    "increment": {
+                      "type": "integer",
+                      "description": "Increment of the sequence or identity column. Default: 1."
+                    }
+                  }
+                }
+              ]
+            },
+            "paramLocation": {
+              "type": "string",
+              "description": "Default location for an endpoint parameter using this domain.",
+              "enum": ["route", "query", "form-data", "json-body"]
+            },
+            "collection": {
+              "type": "boolean",
+              "description": "Defines this as a collection domain so mappings can be defined between collection elements."
+            },
+            "defaultValue": {
+              "type": "string",
+              "description": "Default value for properties in this domain. It can be overridden or removed locally on the property."
+            },
+            "asDomains": {
+              "type": "object",
+              "description": "Domains to use when transforming a field domain in an alias or multiple association (using `as`).",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "mediaType": {
+              "type": "string",
+              "description": "Media type (used when returned by an endpoint)."
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Parameter definitions available to implementation templates.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Domain annotations.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Global annotations to remove from this domain.",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Domain implementation in a language",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Domain type. May contain variables"
+              },
+              "genericType": {
+                "type": "string",
+                "description": "Generic type for the domain. It must contain the '{T}' variable (plus any other variables) to reference the property's original type. For a composition, it is `composition.name`; for a PK or UK of an enum class, it is the enum representation in the target language; and for an alias or association transformation (using `as` or a multiple association), it is the resolved type of the original property. If omitted, the default for a composition or enum is `{T}` (`type` is used for transformations)."
+              },
+              "collector": {
+                "type": "string",
+                "description": "For a collection domain, the collector used to materialize the target collection. Default: 'to{genericType}' (without the generic portion)."
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports required for the type to work. May contain variables",
+                "items": {
+                  "type": "string",
+                  "description": "Import required for the type to work. May contain variables"
+                }
+              },
+              "values": {
+                "type": "object",
+                "description": "Templates used for generation when a default value is provided for a property in this domain",
+                "additionalProperties": false,
+                "properties": {
+                  "template": {
+                    "$ref": "#/definitions/valueTemplate"
+                  },
+                  "overrides": {
+                    "type": "object",
+                    "description": "Overrides for specific values.",
+                    "additionalProperties": {
+                      "$ref": "#/definitions/valueTemplate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Endpoint definition",
+      "required": ["endpoint"],
+      "additionalProperties": false,
+      "properties": {
+        "endpoint": {
+          "type": "object",
+          "description": "Endpoint definition",
+          "required": ["name", "method", "route", "description"],
+          "additionalProperties": false,
+          "properties": {
+            "tags": {
+              "type": "array",
+              "description": "Additional tags to add to this class for generation.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": {
+              "type": "string",
+              "description": "Endpoint name. It will be used as the associated method/function name."
+            },
+            "method": {
+              "type": "string",
+              "description": "Endpoint method.",
+              "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+            },
+            "route": {
+              "type": "string",
+              "description": "Endpoint route. An ID property in the route must be prefixed with its trigram."
+            },
+            "description": {
+              "type": "string",
+              "description": "Endpoint description."
+            },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Preserves property names as written during generation instead of converting them to the target language format."
+            },
+            "propertySourceOrder": {
+              "type": "array",
+              "description": "Endpoint parameter ordering by source. By default, properties from decorators come last.",
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["params", "decorators"]
+              }
+            },
+            "params": {
+              "type": "array",
+              "description": "Endpoint parameters. A parameter is automatically classified as 'Route', 'Query', or 'Body' according to its type and whether it appears in the route.",
+              "items": {
+                "$ref": "#/definitions/property"
+              }
+            },
+            "returns": {
+              "$ref": "#/definitions/property"
+            },
+            "decorators": {
+              "type": "array",
+              "description": "Endpoint decorators.",
+              "items": {
+                "$ref": "#/definitions/decorator"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Endpoint annotations.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "excludedAnnotations": {
+              "type": "array",
+              "description": "Global or decorator annotations to remove from this endpoint.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "propertyAnnotations": {
+              "type": "array",
+              "description": "Annotations to apply to every endpoint property.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Custom endpoint settings for use in a custom generator.",
+              "additionalProperties": {
+                "type": ["string", "boolean", "integer", "number"]
               }
             }
           }
