@@ -398,8 +398,8 @@ domain:
     )
     {
         var uses = firstFile.Uses.Except(uselessImports);
-        var start = firstFile.Uses[0].ToRange()!.Start;
-        var end = firstFile.Uses[^1].ToRange()!.End;
+        var start = firstFile.Uses[0].ToRange().Start;
+        var end = firstFile.Uses[^1].ToRange().End;
         if (!uses.Any())
         {
             var fileText = modelFileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath()).ToList();
@@ -435,9 +435,7 @@ domain:
                         {
                             NewText = string.Join(
                                 "\n  - ",
-                                uses.DistinctBy(u => u.ReferenceName)
-                                    .OrderBy(u => u.ReferenceName)
-                                    .Select(u => u.ReferenceName)
+                                uses.DistinctBy(u => u.Value).OrderBy(u => u.Value).Select(u => u.Value)
                             ),
                             Range = new Range(start, end),
                         },
@@ -454,7 +452,7 @@ domain:
     )
     {
         var useIndex =
-            modelFile.Uses.Count != 0 ? modelFile.Uses[^1].ToRange()!.Start.Line + 1
+            modelFile.Uses.Count != 0 ? modelFile.Uses[^1].ToRange().Start.Line + 1
             : fileText[0].StartsWith('-') ? 1
             : 0;
 

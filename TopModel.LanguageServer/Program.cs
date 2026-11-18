@@ -6,6 +6,7 @@ using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.LanguageServer;
 using TopModel.LanguageServer.Handlers;
+using TopModel.LanguageServer.Handlers.Completion;
 using TopModel.Utils.Cli;
 
 IList<string> fixedArgs = [.. args];

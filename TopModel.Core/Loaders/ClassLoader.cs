@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Declaration declaration)
     {
-        var classe = new Class(reference) { ModelFile = modelFile, Namespace = modelFile.Namespace };
+        var classe = new Class(declaration) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Classes.Add(classe);
 
         parser.ConsumeMapping(prop =>
@@ -233,7 +233,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "values":
                     parser.ConsumeMapping(prop =>
                     {
-                        var name = new DeclarationReference(prop);
+                        var name = new Declaration(prop);
                         var values = new Dictionary<PropertyReference, string>();
 
                         classe.ValueReferences.Add(name, values);
@@ -317,7 +317,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
 
                                                         param.Name ??= new LocatedString(classScalar)
                                                         {
-                                                            Value = param.ClassReference.ReferenceName.ToCamelCase(
+                                                            Value = param.ClassReference.Value.ToCamelCase(
                                                                 strictIfUppercase: true
                                                             ),
                                                         };
@@ -397,7 +397,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                         mapper.Name ??= new LocatedString(classScalar)
                                         {
                                             Value =
-                                                $"To{mapper.ClassReference.ReferenceName.ToPascalCase(strictIfUppercase: true)}",
+                                                $"To{mapper.ClassReference.Value.ToPascalCase(strictIfUppercase: true)}",
                                         };
                                     });
                                 });

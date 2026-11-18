@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Declaration declaration)
     {
-        var decorator = new Decorator(reference) { ModelFile = modelFile, Namespace = modelFile.Namespace };
+        var decorator = new Decorator(declaration) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Decorators.Add(decorator);
 
         parser.ConsumeMapping(prop =>

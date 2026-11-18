@@ -49,10 +49,10 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
         {
             foreach (var reference in files.First().File.Uses)
             {
-                if (files.All(f => f.Store.Files.Any(f => f.Name == reference.ReferenceName)))
+                if (files.All(f => f.Store.Files.Any(f => f.Name == reference.Value)))
                 {
                     builder.Push(
-                        reference.ToRange()!,
+                        reference.ToRange(),
                         SemanticTokenType.Parameter,
                         Array.Empty<SemanticTokenModifier>()
                     );
@@ -73,12 +73,12 @@ public class SemanticTokensHandler(LSWorkerStore workerStore) : SemanticTokensHa
                         SemanticTokenType.Class,
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
-                    Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,
+                    Reference r when r.Value == "false" => SemanticTokenType.Keyword,
                     ParameterReference => SemanticTokenType.Parameter,
                     _ => SemanticTokenType.Function,
                 };
 
-                builder.Push(reference.ToRange()!, type, Array.Empty<SemanticTokenModifier>());
+                builder.Push(reference.ToRange(), type, Array.Empty<SemanticTokenModifier>());
             }
         }
     }

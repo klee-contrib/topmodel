@@ -3,7 +3,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class AssociationProperty(DeclarationReference declarationReference) : IProperty
+internal class AssociationProperty(Declaration declaration) : IProperty
 {
     private string? _defaultValue;
     private ParamLocation? _paramLocation;
@@ -148,7 +148,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
     public IEnumerable<(Reference Reference, object Target)> References =>
         [(Reference, Association), (PropertyReference!, Property)];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     internal string RawSqlName
     {
@@ -170,7 +170,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var ap = new AssociationProperty(DeclarationReference)
+        var ap = new AssociationProperty(Declaration)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -204,7 +204,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
         if (WithReverse != null)
         {
-            ap.WithReverse = new ReverseAssociationDefinition(WithReverse.DeclarationReference)
+            ap.WithReverse = new ReverseAssociationDefinition(WithReverse.Declaration)
             {
                 AnnotationReferences = WithReverse.AnnotationReferences,
                 ClassName = WithReverse.ClassName,
@@ -221,7 +221,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var ap = new AssociationProperty(DeclarationReference)
+        var ap = new AssociationProperty(Declaration)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,

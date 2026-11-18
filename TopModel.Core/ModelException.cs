@@ -20,10 +20,10 @@ public class ModelException : LegitException
     /// </summary>
     /// <param name="objet">Objet de modèle concerné.</param>
     /// <param name="message">Message.</param>
-    /// <param name="reference">Référence éventuelle vers l'erreur (si pas liée à l'objet)</param>
-    public ModelException(object objet, string message, Reference? reference = null)
+    /// <param name="location">Localisation éventuelle vers l'erreur (si pas liée à l'objet)</param>
+    public ModelException(object objet, string message, Location? location = null)
     {
-        ModelError = new ModelError(ErrorType.TMD0000, objet, message, reference);
+        ModelError = new ModelError(ErrorType.TMD0000, objet, message, location);
     }
 
     public override string Message => ModelError != null ? ModelError.ToString() : base.Message;

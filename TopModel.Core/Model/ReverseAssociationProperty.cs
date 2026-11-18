@@ -2,8 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-internal class ReverseAssociationProperty(DeclarationReference declarationReference)
-    : AssociationProperty(declarationReference)
+internal class ReverseAssociationProperty(Declaration declaration) : AssociationProperty(declaration)
 {
 #pragma warning disable CS8765
     public override required AssociationProperty ReverseProperty { get; set; }
@@ -27,8 +26,7 @@ internal class ReverseAssociationProperty(DeclarationReference declarationRefere
         ReverseProperty.WithReverse?.Comment
         ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
 
-    public override ReverseAssociationDefinition WithReverse =>
-        new(ReverseProperty.DeclarationReference) { Property = this };
+    public override ReverseAssociationDefinition WithReverse => new(ReverseProperty.Declaration) { Property = this };
 
     public override IList<AnnotationInstance> Annotations => ReverseProperty.WithReverse?.Annotations ?? [];
 

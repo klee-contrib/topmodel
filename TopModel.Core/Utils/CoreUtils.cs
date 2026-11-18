@@ -24,7 +24,7 @@ public static class CoreUtils
                         item,
                         $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
                         (item as ModelFile)?.Uses.FirstOrDefault(u =>
-                            u.ReferenceName == (visited.Last().Key as ModelFile)?.Name
+                            u.Value == (visited.Last().Key as ModelFile)?.Name
                         )
                     );
                 }

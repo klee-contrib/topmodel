@@ -1,4 +1,4 @@
-﻿using TopModel.LanguageServer.Handlers;
+﻿using TopModel.LanguageServer.Handlers.Completion;
 
 namespace TopModel.LanguageServer.Tests;
 

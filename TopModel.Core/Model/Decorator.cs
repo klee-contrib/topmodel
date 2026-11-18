@@ -5,10 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Decorator(DeclarationReference declarationReference)
-    : IParameterContainer,
-        IPropertyContainer,
-        IVariableContainer
+public class Decorator(Declaration declaration) : IParameterContainer, IPropertyContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -74,7 +71,7 @@ public class Decorator(DeclarationReference declarationReference)
             .Concat(
                 PropertyAnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms))
             )
-            .Where(pr => pr.ReferenceName.IsValidTransform);
+            .Where(pr => pr.Value.IsValidTransform);
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 
@@ -89,7 +86,7 @@ public class Decorator(DeclarationReference declarationReference)
 
     internal IList<IProperty> OwnProperties { get; } = [];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     public override string ToString()
     {

@@ -23,11 +23,11 @@ internal class MapperResolver(
         {
             foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
             {
-                if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
+                if (!referencedClasses.TryGetValue(mappings.ClassReference.Value, out var mappedClass))
                 {
                     yield return Error(
                         ErrorType.TMD0002,
-                        [mappings.ClassReference.ReferenceName],
+                        [mappings.ClassReference.Value],
                         classe,
                         mappings.ClassReference
                     );
@@ -51,33 +51,26 @@ internal class MapperResolver(
 
                 foreach (var mapping in mappings.MappingReferences)
                 {
-                    var currentProperty = classe.ExtendedProperties.FirstOrDefault(p =>
-                        p.Name == mapping.Key.ReferenceName
-                    );
+                    var currentProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Key.Value);
                     if (currentProperty == null)
                     {
-                        yield return Error(
-                            ErrorType.TMD0004,
-                            [mapping.Key.ReferenceName, classe.Name],
-                            classe,
-                            mapping.Key
-                        );
+                        yield return Error(ErrorType.TMD0004, [mapping.Key.Value, classe.Name], classe, mapping.Key);
                     }
 
-                    if (mapping.Value.ReferenceName == "false")
+                    if (mapping.Value.Value == "false")
                     {
                         continue;
                     }
 
                     var mappedProperty = mappings.Class.ExtendedProperties.FirstOrDefault(p =>
-                        p.Name == mapping.Value.ReferenceName
+                        p.Name == mapping.Value.Value
                     );
 
                     if (mappedProperty == null)
                     {
                         yield return Error(
                             ErrorType.TMD0004,
-                            [mapping.Value.ReferenceName, mappings.Class.Name],
+                            [mapping.Value.Value, mappings.Class.Name],
                             classe,
                             mapping.Value
                         );
@@ -109,13 +102,13 @@ internal class MapperResolver(
                     if (mapping.TargetPropertyReference != null)
                     {
                         var currentProperty = classe.ExtendedProperties.FirstOrDefault(p =>
-                            p.Name == mapping.TargetPropertyReference.ReferenceName
+                            p.Name == mapping.TargetPropertyReference.Value
                         );
                         if (currentProperty == null)
                         {
                             yield return Error(
                                 ErrorType.TMD0004,
-                                [mapping.TargetPropertyReference.ReferenceName, classe.Name],
+                                [mapping.TargetPropertyReference.Value, classe.Name],
                                 classe,
                                 mapping.TargetPropertyReference
                             );
@@ -136,7 +129,7 @@ internal class MapperResolver(
                                 ErrorType.TMD0004,
                                 [mapping.Property.Name, classe.Name],
                                 classe,
-                                mapping.Property.DeclarationReference
+                                mapping.Property.Declaration
                             );
                         }
                         else
@@ -152,7 +145,7 @@ internal class MapperResolver(
                                 classe,
                                 mapping.Property,
                                 mapping.TargetProperty,
-                                mapping.Property.DeclarationReference
+                                mapping.Property.Declaration
                             )
                         )
                         {
@@ -166,30 +159,30 @@ internal class MapperResolver(
             {
                 foreach (var param in mapper.Params.GetDuplicates(p => p.Name))
                 {
-                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.DeclarationReference);
+                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.Declaration);
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p =>
                     p switch
                     {
                         ClassMappings pc => pc
-                            .MappingReferences.Where(e => e.Value.ReferenceName != "false")
-                            .Select(e => (e.Key.ReferenceName, Reference: e.Key as Reference)),
+                            .MappingReferences.Where(e => e.Value.Value != "false")
+                            .Select(e => (e.Key.Value, Location: e.Key as Location)),
                         PropertyMapping pm => pm.TargetPropertyReference != null
-                            ? [(pm.TargetPropertyReference.ReferenceName, pm.TargetPropertyReference)]
-                            : [(pm.Property.Name, pm.Property.DeclarationReference!)],
+                            ? [(pm.TargetPropertyReference.Value, pm.TargetPropertyReference)]
+                            : [(pm.Property.Name, pm.Property.Declaration!)],
                     }
                 );
 
                 var hasDoublon = false;
-                foreach (var mapping in mappedProperties.GetDuplicates(p => p.ReferenceName))
+                foreach (var mapping in mappedProperties.GetDuplicates(p => p.Value))
                 {
                     hasDoublon = true;
                     yield return new ModelError(
                         ErrorType.TMD8002,
                         classe,
-                        $"La propriété '{mapping.ReferenceName}' est déjà initialisée dans ce mapper.",
-                        mapping.Reference
+                        $"La propriété '{mapping.Value}' est déjà initialisée dans ce mapper.",
+                        mapping.Location
                     );
                 }
 
@@ -213,7 +206,7 @@ internal class MapperResolver(
                                 (!property.Readonly || classe.Type != ClassType.Interface)
                                 && !explicitMappings.Exists(m => m.Key == property)
                                 && !param.MappingReferences.Any(m =>
-                                    m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
+                                    m.Key.Value == property.Name && m.Value.Value == "false"
                                 )
                             )
                         )
@@ -249,7 +242,7 @@ internal class MapperResolver(
                                 (!property.Readonly || classe.Type != ClassType.Interface)
                                 && !explicitAndAliasMappings.Exists(m => m.Key == property)
                                 && !param.MappingReferences.Any(m =>
-                                    m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
+                                    m.Key.Value == property.Name && m.Value.Value == "false"
                                 )
                             )
                         )
@@ -286,7 +279,7 @@ internal class MapperResolver(
                                 ErrorType.TMD8003,
                                 classe,
                                 $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.",
-                                mapper.DeclarationReference
+                                mapper.Declaration
                             );
                         }
 
@@ -303,7 +296,7 @@ internal class MapperResolver(
                                 ErrorType.TMD8012,
                                 classe,
                                 $"Le paramètre '{param.Name}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.",
-                                param.DeclarationReference
+                                param.Declaration
                             );
                         }
                     }
@@ -312,7 +305,7 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.ToMappers.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.DeclarationReference);
+                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.Declaration);
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
@@ -323,9 +316,7 @@ internal class MapperResolver(
                 foreach (
                     var currentProperty in classe.ExtendedProperties.Where(property =>
                         !explicitMappings.ContainsKey(property)
-                        && !mapper.MappingReferences.Any(m =>
-                            m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
-                        )
+                        && !mapper.MappingReferences.Any(m => m.Key.Value == property.Name && m.Value.Value == "false")
                     )
                 )
                 {
@@ -348,9 +339,7 @@ internal class MapperResolver(
                 foreach (
                     var currentProperty in classe.ExtendedProperties.Where(property =>
                         !explicitAndAliasMappings.ContainsKey(property)
-                        && !mapper.MappingReferences.Any(m =>
-                            m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false"
-                        )
+                        && !mapper.MappingReferences.Any(m => m.Key.Value == property.Name && m.Value.Value == "false")
                     )
                 )
                 {
@@ -373,7 +362,7 @@ internal class MapperResolver(
                         ErrorType.TMD8003,
                         classe,
                         $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.",
-                        mapper.DeclarationReference
+                        mapper.Declaration
                     );
                 }
             }
@@ -390,7 +379,7 @@ internal class MapperResolver(
                         ErrorType.TMD8009,
                         classe,
                         "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.DeclarationReference
+                        mapper.Declaration
                     );
                 }
             }
@@ -403,7 +392,7 @@ internal class MapperResolver(
                         ErrorType.TMD8009,
                         classe,
                         "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.DeclarationReference
+                        mapper.Declaration
                     );
                 }
             }
@@ -517,7 +506,7 @@ internal class MapperResolver(
         Class classe,
         IProperty sourceProperty,
         IProperty targetProperty,
-        Reference? propRef
+        Location? propLocation
     )
     {
         if (targetProperty.Class.Type == ClassType.Interface && targetProperty.Readonly)
@@ -526,7 +515,7 @@ internal class MapperResolver(
                 ErrorType.TMD8008,
                 classe,
                 $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est une interface.",
-                propRef
+                propLocation
             );
         }
 
@@ -536,7 +525,7 @@ internal class MapperResolver(
                 ErrorType.TMD8001,
                 classe,
                 $"La propriété '{sourceProperty.Name}' ne peut pas être mappée à '{targetProperty.Name}'.",
-                propRef
+                propLocation
             );
         }
     }

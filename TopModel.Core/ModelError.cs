@@ -9,21 +9,21 @@ namespace TopModel.Core;
 
 public class ModelError
 {
+    private readonly Location? _location;
     private readonly string _message;
     private readonly object _objet;
-    private readonly Reference? _reference;
 
     internal ModelError(
         ErrorType errorType,
         object objet,
         string message,
-        Reference? reference = null,
+        Location? location = null,
         bool isError = true
     )
     {
+        _location = location;
         _message = message;
         _objet = objet;
-        _reference = reference;
 
         ErrorType = errorType;
         IsError = isError;
@@ -34,10 +34,10 @@ public class ModelError
         ErrorType errorType,
         string[] messageArgs,
         object objet,
-        Reference? reference = null,
+        Location? location = null,
         bool isError = true
     )
-        : this(errorType, objet, localizer.GetString(Enum.GetName(errorType)!, messageArgs), reference, isError) { }
+        : this(errorType, objet, localizer.GetString(Enum.GetName(errorType)!, messageArgs), location, isError) { }
 
     public bool IsError { get; }
 
@@ -61,16 +61,16 @@ public class ModelError
             _ => null,
         };
 
-    public Reference? Reference => _reference ?? _objet.DeclarationReference;
+    public Location? Location => _location ?? _objet.Declaration;
 
     public IProperty? Property => _objet as IProperty;
 
-    public string Message => string.Format(_message, _reference?.ReferenceName);
+    public string Message => string.Format(_message, _location?.Value);
 
     public bool IsIgnored(ModelConfig config)
     {
         var isIgnoredComment =
-            File.Comments.TryGetValue((int)(Reference?.Start.Line ?? 1), out var comment)
+            File.Comments.TryGetValue((int)(Location?.Start.Line ?? 1), out var comment)
             && (
                 comment.Split(" ").FirstOrDefault()?.Equals("ignore", StringComparison.InvariantCultureIgnoreCase)
                 ?? false
@@ -87,7 +87,7 @@ public class ModelError
         var sb = new StringBuilder();
 
         sb.Append(File.Path);
-        sb.Append(Reference?.Position ?? string.Empty);
+        sb.Append(Location?.Position ?? string.Empty);
 
         sb.Append(" - {");
         sb.Append(ErrorType);

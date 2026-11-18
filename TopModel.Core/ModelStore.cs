@@ -146,11 +146,11 @@ public class ModelStore(
     {
         var referencedFiles = modelFile.References.Values.Select(r => r.ModelFile.Name).ToHashSet();
         return modelFile.Uses.Where(use =>
-            use.ReferenceName == modelFile.Name
-            || !referencedFiles.Contains(use.ReferenceName)
-                && _modelFiles.ContainsKey(use.ReferenceName)
+            use.Value == modelFile.Name
+            || !referencedFiles.Contains(use.Value)
+                && _modelFiles.ContainsKey(use.Value)
                 && !(
-                    _modelFiles.TryGetValue(use.ReferenceName, out var mf)
+                    _modelFiles.TryGetValue(use.Value, out var mf)
                     && mf.Properties.OfType<AssociationProperty>()
                         .Any(ap => ap.Association?.ModelFile == modelFile && ap.ReverseProperty != null)
                 )
@@ -308,8 +308,8 @@ public class ModelStore(
                 if (!pendingFileChanges.Values.Any(pu => pu.HasDomains))
                 {
                     var usesMap = _modelFiles
-                        .Where(f => IsValid(f.Key) && f.Value.Uses.All(d => IsValid(d.ReferenceName)))
-                        .SelectMany(f => f.Value.Uses.Select(u => (Use: u.ReferenceName, Source: f.Key)))
+                        .Where(f => IsValid(f.Key) && f.Value.Uses.All(d => IsValid(d.Value)))
+                        .SelectMany(f => f.Value.Uses.Select(u => (Use: u.Value, Source: f.Key)))
                         .GroupBy(f => f.Use)
                         .ToDictionary(f => f.Key, f => f.Select(g => g.Source).Distinct());
 
@@ -471,7 +471,7 @@ public class ModelStore(
         return
         [
             .. modelFile
-                .Uses.Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
+                .Uses.Select(dep => _modelFiles.TryGetValue(dep.Value, out var depFile) ? depFile : null!)
                 .Where(dep => dep != null),
             .. Files.Where(f =>
                 f != modelFile
@@ -553,7 +553,7 @@ public class ModelStore(
                 ErrorType.TMD3004,
                 classe.ModelFile,
                 $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}",
-                classe.Trigram?.DeclarationReference,
+                classe.Trigram?.Declaration,
                 isError: false
             );
         }
@@ -583,7 +583,7 @@ public class ModelStore(
                     ErrorType.TMD0001,
                     [endpoint.Name],
                     endpoint,
-                    endpoint.Name.DeclarationReference
+                    endpoint.Name.Declaration
                 );
             }
 
@@ -603,7 +603,7 @@ public class ModelStore(
                             ErrorType.TMD7001,
                             file,
                             $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.",
-                            file.Options.Endpoints.Prefix?.DeclarationReference
+                            file.Options.Endpoints.Prefix?.Declaration
                         );
                     }
                     else
@@ -626,7 +626,7 @@ public class ModelStore(
                     ErrorType.TMD7002,
                     file,
                     $"Le fichier définit un préfixe d'endpoint alors qu'il ne contient pas de déclaration d'endpoint.",
-                    file.Options.Endpoints.Prefix?.DeclarationReference,
+                    file.Options.Endpoints.Prefix?.Declaration,
                     isError: false
                 );
             }
@@ -721,29 +721,29 @@ public class ModelStore(
     {
         foreach (var modelFile in modelFiles)
         {
-            var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.ReferenceName));
+            var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.Value));
             foreach (var use in nonExistingFiles)
             {
                 yield return new ModelError(
                     ErrorType.TMD1001,
                     modelFile,
-                    $"Le fichier référencé '{use.ReferenceName}' est introuvable.",
+                    $"Le fichier référencé '{use.Value}' est introuvable.",
                     use
                 );
             }
 
             var duplicatedUses = modelFile
-                .Uses.GroupBy(u => u.ReferenceName)
+                .Uses.GroupBy(u => u.Value)
                 .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
                 .Where(r => r.Count > 1)
                 .Select(u => u.ReferenceName);
 
-            foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
+            foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.Value)).Skip(1))
             {
                 yield return new ModelError(
                     ErrorType.TMD1002,
                     modelFile,
-                    $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois",
+                    $"L'import '{use.Value}' ne doit être spécifié qu'une seule fois",
                     use
                 );
             }
@@ -761,7 +761,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Declaration.Start.Line
                     )
                     .First()
             );
@@ -772,7 +772,7 @@ public class ModelStore(
                 ErrorType.TMD3001,
                 classe,
                 $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.",
-                classe.Name.DeclarationReference
+                classe.Name.Declaration
             );
         }
 
@@ -790,7 +790,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Declaration.Start.Line
                     )
                     .First()
             );
@@ -821,7 +821,7 @@ public class ModelStore(
             .Where(g => g.Count() > 1)
             .Select(g =>
                 g.OrderByDescending(c =>
-                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.DeclarationReference.Start.Line
+                        (modelFiles.Contains(c.ModelFile) ? 1_000_000 : 0) + c.Name.Declaration.Start.Line
                     )
                     .First()
             );
@@ -832,7 +832,7 @@ public class ModelStore(
                 ErrorType.TMD4001,
                 dataFlow,
                 $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.",
-                dataFlow.Name.DeclarationReference
+                dataFlow.Name.Declaration
             );
         }
 
@@ -953,7 +953,7 @@ public class ModelStore(
                 yield return new ModelError(
                     ErrorType.TMD1003,
                     modelFile,
-                    $"L'import '{use.ReferenceName}' n'est pas utilisé.",
+                    $"L'import '{use.Value}' n'est pas utilisé.",
                     use,
                     isError: false
                 );

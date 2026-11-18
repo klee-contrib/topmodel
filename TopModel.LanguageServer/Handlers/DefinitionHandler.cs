@@ -4,6 +4,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
+using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer.Handlers;
 
@@ -25,7 +26,7 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
         var references = files
             .Select(f => f.File.GetObjetAtPosition(request.Position))
-            .Select(r => (r.Reference, r.Objet, SelectionRange: r.Objet?.DeclarationReference?.ToRange()!))
+            .Select(r => (r.Reference, r.Objet, SelectionRange: r.Objet?.Declaration?.ToRange()!))
             .Where(r => r.Reference != null && r.Objet != null && r.SelectionRange != null)
             .DistinctBy(r => r.Reference)
             .Select(r => new LocationLink
@@ -67,19 +68,14 @@ public class DefinitionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
 
         if (matchedUse != null)
         {
-            var usedFile = files.First().Store.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+            var usedFile = files.First().Store.Files.SingleOrDefault(f => f.Name == matchedUse.Value);
             if (usedFile != null)
             {
                 return new(
                     new LocationLink
                     {
-                        TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
-                        TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                            0,
-                            0,
-                            0,
-                            0
-                        ),
+                        TargetRange = new Range(0, 0, 5, 200),
+                        TargetSelectionRange = new Range(0, 0, 0, 0),
                         TargetUri = facade.GetFilePath(usedFile),
                     }
                 );

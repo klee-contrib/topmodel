@@ -20,11 +20,11 @@ internal class DataFlowResolver(
     {
         foreach (var dataFlow in modelFiles.SelectMany(mf => mf.DataFlows))
         {
-            if (!referencedClasses.TryGetValue(dataFlow.ClassReference.ReferenceName, out var classe))
+            if (!referencedClasses.TryGetValue(dataFlow.ClassReference.Value, out var classe))
             {
                 yield return Error(
                     ErrorType.TMD0002,
-                    [dataFlow.ClassReference.ReferenceName],
+                    [dataFlow.ClassReference.Value],
                     dataFlow,
                     dataFlow.ClassReference
                 );
@@ -36,13 +36,13 @@ internal class DataFlowResolver(
             if (dataFlow.ActivePropertyReference != null)
             {
                 dataFlow.ActiveProperty = classe.ExtendedProperties.FirstOrDefault(fp =>
-                    fp.Name == dataFlow.ActivePropertyReference.ReferenceName
+                    fp.Name == dataFlow.ActivePropertyReference.Value
                 );
                 if (dataFlow.ActiveProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [dataFlow.ActivePropertyReference.ReferenceName, classe.Name],
+                        [dataFlow.ActivePropertyReference.Value, classe.Name],
                         dataFlow,
                         dataFlow.ActivePropertyReference
                     );
@@ -53,7 +53,7 @@ internal class DataFlowResolver(
 
             foreach (var dependsOnReference in dataFlow.DependsOnReference)
             {
-                if (!referencedDataFlows.TryGetValue(dependsOnReference.ReferenceName, out var referencedDataFlow))
+                if (!referencedDataFlows.TryGetValue(dependsOnReference.Value, out var referencedDataFlow))
                 {
                     yield return new ModelError(
                         ErrorType.TMD4002,
@@ -69,11 +69,11 @@ internal class DataFlowResolver(
 
             foreach (var source in dataFlow.Sources)
             {
-                if (!referencedClasses.TryGetValue(source.ClassReference.ReferenceName, out var sourceClass))
+                if (!referencedClasses.TryGetValue(source.ClassReference.Value, out var sourceClass))
                 {
                     yield return Error(
                         ErrorType.TMD0002,
-                        [source.ClassReference.ReferenceName],
+                        [source.ClassReference.Value],
                         dataFlow,
                         source.ClassReference
                     );
@@ -86,13 +86,13 @@ internal class DataFlowResolver(
                 foreach (var joinPropertyReference in source.JoinPropertyReferences)
                 {
                     var joinProperty = sourceClass.ExtendedProperties.FirstOrDefault(fp =>
-                        fp.Name == joinPropertyReference.ReferenceName
+                        fp.Name == joinPropertyReference.Value
                     );
                     if (joinProperty == null)
                     {
                         yield return Error(
                             ErrorType.TMD0004,
-                            [joinPropertyReference.ReferenceName, classe.Name],
+                            [joinPropertyReference.Value, classe.Name],
                             dataFlow,
                             joinPropertyReference
                         );

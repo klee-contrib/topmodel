@@ -6,6 +6,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
+using Location = OmniSharp.Extensions.LanguageServer.Protocol.Models.Location;
 
 namespace TopModel.LanguageServer.Handlers;
 
@@ -28,9 +29,9 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                 .SelectMany(f =>
                     f.File.Classes.Select(c =>
                         (
-                            Declaration: c.DeclarationReference!,
+                            Declaration: c.Declaration!,
                             References: f.Store.GetClassReferences(c)
-                                .Select(cr => (Reference: cr.Reference as Reference, File: cr.File))
+                                .Select(cr => (Reference: cr.Reference as Reference, cr.File))
                         )
                     )
                 )
@@ -38,7 +39,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Annotations.Select(c =>
                             (
-                                Declaration: c.DeclarationReference!,
+                                Declaration: c.Declaration!,
                                 References: f.Store.GetAnnotationReferences(c)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -49,7 +50,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Domains.Select(d =>
                             (
-                                Declaration: d.DeclarationReference!,
+                                Declaration: d.Declaration!,
                                 References: f.Store.GetDomainReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -60,7 +61,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Decorators.Select(d =>
                             (
-                                Declaration: d.DeclarationReference!,
+                                Declaration: d.Declaration!,
                                 References: f.Store.GetDecoratorReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -71,7 +72,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.DataFlows.Select(d =>
                             (
-                                Declaration: d.DeclarationReference!,
+                                Declaration: d.Declaration!,
                                 References: f.Store.GetDataFlowReferences(d)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -82,7 +83,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                     files.SelectMany(f =>
                         f.File.Endpoints.Select(e =>
                             (
-                                Declaration: e.DeclarationReference!,
+                                Declaration: e.Declaration!,
                                 References: f.Store.GetEndpointReferences(e)
                                     .Select(r => (Reference: r.Reference as Reference, r.File))
                             )
@@ -94,12 +95,12 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                 .GroupBy(r => r.Declaration)
                 .Select(group =>
                 {
-                    var range = group.Key.ToRange()!;
+                    var range = group.Key.ToRange();
                     var locations = group
                         .Select(item => new Location
                         {
                             Uri = new Uri(facade.GetFilePath(item.File)),
-                            Range = item.Reference.ToRange()!,
+                            Range = item.Reference.ToRange(),
                         })
                         .ToArray();
                     return new CodeLens

@@ -9,9 +9,9 @@ namespace TopModel.Core.Loaders;
 public class DataFlowLoader : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Declaration declaration)
     {
-        var dataFlow = new DataFlow(reference) { ModelFile = modelFile };
+        var dataFlow = new DataFlow(declaration) { ModelFile = modelFile };
         modelFile.DataFlows.Add(dataFlow);
         parser.ConsumeMapping(prop =>
         {

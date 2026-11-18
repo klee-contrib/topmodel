@@ -4,7 +4,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Converter(DeclarationReference declarationReference) : IVariableContainer
+public class Converter(Declaration declaration) : IVariableContainer
 {
     /// <summary>
     /// Domains sources du convertisseur
@@ -37,9 +37,9 @@ public class Converter(DeclarationReference declarationReference) : IVariableCon
     public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
     public IEnumerable<TransformReference> TransformReferences =>
-        Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.ReferenceName.IsValidTransform);
+        Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.Value.IsValidTransform);
 
     public required ModelFile ModelFile { get; init; }
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 }

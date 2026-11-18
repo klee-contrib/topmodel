@@ -5,6 +5,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer;
 
@@ -42,7 +43,7 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 
         var diagnosticsToSend = _pendingErrors
             .GroupBy(e => (e.Key.Name, e.Key.Path))
-            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Reference)))
+            .ToDictionary(g => g.Key, g => g.SelectMany(e => e.Value).DistinctBy(e => (e.Message, e.Location)))
             .Where(e => _filesWithErrors.Contains(e.Key.Name) || e.Value.Any())
             .ToList();
 
@@ -61,15 +62,14 @@ public class LSReporter(ILanguageServerFacade facade) : IModelReporter
 
             foreach (var error in fileDiagnostics.Value)
             {
-                var loc = error.Reference;
+                var loc = error.Location;
                 diagnostics.Add(
                     new()
                     {
                         Code = error.ErrorType.ToString(),
                         Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
                         Message = error.Message,
-                        Range = loc.ToRange()!
-                            ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                        Range = loc.ToRange() ?? new Range(0, 0, 0, 0),
                         Source = "TopModel",
                     }
                 );

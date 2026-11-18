@@ -1,4 +1,4 @@
-﻿namespace TopModel.LanguageServer.Handlers;
+﻿namespace TopModel.LanguageServer.Handlers.Completion;
 
 /// <summary>
 /// Type de complétion à proposer à une position donnée du document.

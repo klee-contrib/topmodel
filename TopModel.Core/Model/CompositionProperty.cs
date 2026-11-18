@@ -3,7 +3,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class CompositionProperty(DeclarationReference declarationReference) : IProperty
+internal class CompositionProperty(Declaration declaration) : IProperty
 {
     private ParamLocation? _paramLocation;
 
@@ -109,14 +109,14 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
                 ?? [],
         ];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var cp = new CompositionProperty(DeclarationReference)
+        var cp = new CompositionProperty(Declaration)
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -143,7 +143,7 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var cp = new CompositionProperty(DeclarationReference)
+        var cp = new CompositionProperty(Declaration)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,

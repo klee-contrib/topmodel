@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Annotation(DeclarationReference declarationReference) : IParameterContainer, IVariableContainer
+public class Annotation(Declaration declaration) : IParameterContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -45,9 +45,9 @@ public class Annotation(DeclarationReference declarationReference) : IParameterC
                         .. i.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
                     ]
             )
-            .Where(pr => pr.ReferenceName.IsValidTransform);
+            .Where(pr => pr.Value.IsValidTransform);
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     public override string ToString()
     {

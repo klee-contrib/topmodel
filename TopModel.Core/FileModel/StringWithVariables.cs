@@ -23,13 +23,9 @@ public class StringWithVariables : LocatedString
             .SelectMany(match =>
             {
                 var start = new Mark(
-                    DeclarationReference.Start.Index,
-                    DeclarationReference.Start.Line,
-                    DeclarationReference.Start.Column
-                        + isQuoted
-                        + match.Index
-                        + Value[0..match.Index].Count(c => c == quote)
-                        + 1
+                    Declaration.Start.Index,
+                    Declaration.Start.Line,
+                    Declaration.Start.Column + isQuoted + match.Index + Value[0..match.Index].Count(c => c == quote) + 1
                 );
                 Mark end;
 
@@ -46,13 +42,13 @@ public class StringWithVariables : LocatedString
                                     {
                                         Start = start,
                                         End = end,
-                                        ReferenceName = refName,
+                                        Value = refName,
                                     }
                                     : new TransformReference
                                     {
                                         Start = start,
                                         End = end,
-                                        ReferenceName = refName,
+                                        Value = refName,
                                     };
                             start = new Mark(end.Index, end.Line, end.Column + 1);
                             return reference;

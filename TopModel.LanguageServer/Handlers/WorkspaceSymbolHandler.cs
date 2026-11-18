@@ -57,7 +57,7 @@ public class WorkspaceSymbolHandler(LSWorkerStore workerStore, ILanguageServerFa
                 {
                     Kind = c.Kind,
                     Name = c.Name,
-                    Location = new Location { Range = c.Name.DeclarationReference.ToRange()!, Uri = c.Uri },
+                    Location = new Location { Range = c.Name.Declaration.ToRange()!, Uri = c.Uri },
                 };
             })
             .Where(s => s.Name.ShouldMatch(request.Query))

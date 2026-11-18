@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class AliasProperty(DeclarationReference declarationReference) : IProperty
+internal class AliasProperty(Declaration declaration) : IProperty
 {
     private string? _comment;
     private Class? _composition;
@@ -363,7 +363,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
             .. Reference?.ExcludeReferences?.Select(er =>
                 (
                     er as Reference,
-                    OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName)! as object
+                    OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.Value)! as object
                 )
             )
                 ?? [],
@@ -373,7 +373,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
                 ?? [],
         ];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
@@ -382,7 +382,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var alp = new AliasProperty(DeclarationReference)
+        var alp = new AliasProperty(Declaration)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,
@@ -435,7 +435,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var alp = new AliasProperty(DeclarationReference)
+        var alp = new AliasProperty(Declaration)
         {
             SourceProperty = SourceProperty ?? this,
             As = As,
@@ -505,9 +505,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     internal AliasProperty Clone(IProperty prop, PropertyReference? includeReference)
     {
-        var alp = new AliasProperty(
-            includeReference != null ? new DeclarationReference(includeReference) : DeclarationReference
-        )
+        var alp = new AliasProperty(includeReference != null ? new Declaration(includeReference) : Declaration)
         {
             AnnotationReferences = AnnotationReferences,
             As = As,

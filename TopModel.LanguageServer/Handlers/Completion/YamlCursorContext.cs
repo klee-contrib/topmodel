@@ -2,7 +2,7 @@ using System.Globalization;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
-namespace TopModel.LanguageServer.Handlers;
+namespace TopModel.LanguageServer.Handlers.Completion;
 
 /// <summary>
 /// Bloc YAML courant (entre deux lignes <c>---</c>) lu avec YamlDotNet, avec une sentinelle insérée à la position du curseur.

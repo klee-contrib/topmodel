@@ -1,4 +1,4 @@
-﻿using TopModel.LanguageServer.Handlers;
+﻿using TopModel.LanguageServer.Handlers.Completion;
 using static TopModel.LanguageServer.Tests.CursorText;
 
 namespace TopModel.LanguageServer.Tests;

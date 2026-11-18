@@ -7,34 +7,34 @@ public static class ModelExtensions
 {
     extension(object? objet)
     {
-        public DeclarationReference? DeclarationReference =>
+        public Declaration? Declaration =>
             objet switch
             {
-                Class c => c.DeclarationReference,
-                Endpoint e => e.DeclarationReference,
-                RegularProperty p => p.OwnName.DeclarationReference,
-                AssociationProperty p => p.DeclarationReference,
-                CompositionProperty p => p.OwnName.DeclarationReference,
-                AliasProperty p => p.OwnName?.DeclarationReference ?? p.DeclarationReference,
-                Domain d => d.DeclarationReference,
-                LocatedString l => l.DeclarationReference,
-                Decorator d => d.DeclarationReference,
-                DecoratorInstance { Decorator: Decorator d } => d.DeclarationReference,
-                Annotation a => a.DeclarationReference,
-                AnnotationInstance { Annotation: Annotation a } => a.DeclarationReference,
-                DataFlow d => d.DeclarationReference,
-                FromMapper m => m.Reference.DeclarationReference,
-                ClassMappings c => c.Name.DeclarationReference,
-                PropertyMapping p => p.Property.DeclarationReference,
+                Class c => c.Declaration,
+                Endpoint e => e.Declaration,
+                RegularProperty p => p.OwnName.Declaration,
+                AssociationProperty p => p.Declaration,
+                CompositionProperty p => p.OwnName.Declaration,
+                AliasProperty p => p.OwnName?.Declaration ?? p.Declaration,
+                Domain d => d.Declaration,
+                LocatedString l => l.Declaration,
+                Decorator d => d.Declaration,
+                DecoratorInstance { Decorator: Decorator d } => d.Declaration,
+                Annotation a => a.Declaration,
+                AnnotationInstance { Annotation: Annotation a } => a.Declaration,
+                DataFlow d => d.Declaration,
+                FromMapper m => m.Reference.Declaration,
+                ClassMappings c => c.Name.Declaration,
+                PropertyMapping p => p.Property.Declaration,
                 MapperParam p => p switch
                 {
-                    ClassMappings c => c.DeclarationReference,
-                    PropertyMapping pp => pp.DeclarationReference,
+                    ClassMappings c => c.Declaration,
+                    PropertyMapping pp => pp.Declaration,
                 },
-                Converter c => c.DeclarationReference,
-                TemplateParameter t => t.Name.DeclarationReference,
-                Variable { TemplateParameter: TemplateParameter t } => t.Name.DeclarationReference,
-                ReverseAssociationDefinition rad => rad.Property.DeclarationReference,
+                Converter c => c.Declaration,
+                TemplateParameter t => t.Name.Declaration,
+                Variable { TemplateParameter: TemplateParameter t } => t.Name.Declaration,
+                ReverseAssociationDefinition rad => rad.Property.Declaration,
                 _ => null,
             };
 

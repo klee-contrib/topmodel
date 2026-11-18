@@ -22,7 +22,7 @@ internal class DecoratorResolver(
         var decorators = modelFiles.SelectMany(mf => mf.Decorators);
         var sortedDecorators = CoreUtils
             .Sort(decorators, g =>
-                g.DecoratorReferences.Select(c => decorators.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+                g.DecoratorReferences.Select(c => decorators.FirstOrDefault(d => d.Name == c.Value)!)
             )
             .Where(c => c != null);
 
@@ -36,32 +36,27 @@ internal class DecoratorResolver(
 
                 if (decorator.Target != Target.Endpoint)
                 {
-                    varName.ReferenceName.TryGetClassVariable(config, decorator.TemplateParameters, out variable);
+                    varName.Value.TryGetClassVariable(config, decorator.TemplateParameters, out variable);
                 }
 
                 if (decorator.Target != Target.Class)
                 {
-                    varName.ReferenceName.TryGetEndpointVariable(config, decorator.TemplateParameters, out variable);
+                    varName.Value.TryGetEndpointVariable(config, decorator.TemplateParameters, out variable);
                 }
 
                 if (variable != null)
                 {
-                    decorator.Variables.TryAdd(varName.ReferenceName, variable);
+                    decorator.Variables.TryAdd(varName.Value, variable);
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], decorator, varName);
+                    yield return Warning(ErrorType.TMD0011, [varName.Value], decorator, varName);
                 }
             }
 
             foreach (var templateParam in decorator.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    decorator,
-                    templateParam.DeclarationReference
-                );
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], decorator, templateParam.Declaration);
             }
         }
 
@@ -76,10 +71,10 @@ internal class DecoratorResolver(
             var isError = false;
             foreach (var decoratorRef in container.DecoratorReferences)
             {
-                if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var targetDecorator))
+                if (!referencedDecorators.TryGetValue(decoratorRef.Value, out var targetDecorator))
                 {
                     isError = true;
-                    yield return Error(ErrorType.TMD0005, [decoratorRef.ReferenceName], container, decoratorRef);
+                    yield return Error(ErrorType.TMD0005, [decoratorRef.Value], container, decoratorRef);
                 }
                 else
                 {
@@ -89,7 +84,7 @@ internal class DecoratorResolver(
                         yield return new ModelError(
                             ErrorType.TMD5001,
                             container,
-                            $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de l'objet '{container}'.",
+                            $"Le décorateur '{decoratorRef.Value}' est déjà présent dans la liste des décorateurs de l'objet '{container}'.",
                             decoratorRef
                         );
                     }
@@ -112,7 +107,7 @@ internal class DecoratorResolver(
                             yield return new ModelError(
                                 ErrorType.TMD5002,
                                 container,
-                                $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : seul un 'extends' peut être spécifié.",
+                                $"Impossible d'appliquer le décorateur '{decoratorRef.Value}' à '{container}' : seul un 'extends' peut être spécifié.",
                                 decoratorRef
                             );
                         }
@@ -128,7 +123,7 @@ internal class DecoratorResolver(
                             yield return new ModelError(
                                 ErrorType.TMD5003,
                                 container,
-                                $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : le décorateur ne cible pas le bon type d'objet.",
+                                $"Impossible d'appliquer le décorateur '{decoratorRef.Value}' à '{container}' : le décorateur ne cible pas le bon type d'objet.",
                                 decoratorRef
                             );
                         }
@@ -144,7 +139,7 @@ internal class DecoratorResolver(
                                 new(
                                     targetDecorator,
                                     decoratorRef.ParameterReferences.ToDictionary(
-                                        pr => pr.Key.ReferenceName,
+                                        pr => pr.Key.Value,
                                         pr => pr.Value.Value
                                     )
                                 )

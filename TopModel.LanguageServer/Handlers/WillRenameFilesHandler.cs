@@ -3,7 +3,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
-using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer.Handlers;
 
@@ -30,8 +29,8 @@ public class WillRenameFilesHandler(LSWorkerStore workerStore, ILanguageServerFa
             let newName = store.ModelFileLoadConfig.GetFileName(newPath)
             from file in store.Files
             from use in file.Uses
-            where use.ReferenceName == oldName || use.ReferenceName.StartsWith(oldName + "/")
-            select (file, use as Reference, newName + use.ReferenceName[oldName.Length..])
+            where use.Value == oldName || use.Value.StartsWith(oldName + "/")
+            select (file, use as Core.FileModel.Location, newName + use.Value[oldName.Length..])
         );
 
         return edits.Changes!.Count > 0 ? edits : null;

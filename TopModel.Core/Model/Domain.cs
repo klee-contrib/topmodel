@@ -4,10 +4,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Domain(DeclarationReference declarationReference)
-    : IAnnotationContainer,
-        IParameterContainer,
-        IVariableContainer
+public class Domain(Declaration declaration) : IAnnotationContainer, IParameterContainer, IVariableContainer
 {
     public LocatedString Name { get; internal set; } = null!;
 
@@ -84,11 +81,11 @@ public class Domain(DeclarationReference declarationReference)
             )
             .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
             .Concat(GeneratedValue?.SequenceName?.Transforms ?? [])
-            .Where(pr => pr.ReferenceName.IsValidTransform);
+            .Where(pr => pr.Value.IsValidTransform);
 
     public required ModelFile ModelFile { get; init; }
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     public override string ToString()
     {

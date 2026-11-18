@@ -26,14 +26,11 @@ internal class PropertyResolver(
             switch (prop)
             {
                 case RegularProperty rp:
-                    if (
-                        rp.DomainReference == null
-                        || !domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain)
-                    )
+                    if (rp.DomainReference == null || !domains.TryGetValue(rp.DomainReference.Value, out var domain))
                     {
                         yield return Error(
                             ErrorType.TMD0003,
-                            [rp.DomainReference?.ReferenceName ?? string.Empty],
+                            [rp.DomainReference?.Value ?? string.Empty],
                             rp,
                             rp.DomainReference
                         );
@@ -47,17 +44,14 @@ internal class PropertyResolver(
 
                     rp.Domain = new(
                         domain,
-                        rp.DomainReference.ParameterReferences.ToDictionary(
-                            pr => pr.Key.ReferenceName,
-                            pr => pr.Value.Value
-                        )
+                        rp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.Value, pr => pr.Value.Value)
                     );
                     break;
 
                 case AssociationProperty ap:
-                    if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
+                    if (!referencedClasses.TryGetValue(ap.Reference.Value, out var association))
                     {
-                        yield return Error(ErrorType.TMD0002, [ap.Reference.ReferenceName], ap, ap.Reference);
+                        yield return Error(ErrorType.TMD0002, [ap.Reference.Value], ap, ap.Reference);
                         break;
                     }
 
@@ -70,7 +64,7 @@ internal class PropertyResolver(
                             yield return Error(ErrorType.TMD9008, [], ap, ap.Reference);
                             break;
                         }
-                        ap.ReverseProperty = new ReverseAssociationProperty(ap.WithReverse.DeclarationReference)
+                        ap.ReverseProperty = new ReverseAssociationProperty(ap.WithReverse.Declaration)
                         {
                             Class = association,
                             ReverseProperty = ap,
@@ -80,15 +74,15 @@ internal class PropertyResolver(
                     break;
 
                 case CompositionProperty cp:
-                    if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
+                    if (!referencedClasses.TryGetValue(cp.Reference.Value, out var composition))
                     {
-                        yield return Error(ErrorType.TMD0002, [cp.Reference.ReferenceName], cp, cp.Reference);
+                        yield return Error(ErrorType.TMD0002, [cp.Reference.Value], cp, cp.Reference);
                         break;
                     }
 
                     if (composition.Enum == EnumMode.Enum)
                     {
-                        yield return Error(ErrorType.TMD9010, [cp.Reference.ReferenceName], cp, cp.Reference);
+                        yield return Error(ErrorType.TMD9010, [cp.Reference.Value], cp, cp.Reference);
                         break;
                     }
 
@@ -96,14 +90,9 @@ internal class PropertyResolver(
 
                     if (cp.DomainReference != null)
                     {
-                        if (!domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
+                        if (!domains.TryGetValue(cp.DomainReference.Value, out var cpDomain))
                         {
-                            yield return Error(
-                                ErrorType.TMD0003,
-                                [cp.DomainReference.ReferenceName],
-                                cp,
-                                cp.DomainReference
-                            );
+                            yield return Error(ErrorType.TMD0003, [cp.DomainReference.Value], cp, cp.DomainReference);
                             break;
                         }
 
@@ -115,7 +104,7 @@ internal class PropertyResolver(
                         cp.Domain = new(
                             cpDomain,
                             cp.DomainReference.ParameterReferences.ToDictionary(
-                                pr => pr.Key.ReferenceName,
+                                pr => pr.Key.Value,
                                 pr => pr.Value.Value
                             )
                         );
@@ -126,11 +115,11 @@ internal class PropertyResolver(
                 case AliasProperty alp:
                     if (alp.DomainReference != null)
                     {
-                        if (!domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                        if (!domains.TryGetValue(alp.DomainReference.Value, out var aliasDomain))
                         {
                             yield return Error(
                                 ErrorType.TMD0003,
-                                [alp.DomainReference.ReferenceName],
+                                [alp.DomainReference.Value],
                                 alp,
                                 alp.DomainReference
                             );
@@ -145,7 +134,7 @@ internal class PropertyResolver(
                         alp.Domain = new(
                             aliasDomain,
                             alp.DomainReference.ParameterReferences.ToDictionary(
-                                pr => pr.Key.ReferenceName,
+                                pr => pr.Key.Value,
                                 pr => pr.Value.Value
                             )
                         );
@@ -153,16 +142,11 @@ internal class PropertyResolver(
 
                     if (alp.CompositionReference != null)
                     {
-                        if (
-                            !referencedClasses.TryGetValue(
-                                alp.CompositionReference.ReferenceName,
-                                out var aliasComposition
-                            )
-                        )
+                        if (!referencedClasses.TryGetValue(alp.CompositionReference.Value, out var aliasComposition))
                         {
                             yield return Error(
                                 ErrorType.TMD0002,
-                                [alp.CompositionReference.ReferenceName],
+                                [alp.CompositionReference.Value],
                                 alp,
                                 alp.CompositionReference
                             );
@@ -186,10 +170,10 @@ internal class PropertyResolver(
         var containers = modelFiles.SelectMany(mf => mf.PropertyContainers);
         var sortedContainers = CoreUtils.Sort(containers, container =>
             container
-                .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.ReferenceName)!)
+                .DecoratorReferences.Select(c => containers.FirstOrDefault(d => d.Name == c.Value)!)
                 .Concat(
                     (container as Class)?.ImplementReferences.Select(c =>
-                        containers.FirstOrDefault(d => d.Name == c.ReferenceName)!
+                        containers.FirstOrDefault(d => d.Name == c.Value)!
                     )
                         ?? []
                 )
@@ -201,9 +185,9 @@ internal class PropertyResolver(
                             containers.FirstOrDefault(c =>
                                 c != container
                                 && (
-                                    c.Name == a.Reference?.ClassReference?.ReferenceName
-                                    || c.Name == a.Reference?.EndpointReference?.ReferenceName
-                                    || c.Name == a.Reference?.DecoratorReference?.ReferenceName
+                                    c.Name == a.Reference?.ClassReference?.Value
+                                    || c.Name == a.Reference?.EndpointReference?.Value
+                                    || c.Name == a.Reference?.DecoratorReference?.Value
                                 )
                             )!
                         )
@@ -335,7 +319,7 @@ internal class PropertyResolver(
         {
             if (ap.PropertyReference == null && !ap.Association.ExtendedProperties.Any(p => p.PrimaryKey))
             {
-                yield return Error(ErrorType.TMD9002, [ap.Reference.ReferenceName], ap, ap.Reference);
+                yield return Error(ErrorType.TMD9002, [ap.Reference.Value], ap, ap.Reference);
                 continue;
             }
 
@@ -345,7 +329,7 @@ internal class PropertyResolver(
                 && ap.PropertyReference == null
             )
             {
-                yield return Error(ErrorType.TMD9002, [ap.Reference.ReferenceName], ap, ap.Reference);
+                yield return Error(ErrorType.TMD9002, [ap.Reference.Value], ap, ap.Reference);
                 continue;
             }
 
@@ -392,13 +376,13 @@ internal class PropertyResolver(
             if (ap.PropertyReference != null)
             {
                 var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p =>
-                    p.Name == ap.PropertyReference.ReferenceName
+                    p.Name == ap.PropertyReference.Value
                 );
                 if (referencedProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [ap.PropertyReference.ReferenceName, ap.Association.Name],
+                        [ap.PropertyReference.Value, ap.Association.Name],
                         ap,
                         ap.PropertyReference
                     );
@@ -459,11 +443,11 @@ internal class PropertyResolver(
 
             if (alp.Reference?.ClassReference != null)
             {
-                if (!referencedClasses.TryGetValue(alp.Reference.ClassReference.ReferenceName, out var aliasedClass))
+                if (!referencedClasses.TryGetValue(alp.Reference.ClassReference.Value, out var aliasedClass))
                 {
                     yield return Error(
                         ErrorType.TMD0002,
-                        [alp.Reference.ClassReference.ReferenceName],
+                        [alp.Reference.ClassReference.Value],
                         alp,
                         alp.Reference.ClassReference
                     );
@@ -474,16 +458,11 @@ internal class PropertyResolver(
             }
             else if (alp.Reference?.EndpointReference != null)
             {
-                if (
-                    !referencedEndpoints.TryGetValue(
-                        alp.Reference.EndpointReference.ReferenceName,
-                        out var aliasedEndpoint
-                    )
-                )
+                if (!referencedEndpoints.TryGetValue(alp.Reference.EndpointReference.Value, out var aliasedEndpoint))
                 {
                     yield return Error(
                         ErrorType.TMD0006,
-                        [alp.Reference.EndpointReference.ReferenceName],
+                        [alp.Reference.EndpointReference.Value],
                         alp,
                         alp.Reference.EndpointReference
                     );
@@ -494,16 +473,11 @@ internal class PropertyResolver(
             }
             else if (alp.Reference?.DecoratorReference != null)
             {
-                if (
-                    !referencedDecorators.TryGetValue(
-                        alp.Reference.DecoratorReference.ReferenceName,
-                        out var aliasedDecorator
-                    )
-                )
+                if (!referencedDecorators.TryGetValue(alp.Reference.DecoratorReference.Value, out var aliasedDecorator))
                 {
                     yield return Error(
                         ErrorType.TMD0005,
-                        [alp.Reference.DecoratorReference.ReferenceName],
+                        [alp.Reference.DecoratorReference.Value],
                         alp,
                         alp.Reference.DecoratorReference
                     );
@@ -521,14 +495,12 @@ internal class PropertyResolver(
             var shouldBreak = false;
             foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
             {
-                var aliasedProperty = propertyContainer.Properties.FirstOrDefault(p =>
-                    p.Name == propReference.ReferenceName
-                );
+                var aliasedProperty = propertyContainer.Properties.FirstOrDefault(p => p.Name == propReference.Value);
                 if (aliasedProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [propReference.ReferenceName, propertyContainer.Name],
+                        [propReference.Value, propertyContainer.Name],
                         alp,
                         propReference
                     );
@@ -536,15 +508,15 @@ internal class PropertyResolver(
                 }
             }
 
-            foreach (var include in alp.Reference.IncludeReferences.GetDuplicates(p => p.ReferenceName))
+            foreach (var include in alp.Reference.IncludeReferences.GetDuplicates(p => p.Value))
             {
-                yield return Error(ErrorType.TMD9001, [include.ReferenceName], alp, include);
+                yield return Error(ErrorType.TMD9001, [include.Value], alp, include);
                 shouldBreak = true;
             }
 
-            foreach (var exclude in alp.Reference.ExcludeReferences.GetDuplicates(p => p.ReferenceName))
+            foreach (var exclude in alp.Reference.ExcludeReferences.GetDuplicates(p => p.Value))
             {
-                yield return Error(ErrorType.TMD9001, [exclude.ReferenceName], alp, exclude);
+                yield return Error(ErrorType.TMD9001, [exclude.Value], alp, exclude);
                 shouldBreak = true;
             }
 
@@ -556,10 +528,10 @@ internal class PropertyResolver(
             var propertiesToAlias = (
                 alp.Reference.IncludeReferences.Count > 0
                     ? alp.Reference.IncludeReferences.Select(p =>
-                        propertyContainer.Properties.First(prop => prop.Name == p.ReferenceName)
+                        propertyContainer.Properties.First(prop => prop.Name == p.Value)
                     )
                     : propertyContainer.Properties.Where(prop =>
-                        !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)
+                        !alp.Reference.ExcludeReferences.Select(p => p.Value).Contains(prop.Name)
                     )
             ).Reverse();
 
@@ -567,7 +539,7 @@ internal class PropertyResolver(
             {
                 var prop = alp.Clone(
                     property,
-                    alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name)
+                    alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.Value == property.Name)
                 );
 
                 if (prop.As != null && prop.Domain == null)

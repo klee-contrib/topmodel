@@ -5,6 +5,8 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
+using Location = TopModel.Core.FileModel.Location;
+using OSLocation = OmniSharp.Extensions.LanguageServer.Protocol.Models.Location;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer.Handlers;
@@ -57,8 +59,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
     /// <c>SelectionRange</c> et les ranges de tous les enfants ».
     /// </summary>
     private static DocumentSymbol? CreateSymbol(
-        Reference? nameLocation,
-        Reference? objectLocation,
+        Location? nameLocation,
+        Location? objectLocation,
         string name,
         SymbolKind kind,
         string? detail,
@@ -106,7 +108,7 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             Kind = symbol.Kind,
             Name = symbol.Name,
             ContainerName = containerName,
-            Location = new Location { Range = symbol.SelectionRange, Uri = uri },
+            Location = new OSLocation { Range = symbol.SelectionRange, Uri = uri },
         };
 
         foreach (var child in symbol.Children ?? Enumerable.Empty<DocumentSymbol>())
@@ -137,8 +139,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
         var symbols = file
             .Classes.Select(c =>
                 CreateSymbol(
-                    c.Name.DeclarationReference,
-                    c.DeclarationReference,
+                    c.Name.Declaration,
+                    c.Declaration,
                     c.Name,
                     SymbolKind.Class,
                     c.Comment,
@@ -148,8 +150,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             .Concat(
                 file.Endpoints.Select(e =>
                     CreateSymbol(
-                        e.Name.DeclarationReference,
-                        e.DeclarationReference,
+                        e.Name.Declaration,
+                        e.Declaration,
                         e.Name,
                         SymbolKind.Method,
                         e.Description,
@@ -159,31 +161,19 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             )
             .Concat(
                 file.Domains.Select(d =>
-                    CreateSymbol(
-                        d.Name.DeclarationReference,
-                        d.DeclarationReference,
-                        d.Name,
-                        SymbolKind.Struct,
-                        d.Label ?? d.Name
-                    )
+                    CreateSymbol(d.Name.Declaration, d.Declaration, d.Name, SymbolKind.Struct, d.Label ?? d.Name)
                 )
             )
             .Concat(
                 file.Annotations.Select(a =>
-                    CreateSymbol(
-                        a.Name.DeclarationReference,
-                        a.DeclarationReference,
-                        a.Name,
-                        SymbolKind.Interface,
-                        a.Description
-                    )
+                    CreateSymbol(a.Name.Declaration, a.Declaration, a.Name, SymbolKind.Interface, a.Description)
                 )
             )
             .Concat(
                 file.Decorators.Select(d =>
                     CreateSymbol(
-                        d.Name.DeclarationReference,
-                        d.DeclarationReference,
+                        d.Name.Declaration,
+                        d.Declaration,
                         d.Name,
                         SymbolKind.Interface,
                         d.Description,
@@ -193,25 +183,13 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             )
             .Concat(
                 file.DataFlows.Select(d =>
-                    CreateSymbol(
-                        d.Name.DeclarationReference,
-                        d.DeclarationReference,
-                        d.Name,
-                        SymbolKind.Operator,
-                        detail: null
-                    )
+                    CreateSymbol(d.Name.Declaration, d.Declaration, d.Name, SymbolKind.Operator, detail: null)
                 )
             )
             .Concat(
                 file.Converters.Select(
                     (c, i) =>
-                        CreateSymbol(
-                            c.DeclarationReference,
-                            c.DeclarationReference,
-                            $"Converter#{i}",
-                            SymbolKind.Function,
-                            detail: null
-                        )
+                        CreateSymbol(c.Declaration, c.Declaration, $"Converter#{i}", SymbolKind.Function, detail: null)
                 )
             );
 
@@ -245,8 +223,8 @@ public class DocumentSymbolHandler(LSWorkerStore workerStore) : DocumentSymbolHa
             }
 
             return CreateSymbol(
-                property.DeclarationReference,
-                property.DeclarationReference,
+                property.Declaration,
+                property.Declaration,
                 property.Name,
                 SymbolKind.Field,
                 property.Comment

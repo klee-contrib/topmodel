@@ -2,9 +2,8 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using TopModel.Core;
 
-namespace TopModel.LanguageServer.Handlers;
+namespace TopModel.LanguageServer.Handlers.Completion;
 
 public class CompletionHandler(LSWorkerStore workerStore, ModelFileCache fileCache) : CompletionHandlerBase
 {

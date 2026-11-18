@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.FileModel;
+using Location = TopModel.Core.FileModel.Location;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer.Handlers;
@@ -23,9 +24,7 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
         var (objetName, references) = rename.Value;
 
         return facade.ToWorkspaceEdit(
-            references
-                .Where(r => r.Reference.ReferenceName == objetName)
-                .Select(r => (r.File, r.Reference, request.NewName))
+            references.Where(r => r.Reference.Value == objetName).Select(r => (r.File, r.Reference, request.NewName))
         );
     }
 
@@ -40,10 +39,10 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
 
         var (objetName, references) = rename.Value;
         var range = references
-            .Where(r => r.Reference.ReferenceName == objetName)
-            .Select(r => r.Reference.ToRange()!)
+            .Where(r => r.Reference.Value == objetName)
+            .Select(r => r.Reference.ToRange())
             .FirstOrDefault(r => Contains(r, request.Position))
-            ?? references.First(r => r.Reference.ReferenceName == objetName).Reference.ToRange()!;
+            ?? references.First(r => r.Reference.Value == objetName).Reference.ToRange();
 
         return new RangeOrPlaceholderRange(new PlaceholderRange { Range = range, Placeholder = objetName });
     }
@@ -70,7 +69,7 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
 
     private async Task<(
         string ObjetName,
-        IReadOnlyList<(Reference Reference, ModelFile File)> References
+        IReadOnlyList<(Location Reference, ModelFile File)> References
     )?> TryGetRenameTargets(TextDocumentIdentifier textDocument, Position position, CancellationToken cancellationToken)
     {
         await workerStore.WaitForUpdates(cancellationToken);
@@ -82,7 +81,7 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
         }
 
         var allReferences = files
-            .Select(f => f.Store.GetReferencesForPositionInFile(position, f.File, includeTransitive: true))
+            .Select(f => f.Store.GetLocationsForObjetAtPosition(position, f.File, includeTransitive: true))
             .ToList();
         var objetName = allReferences[0].Objet.GetName();
         if (objetName is null)

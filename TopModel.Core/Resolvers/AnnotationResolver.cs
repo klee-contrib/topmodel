@@ -35,12 +35,12 @@ public class AnnotationResolver(
                     || annotation.Target.Contains(Target.RegularProperty)
                 )
                 {
-                    varName.ReferenceName.TryGetPropertyVariable(config, annotation.TemplateParameters, out variable);
+                    varName.Value.TryGetPropertyVariable(config, annotation.TemplateParameters, out variable);
                 }
 
                 if (annotation.Target.Count == 0 || annotation.Target.Contains(Target.Class))
                 {
-                    varName.ReferenceName.TryGetClassVariable(config, annotation.TemplateParameters, out variable);
+                    varName.Value.TryGetClassVariable(config, annotation.TemplateParameters, out variable);
                 }
 
                 if (
@@ -50,27 +50,22 @@ public class AnnotationResolver(
                     || annotation.Target.Contains(Target.ServerEndpoint)
                 )
                 {
-                    varName.ReferenceName.TryGetEndpointVariable(config, annotation.TemplateParameters, out variable);
+                    varName.Value.TryGetEndpointVariable(config, annotation.TemplateParameters, out variable);
                 }
 
                 if (variable != null)
                 {
-                    annotation.Variables.TryAdd(varName.ReferenceName, variable);
+                    annotation.Variables.TryAdd(varName.Value, variable);
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], annotation, varName);
+                    yield return Warning(ErrorType.TMD0011, [varName.Value], annotation, varName);
                 }
             }
 
             foreach (var templateParam in annotation.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(
-                    ErrorType.TMD0001,
-                    [templateParam.Name],
-                    annotation,
-                    templateParam.DeclarationReference
-                );
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], annotation, templateParam.Declaration);
             }
 
             if (annotation.TemplateParameters.Any() && annotation.Global)
@@ -225,13 +220,13 @@ public class AnnotationResolver(
 
         foreach (var annotationRef in annotationReferences)
         {
-            if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
+            if (!referencedAnnotations.TryGetValue(annotationRef.Value, out var annotation))
             {
                 isError = true;
                 yield return new ModelError(
                     ErrorType.TMD2001,
                     container,
-                    $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.",
+                    $"L'annotation '{annotationRef.Value}' est introuvable dans le fichier ou l'une de ses dépendances.",
                     annotationRef
                 );
             }
@@ -243,7 +238,7 @@ public class AnnotationResolver(
                     yield return new ModelError(
                         ErrorType.TMD2002,
                         container,
-                        $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.",
+                        $"L'annotation '{annotationRef.Value}' est déjà présente dans la liste des annotations de l'objet.",
                         annotationRef
                     );
                 }
@@ -272,7 +267,7 @@ public class AnnotationResolver(
                         yield return new ModelError(
                             ErrorType.TMD2004,
                             container,
-                            $"Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.",
+                            $"Impossible d'appliquer l'annotation '{annotationRef.Value}' à '{container}' : l'annotation ne cible pas le bon type d'objet.",
                             annotationRef
                         );
                     }
@@ -287,10 +282,7 @@ public class AnnotationResolver(
                         annotationsToResolve.Add(
                             new(
                                 annotation,
-                                annotationRef.ParameterReferences.ToDictionary(
-                                    pr => pr.Key.ReferenceName,
-                                    pr => pr.Value.Value
-                                )
+                                annotationRef.ParameterReferences.ToDictionary(pr => pr.Key.Value, pr => pr.Value.Value)
                             )
                         );
                     }

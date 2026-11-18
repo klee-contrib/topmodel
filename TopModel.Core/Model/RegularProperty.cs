@@ -3,7 +3,7 @@ using TopModel.Core.Utils;
 
 namespace TopModel.Core.Model;
 
-internal class RegularProperty(DeclarationReference declarationReference) : IProperty
+internal class RegularProperty(Declaration declaration) : IProperty
 {
     private string? _defaultValue;
     private ParamLocation? _paramLocation;
@@ -103,14 +103,14 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
                 ?? [],
         ];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
     /// <inheritdoc cref="IProperty.CloneDefinition" />
     public IProperty CloneDefinition()
     {
-        var rp = new RegularProperty(DeclarationReference)
+        var rp = new RegularProperty(Declaration)
         {
             AnnotationReferences = AnnotationReferences,
             Comment = Comment,
@@ -138,7 +138,7 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
     /// <inheritdoc cref="IProperty.CloneForContainer" />
     public IProperty CloneForContainer(IPropertyContainer container)
     {
-        var rp = new RegularProperty(DeclarationReference)
+        var rp = new RegularProperty(Declaration)
         {
             SourceProperty = SourceProperty ?? this,
             Annotations = Annotations,

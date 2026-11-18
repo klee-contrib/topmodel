@@ -97,8 +97,7 @@ public class ModelFile
                     d.AnnotationReferences.Select(ar =>
                         (
                             ar as Reference,
-                            d.Annotations.Select(a => a.Annotation).FirstOrDefault(d => d.Name == ar.ReferenceName)!
-                                as object
+                            d.Annotations.Select(a => a.Annotation).FirstOrDefault(d => d.Name == ar.Value)! as object
                         )
                     )
                 )
@@ -111,7 +110,7 @@ public class ModelFile
                                 (
                                     pr as Reference,
                                     d
-                                        .Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName)
+                                        .Annotations.FirstOrDefault(d => d.Annotation.Name == ar.Value)
                                         ?.Annotation.TemplateParameters.ElementAtOrDefault(i)! as object
                                 )
                         )
@@ -123,8 +122,8 @@ public class ModelFile
                     d.ExcludedAnnotationReferences.Select(ar =>
                         (
                             ar as Reference,
-                            d.ExcludedAnnotations.Select(a => a.Annotation)
-                                .FirstOrDefault(d => d.Name == ar.ReferenceName)! as object
+                            d.ExcludedAnnotations.Select(a => a.Annotation).FirstOrDefault(d => d.Name == ar.Value)!
+                                as object
                         )
                     )
                 )
@@ -134,7 +133,7 @@ public class ModelFile
                     d.VariableReferences.Select(pr =>
                         (
                             pr as Reference,
-                            d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null!
+                            d.Variables.TryGetValue(pr.Value, out var variable) ? variable as object : null!
                         )
                     )
                 )
@@ -151,8 +150,7 @@ public class ModelFile
                     c.DecoratorReferences.Select(dr =>
                         (
                             dr as Reference,
-                            c.Decorators.Select(d => d.Decorator).FirstOrDefault(d => d.Name == dr.ReferenceName)!
-                                as object
+                            c.Decorators.Select(d => d.Decorator).FirstOrDefault(d => d.Name == dr.Value)! as object
                         )
                     )
                 )
@@ -165,7 +163,7 @@ public class ModelFile
                                 (
                                     pr as Reference,
                                     c
-                                        .Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName)
+                                        .Decorators.FirstOrDefault(d => d.Decorator.Name == dr.Value)
                                         ?.Decorator.TemplateParameters.ElementAtOrDefault(i)! as object
                                 )
                         )
@@ -177,8 +175,8 @@ public class ModelFile
                     c.PropertyAnnotationReferences.Select(par =>
                         (
                             par as Reference,
-                            c.PropertyAnnotations.Select(d => d.Annotation)
-                                .FirstOrDefault(d => d.Name == par.ReferenceName)! as object
+                            c.PropertyAnnotations.Select(d => d.Annotation).FirstOrDefault(d => d.Name == par.Value)!
+                                as object
                         )
                     )
                 )
@@ -191,7 +189,7 @@ public class ModelFile
                                 (
                                     pr as Reference,
                                     c
-                                        .PropertyAnnotations.FirstOrDefault(d => d.Annotation.Name == par.ReferenceName)
+                                        .PropertyAnnotations.FirstOrDefault(d => d.Annotation.Name == par.Value)
                                         ?.Annotation.TemplateParameters.ElementAtOrDefault(i)! as object
                                 )
                         )
@@ -202,14 +200,14 @@ public class ModelFile
             .Concat(
                 Classes.SelectMany(c =>
                     c.ImplementReferences.Select(r =>
-                        (r as Reference, c.Implements.FirstOrDefault(i => i.Name == r.ReferenceName)! as object)
+                        (r as Reference, c.Implements.FirstOrDefault(i => i.Name == r.Value)! as object)
                     )
                 )
             )
             .Concat(
                 Endpoints.SelectMany(e =>
                     e.Route.Variables.Select(pr =>
-                        (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.ReferenceName)! as object)
+                        (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.Value)! as object)
                     )
                 )
             )
@@ -223,17 +221,14 @@ public class ModelFile
                         c.FlagPropertyReference!,
                         c.LocalePropertyReference!,
                         c.DiscriminatorPropertyReference!,
-                    }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName)!))
+                    }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.Value)!))
                 )
             )
             .Concat(
                 Classes.SelectMany(c =>
                     c.Indexes.SelectMany(uk => uk.PropertyReferences)
                         .Select(propRef =>
-                            (
-                                propRef as Reference,
-                                (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)!
-                            )
+                            (propRef as Reference, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.Value)!)
                         )
                 )
             )
@@ -243,7 +238,7 @@ public class ModelFile
                         .Select(prop =>
                             (
                                 prop.Key as Reference,
-                                (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)!
+                                (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == prop.Key.Value)!
                             )
                         )
                 )
@@ -268,14 +263,13 @@ public class ModelFile
                                 {
                                     (
                                         mr.Key as Reference,
-                                        (object)
-                                            c.ExtendedProperties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)!
+                                        (object)c.ExtendedProperties.FirstOrDefault(k => k.Name == mr.Key.Value)!
                                     ),
                                     (
                                         mr.Value as Reference,
-                                        mr.Value.ReferenceName == "false"
+                                        mr.Value.Value == "false"
                                             ? new Keyword { ModelFile = c.ModelFile }
-                                            : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)!
+                                            : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.Value)!
                                     ),
                                 }
                             )
@@ -285,14 +279,14 @@ public class ModelFile
             .Concat(
                 Converters.SelectMany(c =>
                     c.DomainsFromReferences.Select(d =>
-                        (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.ReferenceName)! as object)
+                        (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.Value)! as object)
                     )
                 )
             )
             .Concat(
                 Converters.SelectMany(c =>
                     c.DomainsToReferences.Select(d =>
-                        (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.ReferenceName)! as object)
+                        (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.Value)! as object)
                     )
                 )
             )
@@ -301,7 +295,7 @@ public class ModelFile
             .Concat(
                 DataFlows.SelectMany(d =>
                     d.DependsOnReference.Select(r =>
-                        (r as Reference, d.DependsOn.FirstOrDefault(dd => dd?.Name == r.ReferenceName)! as object)
+                        (r as Reference, d.DependsOn.FirstOrDefault(dd => dd?.Name == r.Value)! as object)
                     )
                 )
             )
@@ -313,10 +307,7 @@ public class ModelFile
                     .SelectMany(d => d.Sources)
                     .SelectMany(s =>
                         s.JoinPropertyReferences.Select(j =>
-                            (
-                                j as Reference,
-                                s.JoinProperties.FirstOrDefault(jc => jc?.Name == j.ReferenceName)! as object
-                            )
+                            (j as Reference, s.JoinProperties.FirstOrDefault(jc => jc?.Name == j.Value)! as object)
                         )
                     )
             )

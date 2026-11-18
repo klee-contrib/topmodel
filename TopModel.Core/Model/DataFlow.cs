@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.Model;
 
-public class DataFlow(DeclarationReference declarationReference)
+public class DataFlow(Declaration declaration)
 {
     public required ModelFile ModelFile { get; init; }
 
@@ -28,7 +28,7 @@ public class DataFlow(DeclarationReference declarationReference)
 
     public IList<DataFlowSource> Sources { get; } = [];
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     public override string ToString()
     {

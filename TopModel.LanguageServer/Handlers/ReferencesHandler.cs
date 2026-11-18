@@ -16,11 +16,11 @@ public class ReferencesHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         return new(
             files
                 .SelectMany(f =>
-                    f.Store.GetReferencesForPositionInFile(request.Position, f.File)
-                        .Select(r => new { Uri = facade.GetFilePath(r.File), r.Reference })
+                    f.Store.GetLocationsForObjetAtPosition(request.Position, f.File)
+                        .Select(r => new { Uri = facade.GetFilePath(r.File), r.Location })
                 )
                 .Distinct()
-                .Select(r => new Location { Range = r.Reference.ToRange()!, Uri = new Uri(r.Uri) })
+                .Select(r => new Location { Range = r.Location.ToRange(), Uri = new Uri(r.Uri) })
         );
     }
 

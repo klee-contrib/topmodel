@@ -64,8 +64,8 @@ internal class ClassResolver(
                                 ? classe
                                     .DecoratorReferences.Cast<Reference>()
                                     .Concat(classe.ImplementReferences)
-                                    .FirstOrDefault(r => r.ReferenceName == property.SourceContainer!.Name)
-                                : property.DeclarationReference
+                                    .FirstOrDefault(r => r.Value == property.SourceContainer!.Name)
+                                : property.Declaration
                         );
                     }
 
@@ -84,10 +84,8 @@ internal class ClassResolver(
                             modelFile,
                             $"Cette association sur la classe '{classe}' doit définir un rôle.",
                             property.Decorator is not null
-                                ? classe.DecoratorReferences.FirstOrDefault(dr =>
-                                    dr.ReferenceName == property.Decorator.Name
-                                )
-                                : property.DeclarationReference
+                                ? classe.DecoratorReferences.FirstOrDefault(dr => dr.Value == property.Decorator.Name)
+                                : property.Declaration
                         );
                     }
 
@@ -147,7 +145,7 @@ internal class ClassResolver(
                             ErrorType.TMD9013,
                             [property.Name, classe.Name],
                             classe,
-                            property.DeclarationReference
+                            property.Declaration
                         );
                     }
 
@@ -173,7 +171,7 @@ internal class ClassResolver(
                                     classe,
                                     classe
                                         .ValueReferences[value.Reference]
-                                        .Keys.SingleOrDefault(r => r.ReferenceName == property.Name)
+                                        .Keys.SingleOrDefault(r => r.Value == property.Name)
                                 );
                             }
                         }
@@ -198,7 +196,7 @@ internal class ClassResolver(
                             ErrorType.TMD3021,
                             [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
                             modelFile,
-                            index.PropertyReferences.ElementAtOrDefault(0) as Reference ?? classe.DeclarationReference
+                            index.PropertyReferences.ElementAtOrDefault(0) as Location ?? classe.Declaration
                         );
                     }
                 }
@@ -272,7 +270,7 @@ internal class ClassResolver(
                         ErrorType.TMD3003,
                         classe,
                         $"La classe '{classe}' doit avoir au moins une `value` pour être définie comme `enum`.",
-                        classe.EnumOverride.DeclarationReference
+                        classe.EnumOverride.Declaration
                     );
                 }
                 else
@@ -327,14 +325,9 @@ internal class ClassResolver(
     {
         foreach (var classe in modelFiles.SelectMany(mf => mf.Classes).Where(c => c.ExtendsReference != null))
         {
-            if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
+            if (!referencedClasses.TryGetValue(classe.ExtendsReference!.Value, out var extends))
             {
-                yield return Error(
-                    ErrorType.TMD0002,
-                    [classe.ExtendsReference.ReferenceName],
-                    classe,
-                    classe.ExtendsReference
-                );
+                yield return Error(ErrorType.TMD0002, [classe.ExtendsReference.Value], classe, classe.ExtendsReference);
                 continue;
             }
 
@@ -345,7 +338,7 @@ internal class ClassResolver(
             {
                 yield return Error(
                     ErrorType.TMD3006,
-                    [classe.Name, classe.ExtendsReference.ReferenceName],
+                    [classe.Name, classe.ExtendsReference.Value],
                     classe,
                     classe.ExtendsReference
                 );
@@ -364,36 +357,21 @@ internal class ClassResolver(
 
             foreach (var implementReference in classe.ImplementReferences)
             {
-                if (!referencedClasses.TryGetValue(implementReference.ReferenceName, out var implements))
+                if (!referencedClasses.TryGetValue(implementReference.Value, out var implements))
                 {
-                    yield return Error(
-                        ErrorType.TMD0002,
-                        [implementReference.ReferenceName],
-                        classe,
-                        implementReference
-                    );
+                    yield return Error(ErrorType.TMD0002, [implementReference.Value], classe, implementReference);
                     continue;
                 }
 
                 if (implements.Type != ClassType.Interface)
                 {
-                    yield return Error(
-                        ErrorType.TMD3007,
-                        [implementReference.ReferenceName],
-                        classe,
-                        implementReference
-                    );
+                    yield return Error(ErrorType.TMD3007, [implementReference.Value], classe, implementReference);
                     continue;
                 }
 
                 if (classe.Type == ClassType.Interface)
                 {
-                    yield return Error(
-                        ErrorType.TMD3008,
-                        [implementReference.ReferenceName],
-                        classe,
-                        implementReference
-                    );
+                    yield return Error(ErrorType.TMD3008, [implementReference.Value], classe, implementReference);
                     continue;
                 }
 
@@ -409,7 +387,7 @@ internal class ClassResolver(
                 {
                     yield return Error(
                         ErrorType.TMD3022,
-                        [implementReference.ReferenceName, classe.Name],
+                        [implementReference.Value, classe.Name],
                         classe,
                         implementReference
                     );
@@ -435,11 +413,11 @@ internal class ClassResolver(
 
                 foreach (var propRef in index.PropertyReferences)
                 {
-                    var property = classe.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName);
+                    var property = classe.Properties.FirstOrDefault(p => p.Name == propRef.Value);
 
                     if (property == null)
                     {
-                        yield return Error(ErrorType.TMD0004, [propRef.ReferenceName, classe.Name], classe, propRef);
+                        yield return Error(ErrorType.TMD0004, [propRef.Value, classe.Name], classe, propRef);
                     }
                     else
                     {
@@ -471,13 +449,13 @@ internal class ClassResolver(
 
             if (classe.DefaultPropertyReference != null)
             {
-                classe.DefaultProperty = TryGetProperty(classe.DefaultPropertyReference.ReferenceName.ToPascalCase());
+                classe.DefaultProperty = TryGetProperty(classe.DefaultPropertyReference.Value.ToPascalCase());
 
                 if (classe.DefaultProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [classe.DefaultPropertyReference.ReferenceName, classe.Name],
+                        [classe.DefaultPropertyReference.Value, classe.Name],
                         classe,
                         classe.DefaultPropertyReference
                     );
@@ -491,13 +469,13 @@ internal class ClassResolver(
 
             if (classe.OrderPropertyReference != null)
             {
-                classe.OrderProperty = TryGetProperty(classe.OrderPropertyReference.ReferenceName.ToPascalCase());
+                classe.OrderProperty = TryGetProperty(classe.OrderPropertyReference.Value.ToPascalCase());
 
                 if (classe.OrderProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [classe.OrderPropertyReference.ReferenceName, classe.Name],
+                        [classe.OrderPropertyReference.Value, classe.Name],
                         classe,
                         classe.OrderPropertyReference
                     );
@@ -511,13 +489,13 @@ internal class ClassResolver(
 
             if (classe.FlagPropertyReference != null)
             {
-                classe.FlagProperty = TryGetProperty(classe.FlagPropertyReference.ReferenceName.ToPascalCase());
+                classe.FlagProperty = TryGetProperty(classe.FlagPropertyReference.Value.ToPascalCase());
 
                 if (classe.FlagProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [classe.FlagPropertyReference.ReferenceName, classe.Name],
+                        [classe.FlagPropertyReference.Value, classe.Name],
                         classe,
                         classe.FlagPropertyReference
                     );
@@ -531,13 +509,13 @@ internal class ClassResolver(
 
             if (classe.LocalePropertyReference != null)
             {
-                classe.LocaleProperty = TryGetProperty(classe.LocalePropertyReference.ReferenceName.ToPascalCase());
+                classe.LocaleProperty = TryGetProperty(classe.LocalePropertyReference.Value.ToPascalCase());
 
                 if (classe.LocaleProperty == null)
                 {
                     yield return Error(
                         ErrorType.TMD0004,
-                        [classe.LocalePropertyReference.ReferenceName, classe.Name],
+                        [classe.LocalePropertyReference.Value, classe.Name],
                         classe,
                         classe.LocalePropertyReference
                     );
@@ -554,14 +532,14 @@ internal class ClassResolver(
                 if (classe.DiscriminatorPropertyReference != null)
                 {
                     classe.DiscriminatorProperty = TryGetProperty(
-                        classe.DiscriminatorPropertyReference.ReferenceName.ToPascalCase()
+                        classe.DiscriminatorPropertyReference.Value.ToPascalCase()
                     );
 
                     if (classe.DiscriminatorProperty == null)
                     {
                         yield return Error(
                             ErrorType.TMD0004,
-                            [classe.DiscriminatorPropertyReference.ReferenceName, classe.Name],
+                            [classe.DiscriminatorPropertyReference.Value, classe.Name],
                             classe,
                             classe.DiscriminatorPropertyReference
                         );
@@ -569,7 +547,7 @@ internal class ClassResolver(
                 }
                 else
                 {
-                    classe.DiscriminatorProperty = new RegularProperty(new DeclarationReference())
+                    classe.DiscriminatorProperty = new RegularProperty(new Declaration())
                     {
                         OwnName = new LocatedString(new Scalar("Discriminator")),
                         Class = classe,
@@ -685,7 +663,7 @@ internal class ClassResolver(
             {
                 var classValue = new ClassValue
                 {
-                    Name = valueRef.Key.ReferenceName,
+                    Name = valueRef.Key.Value,
                     Class = classe,
                     Reference = valueRef.Key,
                 };
@@ -693,16 +671,11 @@ internal class ClassResolver(
 
                 foreach (var value in valueRef.Value)
                 {
-                    var property = classe.ExtendedProperties.FirstOrDefault(p => p.Name == value.Key.ReferenceName);
+                    var property = classe.ExtendedProperties.FirstOrDefault(p => p.Name == value.Key.Value);
 
                     if (property == null)
                     {
-                        yield return Error(
-                            ErrorType.TMD0004,
-                            [value.Key.ReferenceName, classe.Name],
-                            classe,
-                            value.Key
-                        );
+                        yield return Error(ErrorType.TMD0004, [value.Key.Value, classe.Name], classe, value.Key);
                     }
                     else
                     {
@@ -714,7 +687,7 @@ internal class ClassResolver(
                     p.Required
                     && (p.GeneratedValue == null || p.Association != null)
                     && !p.AssociationMultiple
-                    && !valueRef.Value.Any(v => v.Key.ReferenceName == p.Name)
+                    && !valueRef.Value.Any(v => v.Key.Value == p.Name)
                 );
 
                 if (missingRequiredProperties.Any())
@@ -722,7 +695,7 @@ internal class ClassResolver(
                     yield return new ModelError(
                         ErrorType.TMD3011,
                         classe,
-                        $"La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.",
+                        $"La valeur '{valueRef.Key.Value}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.",
                         valueRef.Key
                     );
                 }

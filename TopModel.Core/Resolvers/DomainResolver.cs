@@ -25,13 +25,13 @@ internal class DomainResolver(
 
             foreach (var varName in converter.VariableReferences)
             {
-                if (varName.ReferenceName.TryGetConverterVariable(out var variable))
+                if (varName.Value.TryGetConverterVariable(out var variable))
                 {
-                    converter.Variables.TryAdd(varName.ReferenceName, variable);
+                    converter.Variables.TryAdd(varName.Value, variable);
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], converter, varName);
+                    yield return Warning(ErrorType.TMD0011, [varName.Value], converter, varName);
                 }
             }
 
@@ -40,9 +40,9 @@ internal class DomainResolver(
 
             foreach (var dom in converter.DomainsFromReferences)
             {
-                if (!domains.TryGetValue(dom.ReferenceName, out var domain))
+                if (!domains.TryGetValue(dom.Value, out var domain))
                 {
-                    yield return Error(ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
+                    yield return Error(ErrorType.TMD0003, [dom.Value], converter, dom);
                     break;
                 }
 
@@ -51,9 +51,9 @@ internal class DomainResolver(
 
             foreach (var dom in converter.DomainsToReferences)
             {
-                if (!domains.TryGetValue(dom.ReferenceName, out var domain))
+                if (!domains.TryGetValue(dom.Value, out var domain))
                 {
-                    yield return Error(ErrorType.TMD0003, [dom.ReferenceName], converter, dom);
+                    yield return Error(ErrorType.TMD0003, [dom.Value], converter, dom);
                     break;
                 }
 
@@ -73,9 +73,9 @@ internal class DomainResolver(
         {
             foreach (var (asName, domainReference) in domain.AsDomainReferences)
             {
-                if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
+                if (!domains.TryGetValue(domainReference.Value, out var asDomain))
                 {
-                    yield return Error(ErrorType.TMD0003, [domainReference.ReferenceName], domain, domainReference);
+                    yield return Error(ErrorType.TMD0003, [domainReference.Value], domain, domainReference);
                     continue;
                 }
 
@@ -84,25 +84,25 @@ internal class DomainResolver(
 
             foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.DeclarationReference);
+                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.Declaration);
             }
 
             if (domain.Collection && !domain.Generic)
             {
-                yield return Error(ErrorType.TMD6004, [], domain, domain.DeclarationReference);
+                yield return Error(ErrorType.TMD6004, [], domain, domain.Declaration);
             }
 
             domain.Variables.Clear();
 
             foreach (var varName in domain.VariableReferences)
             {
-                if (varName.ReferenceName.TryGetPropertyVariable(config, domain.TemplateParameters, out var variable))
+                if (varName.Value.TryGetPropertyVariable(config, domain.TemplateParameters, out var variable))
                 {
-                    domain.Variables.TryAdd(varName.ReferenceName, variable);
+                    domain.Variables.TryAdd(varName.Value, variable);
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.ReferenceName], domain, varName);
+                    yield return Warning(ErrorType.TMD0011, [varName.Value], domain, varName);
                 }
             }
         }

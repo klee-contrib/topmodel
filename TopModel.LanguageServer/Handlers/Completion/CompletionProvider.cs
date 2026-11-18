@@ -3,8 +3,9 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
-namespace TopModel.LanguageServer.Handlers;
+namespace TopModel.LanguageServer.Handlers.Completion;
 
 /// <summary>
 /// Calcule les listes de complétion d'un fichier TMD à partir de son texte, de la position du curseur et des fichiers du modèle.
@@ -44,11 +45,10 @@ public class CompletionProvider(
     ];
 
     private readonly string currentLine = text.ElementAtOrDefault(position.Line) ?? string.Empty;
-    private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? completeRange;
+    private Range? completeRange;
     private string? searchText;
 
-    private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range CompleteRange =>
-        completeRange ??= GetCompleteRange();
+    private Range CompleteRange => completeRange ??= GetCompleteRange();
 
     private string SearchText => searchText ??= GetSearchText();
 
@@ -165,7 +165,7 @@ public class CompletionProvider(
                 .GetInAll(
                     f =>
                         f.Store.Files.Select(f => f.Name)
-                            .Except(f.File.Uses.Select(u => u.ReferenceName))
+                            .Except(f.File.Uses.Select(u => u.Value))
                             .Where(name => name != f.File.Name && name.ToLower().ShouldMatch(SearchText)),
                     f => f
                 )
@@ -294,7 +294,7 @@ public class CompletionProvider(
     {
         if (file.Uses.Count > 0)
         {
-            return file.Uses[^1].ToRange()!.Start.Line + 1;
+            return file.Uses[^1].ToRange().Start.Line + 1;
         }
         else if (text[0].StartsWith('-'))
         {
@@ -381,7 +381,7 @@ public class CompletionProvider(
             .FirstOrDefault();
     }
 
-    private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range GetCompleteRange()
+    private Range GetCompleteRange()
     {
         int start,
             end = currentLine.Length;
@@ -400,7 +400,7 @@ public class CompletionProvider(
             start = currentLine.IndexOf(SearchText);
         }
 
-        return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(position.Line, start, position.Line, end);
+        return new Range(position.Line, start, position.Line, end);
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ public class CompletionProvider(
                     currentFile.Uses.Count > 0
                         ? $"  - {modelFileName}{Environment.NewLine}"
                         : $"uses:{Environment.NewLine}  - {modelFileName}{Environment.NewLine}",
-                Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0),
+                Range = new Range(useIndex, 0, useIndex, 0),
             }
         );
     }

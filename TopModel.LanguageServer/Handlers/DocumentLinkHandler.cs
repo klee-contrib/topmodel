@@ -1,7 +1,7 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol;
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer.Handlers;
 
@@ -47,10 +47,7 @@ public class DocumentLinkHandler(LSWorkerStore workerStore) : DocumentLinkHandle
                         documentLinks.Add(
                             new DocumentLink()
                             {
-                                Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                    new Position(i, lineStart.Length),
-                                    new Position(i, text[i].Length)
-                                ),
+                                Range = new Range(new Position(i, lineStart.Length), new Position(i, text[i].Length)),
                                 Target = target,
                             }
                         );

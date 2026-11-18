@@ -1,10 +1,13 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol;
+﻿using System.Diagnostics.CodeAnalysis;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
+using Location = TopModel.Core.FileModel.Location;
+using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer;
 
@@ -75,6 +78,115 @@ public static class OmnisharpExtensions
             .Select(g => g.First());
     }
 
+    public static Locations GetLocationsForObjetAtPosition(
+        this ModelStore modelStore,
+        Position position,
+        ModelFile file,
+        bool includeTransitive = false
+    )
+    {
+        var (_, referencedObject) = file.GetObjetAtPosition(position);
+
+        var definedObjects = file
+            .Classes.Where(c =>
+                c.Name.Declaration!.Start.Line - 1 == position.Line || c.Declaration!.Start.Line - 1 == position.Line
+            )
+            .Cast<object>()
+            .Concat(
+                file.Annotations.Where(d =>
+                        d.Name.Declaration!.Start.Line - 1 == position.Line
+                        || d.Declaration!.Start.Line - 1 == position.Line
+                    )
+                    .Cast<object>()
+            )
+            .Concat(
+                file.Domains.Where(d =>
+                        d.Name.Declaration!.Start.Line - 1 == position.Line
+                        || d.Declaration!.Start.Line - 1 == position.Line
+                    )
+                    .Cast<object>()
+            )
+            .Concat(
+                file.Decorators.Where(d =>
+                        d.Name.Declaration!.Start.Line - 1 == position.Line
+                        || d.Declaration!.Start.Line - 1 == position.Line
+                    )
+                    .Cast<object>()
+            )
+            .Concat(
+                file.DataFlows.Where(d =>
+                        d.Name.Declaration!.Start.Line - 1 == position.Line
+                        || d.Declaration!.Start.Line - 1 == position.Line
+                    )
+                    .Cast<object>()
+            )
+            .Concat(
+                file.Endpoints.Where(d =>
+                        d.Name.Declaration!.Start.Line - 1 == position.Line
+                        || d.Declaration!.Start.Line - 1 == position.Line
+                    )
+                    .Cast<object>()
+            )
+            .Concat(file.Parameters.Where(d => d.Name.Declaration!.Start.Line - 1 == position.Line).Cast<object>())
+            .Concat(file.Properties.Where(p => p.Declaration!.Start.Line - 1 == position.Line))
+            .Concat(file.ReverseProperties.Where(p => p.Declaration!.Start.Line - 1 == position.Line));
+
+        var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
+
+        return new Locations(
+            definedObject ?? referencedObject,
+            new[] { definedObject!, referencedObject! }
+                .Where(o => o != null)
+                .SelectMany<object, (Location Reference, ModelFile File)>(objet =>
+                    objet switch
+                    {
+                        Class classe =>
+                        [
+                            (Reference: classe.Name.Declaration!, File: classe.ModelFile),
+                            .. modelStore.GetClassReferences(classe, includeTransitive),
+                        ],
+                        Domain domain =>
+                        [
+                            (Reference: domain.Name.Declaration!, File: domain.ModelFile),
+                            .. modelStore.GetDomainReferences(domain),
+                        ],
+                        Annotation annotation =>
+                        [
+                            (Reference: annotation.Name.Declaration!, File: annotation.ModelFile),
+                            .. modelStore.GetAnnotationReferences(annotation),
+                        ],
+                        Decorator decorator =>
+                        [
+                            (Reference: decorator.Name.Declaration!, File: decorator.ModelFile),
+                            .. modelStore.GetDecoratorReferences(decorator),
+                        ],
+                        DataFlow dataFlow =>
+                        [
+                            (Reference: dataFlow.Name.Declaration!, File: dataFlow.ModelFile),
+                            .. modelStore.GetDataFlowReferences(dataFlow),
+                        ],
+                        Endpoint endpoint =>
+                        [
+                            (Reference: endpoint.Name.Declaration!, File: endpoint.ModelFile),
+                            .. modelStore.GetEndpointReferences(endpoint),
+                        ],
+                        IProperty property =>
+                        [
+                            (Reference: property.Declaration!, File: property.ModelFile),
+                            .. modelStore.GetPropertyReferences(property, includeTransitive),
+                        ],
+                        TemplateParameter parameter =>
+                        [
+                            (Reference: parameter.Declaration!, File: parameter.ModelFile),
+                            .. modelStore.GetParameterReferences(parameter),
+                        ],
+                        _ => [],
+                    }
+                )
+                .Distinct()
+        );
+    }
+
     public static string? GetName(this object objet)
     {
         return objet switch
@@ -108,118 +220,6 @@ public static class OmnisharpExtensions
         return (matchedReference, matchedReference != null ? references[matchedReference] : null);
     }
 
-    public static References GetReferencesForPositionInFile(
-        this ModelStore modelStore,
-        Position position,
-        ModelFile file,
-        bool includeTransitive = false
-    )
-    {
-        var (_, referencedObject) = file.GetObjetAtPosition(position);
-
-        var definedObjects = file
-            .Classes.Where(c =>
-                c.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                || c.DeclarationReference!.Start.Line - 1 == position.Line
-            )
-            .Cast<object>()
-            .Concat(
-                file.Annotations.Where(d =>
-                        d.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                        || d.DeclarationReference!.Start.Line - 1 == position.Line
-                    )
-                    .Cast<object>()
-            )
-            .Concat(
-                file.Domains.Where(d =>
-                        d.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                        || d.DeclarationReference!.Start.Line - 1 == position.Line
-                    )
-                    .Cast<object>()
-            )
-            .Concat(
-                file.Decorators.Where(d =>
-                        d.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                        || d.DeclarationReference!.Start.Line - 1 == position.Line
-                    )
-                    .Cast<object>()
-            )
-            .Concat(
-                file.DataFlows.Where(d =>
-                        d.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                        || d.DeclarationReference!.Start.Line - 1 == position.Line
-                    )
-                    .Cast<object>()
-            )
-            .Concat(
-                file.Endpoints.Where(d =>
-                        d.Name.DeclarationReference!.Start.Line - 1 == position.Line
-                        || d.DeclarationReference!.Start.Line - 1 == position.Line
-                    )
-                    .Cast<object>()
-            )
-            .Concat(
-                file.Parameters.Where(d => d.Name.DeclarationReference!.Start.Line - 1 == position.Line).Cast<object>()
-            )
-            .Concat(file.Properties.Where(p => p.DeclarationReference!.Start.Line - 1 == position.Line))
-            .Concat(file.ReverseProperties.Where(p => p.DeclarationReference!.Start.Line - 1 == position.Line));
-
-        var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
-
-        return new References(
-            definedObject ?? referencedObject,
-            new[] { definedObject!, referencedObject! }
-                .Where(o => o != null)
-                .SelectMany<object, (Reference Reference, ModelFile File)>(objet =>
-                    objet switch
-                    {
-                        Class classe =>
-                        [
-                            (Reference: classe.Name.DeclarationReference!, File: classe.ModelFile),
-                            .. modelStore.GetClassReferences(classe, includeTransitive),
-                        ],
-                        Domain domain =>
-                        [
-                            (Reference: domain.Name.DeclarationReference!, File: domain.ModelFile),
-                            .. modelStore.GetDomainReferences(domain),
-                        ],
-                        Annotation annotation =>
-                        [
-                            (Reference: annotation.Name.DeclarationReference!, File: annotation.ModelFile),
-                            .. modelStore.GetAnnotationReferences(annotation),
-                        ],
-                        Decorator decorator =>
-                        [
-                            (Reference: decorator.Name.DeclarationReference!, File: decorator.ModelFile),
-                            .. modelStore.GetDecoratorReferences(decorator),
-                        ],
-                        DataFlow dataFlow =>
-                        [
-                            (Reference: dataFlow.Name.DeclarationReference!, File: dataFlow.ModelFile),
-                            .. modelStore.GetDataFlowReferences(dataFlow),
-                        ],
-                        Endpoint endpoint =>
-                        [
-                            (Reference: endpoint.Name.DeclarationReference!, File: endpoint.ModelFile),
-                            .. modelStore.GetEndpointReferences(endpoint),
-                        ],
-                        IProperty property =>
-                        [
-                            (Reference: property.DeclarationReference!, File: property.ModelFile),
-                            .. modelStore.GetPropertyReferences(property, includeTransitive),
-                        ],
-                        TemplateParameter parameter =>
-                        [
-                            (Reference: parameter.DeclarationReference!, File: parameter.ModelFile),
-                            .. modelStore.GetParameterReferences(parameter),
-                        ],
-                        _ => [],
-                    }
-                )
-                .Distinct()
-        );
-    }
-
     public static bool ShouldMatch(this string word, string otherword)
     {
         if (string.IsNullOrWhiteSpace(otherword))
@@ -240,11 +240,12 @@ public static class OmnisharpExtensions
         return true;
     }
 
-    public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? ToRange(this Reference? loc)
+    [return: NotNullIfNotNull(nameof(loc))]
+    public static Range? ToRange(this Location? loc)
     {
         return loc == null
             ? null
-            : new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+            : new Range(
                 (int)loc.Start.Line - 1,
                 (int)loc.Start.Column - 1,
                 (int)loc.End.Line - 1,
@@ -257,7 +258,7 @@ public static class OmnisharpExtensions
     /// </summary>
     public static WorkspaceEdit ToWorkspaceEdit(
         this ILanguageServerFacade facade,
-        IEnumerable<(ModelFile File, Reference Reference, string NewText)> edits
+        IEnumerable<(ModelFile File, Location Reference, string NewText)> edits
     )
     {
         return new()
@@ -266,7 +267,7 @@ public static class OmnisharpExtensions
                 .Select(e =>
                     (
                         Uri: facade.GetFilePath(e.File),
-                        Edit: new TextEdit { Range = e.Reference.ToRange()!, NewText = e.NewText }
+                        Edit: new TextEdit { Range = e.Reference.ToRange(), NewText = e.NewText }
                     )
                 )
                 .Distinct()

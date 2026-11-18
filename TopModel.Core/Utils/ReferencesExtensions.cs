@@ -16,7 +16,7 @@ public static class ReferencesExtensions
                 .AnnotationContainers.Where(c => c.Annotations.Select(d => d.Annotation).Contains(annotation))
                 .Select(c =>
                     (
-                        Reference: c.AnnotationReferences.FirstOrDefault(dr => dr.ReferenceName == annotation.Name)!,
+                        Reference: c.AnnotationReferences.FirstOrDefault(dr => dr.Value == annotation.Name)!,
                         File: c.ModelFile
                     )
                 )
@@ -28,7 +28,7 @@ public static class ReferencesExtensions
                         .Select(c =>
                             (
                                 Reference: c.ExcludedAnnotationReferences.FirstOrDefault(dr =>
-                                    dr.ReferenceName == annotation.Name
+                                    dr.Value == annotation.Name
                                 )!,
                                 File: c.ModelFile
                             )
@@ -42,7 +42,7 @@ public static class ReferencesExtensions
                         .Select(c =>
                             (
                                 Reference: c.PropertyAnnotationReferences.FirstOrDefault(dr =>
-                                    dr.ReferenceName == annotation.Name
+                                    dr.Value == annotation.Name
                                 )!,
                                 File: c.ModelFile
                             )
@@ -88,7 +88,7 @@ public static class ReferencesExtensions
                                     {
                                         Start = start,
                                         End = end,
-                                        ReferenceName = name,
+                                        Value = name,
                                     },
                                     o.File
                                 );
@@ -113,10 +113,7 @@ public static class ReferencesExtensions
                     modelStore
                         .Classes.Where(c => c.Implements.Contains(classe))
                         .Select(c =>
-                            (
-                                Reference: c.ImplementReferences.First(dr => dr.ReferenceName == classe.Name),
-                                File: c.ModelFile
-                            )
+                            (Reference: c.ImplementReferences.First(dr => dr.Value == classe.Name), File: c.ModelFile)
                         )
                 )
                 .Concat(
@@ -146,7 +143,7 @@ public static class ReferencesExtensions
         {
             return modelStore.DataFlows.SelectMany(d =>
                 d.DependsOn.Where(dd => dd == dataFlow)
-                    .Select(dd => (d.DependsOnReference.First(dr => dr.ReferenceName == dd.Name), d.ModelFile))
+                    .Select(dd => (d.DependsOnReference.First(dr => dr.Value == dd.Name), d.ModelFile))
             );
         }
 
@@ -155,10 +152,7 @@ public static class ReferencesExtensions
             return modelStore
                 .PropertyContainers.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
                 .Select(c =>
-                    (
-                        Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
-                        File: c.ModelFile
-                    )
+                    (Reference: c.DecoratorReferences.First(dr => dr.Value == decorator.Name), File: c.ModelFile)
                 )
                 .Concat(
                     modelStore
@@ -197,14 +191,14 @@ public static class ReferencesExtensions
                             c.DomainsFromReferences.Union(c.DomainsToReferences)
                                 .Select(d => (Reference: d, File: c.ModelFile))
                         )
-                        .Where(r => r.Reference.ReferenceName == domain.Name)
+                        .Where(r => r.Reference.Value == domain.Name)
                 )
                 .Concat(
                     modelStore
                         .Domains.Values.SelectMany(d =>
                             d.AsDomainReferences.Values.Select(adr => (Reference: adr, File: d.ModelFile))
                         )
-                        .Where(r => r.Reference.ReferenceName == domain.Name)
+                        .Where(r => r.Reference.Value == domain.Name)
                 )
                 .Where(l => l.Reference is not null)
                 .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
@@ -230,7 +224,7 @@ public static class ReferencesExtensions
                         .Select(v =>
                             (
                                 Reference: vc.VariableReferences.FirstOrDefault(vr =>
-                                    vr.ReferenceName == v.TemplateParameter!.Name
+                                    vr.Value == v.TemplateParameter!.Name
                                 )!,
                                 File: v.ModelFile
                             )
@@ -243,12 +237,8 @@ public static class ReferencesExtensions
                                 .Select(tp =>
                                     (
                                         Reference: ac
-                                            .AnnotationReferences.FirstOrDefault(ac =>
-                                                ac.ReferenceName == a.Annotation.Name
-                                            )
-                                            ?.ParameterReferences.Keys.FirstOrDefault(pr =>
-                                                pr.ReferenceName == tp.Name
-                                            )!,
+                                            .AnnotationReferences.FirstOrDefault(ac => ac.Value == a.Annotation.Name)
+                                            ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.Value == tp.Name)!,
                                         File: ac.ModelFile
                                     )
                                 )
@@ -262,12 +252,8 @@ public static class ReferencesExtensions
                                 .Select(tp =>
                                     (
                                         Reference: pc
-                                            .DecoratorReferences.FirstOrDefault(ac =>
-                                                ac.ReferenceName == d.Decorator.Name
-                                            )
-                                            ?.ParameterReferences.Keys.FirstOrDefault(pr =>
-                                                pr.ReferenceName == tp.Name
-                                            )!,
+                                            .DecoratorReferences.FirstOrDefault(ac => ac.Value == d.Decorator.Name)
+                                            ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.Value == tp.Name)!,
                                         File: pc.ModelFile
                                     )
                                 )
@@ -282,11 +268,9 @@ public static class ReferencesExtensions
                                     (
                                         Reference: pc
                                             .PropertyAnnotationReferences.FirstOrDefault(ac =>
-                                                ac.ReferenceName == d.Annotation.Name
+                                                ac.Value == d.Annotation.Name
                                             )
-                                            ?.ParameterReferences.Keys.FirstOrDefault(pr =>
-                                                pr.ReferenceName == tp.Name
-                                            )!,
+                                            ?.ParameterReferences.Keys.FirstOrDefault(pr => pr.Value == tp.Name)!,
                                         File: pc.ModelFile
                                     )
                                 )
@@ -300,7 +284,7 @@ public static class ReferencesExtensions
                             .Select(tp =>
                                 (
                                     Reference: ac.DomainReference?.ParameterReferences.Keys.FirstOrDefault(pr =>
-                                        pr.ReferenceName == tp.Name
+                                        pr.Value == tp.Name
                                     )!,
                                     File: ac.ModelFile
                                 )
@@ -330,7 +314,7 @@ public static class ReferencesExtensions
                                     {
                                         Start = start,
                                         End = end,
-                                        ReferenceName = name,
+                                        Value = name,
                                     },
                                     o.File
                                 );
@@ -358,7 +342,7 @@ public static class ReferencesExtensions
                 )
                 {
                     // Si le texte de la référence ne correspond pas au nom calculé, les décalages seraient faux.
-                    if (reference.ReferenceName != name)
+                    if (reference.Value != name)
                     {
                         continue;
                     }
@@ -438,7 +422,7 @@ public static class ReferencesExtensions
                 else if (alp.OriginalProperty?.Class == property.Class)
                 {
                     var excludeReference = alp.OriginalAliasProperty?.Reference?.ExcludeReferences.FirstOrDefault(er =>
-                        er.ReferenceName == property.Name
+                        er.Value == property.Name
                     );
                     if (excludeReference != null)
                     {
@@ -453,34 +437,34 @@ public static class ReferencesExtensions
                 {
                     foreach (var prop in index.PropertyReferences)
                     {
-                        if (prop.ReferenceName == property.Name)
+                        if (prop.Value == property.Name)
                         {
                             yield return (prop, property.Class.ModelFile);
                         }
                     }
                 }
 
-                if (property.Class.DefaultPropertyReference?.ReferenceName == property.Name)
+                if (property.Class.DefaultPropertyReference?.Value == property.Name)
                 {
                     yield return (property.Class.DefaultPropertyReference, property.Class.ModelFile);
                 }
 
-                if (property.Class.OrderPropertyReference?.ReferenceName == property.Name)
+                if (property.Class.OrderPropertyReference?.Value == property.Name)
                 {
                     yield return (property.Class.OrderPropertyReference, property.Class.ModelFile);
                 }
 
-                if (property.Class.FlagPropertyReference?.ReferenceName == property.Name)
+                if (property.Class.FlagPropertyReference?.Value == property.Name)
                 {
                     yield return (property.Class.FlagPropertyReference, property.Class.ModelFile);
                 }
 
-                if (property.Class.LocalePropertyReference?.ReferenceName == property.Name)
+                if (property.Class.LocalePropertyReference?.Value == property.Name)
                 {
                     yield return (property.Class.LocalePropertyReference, property.Class.ModelFile);
                 }
 
-                if (property.Class.DiscriminatorPropertyReference?.ReferenceName == property.Name)
+                if (property.Class.DiscriminatorPropertyReference?.Value == property.Name)
                 {
                     yield return (property.Class.DiscriminatorPropertyReference, property.Class.ModelFile);
                 }
@@ -492,9 +476,7 @@ public static class ReferencesExtensions
                 {
                     if (mappings.Mappings.ContainsKey(property))
                     {
-                        var reference = mappings.MappingReferences.Keys.FirstOrDefault(f =>
-                            f.ReferenceName == property.Name
-                        );
+                        var reference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.Value == property.Name);
                         if (reference != null)
                         {
                             yield return (reference, classe.ModelFile);
@@ -503,9 +485,7 @@ public static class ReferencesExtensions
 
                     if (mappings.Mappings.Any(m => m.Value == property))
                     {
-                        var reference = mappings.MappingReferences.Values.FirstOrDefault(f =>
-                            f.ReferenceName == property.Name
-                        );
+                        var reference = mappings.MappingReferences.Values.FirstOrDefault(f => f.Value == property.Name);
                         if (reference != null)
                         {
                             yield return (reference, classe.ModelFile);
@@ -525,9 +505,7 @@ public static class ReferencesExtensions
                 {
                     if (source.JoinProperties.Contains(property))
                     {
-                        var reference = source.JoinPropertyReferences.FirstOrDefault(f =>
-                            f.ReferenceName == property.Name
-                        );
+                        var reference = source.JoinPropertyReferences.FirstOrDefault(f => f.Value == property.Name);
                         if (reference != null)
                         {
                             yield return (reference, dataFlow.ModelFile);
@@ -547,7 +525,7 @@ public static class ReferencesExtensions
                 reference.Start.Line,
                 reference.Start.Column + offset + length
             ),
-            reference.ReferenceName.Substring(offset, length)
+            reference.Value.Substring(offset, length)
         );
     }
 }

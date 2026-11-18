@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public class Class(DeclarationReference declarationReference) : IPropertyContainer
+public class Class(Declaration declaration) : IPropertyContainer
 {
     private string? _pluralName;
 
@@ -128,11 +128,8 @@ public class Class(DeclarationReference declarationReference) : IPropertyContain
 
     public IList<AnnotationReference> PropertyAnnotationReferences { get; internal set; } = [];
 
-    public IDictionary<DeclarationReference, IDictionary<PropertyReference, string>> ValueReferences
-    {
-        get;
-        internal set;
-    } = new Dictionary<DeclarationReference, IDictionary<PropertyReference, string>>();
+    public IDictionary<Declaration, IDictionary<PropertyReference, string>> ValueReferences { get; internal set; } =
+        new Dictionary<Declaration, IDictionary<PropertyReference, string>>();
 
     public IList<PropertySource> PropertySourceOrder { get; internal set; } =
     [PropertySource.Properties, PropertySource.Implements, PropertySource.Decorators];
@@ -144,7 +141,7 @@ public class Class(DeclarationReference declarationReference) : IPropertyContain
     internal IEnumerable<IProperty> FromMapperOwnProperties =>
         FromMappers.SelectMany(fm => fm.OwnPropertyParams.Select(pp => pp.Property));
 
-    internal DeclarationReference DeclarationReference { get; } = declarationReference;
+    internal Declaration Declaration { get; } = declaration;
 
     internal IList<string> OwnTags { get; set; } = [];
 

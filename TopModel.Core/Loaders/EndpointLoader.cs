@@ -8,9 +8,9 @@ namespace TopModel.Core.Loaders;
 public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader
 {
     /// <inheritdoc cref="ILoader.Load" />
-    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, DeclarationReference reference)
+    public void Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config, Declaration declaration)
     {
-        var endpoint = new Endpoint(reference) { ModelFile = modelFile, Namespace = modelFile.Namespace };
+        var endpoint = new Endpoint(declaration) { ModelFile = modelFile, Namespace = modelFile.Namespace };
         modelFile.Endpoints.Add(endpoint);
 
         parser.ConsumeMapping(prop =>

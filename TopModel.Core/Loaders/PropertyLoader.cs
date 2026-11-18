@@ -13,7 +13,7 @@ public class PropertyLoader(FileChecker fileChecker)
         switch (parser.Current)
         {
             case Scalar { Value: "name" } s:
-                var rp = new RegularProperty(new DeclarationReference(s));
+                var rp = new RegularProperty(new Declaration(s));
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -94,7 +94,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException(
                                 modelFile,
                                 $"Propriété ${prop} inconnue pour une propriété",
-                                new DeclarationReference(propScalar)
+                                new Declaration(propScalar)
                             );
                     }
                 }
@@ -108,7 +108,7 @@ public class PropertyLoader(FileChecker fileChecker)
                 return rp;
 
             case Scalar { Value: "association" } s:
-                var ap = new AssociationProperty(new DeclarationReference(s))
+                var ap = new AssociationProperty(new Declaration(s))
                 {
                     DefaultAssociationUseClass = config.DefaultAssociationUseClass,
                 };
@@ -156,7 +156,7 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "withReverse":
                             if (value?.Value != "false")
                             {
-                                ap.WithReverse = new(new DeclarationReference(prop)) { Property = ap };
+                                ap.WithReverse = new(new Declaration(prop)) { Property = ap };
 
 #pragma warning disable S3247
                                 if (parser.Current is MappingStart)
@@ -269,7 +269,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException(
                                 modelFile,
                                 $"Propriété ${prop.Value} inconnue pour une propriété",
-                                new DeclarationReference(prop)
+                                new Declaration(prop)
                             );
                     }
                 }
@@ -283,13 +283,13 @@ public class PropertyLoader(FileChecker fileChecker)
 
                 if (ap.Multiple && ap.WithReverse == null)
                 {
-                    ap.WithReverse = new(ap.DeclarationReference) { Property = ap };
+                    ap.WithReverse = new(ap.Declaration) { Property = ap };
                 }
 
                 return ap;
 
             case Scalar { Value: "composition" } s:
-                var cp = new CompositionProperty(new DeclarationReference(s));
+                var cp = new CompositionProperty(new Declaration(s));
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -367,7 +367,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException(
                                 modelFile,
                                 $"Propriété ${prop} inconnue pour une propriété",
-                                new DeclarationReference(propScalar)
+                                new Declaration(propScalar)
                             );
                     }
                 }
@@ -424,14 +424,14 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException(
                                 modelFile,
                                 $"Propriété '{prop}' inconnue pour un alias",
-                                new DeclarationReference(propScalar)
+                                new Declaration(propScalar)
                             );
                     }
                 }
 
                 parser.Consume<MappingEnd>();
 
-                var alp = new AliasProperty(new DeclarationReference(s)) { Reference = aliasReference };
+                var alp = new AliasProperty(new Declaration(s)) { Reference = aliasReference };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -552,7 +552,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             throw new ModelException(
                                 modelFile,
                                 $"Propriété ${prop} inconnue pour une propriété",
-                                new DeclarationReference(propScalar)
+                                new Declaration(propScalar)
                             );
                     }
                 }
@@ -568,7 +568,7 @@ public class PropertyLoader(FileChecker fileChecker)
                 throw new ModelException(
                     modelFile,
                     $"Le premier attribut de la propriété doit être `name`, `alias`, `association` ou `composition` (ici ${sc.Value})",
-                    new DeclarationReference(sc)
+                    new Declaration(sc)
                 );
             default:
                 throw new ModelException(modelFile, "Type de propriété inconnu.");
