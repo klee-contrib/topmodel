@@ -1,6 +1,5 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
-using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
@@ -55,7 +54,7 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public PropertyMapping? PropertyMapping { get; set; }
 
-    public virtual string? Role { get; set; }
+    public virtual LocatedString? Role { get; set; }
 
     public virtual bool Multiple { get; set; }
 
@@ -117,7 +116,9 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public IList<string>? Tags { get; set; }
 
-    public string Name => this.GetAssociationName();
+    public IList<NameSegment> NameSegments => this.GetAssociationNameSegments();
+
+    public IList<NameSegment> PropertyNameSegments => this.GetAssociationNameSegments(forcePropertyName: true);
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + RawSqlName;
 
@@ -144,6 +145,9 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public ClassReference Reference { get; set; } = null!;
 
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [(Reference, Association), (PropertyReference!, Property)];
+
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal string RawSqlName
@@ -153,19 +157,13 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
             var sqlName = CoreUtils.GetSqlName(Property);
             if (!string.IsNullOrWhiteSpace(Role))
             {
-                sqlName += UseLegacyRoleName ? $"_{Role.Replace(' ', '_').ToUpper()}" : $"_{Role.ToConstantCase()}";
+                sqlName += $"_{Role.ToConstantCase()}";
             }
             return sqlName;
         }
     }
 
     internal virtual bool DefaultAssociationUseClass { get; init; }
-
-    internal virtual bool UseLegacyRoleName { get; init; }
-
-    string IProperty.TrueNamePascal => this.GetAssociationName(pascalCase: true);
-
-    string IProperty.TruePropertyNamePascal => this.GetAssociationName(pascalCase: true, forcePropertyName: true);
 
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
@@ -192,7 +190,6 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
             Role = Role,
             Tags = Tags,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
         };
 
         if (_useClass.HasValue)
@@ -245,7 +242,6 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
             Role = Role,
             Tags = Tags,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName,
             WithReverse = WithReverse,
         };
 
@@ -264,6 +260,6 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public override string ToString()
     {
-        return Name;
+        return ((IProperty)this).Name;
     }
 }

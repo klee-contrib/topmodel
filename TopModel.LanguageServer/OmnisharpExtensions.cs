@@ -95,12 +95,15 @@ public static class OmnisharpExtensions
     {
         var references = file.References;
 
-        var matchedReference = references.Keys.SingleOrDefault(reference =>
-            reference.Start.Line - 1 <= position.Line
-            && position.Line <= reference.End.Line - 1
-            && reference.Start.Column - 1 <= position.Character
-            && position.Character <= reference.End.Column - 1
-        );
+        var matchedReference = references
+            .Keys.Where(reference =>
+                reference.Start.Line - 1 <= position.Line
+                && position.Line <= reference.End.Line - 1
+                && reference.Start.Column - 1 <= position.Character
+                && position.Character <= reference.End.Column - 1
+            )
+            .OrderBy(r => r.End.Index - r.Start.Index)
+            .FirstOrDefault();
 
         return (matchedReference, matchedReference != null ? references[matchedReference] : null);
     }

@@ -4,8 +4,7 @@ public record ModelFileLoadConfig(
     string App,
     string ModelRoot,
     bool DefaultAssociationUseClass,
-    bool PluralizeTableNames,
-    bool UseLegacyRoleNames
+    bool PluralizeTableNames
 )
 {
     public string GetFileName(string filePath)

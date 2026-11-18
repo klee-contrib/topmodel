@@ -111,7 +111,6 @@ public class PropertyLoader(FileChecker fileChecker)
                 var ap = new AssociationProperty(new DeclarationReference(s))
                 {
                     DefaultAssociationUseClass = config.DefaultAssociationUseClass,
-                    UseLegacyRoleName = config.UseLegacyRoleNames,
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -125,7 +124,7 @@ public class PropertyLoader(FileChecker fileChecker)
                             ap.Reference = new ClassReference(value!);
                             break;
                         case "role":
-                            ap.Role = value!.Value;
+                            ap.Role = new LocatedString(value!);
                             break;
                         case "multiple":
                             ap.Multiple = value!.Value == "true";

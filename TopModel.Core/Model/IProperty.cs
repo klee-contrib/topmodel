@@ -1,19 +1,24 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
 public interface IProperty : IAnnotationContainer
 {
-    string Name { get; }
+    string Name => NameSegments.Name;
 
-    string NamePascal => Parent.PreservePropertyCasing ? Name : TrueNamePascal;
+    IList<NameSegment> NameSegments { get; }
 
-    string NameCamel => Parent.PreservePropertyCasing ? Name : TrueNamePascal.ToFirstLower();
+    IList<NameSegment> PropertyNameSegments { get; }
 
-    string PropertyNamePascal => Parent.PreservePropertyCasing ? Name : TruePropertyNamePascal;
+    string NamePascal => Parent.PreservePropertyCasing ? Name : NameSegments.NamePascal;
 
-    string PropertyNameCamel => Parent.PreservePropertyCasing ? Name : TruePropertyNamePascal.ToFirstLower();
+    string NameCamel => Parent.PreservePropertyCasing ? Name : NamePascal.ToFirstLower();
+
+    string PropertyNamePascal => Parent.PreservePropertyCasing ? Name : PropertyNameSegments.NamePascal;
+
+    string PropertyNameCamel => Parent.PreservePropertyCasing ? Name : PropertyNamePascal.ToFirstLower();
 
     string SqlName { get; }
 
@@ -76,9 +81,7 @@ public interface IProperty : IAnnotationContainer
 
     GeneratedValueDefinition? GeneratedValue => this.Association == null ? Domain?.GeneratedValue : null;
 
-    internal string TrueNamePascal { get; }
-
-    internal string TruePropertyNamePascal { get; }
+    IEnumerable<(Reference Reference, object Target)> References { get; }
 
     internal ParamLocation? OwnLocation { get; }
 

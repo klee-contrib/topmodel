@@ -91,15 +91,7 @@ public class RenameHandler(LSWorkerStore workerStore, ILanguageServerFacade faca
         }
 
         var references = allReferences.SelectMany(r => r).ToList();
-        if (
-            references.Count == 0
-            || !references.TrueForAll(r =>
-                r.Reference.ReferenceName == objetName
-                || r.Reference is ClassReference
-                || r.Reference is EndpointReference
-            )
-            || references.TrueForAll(r => r.Reference.ReferenceName != objetName)
-        )
+        if (references.Count == 0)
         {
             return null;
         }

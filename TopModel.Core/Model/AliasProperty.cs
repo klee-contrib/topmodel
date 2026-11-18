@@ -1,5 +1,4 @@
-﻿using System.Text;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
@@ -62,44 +61,113 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     public LocatedString? OwnName { get; set; }
 
-    public string Name
+    public IList<NameSegment> NameSegments
     {
         get
         {
-            var name = new StringBuilder();
+            var segments = new List<NameSegment>();
 
             if (Prefix is LocatedString prefix)
             {
-                name.Append(prefix);
+                segments.Add(new NameSegment.Text(prefix));
             }
-            else if (Prefix is true)
+            else if (Prefix is true && OriginalProperty != null)
             {
-                name.Append(OriginalProperty?.Parent.Name);
+                if (OriginalProperty.Class != null)
+                {
+                    segments.Add(new NameSegment.ClassName(OriginalProperty.Class));
+                }
+                else
+                {
+                    segments.Add(new NameSegment.Text(OriginalProperty.Parent.Name));
+                }
             }
 
             if (OwnName != null)
             {
-                name.Append(OwnName.Value);
+                segments.AddRange(new NameSegment.Text(OwnName));
             }
             else if (_property is AssociationProperty && Composition == null)
             {
-                name.Append(this.GetAssociationName());
+                segments.AddRange(this.GetAssociationNameSegments());
             }
-            else
+            else if (_property != null)
             {
-                name.Append(_property?.Name);
+                segments.Add(new NameSegment.PropertyName(_property));
             }
 
             if (Suffix is LocatedString suffix)
             {
-                name.Append(suffix);
+                segments.Add(new NameSegment.Text(suffix));
             }
-            else if (Suffix is true)
+            else if (Suffix is true && OriginalProperty != null)
             {
-                name.Append(OriginalProperty?.Parent.Name);
+                if (OriginalProperty.Class != null)
+                {
+                    segments.Add(new NameSegment.ClassName(OriginalProperty.Class));
+                }
+                else
+                {
+                    segments.Add(new NameSegment.Text(OriginalProperty.Parent.Name));
+                }
             }
 
-            return name.ToString();
+            return segments;
+        }
+    }
+
+    public IList<NameSegment> PropertyNameSegments
+    {
+        get
+        {
+            var segments = new List<NameSegment>();
+
+            if (Prefix is LocatedString prefix)
+            {
+                segments.Add(new NameSegment.Text(prefix));
+            }
+            else if (Prefix is true && OriginalProperty != null)
+            {
+                if (OriginalProperty.Class != null)
+                {
+                    segments.Add(new NameSegment.ClassName(OriginalProperty.Class));
+                }
+                else
+                {
+                    segments.Add(new NameSegment.Text(OriginalProperty.Parent.Name));
+                }
+            }
+
+            if (OwnName != null)
+            {
+                segments.AddRange(new NameSegment.Text(OwnName));
+            }
+            else if (_property is AssociationProperty && Composition == null)
+            {
+                segments.AddRange(this.GetAssociationNameSegments(forcePropertyName: true));
+            }
+            else if (_property != null)
+            {
+                segments.Add(new NameSegment.PropertyName(_property));
+            }
+
+            if (Suffix is LocatedString suffix)
+            {
+                segments.Add(new NameSegment.Text(suffix));
+            }
+            else if (Suffix is true && OriginalProperty != null)
+            {
+                if (OriginalProperty.Class != null)
+                {
+                    segments.Add(new NameSegment.ClassName(OriginalProperty.Class));
+                }
+                else
+                {
+                    segments.Add(new NameSegment.Text(OriginalProperty.Parent.Name));
+                }
+            }
+
+            return segments;
         }
     }
 
@@ -287,91 +355,30 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
         set => _paramLocation = value;
     }
 
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [
+            (Reference?.ClassReference!, OriginalProperty?.Class!),
+            (Reference?.EndpointReference!, OriginalProperty?.Endpoint!),
+            (Reference?.DecoratorReference!, OriginalProperty?.Decorator!),
+            (PropertyReference!, OriginalProperty!),
+            (DomainReference!, Domain?.Domain!),
+            (CompositionReference!, Composition!),
+            .. Reference?.ExcludeReferences?.Select(er =>
+                (
+                    er as Reference,
+                    OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName)! as object
+                )
+            )
+                ?? [],
+            .. DomainReference?.ParameterReferences.Keys.Select(
+                (pr, i) => (pr as Reference, Domain?.TemplateParameters.ElementAtOrDefault(i)! as object)
+            )
+                ?? [],
+        ];
+
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
-
-    string IProperty.TrueNamePascal
-    {
-        get
-        {
-            var name = new StringBuilder();
-
-            if (Prefix is LocatedString prefix)
-            {
-                name.Append(prefix.ToFirstUpper());
-            }
-            else if (Prefix is true)
-            {
-                name.Append(OriginalProperty?.Parent.NamePascal);
-            }
-
-            if (OwnName != null)
-            {
-                name.Append(OwnName.ToPascalCase(strictIfUppercase: true));
-            }
-            else if (_property is AssociationProperty && Composition == null)
-            {
-                name.Append(this.GetAssociationName(pascalCase: true));
-            }
-            else
-            {
-                name.Append(_property?.TrueNamePascal);
-            }
-
-            if (Suffix is LocatedString suffix)
-            {
-                name.Append(suffix);
-            }
-            else if (Suffix is true)
-            {
-                name.Append(OriginalProperty?.Parent.NamePascal);
-            }
-
-            return name.ToString();
-        }
-    }
-
-    string IProperty.TruePropertyNamePascal
-    {
-        get
-        {
-            var name = new StringBuilder();
-
-            if (Prefix is LocatedString prefix)
-            {
-                name.Append(prefix.ToFirstUpper());
-            }
-            else if (Prefix is true)
-            {
-                name.Append(OriginalProperty?.Parent.NamePascal);
-            }
-
-            if (OwnName != null)
-            {
-                name.Append(OwnName.ToPascalCase(strictIfUppercase: true));
-            }
-            else if (_property is AssociationProperty && Composition == null)
-            {
-                name.Append(this.GetAssociationName(pascalCase: true, forcePropertyName: true));
-            }
-            else
-            {
-                name.Append(_property?.TrueNamePascal);
-            }
-
-            if (Suffix is LocatedString suffix)
-            {
-                name.Append(suffix);
-            }
-            else if (Suffix is true)
-            {
-                name.Append(OriginalProperty?.Parent.NamePascal);
-            }
-
-            return name.ToString();
-        }
-    }
 
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;
 
@@ -496,7 +503,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     public override string ToString()
     {
-        return Name;
+        return ((IProperty)this).Name;
     }
 
     internal AliasProperty Clone(IProperty prop, PropertyReference? includeReference)

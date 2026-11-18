@@ -27,7 +27,11 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
             files
                 .SelectMany(f =>
                     f.File.Classes.Select(c =>
-                        (Declaration: c.DeclarationReference!, References: f.Store.GetClassReferences(c))
+                        (
+                            Declaration: c.DeclarationReference!,
+                            References: f.Store.GetClassReferences(c)
+                                .Select(cr => (Reference: cr.Reference as Reference, File: cr.File))
+                        )
                     )
                 )
                 .Concat(
