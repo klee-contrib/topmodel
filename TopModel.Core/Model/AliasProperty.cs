@@ -355,6 +355,27 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
         set => _paramLocation = value;
     }
 
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [
+            (Reference?.ClassReference!, OriginalProperty?.Class!),
+            (Reference?.EndpointReference!, OriginalProperty?.Endpoint!),
+            (Reference?.DecoratorReference!, OriginalProperty?.Decorator!),
+            (PropertyReference!, OriginalProperty!),
+            (DomainReference!, Domain?.Domain!),
+            (CompositionReference!, Composition!),
+            .. Reference?.ExcludeReferences?.Select(er =>
+                (
+                    er as Reference,
+                    OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName)! as object
+                )
+            )
+                ?? [],
+            .. DomainReference?.ParameterReferences.Keys.Select(
+                (pr, i) => (pr as Reference, Domain?.TemplateParameters.ElementAtOrDefault(i)! as object)
+            )
+                ?? [],
+        ];
+
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }

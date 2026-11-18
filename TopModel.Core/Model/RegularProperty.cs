@@ -94,6 +94,15 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
         set => _paramLocation = value;
     }
 
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [
+            (DomainReference, Domain?.Domain!),
+            .. DomainReference?.ParameterReferences.Keys.Select(
+                (pr, i) => (pr as Reference, Domain?.TemplateParameters.ElementAtOrDefault(i)! as object)
+            )
+                ?? [],
+        ];
+
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     ParamLocation? IProperty.OwnLocation => _paramLocation ?? Domain?.ParamLocation;

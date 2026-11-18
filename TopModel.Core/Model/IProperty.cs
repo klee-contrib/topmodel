@@ -81,6 +81,8 @@ public interface IProperty : IAnnotationContainer
 
     GeneratedValueDefinition? GeneratedValue => this.Association == null ? Domain?.GeneratedValue : null;
 
+    IEnumerable<(Reference Reference, object Target)> References { get; }
+
     internal ParamLocation? OwnLocation { get; }
 
     IProperty CloneDefinition();

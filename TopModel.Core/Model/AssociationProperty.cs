@@ -145,6 +145,9 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public ClassReference Reference { get; set; } = null!;
 
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [(Reference, Association), (PropertyReference!, Property)];
+
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 
     internal string RawSqlName

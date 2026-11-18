@@ -9,8 +9,6 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
 
     public Class Composition { get; set; } = null!;
 
-    public string Name => OwnName.Value;
-
     public LocatedString OwnName { get; set; } = null!;
 
     public string SqlName => CoreUtils.GetSqlTrigram(FinalTrigram) + CoreUtils.GetSqlName(this);
@@ -100,6 +98,16 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
     public DomainReference? DomainReference { get; set; }
 
     public ClassReference Reference { get; set; } = null!;
+
+    public IEnumerable<(Reference Reference, object Target)> References =>
+        [
+            (Reference, Composition),
+            (DomainReference!, Domain?.Domain!),
+            .. DomainReference?.ParameterReferences.Keys.Select(
+                (pr, i) => (pr as Reference, Domain?.TemplateParameters.ElementAtOrDefault(i)! as object)
+            )
+                ?? [],
+        ];
 
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 

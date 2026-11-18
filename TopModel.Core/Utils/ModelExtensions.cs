@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using YamlDotNet.Core;
 
 namespace TopModel.Core.Utils;
 
@@ -12,10 +13,10 @@ public static class ModelExtensions
             {
                 Class c => c.DeclarationReference,
                 Endpoint e => e.DeclarationReference,
-                RegularProperty p => p.DeclarationReference,
+                RegularProperty p => p.OwnName.DeclarationReference,
                 AssociationProperty p => p.DeclarationReference,
-                CompositionProperty p => p.DeclarationReference,
-                AliasProperty p => p.DeclarationReference,
+                CompositionProperty p => p.OwnName.DeclarationReference,
+                AliasProperty p => p.OwnName?.DeclarationReference ?? p.DeclarationReference,
                 Domain d => d.DeclarationReference,
                 LocatedString l => l.DeclarationReference,
                 Decorator d => d.DeclarationReference,
@@ -122,7 +123,7 @@ public static class ModelExtensions
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
-    public static IEnumerable<(Reference Reference, ModelFile File)> GetClassReferences(
+    public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(
         this ModelStore modelStore,
         Class classe,
         bool includeTransitive = false
@@ -134,49 +135,58 @@ public static class ModelExtensions
                 || p is AssociationProperty ap && ap.Association == classe
                 || p is CompositionProperty cp && cp.Composition == classe
             )
-            .SelectMany<IProperty, (Reference Reference, ModelFile File)>(p =>
+            .Select(p =>
             {
-                return
-                [
-                    (
-                        Reference: p switch
-                        {
-                            AssociationProperty ap => ap.Reference,
-                            CompositionProperty cp => cp.Reference,
-                            AliasProperty alp => alp.Reference?.ClassReference!,
-                            _ => null!, // Impossible
-                        },
-                        File: p.ModelFile
-                    ),
-                    .. includeTransitive
-                    && (
-                        p is AssociationProperty { ClassName: null }
-                        || p is AliasProperty a && (a.Prefix is true || a.Suffix is true)
-                    )
-                        ? modelStore.GetPropertyReferences(p, includeTransitive)
-                        : [],
-                ];
+                return (
+                    Reference: p switch
+                    {
+                        AssociationProperty ap => ap.Reference,
+                        CompositionProperty cp => cp.Reference,
+                        AliasProperty alp => alp.Reference?.ClassReference!,
+                        _ => null!, // Impossible
+                    },
+                    File: p.ModelFile
+                );
             })
+            .Concat(
+                includeTransitive
+                    ? modelStore
+                        .GetNameOccurrences(classe)
+                        .Select(o =>
+                        {
+                            var (start, end, name) = SubRange(o.Reference, o.Offset, o.Length);
+                            return (
+                                Reference: new ClassReference
+                                {
+                                    Start = start,
+                                    End = end,
+                                    ReferenceName = name,
+                                },
+                                o.File
+                            );
+                        })
+                    : []
+            )
             .Concat(
                 modelStore
                     .Properties.OfType<AliasProperty>()
                     .Where(alp => alp.CompositionReference != null && alp.Composition == classe)
                     .Select(p =>
                     {
-                        return (Reference: p.CompositionReference! as Reference, File: p.ModelFile);
+                        return (Reference: p.CompositionReference!, File: p.ModelFile);
                     })
             )
             .Concat(
                 modelStore
                     .Classes.Where(c => c.Extends == classe)
-                    .Select(c => (Reference: c.ExtendsReference! as Reference, File: c.ModelFile))
+                    .Select(c => (Reference: c.ExtendsReference!, File: c.ModelFile))
             )
             .Concat(
                 modelStore
                     .Classes.Where(c => c.Implements.Contains(classe))
                     .Select(c =>
                         (
-                            Reference: c.ImplementReferences.First(dr => dr.ReferenceName == classe.Name) as Reference,
+                            Reference: c.ImplementReferences.First(dr => dr.ReferenceName == classe.Name),
                             File: c.ModelFile
                         )
                     )
@@ -184,12 +194,12 @@ public static class ModelExtensions
             .Concat(
                 modelStore
                     .DataFlows.Where(d => d.Class == classe)
-                    .Select(d => (Reference: d.ClassReference as Reference, File: d.ModelFile))
+                    .Select(d => (Reference: d.ClassReference, File: d.ModelFile))
             )
             .Concat(
                 modelStore.DataFlows.SelectMany(d =>
                     d.Sources.Where(s => s.Class == classe)
-                        .Select(s => (Reference: s.ClassReference as Reference, File: d.ModelFile))
+                        .Select(s => (Reference: s.ClassReference, File: d.ModelFile))
                 )
             )
             .Concat(
@@ -197,7 +207,7 @@ public static class ModelExtensions
                     c.FromMappers.SelectMany(c => c.ClassParams)
                         .Concat(c.ToMappers)
                         .Where(m => m.Class == classe)
-                        .Select(m => (Reference: m.ClassReference as Reference, File: c.ModelFile))
+                        .Select(m => (Reference: m.ClassReference, File: c.ModelFile))
                 )
             )
             .Where(r => r.Reference is not null)
@@ -375,32 +385,74 @@ public static class ModelExtensions
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
-    public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(
+    public static IEnumerable<(PropertyReference Reference, ModelFile File)> GetPropertyReferences(
         this ModelStore modelStore,
         IProperty property,
         bool includeTransitive = false
     )
     {
-        return modelStore.GetPropertyReferencesCore(property, includeTransitive, includeTransitive).Distinct();
+        return modelStore
+            .GetPropertyReferencesCore(property, includeTransitive)
+            .Concat(
+                includeTransitive
+                    ? modelStore
+                        .GetNameOccurrences(property)
+                        .Select(o =>
+                        {
+                            var (start, end, name) = SubRange(o.Reference, o.Offset, o.Length);
+                            return (
+                                Reference: new PropertyReference
+                                {
+                                    Start = start,
+                                    End = end,
+                                    ReferenceName = name,
+                                },
+                                o.File
+                            );
+                        })
+                    : []
+            )
+            .Distinct();
     }
 
-    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(
-        this ModelStore modelStore,
-        IProperty property,
-        bool collectBackward = false,
-        bool collectForward = false
-    )
+    private static IEnumerable<(
+        PropertyReference Reference,
+        ModelFile File,
+        int Offset,
+        int Length
+    )> GetNameOccurrences(this ModelStore modelStore, object target)
     {
-        if (collectBackward && property is AliasProperty ap)
+        foreach (var property in modelStore.Properties)
         {
-            yield return (ap.OriginalProperty!.DeclarationReference!, ap.OriginalProperty.ModelFile);
-
-            foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
+            var portions = property.NameSegments.Targets.Where(t => t.Target == target).ToList();
+            if (portions.Count == 0)
             {
-                yield return result;
+                continue;
+            }
+
+            var name = property.Name;
+            foreach (var (reference, file) in modelStore.GetPropertyReferencesCore(property, includeTransitive: true))
+            {
+                // Si le texte de la référence ne correspond pas au nom calculé, les décalages seraient faux.
+                if (reference.ReferenceName != name)
+                {
+                    continue;
+                }
+
+                foreach (var (offset, length, _) in portions)
+                {
+                    yield return (reference, file, offset, length);
+                }
             }
         }
+    }
 
+    private static IEnumerable<(PropertyReference Reference, ModelFile File)> GetPropertyReferencesCore(
+        this ModelStore modelStore,
+        IProperty property,
+        bool includeTransitive
+    )
+    {
         if (property.Decorator != null)
         {
             foreach (
@@ -409,7 +461,7 @@ public static class ModelExtensions
                 )
             )
             {
-                foreach (var result in modelStore.GetPropertyReferencesCore(p, collectBackward: false, collectForward))
+                foreach (var result in modelStore.GetPropertyReferencesCore(p, includeTransitive))
                 {
                     yield return result;
                 }
@@ -434,9 +486,7 @@ public static class ModelExtensions
                     )
                 )
                 {
-                    foreach (
-                        var result in modelStore.GetPropertyReferencesCore(p, collectBackward: false, collectForward)
-                    )
+                    foreach (var result in modelStore.GetPropertyReferencesCore(p, includeTransitive))
                     {
                         yield return result;
                     }
@@ -448,15 +498,15 @@ public static class ModelExtensions
         {
             if (alp.OriginalProperty == property)
             {
-                var reference = alp.PropertyReference ?? alp.Reference?.ContainerReference;
+                var reference = alp.PropertyReference;
                 if (reference != null)
                 {
                     yield return (reference, alp.ModelFile);
                 }
 
-                if (collectForward)
+                if (includeTransitive)
                 {
-                    foreach (var result in modelStore.GetPropertyReferencesCore(alp, collectForward: true))
+                    foreach (var result in modelStore.GetPropertyReferencesCore(alp, includeTransitive))
                     {
                         yield return result;
                     }
@@ -560,5 +610,18 @@ public static class ModelExtensions
                 }
             }
         }
+    }
+
+    private static (Mark Start, Mark End, string Name) SubRange(Reference reference, int offset, int length)
+    {
+        return (
+            new Mark(reference.Start.Index + offset, reference.Start.Line, reference.Start.Column + offset),
+            new Mark(
+                reference.Start.Index + offset + length,
+                reference.Start.Line,
+                reference.Start.Column + offset + length
+            ),
+            reference.ReferenceName.Substring(offset, length)
+        );
     }
 }
