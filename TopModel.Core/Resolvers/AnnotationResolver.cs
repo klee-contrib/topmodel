@@ -70,11 +70,7 @@ public class AnnotationResolver(
 
             if (annotation.TemplateParameters.Any() && annotation.Global)
             {
-                yield return new ModelError(
-                    ErrorType.TMD2005,
-                    annotation,
-                    "Une annotation globale ne peut pas définir de paramètres."
-                );
+                yield return Error(ErrorType.TMD2005, [], annotation);
             }
         }
 
@@ -151,10 +147,7 @@ public class AnnotationResolver(
                     !globalExclusions.Contains(annotation)
                     && !annotationsToResolve.Any(a => a.Annotation == annotation)
                     && (
-                        annotation.Target.Count == 0
-                            && container is not Decorator
-                            && container is not Domain
-                            && container is not AliasProperty
+                        annotation.Target.Count == 0 && container is not Decorator and not Domain and not AliasProperty
                         || container is Class && annotation.Target.Contains(Target.Class)
                         || container is Endpoint
                             && (
@@ -223,22 +216,17 @@ public class AnnotationResolver(
             if (!referencedAnnotations.TryGetValue(annotationRef.Value, out var annotation))
             {
                 isError = true;
-                yield return new ModelError(
-                    ErrorType.TMD2001,
-                    container,
-                    $"L'annotation '{annotationRef.Value}' est introuvable dans le fichier ou l'une de ses dépendances.",
-                    annotationRef
-                );
+                yield return Error(ErrorType.TMD2001, [annotationRef.Value], container, annotationRef);
             }
             else
             {
                 if (annotationsToResolve.Any(d => d.Annotation == annotation))
                 {
                     isError = true;
-                    yield return new ModelError(
+                    yield return Error(
                         ErrorType.TMD2002,
+                        [annotationRef.Value, container.Name],
                         container,
-                        $"L'annotation '{annotationRef.Value}' est déjà présente dans la liste des annotations de l'objet.",
                         annotationRef
                     );
                 }
@@ -264,10 +252,10 @@ public class AnnotationResolver(
                     )
                     {
                         isError = true;
-                        yield return new ModelError(
+                        yield return Error(
                             ErrorType.TMD2004,
+                            [annotationRef.Value, container.Name],
                             container,
-                            $"Impossible d'appliquer l'annotation '{annotationRef.Value}' à '{container}' : l'annotation ne cible pas le bon type d'objet.",
                             annotationRef
                         );
                     }

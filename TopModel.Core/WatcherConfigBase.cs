@@ -21,7 +21,7 @@ public class WatcherConfigBase
     /// <summary>
     /// Nom de cette configuration.
     /// </summary>
-    public virtual string? Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Tags pris en compte par cette configuration.
@@ -441,7 +441,7 @@ public class WatcherConfigBase
                     localizer,
                     ErrorType.TMD6003,
                     [
-                        Name ?? string.Empty,
+                        Name,
                         t.Domain.ToString(),
                         string.Join(", ", Language.Select(l => $"'{ResolveTagVariables(l, t.tag)}'")),
                     ],

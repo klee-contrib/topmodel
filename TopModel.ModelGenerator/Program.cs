@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using System.Text.RegularExpressions;
 using TopModel.ModelGenerator;
+using TopModel.Utils;
 using TopModel.Utils.Cli;
 
 var schemaOption = new Option<bool>("--schema", "-s") { Description = CliMessage.SchemaOptionDescription.GetMessage() };

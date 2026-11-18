@@ -55,12 +55,7 @@ internal class DataFlowResolver(
             {
                 if (!referencedDataFlows.TryGetValue(dependsOnReference.Value, out var referencedDataFlow))
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD4002,
-                        dataFlow,
-                        "Le flux de données '{0}' est introuvable dans le fichier ou l'une de ses dépendances.",
-                        dependsOnReference
-                    );
+                    yield return Error(ErrorType.TMD4002, [dependsOnReference.Value], dataFlow, dependsOnReference);
                     continue;
                 }
 

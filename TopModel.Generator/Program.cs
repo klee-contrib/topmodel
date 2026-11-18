@@ -6,6 +6,7 @@ using Spectre.Console;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.Generator;
+using TopModel.Utils;
 using TopModel.Utils.Cli;
 
 var excludeOption = new Option<IEnumerable<string>>("--exclude", "-e")

@@ -79,10 +79,10 @@ internal class ClassResolver(
                             )
                     )
                     {
-                        yield return new ModelError(
+                        yield return Error(
                             ErrorType.TMD3005,
+                            [classe.Name],
                             modelFile,
-                            $"Cette association sur la classe '{classe}' doit définir un rôle.",
                             property.Decorator is not null
                                 ? classe.DecoratorReferences.FirstOrDefault(dr => dr.Value == property.Decorator.Name)
                                 : property.Declaration
@@ -99,10 +99,10 @@ internal class ClassResolver(
                             )
                         )
                         {
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD3020,
-                                prop,
-                                $"Impossible de créer une composition ou une association vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe `enum: true` comme '{classe}'."
+                                [(prop.Composition ?? prop.Association)!.Name, classe.Name],
+                                prop
                             );
                         }
                     }
@@ -118,10 +118,10 @@ internal class ClassResolver(
                             )
                         )
                         {
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD3020,
-                                prop,
-                                $"Impossible de créer une composition ou une association classe vers '{prop.Composition ?? prop.Association}' car ce n'est pas une classe enum readonly comme '{classe}'."
+                                [(prop.Composition ?? prop.Association)!.Name, classe.Name],
+                                prop
                             );
                         }
                     }
@@ -232,10 +232,10 @@ internal class ClassResolver(
                         if (ukValues.IndexOf(ukValue) < i)
                         {
                             var duplicateValue = classe.Values[i];
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD3012,
+                                [string.Join(", ", uk.Select(u => u.Name))],
                                 duplicateValue,
-                                $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]",
                                 duplicateValue.Reference
                             );
                         }
@@ -255,23 +255,14 @@ internal class ClassResolver(
         {
             if (classe.Reference && classe.ReferenceKey == null)
             {
-                yield return new ModelError(
-                    ErrorType.TMD3002,
-                    classe,
-                    $"La classe '{classe}' doit avoir une clé primaire simple (ou à défaut, au moins une propriété avec clé d'unicité simple) pour être définie comme `reference`."
-                );
+                yield return Error(ErrorType.TMD3002, [classe.Name], classe);
             }
 
             if (classe.EnumOverride != null)
             {
                 if (classe.EnumOverride != "false" && classe.Values.Count == 0)
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3003,
-                        classe,
-                        $"La classe '{classe}' doit avoir au moins une `value` pour être définie comme `enum`.",
-                        classe.EnumOverride.Declaration
-                    );
+                    yield return Error(ErrorType.TMD3003, [classe.Name], classe, classe.EnumOverride.Declaration);
                 }
                 else
                 {
@@ -294,20 +285,12 @@ internal class ClassResolver(
 
             if (classe.Extends != null && classe.Enum != classe.Extends.Enum)
             {
-                yield return new ModelError(
-                    ErrorType.TMD3010,
-                    classe,
-                    $"La classe '{classe}' et sa classe parente '{classe.Extends}' doivent toutes les deux être des `enum`."
-                );
+                yield return Error(ErrorType.TMD3010, [classe.Name, classe.Extends.Name], classe);
             }
 
             if (classe.Enum == EnumMode.Enum && classe.ReferenceKey?.EnumProperty == null)
             {
-                yield return new ModelError(
-                    ErrorType.TMD3019,
-                    classe,
-                    $"La classe {classe} doit avoir une clé primaire (ou à défaut, au moins une propriété avec clé d'unicité simple) convertible en enum pour être marquée avec `enum: true`."
-                );
+                yield return Error(ErrorType.TMD3019, [classe.Name], classe);
             }
 
             if (classe.Enum == EnumMode.Enum)
@@ -561,42 +544,26 @@ internal class ClassResolver(
             {
                 if (classe.DefaultProperty == null)
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3014,
-                        classe,
-                        "Une classe de traduction doit contenir une 'DefaultProperty'."
-                    );
+                    yield return Error(ErrorType.TMD3014, [], classe);
                 }
 
                 if (classe.LocaleProperty != null)
                 {
                     if (!classe.LocaleProperty.PrimaryKey || classe.PrimaryKey.Count() != 2)
                     {
-                        yield return new ModelError(
-                            ErrorType.TMD3015,
-                            classe,
-                            "Si une classe de traduction définit une 'LocaleProperty', elle doit faire partie d'une clé primaire composite avec la clé de traduction."
-                        );
+                        yield return Error(ErrorType.TMD3015, [], classe);
                     }
                 }
                 else
                 {
                     if (classe.PrimaryKey.Count() != 1)
                     {
-                        yield return new ModelError(
-                            ErrorType.TMD3016,
-                            classe,
-                            "Une classe de traduction sans 'LocaleProperty' doit avoir une clé primaire simple."
-                        );
+                        yield return Error(ErrorType.TMD3016, [], classe);
                     }
 
                     if (translationStore.Translations.Keys.Count > 1)
                     {
-                        yield return new ModelError(
-                            ErrorType.TMD3017,
-                            classe,
-                            "Une classe de traduction doit avoir une 'LocaleProperty' si votre configuration définit plusieurs locales."
-                        );
+                        yield return Error(ErrorType.TMD3017, [], classe);
                     }
                 }
 
@@ -606,11 +573,7 @@ internal class ClassResolver(
                     )
                 )
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3018,
-                        classe,
-                        "Une classe de traduction ne peut pas avoir de propriétés obligatoires autres que sa `DefaultProperty`."
-                    );
+                    yield return Error(ErrorType.TMD3018, [], classe);
                 }
             }
         }
@@ -692,10 +655,10 @@ internal class ClassResolver(
 
                 if (missingRequiredProperties.Any())
                 {
-                    yield return new ModelError(
+                    yield return Error(
                         ErrorType.TMD3011,
+                        [valueRef.Key.Value, string.Join(", ", missingRequiredProperties.Select(p => p.Name))],
                         classe,
-                        $"La valeur '{valueRef.Key.Value}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.",
                         valueRef.Key
                     );
                 }

@@ -81,10 +81,10 @@ internal class DecoratorResolver(
                     if (container.Decorators.Any(d => d.Decorator == targetDecorator))
                     {
                         isError = true;
-                        yield return new ModelError(
+                        yield return Error(
                             ErrorType.TMD5001,
+                            [decoratorRef.Value, container.Name],
                             container,
-                            $"Le décorateur '{decoratorRef.Value}' est déjà présent dans la liste des décorateurs de l'objet '{container}'.",
                             decoratorRef
                         );
                     }
@@ -104,10 +104,10 @@ internal class DecoratorResolver(
                         )
                         {
                             isError = true;
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD5002,
+                                [decoratorRef.Value, container.Name],
                                 container,
-                                $"Impossible d'appliquer le décorateur '{decoratorRef.Value}' à '{container}' : seul un 'extends' peut être spécifié.",
                                 decoratorRef
                             );
                         }
@@ -120,10 +120,10 @@ internal class DecoratorResolver(
                         )
                         {
                             isError = true;
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD5003,
+                                [decoratorRef.Value, container.Name],
                                 container,
-                                $"Impossible d'appliquer le décorateur '{decoratorRef.Value}' à '{container}' : le décorateur ne cible pas le bon type d'objet.",
                                 decoratorRef
                             );
                         }

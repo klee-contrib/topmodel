@@ -73,7 +73,7 @@ public class TopModelLock : TopModelLockFile
             {
                 if (!unique.Add(fichier))
                 {
-                    _logger.LogWarning($"{{TMD1006}} - Le fichier suivant est en doublon : '{fichier.ToRelative()}'.");
+                    _logger.LogWarning(ErrorType.TMD1006, fichier.ToRelative());
                 }
             }
         }
@@ -112,9 +112,7 @@ public class TopModelLock : TopModelLockFile
                     .Except(generatedFiles)
             )
             {
-                _logger.LogWarning(
-                    $"{{TMD1005}} - Le fichier '{ignoredFile.ToRelative(_config.ConfigRoot)}' dans `ignoredFiles` est introuvable."
-                );
+                _logger.LogWarning(ErrorType.TMD1005, ignoredFile.ToRelative(_config.ConfigRoot));
             }
         }
 

@@ -437,6 +437,11 @@ public class ModelStore(
         }
     }
 
+    private ModelError Error(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
+    {
+        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: true);
+    }
+
     private IEnumerable<ModelFile> GetAffectedFiles(
         IEnumerable<string> fileNames,
         IDictionary<string, IEnumerable<string>> usesMap,
@@ -498,7 +503,7 @@ public class ModelStore(
             {
                 foreach (var domain in g.Skip(1))
                 {
-                    yield return new ModelError(localizer, ErrorType.TMD6001, [domain.ToString()], domain);
+                    yield return Error(ErrorType.TMD6001, [domain.ToString()], domain);
                 }
             }
 
@@ -526,7 +531,7 @@ public class ModelStore(
                 {
                     foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                     {
-                        yield return new ModelError(localizer, ErrorType.TMD6002, [from.Name, to.Name], converter);
+                        yield return Error(ErrorType.TMD6002, [from.Name, to.Name], converter);
                     }
                 }
 
@@ -549,23 +554,22 @@ public class ModelStore(
         )
         {
             var otherClasses = Classes.Where(u => u.Trigram == classe.Trigram && u != classe);
-            yield return new ModelError(
+            yield return Warning(
                 ErrorType.TMD3004,
+                [classe.Trigram ?? string.Empty, string.Join(", ", otherClasses.Select(c => c.Name))],
                 classe.ModelFile,
-                $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}",
-                classe.Trigram?.Declaration,
-                isError: false
+                classe.Trigram?.Declaration
             );
         }
 
         foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
         {
-            yield return new ModelError(localizer, ErrorType.TMD0009, [domain.Name], domain, isError: false);
+            yield return Warning(ErrorType.TMD0009, [domain.Name], domain);
         }
 
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
-            yield return new ModelError(localizer, ErrorType.TMD0010, [decorator.Name], decorator, isError: false);
+            yield return Warning(ErrorType.TMD0010, [decorator.Name], decorator);
         }
 
         foreach (
@@ -578,13 +582,7 @@ public class ModelStore(
 
             foreach (var endpoint in endpoints.GetDuplicates(p => p.Name))
             {
-                yield return new ModelError(
-                    localizer,
-                    ErrorType.TMD0001,
-                    [endpoint.Name],
-                    endpoint,
-                    endpoint.Name.Declaration
-                );
+                yield return Error(ErrorType.TMD0001, [endpoint.Name], endpoint, endpoint.Name.Declaration);
             }
 
             if (
@@ -597,23 +595,12 @@ public class ModelStore(
             {
                 foreach (var file in endpointFiles)
                 {
-                    if (file.Options.Endpoints.Prefix != null)
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD7001,
-                            file,
-                            $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.",
-                            file.Options.Endpoints.Prefix?.Declaration
-                        );
-                    }
-                    else
-                    {
-                        yield return new ModelError(
-                            ErrorType.TMD7001,
-                            file,
-                            $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font."
-                        );
-                    }
+                    yield return Error(
+                        ErrorType.TMD7001,
+                        [file.Options.Endpoints.Prefix ?? string.Empty],
+                        file,
+                        file.Options.Endpoints.Prefix?.Declaration
+                    );
                 }
             }
         }
@@ -622,13 +609,7 @@ public class ModelStore(
         {
             if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
             {
-                yield return new ModelError(
-                    ErrorType.TMD7002,
-                    file,
-                    $"Le fichier définit un préfixe d'endpoint alors qu'il ne contient pas de déclaration d'endpoint.",
-                    file.Options.Endpoints.Prefix?.Declaration,
-                    isError: false
-                );
+                yield return Warning(ErrorType.TMD7002, [], file, file.Options.Endpoints.Prefix?.Declaration);
             }
         }
 
@@ -638,11 +619,7 @@ public class ModelStore(
             {
                 if (!genConfig.AvailableClasses.Contains(classe.Extends) && Classes.Contains(classe.Extends))
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD3013,
-                        classe,
-                        $"La classe '{classe}' ne peut pas faire partie de la configuration '{genConfig.Name}' car elle hérite de la classe '{classe.Extends}' qui n'y est pas disponible."
-                    );
+                    yield return Error(ErrorType.TMD3013, [classe.Name, genConfig.Name, classe.Extends!.Name], classe);
                 }
             }
         }
@@ -663,10 +640,10 @@ public class ModelStore(
                 {
                     if (!genConfig.AvailableClasses.Contains(composition) && Classes.Contains(composition))
                     {
-                        yield return new ModelError(
+                        yield return Error(
                             ErrorType.TMD7006,
-                            endpoint,
-                            $"L'endpoint '{endpoint}' ne peut pas faire partie de la configuration '{genConfig.Name}' car il dépend la classe '{composition}' qui n'y est pas disponible."
+                            [endpoint.Name, genConfig.Name, composition!.Name],
+                            endpoint
                         );
                     }
                 }
@@ -724,12 +701,7 @@ public class ModelStore(
             var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.Value));
             foreach (var use in nonExistingFiles)
             {
-                yield return new ModelError(
-                    ErrorType.TMD1001,
-                    modelFile,
-                    $"Le fichier référencé '{use.Value}' est introuvable.",
-                    use
-                );
+                yield return Error(ErrorType.TMD1001, [use.Value], modelFile, use);
             }
 
             var duplicatedUses = modelFile
@@ -740,12 +712,7 @@ public class ModelStore(
 
             foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.Value)).Skip(1))
             {
-                yield return new ModelError(
-                    ErrorType.TMD1002,
-                    modelFile,
-                    $"L'import '{use.Value}' ne doit être spécifié qu'une seule fois",
-                    use
-                );
+                yield return Error(ErrorType.TMD1002, [use.Value], modelFile, use);
             }
         }
 
@@ -768,12 +735,7 @@ public class ModelStore(
 
         foreach (var classe in duplicateClasses.Where(c => modelFiles.Contains(c.ModelFile)))
         {
-            yield return new ModelError(
-                ErrorType.TMD3001,
-                classe,
-                $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.",
-                classe.Name.Declaration
-            );
+            yield return Error(ErrorType.TMD3001, [classe.Name], classe, classe.Name.Declaration);
         }
 
         var referencedClasses = referencedClassesRaw
@@ -828,12 +790,7 @@ public class ModelStore(
 
         foreach (var dataFlow in duplicateDataFlows.Where(c => modelFiles.Contains(c.ModelFile)))
         {
-            yield return new ModelError(
-                ErrorType.TMD4001,
-                dataFlow,
-                $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.",
-                dataFlow.Name.Declaration
-            );
+            yield return Error(ErrorType.TMD4001, [dataFlow.Name], dataFlow, dataFlow.Name.Declaration);
         }
 
         var referencedDataFlows = referencedDataFlowsRaw
@@ -950,13 +907,7 @@ public class ModelStore(
         {
             foreach (var use in GetUselessImports(modelFile))
             {
-                yield return new ModelError(
-                    ErrorType.TMD1003,
-                    modelFile,
-                    $"L'import '{use.Value}' n'est pas utilisé.",
-                    use,
-                    isError: false
-                );
+                yield return Warning(ErrorType.TMD1003, [use.Value], modelFile, use);
             }
         }
     }
@@ -978,5 +929,10 @@ public class ModelStore(
                 genConfig.Files.Remove(fileName);
             }
         }
+    }
+
+    private ModelError Warning(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
+    {
+        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: false);
     }
 }

@@ -83,9 +83,7 @@ public class GeneratedFileWriter : IFileWriter
             {
                 if (!_config.NoWarn.Contains(ErrorType.TMD1004))
                 {
-                    _logger.LogWarning(
-                        $"{{TMD1004}} - Le fichier '{ignoredFile.Path}' ne sera pas regénéré pour le motif : '{ignoredFile.Comment}'."
-                    );
+                    _logger.LogWarning(ErrorType.TMD1004, ignoredFile.Path, ignoredFile.Comment);
                 }
 
                 return;

@@ -77,4 +77,16 @@ public static class ContainerExtensions
                 _ => throw new InvalidOperationException(),
             };
     }
+
+    extension(IAnnotationContainer container)
+    {
+        public string Name =>
+            container switch
+            {
+                IPropertyContainer c => c.Name,
+                IProperty a => a.Name,
+                Domain d => d.Name,
+                _ => throw new InvalidOperationException(),
+            };
+    }
 }

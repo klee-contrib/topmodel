@@ -1,5 +1,3 @@
-using System.Resources;
-using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace TopModel.Utils.Cli;
@@ -7,17 +5,6 @@ namespace TopModel.Utils.Cli;
 public static class LogUtils
 {
     private static readonly string[] Colors = ["teal", "olive", "yellow", "aqua"];
-
-    extension<T>(T messageType)
-        where T : struct, Enum
-    {
-        public string GetMessage(params object[] args)
-        {
-            var format = ResourceManagerCache<T>.Instance.GetString(Enum.GetName(messageType)!)
-                ?? Enum.GetName(messageType)!;
-            return args.Length > 0 ? string.Format(format, args) : format;
-        }
-    }
 
     extension(AnsiConsole)
     {
@@ -54,35 +41,8 @@ public static class LogUtils
         }
     }
 
-    extension(ILogger logger)
-    {
-        public void LogError<T>(T key, params object[] args)
-            where T : struct, Enum
-        {
-            logger.LogError(key.GetMessage(args));
-        }
-
-        public void LogInformation<T>(T key, params object[] args)
-            where T : struct, Enum
-        {
-            logger.LogInformation(key.GetMessage(args));
-        }
-
-        public void LogWarning<T>(T key, params object[] args)
-            where T : struct, Enum
-        {
-            logger.LogWarning(key.GetMessage(args));
-        }
-    }
-
     public static LoggingScope GetScope(int index)
     {
         return new LoggingScope(index + 1, Colors[index % Colors.Length]);
-    }
-
-    private static class ResourceManagerCache<T>
-        where T : struct, Enum
-    {
-        public static readonly ResourceManager Instance = new(typeof(T));
     }
 }

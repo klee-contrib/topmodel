@@ -153,17 +153,95 @@
   <data name="TMD0011" xml:space="preserve">
     <value>La variable '{0}' est introuvable.</value>
   </data>
-  <data name="TMD3007" xml:space="preserve">
-    <value>La classe '{0}' n'est pas une interface et donc ne peut pas être implémentée.</value>
+  <data name="TMD1001" xml:space="preserve">
+    <value>Le fichier référencé '{0}' est introuvable.</value>
+  </data>
+  <data name="TMD1002" xml:space="preserve">
+    <value>L'import '{0}' ne doit être spécifié qu'une seule fois.</value>
+  </data>
+  <data name="TMD1003" xml:space="preserve">
+    <value>L'import '{0}' n'est pas utilisé.</value>
+  </data>
+  <data name="TMD1004" xml:space="preserve">
+    <value>Le fichier '{0}' ne sera pas régénéré pour le motif suivant : '{1}'.</value>
+  </data>
+  <data name="TMD1005" xml:space="preserve">
+    <value>Le fichier '{0}' dans `ignoredFiles` est introuvable.</value>
+  </data>
+  <data name="TMD1006" xml:space="preserve">
+    <value>Le fichier '{0}' est en double.</value>
+  </data>
+  <data name="TMD2001" xml:space="preserve">
+    <value>L'annotation '{0}' est introuvable dans le fichier ou l'une de ses dépendances.</value>
+  </data>
+  <data name="TMD2002" xml:space="preserve">
+    <value>L'annotation '{0}' est déjà présente dans la liste des annotations de '{1}'.</value>
+  </data>
+  <data name="TMD2004" xml:space="preserve">
+    <value>Impossible d'appliquer l'annotation '{0}' à '{1}' : l'annotation ne cible pas ce type d'objet.</value>
+  </data>
+  <data name="TMD2005" xml:space="preserve">
+    <value>Une annotation globale ne peut pas définir de paramètres.</value>
+  </data>
+  <data name="TMD3001" xml:space="preserve">
+    <value>La classe '{0}' est définie plusieurs fois dans le fichier ou une de ses dépendances.</value>
+  </data>
+  <data name="TMD3002" xml:space="preserve">
+    <value>La classe '{0}' doit avoir une clé primaire simple (ou, à défaut, au moins une propriété avec une clé d'unicité simple) pour être définie comme `reference`.</value>
+  </data>
+  <data name="TMD3003" xml:space="preserve">
+    <value>La classe '{0}' doit avoir au moins une `value` pour être définie comme `enum`.</value>
+  </data>
+  <data name="TMD3004" xml:space="preserve">
+    <value>Le trigramme '{0}' est déjà utilisé par : {1}.</value>
+  </data>
+  <data name="TMD3005" xml:space="preserve">
+    <value>Cette association sur la classe '{0}' doit définir un rôle.</value>
   </data>
   <data name="TMD3006" xml:space="preserve">
-    <value>La classe '{0}' ne peut pas hériter de la classe '{1}' car seule une interface peut hériter d'une interface, et inversement.</value>
+    <value>La classe '{0}' ne peut pas hériter de la classe '{1}' car une classe et une interface ne peuvent pas hériter l'une de l'autre.</value>
+  </data>
+  <data name="TMD3007" xml:space="preserve">
+    <value>La classe '{0}' n'est pas une interface et donc ne peut pas être implémentée.</value>
   </data>
   <data name="TMD3008" xml:space="preserve">
     <value>L'interface '{0}' ne peut pas implémenter une autre interface. Utilisez `extends` à la place.</value>
   </data>
   <data name="TMD3009" xml:space="preserve">
     <value>La classe '{0}' persistée ne peut pas hériter de la classe '{1}' car ce n'est pas une classe persistée avec une clé primaire simple.</value>
+  </data>
+  <data name="TMD3010" xml:space="preserve">
+    <value>La classe '{0}' et sa classe parente '{1}' doivent toutes les deux être des `enum`.</value>
+  </data>
+  <data name="TMD3011" xml:space="preserve">
+    <value>La valeur '{0}' n'initialise pas les propriétés obligatoires suivantes : {1}.</value>
+  </data>
+  <data name="TMD3012" xml:space="preserve">
+    <value>La valeur viole la contrainte d'unicité [{0}].</value>
+  </data>
+  <data name="TMD3013" xml:space="preserve">
+    <value>La classe '{0}' ne peut pas faire partie de la configuration '{1}' car elle hérite de la classe '{2}', qui n'y est pas disponible.</value>
+  </data>
+  <data name="TMD3014" xml:space="preserve">
+    <value>Une classe de traduction doit contenir une `DefaultProperty`.</value>
+  </data>
+  <data name="TMD3015" xml:space="preserve">
+    <value>Si une classe de traduction définit une `LocaleProperty`, elle doit faire partie d'une clé primaire composite avec la clé de traduction.</value>
+  </data>
+  <data name="TMD3016" xml:space="preserve">
+    <value>Une classe de traduction sans `LocaleProperty` doit avoir une clé primaire simple.</value>
+  </data>
+  <data name="TMD3017" xml:space="preserve">
+    <value>Une classe de traduction doit avoir une `LocaleProperty` si la configuration définit plusieurs locales.</value>
+  </data>
+  <data name="TMD3018" xml:space="preserve">
+    <value>Une classe de traduction ne peut pas avoir de propriétés obligatoires autres que sa `DefaultProperty`.</value>
+  </data>
+  <data name="TMD3019" xml:space="preserve">
+    <value>La classe '{0}' doit avoir une clé primaire (ou, à défaut, au moins une propriété avec une clé d'unicité simple) convertible en enum pour être marquée avec `enum: true`.</value>
+  </data>
+  <data name="TMD3020" xml:space="preserve">
+    <value>Impossible de créer une composition ou une association vers '{0}', car il ne s'agit pas du même type de classe enum que '{1}'.</value>
   </data>
   <data name="TMD3021" xml:space="preserve">
     <value>Un index a déjà été défini sur la classe '{0}' pour les propriétés suivantes : '{1}'.</value>
@@ -172,13 +250,31 @@
     <value>L'interface '{0}' a déjà été renseignée sur la classe '{1}' (ou son parent).</value>
   </data>
   <data name="TMD3023" xml:space="preserve">
-    <value>La classe '{0}' va hériter de propriétés depuis '{1}', qui n'est pas spécifié dans 'propertySourceOrder'.</value>
+    <value>La classe '{0}' va hériter de propriétés depuis '{1}', qui n'est pas spécifié dans `propertySourceOrder`.</value>
   </data>
   <data name="TMD3024" xml:space="preserve">
-    <value>La classe '{0}' abstraite et persistée doit spécifier une stratégie d'héritage différente de 'joined-tables'.</value>
+    <value>La classe '{0}' abstraite et persistée doit spécifier une stratégie d'héritage différente de `joined-tables`.</value>
+  </data>
+  <data name="TMD3025" xml:space="preserve">
+    <value>La classe '{0}' avec une clé primaire auto-générée a besoin d'un nom de séquence pour utiliser la stratégie `distinct-tables`.</value>
   </data>
   <data name="TMD3026" xml:space="preserve">
     <value>La classe '{0}' ne peut pas définir de valeurs car elle n'est pas de type `regular`.</value>
+  </data>
+  <data name="TMD4001" xml:space="preserve">
+    <value>Le flux de données '{0}' est défini plusieurs fois dans le fichier ou une de ses dépendances.</value>
+  </data>
+  <data name="TMD4002" xml:space="preserve">
+    <value>Le flux de données '{0}' est introuvable dans le fichier ou l'une de ses dépendances.</value>
+  </data>
+  <data name="TMD5001" xml:space="preserve">
+    <value>Le décorateur '{0}' est déjà présent dans la liste des décorateurs de '{1}'.</value>
+  </data>
+  <data name="TMD5002" xml:space="preserve">
+    <value>Impossible d'appliquer le décorateur '{0}' à '{1}' : seul un `extends` peut être spécifié.</value>
+  </data>
+  <data name="TMD5003" xml:space="preserve">
+    <value>Impossible d'appliquer le décorateur '{0}' à '{1}' : le décorateur ne cible pas ce type d'objet.</value>
   </data>
   <data name="TMD6001" xml:space="preserve">
     <value>Le domaine '{0}' est déjà défini.</value>
@@ -190,25 +286,91 @@
     <value>La configuration '{0}' requiert que le domaine '{1}' ait une implémentation pour l'un des langages suivants : {2}.</value>
   </data>
   <data name="TMD6004" xml:space="preserve">
-    <value>Le domaine doit être générique pour être défini comme un domaine de collection (`genericType` doit être défini sur toutes les implémentations).</value>
+    <value>Ce domaine doit être générique pour être défini comme un domaine `collection` (`genericType` doit être défini sur toutes les implémentations).</value>
+  </data>
+  <data name="TMD7001" xml:space="preserve">
+    <value>Le préfixe d'endpoint '{0}' doit être identique dans les fichiers ayant le même nom de fichier d'endpoint et le même module.</value>
+  </data>
+  <data name="TMD7002" xml:space="preserve">
+    <value>Le fichier définit un préfixe d'endpoint alors qu'il ne contient aucune déclaration d'endpoint.</value>
+  </data>
+  <data name="TMD7003" xml:space="preserve">
+    <value>Le fichier définit un nom de fichier d'endpoint alors qu'il ne contient aucune déclaration d'endpoint.</value>
+  </data>
+  <data name="TMD7004" xml:space="preserve">
+    <value>Le paramètre facultatif '{0}' doit suivre tous les paramètres obligatoires.</value>
+  </data>
+  <data name="TMD7005" xml:space="preserve">
+    <value>L'endpoint '{0}' définit un paramètre '{1}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {2}.</value>
+  </data>
+  <data name="TMD7006" xml:space="preserve">
+    <value>L'endpoint '{0}' ne peut pas faire partie de la configuration '{1}' car il dépend de la classe '{2}', qui n'y est pas disponible.</value>
+  </data>
+  <data name="TMD7007" xml:space="preserve">
+    <value>L'endpoint '{0}' ne peut pas contenir plusieurs paramètres `json-body` ou `form-data`.</value>
+  </data>
+  <data name="TMD7008" xml:space="preserve">
+    <value>La composition '{0}' doit être localisée dans `json-body` ou `form-data`.</value>
+  </data>
+  <data name="TMD7009" xml:space="preserve">
+    <value>La composition '{0}' ne peut pas être localisée dans `json-body`, car ses propriétés ou d'autres paramètres de l'endpoint demandent `form-data`.</value>
+  </data>
+  <data name="TMD7010" xml:space="preserve">
+    <value>Le paramètre '{0}' ne peut pas être défini comme paramètre de route car il est introuvable dans la route de l'endpoint.</value>
+  </data>
+  <data name="TMD8001" xml:space="preserve">
+    <value>La propriété '{0}' ne peut pas être mappée à '{1}'.</value>
+  </data>
+  <data name="TMD8002" xml:space="preserve">
+    <value>La propriété '{0}' est déjà initialisée dans ce mapper.</value>
+  </data>
+  <data name="TMD8003" xml:space="preserve">
+    <value>Plusieurs propriétés peuvent être mappées sur '{0}' : {1}.</value>
+  </data>
+  <data name="TMD8004" xml:space="preserve">
+    <value>La propriété '{0}' ne peut pas être mappée à la composition '{1}' car ce n'est pas une association.</value>
+  </data>
+  <data name="TMD8005" xml:space="preserve">
+    <value>L'association '{0}' ne peut pas être mappée à la composition '{1}', car l'association et la composition doivent toutes les deux être simples.</value>
+  </data>
+  <data name="TMD8006" xml:space="preserve">
+    <value>La propriété '{0}' ne peut pas être mappée à la composition '{1}', car son domaine ne correspond pas à celui de la clé primaire de la classe composée '{2}'.</value>
+  </data>
+  <data name="TMD8007" xml:space="preserve">
+    <value>La classe '{0}' ne peut pas être mappée sur la propriété '{1}', car cette propriété n'est pas une composition de cette classe.</value>
+  </data>
+  <data name="TMD8008" xml:space="preserve">
+    <value>La propriété '{0}' ne peut pas être la cible d'un mapping, car elle est marquée comme `readonly` sur une interface.</value>
+  </data>
+  <data name="TMD8009" xml:space="preserve">
+    <value>Aucun mapping n'a été trouvé sur ce mapper.</value>
+  </data>
+  <data name="TMD8010" xml:space="preserve">
+    <value>La propriété '{0}' doit être une composition de la même classe que '{1}' pour définir un mapping entre les deux.</value>
+  </data>
+  <data name="TMD8011" xml:space="preserve">
+    <value>La propriété '{0}' ne peut pas être une composition pour définir un mapping vers '{1}'.</value>
+  </data>
+  <data name="TMD8012" xml:space="preserve">
+    <value>Le paramètre '{0}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({1}) ne l'est pas.</value>
   </data>
   <data name="TMD9001" xml:space="preserve">
     <value>La propriété '{0}' est déjà référencée dans la définition de l'alias.</value>
   </data>
   <data name="TMD9002" xml:space="preserve">
-    <value>La classe '{0}' n'a pas de clé primaire simple, vous devez renseigner une propriété cible pour l'utiliser dans une association.</value>
+    <value>La classe '{0}' n'a pas de clé primaire simple ; vous devez renseigner une propriété cible pour l'utiliser dans une association.</value>
   </data>
   <data name="TMD9003" xml:space="preserve">
-    <value>Cette association ne peut pas être multiple car le domaine '{0}' ne contient pas de définition de domaine 'as' pour '{1}'.</value>
+    <value>Cette association ne peut pas être multiple car le domaine '{0}' ne contient pas de définition de domaine `as` pour '{1}'.</value>
   </data>
   <data name="TMD9004" xml:space="preserve">
-    <value>Cette association ne peut pas définir d'association réciproque car le domaine {0} ne contient pas de définition de domaine 'as' pour '{1}'.</value>
+    <value>Cette association ne peut pas définir d'association réciproque car le domaine '{0}' ne contient pas de définition de domaine `as` pour '{1}'.</value>
   </data>
   <data name="TMD9005" xml:space="preserve">
-    <value>Le domaine '{0}' doit définir un domaine 'as' pour '{1}' pour définir un alias '{1}' sur la propriété '{2}' de la classe '{3}'.</value>
+    <value>Le domaine '{0}' doit définir un domaine `as` pour '{1}' pour définir un alias '{1}' sur la propriété '{2}' de la classe '{3}'.</value>
   </data>
   <data name="TMD9006" xml:space="preserve">
-    <value>Il est impossible de définir une association multiple sur classe sans clé primaire simple.</value>
+    <value>Il est impossible de définir une association multiple sur une classe sans clé primaire simple.</value>
   </data>
   <data name="TMD9007" xml:space="preserve">
     <value>Une association réciproque ne peut être définie que dans une classe avec une clé primaire simple.</value>
@@ -217,39 +379,18 @@
     <value>Le fichier de la classe cible doit référencer le fichier courant pour définir une association réciproque.</value>
   </data>
   <data name="TMD9009" xml:space="preserve">
-    <value>Il est impossible de surcharger la composition sur un alias d'une propriété standard (ni association, ni composition).</value>
+    <value>Il est impossible de surcharger `composition` sur un alias d'une propriété standard (ni association ni composition).</value>
   </data>
   <data name="TMD9010" xml:space="preserve">
     <value>Il est impossible de définir une composition sur la classe '{0}', car il s'agit d'une classe `enum: true`.</value>
   </data>
   <data name="TMD9011" xml:space="preserve">
-    <value>Il est impossible d'utiliser le domaine '{0}' pour la propriété '{1}' car il n'est pas non générique (`type` doit être défini sur toutes les implémentations).</value>
+    <value>Il est impossible d'utiliser le domaine '{0}' pour la propriété '{1}' car il n'a pas de type non générique (`type` doit être défini sur toutes les implémentations).</value>
   </data>
   <data name="TMD9012" xml:space="preserve">
     <value>Il est impossible de définir un alias sur la propriété '{0}' de la classe '{1}' car il s'agit d'une association multiple et la classe cible est persistée.</value>
   </data>
   <data name="TMD9013" xml:space="preserve">
-    <value>Il est impossible de définir une valeur pour l'association '{0}' de la classe '{1}' car elle est multiple ou ne cible pas une classe enum readonly.</value>
-  </data>
-  <data name="TMD3025" xml:space="preserve">
-    <value>La classe '{0}' avec une clé primaire auto-générée a besoin d'un nom de séquence pour utiliser la stratégie `distinct-tables`.</value>
-  </data>
-  <data name="TMD7007" xml:space="preserve">
-    <value>L'endpoint '{0}` ne peut pas contenir plusieurs paramètres 'json-body' ou 'form-data'.</value>
-  </data>
-  <data name="TMD7008" xml:space="preserve">
-    <value>La composition '{0}' doit être localisée dans 'json-body' ou 'form-data'.</value>
-  </data>
-  <data name="TMD7009" xml:space="preserve">
-    <value>La composition '{0}' ne peut pas être localisée dans 'json-body', car ses propriétés ou d'autres paramètres du endpoint demandent 'form-data'.</value>
-  </data>
-  <data name="TMD7010" xml:space="preserve">
-    <value>Le paramètre '{0}' ne peut pas être défini comme paramètre de route car il est introuvable dans la route de l'endpoint.</value>
-  </data>
-  <data name="TMD7004" xml:space="preserve">
-    <value>Le paramètre facultatif '{0}' devrait suivre tous les paramètres obligatoires.</value>
-  </data>
-  <data name="TMD7005" xml:space="preserve">
-    <value>L'endpoint '{0}' définit un paramètre '{1}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {2}.</value>
+    <value>Il est impossible de définir une valeur pour l'association '{0}' de la classe '{1}' car elle est multiple ou ne cible pas une classe enum `readonly`.</value>
   </data>
 </root>

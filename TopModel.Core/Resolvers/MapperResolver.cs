@@ -178,12 +178,7 @@ internal class MapperResolver(
                 foreach (var mapping in mappedProperties.GetDuplicates(p => p.Value))
                 {
                     hasDoublon = true;
-                    yield return new ModelError(
-                        ErrorType.TMD8002,
-                        classe,
-                        $"La propriété '{mapping.Value}' est déjà initialisée dans ce mapper.",
-                        mapping.Location
-                    );
+                    yield return Error(ErrorType.TMD8002, [mapping.Value], classe, mapping.Location);
                 }
 
                 if (!hasDoublon)
@@ -275,10 +270,19 @@ internal class MapperResolver(
                     {
                         foreach (var mapping in finalMappings.GetDuplicates(p => p.Key))
                         {
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD8003,
+                                [
+                                    mapping.Key.Name,
+                                    string.Join(
+                                        ", ",
+                                        mapper.ClassParams.SelectMany(p =>
+                                            p.Mappings.Where(m => m.Key == mapping.Key)
+                                                .Select(m => $"'{p.Name}.{m.Value}'")
+                                        )
+                                    ),
+                                ],
                                 classe,
-                                $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.",
                                 mapper.Declaration
                             );
                         }
@@ -292,10 +296,10 @@ internal class MapperResolver(
                             var previousRequired = mapper
                                 .Params.Where((q, j) => !q.Required && j < mapper.Params.IndexOf(param))
                                 .Select(p => p.Name);
-                            yield return new ModelError(
+                            yield return Error(
                                 ErrorType.TMD8012,
+                                [param.Name, string.Join(", ", previousRequired)],
                                 classe,
-                                $"Le paramètre '{param.Name}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.",
                                 param.Declaration
                             );
                         }
@@ -358,10 +362,16 @@ internal class MapperResolver(
 
                 foreach (var mapping in mapper.Mappings.GetDuplicates(p => p.Value))
                 {
-                    yield return new ModelError(
+                    yield return Error(
                         ErrorType.TMD8003,
+                        [
+                            $"{mapper.Class}.{mapping.Value?.Name}",
+                            string.Join(
+                                ", ",
+                                mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'")
+                            ),
+                        ],
                         classe,
-                        $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.",
                         mapper.Declaration
                     );
                 }
@@ -375,12 +385,7 @@ internal class MapperResolver(
             {
                 if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any() && !mapper.PropertyParams.Any())
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD8009,
-                        classe,
-                        "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.Declaration
-                    );
+                    yield return Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
                 }
             }
 
@@ -388,12 +393,7 @@ internal class MapperResolver(
             {
                 if (mapper.Mappings.Count == 0)
                 {
-                    yield return new ModelError(
-                        ErrorType.TMD8009,
-                        classe,
-                        "Aucun mapping n'a été trouvé sur ce mapper.",
-                        mapper.Declaration
-                    );
+                    yield return Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
                 }
             }
         }
@@ -511,22 +511,12 @@ internal class MapperResolver(
     {
         if (targetProperty.Class.Type == ClassType.Interface && targetProperty.Readonly)
         {
-            yield return new ModelError(
-                ErrorType.TMD8008,
-                classe,
-                $"La propriété '{targetProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly' et sa classe est une interface.",
-                propLocation
-            );
+            yield return Error(ErrorType.TMD8008, [targetProperty.Name], classe, propLocation);
         }
 
         if (!CheckPossibleMapping(sourceProperty, targetProperty))
         {
-            yield return new ModelError(
-                ErrorType.TMD8001,
-                classe,
-                $"La propriété '{sourceProperty.Name}' ne peut pas être mappée à '{targetProperty.Name}'.",
-                propLocation
-            );
+            yield return Error(ErrorType.TMD8001, [sourceProperty.Name, targetProperty.Name], classe, propLocation);
         }
     }
 }
