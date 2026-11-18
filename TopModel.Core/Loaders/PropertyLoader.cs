@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -7,7 +8,7 @@ namespace TopModel.Core.Loaders;
 
 public class PropertyLoader(FileChecker fileChecker)
 {
-    public IProperty Load(Parser parser, ModelFile modelFile, ModelFileLoadConfig config)
+    public IProperty Load(Parser parser, IPropertyContainer container, ModelFileLoadConfig config)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
@@ -91,10 +92,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             rp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException(
-                                modelFile,
-                                $"Propriété ${prop} inconnue pour une propriété",
-                                new Declaration(propScalar)
+                            throw ModelException.From(
+                                CoreMessage.PropertyInvalidForProperty,
+                                container,
+                                new Declaration(propScalar),
+                                prop
                             );
                     }
                 }
@@ -266,10 +268,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             ap.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException(
-                                modelFile,
-                                $"Propriété ${prop.Value} inconnue pour une propriété",
-                                new Declaration(prop)
+                            throw ModelException.From(
+                                CoreMessage.PropertyInvalidForProperty,
+                                container,
+                                new Declaration(prop),
+                                prop.Value
                             );
                     }
                 }
@@ -364,10 +367,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             cp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException(
-                                modelFile,
-                                $"Propriété ${prop} inconnue pour une propriété",
-                                new Declaration(propScalar)
+                            throw ModelException.From(
+                                CoreMessage.PropertyInvalidForProperty,
+                                container,
+                                new Declaration(propScalar),
+                                prop
                             );
                     }
                 }
@@ -421,10 +425,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             parser.Consume<SequenceEnd>();
                             break;
                         default:
-                            throw new ModelException(
-                                modelFile,
-                                $"Propriété '{prop}' inconnue pour un alias",
-                                new Declaration(propScalar)
+                            throw ModelException.From(
+                                CoreMessage.PropertyInvalidForAlias,
+                                container,
+                                new Declaration(propScalar),
+                                prop
                             );
                     }
                 }
@@ -549,10 +554,11 @@ public class PropertyLoader(FileChecker fileChecker)
                             alp.Tags = fileChecker.Deserialize<IList<string>>(parser);
                             break;
                         default:
-                            throw new ModelException(
-                                modelFile,
-                                $"Propriété ${prop} inconnue pour une propriété",
-                                new Declaration(propScalar)
+                            throw ModelException.From(
+                                CoreMessage.PropertyInvalidForProperty,
+                                container,
+                                new Declaration(propScalar),
+                                prop
                             );
                     }
                 }
@@ -565,13 +571,14 @@ public class PropertyLoader(FileChecker fileChecker)
                 parser.Consume<MappingEnd>();
                 return alp;
             case Scalar sc:
-                throw new ModelException(
-                    modelFile,
-                    $"Le premier attribut de la propriété doit être `name`, `alias`, `association` ou `composition` (ici ${sc.Value})",
-                    new Declaration(sc)
+                throw ModelException.From(
+                    CoreMessage.FirstPropertyAttributeInvalid,
+                    container,
+                    new Declaration(sc),
+                    sc.Value
                 );
             default:
-                throw new ModelException(modelFile, "Type de propriété inconnu.");
+                throw ModelException.From(CoreMessage.PropertyTypeUnknown, container, container.Declaration);
         }
     }
 }

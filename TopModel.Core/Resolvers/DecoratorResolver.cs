@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -7,11 +6,10 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class DecoratorResolver(
-    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Decorator> referencedDecorators
-) : BaseResolver(localizer)
+) : BaseResolver
 {
     /// <summary>
     /// Résout les décorateurs sur les classes, les endpoints et les autres décorateurs.
@@ -50,13 +48,18 @@ internal class DecoratorResolver(
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.Value], decorator, varName);
+                    yield return ModelError.Warning(ErrorType.TMD0011, [varName.Value], decorator, varName);
                 }
             }
 
             foreach (var templateParam in decorator.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], decorator, templateParam.Declaration);
+                yield return ModelError.Error(
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    decorator,
+                    templateParam.Declaration
+                );
             }
         }
 
@@ -74,14 +77,14 @@ internal class DecoratorResolver(
                 if (!referencedDecorators.TryGetValue(decoratorRef.Value, out var targetDecorator))
                 {
                     isError = true;
-                    yield return Error(ErrorType.TMD0005, [decoratorRef.Value], container, decoratorRef);
+                    yield return ModelError.Error(ErrorType.TMD0005, [decoratorRef.Value], container, decoratorRef);
                 }
                 else
                 {
                     if (container.Decorators.Any(d => d.Decorator == targetDecorator))
                     {
                         isError = true;
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD5001,
                             [decoratorRef.Value, container.Name],
                             container,
@@ -104,7 +107,7 @@ internal class DecoratorResolver(
                         )
                         {
                             isError = true;
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD5002,
                                 [decoratorRef.Value, container.Name],
                                 container,
@@ -120,7 +123,7 @@ internal class DecoratorResolver(
                         )
                         {
                             isError = true;
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD5003,
                                 [decoratorRef.Value, container.Name],
                                 container,

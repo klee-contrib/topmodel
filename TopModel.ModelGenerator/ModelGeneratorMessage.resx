@@ -117,11 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="RegisteredGenerators" xml:space="preserve">
-    <value>Registered generators:{0}</value>
-  </data>
-  <data name="UpdateCompleted" xml:space="preserve">
-    <value>Update completed successfully.</value>
+  <data name="ConnectingToDb" xml:space="preserve">
+    <value>Connecting to database {0}...</value>
   </data>
   <data name="DbConnectionSuccess" xml:space="preserve">
     <value>Connected to database {0}!</value>
@@ -129,16 +126,19 @@
   <data name="GeneratingPleaseWait" xml:space="preserve">
     <value>Generating, please wait...</value>
   </data>
-  <data name="ConnectingToDb" xml:space="preserve">
-    <value>Connecting to database {0}...</value>
-  </data>
   <data name="PasswordPrompt" xml:space="preserve">
     <value>Password for user {0}: </value>
   </data>
-  <data name="WrongPasswordPrompt" xml:space="preserve">
-    <value>Wrong password for user {0}: </value>
+  <data name="RegisteredGenerators" xml:space="preserve">
+    <value>Registered generators:{0}</value>
   </data>
   <data name="RootCommandDescription" xml:space="preserve">
     <value>Starts the tmd files generator.</value>
+  </data>
+  <data name="UpdateCompleted" xml:space="preserve">
+    <value>Update completed successfully.</value>
+  </data>
+  <data name="WrongPasswordPrompt" xml:space="preserve">
+    <value>Wrong password for user {0}: </value>
   </data>
 </root>

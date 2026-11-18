@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,38 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ConfigFileNotFound" xml:space="preserve">
-    <value>Le fichier de configuration '{0}' est introuvable.</value>
+  <data name="ActionCreated" xml:space="preserve">
+    <value>Créé</value>
   </data>
-  <data name="ConfigFilesFound" xml:space="preserve">
-    <value>Fichiers de configuration trouvés :</value>
+  <data name="ActionDeleted" xml:space="preserve">
+    <value>Supprimé</value>
   </data>
-  <data name="NoConfigFileFound" xml:space="preserve">
-    <value>Aucun fichier de configuration trouvé.</value>
+  <data name="ActionModified" xml:space="preserve">
+    <value>Modifié</value>
   </data>
-  <data name="NewVersionAvailable" xml:space="preserve">
-    <value>Nouvelle version disponible : {0}</value>
+  <data name="ActionRenamed" xml:space="preserve">
+    <value>Renommé</value>
   </data>
-  <data name="DotnetUpdateCommand" xml:space="preserve">
-    <value>Vous pouvez lancer la commande `dotnet tool update -g {0}` pour effectuer la mise à jour.</value>
-  </data>
-  <data name="WatchModeEnabled" xml:space="preserve">
-    <value>Mode [darkcyan]watch[/] activé.</value>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>Arrêt du processus demandé...</value>
   </data>
   <data name="CheckModeEnabled" xml:space="preserve">
     <value>Mode [darkcyan]check[/] activé.</value>
-  </data>
-  <data name="OneFileModifiedInCheckMode" xml:space="preserve">
-    <value>1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.</value>
-  </data>
-  <data name="MultipleFilesModifiedInCheckMode" xml:space="preserve">
-    <value>{0} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.</value>
-  </data>
-  <data name="FileOptionDescription" xml:space="preserve">
-    <value>Chemin vers un fichier de config.</value>
-  </data>
-  <data name="WatchOptionDescription" xml:space="preserve">
-    <value>Lance le générateur en mode 'watch'.</value>
   </data>
   <data name="CheckOptionDescription" xml:space="preserve">
     <value>Vérifie que la génération est à jour (aucun fichier ne doit être généré).</value>
@@ -156,22 +141,49 @@
   <data name="ConfigChanged" xml:space="preserve">
     <value>Modifié</value>
   </data>
-  <data name="CancellationRequested" xml:space="preserve">
-    <value>Arrêt du processus demandé...</value>
+  <data name="ConfigFileNotFound" xml:space="preserve">
+    <value>Le fichier de configuration '{0}' est introuvable.</value>
   </data>
-  <data name="ParallelOptionDescription" xml:space="preserve">
-    <value>Lance les configurations données en parallèle.</value>
+  <data name="ConfigFilesFound" xml:space="preserve">
+    <value>Fichiers de configuration trouvés :</value>
   </data>
-  <data name="ParallelModeEnabled" xml:space="preserve">
-    <value>Mode [olive]parallèle[/] activé.</value>
-  </data>  
-  <data name="SchemaOptionDescription" xml:space="preserve">
-    <value>Génère le fichier de schéma JSON du fichier de config.</value>
+  <data name="ConfigSchemaGenerated" xml:space="preserve">
+    <value>Schéma de configuration généré avec succès.</value>
+  </data>
+  <data name="DotnetUpdateCommand" xml:space="preserve">
+    <value>Vous pouvez lancer la commande `dotnet tool update -g {0}` pour effectuer la mise à jour.</value>
+  </data>
+  <data name="FileOptionDescription" xml:space="preserve">
+    <value>Chemin vers un fichier de config.</value>
   </data>
   <data name="GeneratingConfigSchema" xml:space="preserve">
     <value>Génération du schéma de configuration...</value>
   </data>
-  <data name="ConfigSchemaGenerated" xml:space="preserve">
-    <value>Schéma de configuration généré avec succès.</value>
+  <data name="MultipleFilesModifiedInCheckMode" xml:space="preserve">
+    <value>{0} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>Nouvelle version disponible : {0}</value>
+  </data>
+  <data name="NoConfigFileFound" xml:space="preserve">
+    <value>Aucun fichier de configuration trouvé.</value>
+  </data>
+  <data name="OneFileModifiedInCheckMode" xml:space="preserve">
+    <value>1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.</value>
+  </data>
+  <data name="ParallelModeEnabled" xml:space="preserve">
+    <value>Mode [olive]parallèle[/] activé.</value>
+  </data>
+  <data name="ParallelOptionDescription" xml:space="preserve">
+    <value>Lance les configurations données en parallèle.</value>
+  </data>
+  <data name="SchemaOptionDescription" xml:space="preserve">
+    <value>Génère le fichier de schéma JSON du fichier de config.</value>
+  </data>
+  <data name="WatchModeEnabled" xml:space="preserve">
+    <value>Mode [darkcyan]watch[/] activé.</value>
+  </data>
+  <data name="WatchOptionDescription" xml:space="preserve">
+    <value>Lance le générateur en mode `watch`.</value>
   </data>
 </root>

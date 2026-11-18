@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,38 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ConfigFileNotFound" xml:space="preserve">
-    <value>Config file '{0}' not found.</value>
+  <data name="ActionCreated" xml:space="preserve">
+    <value>Created</value>
   </data>
-  <data name="ConfigFilesFound" xml:space="preserve">
-    <value>Config files found:</value>
+  <data name="ActionDeleted" xml:space="preserve">
+    <value>Deleted</value>
   </data>
-  <data name="NoConfigFileFound" xml:space="preserve">
-    <value>No config file found.</value>
+  <data name="ActionModified" xml:space="preserve">
+    <value>Modified</value>
   </data>
-  <data name="NewVersionAvailable" xml:space="preserve">
-    <value>New version available: {0}</value>
+  <data name="ActionRenamed" xml:space="preserve">
+    <value>Renamed</value>
   </data>
-  <data name="DotnetUpdateCommand" xml:space="preserve">
-    <value>You can run `dotnet tool update -g {0}` to update.</value>
-  </data>
-  <data name="WatchModeEnabled" xml:space="preserve">
-    <value>[darkcyan]Watch[/] mode enabled.</value>
+  <data name="CancellationRequested" xml:space="preserve">
+    <value>Process stop requested...</value>
   </data>
   <data name="CheckModeEnabled" xml:space="preserve">
     <value>[darkcyan]Check[/] mode enabled.</value>
-  </data>
-  <data name="OneFileModifiedInCheckMode" xml:space="preserve">
-    <value>1 generated file was modified or deleted. Generated code was not up to date.</value>
-  </data>
-  <data name="MultipleFilesModifiedInCheckMode" xml:space="preserve">
-    <value>{0} generated files were modified or deleted. Generated code was not up to date.</value>
-  </data>
-  <data name="FileOptionDescription" xml:space="preserve">
-    <value>Path to a config file.</value>
-  </data>
-  <data name="WatchOptionDescription" xml:space="preserve">
-    <value>Runs the generator in 'watch' mode.</value>
   </data>
   <data name="CheckOptionDescription" xml:space="preserve">
     <value>Checks that the generation is up to date (no file should be generated).</value>
@@ -156,22 +141,49 @@
   <data name="ConfigChanged" xml:space="preserve">
     <value>Changed</value>
   </data>
-  <data name="CancellationRequested" xml:space="preserve">
-    <value>Process stop requested...</value>
+  <data name="ConfigFileNotFound" xml:space="preserve">
+    <value>Config file '{0}' not found.</value>
   </data>
-  <data name="ParallelOptionDescription" xml:space="preserve">
-    <value>Runs the provided configs in parallel.</value>
+  <data name="ConfigFilesFound" xml:space="preserve">
+    <value>Config files found:</value>
   </data>
-  <data name="ParallelModeEnabled" xml:space="preserve">
-    <value>[olive]Parallel[/] mode enabled.</value>
+  <data name="ConfigSchemaGenerated" xml:space="preserve">
+    <value>Configuration schema generated successfully.</value>
   </data>
-  <data name="SchemaOptionDescription" xml:space="preserve">
-    <value>Generates the JSON schema file for the config file.</value>
+  <data name="DotnetUpdateCommand" xml:space="preserve">
+    <value>You can run `dotnet tool update -g {0}` to update.</value>
+  </data>
+  <data name="FileOptionDescription" xml:space="preserve">
+    <value>Path to a config file.</value>
   </data>
   <data name="GeneratingConfigSchema" xml:space="preserve">
     <value>Generating configuration schema...</value>
   </data>
-  <data name="ConfigSchemaGenerated" xml:space="preserve">
-    <value>Configuration schema generated successfully.</value>
+  <data name="MultipleFilesModifiedInCheckMode" xml:space="preserve">
+    <value>{0} generated files were modified or deleted. Generated code was not up to date.</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>New version available: {0}</value>
+  </data>
+  <data name="NoConfigFileFound" xml:space="preserve">
+    <value>No config file found.</value>
+  </data>
+  <data name="OneFileModifiedInCheckMode" xml:space="preserve">
+    <value>1 generated file was modified or deleted. Generated code was not up to date.</value>
+  </data>
+  <data name="ParallelModeEnabled" xml:space="preserve">
+    <value>[olive]Parallel[/] mode enabled.</value>
+  </data>
+  <data name="ParallelOptionDescription" xml:space="preserve">
+    <value>Runs the provided configs in parallel.</value>
+  </data>
+  <data name="SchemaOptionDescription" xml:space="preserve">
+    <value>Generates the JSON schema file for the config file.</value>
+  </data>
+  <data name="WatchModeEnabled" xml:space="preserve">
+    <value>[darkcyan]Watch[/] mode enabled.</value>
+  </data>
+  <data name="WatchOptionDescription" xml:space="preserve">
+    <value>Runs the generator in `watch` mode.</value>
   </data>
 </root>

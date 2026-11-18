@@ -2,12 +2,12 @@ namespace TopModel.ModelGenerator;
 
 public enum ModelGeneratorMessage
 {
-    RootCommandDescription,
-    RegisteredGenerators,
-    UpdateCompleted,
+    ConnectingToDb,
     DbConnectionSuccess,
     GeneratingPleaseWait,
-    ConnectingToDb,
     PasswordPrompt,
+    RegisteredGenerators,
+    RootCommandDescription,
+    UpdateCompleted,
     WrongPasswordPrompt,
 }

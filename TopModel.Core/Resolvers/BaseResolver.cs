@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-public abstract class BaseResolver(IStringLocalizer localizer)
+public abstract class BaseResolver
 {
-    protected IEnumerable<ModelError> CheckParameters(
+    protected static IEnumerable<ModelError> CheckParameters(
         object objet,
         ReferenceWithParameters reference,
         IParameterContainer container
@@ -19,7 +18,12 @@ public abstract class BaseResolver(IStringLocalizer localizer)
             )
         )
         {
-            yield return Error(ErrorType.TMD0007, [extraParameter.Value, container.Name], objet, extraParameter);
+            yield return ModelError.Error(
+                ErrorType.TMD0007,
+                [extraParameter.Value, container.Name],
+                objet,
+                extraParameter
+            );
         }
 
         foreach (
@@ -28,17 +32,7 @@ public abstract class BaseResolver(IStringLocalizer localizer)
             )
         )
         {
-            yield return Error(ErrorType.TMD0008, [missingParameter.Name, container.Name], objet, reference);
+            yield return ModelError.Error(ErrorType.TMD0008, [missingParameter.Name, container.Name], objet, reference);
         }
-    }
-
-    protected ModelError Error(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
-    {
-        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: true);
-    }
-
-    protected ModelError Warning(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
-    {
-        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: false);
     }
 }

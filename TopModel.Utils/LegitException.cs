@@ -1,10 +1,3 @@
 ﻿namespace TopModel.Utils;
 
-public class LegitException : Exception
-{
-    public LegitException()
-        : base() { }
-
-    public LegitException(string message)
-        : base(message) { }
-}
+public class LegitException(string message) : Exception(message) { }

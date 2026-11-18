@@ -2,6 +2,7 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core.Model;
+using TopModel.Utils;
 
 namespace TopModel.LanguageServer.Handlers;
 
@@ -32,7 +33,7 @@ public class HoverHandler(LSWorkerStore workerStore) : HoverHandlerBase
                     DecoratorInstance { Decorator: Decorator d } => d.Description,
                     Annotation a => a.Description,
                     AnnotationInstance { Annotation: Annotation a } => a.Description,
-                    DataFlow d => $"Flux de données '{d.Name}'",
+                    DataFlow d => LanguageServerMessage.DataFlowDescription.GetMessage(d.Name),
                     TemplateParameter tp => tp.Description,
                     Variable v => v.Description,
                     _ => string.Empty,

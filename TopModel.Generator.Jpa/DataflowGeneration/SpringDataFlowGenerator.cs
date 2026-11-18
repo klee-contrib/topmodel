@@ -1,6 +1,5 @@
 using System.Data;
 using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -99,11 +98,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
     protected virtual string GetDataFlowMapperCall(JavaWriter fw, Class sourceClass, Class targetClass, string tag)
     {
-        var mapper = sourceClass.GetMapperTo(targetClass)
-            ?? throw new ModelException(
-                targetClass,
-                $"Aucun mapper depuis '{sourceClass.NamePascal}' vers '{targetClass.NamePascal}' n'a été trouvé pour ce flow."
-            );
+        var mapper = sourceClass.GetMapperTo(targetClass);
 
         switch (mapper)
         {
@@ -123,7 +118,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 return $"{Config.GetMapperName(mapperNs, mapperModelPath)}.{methodName}(item)";
             }
             default:
-                return string.Empty;
+                return $"MissingMapper.create{targetClass.NamePascal}(item)";
         }
     }
 

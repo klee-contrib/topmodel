@@ -547,6 +547,8 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                         }
                         var genConfig = sortedConfigs[j];
                         var number = j + 1;
+
+                        genConfig.Name ??= $"{configName}@{number}";
                         genConfig.InitVariables(Config.App, number, _logger);
 
                         genConfig.ExcludedTags = ExcludedTags.ToList();
@@ -557,7 +559,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                         ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                         ModelUtils.CombinePath(Config.ConfigRoot, genConfig, c => c.OutputDirectory);
 
-                        genConfig.Name ??= $"{configName}@{number}";
                         try
                         {
                             Config.Configs.Add(genConfig.Name, genConfig);

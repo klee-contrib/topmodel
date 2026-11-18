@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using Meziantou.Framework.Globbing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NeoSmart.AsyncLock;
 using TopModel.Core.FileModel;
@@ -18,7 +17,6 @@ public class ModelStore(
     ModelConfig config,
     IEnumerable<IModelWatcher> modelWatchers,
     TranslationStore translationStore,
-    IStringLocalizer<ErrorType> localizer,
     IModelReporter? modelReporter = null
 ) : IDisposable
 {
@@ -177,12 +175,13 @@ public class ModelStore(
         if (watchers.Any())
         {
             logger.LogInformation(
-                $"Watchers enregistrés : {Environment.NewLine}                          - {string.Join($"{Environment.NewLine}                          - ", watchers.Order())}"
+                CoreMessage.WatchersRegistered,
+                $"{Environment.NewLine}                          - {string.Join($"{Environment.NewLine}                          - ", watchers.Order())}"
             );
         }
         else
         {
-            logger.LogWarning($"Aucun watcher enregistré pour cette configuration");
+            logger.LogWarning(CoreMessage.NoWatchersRegistered);
         }
 
         if (watch)
@@ -192,7 +191,7 @@ public class ModelStore(
 
         _modelFiles.Clear();
 
-        logger.LogInformation("Chargement du modèle...");
+        logger.LogInformation(CoreMessage.LoadingModel);
 
         using (await _lockInit.LockAsync(ct))
         {
@@ -385,13 +384,13 @@ public class ModelStore(
 
                     foreach (var pu in pendingFileChanges.Where(pu => pu.Value.Status == ModelFileStatus.Errored))
                     {
-                        logger.LogError($"{pu.Key.ToRelative()} - Fichier invalide.");
+                        logger.LogError(CoreMessage.InvalidFile, pu.Key.ToRelative());
                     }
 
-                    throw new ModelException("Erreur lors de la lecture du modèle.");
+                    throw new LegitException(CoreMessage.ModelLoadError.GetMessage());
                 }
 
-                logger.LogInformation("Modèle chargé avec succès.");
+                logger.LogInformation(CoreMessage.ModelLoaded);
 
                 modelReporter?.RegisterChange();
 
@@ -419,7 +418,7 @@ public class ModelStore(
                     await _topModelLock.UpdateFiles(generatedFiles);
                 }
 
-                logger.LogInformation($"Mise à jour terminée avec succès.");
+                logger.LogInformation(CoreMessage.UpdateCompleted);
                 logger.LogInformation(string.Empty);
 
                 pendingFileChanges.Clear();
@@ -431,15 +430,10 @@ public class ModelStore(
                     e = e.InnerException!;
                 }
 
-                logger.LogError(e, $"Une erreur s'est produite lors de la mise à jour : {e.Message}");
+                logger.LogError(e, CoreMessage.UpdateError.GetMessage(e.Message));
                 OnResolve?.Invoke(true);
             }
         }
-    }
-
-    private ModelError Error(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
-    {
-        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: true);
     }
 
     private IEnumerable<ModelFile> GetAffectedFiles(
@@ -503,11 +497,11 @@ public class ModelStore(
             {
                 foreach (var domain in g.Skip(1))
                 {
-                    yield return Error(ErrorType.TMD6001, [domain.ToString()], domain);
+                    yield return ModelError.Error(ErrorType.TMD6001, [domain.ToString()], domain);
                 }
             }
 
-            foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files, localizer)))
+            foreach (var error in config.Configs.Values.SelectMany(c => c.CheckDomainImplementations(Files)))
             {
                 yield return error;
             }
@@ -531,7 +525,7 @@ public class ModelStore(
                 {
                     foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                     {
-                        yield return Error(ErrorType.TMD6002, [from.Name, to.Name], converter);
+                        yield return ModelError.Error(ErrorType.TMD6002, [from.Name, to.Name], converter);
                     }
                 }
 
@@ -554,7 +548,7 @@ public class ModelStore(
         )
         {
             var otherClasses = Classes.Where(u => u.Trigram == classe.Trigram && u != classe);
-            yield return Warning(
+            yield return ModelError.Warning(
                 ErrorType.TMD3004,
                 [classe.Trigram ?? string.Empty, string.Join(", ", otherClasses.Select(c => c.Name))],
                 classe.ModelFile,
@@ -564,12 +558,12 @@ public class ModelStore(
 
         foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
         {
-            yield return Warning(ErrorType.TMD0009, [domain.Name], domain);
+            yield return ModelError.Warning(ErrorType.TMD0009, [domain.Name], domain);
         }
 
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
-            yield return Warning(ErrorType.TMD0010, [decorator.Name], decorator);
+            yield return ModelError.Warning(ErrorType.TMD0010, [decorator.Name], decorator);
         }
 
         foreach (
@@ -582,7 +576,7 @@ public class ModelStore(
 
             foreach (var endpoint in endpoints.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [endpoint.Name], endpoint, endpoint.Name.Declaration);
+                yield return ModelError.Error(ErrorType.TMD0001, [endpoint.Name], endpoint, endpoint.Name.Declaration);
             }
 
             if (
@@ -595,7 +589,7 @@ public class ModelStore(
             {
                 foreach (var file in endpointFiles)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD7001,
                         [file.Options.Endpoints.Prefix ?? string.Empty],
                         file,
@@ -609,7 +603,12 @@ public class ModelStore(
         {
             if (!string.IsNullOrEmpty(file.Options.Endpoints.Prefix))
             {
-                yield return Warning(ErrorType.TMD7002, [], file, file.Options.Endpoints.Prefix?.Declaration);
+                yield return ModelError.Warning(
+                    ErrorType.TMD7002,
+                    [],
+                    file,
+                    file.Options.Endpoints.Prefix?.Declaration
+                );
             }
         }
 
@@ -619,7 +618,11 @@ public class ModelStore(
             {
                 if (!genConfig.AvailableClasses.Contains(classe.Extends) && Classes.Contains(classe.Extends))
                 {
-                    yield return Error(ErrorType.TMD3013, [classe.Name, genConfig.Name, classe.Extends!.Name], classe);
+                    yield return ModelError.Error(
+                        ErrorType.TMD3013,
+                        [classe.Name, genConfig.Name, classe.Extends!.Name],
+                        classe
+                    );
                 }
             }
         }
@@ -640,7 +643,7 @@ public class ModelStore(
                 {
                     if (!genConfig.AvailableClasses.Contains(composition) && Classes.Contains(composition))
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD7006,
                             [endpoint.Name, genConfig.Name, composition!.Name],
                             endpoint
@@ -701,7 +704,7 @@ public class ModelStore(
             var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.ContainsKey(use.Value));
             foreach (var use in nonExistingFiles)
             {
-                yield return Error(ErrorType.TMD1001, [use.Value], modelFile, use);
+                yield return ModelError.Error(ErrorType.TMD1001, [use.Value], modelFile, use);
             }
 
             var duplicatedUses = modelFile
@@ -712,7 +715,7 @@ public class ModelStore(
 
             foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.Value)).Skip(1))
             {
-                yield return Error(ErrorType.TMD1002, [use.Value], modelFile, use);
+                yield return ModelError.Error(ErrorType.TMD1002, [use.Value], modelFile, use);
             }
         }
 
@@ -735,7 +738,7 @@ public class ModelStore(
 
         foreach (var classe in duplicateClasses.Where(c => modelFiles.Contains(c.ModelFile)))
         {
-            yield return Error(ErrorType.TMD3001, [classe.Name], classe, classe.Name.Declaration);
+            yield return ModelError.Error(ErrorType.TMD3001, [classe.Name], classe, classe.Name.Declaration);
         }
 
         var referencedClasses = referencedClassesRaw
@@ -790,22 +793,21 @@ public class ModelStore(
 
         foreach (var dataFlow in duplicateDataFlows.Where(c => modelFiles.Contains(c.ModelFile)))
         {
-            yield return Error(ErrorType.TMD4001, [dataFlow.Name], dataFlow, dataFlow.Name.Declaration);
+            yield return ModelError.Error(ErrorType.TMD4001, [dataFlow.Name], dataFlow, dataFlow.Name.Declaration);
         }
 
         var referencedDataFlows = referencedDataFlowsRaw
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var annotationResolver = new AnnotationResolver(localizer, modelFiles, config, referencedAnnotations);
-        var classResolver = new ClassResolver(localizer, modelFiles, referencedClasses, translationStore);
-        var dataFlowResolver = new DataFlowResolver(localizer, modelFiles, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(localizer, modelFiles, config, referencedDecorators);
-        var domainResolver = new DomainResolver(localizer, modelFiles, config, Domains);
-        var endpointResolver = new EndpointResolver(localizer, modelFiles);
-        var mapperResolver = new MapperResolver(localizer, modelFiles, referencedClasses, Converters);
+        var annotationResolver = new AnnotationResolver(modelFiles, config, referencedAnnotations);
+        var classResolver = new ClassResolver(modelFiles, referencedClasses, translationStore);
+        var dataFlowResolver = new DataFlowResolver(modelFiles, referencedDataFlows, referencedClasses);
+        var decoratorResolver = new DecoratorResolver(modelFiles, config, referencedDecorators);
+        var domainResolver = new DomainResolver(modelFiles, config, Domains);
+        var endpointResolver = new EndpointResolver(modelFiles);
+        var mapperResolver = new MapperResolver(modelFiles, referencedClasses, Converters);
         var propertyResolver = new PropertyResolver(
-            localizer,
             modelFiles,
             Domains,
             referencedClasses,
@@ -907,7 +909,7 @@ public class ModelStore(
         {
             foreach (var use in GetUselessImports(modelFile))
             {
-                yield return Warning(ErrorType.TMD1003, [use.Value], modelFile, use);
+                yield return ModelError.Warning(ErrorType.TMD1003, [use.Value], modelFile, use);
             }
         }
     }
@@ -929,10 +931,5 @@ public class ModelStore(
                 genConfig.Files.Remove(fileName);
             }
         }
-    }
-
-    private ModelError Warning(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
-    {
-        return new ModelError(localizer, errorType, messageArgs, objet, location, isError: false);
     }
 }

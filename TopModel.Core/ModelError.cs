@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.Extensions.Localization;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
@@ -28,16 +27,6 @@ public class ModelError
         ErrorType = errorType;
         IsError = isError;
     }
-
-    internal ModelError(
-        IStringLocalizer localizer,
-        ErrorType errorType,
-        string[] messageArgs,
-        object objet,
-        Location? location = null,
-        bool isError = true
-    )
-        : this(errorType, objet, localizer.GetString(Enum.GetName(errorType)!, messageArgs), location, isError) { }
 
     public bool IsError { get; }
 
@@ -89,10 +78,8 @@ public class ModelError
         sb.Append(File.Path);
         sb.Append(Location?.Position ?? string.Empty);
 
-        sb.Append(" - {");
-        sb.Append(ErrorType);
-        sb.Append("} ");
-        sb.Append(Message);
+        sb.Append(" - ");
+        sb.Append(ErrorType.FormatDiagnosticMessage(Message));
         sb.Append(" (");
         sb.Append(File);
 
@@ -128,5 +115,20 @@ public class ModelError
         sb.Append(')');
 
         return sb.ToString();
+    }
+
+    internal static ModelError Error(ErrorType errorType, string[] messageArgs, object objet, Location? location = null)
+    {
+        return new(errorType, objet, errorType.GetMessage(messageArgs), location, isError: true);
+    }
+
+    internal static ModelError Warning(
+        ErrorType errorType,
+        string[] messageArgs,
+        object objet,
+        Location? location = null
+    )
+    {
+        return new(errorType, objet, errorType.GetMessage(messageArgs), location, isError: false);
     }
 }

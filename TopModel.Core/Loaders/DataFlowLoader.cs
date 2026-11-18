@@ -101,9 +101,11 @@ public class DataFlowLoader : ILoader
                                     source.InnerJoin = value!.Value == "true";
                                     break;
                                 default:
-                                    throw new ModelException(
+                                    throw ModelException.From(
+                                        CoreMessage.PropertyInvalidForDataFlowSource,
                                         dataFlow,
-                                        $"Propriété ${prop} inconnue pour une source de flux de données"
+                                        new Declaration(prop),
+                                        prop.Value
                                     );
                             }
                         });
@@ -111,7 +113,12 @@ public class DataFlowLoader : ILoader
                     });
                     break;
                 default:
-                    throw new ModelException(dataFlow, $"Propriété ${prop} inconnue pour un flux de données");
+                    throw ModelException.From(
+                        CoreMessage.PropertyInvalidForDataFlow,
+                        dataFlow,
+                        new Declaration(prop),
+                        prop.Value
+                    );
             }
         });
     }

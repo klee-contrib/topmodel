@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using TopModel.Utils;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace TopModel.LanguageServer.Handlers.Completion;
@@ -229,7 +230,12 @@ public class CompletionProvider(
                 {
                     Kind = CompletionItemKind.Property,
                     Label = p.Name.Value,
-                    LabelDetails = new() { Description = p.Required ? $"{p.Comment} (requis)" : p.Comment },
+                    LabelDetails = new()
+                    {
+                        Description = p.Required
+                            ? $"{p.Comment} ({LanguageServerMessage.Required.GetMessage()})"
+                            : p.Comment,
+                    },
                     SortText = (p.Required ? "0" : "1") + p.Name.Value,
                     TextEdit = ReplaceWord(p.Name.Value),
                 })

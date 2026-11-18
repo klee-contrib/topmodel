@@ -501,15 +501,15 @@ public class ModelFileLoader(
                         }
 
                         e = (FileSystemEventArgs)v!;
-                        var type = e.ChangeType switch
+                        var message = e.ChangeType switch
                         {
-                            WatcherChangeTypes.Created => "Créé",
-                            WatcherChangeTypes.Deleted => "Supprimé",
-                            WatcherChangeTypes.Renamed => "Renommé",
-                            _ => "Modifié",
+                            WatcherChangeTypes.Created => CoreMessage.FileCreated,
+                            WatcherChangeTypes.Deleted => CoreMessage.FileDeleted,
+                            WatcherChangeTypes.Renamed => CoreMessage.FileRenamed,
+                            _ => CoreMessage.FileModified,
                         };
 
-                        logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
+                        logger.LogInformation(message, e.FullPath.ToRelative());
 
                         foreach (var (config, _, _) in _fileWatchers[modelRoot].Configs)
                         {
@@ -672,7 +672,7 @@ public class ModelFileLoader(
                 "decorator" => decoratorLoader,
                 "domain" => domainLoader,
                 "endpoint" => endpointLoader,
-                _ => throw new ModelException(file, $"Type de document inconnu ('{scalar.Value}').", declaration),
+                _ => throw ModelException.From(CoreMessage.UnknownDocumentType, file, declaration, scalar.Value),
             };
 
             loader.Load(parser, file, config, declaration);

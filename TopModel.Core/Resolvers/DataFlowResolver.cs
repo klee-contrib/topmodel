@@ -1,16 +1,14 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
 internal class DataFlowResolver(
-    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, DataFlow> referencedDataFlows,
     IDictionary<string, Class> referencedClasses
-) : BaseResolver(localizer)
+) : BaseResolver
 {
     /// <summary>
     /// Résout les flux de données.
@@ -22,7 +20,7 @@ internal class DataFlowResolver(
         {
             if (!referencedClasses.TryGetValue(dataFlow.ClassReference.Value, out var classe))
             {
-                yield return Error(
+                yield return ModelError.Error(
                     ErrorType.TMD0002,
                     [dataFlow.ClassReference.Value],
                     dataFlow,
@@ -40,7 +38,7 @@ internal class DataFlowResolver(
                 );
                 if (dataFlow.ActiveProperty == null)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0004,
                         [dataFlow.ActivePropertyReference.Value, classe.Name],
                         dataFlow,
@@ -55,7 +53,12 @@ internal class DataFlowResolver(
             {
                 if (!referencedDataFlows.TryGetValue(dependsOnReference.Value, out var referencedDataFlow))
                 {
-                    yield return Error(ErrorType.TMD4002, [dependsOnReference.Value], dataFlow, dependsOnReference);
+                    yield return ModelError.Error(
+                        ErrorType.TMD4002,
+                        [dependsOnReference.Value],
+                        dataFlow,
+                        dependsOnReference
+                    );
                     continue;
                 }
 
@@ -66,7 +69,7 @@ internal class DataFlowResolver(
             {
                 if (!referencedClasses.TryGetValue(source.ClassReference.Value, out var sourceClass))
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0002,
                         [source.ClassReference.Value],
                         dataFlow,
@@ -85,7 +88,7 @@ internal class DataFlowResolver(
                     );
                     if (joinProperty == null)
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD0004,
                             [joinPropertyReference.Value, classe.Name],
                             dataFlow,

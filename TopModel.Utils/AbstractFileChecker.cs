@@ -67,7 +67,7 @@ public abstract class AbstractFileChecker<TConfig>
         if (!result.IsValid)
         {
             var erreur = new StringBuilder();
-            erreur.AppendLine($"Erreur dans le fichier {fileName.ToRelative()} :");
+            erreur.AppendLine(UtilsMessage.ConfigFileError.GetMessage(fileName.ToRelative()));
 
             void HandleErrors(EvaluationResults r)
             {
@@ -104,7 +104,7 @@ public abstract class AbstractFileChecker<TConfig>
         while (parser.Current is YamlDotNet.Core.Events.DocumentStart)
         {
             var yaml = Deserializer.Deserialize(parser)
-                ?? throw new LegitException($"Impossible de lire le fichier {fileName.ToRelative()}.");
+                ?? throw new LegitException(UtilsMessage.CannotReadFile.GetMessage(fileName.ToRelative()));
             var json = JsonSerializer.SerializeToElement(yaml);
 
             Validate(fileName, schema, json);

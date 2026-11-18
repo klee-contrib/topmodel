@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -7,11 +6,10 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 internal class MapperResolver(
-    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     IEnumerable<Converter> converters
-) : BaseResolver(localizer)
+) : BaseResolver
 {
     /// <summary>
     /// Résout les mappers.
@@ -25,7 +23,7 @@ internal class MapperResolver(
             {
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.Value, out var mappedClass))
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0002,
                         [mappings.ClassReference.Value],
                         classe,
@@ -54,7 +52,12 @@ internal class MapperResolver(
                     var currentProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Key.Value);
                     if (currentProperty == null)
                     {
-                        yield return Error(ErrorType.TMD0004, [mapping.Key.Value, classe.Name], classe, mapping.Key);
+                        yield return ModelError.Error(
+                            ErrorType.TMD0004,
+                            [mapping.Key.Value, classe.Name],
+                            classe,
+                            mapping.Key
+                        );
                     }
 
                     if (mapping.Value.Value == "false")
@@ -68,7 +71,7 @@ internal class MapperResolver(
 
                     if (mappedProperty == null)
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD0004,
                             [mapping.Value.Value, mappings.Class.Name],
                             classe,
@@ -106,7 +109,7 @@ internal class MapperResolver(
                         );
                         if (currentProperty == null)
                         {
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD0004,
                                 [mapping.TargetPropertyReference.Value, classe.Name],
                                 classe,
@@ -125,7 +128,7 @@ internal class MapperResolver(
                         );
                         if (mappedProperty == null)
                         {
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD0004,
                                 [mapping.Property.Name, classe.Name],
                                 classe,
@@ -159,7 +162,7 @@ internal class MapperResolver(
             {
                 foreach (var param in mapper.Params.GetDuplicates(p => p.Name))
                 {
-                    yield return Error(ErrorType.TMD0001, [param.Name], classe, param.Declaration);
+                    yield return ModelError.Error(ErrorType.TMD0001, [param.Name], classe, param.Declaration);
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p =>
@@ -178,7 +181,7 @@ internal class MapperResolver(
                 foreach (var mapping in mappedProperties.GetDuplicates(p => p.Value))
                 {
                     hasDoublon = true;
-                    yield return Error(ErrorType.TMD8002, [mapping.Value], classe, mapping.Location);
+                    yield return ModelError.Error(ErrorType.TMD8002, [mapping.Value], classe, mapping.Location);
                 }
 
                 if (!hasDoublon)
@@ -270,7 +273,7 @@ internal class MapperResolver(
                     {
                         foreach (var mapping in finalMappings.GetDuplicates(p => p.Key))
                         {
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD8003,
                                 [
                                     mapping.Key.Name,
@@ -296,7 +299,7 @@ internal class MapperResolver(
                             var previousRequired = mapper
                                 .Params.Where((q, j) => !q.Required && j < mapper.Params.IndexOf(param))
                                 .Select(p => p.Name);
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD8012,
                                 [param.Name, string.Join(", ", previousRequired)],
                                 classe,
@@ -309,7 +312,7 @@ internal class MapperResolver(
 
             foreach (var mapper in classe.ToMappers.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.Declaration);
+                yield return ModelError.Error(ErrorType.TMD0001, [mapper.Name], classe, mapper.Declaration);
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
@@ -362,7 +365,7 @@ internal class MapperResolver(
 
                 foreach (var mapping in mapper.Mappings.GetDuplicates(p => p.Value))
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD8003,
                         [
                             $"{mapper.Class}.{mapping.Value?.Name}",
@@ -385,7 +388,7 @@ internal class MapperResolver(
             {
                 if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any() && !mapper.PropertyParams.Any())
                 {
-                    yield return Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
+                    yield return ModelError.Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
                 }
             }
 
@@ -393,7 +396,7 @@ internal class MapperResolver(
             {
                 if (mapper.Mappings.Count == 0)
                 {
-                    yield return Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
+                    yield return ModelError.Error(ErrorType.TMD8009, [], classe, mapper.Declaration);
                 }
             }
         }
@@ -511,12 +514,17 @@ internal class MapperResolver(
     {
         if (targetProperty.Class.Type == ClassType.Interface && targetProperty.Readonly)
         {
-            yield return Error(ErrorType.TMD8008, [targetProperty.Name], classe, propLocation);
+            yield return ModelError.Error(ErrorType.TMD8008, [targetProperty.Name], classe, propLocation);
         }
 
         if (!CheckPossibleMapping(sourceProperty, targetProperty))
         {
-            yield return Error(ErrorType.TMD8001, [sourceProperty.Name, targetProperty.Name], classe, propLocation);
+            yield return ModelError.Error(
+                ErrorType.TMD8001,
+                [sourceProperty.Name, targetProperty.Name],
+                classe,
+                propLocation
+            );
         }
     }
 }

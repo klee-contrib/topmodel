@@ -35,7 +35,7 @@ public class FileChecker()
         var config = new ModelConfig();
         if (!(stream.Documents.Any() && stream.Documents[0].RootNode is YamlMappingNode))
         {
-            throw new($"Aucun document yaml dans le fichier de configuration");
+            throw new LegitException(CoreMessage.NoYamlDocument.GetMessage());
         }
 
         foreach (var kv in (stream.Documents[0].RootNode as YamlMappingNode)!.Children)

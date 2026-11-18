@@ -6,6 +6,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core.FileModel;
 using TopModel.Core.Utils;
+using TopModel.Utils;
 using Location = OmniSharp.Extensions.LanguageServer.Protocol.Models.Location;
 
 namespace TopModel.LanguageServer.Handlers;
@@ -108,7 +109,7 @@ public class CodeLensHandler(LSWorkerStore workerStore, ILanguageServerFacade fa
                         Range = range,
                         Command = new Command()
                         {
-                            Title = $"{group.Count()} references",
+                            Title = LanguageServerMessage.ReferencesCount.GetMessage(group.Count()),
                             Name = "editor.action.showReferences",
                             Arguments = JArray.FromObject(
                                 new object[] { request.TextDocument.Uri, range.Start, locations },

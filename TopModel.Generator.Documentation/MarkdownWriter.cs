@@ -86,11 +86,11 @@ public sealed class MarkdownWriter : IAsyncDisposable
     {
         if (level is < 1 or > 6)
         {
-            throw new ArgumentOutOfRangeException(nameof(level), "Le niveau de titre doit être compris entre 1 et 6.");
+            throw new ArgumentOutOfRangeException(nameof(level), DocumentationMessage.InvalidTitleLevel.GetMessage());
         }
         if (level == 1 && HasLevel1Header)
         {
-            throw new InvalidOperationException("Un document Markdown ne peut contenir qu'un seul titre de niveau 1.");
+            throw new InvalidOperationException(DocumentationMessage.MultipleLevel1Titles.GetMessage());
         }
         HasLevel1Header |= level == 1;
         _fileWriter.WriteLine($"{new string('#', level)} {text}");

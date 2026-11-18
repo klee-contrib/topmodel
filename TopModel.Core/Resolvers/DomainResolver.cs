@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class DomainResolver(
-    IStringLocalizer localizer,
-    IList<ModelFile> modelFiles,
-    ModelConfig config,
-    IDictionary<string, Domain> domains
-) : BaseResolver(localizer)
+internal class DomainResolver(IList<ModelFile> modelFiles, ModelConfig config, IDictionary<string, Domain> domains)
+    : BaseResolver
 {
     /// <summary>
     /// Résout les convertisseurs.
@@ -31,7 +26,7 @@ internal class DomainResolver(
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.Value], converter, varName);
+                    yield return ModelError.Warning(ErrorType.TMD0011, [varName.Value], converter, varName);
                 }
             }
 
@@ -42,7 +37,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.Value, out var domain))
                 {
-                    yield return Error(ErrorType.TMD0003, [dom.Value], converter, dom);
+                    yield return ModelError.Error(ErrorType.TMD0003, [dom.Value], converter, dom);
                     break;
                 }
 
@@ -53,7 +48,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(dom.Value, out var domain))
                 {
-                    yield return Error(ErrorType.TMD0003, [dom.Value], converter, dom);
+                    yield return ModelError.Error(ErrorType.TMD0003, [dom.Value], converter, dom);
                     break;
                 }
 
@@ -75,7 +70,7 @@ internal class DomainResolver(
             {
                 if (!domains.TryGetValue(domainReference.Value, out var asDomain))
                 {
-                    yield return Error(ErrorType.TMD0003, [domainReference.Value], domain, domainReference);
+                    yield return ModelError.Error(ErrorType.TMD0003, [domainReference.Value], domain, domainReference);
                     continue;
                 }
 
@@ -84,12 +79,17 @@ internal class DomainResolver(
 
             foreach (var templateParam in domain.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], domain, templateParam.Declaration);
+                yield return ModelError.Error(
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    domain,
+                    templateParam.Declaration
+                );
             }
 
             if (domain.Collection && !domain.Generic)
             {
-                yield return Error(ErrorType.TMD6004, [], domain, domain.Declaration);
+                yield return ModelError.Error(ErrorType.TMD6004, [], domain, domain.Declaration);
             }
 
             domain.Variables.Clear();
@@ -102,7 +102,7 @@ internal class DomainResolver(
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.Value], domain, varName);
+                    yield return ModelError.Warning(ErrorType.TMD0011, [varName.Value], domain, varName);
                 }
             }
         }

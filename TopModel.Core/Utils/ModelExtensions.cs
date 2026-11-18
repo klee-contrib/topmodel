@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
+using TopModel.Utils;
 
 namespace TopModel.Core.Utils;
 
@@ -75,7 +76,7 @@ public static class ModelExtensions
                     .FromMapper
                     .Class
                     .ModelFile,
-                _ => throw new InvalidOperationException("Type d'objet non supporté."),
+                _ => throw new InvalidOperationException(CoreMessage.UnsupportedObjectType.GetMessage()),
             };
     }
 }

@@ -8,25 +8,22 @@ namespace TopModel.Core;
 /// </summary>
 public class ModelException : LegitException
 {
-    /// <summary>
-    /// Constructeur.
-    /// </summary>
-    /// <param name="message">Message.</param>
-    public ModelException(string message)
-        : base(message) { }
-
-    /// <summary>
-    /// Constructeur.
-    /// </summary>
-    /// <param name="objet">Objet de modèle concerné.</param>
-    /// <param name="message">Message.</param>
-    /// <param name="location">Localisation éventuelle vers l'erreur (si pas liée à l'objet)</param>
-    public ModelException(object objet, string message, Location? location = null)
+    private ModelException(ModelError modelError)
+        : base(modelError.ToString())
     {
-        ModelError = new ModelError(ErrorType.TMD0000, objet, message, location);
+        ModelError = modelError;
     }
 
-    public override string Message => ModelError != null ? ModelError.ToString() : base.Message;
+    public override string Message => ModelError.ToString();
 
-    public ModelError? ModelError { get; }
+    public ModelError ModelError { get; }
+
+    public static ModelException From<T>(T messageType, object objet, Location? location, params string[] args)
+        where T : struct, Enum
+    {
+        var modelError = messageType is ErrorType errorType
+            ? ModelError.Error(errorType, args, objet, location)
+            : new ModelError(ErrorType.TMD0000, objet, messageType.GetMessage(args), location);
+        return new ModelException(modelError);
+    }
 }

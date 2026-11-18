@@ -91,10 +91,10 @@ public class LoggerProvider : ILoggerProvider
                 AnsiConsole.Markup($" {split[1]} ");
 
                 message = message.EscapeMarkup();
-                message = WriteAction(message, "Supprimé", "maroon");
-                message = WriteAction(message, "Créé", "green");
-                message = WriteAction(message, "Modifié", "teal");
-                message = WriteAction(message, "Renommé", "yellow");
+                message = WriteAction(message, CliMessage.ActionDeleted.GetMessage(), "maroon");
+                message = WriteAction(message, CliMessage.ActionCreated.GetMessage(), "green");
+                message = WriteAction(message, CliMessage.ActionModified.GetMessage(), "teal");
+                message = WriteAction(message, CliMessage.ActionRenamed.GetMessage(), "yellow");
                 if (logLevel != LogLevel.Error && logLevel != LogLevel.Warning)
                 {
                     var split2 = message.Split('/');

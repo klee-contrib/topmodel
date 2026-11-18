@@ -44,8 +44,9 @@ public class LSWorker : TopModelWorker<ModelConfig, FileChecker>
                 var genConfig = sortedConfigs[j];
                 var number = j + 1;
 
-                genConfig.InitVariables(Config.App, number);
                 genConfig.Name ??= $"{configName}@{number}";
+                genConfig.InitVariables(Config.App, number);
+
                 try
                 {
                     Config.Configs.Add(genConfig.Name, genConfig);

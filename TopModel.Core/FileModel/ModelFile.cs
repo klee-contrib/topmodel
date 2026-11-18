@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.Model;
 using TopModel.Core.Utils;
+using TopModel.Utils;
 
 namespace TopModel.Core.FileModel;
 
@@ -142,7 +143,10 @@ public class ModelFile
                 VariableContainers
                     .SelectMany(d => d.TransformReferences)
                     .Select(tr =>
-                        (tr as Reference, new Variable { Description = "Transformation de variable" } as object)
+                        (
+                            tr as Reference,
+                            new Variable { Description = VariableMessage.VariableTransform.GetMessage() } as object
+                        )
                     )
             )
             .Concat(

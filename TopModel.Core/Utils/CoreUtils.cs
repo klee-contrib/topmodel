@@ -20,12 +20,14 @@ public static class CoreUtils
             {
                 if (inProcess)
                 {
-                    throw new ModelException(
+                    throw ModelException.From(
+                        CoreMessage.CircularDependency,
                         item,
-                        $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
                         (item as ModelFile)?.Uses.FirstOrDefault(u =>
                             u.Value == (visited.Last().Key as ModelFile)?.Name
-                        )
+                        ),
+                        visited.Last().Key?.ToString()!,
+                        item?.ToString()!
                     );
                 }
             }

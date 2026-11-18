@@ -1,53 +1,54 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using TopModel.Core.Model;
+using TopModel.Utils;
 
 namespace TopModel.Core.Utils;
 
 internal static class VariableUtils
 {
-    internal static readonly Dictionary<string, string> ClassProperties = new()
+    internal static readonly Dictionary<string, VariableMessage> ClassProperties = new()
     {
-        ["trigram"] = "Trigramme de la classe",
-        ["name"] = "Nom de la classe",
-        ["sqlName"] = "Nom de la table SQL de la classe",
-        ["comment"] = "Commentaire de la classe",
-        ["label"] = "Libellé de la classe",
-        ["pluralName"] = "Nom au pluriel de la classe",
-        ["module"] = "Module du fichier contenant la classe",
+        ["trigram"] = VariableMessage.ClassTrigram,
+        ["name"] = VariableMessage.ClassName,
+        ["sqlName"] = VariableMessage.ClassSqlName,
+        ["comment"] = VariableMessage.ClassComment,
+        ["label"] = VariableMessage.ClassLabel,
+        ["pluralName"] = VariableMessage.ClassPluralName,
+        ["module"] = VariableMessage.ClassModule,
     };
 
-    internal static readonly Dictionary<string, string> DomainProperties = new()
+    internal static readonly Dictionary<string, VariableMessage> DomainProperties = new()
     {
-        ["mediaType"] = "Media type d'une proprieté du domaine",
-        ["length"] = "Longueur d'une proprieté du domaine",
-        ["scale"] = "Nombre de chiffres après la virgule pour une propriété du domaine",
-        ["name"] = "Nom du domaine",
-        ["type"] = "Type d'implémentation du domaine",
+        ["mediaType"] = VariableMessage.DomainMediaType,
+        ["length"] = VariableMessage.DomainLength,
+        ["scale"] = VariableMessage.DomainScale,
+        ["name"] = VariableMessage.DomainName,
+        ["type"] = VariableMessage.DomainType,
     };
 
-    internal static readonly Dictionary<string, string> EndpointProperties = new()
+    internal static readonly Dictionary<string, VariableMessage> EndpointProperties = new()
     {
-        ["name"] = "Nom de l'endpoint",
-        ["method"] = "Méthode HTTP de l'endpoint",
-        ["route"] = "Route de l'endpoint",
-        ["description"] = "Description de l'endpoint",
-        ["module"] = "Module du fichier contenant l'endpoint",
+        ["name"] = VariableMessage.EndpointName,
+        ["method"] = VariableMessage.EndpointMethod,
+        ["route"] = VariableMessage.EndpointRoute,
+        ["description"] = VariableMessage.EndpointDescription,
+        ["module"] = VariableMessage.EndpointModule,
     };
 
-    internal static readonly Dictionary<string, string> PropertyProperties = new()
+    internal static readonly Dictionary<string, VariableMessage> PropertyProperties = new()
     {
-        ["T"] = "Type sur lequel s'applique le type générique",
-        ["value"] = "Valeur de la propriété",
-        ["name"] = "Nom de la propriété",
-        ["sqlName"] = "Nom de la colonne SQL de la propriété",
-        ["paramName"] = "Nom de la propriété en tant que paramètre d'endpoint",
-        ["trigram"] = "Trigramme de la propriété",
-        ["label"] = "Libellé de la propriété",
-        ["comment"] = "Commentaire de la propriété",
-        ["required"] = "Si la propriété est obligatoire",
-        ["resourceKey"] = "Clé de traduction de la propriété",
-        ["commentResourceKey"] = "Clé de traduction pour le commentaire de la propriété",
-        ["defaultValue"] = "Valeur par défaut de la propriété",
+        ["T"] = VariableMessage.PropertyGenericType,
+        ["value"] = VariableMessage.PropertyValue,
+        ["name"] = VariableMessage.PropertyName,
+        ["sqlName"] = VariableMessage.PropertySqlName,
+        ["paramName"] = VariableMessage.PropertyParamName,
+        ["trigram"] = VariableMessage.PropertyTrigram,
+        ["label"] = VariableMessage.PropertyLabel,
+        ["comment"] = VariableMessage.PropertyComment,
+        ["required"] = VariableMessage.PropertyRequired,
+        ["resourceKey"] = VariableMessage.PropertyResourceKey,
+        ["commentResourceKey"] = VariableMessage.PropertyCommentResourceKey,
+        ["defaultValue"] = VariableMessage.PropertyDefaultValue,
     };
 
     internal static readonly string[] Transforms =
@@ -86,9 +87,9 @@ internal static class VariableUtils
                 return input["extends.".Length..].TryGetClassVariable(config, templateParameters, out variable);
             }
 
-            if (input.StartsWith($"customProperties."))
+            if (input.StartsWith("customProperties."))
             {
-                variable = new Variable { Description = "Propriété personnalisée" };
+                variable = new Variable { Description = VariableMessage.CustomProperty.GetMessage() };
                 return true;
             }
 
@@ -106,7 +107,7 @@ internal static class VariableUtils
 
             if (ClassProperties.TryGetValue(input, out var description))
             {
-                variable = new Variable { Description = description };
+                variable = new Variable { Description = description.GetMessage() };
                 return true;
             }
 
@@ -139,7 +140,7 @@ internal static class VariableUtils
 
             if (input == "value")
             {
-                variable = new Variable { Description = "Valeur de la propriété à convertir" };
+                variable = new Variable { Description = VariableMessage.PropertyValueToConvert.GetMessage() };
                 return true;
             }
 
@@ -151,7 +152,7 @@ internal static class VariableUtils
         {
             if (DomainProperties.TryGetValue(input, out var description))
             {
-                variable = new Variable { Description = description };
+                variable = new Variable { Description = description.GetMessage() };
                 return true;
             }
 
@@ -172,7 +173,7 @@ internal static class VariableUtils
 
             if (input.StartsWith("customProperties."))
             {
-                variable = new Variable { Description = "Propriété personnalisée" };
+                variable = new Variable { Description = VariableMessage.CustomProperty.GetMessage() };
                 return true;
             }
 
@@ -190,7 +191,7 @@ internal static class VariableUtils
 
             if (EndpointProperties.TryGetValue(input, out var description))
             {
-                variable = new Variable { Description = description };
+                variable = new Variable { Description = description.GetMessage() };
                 return true;
             }
 
@@ -237,9 +238,9 @@ internal static class VariableUtils
                 return input["domain.".Length..].TryGetDomainVariable(out variable);
             }
 
-            if (input.StartsWith($"customProperties."))
+            if (input.StartsWith("customProperties."))
             {
-                variable = new Variable { Description = "Propriété personnalisée" };
+                variable = new Variable { Description = VariableMessage.CustomProperty.GetMessage() };
                 return true;
             }
 
@@ -261,7 +262,7 @@ internal static class VariableUtils
 
             if (PropertyProperties.TryGetValue(input, out var description))
             {
-                variable = new Variable { Description = description };
+                variable = new Variable { Description = description.GetMessage() };
                 return true;
             }
 

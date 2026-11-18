@@ -41,9 +41,7 @@ public class TopModelLock : TopModelLockFile
             }
             catch
             {
-                _logger.LogError(
-                    $"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement."
-                );
+                _logger.LogError(UtilsMessage.LockFileReadError, _config.LockFileName);
                 throw;
             }
         }
@@ -56,9 +54,7 @@ public class TopModelLock : TopModelLockFile
 
         if (Version != null && version != Version)
         {
-            logger.LogWarning(
-                $"Ce modèle a été généré pour la dernière fois avec {assembly.Name} v{Version}, qui n'est pas la version actuellement installée (v{version})"
-            );
+            logger.LogWarning(UtilsMessage.LockFileVersionMismatch, assembly.Name!, Version, version);
         }
 
         Version = version;
@@ -97,7 +93,7 @@ public class TopModelLock : TopModelLockFile
         Parallel.ForEach(filesToPrune.Where(File.Exists), fileToPrune =>
         {
             File.Delete(fileToPrune);
-            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
+            _logger.LogInformation(UtilsMessage.FileDeleted, fileToPrune.ToRelative());
         });
 
         GeneratedFiles = generatedFilesList;

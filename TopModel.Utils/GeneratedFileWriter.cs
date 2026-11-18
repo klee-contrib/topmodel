@@ -116,7 +116,10 @@ public class GeneratedFileWriter : IFileWriter
             await sw.WriteAsync(newContent);
         }
 
-        _logger.LogInformation($"{(fileExists ? "Modifié:  " : "Créé:     ")}{FileName.ToRelative()}");
+        _logger.LogInformation(
+            fileExists ? UtilsMessage.FileModified : UtilsMessage.FileCreated,
+            FileName.ToRelative()
+        );
     }
 
     /// <inheritdoc cref="IFileWriter.Write" />

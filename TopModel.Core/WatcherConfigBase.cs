@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS0618
 
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders.YamlUtils;
@@ -288,10 +287,7 @@ public class WatcherConfigBase
             Variables["app"] = app;
         }
 
-        if (Name != null && !Variables.ContainsKey("name"))
-        {
-            Variables["name"] = Name;
-        }
+        Variables["name"] = Name;
 
         // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
         if (TagVariableNames.Any())
@@ -341,9 +337,7 @@ public class WatcherConfigBase
                         if (!supportedProperties.Contains(property.Name))
                         {
                             hasMissingVar = true;
-                            logger?.LogWarning(
-                                $"{{{Name}.{property.Name}}} - La variable '{{{varName}}}' n'est pas supportée par cette propriété."
-                            );
+                            logger?.LogWarning(CoreMessage.UnsupportedPropertyVariable, Name, property.Name, varName);
                         }
 
                         continue;
@@ -354,16 +348,12 @@ public class WatcherConfigBase
                     if (!hasTagSupport)
                     {
                         hasMissingVar = true;
-                        logger?.LogWarning(
-                            $"{{{Name}.{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour cette configuration."
-                        );
+                        logger?.LogWarning(CoreMessage.UndefinedGlobalVariable, Name, property.Name, varName);
                     }
                     else if (!TagVariableNames.Contains(varName))
                     {
                         hasMissingVar = true;
-                        logger?.LogWarning(
-                            $"{{{Name}.{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour cette configuration."
-                        );
+                        logger?.LogWarning(CoreMessage.UndefinedConfigVariable, Name, property.Name, varName);
                     }
                 }
             }
@@ -416,10 +406,7 @@ public class WatcherConfigBase
         return result;
     }
 
-    internal IEnumerable<ModelError> CheckDomainImplementations(
-        IEnumerable<ModelFile> files,
-        IStringLocalizer localizer
-    )
+    internal IEnumerable<ModelError> CheckDomainImplementations(IEnumerable<ModelFile> files)
     {
         var handledFiles = files.Where(file => Tags.Intersect(file.AllTags.Except(ExcludedTags)).Any());
 
@@ -437,8 +424,7 @@ public class WatcherConfigBase
                     .Distinct()
             )
             {
-                yield return new ModelError(
-                    localizer,
+                yield return ModelError.Error(
                     ErrorType.TMD6003,
                     [
                         Name,

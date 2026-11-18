@@ -43,13 +43,13 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        var property = propertyLoader.Load(parser, modelFile, config);
+                        var property = propertyLoader.Load(parser, endpoint, config);
                         property.Endpoint = endpoint;
                         endpoint.OwnParams.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.OwnReturns = propertyLoader.Load(parser, modelFile, config);
+                    endpoint.OwnReturns = propertyLoader.Load(parser, endpoint, config);
                     endpoint.OwnReturns.Endpoint = endpoint;
                     break;
                 case "decorators":
@@ -135,7 +135,12 @@ public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoad
                     );
                     break;
                 default:
-                    throw new ModelException(endpoint, $"Propriété ${prop} inconnue pour un endpoint");
+                    throw ModelException.From(
+                        CoreMessage.PropertyInvalidForEndpoint,
+                        endpoint,
+                        new Declaration(prop),
+                        prop.Value
+                    );
             }
         });
     }

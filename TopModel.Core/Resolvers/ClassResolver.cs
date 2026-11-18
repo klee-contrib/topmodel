@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -8,11 +7,10 @@ using YamlDotNet.Core.Events;
 namespace TopModel.Core.Resolvers;
 
 internal class ClassResolver(
-    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     IDictionary<string, Class> referencedClasses,
     TranslationStore translationStore
-) : BaseResolver(localizer)
+) : BaseResolver
 {
     /// <summary>
     /// Effectue les vérifications de cohérence sur le résultat de la résolution des classes.
@@ -31,7 +29,7 @@ internal class ClassResolver(
                         && classe.InheritanceStrategy == InheritanceStrategy.JoinedTables
                     )
                     {
-                        yield return Error(ErrorType.TMD3024, [classe.Name], classe);
+                        yield return ModelError.Error(ErrorType.TMD3024, [classe.Name], classe);
                     }
 
                     if (
@@ -41,12 +39,12 @@ internal class ClassResolver(
                         && classe.InheritanceStrategy == InheritanceStrategy.DistinctTables
                     )
                     {
-                        yield return Error(ErrorType.TMD3025, [classe.Name], classe);
+                        yield return ModelError.Error(ErrorType.TMD3025, [classe.Name], classe);
                     }
 
                     if (classe.Extends != null && classe.Extends.ExtendedProperties.Count(p => p.PrimaryKey) != 1)
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD3009,
                             [classe.Name, classe.Extends.Name],
                             classe,
@@ -56,7 +54,7 @@ internal class ClassResolver(
                     // Doublons de propriétés.
                     foreach (var property in classe.ExtendedProperties.GetDuplicates(p => p.NamePascal))
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD0001,
                             [property.Name],
                             modelFile,
@@ -79,7 +77,7 @@ internal class ClassResolver(
                             )
                     )
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD3005,
                             [classe.Name],
                             modelFile,
@@ -99,7 +97,7 @@ internal class ClassResolver(
                             )
                         )
                         {
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD3020,
                                 [(prop.Composition ?? prop.Association)!.Name, classe.Name],
                                 prop
@@ -118,7 +116,7 @@ internal class ClassResolver(
                             )
                         )
                         {
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD3020,
                                 [(prop.Composition ?? prop.Association)!.Name, classe.Name],
                                 prop
@@ -141,7 +139,7 @@ internal class ClassResolver(
                         )
                     )
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD9013,
                             [property.Name, classe.Name],
                             classe,
@@ -165,7 +163,7 @@ internal class ClassResolver(
                                 )
                             )
                             {
-                                yield return Error(
+                                yield return ModelError.Error(
                                     ErrorType.TMD9013,
                                     [property.Name, classe.Name],
                                     classe,
@@ -192,7 +190,7 @@ internal class ClassResolver(
                         )
                     )
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD3021,
                             [classe.Name, string.Join(", ", index.Properties.Select(p => p.Name))],
                             modelFile,
@@ -232,7 +230,7 @@ internal class ClassResolver(
                         if (ukValues.IndexOf(ukValue) < i)
                         {
                             var duplicateValue = classe.Values[i];
-                            yield return Error(
+                            yield return ModelError.Error(
                                 ErrorType.TMD3012,
                                 [string.Join(", ", uk.Select(u => u.Name))],
                                 duplicateValue,
@@ -255,14 +253,19 @@ internal class ClassResolver(
         {
             if (classe.Reference && classe.ReferenceKey == null)
             {
-                yield return Error(ErrorType.TMD3002, [classe.Name], classe);
+                yield return ModelError.Error(ErrorType.TMD3002, [classe.Name], classe);
             }
 
             if (classe.EnumOverride != null)
             {
                 if (classe.EnumOverride != "false" && classe.Values.Count == 0)
                 {
-                    yield return Error(ErrorType.TMD3003, [classe.Name], classe, classe.EnumOverride.Declaration);
+                    yield return ModelError.Error(
+                        ErrorType.TMD3003,
+                        [classe.Name],
+                        classe,
+                        classe.EnumOverride.Declaration
+                    );
                 }
                 else
                 {
@@ -285,12 +288,12 @@ internal class ClassResolver(
 
             if (classe.Extends != null && classe.Enum != classe.Extends.Enum)
             {
-                yield return Error(ErrorType.TMD3010, [classe.Name, classe.Extends.Name], classe);
+                yield return ModelError.Error(ErrorType.TMD3010, [classe.Name, classe.Extends.Name], classe);
             }
 
             if (classe.Enum == EnumMode.Enum && classe.ReferenceKey?.EnumProperty == null)
             {
-                yield return Error(ErrorType.TMD3019, [classe.Name], classe);
+                yield return ModelError.Error(ErrorType.TMD3019, [classe.Name], classe);
             }
 
             if (classe.Enum == EnumMode.Enum)
@@ -310,7 +313,12 @@ internal class ClassResolver(
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.Value, out var extends))
             {
-                yield return Error(ErrorType.TMD0002, [classe.ExtendsReference.Value], classe, classe.ExtendsReference);
+                yield return ModelError.Error(
+                    ErrorType.TMD0002,
+                    [classe.ExtendsReference.Value],
+                    classe,
+                    classe.ExtendsReference
+                );
                 continue;
             }
 
@@ -319,7 +327,7 @@ internal class ClassResolver(
                 && extends.Type != classe.Type
             )
             {
-                yield return Error(
+                yield return ModelError.Error(
                     ErrorType.TMD3006,
                     [classe.Name, classe.ExtendsReference.Value],
                     classe,
@@ -342,19 +350,34 @@ internal class ClassResolver(
             {
                 if (!referencedClasses.TryGetValue(implementReference.Value, out var implements))
                 {
-                    yield return Error(ErrorType.TMD0002, [implementReference.Value], classe, implementReference);
+                    yield return ModelError.Error(
+                        ErrorType.TMD0002,
+                        [implementReference.Value],
+                        classe,
+                        implementReference
+                    );
                     continue;
                 }
 
                 if (implements.Type != ClassType.Interface)
                 {
-                    yield return Error(ErrorType.TMD3007, [implementReference.Value], classe, implementReference);
+                    yield return ModelError.Error(
+                        ErrorType.TMD3007,
+                        [implementReference.Value],
+                        classe,
+                        implementReference
+                    );
                     continue;
                 }
 
                 if (classe.Type == ClassType.Interface)
                 {
-                    yield return Error(ErrorType.TMD3008, [implementReference.Value], classe, implementReference);
+                    yield return ModelError.Error(
+                        ErrorType.TMD3008,
+                        [implementReference.Value],
+                        classe,
+                        implementReference
+                    );
                     continue;
                 }
 
@@ -368,7 +391,7 @@ internal class ClassResolver(
 
                 if (existing.Contains(implements))
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD3022,
                         [implementReference.Value, classe.Name],
                         classe,
@@ -400,7 +423,7 @@ internal class ClassResolver(
 
                     if (property == null)
                     {
-                        yield return Error(ErrorType.TMD0004, [propRef.Value, classe.Name], classe, propRef);
+                        yield return ModelError.Error(ErrorType.TMD0004, [propRef.Value, classe.Name], classe, propRef);
                     }
                     else
                     {
@@ -436,7 +459,7 @@ internal class ClassResolver(
 
                 if (classe.DefaultProperty == null)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0004,
                         [classe.DefaultPropertyReference.Value, classe.Name],
                         classe,
@@ -456,7 +479,7 @@ internal class ClassResolver(
 
                 if (classe.OrderProperty == null)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0004,
                         [classe.OrderPropertyReference.Value, classe.Name],
                         classe,
@@ -476,7 +499,7 @@ internal class ClassResolver(
 
                 if (classe.FlagProperty == null)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0004,
                         [classe.FlagPropertyReference.Value, classe.Name],
                         classe,
@@ -496,7 +519,7 @@ internal class ClassResolver(
 
                 if (classe.LocaleProperty == null)
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD0004,
                         [classe.LocalePropertyReference.Value, classe.Name],
                         classe,
@@ -520,7 +543,7 @@ internal class ClassResolver(
 
                     if (classe.DiscriminatorProperty == null)
                     {
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD0004,
                             [classe.DiscriminatorPropertyReference.Value, classe.Name],
                             classe,
@@ -544,26 +567,26 @@ internal class ClassResolver(
             {
                 if (classe.DefaultProperty == null)
                 {
-                    yield return Error(ErrorType.TMD3014, [], classe);
+                    yield return ModelError.Error(ErrorType.TMD3014, [], classe);
                 }
 
                 if (classe.LocaleProperty != null)
                 {
                     if (!classe.LocaleProperty.PrimaryKey || classe.PrimaryKey.Count() != 2)
                     {
-                        yield return Error(ErrorType.TMD3015, [], classe);
+                        yield return ModelError.Error(ErrorType.TMD3015, [], classe);
                     }
                 }
                 else
                 {
                     if (classe.PrimaryKey.Count() != 1)
                     {
-                        yield return Error(ErrorType.TMD3016, [], classe);
+                        yield return ModelError.Error(ErrorType.TMD3016, [], classe);
                     }
 
                     if (translationStore.Translations.Keys.Count > 1)
                     {
-                        yield return Error(ErrorType.TMD3017, [], classe);
+                        yield return ModelError.Error(ErrorType.TMD3017, [], classe);
                     }
                 }
 
@@ -573,7 +596,7 @@ internal class ClassResolver(
                     )
                 )
                 {
-                    yield return Error(ErrorType.TMD3018, [], classe);
+                    yield return ModelError.Error(ErrorType.TMD3018, [], classe);
                 }
             }
         }
@@ -616,7 +639,7 @@ internal class ClassResolver(
         {
             if (classe.Type != ClassType.Regular)
             {
-                yield return Error(ErrorType.TMD3026, [classe.Name], classe);
+                yield return ModelError.Error(ErrorType.TMD3026, [classe.Name], classe);
                 continue;
             }
 
@@ -638,7 +661,12 @@ internal class ClassResolver(
 
                     if (property == null)
                     {
-                        yield return Error(ErrorType.TMD0004, [value.Key.Value, classe.Name], classe, value.Key);
+                        yield return ModelError.Error(
+                            ErrorType.TMD0004,
+                            [value.Key.Value, classe.Name],
+                            classe,
+                            value.Key
+                        );
                     }
                     else
                     {
@@ -655,7 +683,7 @@ internal class ClassResolver(
 
                 if (missingRequiredProperties.Any())
                 {
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD3011,
                         [valueRef.Key.Value, string.Join(", ", missingRequiredProperties.Select(p => p.Name))],
                         classe,

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
 using TopModel.Utils;
@@ -7,11 +6,10 @@ using TopModel.Utils;
 namespace TopModel.Core.Resolvers;
 
 public class AnnotationResolver(
-    IStringLocalizer localizer,
     IList<ModelFile> modelFiles,
     ModelConfig config,
     IDictionary<string, Annotation> referencedAnnotations
-) : BaseResolver(localizer)
+) : BaseResolver
 {
     /// <summary>
     /// Résout les annotations.
@@ -59,18 +57,23 @@ public class AnnotationResolver(
                 }
                 else
                 {
-                    yield return Warning(ErrorType.TMD0011, [varName.Value], annotation, varName);
+                    yield return ModelError.Warning(ErrorType.TMD0011, [varName.Value], annotation, varName);
                 }
             }
 
             foreach (var templateParam in annotation.TemplateParameters.GetDuplicates(p => p.Name))
             {
-                yield return Error(ErrorType.TMD0001, [templateParam.Name], annotation, templateParam.Declaration);
+                yield return ModelError.Error(
+                    ErrorType.TMD0001,
+                    [templateParam.Name],
+                    annotation,
+                    templateParam.Declaration
+                );
             }
 
             if (annotation.TemplateParameters.Any() && annotation.Global)
             {
-                yield return Error(ErrorType.TMD2005, [], annotation);
+                yield return ModelError.Error(ErrorType.TMD2005, [], annotation);
             }
         }
 
@@ -216,14 +219,14 @@ public class AnnotationResolver(
             if (!referencedAnnotations.TryGetValue(annotationRef.Value, out var annotation))
             {
                 isError = true;
-                yield return Error(ErrorType.TMD2001, [annotationRef.Value], container, annotationRef);
+                yield return ModelError.Error(ErrorType.TMD2001, [annotationRef.Value], container, annotationRef);
             }
             else
             {
                 if (annotationsToResolve.Any(d => d.Annotation == annotation))
                 {
                     isError = true;
-                    yield return Error(
+                    yield return ModelError.Error(
                         ErrorType.TMD2002,
                         [annotationRef.Value, container.Name],
                         container,
@@ -252,7 +255,7 @@ public class AnnotationResolver(
                     )
                     {
                         isError = true;
-                        yield return Error(
+                        yield return ModelError.Error(
                             ErrorType.TMD2004,
                             [annotationRef.Value, container.Name],
                             container,

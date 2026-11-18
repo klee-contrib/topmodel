@@ -37,16 +37,20 @@ public static class LogUtils
         }
     }
 
+    extension(ErrorType errorType)
+    {
+        public string FormatDiagnosticMessage(string message)
+        {
+            return $"{{{errorType}}} - {message}";
+        }
+    }
+
     private static string GetLogMessage<T>(T key, params object[] args)
         where T : struct, Enum
     {
-        var message = key.GetMessage(args);
-        if (key is ErrorType errorType)
-        {
-            message = $"{{{errorType}}} - {message}";
-        }
-
-        return message;
+        return key is ErrorType errorType
+            ? errorType.FormatDiagnosticMessage(errorType.GetMessage(args))
+            : key.GetMessage(args);
     }
 
     private static class ResourceManagerCache<T>

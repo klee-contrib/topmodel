@@ -118,7 +118,7 @@ public class CodeActionHandler(LSWorkerStore workerStore, ILanguageServerFacade 
         [
             new CodeAction
             {
-                Title = $"TopModel : Créer l'annotation {annotationName} dans ce fichier",
+                Title = LanguageServerMessage.CreateAnnotation.GetMessage(annotationName),
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
                 Diagnostics = new List<Diagnostic> { diagnostic },
@@ -161,7 +161,7 @@ annotation:
         [
             new CodeAction
             {
-                Title = $"TopModel : Créer la classe {className} dans ce fichier",
+                Title = LanguageServerMessage.CreateClass.GetMessage(className),
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
                 Diagnostics = new List<Diagnostic> { diagnostic },
@@ -213,7 +213,7 @@ class:
                 return (CommandOrCodeAction)
                     new CodeAction
                     {
-                        Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
+                        Title = LanguageServerMessage.AddDomainToFile.GetMessage(f.Path),
                         Kind = CodeActionKind.QuickFix,
                         IsPreferred = true,
                         Diagnostics = new List<Diagnostic> { diagnostic },
@@ -275,7 +275,7 @@ domain:
         return (CommandOrCodeAction)
             new CodeAction
             {
-                Title = $"TopModel : Ignorer cette instance du warning {warningCode}",
+                Title = LanguageServerMessage.IgnoreWarningInstance.GetMessage(warningCode),
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = false,
                 Diagnostics = new List<Diagnostic> { diagnostic },
@@ -408,7 +408,7 @@ domain:
             end.Character = 0;
             return new CodeAction()
             {
-                Title = "Trier les Uses",
+                Title = LanguageServerMessage.OrganizeImports.GetMessage(),
                 Kind = CodeActionKind.SourceOrganizeImports,
                 IsPreferred = true,
                 Edit = new WorkspaceEdit
@@ -422,7 +422,7 @@ domain:
         }
         return new CodeAction()
         {
-            Title = "Trier les Uses",
+            Title = LanguageServerMessage.OrganizeImports.GetMessage(),
             Kind = CodeActionKind.SourceOrganizeImports,
             IsPreferred = true,
             Edit = new WorkspaceEdit
@@ -470,8 +470,9 @@ domain:
         return (CommandOrCodeAction)
             new CodeAction
             {
-                Title =
-                    $"TopModel : Ajouter l'import {sourceFile.Name}{(reverse ? $" dans le fichier {targetFile.Name}" : string.Empty)}",
+                Title = reverse
+                    ? LanguageServerMessage.AddImportToFile.GetMessage(sourceFile.Name, targetFile.Name)
+                    : LanguageServerMessage.AddImport.GetMessage(sourceFile.Name),
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
                 Diagnostics = new List<Diagnostic> { diagnostic },

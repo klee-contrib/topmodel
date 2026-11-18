@@ -170,7 +170,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.OwnProperties.Add(propertyLoader.Load(parser, modelFile, config));
+                        classe.OwnProperties.Add(propertyLoader.Load(parser, classe, config));
                     });
                     break;
                 case "unique":
@@ -215,7 +215,12 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                         });
                                         break;
                                     default:
-                                        throw new ModelException(classe, $"Propriété ${prop} inconnue pour un index");
+                                        throw ModelException.From(
+                                            CoreMessage.PropertyInvalidForIndex,
+                                            classe,
+                                            new Declaration(prop),
+                                            prop.Value
+                                        );
                                 }
                             });
 
@@ -334,7 +339,7 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                                 case "property":
                                                                     param.Property = propertyLoader.Load(
                                                                         parser,
-                                                                        modelFile,
+                                                                        classe,
                                                                         config
                                                                     );
                                                                     param.Property.PropertyMapping = param;
@@ -348,9 +353,10 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                                                     }
                                                     else
                                                     {
-                                                        throw new ModelException(
+                                                        throw ModelException.From(
+                                                            CoreMessage.MapperFromParametersInvalid,
                                                             classe,
-                                                            $"Erreur dans la construction des paramètres du mapper 'from'."
+                                                            classe.Declaration
                                                         );
                                                     }
 
@@ -406,7 +412,12 @@ public class ClassLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
                     });
                     break;
                 default:
-                    throw new ModelException(classe, $"Propriété ${prop} inconnue pour une classe");
+                    throw ModelException.From(
+                        CoreMessage.PropertyInvalidForClass,
+                        classe,
+                        new Declaration(prop),
+                        prop.Value
+                    );
             }
         });
 

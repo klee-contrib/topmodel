@@ -1,4 +1,7 @@
-﻿namespace TopModel.Core.Model;
+﻿using TopModel.Core.Utils;
+using TopModel.Utils;
+
+namespace TopModel.Core.Model;
 
 public class Variable
 {
@@ -28,7 +31,10 @@ public class Variable
                 return TemplateParameter.Description;
             }
 
-            return $"Variable de configuration ({(ByTag ? "par tag" : "globale")}) pour les modules : \n- {string.Join("\n- ", Configs)}";
+            var modules = $"\n- {string.Join("\n- ", Configs)}";
+            return (
+                ByTag ? VariableMessage.ConfigurationVariableByTag : VariableMessage.ConfigurationVariableGlobal
+            ).GetMessage(modules);
         }
         init => _description = value;
     }
