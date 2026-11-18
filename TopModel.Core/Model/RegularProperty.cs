@@ -168,6 +168,6 @@ internal class RegularProperty(DeclarationReference declarationReference) : IPro
 
     public override string ToString()
     {
-        return ((IProperty)this).Name;
+        return this.Name;
     }
 }

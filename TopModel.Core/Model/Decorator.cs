@@ -74,7 +74,7 @@ public class Decorator(DeclarationReference declarationReference)
             .Concat(
                 PropertyAnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms))
             )
-            .Where(pr => pr.ReferenceName.IsValidTransform());
+            .Where(pr => pr.ReferenceName.IsValidTransform);
 
     public IList<DecoratorReference> DecoratorReferences { get; internal set; } = [];
 

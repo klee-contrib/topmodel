@@ -25,7 +25,7 @@ internal class ReverseAssociationProperty(DeclarationReference declarationRefere
 
     public override string Comment =>
         ReverseProperty.WithReverse?.Comment
-        ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{((IProperty)ReverseProperty).Name}";
+        ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
 
     public override ReverseAssociationDefinition WithReverse =>
         new(ReverseProperty.DeclarationReference) { Property = this };

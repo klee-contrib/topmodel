@@ -452,7 +452,7 @@ public class DbContextGenerator(
                 hasSequence = true;
                 w.WriteLine(
                     2,
-                    $"modelBuilder.HasSequence(\"{sequenceName}\").StartsAt({property.GeneratedValue!.Start}).IncrementsBy({property.GeneratedValue.Increment});"
+                    $"modelBuilder.HasSequence(\"{sequenceName}\").StartsAt({property.GeneratedValue!.Start}).IncrementsBy({property.GeneratedValue!.Increment});"
                 );
 
                 var classesWithSequence = new List<Class>();
@@ -485,7 +485,7 @@ public class DbContextGenerator(
                     w.WriteLine($").UseHiLo(\"{sequenceName}\");");
                 }
             }
-            else if (property.GeneratedValue!.Start != 1 || property.GeneratedValue.Increment != 1)
+            else if (property.GeneratedValue!.Start != 1 || property.GeneratedValue!.Increment != 1)
             {
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(property.Class, tag, contextNs)}>().Property(");
 
@@ -499,7 +499,7 @@ public class DbContextGenerator(
                 }
 
                 w.WriteLine(
-                    $").UseIdentityColumn({property.GeneratedValue.Start}, {property.GeneratedValue.Increment});"
+                    $").UseIdentityColumn({property.GeneratedValue!.Start}, {property.GeneratedValue!.Increment});"
                 );
             }
         }

@@ -45,7 +45,7 @@ public class Annotation(DeclarationReference declarationReference) : IParameterC
                         .. i.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
                     ]
             )
-            .Where(pr => pr.ReferenceName.IsValidTransform());
+            .Where(pr => pr.ReferenceName.IsValidTransform);
 
     internal DeclarationReference DeclarationReference { get; } = declarationReference;
 

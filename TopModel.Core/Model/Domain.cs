@@ -84,7 +84,7 @@ public class Domain(DeclarationReference declarationReference)
             )
             .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
             .Concat(GeneratedValue?.SequenceName?.Transforms ?? [])
-            .Where(pr => pr.ReferenceName.IsValidTransform());
+            .Where(pr => pr.ReferenceName.IsValidTransform);
 
     public required ModelFile ModelFile { get; init; }
 

@@ -264,9 +264,6 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     public string? As { get; set; }
 
-    public GeneratedValueDefinition? GeneratedValue =>
-        !PreservePrimaryKey && this.Association == null ? Domain?.GeneratedValue : null;
-
     public IList<AnnotationInstance> Annotations =>
         [
             .. OriginalProperty?.Annotations.Where(ann =>
@@ -503,7 +500,7 @@ internal class AliasProperty(DeclarationReference declarationReference) : IPrope
 
     public override string ToString()
     {
-        return ((IProperty)this).Name;
+        return this.Name;
     }
 
     internal AliasProperty Clone(IProperty prop, PropertyReference? includeReference)

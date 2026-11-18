@@ -24,6 +24,6 @@ internal class ReverseAssociationDefinition(DeclarationReference declarationRefe
 
     public override string ToString()
     {
-        return $"Reverse{((IProperty)Property)?.Name}";
+        return $"Reverse{Property?.Name}";
     }
 }

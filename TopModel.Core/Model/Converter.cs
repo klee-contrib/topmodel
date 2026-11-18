@@ -37,7 +37,7 @@ public class Converter(DeclarationReference declarationReference) : IVariableCon
     public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
     public IEnumerable<TransformReference> TransformReferences =>
-        Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.ReferenceName.IsValidTransform());
+        Implementations.Values.SelectMany(i => i.Text.Transforms).Where(pr => pr.ReferenceName.IsValidTransform);
 
     public required ModelFile ModelFile { get; init; }
 

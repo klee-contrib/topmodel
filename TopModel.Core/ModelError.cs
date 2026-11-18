@@ -112,7 +112,7 @@ public class ModelError
         switch (Property)
         {
             case RegularProperty rp:
-                sb.Append($"/{((IProperty)rp).Name}");
+                sb.Append($"/{rp.Name}");
                 break;
             case AssociationProperty:
                 sb.Append("/{association}");

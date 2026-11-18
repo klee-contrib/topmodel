@@ -260,6 +260,6 @@ internal class AssociationProperty(DeclarationReference declarationReference) : 
 
     public override string ToString()
     {
-        return ((IProperty)this).Name;
+        return this.Name;
     }
 }

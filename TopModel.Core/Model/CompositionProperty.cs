@@ -171,6 +171,6 @@ internal class CompositionProperty(DeclarationReference declarationReference) : 
 
     public override string ToString()
     {
-        return ((IProperty)this).Name;
+        return this.Name;
     }
 }

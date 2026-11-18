@@ -64,7 +64,7 @@ internal class ClassResolver(
                                 ? classe
                                     .DecoratorReferences.Cast<Reference>()
                                     .Concat(classe.ImplementReferences)
-                                    .FirstOrDefault(r => r.ReferenceName == property.SourceContainer.Name)
+                                    .FirstOrDefault(r => r.ReferenceName == property.SourceContainer!.Name)
                                 : property.DeclarationReference
                         );
                     }

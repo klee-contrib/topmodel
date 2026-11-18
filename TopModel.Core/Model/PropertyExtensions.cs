@@ -3,10 +3,90 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
-public static class ModelExtensions
+public static class PropertyExtensions
 {
     extension(IProperty prop)
     {
+        /// <summary>
+        /// Nom de la propriété.
+        /// </summary>
+        public string Name => prop.NameSegments.Name;
+
+        /// <summary>
+        /// Nom de la propriété en PascalCase.
+        /// </summary>
+        public string NamePascal => prop.Parent.PreservePropertyCasing ? prop.Name : prop.NameSegments.NamePascal;
+
+        /// <summary>
+        /// Nom de la propriété en camelCase.
+        /// </summary>
+        public string NameCamel => prop.Parent.PreservePropertyCasing ? prop.Name : prop.NamePascal.ToFirstLower();
+
+        /// <summary>
+        /// Nom de la propriété (y compris avec useClass: true) en PascalCase.
+        /// </summary>
+        public string PropertyNamePascal =>
+            prop.Parent.PreservePropertyCasing ? prop.Name : prop.PropertyNameSegments.NamePascal;
+
+        /// <summary>
+        /// Nom de la propriété (y compris avec useClass: true) en camelCase.
+        /// </summary>
+        public string PropertyNameCamel =>
+            prop.Parent.PreservePropertyCasing ? prop.Name : prop.PropertyNamePascal.ToFirstLower();
+
+        /// <summary>
+        /// Conteneur source de la propriété.
+        /// </summary>
+        public IPropertyContainer? SourceContainer => prop.SourceProperty?.Parent;
+
+        /// <summary>
+        /// Parent de la propriété.
+        /// </summary>
+        public IPropertyContainer Parent =>
+            prop.Class
+            ?? (IPropertyContainer)prop.Endpoint!
+            ?? (IPropertyContainer)prop.Decorator!
+            ?? prop.PropertyMapping!;
+
+        /// <summary>
+        /// Propriété à utiliser pour le libellé de la propriété.
+        /// </summary>
+        public IProperty ResourceProperty =>
+            prop.SourceContainer != null
+                ? prop.SourceContainer!.Properties.First(p => p.Name == prop.Name).ResourceProperty
+            : prop is AliasProperty { OverridesLabel: false, OriginalProperty: IProperty op } ? op.ResourceProperty
+            : prop;
+
+        /// <summary>
+        /// Clé de ressource pour le libellé de la propriété.
+        /// </summary>
+        public string ResourceKey =>
+            $"{prop.ResourceProperty.Parent.Namespace.ModuleCamel}.{prop.ResourceProperty.Parent.NameCamel}.{prop.ResourceProperty.PropertyNameCamel}";
+
+        /// <summary>
+        /// Propriété à utiliser pour le commentaire de la propriété.
+        /// </summary>
+        public IProperty CommentResourceProperty =>
+            prop.SourceContainer != null
+                ? prop.SourceContainer!.Properties.First(p => p.Name == prop.Name).CommentResourceProperty
+            : prop is AliasProperty { OverridesComment: false, OriginalProperty: IProperty op }
+                ? op.CommentResourceProperty
+            : prop;
+
+        /// <summary>
+        /// Clé de ressource pour le commentaire de la propriété.
+        /// </summary>
+        public string CommentResourceKey =>
+            $"comments.{prop.CommentResourceProperty.Parent.Namespace.ModuleCamel}.{prop.CommentResourceProperty.Parent.NameCamel}.{prop.CommentResourceProperty.PropertyNameCamel}";
+
+        /// <summary>
+        /// Définition de valeur générée pour la propriété.
+        /// </summary>
+        public GeneratedValueDefinition? GeneratedValue =>
+            prop is not AliasProperty { PreservePrimaryKey: true } && prop.Association == null
+                ? prop.Domain?.GeneratedValue
+                : null;
+
         /// <summary>
         /// Si la propriété est une association, classe cible de l'association.
         /// </summary>
@@ -401,98 +481,5 @@ public static class ModelExtensions
 
             return nameSegments;
         }
-    }
-
-    extension(IList<NameSegment> nameSegments)
-    {
-        public string Name => string.Concat(nameSegments.Select(ns => ns.Render(pascalCase: false)));
-
-        public string NamePascal => string.Concat(nameSegments.Select(ns => ns.Render(pascalCase: true)));
-
-        public IEnumerable<(int Offset, int Length, object Target)> Targets
-        {
-            get
-            {
-                var offset = 0;
-                foreach (var segment in nameSegments)
-                {
-                    var length = segment.Render(pascalCase: false).Length;
-                    switch (segment)
-                    {
-                        case NameSegment.Text te:
-                            yield return (offset, length, te.Raw);
-                            break;
-                        case NameSegment.ClassName cn:
-                            yield return (offset, length, cn.Class);
-                            break;
-                        case NameSegment.PropertyName { Property: { } property }:
-                            yield return (offset, length, property);
-                            foreach (var (subOffset, subLength, target) in property.NameSegments.Targets)
-                            {
-                                yield return (offset + subOffset, subLength, target);
-                            }
-
-                            break;
-                    }
-
-                    offset += length;
-                }
-            }
-        }
-    }
-
-    extension(Class classe)
-    {
-        /// <summary>
-        /// Association vers la classe parente pour une classe dérivée.
-        /// </summary>
-        public IProperty? ParentAssociationProperty =>
-            classe.Extends != null && classe.Extends.InheritanceStrategy == InheritanceStrategy.JoinedTables
-                ? new AssociationProperty(null!)
-                {
-                    Association = classe.Extends,
-                    Class = classe,
-                    Comment = "Association vers la clé primaire de la classe parente",
-                    Required = true,
-                    PrimaryKey = !classe.PrimaryKey.Any(),
-                }
-                : null;
-
-        /// <summary>
-        /// Récupère le potentiel mapper de la classe courante vers la classe cible.
-        /// </summary>
-        /// <param name="targetClass">Classe cible.</param>
-        /// <returns>Mapper (from ou to), s'il existe.</returns>
-        public Mapper? GetMapperTo(Class targetClass)
-        {
-            var fromMapper = targetClass.FromMappers.FirstOrDefault(fm =>
-                fm.Params.Count == 1 && fm.ClassParams.SingleOrDefault()?.Class == classe
-            );
-            if (fromMapper != null)
-            {
-                return fromMapper;
-            }
-
-            var toMapper = classe.ToMappers.FirstOrDefault(tm => tm.Class == targetClass);
-            if (toMapper != null)
-            {
-                return toMapper;
-            }
-
-            return null;
-        }
-    }
-
-    extension(IPropertyContainer container)
-    {
-        internal IList<IProperty> OwnProperties =>
-            container switch
-            {
-                Class c => c.OwnProperties,
-                Endpoint e => e.OwnParams.Concat([e.OwnReturns!]).Where(p => p != null).ToList(),
-                Decorator d => d.OwnProperties,
-                PropertyMapping p => [p.Property],
-                _ => throw new InvalidOperationException(),
-            };
     }
 }
