@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 
 /**
  * Assiette.
+ */
 @Entity
 @Table(name = "assiette")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -41,6 +42,7 @@ public class Assiette extends Vaisselle {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Assiette Assiette}.
+	 */
 	public enum Fields {
 		TAILLE(Integer.class);
 

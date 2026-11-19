@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Lieu.
+ */
 @Table(name = "lieu")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class Lieu {

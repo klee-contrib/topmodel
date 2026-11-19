@@ -19,6 +19,7 @@ import restaurant.jpa_server.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeRead implements Serializable {
 

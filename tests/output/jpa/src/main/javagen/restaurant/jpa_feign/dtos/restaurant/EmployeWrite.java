@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un employé en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeWrite implements Serializable {
 
@@ -243,6 +244,7 @@ public class EmployeWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.EmployeWrite EmployeWrite}.
+	 */
 	public enum Fields {
 		NOM(String.class),
 		PRENOM(String.class),

@@ -41,8 +41,6 @@ import restaurant.jpa_server.dtos.restaurant.TableItem;
 import restaurant.jpa_server.dtos.restaurant.TableRead;
 import restaurant.jpa_server.dtos.restaurant.TableWrite;
 
-/**
- * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantMappers {
 

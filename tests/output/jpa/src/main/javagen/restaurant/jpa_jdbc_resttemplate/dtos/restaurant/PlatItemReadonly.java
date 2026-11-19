@@ -10,6 +10,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Détail d'un plat en liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface PlatItemReadonly {
 

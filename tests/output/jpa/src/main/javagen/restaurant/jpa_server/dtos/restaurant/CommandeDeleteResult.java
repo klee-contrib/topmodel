@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Résultat de suppression d'une commande.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeDeleteResult implements Serializable {
 

@@ -33,8 +33,6 @@ import restaurant.jpa_feign.dtos.restaurant.ReservationRead;
 import restaurant.jpa_feign.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
-/**
- * .
 @FeignClient(name = "Restaurant", contextId = "CommandeApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface CommandeApi {

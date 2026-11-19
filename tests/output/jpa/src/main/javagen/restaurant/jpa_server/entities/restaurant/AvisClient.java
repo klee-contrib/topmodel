@@ -26,6 +26,7 @@ import topmodel.test.NombreVuesBase;
 
 /**
  * Avis d'un client sur un restaurant.
+ */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -228,6 +229,7 @@ public class AvisClient extends NombreVuesBase {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.AvisClient AvisClient}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOTE(Integer.class),

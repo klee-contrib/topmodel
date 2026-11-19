@@ -16,6 +16,7 @@ import restaurant.jpa_server.enums.restaurant.DepartementCode;
 
 /**
  * Détail d'un client en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientWrite implements Serializable {
 

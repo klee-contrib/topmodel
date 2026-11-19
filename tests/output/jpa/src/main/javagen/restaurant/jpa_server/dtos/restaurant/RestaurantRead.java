@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 
 /**
  * Détail d'un restaurant en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantRead implements Serializable {
 

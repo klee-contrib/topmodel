@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 
 /**
  * Couvert.
+ */
 @Entity
 @Table(name = "couvert")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

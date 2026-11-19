@@ -417,7 +417,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                     Association.Enum: not EnumMode.Enum,
                     UseClassForAssociation: true
                 }
-            && Config.AvailableClasses.Contains(ap.Association)
+            && Config.AvailableClasses.Contains(pk.Association)
         )
         {
             return $".{Config.GetGetterName(ap, tag)}()";

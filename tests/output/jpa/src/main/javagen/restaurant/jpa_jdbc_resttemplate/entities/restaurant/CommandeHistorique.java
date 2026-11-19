@@ -19,6 +19,7 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Commande pour historique avec préservation des clés primaires.
+ */
 @Table(name = "commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeHistorique {

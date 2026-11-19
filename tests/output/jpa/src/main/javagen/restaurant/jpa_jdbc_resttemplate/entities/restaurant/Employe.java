@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Employé du restaurant.
+ */
 @Table(name = "employe")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Employe extends Personne implements EmployeBase {

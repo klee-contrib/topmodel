@@ -19,6 +19,7 @@ import restaurant.jpa_server.enums.restaurant.RegionCode;
 
 /**
  * Région.
+ */
 @Entity
 @Table(name = "region")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -98,6 +99,7 @@ public class Region {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Region Region}.
+	 */
 	public enum Fields {
 		CODE(RegionCode.class),
 		LIBELLE(String.class),

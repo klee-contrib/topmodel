@@ -8,6 +8,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Détail d'un restaurant en liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface RestaurantItem {
 

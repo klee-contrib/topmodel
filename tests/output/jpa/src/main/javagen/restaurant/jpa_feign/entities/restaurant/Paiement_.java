@@ -8,8 +8,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-/**
- * .
 @StaticMetamodel(Paiement.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Paiement_ {

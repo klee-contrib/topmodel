@@ -19,6 +19,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Plat du menu.
+ */
 @Table(name = "plat")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

@@ -16,6 +16,7 @@ import jakarta.persistence.SequenceGenerator;
 
 /**
  * Vaisselle de restaurant.
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -72,6 +73,7 @@ public abstract class Vaisselle {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Vaisselle Vaisselle}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		DESCRIPTION(String.class);

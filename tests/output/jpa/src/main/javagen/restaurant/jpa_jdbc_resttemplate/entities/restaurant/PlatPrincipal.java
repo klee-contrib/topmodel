@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Plat principal.
+ */
 @Table(name = "plat_principal")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatPrincipal extends Plat {

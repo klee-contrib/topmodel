@@ -32,6 +32,7 @@ public record PaiementItem(
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PaiementItem PaiementItem}.
+	 */
 	public enum Fields {
 		FACTURE_ID(Integer.class),
 		SWILE_CARD_ID(Integer.class),

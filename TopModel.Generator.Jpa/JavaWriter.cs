@@ -266,19 +266,33 @@ public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposab
     {
         AddImports(javaClass.Imports);
         WriteLine();
-        WriteDocStart(indentationLevel, javaClass.Comment);
-        if (javaClass is JavaRecord jr)
+        var recordFields = javaClass is JavaRecord jr
+            ? jr.Fields.Where(f => !f.Static && f.Comments.Any()).ToList()
+            : [];
+        var hasClassComment = !string.IsNullOrEmpty(javaClass.Comment);
+
+        if (hasClassComment || recordFields.Count > 0)
         {
-            var recordFields = jr.Fields.Where(f => !f.Static && f.Comments.Any()).ToList();
+            if (hasClassComment)
+            {
+                WriteDocStart(indentationLevel, javaClass.Comment);
+            }
+            else
+            {
+                WriteLine(indentationLevel, "/**");
+            }
 
             if (recordFields.Count > 0)
             {
-                WriteLine(indentationLevel, " *");
-            }
+                if (hasClassComment)
+                {
+                    WriteLine(indentationLevel, " *");
+                }
 
-            foreach (var field in recordFields)
-            {
-                WriteRecordFieldComment(indentationLevel, field);
+                foreach (var field in recordFields)
+                {
+                    WriteRecordFieldComment(indentationLevel, field);
+                }
             }
 
             WriteDocEnd(indentationLevel);

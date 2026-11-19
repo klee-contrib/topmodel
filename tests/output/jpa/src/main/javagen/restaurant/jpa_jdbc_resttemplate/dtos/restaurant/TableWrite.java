@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une table en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TableWrite implements Serializable {
 

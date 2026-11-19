@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un avis en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class AvisClientWrite implements Serializable {
 

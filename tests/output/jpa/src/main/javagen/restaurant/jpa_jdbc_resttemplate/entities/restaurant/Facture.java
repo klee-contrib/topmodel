@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Facture.
+ */
 @Table(name = "facture")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Facture {

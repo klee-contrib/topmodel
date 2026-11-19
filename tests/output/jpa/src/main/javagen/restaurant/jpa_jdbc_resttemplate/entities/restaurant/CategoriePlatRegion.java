@@ -17,6 +17,7 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
 
 /**
  * Catégories de plats disponibles par région.
+ */
 @Table(name = "categorie_plat_region")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion {

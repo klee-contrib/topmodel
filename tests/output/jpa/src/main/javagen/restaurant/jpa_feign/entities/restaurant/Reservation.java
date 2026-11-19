@@ -26,6 +26,7 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * Réservation d'une table.
+ */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -253,6 +254,7 @@ public class Reservation {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Reservation Reservation}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		DATE_RESERVATION(LocalDateTime.class),

@@ -19,6 +19,7 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
 
 /**
  * Département.
+ */
 @Table(name = "departement")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Departement {

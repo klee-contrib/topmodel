@@ -28,6 +28,7 @@ public record FactureItem(
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.FactureItem FactureItem}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		COMMANDE_ID(Integer.class),

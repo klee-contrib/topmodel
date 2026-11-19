@@ -11,8 +11,6 @@ import jakarta.annotation.Generated;
 
 import restaurant.jpa_feign.entities.restaurant.CategoriePlat;
 
-/**
- * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantDTOMappers {
 

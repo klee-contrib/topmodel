@@ -23,6 +23,7 @@ import jakarta.persistence.Transient;
 
 /**
  * Restaurant.
+ */
 @Entity
 @DiscriminatorValue("RESTAURANT")
 @EntityListeners(AuditingEntityListener.class)
@@ -280,6 +281,7 @@ public class Restaurant extends Lieu {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Restaurant Restaurant}.
+	 */
 	public enum Fields {
 		TELEPHONE(String.class),
 		MENUS(List.class),

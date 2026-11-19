@@ -6,8 +6,6 @@ package restaurant.jpa_jdbc_resttemplate.dtos.restaurant;
 
 import jakarta.annotation.Generated;
 
-/**
- * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantDTOMappers {
 

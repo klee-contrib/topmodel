@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Prestaire du restaurant.
+ */
 @Table(name = "prestataire")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Prestataire implements EmployeBase {

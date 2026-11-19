@@ -37,8 +37,6 @@ import restaurant.jpa_feign.entities.restaurant.CategoriePlat;
 import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 import restaurant.jpa_feign.enums.restaurant.RegionCode;
 
-/**
- * .
 @FeignClient(name = "Restaurant", contextId = "MenuApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface MenuApi {

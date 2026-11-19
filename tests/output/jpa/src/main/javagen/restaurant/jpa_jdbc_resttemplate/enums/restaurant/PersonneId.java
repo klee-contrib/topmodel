@@ -6,6 +6,7 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 
 /**
  * Valeurs connues de la propriété Id de la classe Personne.
+ */
 public class PersonneId {
 
 	public static final Integer Jean = 1;

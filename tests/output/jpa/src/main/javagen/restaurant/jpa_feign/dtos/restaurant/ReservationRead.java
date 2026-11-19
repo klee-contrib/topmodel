@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une réservation en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ReservationRead implements Serializable {
 
@@ -365,6 +366,7 @@ public class ReservationRead implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ReservationRead ReservationRead}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		DATE_RESERVATION(LocalDateTime.class),

@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 
 /**
  * Ligne de commande pour historique avec préservation des clés primaires.
+ */
 @Entity
 @Table(name = "ligne_commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -193,6 +194,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.LigneCommandeHistorique LigneCommandeHistorique}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		QUANTITE(Integer.class),

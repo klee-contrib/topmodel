@@ -18,6 +18,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un plat en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatWrite implements Serializable {
 

@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Ligne de commande pour historique avec préservation des clés primaires.
+ */
 @Table(name = "ligne_commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeHistorique {

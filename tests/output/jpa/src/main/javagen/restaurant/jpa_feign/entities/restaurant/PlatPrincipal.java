@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 
 /**
  * Plat principal.
+ */
 @Entity
 @DiscriminatorValue("PRINCIPAL")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -41,6 +42,7 @@ public class PlatPrincipal extends Plat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.PlatPrincipal PlatPrincipal}.
+	 */
 	public enum Fields {
 		VEGETARIEN(Boolean.class);
 

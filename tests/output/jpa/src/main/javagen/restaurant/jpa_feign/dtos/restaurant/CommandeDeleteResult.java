@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Résultat de suppression d'une commande.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeDeleteResult implements Serializable {
 
@@ -72,6 +73,7 @@ public class CommandeDeleteResult implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.CommandeDeleteResult CommandeDeleteResult}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		DATE_COMMANDE(LocalDateTime.class);

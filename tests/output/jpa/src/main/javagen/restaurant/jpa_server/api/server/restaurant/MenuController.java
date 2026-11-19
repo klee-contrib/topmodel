@@ -38,8 +38,6 @@ import restaurant.jpa_server.entities.restaurant.CategoriePlat;
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
 import restaurant.jpa_server.enums.restaurant.RegionCode;
 
-/**
- * .
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface MenuController {

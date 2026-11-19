@@ -21,6 +21,7 @@ import restaurant.jpa_feign.enums.restaurant.TypeFactureCode;
 
 /**
  * Facture.
+ */
 @Entity
 @Table(name = "facture")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -101,6 +102,7 @@ public class Facture {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Facture Facture}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		COMMANDE(Commande.class),

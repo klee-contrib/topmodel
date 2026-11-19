@@ -25,6 +25,7 @@ import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 
 /**
  * Catégorie de plat.
+ */
 @Entity
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
@@ -158,6 +159,7 @@ public class CategoriePlat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.CategoriePlat CategoriePlat}.
+	 */
 	public enum Fields {
 		CODE(CategoriePlatCode.class),
 		LIBELLE(String.class),

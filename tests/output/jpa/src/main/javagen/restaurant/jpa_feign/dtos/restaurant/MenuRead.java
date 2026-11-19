@@ -20,6 +20,7 @@ import restaurant.jpa_feign.entities.restaurant.CategoriePlat;
 
 /**
  * Détail d'un menu en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class MenuRead implements Serializable {
 
@@ -295,6 +296,7 @@ public class MenuRead implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.MenuRead MenuRead}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

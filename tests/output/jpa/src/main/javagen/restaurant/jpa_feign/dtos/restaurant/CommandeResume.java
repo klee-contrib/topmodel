@@ -8,6 +8,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Résumé d'une commande pour liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface CommandeResume {
 

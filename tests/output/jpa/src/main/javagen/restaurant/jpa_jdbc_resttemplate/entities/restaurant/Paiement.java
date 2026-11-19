@@ -11,6 +11,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Paiement.
+ */
 @Table(name = "paiement")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Paiement {

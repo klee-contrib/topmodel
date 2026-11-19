@@ -21,6 +21,7 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Commande d'un client.
+ */
 @Table(name = "commande")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

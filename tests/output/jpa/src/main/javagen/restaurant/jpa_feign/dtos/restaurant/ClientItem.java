@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un client en liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientItem extends PersonneItem implements Serializable {
 
@@ -46,6 +47,7 @@ public class ClientItem extends PersonneItem implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientItem ClientItem}.
+	 */
 	public enum Fields {
 		NOM_COMPLET(String.class);
 

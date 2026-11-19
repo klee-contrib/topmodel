@@ -17,6 +17,7 @@ import jakarta.validation.constraints.PastOrPresent;
 
 /**
  * Détail d'une ligne de commande en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeRead implements Serializable {
 

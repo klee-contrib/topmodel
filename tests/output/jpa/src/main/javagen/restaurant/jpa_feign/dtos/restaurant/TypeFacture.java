@@ -47,6 +47,7 @@ public record TypeFacture(
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TypeFacture TypeFacture}.
+	 */
 	public enum Fields {
 		CODE(TypeFactureCode.class),
 		LIBELLE(String.class);

@@ -23,6 +23,7 @@ import restaurant.jpa_server.enums.restaurant.RegionCode;
 
 /**
  * Catégories de plats disponibles par région.
+ */
 @Entity
 @Table(name = "categorie_plat_region")
 @IdClass(CategoriePlatRegion.CategoriePlatRegionId.class)
@@ -90,6 +91,7 @@ public class CategoriePlatRegion {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CategoriePlatRegion CategoriePlatRegion}.
+	 */
 	public enum Fields {
 		REGION_CODE(RegionCode.class),
 		CATEGORIE_PLAT(CategoriePlat.class);
@@ -110,8 +112,6 @@ public class CategoriePlatRegion {
 		}
 	}
 
-	/**
-	 * .
 	public static class CategoriePlatRegionId {
 
 		@JoinColumn(name = "reg_code", referencedColumnName = "reg_code")
@@ -176,12 +176,12 @@ public class CategoriePlatRegion {
 			}
 
 			return Objects.equals(this.regionCode, oId.regionCode)
-			 && Objects.equals(this.categoriePlat, oId.categoriePlat);
+			 && Objects.equals(this.categoriePlat.getCode(), oId.categoriePlat.getCode());
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(regionCode, categoriePlat);
+			return Objects.hash(regionCode, categoriePlat == null ? null : categoriePlat.getCode());
 		}
 	}
 }

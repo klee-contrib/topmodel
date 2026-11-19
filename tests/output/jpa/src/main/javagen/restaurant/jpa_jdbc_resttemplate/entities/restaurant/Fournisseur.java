@@ -11,6 +11,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Restaurant.
+ */
 @Table(name = "fournisseur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Fournisseur extends Lieu {

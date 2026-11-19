@@ -10,6 +10,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Couvert.
+ */
 @Table(name = "couvert")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Couvert extends Vaisselle {

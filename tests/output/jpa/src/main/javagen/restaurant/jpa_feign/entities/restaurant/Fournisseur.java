@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 
 /**
  * Restaurant.
+ */
 @Entity
 @DiscriminatorValue("FOURNISSEUR")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -64,6 +65,7 @@ public class Fournisseur extends Lieu {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Fournisseur Fournisseur}.
+	 */
 	public enum Fields {
 		TELEPHONE(String.class),
 		BIO(Boolean.class);

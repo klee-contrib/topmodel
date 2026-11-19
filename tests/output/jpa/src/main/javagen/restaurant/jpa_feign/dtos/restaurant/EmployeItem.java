@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 
 /**
  * Détail d'un employé en liste.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeItem extends PersonneItem implements Serializable {
 
@@ -99,6 +100,7 @@ public class EmployeItem extends PersonneItem implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.EmployeItem EmployeItem}.
+	 */
 	public enum Fields {
 		MATRICULE(String.class),
 		RESTAURANT_ID(Integer.class),

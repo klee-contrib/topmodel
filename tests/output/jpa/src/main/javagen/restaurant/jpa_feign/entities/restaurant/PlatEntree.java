@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 
 /**
  * Entrée.
+ */
 @Entity
 @DiscriminatorValue("ENTREE")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

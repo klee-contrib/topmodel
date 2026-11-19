@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 
 /**
  * Paiement.
+ */
 @Entity
 @Table(name = "paiement")
 @IdClass(Paiement.PaiementId.class)
@@ -72,6 +73,7 @@ public class Paiement {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Paiement Paiement}.
+	 */
 	public enum Fields {
 		FACTURE(Facture.class),
 		SWILE_CARD_ID(Integer.class);
@@ -92,8 +94,6 @@ public class Paiement {
 		}
 	}
 
-	/**
-	 * .
 	public static class PaiementId {
 
 		@JoinColumn(name = "id", referencedColumnName = "id")
@@ -156,13 +156,13 @@ public class Paiement {
 				return false;
 			}
 
-			return Objects.equals(this.facture, oId.facture)
+			return Objects.equals(this.facture.getId(), oId.facture.getId())
 			 && Objects.equals(this.swileCardId, oId.swileCardId);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(facture, swileCardId);
+			return Objects.hash(facture == null ? null : facture.getId(), swileCardId);
 		}
 	}
 }

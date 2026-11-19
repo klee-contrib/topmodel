@@ -22,6 +22,7 @@ import restaurant.jpa_jdbc_resttemplate.entities.restaurant.CategoriePlat;
 
 /**
  * Détail d'un menu en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class MenuRead implements Serializable {
 

@@ -8,6 +8,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Type de terrasse.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum TypeTerrasse {
 	INT,

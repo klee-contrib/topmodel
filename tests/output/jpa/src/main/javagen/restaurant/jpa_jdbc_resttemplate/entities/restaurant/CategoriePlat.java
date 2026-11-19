@@ -20,6 +20,7 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
+ */
 @Table(name = "categorie_plat")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlat {

@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 
 /**
  * Restaurant avec ses statistiques.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantAvecStatistiques implements Serializable {
 

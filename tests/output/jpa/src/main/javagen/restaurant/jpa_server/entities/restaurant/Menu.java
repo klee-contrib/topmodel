@@ -30,6 +30,7 @@ import jakarta.persistence.Table;
 
 /**
  * Menu du restaurant.
+ */
 @Entity
 @Table(name = "menu")
 @EntityListeners(AuditingEntityListener.class)
@@ -277,6 +278,7 @@ public class Menu {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Menu Menu}.
+	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

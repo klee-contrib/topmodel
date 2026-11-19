@@ -6,6 +6,7 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 
 /**
  * Valeurs connues de la propriété Matricule de la classe Employe.
+ */
 public class EmployeMatricule {
 
 	public static final String Michel = "123456";

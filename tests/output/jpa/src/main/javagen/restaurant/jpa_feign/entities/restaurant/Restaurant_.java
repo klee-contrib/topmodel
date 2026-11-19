@@ -11,8 +11,6 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
-/**
- * .
 @StaticMetamodel(Restaurant.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Restaurant_ extends Lieu_ {

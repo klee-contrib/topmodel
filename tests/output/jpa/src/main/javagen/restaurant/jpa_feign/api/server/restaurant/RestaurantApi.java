@@ -36,8 +36,6 @@ import restaurant.jpa_feign.dtos.restaurant.TableRead;
 import restaurant.jpa_feign.dtos.restaurant.TableWrite;
 import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 
-/**
- * .
 @FeignClient(name = "Restaurant", contextId = "RestaurantApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface RestaurantApi {

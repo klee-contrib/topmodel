@@ -18,6 +18,7 @@ import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 
 /**
  * Détail d'un plat en écriture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatWrite implements Serializable {
 
@@ -223,6 +224,7 @@ public class PlatWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PlatWrite PlatWrite}.
+	 */
 	public enum Fields {
 		NOM(String.class),
 		DESCRIPTION(String.class),

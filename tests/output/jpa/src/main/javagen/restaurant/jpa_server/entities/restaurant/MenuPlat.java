@@ -24,6 +24,7 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * Plat dans un menu.
+ */
 @Entity
 @IdClass(MenuPlat.MenuPlatId.class)
 @EntityListeners(AuditingEntityListener.class)
@@ -131,6 +132,7 @@ public class MenuPlat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.MenuPlat MenuPlat}.
+	 */
 	public enum Fields {
 		MENU(Menu.class),
 		PLAT(Plat.class),
@@ -153,8 +155,6 @@ public class MenuPlat {
 		}
 	}
 
-	/**
-	 * .
 	public static class MenuPlatId {
 
 		@JoinColumn(name = "men_id", referencedColumnName = "men_id")
@@ -218,13 +218,13 @@ public class MenuPlat {
 				return false;
 			}
 
-			return Objects.equals(this.menu, oId.menu)
-			 && Objects.equals(this.plat, oId.plat);
+			return Objects.equals(this.menu.getId(), oId.menu.getId())
+			 && Objects.equals(this.plat.getId(), oId.plat.getId());
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(menu, plat);
+			return Objects.hash(menu == null ? null : menu.getId(), plat == null ? null : plat.getId());
 		}
 	}
 }

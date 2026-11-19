@@ -8,6 +8,7 @@ import jakarta.annotation.Generated;
 
 /**
  * Définition d'une personne.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface PersonneBase {
 

@@ -19,6 +19,7 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en lecture.
+ */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeRead implements Serializable {
 
@@ -293,6 +294,7 @@ public class CommandeRead implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.CommandeRead CommandeRead}.
+	 */
 	public enum Fields {
 		COMMANDE_ID(Integer.class),
 		COMMANDE_DATE_COMMANDE(LocalDateTime.class),
