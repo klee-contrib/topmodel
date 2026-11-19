@@ -95,7 +95,7 @@ public class JavaUniqueValuedPropertyGenerator(
             javaClass.Add(Config.GeneratedAnnotation);
         }
 
-        var emptyConstructor =new JavaConstructor(Config.GetEnumType(property)) { Visibility = "private" };
+        var emptyConstructor = new JavaConstructor(Config.GetEnumType(property)) { Visibility = "private" };
         emptyConstructor.AddBodyLine("// private constructor to hide implicite public one");
         javaClass.Add(emptyConstructor);
 

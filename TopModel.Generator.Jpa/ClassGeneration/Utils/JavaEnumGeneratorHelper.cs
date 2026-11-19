@@ -92,7 +92,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             }
         );
         method.AddBodyLine(@$"return switch ({key.NameCamel}) {{");
-        foreach (var refValue in GetValuesByName(classe))
+        foreach (var refValue in classe.Values.OrderBy(v => v.Value[key], StringComparer.Ordinal))
         {
             var code = Config.GetValue(key, tag, refValue.Value[key]);
             if (key.EnumProperty != null && Config.UniqueValueGeneration != Core.UniqueValueGenerationMode.ConstOnly)

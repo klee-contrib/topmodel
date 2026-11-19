@@ -218,8 +218,8 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         }
 
         equalsMethod.AddBodyLine();
-        var pkComparisons = classe.PrimaryKey
-            .Select(pk =>
+        var pkComparisons = classe
+            .PrimaryKey.Select(pk =>
             {
                 var getter = GetterToCompareCompositePkPk(pk, tag);
                 return $"Objects.equals(this.{pk.NameCamel}{getter}, oId.{pk.NameCamel}{getter})";

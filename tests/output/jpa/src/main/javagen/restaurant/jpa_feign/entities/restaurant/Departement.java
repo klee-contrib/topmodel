@@ -117,10 +117,10 @@ public class Departement {
 	 */
 	public static Departement getValue(String code) {
 		return switch (code) {
-			case "92" -> HAUTS_DE_SEINE;
 			case "75" -> PARIS;
-			case "94" -> SEINE_ET_MARNE;
+			case "92" -> HAUTS_DE_SEINE;
 			case "93" -> SEINE_SAINT_DENIS;
+			case "94" -> SEINE_ET_MARNE;
 			default -> throw new IllegalArgumentException("Clé d'énumération inconnue : " + code);
 		};
 	}
