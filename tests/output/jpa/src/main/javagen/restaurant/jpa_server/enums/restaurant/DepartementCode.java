@@ -4,9 +4,12 @@
 
 package restaurant.jpa_server.enums.restaurant;
 
+import jakarta.annotation.Generated;
+
 /**
  * Valeurs connues de la propriété Code de la classe Departement.
  */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class DepartementCode {
 
 	/**

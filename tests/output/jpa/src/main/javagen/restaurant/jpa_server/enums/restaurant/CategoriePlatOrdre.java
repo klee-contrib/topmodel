@@ -4,9 +4,12 @@
 
 package restaurant.jpa_server.enums.restaurant;
 
+import jakarta.annotation.Generated;
+
 /**
  * Valeurs connues de la propriété Ordre de la classe CategoriePlat.
  */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatOrdre {
 
 	/**

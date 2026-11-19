@@ -89,7 +89,12 @@ public class JavaUniqueValuedPropertyGenerator(
             Comment = $"Valeurs connues de la propriété {property.NamePascal} de la classe {classe.NamePascal}",
         };
 
-        var emptyConstructor = new JavaConstructor(Config.GetEnumType(property)) { Visibility = "private" };
+        if (Config.GeneratedHint)
+        {
+            javaClass.Add(Config.GeneratedAnnotation);
+        }
+
+        var emptyConstructor =new JavaConstructor(Config.GetEnumType(property)) { Visibility = "private" };
         emptyConstructor.AddBodyLine("// private constructor to hide implicite public one");
         javaClass.Add(emptyConstructor);
 

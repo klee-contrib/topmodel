@@ -85,6 +85,11 @@ public class JavaEnumClassPropertyGenerator(
             Comment =
                 $"Enumération des valeurs possibles de la propriété {property.NamePascal} de la classe {classe.NamePascal}",
         };
+        if (Config.GeneratedHint)
+        {
+            javaEnum.Add(Config.GeneratedAnnotation);
+        }
+
         var i = 0;
         var refs = Config.GetAllValues(classe).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 

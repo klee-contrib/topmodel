@@ -4,9 +4,12 @@
 
 package restaurant.jpa_server.enums.restaurant;
 
+import jakarta.annotation.Generated;
+
 /**
  * Enumération des valeurs possibles de la propriété Code de la classe Region.
  */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum RegionCode {
 	/**
 	 * Île de France.

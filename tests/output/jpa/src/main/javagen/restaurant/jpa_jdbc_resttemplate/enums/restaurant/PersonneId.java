@@ -4,9 +4,12 @@
 
 package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 
+import jakarta.annotation.Generated;
+
 /**
  * Valeurs connues de la propriété Id de la classe Personne.
  */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PersonneId {
 
 	public static final Integer Jean = 1;
