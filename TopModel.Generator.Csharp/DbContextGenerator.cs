@@ -682,7 +682,7 @@ public class DbContextGenerator(
                 w.Write(2, $"modelBuilder.Entity<{GetClassName(classe, tag, contextNs)}>().HasData(");
                 if (classe.Enum == EnumMode.Class && classe.Readonly && !hasClassAssociations)
                 {
-                    w.Write($"{GetClassName(classe, tag, contextNs)}.Values");
+                    w.Write($"{Config.GetNamespace(classe, tag, contextNs)}.{Config.GetTypeName(classe)}.Values");
                 }
                 else
                 {
