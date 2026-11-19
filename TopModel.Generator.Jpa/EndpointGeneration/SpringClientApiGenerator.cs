@@ -192,7 +192,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
                         "RequestPart",
                         imports: "org.springframework.web.bind.annotation.RequestPart"
                     )
-                        .AddAttribute(@$"""{param.Name}""")
+                        .AddAttribute(@$"""{param.GetParamName()}""")
                         .AddAttribute("required", param.Required.ToString().ToFirstLower());
 
                     var parameter = new JavaMethodParameter(Config.GetType(param, tag), param.GetParamName())
