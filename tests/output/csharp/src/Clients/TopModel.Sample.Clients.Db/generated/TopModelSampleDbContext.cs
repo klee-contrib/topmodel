@@ -299,14 +299,14 @@ public partial class TopModelSampleDbContext(DbContextOptions<TopModelSampleDbCo
 
         modelBuilder.Entity<Assiette>().HasData(
             new Assiette { Id = 1, Description = "Grande assiette", Taille = 29 });
-        modelBuilder.Entity<CategoriePlat>().HasData(CategoriePlat.Values);
+        modelBuilder.Entity<CategoriePlat>().HasData(Sample.Restaurant.Models.CategoriePlat.Values);
         modelBuilder.Entity<CategoriePlatRegion>().HasData(
             new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Entree.Code },
             new { RegionCode = Region.Codes.IDF, CategoriePlatCode = CategoriePlat.Dessert.Code });
         modelBuilder.Entity<Couvert>().HasData(
             new Couvert { Id = 2, Description = "Fourchette" },
             new Couvert { Id = 3, Description = "Couteau" });
-        modelBuilder.Entity<Departement>().HasData(Departement.Values);
+        modelBuilder.Entity<Departement>().HasData(Sample.Restaurant.Models.Departement.Values);
         modelBuilder.Entity<Employe>().HasData(
             new { Id = Personne.MichelId, Nom = "Christophe", Prenom = "Michel", Matricule = Employe.MichelMatricule, DateCreation = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), DateEmbauche = DateTime.Parse("2026-01-01T00:00:00Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), RestaurantId = 1 });
         modelBuilder.Entity<Fournisseur>().HasData(

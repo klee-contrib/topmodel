@@ -1,5 +1,9 @@
 # Changelog CSharp
 
+## Non publié
+
+- Correction de la qualification des valeurs de référence dans `HasData` lorsqu'un `DbSet` porte le même nom que la classe.
+
 ## 4.6.4
 
 - [#607](https://github.com/klee-contrib/topmodel/pull/607) - Gestion du templating {module} pour les variables apiRootPath, dbContextPath et dbContextName- #607
