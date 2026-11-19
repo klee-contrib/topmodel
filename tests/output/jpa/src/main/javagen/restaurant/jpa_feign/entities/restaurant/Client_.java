@@ -9,6 +9,8 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
+/**
+ * .
 @StaticMetamodel(Client.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Client_ extends Personne_ {

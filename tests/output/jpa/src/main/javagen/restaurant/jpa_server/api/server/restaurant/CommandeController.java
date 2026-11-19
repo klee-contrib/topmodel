@@ -34,6 +34,8 @@ import restaurant.jpa_server.dtos.restaurant.ReservationRead;
 import restaurant.jpa_server.dtos.restaurant.ReservationWrite;
 import restaurant.jpa_server.enums.restaurant.StatutCommande;
 
+/**
+ * .
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface CommandeController {

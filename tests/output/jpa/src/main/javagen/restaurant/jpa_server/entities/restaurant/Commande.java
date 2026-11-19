@@ -33,7 +33,6 @@ import restaurant.jpa_server.enums.restaurant.StatutCommande;
 
 /**
  * Commande d'un client.
- */
 @Entity
 @Table(name = "commande")
 @EntityListeners(AuditingEntityListener.class)
@@ -305,7 +304,6 @@ public class Commande {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Commande Commande}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		DATE_COMMANDE(LocalDateTime.class),

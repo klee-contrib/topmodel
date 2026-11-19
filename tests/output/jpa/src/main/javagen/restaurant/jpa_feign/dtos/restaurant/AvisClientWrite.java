@@ -13,7 +13,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un avis en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class AvisClientWrite implements Serializable {
 
@@ -145,7 +144,6 @@ public class AvisClientWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.AvisClientWrite AvisClientWrite}.
-	 */
 	public enum Fields {
 		NOTE(Integer.class),
 		COMMENTAIRE(String.class),

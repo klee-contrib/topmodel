@@ -22,7 +22,6 @@ import jakarta.persistence.Table;
 
 /**
  * Classe de base représentant une personne.
- */
 @Entity
 @Table(name = "personne")
 @EntityListeners(AuditingEntityListener.class)
@@ -150,7 +149,6 @@ public class Personne implements PersonneBase {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Personne Personne}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

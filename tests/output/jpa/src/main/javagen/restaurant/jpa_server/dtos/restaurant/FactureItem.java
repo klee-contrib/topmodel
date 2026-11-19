@@ -11,6 +11,13 @@ import restaurant.jpa_server.enums.restaurant.TypeFactureCode;
 
 /**
  * Détail d'une facture.
+ *
+ * @param id Identifiant de la facture.
+ *           Alias of {@link restaurant.jpa_server.entities.restaurant.Facture#getId() Facture#getId()}
+ * @param commandeId Commande associée à la facture.
+ *                   Alias of {@link restaurant.jpa_server.entities.restaurant.Facture#getCommande() Facture#getCommande()}
+ * @param typeFactureCode type de facture.
+ *                        Alias of {@link restaurant.jpa_server.entities.restaurant.Facture#getTypeFactureCode() Facture#getTypeFactureCode()}
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record FactureItem(

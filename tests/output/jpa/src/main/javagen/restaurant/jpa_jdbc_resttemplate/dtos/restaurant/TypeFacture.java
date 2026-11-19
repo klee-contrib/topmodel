@@ -15,6 +15,9 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.TypeFactureCode;
 
 /**
  * Type de facture.
+ *
+ * @param code Code du type de facture.
+ * @param libelle Libellé du type de facture.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record TypeFacture(

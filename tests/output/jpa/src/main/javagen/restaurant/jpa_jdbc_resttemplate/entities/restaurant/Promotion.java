@@ -18,7 +18,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Promotion sur un plat.
- */
 @Table(name = "promotion")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

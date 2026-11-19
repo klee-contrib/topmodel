@@ -266,9 +266,21 @@ public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposab
     {
         AddImports(javaClass.Imports);
         WriteLine();
-        if (!string.IsNullOrEmpty(javaClass.Comment))
+        WriteDocStart(indentationLevel, javaClass.Comment);
+        if (javaClass is JavaRecord jr)
         {
-            WriteDocStart(indentationLevel, javaClass.Comment);
+            var recordFields = jr.Fields.Where(f => !f.Static && f.Comments.Any()).ToList();
+
+            if (recordFields.Count > 0)
+            {
+                WriteLine(indentationLevel, " *");
+            }
+
+            foreach (var field in recordFields)
+            {
+                WriteRecordFieldComment(indentationLevel, field);
+            }
+
             WriteDocEnd(indentationLevel);
         }
 
@@ -534,7 +546,8 @@ public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposab
     private void WriteRecordDeclaration(int indentationLevel, JavaRecord javaRecord)
     {
         WriteLine(indentationLevel, $"{javaRecord.Visibility} {javaRecord.ClassType} {javaRecord.Name}(");
-        foreach (var field in javaRecord.Fields.Where(f => !f.Static))
+        var components = javaRecord.Fields.Where(f => !f.Static).ToList();
+        foreach (var field in components)
         {
             var annotations = string.Join(
                 ' ',
@@ -548,9 +561,30 @@ public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposab
             {
                 line += $"{annotations} ";
             }
-            line += $"{field.Type} {field.Name}{(field != javaRecord.Fields[^1] ? "," : string.Empty)}";
+            line += $"{field.Type} {field.Name}{(field != components[^1] ? "," : string.Empty)}";
             WriteLine(indentationLevel + 1, line);
         }
         WriteLine(indentationLevel, $@") {{");
+    }
+
+    /// <summary>
+    /// Ecrit le commentaire @param d'un composant de record (dans la Javadoc du record).
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="field">Champ du record.</param>
+    private void WriteRecordFieldComment(int indentationLevel, JavaField field)
+    {
+        var first = field.Comments[0].Trim();
+        if (!first.EndsWith('.'))
+        {
+            first += '.';
+        }
+
+        WriteLine(indentationLevel, $" * @param {field.Name} {first}");
+        var continuationIndent = new string(' ', "@param ".Length + field.Name.Length + 1);
+        foreach (var line in field.Comments.Skip(1))
+        {
+            WriteLine(indentationLevel, $" * {continuationIndent}{line}");
+        }
     }
 }

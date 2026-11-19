@@ -13,7 +13,6 @@ import restaurant.jpa_server.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface CommandeItem {
 

@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une promotion en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PromotionWrite implements Serializable {
 

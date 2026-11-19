@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un client en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientItem extends PersonneItem implements Serializable {
 

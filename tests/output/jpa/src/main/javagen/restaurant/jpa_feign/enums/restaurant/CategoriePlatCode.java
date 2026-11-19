@@ -6,7 +6,6 @@ package restaurant.jpa_feign.enums.restaurant;
 
 /**
  * Enumération des valeurs possibles de la propriété Code de la classe CategoriePlat.
- */
 public enum CategoriePlatCode {
 	/**
 	 * Autre.

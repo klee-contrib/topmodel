@@ -13,6 +13,9 @@ import restaurant.jpa_feign.enums.restaurant.TypeFactureCode;
 
 /**
  * Type de facture.
+ *
+ * @param code Code du type de facture.
+ * @param libelle Libellé du type de facture.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record TypeFacture(
@@ -44,7 +47,6 @@ public record TypeFacture(
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TypeFacture TypeFacture}.
-	 */
 	public enum Fields {
 		CODE(TypeFactureCode.class),
 		LIBELLE(String.class);

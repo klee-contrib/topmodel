@@ -20,7 +20,6 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * Table du restaurant.
- */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -175,7 +174,6 @@ public class Table {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Table Table}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NUMERO(String.class),

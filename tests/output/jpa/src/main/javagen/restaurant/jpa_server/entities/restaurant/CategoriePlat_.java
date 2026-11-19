@@ -12,6 +12,8 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
 
+/**
+ * .
 @StaticMetamodel(CategoriePlat.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlat_ {

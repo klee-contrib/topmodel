@@ -10,7 +10,6 @@ import jakarta.annotation.Generated;
 
 /**
  * Dessert.
- */
 @Table(name = "plat_dessert")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatDessert extends Plat {

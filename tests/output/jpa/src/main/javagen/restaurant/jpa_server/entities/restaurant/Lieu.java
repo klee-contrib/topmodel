@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 
 /**
  * Lieu.
- */
 @Entity
 @Table(name = "lieu")
 @DiscriminatorColumn(name = "lie_discriminator")
@@ -98,7 +97,6 @@ public abstract class Lieu {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Lieu Lieu}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

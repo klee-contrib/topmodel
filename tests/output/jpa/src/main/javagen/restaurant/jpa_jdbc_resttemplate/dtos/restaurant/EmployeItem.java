@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 
 /**
  * Détail d'un employé en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeItem extends PersonneItem implements Serializable {
 

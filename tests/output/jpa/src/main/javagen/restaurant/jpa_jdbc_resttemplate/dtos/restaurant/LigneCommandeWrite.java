@@ -15,7 +15,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Détail d'une ligne de commande en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeWrite implements Serializable {
 

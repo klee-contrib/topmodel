@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Statistiques d'un restaurant.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class StatistiquesRestaurant implements Serializable {
 
@@ -139,7 +138,6 @@ public class StatistiquesRestaurant implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.StatistiquesRestaurant StatistiquesRestaurant}.
-	 */
 	public enum Fields {
 		RESTAURANT_ID(Integer.class),
 		NOMBRE_COMMANDES(Integer.class),

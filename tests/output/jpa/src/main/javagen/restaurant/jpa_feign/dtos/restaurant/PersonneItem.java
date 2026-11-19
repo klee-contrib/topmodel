@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une personne en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class PersonneItem implements Serializable {
 
@@ -92,7 +91,6 @@ public abstract class PersonneItem implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PersonneItem PersonneItem}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

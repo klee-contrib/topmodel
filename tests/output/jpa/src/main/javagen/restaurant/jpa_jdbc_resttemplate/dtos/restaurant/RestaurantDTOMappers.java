@@ -6,6 +6,8 @@ package restaurant.jpa_jdbc_resttemplate.dtos.restaurant;
 
 import jakarta.annotation.Generated;
 
+/**
+ * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantDTOMappers {
 
@@ -45,7 +47,7 @@ public class RestaurantDTOMappers {
 			throw new IllegalArgumentException("source cannot be null");
 		}
 
-		return new FactureItem (
+		return new FactureItem(
 			source.factureId(),
 			null,
 			null

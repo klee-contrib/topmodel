@@ -18,7 +18,6 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
 /**
  * Détail d'une commande en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CommandeWrite implements Serializable {
 
@@ -245,7 +244,6 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.CommandeWrite CommandeWrite}.
-	 */
 	public enum Fields {
 		DATE_COMMANDE(LocalDateTime.class),
 		DATE_LIVRAISON(LocalDateTime.class),

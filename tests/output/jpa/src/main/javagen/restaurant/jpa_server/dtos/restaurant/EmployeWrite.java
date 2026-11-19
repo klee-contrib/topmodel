@@ -17,7 +17,6 @@ import restaurant.jpa_server.enums.restaurant.DepartementCode;
 
 /**
  * Détail d'un employé en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeWrite implements Serializable {
 

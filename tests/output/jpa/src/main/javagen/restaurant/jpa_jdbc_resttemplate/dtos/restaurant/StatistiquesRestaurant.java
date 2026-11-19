@@ -15,7 +15,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Statistiques d'un restaurant.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class StatistiquesRestaurant implements Serializable {
 

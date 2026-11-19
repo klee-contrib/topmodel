@@ -10,6 +10,8 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 
 import restaurant.jpa_server.enums.restaurant.RegionCode;
 
+/**
+ * .
 @StaticMetamodel(Departement.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Departement_ {

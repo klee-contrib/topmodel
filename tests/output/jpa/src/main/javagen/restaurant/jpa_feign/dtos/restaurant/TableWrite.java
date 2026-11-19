@@ -13,7 +13,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une table en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TableWrite implements Serializable {
 
@@ -122,7 +121,6 @@ public class TableWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TableWrite TableWrite}.
-	 */
 	public enum Fields {
 		NUMERO(String.class),
 		CAPACITE(Integer.class),

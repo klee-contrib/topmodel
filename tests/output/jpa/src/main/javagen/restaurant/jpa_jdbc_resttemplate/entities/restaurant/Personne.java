@@ -20,7 +20,6 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.DepartementCode;
 
 /**
  * Classe de base représentant une personne.
- */
 @Table(name = "personne")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

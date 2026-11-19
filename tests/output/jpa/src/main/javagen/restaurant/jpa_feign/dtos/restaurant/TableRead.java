@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une table en lecture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TableRead implements TableItem, Serializable {
 
@@ -173,7 +172,6 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TableRead TableRead}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NUMERO(String.class),

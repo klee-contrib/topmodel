@@ -17,7 +17,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Restaurant.
- */
 @Table(name = "restaurant")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

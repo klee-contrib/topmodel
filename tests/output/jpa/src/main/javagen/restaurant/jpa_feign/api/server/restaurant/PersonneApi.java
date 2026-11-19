@@ -34,6 +34,8 @@ import restaurant.jpa_feign.dtos.restaurant.CommandeItem;
 import restaurant.jpa_feign.dtos.restaurant.EmployeRead;
 import restaurant.jpa_feign.dtos.restaurant.EmployeWrite;
 
+/**
+ * .
 @FeignClient(name = "Restaurant", contextId = "PersonneApi")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface PersonneApi {

@@ -23,7 +23,6 @@ import restaurant.jpa_feign.enums.restaurant.RegionCode;
 
 /**
  * Département.
- */
 @Entity
 @Immutable
 @Table(name = "departement")
@@ -132,7 +131,6 @@ public class Departement {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Departement Departement}.
-	 */
 	public enum Fields {
 		CODE(String.class),
 		LIBELLE(String.class),

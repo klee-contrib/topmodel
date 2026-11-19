@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 
 /**
  * Client du restaurant.
- */
 @Entity
 @Table(name = "client")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -115,7 +114,6 @@ public class Client extends Personne {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Client Client}.
-	 */
 	public enum Fields {
 		EMAIL(String.class),
 		SWILE_CARD(Integer.class),

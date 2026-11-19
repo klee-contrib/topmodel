@@ -21,7 +21,6 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
 /**
  * Commande pour historique avec préservation des clés primaires.
- */
 @Entity
 @Table(name = "commande_historique")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -272,7 +271,6 @@ public class CommandeHistorique {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.CommandeHistorique CommandeHistorique}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		DATE_COMMANDE(LocalDateTime.class),

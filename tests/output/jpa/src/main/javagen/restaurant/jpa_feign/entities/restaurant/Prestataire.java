@@ -15,7 +15,6 @@ import jakarta.persistence.Table;
 
 /**
  * Prestaire du restaurant.
- */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
@@ -123,7 +122,6 @@ public class Prestataire implements EmployeBase {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Prestataire Prestataire}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

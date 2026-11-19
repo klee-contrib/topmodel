@@ -19,7 +19,6 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
 /**
  * Client avec la liste de ses commandes.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientAvecCommandes implements Serializable {
 
@@ -486,7 +485,6 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientAvecCommandes ClientAvecCommandes}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

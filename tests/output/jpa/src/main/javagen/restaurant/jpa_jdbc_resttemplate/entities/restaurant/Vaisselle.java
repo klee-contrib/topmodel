@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Vaisselle de restaurant.
- */
 @Table(name = "vaisselle")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class Vaisselle {

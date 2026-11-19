@@ -6,7 +6,6 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 
 /**
  * Valeurs connues de la propriété Ordre de la classe CategoriePlat.
- */
 public class CategoriePlatOrdre {
 
 	/**

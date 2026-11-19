@@ -18,7 +18,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un employé en lecture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeRead implements Serializable {
 

@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Détail d'une ligne de commande en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeWrite implements Serializable {
 
@@ -145,7 +144,6 @@ public class LigneCommandeWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.LigneCommandeWrite LigneCommandeWrite}.
-	 */
 	public enum Fields {
 		QUANTITE(Integer.class),
 		PRIX_UNITAIRE(BigDecimal.class),

@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Région.
- */
 @Table(name = "region")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Region {

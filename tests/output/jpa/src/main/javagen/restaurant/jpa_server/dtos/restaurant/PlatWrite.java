@@ -18,7 +18,6 @@ import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
 
 /**
  * Détail d'un plat en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatWrite implements Serializable {
 

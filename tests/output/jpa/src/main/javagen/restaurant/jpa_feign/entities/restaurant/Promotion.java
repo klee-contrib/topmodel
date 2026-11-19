@@ -24,7 +24,6 @@ import jakarta.persistence.Table;
 
 /**
  * Promotion sur un plat.
- */
 @Entity
 @Table(name = "promotion")
 @EntityListeners(AuditingEntityListener.class)
@@ -244,7 +243,6 @@ public class Promotion {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Promotion Promotion}.
-	 */
 	public enum Fields {
 		PLAT(Plat.class),
 		LIBELLE(String.class),

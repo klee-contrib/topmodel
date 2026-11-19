@@ -21,7 +21,6 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.StatutCommande;
 
 /**
  * Client avec la liste de ses commandes.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientAvecCommandes implements Serializable {
 

@@ -12,6 +12,13 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une facture.
+ *
+ * @param id Identifiant de la facture.
+ *           Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Facture#getId() Facture#getId()}
+ * @param commandeId Commande associée à la facture.
+ *                   Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Facture#getCommande() Facture#getCommande()}
+ * @param typeFactureCode type de facture.
+ *                        Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Facture#getTypeFactureCode() Facture#getTypeFactureCode()}
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record FactureItem(

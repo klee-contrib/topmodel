@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une personne en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class PersonneItem implements Serializable {
 

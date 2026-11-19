@@ -6,7 +6,6 @@ package restaurant.jpa_server.enums.restaurant;
 
 /**
  * Valeurs connues de la propriété Code de la classe Departement.
- */
 public class DepartementCode {
 
 	/**

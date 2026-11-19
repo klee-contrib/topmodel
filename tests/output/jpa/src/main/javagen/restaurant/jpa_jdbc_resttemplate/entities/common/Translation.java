@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Table pour stocker les traductions en SQL.
- */
 @Table(name = "translation")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Translation {

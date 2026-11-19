@@ -11,7 +11,6 @@ import jakarta.persistence.Entity;
 
 /**
  * Boisson.
- */
 @Entity
 @DiscriminatorValue("BOISSON")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -42,7 +41,6 @@ public class PlatBoisson extends Plat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.PlatBoisson PlatBoisson}.
-	 */
 	public enum Fields {
 		VOLUME(Integer.class);
 

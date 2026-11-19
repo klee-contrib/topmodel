@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'une promotion en lecture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PromotionRead implements Serializable {
 
@@ -220,7 +219,6 @@ public class PromotionRead implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PromotionRead PromotionRead}.
-	 */
 	public enum Fields {
 		PLAT_ID(Integer.class),
 		LIBELLE(String.class),

@@ -7,6 +7,8 @@ package restaurant.jpa_feign.entities.restaurant;
 import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.StaticMetamodel;
 
+/**
+ * .
 @StaticMetamodel(PlatDessert.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class PlatDessert_ extends Plat_ {

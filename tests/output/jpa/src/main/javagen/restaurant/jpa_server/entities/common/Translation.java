@@ -15,7 +15,6 @@ import jakarta.persistence.Table;
 
 /**
  * Table pour stocker les traductions en SQL.
- */
 @Entity
 @Table(name = "translation")
 @IdClass(Translation.TranslationId.class)
@@ -93,7 +92,6 @@ public class Translation {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.common.Translation Translation}.
-	 */
 	public enum Fields {
 		RESOURCE_KEY(String.class),
 		VALUE(String.class),
@@ -115,6 +113,8 @@ public class Translation {
 		}
 	}
 
+	/**
+	 * .
 	public static class TranslationId {
 
 		@Column(name = "tra_resource_key", nullable = false, length = 100, columnDefinition = "varchar")

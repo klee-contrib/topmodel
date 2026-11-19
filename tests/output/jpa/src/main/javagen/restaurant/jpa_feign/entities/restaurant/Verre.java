@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 
 /**
  * Verre.
- */
 @Entity
 @Table(name = "verre")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -42,7 +41,6 @@ public class Verre extends Vaisselle {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Verre Verre}.
-	 */
 	public enum Fields {
 		A_PIED(Boolean.class);
 

@@ -19,7 +19,6 @@ import restaurant.jpa_server.entities.restaurant.Restaurant;
 
 /**
  * Classe de mapping entre les id technique et les id de restaurants.
- */
 @Entity
 @Table(name = "restaurant_external_system_mapping")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

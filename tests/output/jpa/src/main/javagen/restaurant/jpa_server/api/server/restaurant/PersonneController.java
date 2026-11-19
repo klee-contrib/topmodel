@@ -35,6 +35,8 @@ import restaurant.jpa_server.dtos.restaurant.CommandeItem;
 import restaurant.jpa_server.dtos.restaurant.EmployeRead;
 import restaurant.jpa_server.dtos.restaurant.EmployeWrite;
 
+/**
+ * .
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface PersonneController {

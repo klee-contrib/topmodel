@@ -26,7 +26,6 @@ import restaurant.jpa_server.enums.restaurant.CategoriePlatOrdre;
 
 /**
  * Catégorie de plat.
- */
 @Entity
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
@@ -160,7 +159,6 @@ public class CategoriePlat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CategoriePlat CategoriePlat}.
-	 */
 	public enum Fields {
 		CODE(CategoriePlatCode.class),
 		LIBELLE(String.class),

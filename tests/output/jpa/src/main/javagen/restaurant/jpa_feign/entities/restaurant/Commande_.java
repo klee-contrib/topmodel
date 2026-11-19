@@ -14,6 +14,8 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 
 import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 
+/**
+ * .
 @StaticMetamodel(Commande.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Commande_ {

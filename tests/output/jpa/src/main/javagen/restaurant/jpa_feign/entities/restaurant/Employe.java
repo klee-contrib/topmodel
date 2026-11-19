@@ -19,7 +19,6 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * Employé du restaurant.
- */
 @Entity
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(
@@ -174,7 +173,6 @@ public class Employe extends Personne implements EmployeBase {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Employe Employe}.
-	 */
 	public enum Fields {
 		TELEPHONE(String.class),
 		DATE_NAISSANCE(LocalDateTime.class),

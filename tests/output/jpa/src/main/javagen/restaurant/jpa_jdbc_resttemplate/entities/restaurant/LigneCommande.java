@@ -19,7 +19,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Ligne d'une commande.
- */
 @Table(name = "ligne_commande")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

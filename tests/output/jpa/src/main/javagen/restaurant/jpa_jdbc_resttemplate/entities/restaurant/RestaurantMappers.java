@@ -38,6 +38,8 @@ import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.StatistiquesRestaurant;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.TableRead;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.TableWrite;
 
+/**
+ * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantMappers {
 
@@ -265,18 +267,17 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Mappe les champs sources sur l'instance de la classe 'FactureItem' passée en paramètre.
+	 * Crée une nouvelle instance de la classe 'FactureItem' en mappant les champs sources.
 	 * @param facture Instance de 'Facture' source.
 	 *
-	 * @return L'instance de 'FactureItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 * @return Une nouvelle instance de 'FactureItem' sur laquelle les champs sources ont été mappés.
 	 */
 	public static FactureItem createFactureItem(Facture facture) {
-
 		if (facture == null) {
 			throw new IllegalArgumentException("facture cannot be null");
 		}
 
-		return new FactureItem (
+		return new FactureItem(
 			facture.getId(),
 			facture.getCommande(),
 			facture.getTypeFactureCode()
@@ -358,14 +359,13 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Mappe les champs sources sur l'instance de la classe 'PaiementItem' passée en paramètre.
+	 * Crée une nouvelle instance de la classe 'PaiementItem' en mappant les champs sources.
 	 * @param paiement Instance de 'Paiement' source.
 	 * @param commande Instance de 'Commande' source.
 	 *
-	 * @return L'instance de 'PaiementItem' passée en paramètres sur lesquels les champs sources ont été mappés.
+	 * @return Une nouvelle instance de 'PaiementItem' sur laquelle les champs sources ont été mappés.
 	 */
 	public static PaiementItem createPaiementItem(Paiement paiement, Commande commande) {
-
 		if (paiement == null) {
 			throw new IllegalArgumentException("paiement cannot be null");
 		}
@@ -374,7 +374,7 @@ public class RestaurantMappers {
 			throw new IllegalArgumentException("commande cannot be null");
 		}
 
-		return new PaiementItem (
+		return new PaiementItem(
 			paiement.getFacture(),
 			paiement.getSwileCardId(),
 			commande.getDateCommande(),

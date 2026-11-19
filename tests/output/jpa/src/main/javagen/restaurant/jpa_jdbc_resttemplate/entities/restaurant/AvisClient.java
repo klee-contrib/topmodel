@@ -20,7 +20,6 @@ import topmodel.test.NombreVuesBase;
 
 /**
  * Avis d'un client sur un restaurant.
- */
 @Table(name = "avis_client")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

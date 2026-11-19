@@ -37,6 +37,8 @@ import restaurant.jpa_server.dtos.restaurant.TableRead;
 import restaurant.jpa_server.dtos.restaurant.TableWrite;
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
 
+/**
+ * .
 @RequestMapping("api/restaurants")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface RestaurantController {

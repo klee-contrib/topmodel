@@ -8,7 +8,6 @@ import jakarta.annotation.Generated;
 
 /**
  * Statut d'une commande.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum StatutCommande {
 	/**

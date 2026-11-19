@@ -19,7 +19,6 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.DepartementCode;
 
 /**
  * Détail d'un employé en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class EmployeWrite implements Serializable {
 

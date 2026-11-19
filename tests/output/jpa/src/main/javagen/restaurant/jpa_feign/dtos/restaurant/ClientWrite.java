@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Détail d'un client en écriture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ClientWrite implements Serializable {
 
@@ -171,7 +170,6 @@ public class ClientWrite implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientWrite ClientWrite}.
-	 */
 	public enum Fields {
 		NOM(String.class),
 		PRENOM(String.class),

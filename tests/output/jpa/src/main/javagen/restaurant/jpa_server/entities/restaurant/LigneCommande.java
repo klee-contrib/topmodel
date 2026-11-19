@@ -25,7 +25,6 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * Ligne d'une commande.
- */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -205,7 +204,6 @@ public class LigneCommande {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.LigneCommande LigneCommande}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		QUANTITE(Integer.class),

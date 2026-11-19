@@ -11,6 +11,8 @@ import jakarta.annotation.Generated;
 
 import restaurant.jpa_server.entities.restaurant.CategoriePlat;
 
+/**
+ * .
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RestaurantDTOMappers {
 
@@ -50,7 +52,7 @@ public class RestaurantDTOMappers {
 			throw new IllegalArgumentException("source cannot be null");
 		}
 
-		return new FactureItem (
+		return new FactureItem(
 			source.factureId(),
 			null,
 			null

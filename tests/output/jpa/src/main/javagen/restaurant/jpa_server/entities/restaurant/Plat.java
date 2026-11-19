@@ -31,7 +31,6 @@ import jakarta.persistence.Table;
 
 /**
  * Plat du menu.
- */
 @Entity
 @Table(name = "plat")
 @DiscriminatorValue("AUTRE")
@@ -280,7 +279,6 @@ public class Plat {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Plat Plat}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

@@ -19,7 +19,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Réservation d'une table.
- */
 @Table(name = "reservation")
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

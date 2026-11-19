@@ -24,7 +24,6 @@ import restaurant.jpa_server.enums.restaurant.DepartementCode;
 
 /**
  * Classe de base représentant une personne.
- */
 @Entity
 @Table(name = "personne")
 @EntityListeners(AuditingEntityListener.class)
@@ -152,7 +151,6 @@ public class Personne implements PersonneBase {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Personne Personne}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		NOM(String.class),

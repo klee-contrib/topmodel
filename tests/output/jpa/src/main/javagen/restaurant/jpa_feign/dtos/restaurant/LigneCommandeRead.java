@@ -15,7 +15,6 @@ import jakarta.validation.constraints.PastOrPresent;
 
 /**
  * Détail d'une ligne de commande en lecture.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class LigneCommandeRead implements Serializable {
 
@@ -196,7 +195,6 @@ public class LigneCommandeRead implements Serializable {
 
 	/**
 	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.LigneCommandeRead LigneCommandeRead}.
-	 */
 	public enum Fields {
 		ID(Integer.class),
 		QUANTITE(Integer.class),

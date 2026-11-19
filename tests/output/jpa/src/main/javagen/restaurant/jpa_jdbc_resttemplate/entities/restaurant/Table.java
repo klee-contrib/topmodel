@@ -17,7 +17,6 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Table du restaurant.
- */
 @EntityListeners(AuditingEntityListener.class)
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @org.springframework.data.relational.core.mapping.Table(name = "table")

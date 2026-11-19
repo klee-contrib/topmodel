@@ -8,7 +8,6 @@ import jakarta.annotation.Generated;
 
 /**
  * Détail d'une table en liste.
- */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface TableItem {
 

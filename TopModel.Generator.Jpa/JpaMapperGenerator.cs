@@ -252,13 +252,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             Static = true,
             Visibility = "public",
             ReturnComment =
-                $"L'instance de '{classe.NamePascal}' passée en paramètres sur lesquels les champs sources ont été mappés",
-            Comment = $"Mappe les champs sources sur l'instance de la classe '{classe.NamePascal}' passée en paramètre",
+                $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
+            Comment = $"Crée une nouvelle instance de la classe '{classe.NamePascal}' en mappant les champs sources.",
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
-
-        fromMapperMethod.AddBodyLine();
 
         foreach (var param in mapper.ClassParams.Where(p => p.Mappings.Count > 0))
         {
@@ -293,7 +291,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
         }
 
-        fromMapperMethod.AddBodyLine($"return new {classe.NamePascal} (");
+        fromMapperMethod.AddBodyLine($"return new {classe.NamePascal}(");
         var availableProperties = Config.GetAvailableProperties(classe);
         var last = availableProperties.Last();
         foreach (var property in availableProperties)
@@ -374,7 +372,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         toMapperMethod.AddBodyLine("}");
         toMapperMethod.AddBodyLine();
 
-        toMapperMethod.AddBodyLine($"return new {targetClass.NamePascal} (");
+        toMapperMethod.AddBodyLine($"return new {targetClass.NamePascal}(");
         var availableProperties = Config.GetAvailableProperties(targetClass);
         var last = availableProperties.Last();
         foreach (var targetProperty in availableProperties)
