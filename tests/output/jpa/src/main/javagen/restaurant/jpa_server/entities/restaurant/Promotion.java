@@ -235,8 +235,8 @@ public class Promotion {
 	}
 
 	/**
-	 * Setter for platId.
-	 * @param platId Set the value of {@link restaurant.jpa_server.entities.restaurant.Promotion#platId platId}.
+	 * Set the value of {@link #platId platId}.
+	 * @param platId value to set.
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;

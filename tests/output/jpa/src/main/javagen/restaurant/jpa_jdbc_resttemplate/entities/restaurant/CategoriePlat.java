@@ -12,7 +12,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_resttemplate.enums.restaurant.CategoriePlatCode;
@@ -25,19 +24,14 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.CategoriePlatOrdre;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlat {
 
-	@Transient
 	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.Autre, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
 
-	@Transient
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
 
-	@Transient
 	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
 
-	@Transient
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
-	@Transient
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.Principal, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
 
 	/**

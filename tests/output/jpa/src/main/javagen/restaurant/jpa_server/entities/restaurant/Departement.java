@@ -17,7 +17,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import restaurant.jpa_server.enums.restaurant.DepartementCode;
 import restaurant.jpa_server.enums.restaurant.RegionCode;
@@ -32,16 +31,12 @@ import restaurant.jpa_server.enums.restaurant.RegionCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Departement {
 
-	@Transient
 	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine, "restaurant.departement.values.HautsDeSeine", RegionCode.IDF);
 
-	@Transient
 	public static final Departement PARIS = new Departement(DepartementCode.Paris, "restaurant.departement.values.Paris", RegionCode.IDF);
 
-	@Transient
 	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne, "restaurant.departement.values.SeineEtMarne", RegionCode.IDF);
 
-	@Transient
 	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.IDF);
 
 	/**

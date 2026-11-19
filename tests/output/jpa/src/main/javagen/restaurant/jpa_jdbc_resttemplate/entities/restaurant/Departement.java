@@ -11,7 +11,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 import restaurant.jpa_jdbc_resttemplate.enums.restaurant.DepartementCode;
@@ -24,16 +23,12 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Departement {
 
-	@Transient
 	public static final Departement HAUTS_DE_SEINE = new Departement(DepartementCode.HautsDeSeine, "restaurant.departement.values.HautsDeSeine", RegionCode.Idf);
 
-	@Transient
 	public static final Departement PARIS = new Departement(DepartementCode.Paris, "restaurant.departement.values.Paris", RegionCode.Idf);
 
-	@Transient
 	public static final Departement SEINE_ET_MARNE = new Departement(DepartementCode.SeineEtMarne, "restaurant.departement.values.SeineEtMarne", RegionCode.Idf);
 
-	@Transient
 	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.Idf);
 
 	/**

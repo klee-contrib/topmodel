@@ -17,7 +17,6 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import restaurant.jpa_feign.enums.restaurant.RegionCode;
 
@@ -30,10 +29,8 @@ import restaurant.jpa_feign.enums.restaurant.RegionCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion {
 
-	@Transient
 	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.IDF, CategoriePlat.DESSERT);
 
-	@Transient
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.IDF, CategoriePlat.ENTREE);
 
 	/**

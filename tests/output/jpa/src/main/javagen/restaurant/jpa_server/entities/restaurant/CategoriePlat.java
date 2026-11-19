@@ -18,7 +18,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 import restaurant.jpa_server.enums.restaurant.CategoriePlatCode;
@@ -39,19 +38,14 @@ import restaurant.jpa_server.enums.restaurant.CategoriePlatOrdre;
 )
 public class CategoriePlat {
 
-	@Transient
 	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
 
-	@Transient
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
 
-	@Transient
 	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
 
-	@Transient
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
-	@Transient
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.PRINCIPAL, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
 
 	/**

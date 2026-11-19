@@ -10,7 +10,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.Transient;
 
 import restaurant.jpa_jdbc_resttemplate.enums.restaurant.CategoriePlatCode;
 import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
@@ -22,10 +21,8 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.RegionCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatRegion {
 
-	@Transient
 	public static final CategoriePlatRegion IDF_DESSERT = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Dessert);
 
-	@Transient
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Entree);
 
 	/**

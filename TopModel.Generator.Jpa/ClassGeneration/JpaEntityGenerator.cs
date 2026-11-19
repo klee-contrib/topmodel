@@ -264,7 +264,6 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         {
             foreach (var javaFinalField in JavaConstructorGenerator.GetConstFields(classe, tag))
             {
-                javaFinalField.Add(new JavaAnnotation("Transient", imports: "jakarta.persistence.Transient"));
                 yield return javaFinalField;
             }
             yield return JavaConstructorGenerator.GetStaticValuesList(classe);
@@ -347,14 +346,8 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             var method = new JavaMethod("void", setterName)
             {
                 Visibility = "public",
-                Comment = $"Setter for {propertyName}",
-            }.AddParameter(
-                new JavaMethodParameter(propertyType, propertyName)
-                {
-                    Comment =
-                        $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
-                }
-            );
+                Comment = $"Set the value of {{@link #{propertyName} {propertyName}}}",
+            }.AddParameter(new JavaMethodParameter(propertyType, propertyName) { Comment = "value to set" });
             method.AddImports(Config.GetDomainImports(ap, tag));
             method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
             return method;
