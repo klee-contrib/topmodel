@@ -12,19 +12,9 @@ import jakarta.annotation.Generated;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum CategoriePlatCode {
 	/**
-	 * Autre.
-	 */
-	AUTRE,
-
-	/**
 	 * Boisson.
 	 */
 	BOISSON,
-
-	/**
-	 * Dessert.
-	 */
-	DESSERT,
 
 	/**
 	 * Entrée.
@@ -34,5 +24,15 @@ public enum CategoriePlatCode {
 	/**
 	 * Plat principal.
 	 */
-	PRINCIPAL
+	PRINCIPAL,
+
+	/**
+	 * Dessert.
+	 */
+	DESSERT,
+
+	/**
+	 * Autre.
+	 */
+	AUTRE
 }

@@ -2,6 +2,7 @@
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
+using TopModel.Generator.Jpa.ClassGeneration.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -91,7 +92,7 @@ public class JavaEnumClassPropertyGenerator(
         }
 
         var i = 0;
-        var refs = Config.GetAllValues(classe).OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+        var refs = JavaEnumGeneratorHelper.GetOrderedValues(classe, Config.GetAllValues(classe));
 
         foreach (var value in refs)
         {

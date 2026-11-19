@@ -12,19 +12,21 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// Retourne les valeurs de la classe triées par OrderProperty, sinon par DefaultProperty, sinon par nom.
     /// </summary>
     /// <param name="classe">La classe.</param>
+    /// <param name="values">Valeurs à trier (par défaut, les valeurs de la classe).</param>
     /// <returns>Les valeurs triées.</returns>
-    public static IList<ClassValue> GetOrderedValues(Class classe)
+    public static IList<ClassValue> GetOrderedValues(Class classe, IEnumerable<ClassValue>? values = null)
     {
+        values ??= classe.Values;
         var orderProperty = classe.OrderProperty ?? classe.DefaultProperty;
         return orderProperty != null
-            ? classe
-                .Values.OrderBy(
+            ? values
+                .OrderBy(
                     v => v.Value.TryGetValue(orderProperty, out var value) ? value : null,
                     StringComparer.InvariantCulture
                 )
                 .ThenBy(v => v.Name, StringComparer.Ordinal)
                 .ToList()
-            : classe.Values.OrderBy(v => v.Name, StringComparer.Ordinal).ToList();
+            : values.OrderBy(v => v.Name, StringComparer.Ordinal).ToList();
     }
 
     /// <summary>

@@ -13,19 +13,9 @@ import jakarta.annotation.Generated;
 public class CategoriePlatCode {
 
 	/**
-	 * Autre.
-	 */
-	public static final String Autre = "AUTRE";
-
-	/**
 	 * Boisson.
 	 */
 	public static final String Boisson = "BOISSON";
-
-	/**
-	 * Dessert.
-	 */
-	public static final String Dessert = "DESSERT";
 
 	/**
 	 * Entrée.
@@ -36,6 +26,16 @@ public class CategoriePlatCode {
 	 * Plat principal.
 	 */
 	public static final String Principal = "PRINCIPAL";
+
+	/**
+	 * Dessert.
+	 */
+	public static final String Dessert = "DESSERT";
+
+	/**
+	 * Autre.
+	 */
+	public static final String Autre = "AUTRE";
 
 	private CategoriePlatCode() {
 		// private constructor to hide implicite public one
