@@ -224,7 +224,7 @@ public class MenuPlat {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(menu == null ? null : menu, plat == null ? null : plat);
+			return Objects.hash(menu, plat);
 		}
 	}
 }

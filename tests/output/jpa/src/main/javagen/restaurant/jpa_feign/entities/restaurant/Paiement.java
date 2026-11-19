@@ -162,7 +162,7 @@ public class Paiement {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(facture == null ? null : facture, swileCardId == null ? null : swileCardId);
+			return Objects.hash(facture, swileCardId);
 		}
 	}
 }

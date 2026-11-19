@@ -228,7 +228,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             new JavaAnnotation("Override")
         );
         hashCodeMethod.AddBodyLine(
-            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{(pk.Association != null ? $"{pk.NameCamel} == null ? null : " : string.Empty)}{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)}"))});"
+            $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk =>
+            {
+                var getter = GetterToCompareCompositePkPk(pk, tag);
+                return string.IsNullOrEmpty(getter)
+                    ? pk.NameCamel
+                    : $"{pk.NameCamel} == null ? null : {pk.NameCamel}{getter}";
+            }))});"
         );
         hashCodeMethod.AddImports("java.util.Objects");
         javaClass.Add(hashCodeMethod);

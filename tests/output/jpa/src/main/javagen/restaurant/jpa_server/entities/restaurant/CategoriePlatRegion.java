@@ -181,7 +181,7 @@ public class CategoriePlatRegion {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(regionCode == null ? null : regionCode, categoriePlat == null ? null : categoriePlat);
+			return Objects.hash(regionCode, categoriePlat);
 		}
 	}
 }
