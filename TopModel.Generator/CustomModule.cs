@@ -47,7 +47,8 @@ public class CustomModule(
                     SearchOption.AllDirectories
                 )
                 .Where(f =>
-                    !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                    !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}")
+                    && !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
                     && (
                         Path.GetExtension(f).Equals(".cs", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(f).Equals(".json", StringComparison.OrdinalIgnoreCase)
