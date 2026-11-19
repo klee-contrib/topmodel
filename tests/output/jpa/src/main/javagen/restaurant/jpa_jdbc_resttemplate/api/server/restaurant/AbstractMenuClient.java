@@ -5,19 +5,26 @@
 package restaurant.jpa_jdbc_resttemplate.api.server.restaurant;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.MenuRead;
+import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.MenuWrite;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatItem;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatRead;
 import restaurant.jpa_jdbc_resttemplate.dtos.restaurant.PlatWrite;
@@ -46,6 +53,25 @@ public abstract class AbstractMenuClient {
 	 * @return les headers à ajouter à la requête
 	 */
 	protected abstract HttpHeaders getHeaders();
+
+	/**
+	 * Ajoute une valeur au corps multipart de la requête.
+	 * Les valeurs nulles sont ignorées, les collections sont ajoutées élément par élément.
+	 * @param body corps multipart de la requête
+	 * @param name nom du champ
+	 * @param value valeur du champ
+	 */
+	protected void addPart(MultiValueMap<String, Object> body, String name, Object value) {
+		if (value instanceof Collection<?> values) {
+			values.forEach(v -> addPart(body, name, v));
+		} else if (value instanceof MultipartFile file) {
+			body.add(name, file.getResource());
+		} else if (value instanceof Resource resource) {
+			body.add(name, resource);
+		} else if (value != null) {
+			body.add(name, String.valueOf(value));
+		}
+	}
 
 	/**
 	 * UriComponentsBuilder pour la méthode addPlat.
@@ -82,10 +108,23 @@ public abstract class AbstractMenuClient {
 	 * @param regCodeOrigine Code de la région.
 	 * @return Menu créé avec ses plats
 	 */
-	public ResponseEntity<MenuRead> createMenu(){
+	public ResponseEntity<MenuRead> createMenu(MenuWrite menu, String regCodeOrigine){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.createMenuUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), MenuRead.class);
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		if (menu != null) {
+			addPart(body, "nom", menu.getNom());
+			addPart(body, "description", menu.getDescription());
+			addPart(body, "prix", menu.getPrix());
+			addPart(body, "disponible", menu.getDisponible());
+			addPart(body, "dateDebut", menu.getDateDebut());
+			addPart(body, "dateFin", menu.getDateFin());
+			addPart(body, "restaurantId", menu.getRestaurantId());
+			addPart(body, "categoriesPlat", menu.getCategoriesPlat());
+		}
+		addPart(body, "regCodeOrigine", regCodeOrigine);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(body, headers), MenuRead.class);
 	}
 
 	/**

@@ -21,7 +21,12 @@ public class SpringRestTemplateApiGenerator(
 
     protected virtual void AddMethodParamsImports(JavaWriter fw, Endpoint endpoint, string tag)
     {
-        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
+        foreach (
+            var param in endpoint
+                .GetRouteParams()
+                .Concat(endpoint.GetQueryParams(Config))
+                .Concat(endpoint.GetFormDataParams(Config))
+        )
         {
             fw.AddImports(param.GetTypeImports(Config, tag));
         }
@@ -79,16 +84,26 @@ public class SpringRestTemplateApiGenerator(
             }
         }
 
-        var bodyParam = endpoint.GetJsonBodyParam(Config);
-        if (bodyParam != null && withBody)
+        if (!withBody)
+        {
+            return methodParams;
+        }
+
+        var bodyParams = endpoint.GetFormDataParams(Config).ToList();
+        if (endpoint.GetJsonBodyParam(Config) is IProperty bodyParam)
+        {
+            bodyParams.Add(bodyParam);
+        }
+
+        foreach (var param in bodyParams)
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetType(bodyParam, tag)} {bodyParam.GetParamName()}");
+                methodParams.Add($"{Config.GetType(param, tag)} {param.GetParamName()}");
             }
             else
             {
-                methodParams.Add(bodyParam.GetParamName());
+                methodParams.Add(param.GetParamName());
             }
         }
 
@@ -138,12 +153,50 @@ public class SpringRestTemplateApiGenerator(
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"protected abstract HttpHeaders getHeaders();");
 
+        if (endpoints.Any(e => e.GetFormDataParams(Config).Any()))
+        {
+            WriteAddPartMethod(fw);
+        }
+
         foreach (var endpoint in endpoints)
         {
             WriteEndpoint(fw, endpoint, tag);
         }
 
         fw.WriteLine("}");
+    }
+
+    /// <summary>
+    /// Écrit la méthode utilitaire d'ajout d'une valeur dans un corps multipart.
+    /// </summary>
+    /// <param name="fw">Writer.</param>
+    protected virtual void WriteAddPartMethod(JavaWriter fw)
+    {
+        fw.AddImports([
+            "java.util.Collection",
+            "org.springframework.core.io.Resource",
+            "org.springframework.util.MultiValueMap",
+            "org.springframework.web.multipart.MultipartFile",
+        ]);
+
+        fw.WriteLine();
+        fw.WriteDocStart(1, "Ajoute une valeur au corps multipart de la requête");
+        fw.WriteLine(1, " * Les valeurs nulles sont ignorées, les collections sont ajoutées élément par élément.");
+        fw.WriteLine(1, " * @param body corps multipart de la requête");
+        fw.WriteLine(1, " * @param name nom du champ");
+        fw.WriteLine(1, " * @param value valeur du champ");
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, "protected void addPart(MultiValueMap<String, Object> body, String name, Object value) {");
+        fw.WriteLine(2, "if (value instanceof Collection<?> values) {");
+        fw.WriteLine(3, "values.forEach(v -> addPart(body, name, v));");
+        fw.WriteLine(2, "} else if (value instanceof MultipartFile file) {");
+        fw.WriteLine(3, "body.add(name, file.getResource());");
+        fw.WriteLine(2, "} else if (value instanceof Resource resource) {");
+        fw.WriteLine(3, "body.add(name, resource);");
+        fw.WriteLine(2, "} else if (value != null) {");
+        fw.WriteLine(3, "body.add(name, String.valueOf(value));");
+        fw.WriteLine(2, "}");
+        fw.WriteLine(1, "}");
     }
 
     protected virtual void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
@@ -205,8 +258,18 @@ public class SpringRestTemplateApiGenerator(
             2,
             $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, tag, withType: false, withBody: false))});"
         );
-        var body =
-            $"new HttpEntity<>({(endpoint.GetJsonBodyParam(Config)?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam(Config)?.GetParamName()}, " : string.Empty)}headers)";
+        string body;
+        var formDataParams = endpoint.GetFormDataParams(Config).ToList();
+        if (formDataParams.Count > 0)
+        {
+            WriteMultipartBody(fw, formDataParams, tag);
+            body = "new HttpEntity<>(body, headers)";
+        }
+        else
+        {
+            var bodyParamName = endpoint.GetJsonBodyParam(Config)?.GetParamName();
+            body = $"new HttpEntity<>({(bodyParamName != null ? $"{bodyParamName}, " : string.Empty)}headers)";
+        }
 
         fw.WriteLine(
             2,
@@ -227,6 +290,46 @@ public class SpringRestTemplateApiGenerator(
             "org.springframework.http.HttpHeaders",
             "org.springframework.http.ResponseEntity",
         ]);
+    }
+
+    /// <summary>
+    /// Écrit la construction du corps multipart à partir des paramètres form-data.
+    /// Les compositions sont envoyées à plat (un champ par propriété), comme le fait le client JS.
+    /// </summary>
+    /// <param name="fw">Writer.</param>
+    /// <param name="formDataParams">Paramètres form-data.</param>
+    /// <param name="tag">Tag.</param>
+    protected virtual void WriteMultipartBody(JavaWriter fw, IList<IProperty> formDataParams, string tag)
+    {
+        fw.AddImports([
+            "org.springframework.http.MediaType",
+            "org.springframework.util.LinkedMultiValueMap",
+            "org.springframework.util.MultiValueMap",
+        ]);
+
+        fw.WriteLine(2, "headers.setContentType(MediaType.MULTIPART_FORM_DATA);");
+        fw.WriteLine(2, "MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();");
+        foreach (var param in formDataParams)
+        {
+            var paramName = param.GetParamName();
+            if (param is { Composition: Class composition, Domain: null })
+            {
+                fw.WriteLine(2, $"if ({paramName} != null) {{");
+                foreach (var prop in Config.GetProperties(composition))
+                {
+                    fw.WriteLine(
+                        3,
+                        $@"addPart(body, ""{prop.NameCamel}"", {paramName}.{Config.GetGetterName(prop, tag)}());"
+                    );
+                }
+
+                fw.WriteLine(2, "}");
+            }
+            else
+            {
+                fw.WriteLine(2, $@"addPart(body, ""{paramName}"", {paramName});");
+            }
+        }
     }
 
     protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint, string tag)
