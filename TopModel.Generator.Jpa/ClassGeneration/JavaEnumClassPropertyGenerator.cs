@@ -92,7 +92,7 @@ public class JavaEnumClassPropertyGenerator(
         }
 
         var i = 0;
-        var refs = JavaEnumGeneratorHelper.GetOrderedValues(classe, Config.GetAllValues(classe));
+        var refs = JavaEnumGeneratorHelper.GetValuesByName(classe, Config.GetAllValues(classe));
 
         foreach (var value in refs)
         {

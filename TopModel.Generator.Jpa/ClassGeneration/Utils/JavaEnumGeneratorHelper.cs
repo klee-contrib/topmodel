@@ -9,24 +9,35 @@ namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerator(config)
 {
     /// <summary>
-    /// Retourne les valeurs de la classe triées par OrderProperty, sinon par DefaultProperty, sinon par nom.
+    /// Retourne les valeurs de la classe triées par OrderProperty, sinon par DefaultProperty,
+    /// sinon dans l'ordre de déclaration (même politique que la liste <c>Values</c> du générateur C#).
     /// </summary>
     /// <param name="classe">La classe.</param>
-    /// <param name="values">Valeurs à trier (par défaut, les valeurs de la classe).</param>
     /// <returns>Les valeurs triées.</returns>
-    public static IList<ClassValue> GetOrderedValues(Class classe, IEnumerable<ClassValue>? values = null)
+    public static IList<ClassValue> GetOrderedValues(Class classe)
     {
-        values ??= classe.Values;
         var orderProperty = classe.OrderProperty ?? classe.DefaultProperty;
         return orderProperty != null
-            ? values
-                .OrderBy(
+            ? classe
+                .Values.OrderBy(
                     v => v.Value.TryGetValue(orderProperty, out var value) ? value : null,
                     StringComparer.InvariantCulture
                 )
-                .ThenBy(v => v.Name, StringComparer.Ordinal)
                 .ToList()
-            : values.OrderBy(v => v.Name, StringComparer.Ordinal).ToList();
+            : classe.Values.ToList();
+    }
+
+    /// <summary>
+    /// Retourne les valeurs triées par nom (même politique que le générateur C# pour les constantes et les enums).
+    /// </summary>
+    /// <param name="classe">La classe.</param>
+    /// <param name="values">Valeurs à trier (par défaut, les valeurs de la classe).</param>
+    /// <returns>Les valeurs triées par nom.</returns>
+    public static IList<ClassValue> GetValuesByName(Class classe, IEnumerable<ClassValue>? values = null)
+    {
+        return (values ?? classe.Values)
+            .OrderBy(v => v.Name.ToPascalCase(strictIfUppercase: true), StringComparer.Ordinal)
+            .ToList();
     }
 
     /// <summary>
@@ -50,7 +61,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// <param name="tag">Le tag de génération.</param>
     public virtual IEnumerable<JavaField> GetConstFields(Class classe, string tag)
     {
-        foreach (var refValue in GetOrderedValues(classe))
+        foreach (var refValue in GetValuesByName(classe))
         {
             var field = new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
             {
@@ -81,7 +92,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             }
         );
         method.AddBodyLine(@$"return switch ({key.NameCamel}) {{");
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        foreach (var refValue in GetValuesByName(classe))
         {
             var code = Config.GetValue(key, tag, refValue.Value[key]);
             if (key.EnumProperty != null && Config.UniqueValueGeneration != Core.UniqueValueGenerationMode.ConstOnly)

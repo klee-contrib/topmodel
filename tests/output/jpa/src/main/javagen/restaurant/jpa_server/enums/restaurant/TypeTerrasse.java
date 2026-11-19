@@ -11,6 +11,6 @@ import jakarta.annotation.Generated;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum TypeTerrasse {
-	INT,
-	EXT
+	EXT,
+	INT
 }

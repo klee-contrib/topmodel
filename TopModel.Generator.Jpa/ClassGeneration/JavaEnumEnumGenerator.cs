@@ -140,7 +140,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
 
     private IEnumerable<JavaEnumValue> GetEnumValues(Class classe, string tag)
     {
-        foreach (var refValue in classe.Values)
+        foreach (var refValue in JavaEnumGeneratorHelper.GetValuesByName(classe))
         {
             var args = Config
                 .GetProperties(classe)

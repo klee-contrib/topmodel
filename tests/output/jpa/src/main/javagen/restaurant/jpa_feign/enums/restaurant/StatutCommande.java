@@ -12,6 +12,11 @@ import jakarta.annotation.Generated;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public enum StatutCommande {
 	/**
+	 * Annulée.
+	 */
+	ANNULE("Annulée"),
+
+	/**
 	 * En attente.
 	 */
 	EN_ATT("En attente"),
@@ -29,12 +34,7 @@ public enum StatutCommande {
 	/**
 	 * Servie.
 	 */
-	SERVIE("Servie"),
-
-	/**
-	 * Annulée.
-	 */
-	ANNULE("Annulée");
+	SERVIE("Servie");
 
 	/**
 	 * Libellé du statut.
