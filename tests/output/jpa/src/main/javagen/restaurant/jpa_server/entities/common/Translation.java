@@ -173,7 +173,7 @@ public class Translation {
 			TranslationId oId = (TranslationId) o;
 
 			return Objects.equals(this.resourceKey, oId.resourceKey)
-			 && Objects.equals(this.lang, oId.lang);
+					&& Objects.equals(this.lang, oId.lang);
 		}
 
 		@Override

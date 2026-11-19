@@ -219,7 +219,7 @@ public class MenuPlat {
 			}
 
 			return Objects.equals(this.menu.getId(), oId.menu.getId())
-			 && Objects.equals(this.plat.getId(), oId.plat.getId());
+					&& Objects.equals(this.plat.getId(), oId.plat.getId());
 		}
 
 		@Override

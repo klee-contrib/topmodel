@@ -157,7 +157,7 @@ public class Paiement {
 			}
 
 			return Objects.equals(this.facture.getId(), oId.facture.getId())
-			 && Objects.equals(this.swileCardId, oId.swileCardId);
+					&& Objects.equals(this.swileCardId, oId.swileCardId);
 		}
 
 		@Override

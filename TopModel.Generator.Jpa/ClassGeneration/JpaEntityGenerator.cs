@@ -218,9 +218,22 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         }
 
         equalsMethod.AddBodyLine();
-        equalsMethod.AddBodyLine(
-            $@"return {string.Join($"{Environment.NewLine} && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)}, oId.{pk.NameCamel}{GetterToCompareCompositePkPk(pk, tag)})"))};"
-        );
+        var pkComparisons = classe.PrimaryKey
+            .Select(pk =>
+            {
+                var getter = GetterToCompareCompositePkPk(pk, tag);
+                return $"Objects.equals(this.{pk.NameCamel}{getter}, oId.{pk.NameCamel}{getter})";
+            })
+            .ToList();
+        for (var i = 0; i < pkComparisons.Count; i++)
+        {
+            var isFirst = i == 0;
+            var isLast = i == pkComparisons.Count - 1;
+            equalsMethod.AddBodyLine(
+                isFirst ? 0 : 2,
+                $"{(isFirst ? "return " : "&& ")}{pkComparisons[i]}{(isLast ? ";" : string.Empty)}"
+            );
+        }
 
         javaClass.Add(equalsMethod);
 

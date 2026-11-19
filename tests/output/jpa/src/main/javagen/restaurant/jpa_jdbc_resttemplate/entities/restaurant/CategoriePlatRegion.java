@@ -28,7 +28,7 @@ public class CategoriePlatRegion {
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.
 	 */
-	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_ENTREE, IDF_DESSERT);
+	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_DESSERT, IDF_ENTREE);
 
 	/**
 	 * Région.

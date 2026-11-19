@@ -9,6 +9,25 @@ namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
 public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerator(config)
 {
     /// <summary>
+    /// Retourne les valeurs de la classe triées par OrderProperty, sinon par DefaultProperty, sinon par nom.
+    /// </summary>
+    /// <param name="classe">La classe.</param>
+    /// <returns>Les valeurs triées.</returns>
+    public static IList<ClassValue> GetOrderedValues(Class classe)
+    {
+        var orderProperty = classe.OrderProperty ?? classe.DefaultProperty;
+        return orderProperty != null
+            ? classe
+                .Values.OrderBy(
+                    v => v.Value.TryGetValue(orderProperty, out var value) ? value : null,
+                    StringComparer.InvariantCulture
+                )
+                .ThenBy(v => v.Name, StringComparer.Ordinal)
+                .ToList()
+            : classe.Values.OrderBy(v => v.Name, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
     /// Génère l'appel du constructeur tout argument pour une valeur de référence donnée,
     /// avec les valeurs calculées pour chaque propriété de la classe.
     /// </summary>
@@ -29,7 +48,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
     /// <param name="tag">Le tag de génération.</param>
     public virtual IEnumerable<JavaField> GetConstFields(Class classe, string tag)
     {
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        foreach (var refValue in GetOrderedValues(classe))
         {
             var field = new JavaField(classe.NamePascal, refValue.Name.ToConstantCase())
             {
@@ -107,11 +126,10 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
 
     public JavaField GetStaticValuesList(Class classe)
     {
-        var values =
-            (classe.OrderProperty ?? classe.DefaultProperty) != null
-                ? classe.Values.OrderBy(v => v.Value[classe.OrderProperty ?? classe.DefaultProperty!]).ToList()
-                : classe.Values;
-        var stringValues = string.Join(", ", values.Select(refValue => refValue.Name.ToConstantCase()));
+        var stringValues = string.Join(
+            ", ",
+            GetOrderedValues(classe).Select(refValue => refValue.Name.ToConstantCase())
+        );
         var field = new JavaField($"List<{classe.NamePascal}>", "VALUES")
         {
             Static = true,

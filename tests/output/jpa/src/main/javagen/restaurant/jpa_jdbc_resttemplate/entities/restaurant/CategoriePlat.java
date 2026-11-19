@@ -24,15 +24,15 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.CategoriePlatOrdre;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlat {
 
-	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.Autre, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
-
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.Boisson, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
-
-	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
 
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.Entree, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.Principal, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
+
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.Dessert, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
+
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.Autre, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.

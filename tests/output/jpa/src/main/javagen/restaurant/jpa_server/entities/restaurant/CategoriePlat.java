@@ -38,15 +38,15 @@ import restaurant.jpa_server.enums.restaurant.CategoriePlatOrdre;
 )
 public class CategoriePlat {
 
-	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
-
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "restaurant.categoriePlat.values.Boisson", CategoriePlatOrdre.Boisson, new BigDecimal(2));
-
-	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
 
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "restaurant.categoriePlat.values.Entree", CategoriePlatOrdre.Entree, null);
 
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.PRINCIPAL, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
+
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "restaurant.categoriePlat.values.Dessert", CategoriePlatOrdre.Dessert, null);
+
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "restaurant.categoriePlat.values.Autre", CategoriePlatOrdre.Autre, null);
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.

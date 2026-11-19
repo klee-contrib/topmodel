@@ -37,15 +37,15 @@ import restaurant.jpa_feign.enums.restaurant.CategoriePlatCode;
 )
 public class CategoriePlat {
 
-	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "Autre", 5, null);
-
 	public static final CategoriePlat BOISSON = new CategoriePlat(CategoriePlatCode.BOISSON, "Boisson", 1, new BigDecimal(2));
-
-	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "Dessert", 4, null);
 
 	public static final CategoriePlat ENTREE = new CategoriePlat(CategoriePlatCode.ENTREE, "Entrée", 2, null);
 
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.PRINCIPAL, "Plat principal", 3, new BigDecimal(10));
+
+	public static final CategoriePlat DESSERT = new CategoriePlat(CategoriePlatCode.DESSERT, "Dessert", 4, null);
+
+	public static final CategoriePlat AUTRE = new CategoriePlat(CategoriePlatCode.AUTRE, "Autre", 5, null);
 
 	/**
 	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
