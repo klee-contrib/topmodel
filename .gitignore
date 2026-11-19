@@ -17,3 +17,5 @@ launchSettings.json
 # Docker PostgreSQL
 postgres-data
 .vscode/launch.json
+tests/output/jpa/.settings/
+tests/output/jpa/.project
